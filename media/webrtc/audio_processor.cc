@@ -191,12 +191,14 @@ AudioProcessor::AudioProcessor(
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
     LogCallback log_callback,
     const AudioProcessingSettings& settings,
-    const media::AudioParameters& input_format)
+    const media::AudioParameters& input_format,
+    const media::AudioParameters& output_format)
     : settings_(settings),
       webrtc_audio_processing_(
           media::CreateWebRtcAudioProcessingModule(settings)),
       log_callback_(std::move(log_callback)),
       input_format_(input_format),
+      output_format_(output_format),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       audio_delay_stats_reporter_(kBuffersPerSecond) {
@@ -206,88 +208,35 @@ AudioProcessor::AudioProcessor(
       "%s({multi_channel_capture_processing=%s})", __func__,
       settings_.multi_channel_capture_processing ? "true" : "false"));
 
-  DCHECK(input_format_.IsValid());
-  SendLogMessage(
-      base::StringPrintf("%s({input_format_=[%s]})", __func__,
-                         input_format_.AsHumanReadableString().c_str()));
-
-  // TODO(crbug/881275): For now, we assume fixed parameters for the output when
-  // audio processing is enabled, to match the previous behavior. We should
-  // either use the input parameters (in which case, audio processing will
-  // convert at output) or ideally, have a backchannel from the sink to know
-  // what format it would prefer.
-  const int output_sample_rate =
-      webrtc_audio_processing_ ?
-#if BUILDFLAG(IS_CHROMECAST)
-                               std::min(media::kAudioProcessingSampleRateHz,
-                                        input_format_.sample_rate())
-#else
-                               media::kAudioProcessingSampleRateHz
-#endif  // BUILDFLAG(IS_CHROMECAST)
-                               : input_format_.sample_rate();
-
-  const int fifo_output_channels = input_format_.channels();
-
-  media::ChannelLayout output_channel_layout;
-  if (!webrtc_audio_processing_) {
-    output_channel_layout = input_format.channel_layout();
-  } else if (settings_.multi_channel_capture_processing) {
-    // The number of output channels is equal to the number of input channels.
-    // If the media stream audio processor receives stereo input it will output
-    // stereo. To reduce computational complexity, APM will not perform full
-    // multichannel processing unless any sink requests more than one channel.
-    // If the input is multichannel but the sinks are not interested in more
-    // than one channel, APM will internally downmix the signal to mono and
-    // process it. The processed mono signal will then be upmixed to same number
-    // of channels as the input before leaving the media stream audio processor.
-    // If a sink later requests stereo, APM will start performing true stereo
-    // processing. There will be no need to change the output format.
-
-    output_channel_layout = input_format.channel_layout();
-  } else {
-    output_channel_layout = media::CHANNEL_LAYOUT_MONO;
+  CHECK(input_format_.IsValid());
+  CHECK(output_format_.IsValid());
+  if (settings.NeedWebrtcAudioProcessing()) {
+    DCHECK(!!webrtc_audio_processing_);
+    DCHECK_EQ(output_format_.sample_rate() / 100,
+              output_format_.frames_per_buffer());
   }
-
-  // webrtc::AudioProcessing requires a 10 ms chunk size. We use this native
-  // size when processing is enabled. When disabled we use the same size as
-  // the source if less than 10 ms.
-  //
-  // TODO(ajm): This conditional buffer size appears to be assuming knowledge of
-  // the sink based on the source parameters. PeerConnection sinks seem to want
-  // 10 ms chunks regardless, while WebAudio sinks want less, and we're assuming
-  // we can identify WebAudio sinks by the input chunk size. Less fragile would
-  // be to have the sink actually tell us how much it wants (as in the above
-  // todo).
-  int processing_frames = input_format.sample_rate() / 100;
-  int output_frames = output_sample_rate / 100;
-  if (!webrtc_audio_processing_ &&
-      input_format.frames_per_buffer() < output_frames) {
-    processing_frames = input_format.frames_per_buffer();
-    output_frames = processing_frames;
-  }
-
-  output_format_ = media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LOW_LATENCY, output_channel_layout,
-      output_sample_rate, output_frames);
-  if (output_channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
-    // Explicitly set number of channels for discrete channel layouts.
-    output_format_.set_channels_for_discrete(input_format.channels());
-  }
-  SendLogMessage(
-      base::StringPrintf("%s => (output_format=[%s])", __func__,
-                         output_format_.AsHumanReadableString().c_str()));
   SendLogMessage(base::StringPrintf(
-      "%s => (FIFO: processing_frames=%d, output_channels=%d)", __func__,
-      processing_frames, fifo_output_channels));
+      "%s({input_format_=[%s], output_format_=[%s]})", __func__,
+      input_format_.AsHumanReadableString().c_str(),
+      output_format_.AsHumanReadableString().c_str()));
 
+  // If audio processing is needed, rebuffer to 10 ms. If not, rebuffer to the
+  // requested output format.
+  const int fifo_output_frames_per_buffer =
+      settings_.NeedWebrtcAudioProcessing()
+          ? input_format_.sample_rate() / 100
+          : output_format_.frames_per_buffer();
+  SendLogMessage(
+      base::StringPrintf("%s => (FIFO: fifo_output_frames_per_buffer=%d)",
+                         __func__, fifo_output_frames_per_buffer));
   capture_fifo_ = std::make_unique<AudioProcessorCaptureFifo>(
-      input_format.channels(), fifo_output_channels,
-      input_format.frames_per_buffer(), processing_frames,
+      input_format.channels(), input_format_.channels(),
+      input_format.frames_per_buffer(), fifo_output_frames_per_buffer,
       input_format.sample_rate());
 
   if (webrtc_audio_processing_) {
     output_bus_ = std::make_unique<AudioProcessorCaptureBus>(
-        output_format_.channels(), output_frames);
+        output_format_.channels(), output_format.frames_per_buffer());
   }
 }
 
@@ -557,4 +506,69 @@ void AudioProcessor::SendLogMessage(const std::string& message) {
                                        reinterpret_cast<uintptr_t>(this)));
 }
 
+// If WebRTC audio processing is used, the default output format is fixed to the
+// native WebRTC processing format in order to avoid rebuffering and resampling.
+// If not, then the input format is essentially preserved.
+// static
+AudioParameters AudioProcessor::GetDefaultOutputFormat(
+    const AudioParameters& input_format,
+    const AudioProcessingSettings& settings) {
+  const bool need_webrtc_audio_processing =
+      settings.NeedWebrtcAudioProcessing();
+  const int output_sample_rate =
+      need_webrtc_audio_processing ?
+#if BUILDFLAG(IS_CHROMECAST)
+                                   std::min(media::kAudioProcessingSampleRateHz,
+                                            input_format.sample_rate())
+#else
+                                   media::kAudioProcessingSampleRateHz
+#endif  // BUILDFLAG(IS_CHROMECAST)
+                                   : input_format.sample_rate();
+
+  media::ChannelLayout output_channel_layout;
+  if (!need_webrtc_audio_processing) {
+    output_channel_layout = input_format.channel_layout();
+  } else if (settings.multi_channel_capture_processing) {
+    // The number of output channels is equal to the number of input channels.
+    // If the media stream audio processor receives stereo input it will
+    // output stereo. To reduce computational complexity, APM will not perform
+    // full multichannel processing unless any sink requests more than one
+    // channel. If the input is multichannel but the sinks are not interested
+    // in more than one channel, APM will internally downmix the signal to
+    // mono and process it. The processed mono signal will then be upmixed to
+    // same number of channels as the input before leaving the media stream
+    // audio processor. If a sink later requests stereo, APM will start
+    // performing true stereo processing. There will be no need to change the
+    // output format.
+
+    output_channel_layout = input_format.channel_layout();
+  } else {
+    output_channel_layout = media::CHANNEL_LAYOUT_MONO;
+  }
+
+  // webrtc::AudioProcessing requires a 10 ms chunk size. We use this native
+  // size when processing is enabled. When disabled we use the same size as
+  // the source if less than 10 ms.
+  //
+  // TODO(ajm): This conditional buffer size appears to be assuming knowledge of
+  // the sink based on the source parameters. PeerConnection sinks seem to want
+  // 10 ms chunks regardless, while WebAudio sinks want less, and we're assuming
+  // we can identify WebAudio sinks by the input chunk size. Less fragile would
+  // be to have the sink actually tell us how much it wants (as in the above
+  // todo).
+  int output_frames = output_sample_rate / 100;
+  if (!need_webrtc_audio_processing &&
+      input_format.frames_per_buffer() < output_frames) {
+    output_frames = input_format.frames_per_buffer();
+  }
+
+  media::AudioParameters output_format = media::AudioParameters(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY, output_channel_layout,
+      output_sample_rate, output_frames);
+  if (output_channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
+    // Explicitly set number of channels for discrete channel layouts.
+    output_format.set_channels_for_discrete(input_format.channels());
+  }
+  return output_format;
+}
 }  // namespace media

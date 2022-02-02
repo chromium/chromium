@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -34,6 +35,18 @@ using ::testing::Return;
 
 namespace media {
 namespace {
+
+static const int kSupportedSampleRates[] = {8000,
+                                            16000,
+                                            22050,
+                                            32000,
+                                            44100,
+                                            48000
+#if BUILDFLAG(IS_CHROMECAST)
+                                            ,
+                                            96000
+#endif  // BUILDFLAG(IS_CHROMECAST)
+};
 
 using MockProcessedCaptureCallback =
     base::MockRepeatingCallback<void(const media::AudioBus& audio_bus,
@@ -88,13 +101,12 @@ class AudioProcessorTest : public ::testing::Test {
   // Helper method to save duplicated code.
   static void ProcessDataAndVerifyFormat(
       AudioProcessor& audio_processor,
-      MockProcessedCaptureCallback& mock_capture_callback,
-      int expected_output_sample_rate,
-      int expected_output_channels,
-      int expected_output_buffer_size) {
+      MockProcessedCaptureCallback& mock_capture_callback) {
     // Read the audio data from a file.
     const media::AudioParameters& params =
         audio_processor.GetInputFormatForTesting();
+    const media::AudioParameters& output_params =
+        audio_processor.OutputFormat();
     const int packet_size = params.frames_per_buffer() * 2 * params.channels();
     const size_t length = packet_size * kNumberOfPacketsForTest;
     std::unique_ptr<char[]> capture_data(new char[length]);
@@ -125,16 +137,13 @@ class AudioProcessorTest : public ::testing::Test {
           .WillRepeatedly([&](const media::AudioBus& processed_audio,
                               base::TimeTicks audio_capture_time,
                               absl::optional<double> new_volume) {
+            EXPECT_EQ(processed_audio.channels(), output_params.channels());
+            EXPECT_EQ(processed_audio.frames(),
+                      output_params.frames_per_buffer());
             EXPECT_EQ(audio_capture_time, input_capture_time);
           });
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
                                            num_preferred_channels, 1.0, false);
-      EXPECT_EQ(expected_output_sample_rate,
-                audio_processor.OutputFormat().sample_rate());
-      EXPECT_EQ(expected_output_channels,
-                audio_processor.OutputFormat().channels());
-      EXPECT_EQ(expected_output_buffer_size,
-                audio_processor.OutputFormat().frames_per_buffer());
 
       data_ptr += params.frames_per_buffer() * params.channels();
 
@@ -174,9 +183,32 @@ class AudioProcessorTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-class AudioProcessorTestMultichannel
+struct AudioProcessorTestMultichannelAndFormat
     : public AudioProcessorTest,
-      public ::testing::WithParamInterface<bool> {};
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+  AudioParameters GetProcessorOutputParams(
+      const AudioParameters& params,
+      const AudioProcessingSettings& settings) {
+    const bool use_input_format_for_output = std::get<1>(GetParam());
+    return use_input_format_for_output
+               ? params
+               : AudioProcessor::GetDefaultOutputFormat(params, settings);
+  }
+
+  static std::string PrintTestName(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [multichannel, input_format_for_output] = info.param;
+    return base::StringPrintf("MultichannelApm%sSameInputOutputFormat%s",
+                              multichannel ? "True" : "False",
+                              input_format_for_output ? "True" : "False");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    AudioProcessorTestMultichannelAndFormat,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    &AudioProcessorTestMultichannelAndFormat::PrintTestName);
 
 // Test crashing with ASAN on Android. crbug.com/468762
 #if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
@@ -184,34 +216,34 @@ class AudioProcessorTestMultichannel
 #else
 #define MAYBE_WithAudioProcessing WithAudioProcessing
 #endif
-TEST_P(AudioProcessorTestMultichannel, MAYBE_WithAudioProcessing) {
-  const bool use_multichannel_processing = GetParam();
+TEST_P(AudioProcessorTestMultichannelAndFormat, MAYBE_WithAudioProcessing) {
   AudioProcessingSettings settings{.multi_channel_capture_processing =
-                                       use_multichannel_processing};
+                                       std::get<0>(GetParam())};
   AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), settings, params_);
+                                 LogCallbackForTesting(), settings, params_,
+                                 GetProcessorOutputParams(params_, settings));
   EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
   VerifyDefaultComponents(audio_processor);
 
-  const int expected_output_channels =
-      use_multichannel_processing ? params_.channels() : 1;
-  ProcessDataAndVerifyFormat(audio_processor, mock_capture_callback_,
-                             media::kAudioProcessingSampleRateHz,
-                             expected_output_channels,
-                             media::kAudioProcessingSampleRateHz / 100);
+  ProcessDataAndVerifyFormat(audio_processor, mock_capture_callback_);
 }
 
 TEST_F(AudioProcessorTest, TurnOffDefaultConstraints) {
   AudioProcessingSettings settings;
   // Turn off the default settings and pass it to AudioProcessor.
   DisableDefaultSettings(settings);
-  AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), settings, params_);
+  AudioProcessor audio_processor(
+      mock_capture_callback_.Get(), LogCallbackForTesting(), settings, params_,
+      AudioProcessor::GetDefaultOutputFormat(params_, settings));
   EXPECT_FALSE(audio_processor.has_webrtc_audio_processing());
 
-  ProcessDataAndVerifyFormat(audio_processor, mock_capture_callback_,
-                             params_.sample_rate(), params_.channels(),
-                             params_.sample_rate() / 100);
+  EXPECT_EQ(audio_processor.OutputFormat().sample_rate(),
+            params_.sample_rate());
+  EXPECT_EQ(audio_processor.OutputFormat().channels(), params_.channels());
+  EXPECT_EQ(audio_processor.OutputFormat().frames_per_buffer(),
+            params_.sample_rate() / 100);
+
+  ProcessDataAndVerifyFormat(audio_processor, mock_capture_callback_);
 }
 
 // Test crashing with ASAN on Android. crbug.com/468762
@@ -220,23 +252,10 @@ TEST_F(AudioProcessorTest, TurnOffDefaultConstraints) {
 #else
 #define MAYBE_TestAllSampleRates TestAllSampleRates
 #endif
-TEST_P(AudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
-  const bool use_multichannel_processing = GetParam();
+TEST_P(AudioProcessorTestMultichannelAndFormat, MAYBE_TestAllSampleRates) {
   AudioProcessingSettings settings{.multi_channel_capture_processing =
-                                       use_multichannel_processing};
+                                       std::get<0>(GetParam())};
 
-  static const int kSupportedSampleRates[] = {
-    8000,
-    16000,
-    22050,
-    32000,
-    44100,
-    48000
-#if BUILDFLAG(IS_CHROMECAST)
-    ,
-    96000
-#endif  // BUILDFLAG(IS_CHROMECAST)
-  };
   for (int sample_rate : kSupportedSampleRates) {
     SCOPED_TRACE(testing::Message() << "sample_rate=" << sample_rate);
     int buffer_size = sample_rate / 100;
@@ -244,35 +263,26 @@ TEST_P(AudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
                                   media::CHANNEL_LAYOUT_STEREO, sample_rate,
                                   buffer_size);
     AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings, params);
+                                   LogCallbackForTesting(), settings, params,
+                                   GetProcessorOutputParams(params, settings));
     EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
     VerifyDefaultComponents(audio_processor);
 
-    int expected_sample_rate =
-#if BUILDFLAG(IS_CHROMECAST)
-        std::min(sample_rate, media::kAudioProcessingSampleRateHz);
-#else
-        media::kAudioProcessingSampleRateHz;
-#endif  // BUILDFLAG(IS_CHROMECAST)
-    const int expected_output_channels =
-        use_multichannel_processing ? params_.channels() : 1;
-    ProcessDataAndVerifyFormat(audio_processor, mock_capture_callback_,
-                               expected_sample_rate, expected_output_channels,
-                               expected_sample_rate / 100);
+    ProcessDataAndVerifyFormat(audio_processor, mock_capture_callback_);
   }
 }
 
 TEST_F(AudioProcessorTest, StartStopAecDump) {
-  AudioProcessingSettings settings;
-
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   base::FilePath temp_file_path;
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_directory.GetPath(),
                                              &temp_file_path));
   {
-    AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings, params_);
+    AudioProcessingSettings settings;
+    AudioProcessor audio_processor(
+        mock_capture_callback_.Get(), LogCallbackForTesting(), settings,
+        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings));
 
     // Start and stop recording.
     audio_processor.OnStartDump(base::File(
@@ -295,8 +305,6 @@ TEST_F(AudioProcessorTest, StartStopAecDump) {
 }
 
 TEST_F(AudioProcessorTest, StartAecDumpDuringOngoingAecDump) {
-  AudioProcessingSettings settings;
-
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   base::FilePath temp_file_path_a;
@@ -306,8 +314,10 @@ TEST_F(AudioProcessorTest, StartAecDumpDuringOngoingAecDump) {
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_directory.GetPath(),
                                              &temp_file_path_b));
   {
-    AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings, params_);
+    AudioProcessingSettings settings;
+    AudioProcessor audio_processor(
+        mock_capture_callback_.Get(), LogCallbackForTesting(), settings,
+        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings));
 
     // Start a recording.
     audio_processor.OnStartDump(base::File(
@@ -330,24 +340,19 @@ TEST_F(AudioProcessorTest, StartAecDumpDuringOngoingAecDump) {
   // The temporary files are deleted when temp_directory exits scope.
 }
 
-TEST_P(AudioProcessorTestMultichannel, TestStereoAudio) {
-  const bool use_multichannel_processing = GetParam();
-  SCOPED_TRACE(testing::Message() << "use_multichannel_processing="
-                                  << use_multichannel_processing);
-  const media::AudioParameters source_params(
-      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_STEREO, 48000, 480);
+TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
+  const bool use_multichannel_processing = std::get<0>(GetParam());
 
   // Construct left and right channels, and populate each channel with
   // different values.
-  const int size = media::AudioBus::CalculateMemorySize(source_params);
+  const int size = media::AudioBus::CalculateMemorySize(params_);
   std::unique_ptr<float, base::AlignedFreeDeleter> left_channel(
       static_cast<float*>(base::AlignedAlloc(size, 32)));
   std::unique_ptr<float, base::AlignedFreeDeleter> right_channel(
       static_cast<float*>(base::AlignedAlloc(size, 32)));
   std::unique_ptr<media::AudioBus> wrapper =
-      media::AudioBus::CreateWrapper(source_params.channels());
-  wrapper->set_frames(source_params.frames_per_buffer());
+      media::AudioBus::CreateWrapper(params_.channels());
+  wrapper->set_frames(params_.frames_per_buffer());
   wrapper->SetChannelData(0, left_channel.get());
   wrapper->SetChannelData(1, right_channel.get());
   wrapper->Zero();
@@ -370,8 +375,8 @@ TEST_P(AudioProcessorTestMultichannel, TestStereoAudio) {
     // Turn on the stereo channels mirroring.
     settings.stereo_mirroring = true;
     AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings,
-                                   source_params);
+                                   LogCallbackForTesting(), settings, params_,
+                                   GetProcessorOutputParams(params_, settings));
     EXPECT_EQ(audio_processor.has_webrtc_audio_processing(), use_apm);
     // There's no sense in continuing if this fails.
     ASSERT_EQ(2, audio_processor.OutputFormat().channels());
@@ -422,6 +427,49 @@ TEST_P(AudioProcessorTestMultichannel, TestStereoAudio) {
   }
 }
 
+struct AudioProcessorDefaultOutputFormatTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<std::tuple<bool, int>> {
+  static std::string PrintTestName(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [multichannel, sample_rate] = info.param;
+    return base::StringPrintf("MultichannelApm%sSampleRate%d",
+                              multichannel ? "True" : "False", sample_rate);
+  }
+};
+
+INSTANTIATE_TEST_CASE_P(
+    /*no prefix*/,
+    AudioProcessorDefaultOutputFormatTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::ValuesIn(kSupportedSampleRates)),
+    &AudioProcessorDefaultOutputFormatTest::PrintTestName);
+
+TEST_P(AudioProcessorDefaultOutputFormatTest, GetDefaultOutputFormat) {
+  AudioProcessingSettings settings{.multi_channel_capture_processing =
+                                       std::get<0>(GetParam())};
+  const int sample_rate = std::get<1>(GetParam());
+
+  media::AudioParameters input_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::CHANNEL_LAYOUT_STEREO, sample_rate, sample_rate / 100);
+  AudioParameters output_params =
+      AudioProcessor::GetDefaultOutputFormat(input_params, settings);
+
+  const int expected_sample_rate =
+#if BUILDFLAG(IS_CHROMECAST)
+      std::min(sample_rate, media::kAudioProcessingSampleRateHz);
+#else
+      media::kAudioProcessingSampleRateHz;
+#endif  // BUILDFLAG(IS_CHROMECAST)
+  const int expected_output_channels =
+      settings.multi_channel_capture_processing ? input_params.channels() : 1;
+
+  EXPECT_EQ(output_params.sample_rate(), expected_sample_rate);
+  EXPECT_EQ(output_params.channels(), expected_output_channels);
+  EXPECT_EQ(output_params.frames_per_buffer(), expected_sample_rate / 100);
+}
+
 // Ensure that discrete channel layouts do not crash with audio processing
 // enabled.
 TEST_F(AudioProcessorTest, DiscreteChannelLayout) {
@@ -432,15 +480,12 @@ TEST_F(AudioProcessorTest, DiscreteChannelLayout) {
   // Test both 1 and 2 discrete channels.
   for (int channels = 1; channels <= 2; ++channels) {
     params.set_channels_for_discrete(channels);
-    AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                   LogCallbackForTesting(), settings, params);
+    AudioProcessor audio_processor(
+        mock_capture_callback_.Get(), LogCallbackForTesting(), settings, params,
+        AudioProcessor::GetDefaultOutputFormat(params, settings));
     EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(AudioProcessorMultichannelAffectedTests,
-                         AudioProcessorTestMultichannel,
-                         ::testing::Values(false, true));
 
 // When audio processing is performed, processed audio should be delivered as
 // soon as 10 ms of audio has been received.
@@ -452,8 +497,9 @@ TEST(AudioProcessorCallbackTest,
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 4 / 1000);
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings, params);
+  AudioProcessor audio_processor(
+      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
+      AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_TRUE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -501,8 +547,9 @@ TEST(AudioProcessorCallbackTest,
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 35 / 1000);
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings, params);
+  AudioProcessor audio_processor(
+      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
+      AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_TRUE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -540,8 +587,9 @@ TEST(AudioProcessorCallbackTest,
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 4 / 1000);
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings, params);
+  AudioProcessor audio_processor(
+      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
+      AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_FALSE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -576,8 +624,9 @@ TEST(AudioProcessorCallbackTest,
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, 48000,
                                 48000 * 35 / 1000);
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings, params);
+  AudioProcessor audio_processor(
+      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params,
+      AudioProcessor::GetDefaultOutputFormat(params, settings));
   ASSERT_FALSE(audio_processor.has_webrtc_audio_processing());
   int output_sample_rate = audio_processor.OutputFormat().sample_rate();
   std::unique_ptr<media::AudioBus> data_bus =
@@ -609,8 +658,9 @@ TEST_F(AudioProcessorTest,
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
   settings.echo_cancellation = true;
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings, params_);
+  AudioProcessor audio_processor(
+      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params_,
+      AudioProcessor::GetDefaultOutputFormat(params_, settings));
   EXPECT_TRUE(audio_processor.RequiresPlayoutReference());
 }
 
@@ -619,8 +669,9 @@ TEST_F(AudioProcessorTest, RequiresPlayoutReferenceWhenGainControlIsEnabled) {
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
   settings.automatic_gain_control = true;
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings, params_);
+  AudioProcessor audio_processor(
+      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params_,
+      AudioProcessor::GetDefaultOutputFormat(params_, settings));
   EXPECT_TRUE(audio_processor.RequiresPlayoutReference());
 }
 
@@ -638,8 +689,9 @@ TEST_F(AudioProcessorTest,
   settings.high_pass_filter = true;
   settings.stereo_mirroring = true;
   settings.force_apm_creation = true;
-  AudioProcessor audio_processor(mock_capture_callback.Get(),
-                                 LogCallbackForTesting(), settings, params_);
+  AudioProcessor audio_processor(
+      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params_,
+      AudioProcessor::GetDefaultOutputFormat(params_, settings));
   EXPECT_FALSE(audio_processor.RequiresPlayoutReference());
 }
 

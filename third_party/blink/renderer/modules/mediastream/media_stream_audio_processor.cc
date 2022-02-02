@@ -30,7 +30,10 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
                        ConvertToBaseRepeatingCallback(
                            CrossThreadBindRepeating(&WebRtcLogMessage)),
                        settings,
-                       capture_data_source_params),
+                       capture_data_source_params,
+                       media::AudioProcessor::GetDefaultOutputFormat(
+                           capture_data_source_params,
+                           settings)),
       playout_data_source_(std::move(playout_data_source)),
       main_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
       aec_dump_agent_impl_(AecDumpAgentImpl::Create(this)),

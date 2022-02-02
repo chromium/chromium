@@ -80,8 +80,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   void Stop();
 
   // The format of the processed capture output audio from the processor.
-  // Is constant between calls to OnCaptureFormatChanged().
-  // Must only be called on the main render thread.
+  // Is constant throughout MediaStreamAudioProcessor lifetime.
   const media::AudioParameters& OutputFormat() const;
 
   // Accessor to check if WebRTC audio processing is enabled or not.
