@@ -15,6 +15,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -65,6 +66,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/startup/startup_switches.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -860,7 +862,6 @@ void BrowserManager::StartWithLogFile(
                                    "--user-data-dir=" + user_data_dir,
                                    "--enable-gpu-rasterization",
                                    "--lang=" + locale,
-                                   "--enable-crashpad",
                                    "--enable-webgl-image-chromium",
                                    "--breakpad-dump-location=" + crash_dir};
 
@@ -932,6 +933,10 @@ void BrowserManager::StartWithLogFile(
   // Append a fake switch for backward compatibility.
   // TODO(crbug.com/1188020): Remove this after M93 Lacros is spread enough.
   command_line.AppendSwitchASCII(mojo::PlatformChannel::kHandleSwitch, "-1");
+
+  if (crash_reporter::IsCrashpadEnabled()) {
+    command_line.AppendSwitch(switches::kEnableCrashpad);
+  }
 
   // Create the lacros-chrome subprocess.
   base::RecordAction(base::UserMetricsAction("Lacros.Launch"));

@@ -3,6 +3,9 @@ specific_include_rules = {
     "+ash/components/arc/mojom",
     "+components/arc/intent_helper",
   ],
+  "browser_manager\.cc": [
+    "+components/crash/core/app",
+  ],
   "message_center_ash(\.cc|_unittest\.cc)": [
     # Provides a mojo interface around the message center, but lives in this
     # directory for consistency with other crosapi classes.
