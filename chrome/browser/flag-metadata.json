@@ -4253,7 +4253,7 @@
   {
     "name": "omnibox-active-search-engines",
     "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "omnibox-adaptive-suggestions-count",
