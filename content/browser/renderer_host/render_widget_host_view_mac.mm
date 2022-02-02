@@ -169,7 +169,7 @@ id RenderWidgetHostViewMac::GetAccessibilityFocusedUIElement() {
     DCHECK(focused_item);
     if (focused_item) {
       BrowserAccessibilityCocoa* focused_item_cocoa =
-          ToBrowserAccessibilityCocoa(focused_item);
+          focused_item->GetNativeViewAccessible();
       DCHECK(focused_item_cocoa);
       if (focused_item_cocoa)
         return focused_item_cocoa;
@@ -1534,7 +1534,7 @@ void RenderWidgetHostViewMac::ShowSharePicker(
 
 id RenderWidgetHostViewMac::GetRootBrowserAccessibilityElement() {
   if (auto* manager = host()->GetRootBrowserAccessibilityManager())
-    return ToBrowserAccessibilityCocoa(manager->GetRoot());
+    return manager->GetRoot()->GetNativeViewAccessible();
   return nil;
 }
 

@@ -87,7 +87,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   BrowserAccessibilityCocoa* new_native_obj = CreateNativeWrapper();
 
   // Rebuild children to pick up a newly created cocoa object.
-  [ToBrowserAccessibilityCocoa(parent) childrenChanged];
+  [parent->GetNativeViewAccessible() childrenChanged];
 
   // If focused, fire a focus notification on the new native object.
   if (manager_->GetFocus() == this) {
@@ -216,18 +216,6 @@ BrowserAccessibilityCocoa* BrowserAccessibilityMac::CreateNativeWrapper() {
   // `AXPlatformNodeMac` takes ownership of the Cocoa object here.
   platform_node_->SetNativeWrapper(node_cocoa);
   return node_cocoa;
-}
-
-const BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(
-    const BrowserAccessibility* obj) {
-  DCHECK(obj);
-  return static_cast<const BrowserAccessibilityMac*>(obj)->GetNativeWrapper();
-}
-
-BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(
-    BrowserAccessibility* obj) {
-  DCHECK(obj);
-  return static_cast<BrowserAccessibilityMac*>(obj)->GetNativeWrapper();
 }
 
 }  // namespace content

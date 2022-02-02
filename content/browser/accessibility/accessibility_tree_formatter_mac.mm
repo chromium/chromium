@@ -82,9 +82,7 @@ void AccessibilityTreeFormatterMac::AddDefaultFilters(
 base::Value AccessibilityTreeFormatterMac::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   DCHECK(root);
-  BrowserAccessibility* internal_root =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
-  return BuildTree(ToBrowserAccessibilityCocoa(internal_root));
+  return BuildTree(root->GetNativeViewAccessible());
 }
 
 base::Value AccessibilityTreeFormatterMac::BuildTreeForSelector(
@@ -137,10 +135,8 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
     const std::vector<ui::AXScriptInstruction>& instructions,
     size_t start_index,
     size_t end_index) const {
-  BrowserAccessibilityCocoa* platform_root = ToBrowserAccessibilityCocoa(
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root));
-
-  return EvaluateScript(platform_root, instructions, start_index, end_index);
+  return EvaluateScript(root->GetNativeViewAccessible(), instructions,
+                        start_index, end_index);
 }
 
 std::string AccessibilityTreeFormatterMac::EvaluateScript(
@@ -189,9 +185,7 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
 base::Value AccessibilityTreeFormatterMac::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   DCHECK(node);
-  BrowserAccessibility* internal_node =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(node);
-  return BuildNode(ToBrowserAccessibilityCocoa(internal_node));
+  return BuildNode(node->GetNativeViewAccessible());
 }
 
 base::Value AccessibilityTreeFormatterMac::BuildNode(const id node) const {

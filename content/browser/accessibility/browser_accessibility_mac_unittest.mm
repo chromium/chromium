@@ -106,7 +106,7 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
     manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
         MakeAXTreeUpdate(root_, child1, child2), nullptr);
     accessibility_.reset(
-        [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
+        [manager_->GetRoot()->GetNativeViewAccessible() retain]);
   }
 
   void SetRootValue(std::string value) {
@@ -180,8 +180,7 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   root_.role = ax::mojom::Role::kTextField;
   manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
       MakeAXTreeUpdate(root_), nullptr);
-  accessibility_.reset(
-      [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
+  accessibility_.reset([manager_->GetRoot()->GetNativeViewAccessible() retain]);
 
   // Insertion but no deletion.
 
@@ -266,7 +265,7 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   manager_ =
       std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
   base::scoped_nsobject<BrowserAccessibilityCocoa> ax_table_(
-      [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
+      [manager_->GetRoot()->GetNativeViewAccessible() retain]);
   id children = [ax_table_ children];
   EXPECT_EQ(5U, [children count]);
 

@@ -22,8 +22,9 @@ class AccessibilityHitTestingMacBrowserTest
     : public AccessibilityHitTestingBrowserTest {
  public:
   BrowserAccessibilityCocoa* GetWebContentRoot() {
-    return ToBrowserAccessibilityCocoa(
-        GetRootBrowserAccessibilityManager()->GetRoot());
+    return GetRootBrowserAccessibilityManager()
+        ->GetRoot()
+        ->GetNativeViewAccessible();
   }
 };
 
@@ -58,8 +59,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingMacBrowserTest,
     gfx::Point rect_2_point(49, 20);
     BrowserAccessibilityCocoa* hit_element = [root
         accessibilityHitTest:NSMakePoint(rect_2_point.x(), rect_2_point.y())];
-    BrowserAccessibilityCocoa* expected_element = ToBrowserAccessibilityCocoa(
-        FindNode(ax::mojom::Role::kGenericContainer, "rect2"));
+    BrowserAccessibilityCocoa* expected_element =
+        FindNode(ax::mojom::Role::kGenericContainer, "rect2")
+            ->GetNativeViewAccessible();
     EXPECT_ACCESSIBILITY_MAC_HIT_TEST_RESULT(rect_2_point, expected_element,
                                              hit_element);
   }
@@ -69,8 +71,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingMacBrowserTest,
     gfx::Point rect_b_point(79, 79);
     BrowserAccessibilityCocoa* hit_element = [root
         accessibilityHitTest:NSMakePoint(rect_b_point.x(), rect_b_point.y())];
-    BrowserAccessibilityCocoa* expected_element = ToBrowserAccessibilityCocoa(
-        FindNode(ax::mojom::Role::kGenericContainer, "rectB"));
+    BrowserAccessibilityCocoa* expected_element =
+        FindNode(ax::mojom::Role::kGenericContainer, "rectB")
+            ->GetNativeViewAccessible();
     EXPECT_ACCESSIBILITY_MAC_HIT_TEST_RESULT(rect_b_point, expected_element,
                                              hit_element);
   }
