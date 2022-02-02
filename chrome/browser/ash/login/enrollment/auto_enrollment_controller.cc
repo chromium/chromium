@@ -486,6 +486,10 @@ AutoEnrollmentController::DetermineAutoEnrollmentCheckType(
   FRERequirement fre_requirement = GetFRERequirement();
   LOG_DETERMINATION() << FRERequirementToString(fre_requirement);
 
+  // Skip FRE check if the device is explicitly marked as consumer owned.
+  if (fre_requirement == FRERequirement::kExplicitlyNotRequired)
+    return AutoEnrollmentCheckType::kNone;
+
   if (ShouldDoFRECheck(command_line, fre_requirement)) {
     // FRE has precedence over Initial Enrollment.
     LOG(WARNING) << "Proceeding with FRE check.";

@@ -1485,8 +1485,9 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
   }
 
   // Test initial enrollment. This method is shared by the tests for initial
-  // enrollment for a device that is new or in consumer mode.
-  void DoInitialEnrollment() {
+  // enrollment for a device that is new or in consumer mode. |check_fre|
+  // specifies if forced re-enrollment check is needed.
+  void DoInitialEnrollment(bool check_fre) {
     fake_statistics_provider_.SetMachineStatistic(
         system::kEnterpriseManagementEmbargoEndDateKey,
         GenerateEmbargoEndDate(-15 /* days_offset */));
@@ -1506,11 +1507,14 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     mock_eula_screen_->ExitScreen(
         EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
 
-    // Wait for auto-enrollment controller to encounter the connection error.
-    WaitForAutoEnrollmentState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+    if (check_fre) {
+      // Wait for auto-enrollment controller to encounter the connection error.
+      WaitForAutoEnrollmentState(
+          policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
 
-    // Let update screen smooth time process (time = 0ms).
-    base::RunLoop().RunUntilIdle();
+      // Let update screen smooth time process (time = 0ms).
+      base::RunLoop().RunUntilIdle();
+    }
 
     CheckCurrentScreen(UpdateView::kScreenId);
     EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
@@ -1523,8 +1527,10 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
 
     // The error screen shows up if there's no auto-enrollment decision.
     EXPECT_FALSE(StartupUtils::IsOobeCompleted());
-    EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
-              GetErrorScreen()->GetParentScreen());
+    if (check_fre) {
+      EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
+                GetErrorScreen()->GetParentScreen());
+    }
     base::DictionaryValue device_state;
     device_state.SetStringKey(
         policy::kDeviceStateMode,
@@ -1557,7 +1563,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
                        ControlFlowInitialEnrollment) {
   fake_statistics_provider_.ClearMachineStatistic(system::kActivateDateKey);
 
-  DoInitialEnrollment();
+  DoInitialEnrollment(/*check_fre=*/true);
 }
 
 // Tests that a device that is in consumer mode can do another initial
@@ -1568,7 +1574,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   fake_statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey,
                                                 "0");
 
-  DoInitialEnrollment();
+  DoInitialEnrollment(/*check_fre=*/false);
 }
 
 // Tests that a server error occurs during the Initial Enrollment check.  The
