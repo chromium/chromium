@@ -22,7 +22,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80);
   ui::ColorMixer& mixer = provider->AddMixer();
-  mixer[ui::kColorTouchableMenuBackground] = {menu_background_color};
+  mixer[ui::kColorAshSystemUIMenuBackground] = {menu_background_color};
 }
 
 }  // namespace ash

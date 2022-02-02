@@ -187,7 +187,7 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
                minimum_preferred_width_ - 2 * insets.width()));
 
   if (parent_menu_item_->GetMenuController() &&
-      parent_menu_item_->GetMenuController()->use_touchable_layout()) {
+      parent_menu_item_->GetMenuController()->use_ash_system_ui_layout()) {
     width = std::max(touchable_minimum_width, width);
   }
 

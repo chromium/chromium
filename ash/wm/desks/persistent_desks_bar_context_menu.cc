@@ -25,7 +25,7 @@ void PersistentDesksBarContextMenu::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                         views::MenuRunner::CONTEXT_MENU |
                         views::MenuRunner::FIXED_ANCHOR;
 

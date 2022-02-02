@@ -365,7 +365,7 @@ void SearchResultTileItemView::OnGetContextMenuModel(
       view_delegate_->IsInTabletMode());
   context_menu_->Run(anchor_rect, views::MenuAnchorPosition::kBubbleRight,
                      views::MenuRunner::HAS_MNEMONICS |
-                         views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                         views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                          views::MenuRunner::CONTEXT_MENU |
                          views::MenuRunner::FIXED_ANCHOR);
   if (!selected()) {

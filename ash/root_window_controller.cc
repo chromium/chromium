@@ -799,7 +799,7 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
       gfx::Rect(location_in_screen, gfx::Size()),
       views::MenuAnchorPosition::kBubbleRight,
       views::MenuRunner::CONTEXT_MENU |
-          views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+          views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
           views::MenuRunner::FIXED_ANCHOR);
 }
 

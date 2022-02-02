@@ -1985,8 +1985,9 @@ bool MenuController::GetMenuPartByScreenCoordinateImpl(
     return true;
   }
 
-  // Return false for points on touchable menu shadows, to search parent menus.
-  if (use_touchable_layout_)
+  // Return false for points on ash system UI menu shadows, to search parent
+  // menus.
+  if (use_ash_system_ui_layout_)
     return false;
 
   // While the mouse isn't over a menu item or the scroll buttons of menu, it

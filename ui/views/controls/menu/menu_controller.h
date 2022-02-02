@@ -226,10 +226,10 @@ class VIEWS_EXPORT MenuController
   // Only used for testing.
   static void TurnOffMenuSelectionHoldForTest();
 
-  void set_use_touchable_layout(bool use_touchable_layout) {
-    use_touchable_layout_ = use_touchable_layout;
+  void set_use_ash_system_ui_layout(bool value) {
+    use_ash_system_ui_layout_ = value;
   }
-  bool use_touchable_layout() const { return use_touchable_layout_; }
+  bool use_ash_system_ui_layout() const { return use_ash_system_ui_layout_; }
 
   // Notifies |this| that |menu_item| is being destroyed.
   void OnMenuItemDestroying(MenuItemView* menu_item);
@@ -787,8 +787,8 @@ class VIEWS_EXPORT MenuController
   // Set to true if the menu item was selected by touch.
   bool item_selected_by_touch_ = false;
 
-  // Whether to use the touchable layout.
-  bool use_touchable_layout_ = false;
+  // Whether to use the ash system UI specific layout.
+  bool use_ash_system_ui_layout_ = false;
 
   // During mouse event handling, this is the RootView to forward mouse events
   // to. We need this, because if we forward one event to it (e.g., mouse

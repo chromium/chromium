@@ -2418,7 +2418,7 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
 
 // Test that submenus are displayed within the screen bounds on smaller screens.
 TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
-  menu_controller()->set_use_touchable_layout(true);
+  menu_controller()->set_use_ash_system_ui_layout(true);
   MenuItemView* sub_item = menu_item()->GetSubmenu()->GetMenuItemAt(0);
   sub_item->AppendMenuItem(11, u"Subitem.One");
 

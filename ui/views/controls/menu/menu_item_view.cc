@@ -743,7 +743,8 @@ void MenuItemView::Layout() {
       if (config.icons_in_label || type_ == Type::kCheckbox ||
           type_ == Type::kRadio)
         x = label_start_;
-      if (GetMenuController() && GetMenuController()->use_touchable_layout())
+      if (GetMenuController() &&
+          GetMenuController()->use_ash_system_ui_layout())
         x = config.touchable_item_horizontal_padding;
 
       int y =
@@ -753,7 +754,8 @@ void MenuItemView::Layout() {
 
     if (radio_check_image_view_) {
       int x = config.item_horizontal_padding;
-      if (GetMenuController() && GetMenuController()->use_touchable_layout())
+      if (GetMenuController() &&
+          GetMenuController()->use_ash_system_ui_layout())
         x = config.touchable_item_horizontal_padding;
       int y =
           (height() + GetTopMargin() - GetBottomMargin() - kMenuCheckSize) / 2;
@@ -842,16 +844,17 @@ void MenuItemView::UpdateMenuPartSizes() {
   if (has_icons_)
     icon_area_width_ = std::max(icon_area_width_, GetMaxIconViewWidth());
 
-  const bool use_touchable_layout =
-      GetMenuController() && GetMenuController()->use_touchable_layout();
+  const bool use_ash_system_ui_layout =
+      GetMenuController() && GetMenuController()->use_ash_system_ui_layout();
   label_start_ =
-      (use_touchable_layout ? config.touchable_item_horizontal_padding
-                            : config.item_horizontal_padding) +
+      (use_ash_system_ui_layout ? config.touchable_item_horizontal_padding
+                                : config.item_horizontal_padding) +
       icon_area_width_;
 
   const bool use_padding = config.always_use_icon_to_label_padding ||
                            (!config.icons_in_label && has_icons_) ||
-                           HasChecksOrRadioButtons() || use_touchable_layout;
+                           HasChecksOrRadioButtons() ||
+                           use_ash_system_ui_layout;
   int padding = use_padding ? LayoutProvider::Get()->GetDistanceMetric(
                                   DISTANCE_RELATED_LABEL_HORIZONTAL)
                             : 0;
@@ -941,7 +944,7 @@ const gfx::FontList MenuItemView::GetFontList() const {
       return *font_list;
     }
   }
-  if (GetMenuController() && GetMenuController()->use_touchable_layout())
+  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout())
     return style::GetFont(style::CONTEXT_TOUCH_MENU, style::STYLE_PRIMARY);
   return MenuConfig::instance().font_list;
 }
@@ -1152,7 +1155,7 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
 
 SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
   style::TextContext context =
-      GetMenuController() && GetMenuController()->use_touchable_layout()
+      GetMenuController() && GetMenuController()->use_ash_system_ui_layout()
           ? style::CONTEXT_TOUCH_MENU
           : style::CONTEXT_MENU;
 
@@ -1271,7 +1274,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   const gfx::FontList& font_list = GetFontList();
 
-  if (GetMenuController() && GetMenuController()->use_touchable_layout()) {
+  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout()) {
     dimensions.height = menu_config.touchable_menu_height;
 
     // For container MenuItemViews, the width components should only include the
@@ -1372,7 +1375,7 @@ int MenuItemView::GetLabelStartForThisItem() const {
   const MenuConfig& config = MenuConfig::instance();
 
   // Touchable items with icons do not respect |label_start_|.
-  if (GetMenuController() && GetMenuController()->use_touchable_layout() &&
+  if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout() &&
       icon_view_) {
     return 2 * config.touchable_item_horizontal_padding +
            icon_view_->GetPreferredSize().width();

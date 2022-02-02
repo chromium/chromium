@@ -218,7 +218,7 @@ void ContinueTaskView::ShowContextMenuForViewImpl(
   if (!result())
     return;
 
-  int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::CONTEXT_MENU |
                   views::MenuRunner::FIXED_ANCHOR;
 

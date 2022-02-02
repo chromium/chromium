@@ -55,7 +55,7 @@ void AppsGridContextMenu::ShowContextMenuForViewImpl(
                           base::Unretained(this)));
   root_menu_item_view_ = menu_model_adapter_->CreateMenu();
 
-  int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::CONTEXT_MENU |
                   views::MenuRunner::FIXED_ANCHOR;
   menu_runner_ =

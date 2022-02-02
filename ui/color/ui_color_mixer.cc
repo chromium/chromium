@@ -204,7 +204,6 @@ void AddUiColorMixer(ColorProvider* provider,
                                                   : gfx::kGoogleBlue300};
   mixer[kColorTooltipBackground] = SetAlpha(kColorPrimaryBackground, 0xCC);
   mixer[kColorTooltipForeground] = SetAlpha(kColorPrimaryForeground, 0xDE);
-  mixer[kColorTouchableMenuBackground] = {kColorMenuBackground};
   mixer[kColorTreeBackground] = {kColorPrimaryBackground};
   mixer[kColorTreeNodeBackgroundSelectedFocused] = {
       kColorItemSelectionBackground};

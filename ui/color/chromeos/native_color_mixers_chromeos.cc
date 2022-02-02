@@ -24,6 +24,8 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
         high_elevation
             ? color_utils::AlphaBlend(SK_ColorWHITE, gfx::kGoogleGrey900, 0.08f)
             : gfx::kGoogleGrey900;
+    mixer[kColorAshSystemUIMenuBackground] = {
+        SkColorSetA(gfx::kGoogleGrey900, 0xCC)};
     mixer[kColorNativeColor1] = {gfx::kGoogleBlue400};
     mixer[kColorNativeColor1Shade1] = {color_utils::AlphaBlend(
         gfx::kGoogleBlue600, base_color, high_elevation ? 0.4f : 0.3f)};
@@ -40,6 +42,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
             ? gfx::kGoogleGrey700
             : color_utils::AlphaBlend(gfx::kGoogleGrey200, base_color, 0.3f)};
   } else {
+    mixer[kColorAshSystemUIMenuBackground] = {SkColorSetA(SK_ColorWHITE, 0xCC)};
     mixer[kColorNativeColor1] = {gfx::kGoogleBlue500};
     mixer[kColorNativeColor1Shade1] = {gfx::kGoogleBlue300};
     mixer[kColorNativeColor1Shade2] = {gfx::kGoogleBlue100};

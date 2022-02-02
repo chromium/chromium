@@ -690,7 +690,7 @@ void AppListItemView::OnContextMenuModelReceived(
     grid_delegate_->ClearSelectedView();
 
   int run_types = views::MenuRunner::HAS_MNEMONICS |
-                  views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                  views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::FIXED_ANCHOR |
                   views::MenuRunner::CONTEXT_MENU;
 

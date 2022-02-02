@@ -97,7 +97,7 @@ void CameraRollThumbnail::ButtonPressed() {
   menu_runner_ = std::make_unique<views::MenuRunner>(
       GetMenuModel(), views::MenuRunner::CONTEXT_MENU |
                           views::MenuRunner::FIXED_ANCHOR |
-                          views::MenuRunner::USE_TOUCHABLE_LAYOUT);
+                          views::MenuRunner::USE_ASH_SYS_UI_LAYOUT);
   menu_runner_->RunMenuAt(GetWidget(), button_controller(), GetBoundsInScreen(),
                           views::MenuAnchorPosition::kBubbleTopRight,
                           ui::MENU_SOURCE_NONE);

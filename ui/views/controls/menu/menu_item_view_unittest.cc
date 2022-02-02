@@ -214,7 +214,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
     menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
     menu_item_view_ = new TestMenuItemView(menu_delegate_.get());
     menu_runner_ = std::make_unique<MenuRunner>(
-        menu_item_view_, MenuRunner::USE_TOUCHABLE_LAYOUT);
+        menu_item_view_, MenuRunner::USE_ASH_SYS_UI_LAYOUT);
     menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
                             MenuAnchorPosition::kTopLeft,
                             ui::MENU_SOURCE_KEYBOARD);

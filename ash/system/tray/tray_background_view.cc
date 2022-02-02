@@ -390,7 +390,7 @@ void TrayBackgroundView::ShowContextMenuForViewImpl(
   if (!context_menu_model_)
     return;
 
-  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                         views::MenuRunner::CONTEXT_MENU |
                         views::MenuRunner::FIXED_ANCHOR;
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
