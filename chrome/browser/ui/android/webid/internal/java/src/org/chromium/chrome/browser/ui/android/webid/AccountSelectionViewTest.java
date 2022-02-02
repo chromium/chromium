@@ -236,18 +236,15 @@ public class AccountSelectionViewTest {
     @Test
     @MediumTest
     public void testDataSharingConsentDisplayed() {
-        final String rpUrl = "www.rp.org";
         final String idpUrl = "www.idp.org";
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetItems.addAll(
-                    Collections.singletonList(buildDataSharingConsentItem(rpUrl, idpUrl)));
+            mSheetItems.addAll(Collections.singletonList(buildDataSharingConsentItem(idpUrl)));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         assertNotNull(getAccounts().getChildAt(0));
         TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
         String expectedSharingConsentText =
-                mActivity.getString(R.string.account_selection_data_sharing_consent, "www.idp.org",
-                        "www.rp.org", "www.rp.org");
+                mActivity.getString(R.string.account_selection_data_sharing_consent, "www.idp.org");
         expectedSharingConsentText = expectedSharingConsentText.replaceAll("<[^>]*>", "");
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
@@ -347,10 +344,9 @@ public class AccountSelectionViewTest {
                         .build());
     }
 
-    private MVCListAdapter.ListItem buildDataSharingConsentItem(String rpUrl, String idpUrl) {
+    private MVCListAdapter.ListItem buildDataSharingConsentItem(String idpUrl) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
-        properties.mFormattedRpUrl = rpUrl;
         properties.mFormattedIdpUrl = idpUrl;
         properties.mTermsOfServiceUrl = "";
         properties.mPrivacyPolicyUrl = "";

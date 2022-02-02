@@ -489,8 +489,6 @@ public class AccountSelectionControllerTest {
         assertEquals("Incorrect terms of service URL", TEST_URL_TERMS_OF_SERVICE.getSpec(),
                 dataSharingProperties.mTermsOfServiceUrl);
         assertEquals("Incorrect continue type", ItemType.CONTINUE_BUTTON, mSheetItems.get(2).type);
-        assertEquals("incorrect rp url", formatForSecurityDisplay(TEST_URL),
-                dataSharingProperties.mFormattedRpUrl);
         assertEquals("Incorrect provider url", formatForSecurityDisplay(TEST_URL_2),
                 dataSharingProperties.mFormattedIdpUrl);
     }

@@ -5365,7 +5365,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         with <ph name="IDENTITY_PROVIDER_URL">%1$s<ex>idp.com</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up." translateable="false">
-        To sign up, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with <ph name="RP_URL1">%2$s<ex>recipes.com</ex></ph>. See <ph name="RP_URL2">%3$s<ex>recipes.com</ex></ph>'s <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link2&gt;</ph>.
+        To continue, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link2&gt;</ph>.
       </message>
 
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials." translateable="false">
@@ -5384,7 +5384,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         List of accounts to be selected is closed.
       </message>
       <message name="IDS_SIGN_IN_SHEET_TITLE" desc="Header for sign in sheet." translateable="false">
-        Signing into <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
+        Sign in to <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
       </message>
       <message name="IDS_VERIFY_SHEET_TITLE" desc="Header for verify sheet." translateable="false">
         Verifying…

@@ -158,7 +158,7 @@ class AccountSelectionMediator {
         mSheetItems.add(new ListItem(ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, cancelBtnModel));
     }
 
-    private void addContinueButton(Account account, GURL rpUrl, GURL idpUrl,
+    private void addContinueButton(Account account, GURL idpUrl,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata) {
         // Shows the continue button for both sign-up and non auto-sign-in.
         final PropertyModel continueBtnModel = createContinueBtnItem(account, idpMetadata);
@@ -167,7 +167,7 @@ class AccountSelectionMediator {
         // Only show the user data sharing consent text for sign up.
         if (!account.isSignIn()) {
             mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
-                    createDataSharingConsentItem(rpUrl, idpUrl, clientMetadata)));
+                    createDataSharingConsentItem(idpUrl, clientMetadata)));
         }
     }
 
@@ -225,7 +225,7 @@ class AccountSelectionMediator {
             mAutoSignInTaskHandler.postDelayed(
                     () -> onAccountSelected(mSelectedAccount), AUTO_SIGN_IN_CANCELLATION_TIMER_MS);
         } else if (mSelectedAccount != null) {
-            addContinueButton(mSelectedAccount, rpUrl, idpUrl, idpMetadata, clientMetadata);
+            addContinueButton(mSelectedAccount, idpUrl, idpMetadata, clientMetadata);
         }
 
         showContent();
@@ -338,14 +338,11 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createDataSharingConsentItem(
-            GURL rpUrl, GURL idpUrl, ClientIdMetadata metadata) {
+    private PropertyModel createDataSharingConsentItem(GURL idpUrl, ClientIdMetadata metadata) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
         properties.mFormattedIdpUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        properties.mFormattedRpUrl =
-                UrlFormatter.formatUrlForSecurityDisplay(rpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl().getValidSpecOrEmpty();
         properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl().getValidSpecOrEmpty();
 

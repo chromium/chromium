@@ -195,8 +195,7 @@ class AccountSelectionViewBinder {
 
             String consentText = String.format(
                     view.getContext().getString(R.string.account_selection_data_sharing_consent),
-                    properties.mFormattedIdpUrl, properties.mFormattedRpUrl,
-                    properties.mFormattedRpUrl);
+                    properties.mFormattedIdpUrl);
             SpannableString span = SpanApplier.applySpans(consentText,
                     new SpanApplier.SpanInfo("<link1>", "</link1>", privacyPolicyLink),
                     new SpanApplier.SpanInfo("<link2>", "</link2>", termsOfServiceLink));

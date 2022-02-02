@@ -99,7 +99,6 @@ class AccountSelectionProperties {
     static class DataSharingConsentProperties {
         static class Properties {
             public String mFormattedIdpUrl;
-            public String mFormattedRpUrl;
             public String mTermsOfServiceUrl;
             public String mPrivacyPolicyUrl;
         }
