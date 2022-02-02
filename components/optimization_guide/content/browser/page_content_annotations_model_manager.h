@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/bert_model_handler.h"
@@ -57,12 +58,13 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
 
-  // Runs |callback| with true when the model that powers |BatchAnnotate| for
-  // the given annotation type is ready to execute. If the model is ready now,
-  // the callback is run immediately. If the model will never become ready, due
-  // to feature flags for example, the callback run with false.
-  void NotifyWhenModelAvailable(AnnotationType type,
-                                base::OnceCallback<void(bool)> callback);
+  // Requests that the given model for |type| be loaded in the background and
+  // then runs |callback| with true when the model is ready to execute. If the
+  // model is ready now, the callback is run immediately. If the model file will
+  // never be available, the callback is run with false.
+  void RequestAndNotifyWhenModelAvailable(
+      AnnotationType type,
+      base::OnceCallback<void(bool)> callback);
 
   // Returns the model info associated with the given AnnotationType, if it is
   // available and loaded.
@@ -253,6 +255,9 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
   // The current state of the running job, if any.
   JobExecutionState job_state_ = JobExecutionState::kIdle;
+
+  // The model provider, not owned.
+  raw_ptr<OptimizationGuideModelProvider> optimization_guide_model_provider_;
 
   base::WeakPtrFactory<PageContentAnnotationsModelManager> weak_ptr_factory_{
       this};
