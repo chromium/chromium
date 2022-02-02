@@ -276,6 +276,16 @@ SessionPropertySetter::SessionPropertySetter(
 
 SessionPropertySetter::~SessionPropertySetter() {}
 
+bool SessionPropertySetter::IsSupported(CFStringRef key) {
+  DCHECK(session_);
+  if (!supported_keys_) {
+    CFDictionaryRef dict_ref;
+    if (VTSessionCopySupportedPropertyDictionary(session_, &dict_ref) == noErr)
+      supported_keys_.reset(dict_ref);
+  }
+  return supported_keys_ && CFDictionaryContainsKey(supported_keys_, key);
+}
+
 bool SessionPropertySetter::Set(CFStringRef key, int32_t value) {
   DCHECK(session_);
   base::ScopedCFTypeRef<CFNumberRef> cfvalue(
@@ -286,6 +296,13 @@ bool SessionPropertySetter::Set(CFStringRef key, int32_t value) {
 bool SessionPropertySetter::Set(CFStringRef key, bool value) {
   DCHECK(session_);
   CFBooleanRef cfvalue = (value) ? kCFBooleanTrue : kCFBooleanFalse;
+  return VTSessionSetProperty(session_, key, cfvalue) == noErr;
+}
+
+bool SessionPropertySetter::Set(CFStringRef key, double value) {
+  DCHECK(session_);
+  base::ScopedCFTypeRef<CFNumberRef> cfvalue(
+      CFNumberCreate(nullptr, kCFNumberDoubleType, &value));
   return VTSessionSetProperty(session_, key, cfvalue) == noErr;
 }
 

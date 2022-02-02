@@ -28,6 +28,7 @@ some chunks.
         height: height,
         bitrate: 2000000,
         scalabilityMode: "L1T" + arg.layers,
+        latencyMode: "realtime",
       };
 
       let support = await VideoEncoder.isConfigSupported(encoder_config);

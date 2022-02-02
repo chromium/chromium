@@ -50,13 +50,16 @@ class MEDIA_EXPORT SessionPropertySetter {
   SessionPropertySetter(base::ScopedCFTypeRef<VTCompressionSessionRef> session);
   ~SessionPropertySetter();
 
+  bool IsSupported(CFStringRef key);
   bool Set(CFStringRef key, int32_t value);
   bool Set(CFStringRef key, bool value);
+  bool Set(CFStringRef key, double value);
   bool Set(CFStringRef key, CFStringRef value);
   bool Set(CFStringRef key, CFArrayRef value);
 
  private:
   base::ScopedCFTypeRef<VTCompressionSessionRef> session_;
+  base::ScopedCFTypeRef<CFDictionaryRef> supported_keys_;
 };
 
 }  // namespace video_toolbox

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -14,6 +15,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bitrate.h"
 #include "media/base/mac/video_frame_mac.h"
+
+// This is a min version of macOS where we want to support SVC encoding via
+// EnableLowLatencyRateControl flag. The flag is actually supported since 11.3,
+// but there we see frame drops even with ample bitrate budget. Excessive frame
+// drops were fixed in 12.1.
+#define LOW_LATENCY_FLAG_AVAILABLE_VER 12.0.1
 
 namespace media {
 
@@ -139,6 +146,8 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
+  if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *))
+    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
   for (const auto& supported_profile : kSupportedProfiles) {
     profile.profile = supported_profile;
     profiles.push_back(profile);
@@ -179,6 +188,14 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   bitrate_ = config.bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
+
+  if (config.HasTemporalLayer())
+    num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
+
+  if (num_temporal_layers_ > 2) {
+    DLOG(ERROR) << "Unsupported number of SVC temporal layers.";
+    return false;
+  }
 
   if (!ResetCompressionSession()) {
     DLOG(ERROR) << "Failed creating compression session.";
@@ -499,6 +516,11 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
                              0));
   const bool keyframe = !CFDictionaryContainsKey(
       sample_attachments, kCMSampleAttachmentKey_NotSync);
+  bool belongs_to_base_layer = true;
+  if (CFBooleanRef value_ptr = base::mac::GetValueFromDictionary<CFBooleanRef>(
+          sample_attachments, kCMSampleAttachmentKey_IsDependedOnByOthers)) {
+    belongs_to_base_layer = static_cast<bool>(CFBooleanGetValue(value_ptr));
+  }
 
   size_t used_buffer_size = 0;
   const bool copy_rv = video_toolbox::CopySampleBufferToAnnexBBuffer(
@@ -515,12 +537,12 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
     bitrate_adjuster_.Update(used_buffer_size);
   }
 
+  BitstreamBufferMetadata md(used_buffer_size, keyframe,
+                             encode_output->capture_timestamp);
+  md.h264.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
   client_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &Client::BitstreamBufferReady, client_, buffer_ref->id,
-          BitstreamBufferMetadata(used_buffer_size, keyframe,
-                                  encode_output->capture_timestamp)));
+      FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, client_,
+                                buffer_ref->id, std::move(md)));
   MaybeRunFlushCallback();
 }
 
@@ -545,9 +567,17 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
     const gfx::Size& input_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  std::vector<CFTypeRef> encoder_keys(
-      1, kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder);
-  std::vector<CFTypeRef> encoder_values(1, kCFBooleanTrue);
+  std::vector<CFTypeRef> encoder_keys{
+      kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder};
+  std::vector<CFTypeRef> encoder_values{kCFBooleanTrue};
+
+  if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
+    if (require_low_delay_) {
+      encoder_keys.push_back(
+          kVTVideoEncoderSpecification_EnableLowLatencyRateControl);
+      encoder_values.push_back(kCFBooleanTrue);
+    }
+  }
   base::ScopedCFTypeRef<CFDictionaryRef> encoder_spec =
       video_toolbox::DictionaryWithKeysAndValues(
           encoder_keys.data(), encoder_values.data(), encoder_keys.size());
@@ -599,15 +629,28 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
       kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 240);
   DLOG_IF(ERROR, !rv) << " Setting session property failed.";
 
-  bool delay_count_rv =
-      session_property_setter.Set(kVTCompressionPropertyKey_MaxFrameDelayCount,
-                                  static_cast<int>(kNumInputBuffers));
-  if (!delay_count_rv) {
-    DLOG(ERROR) << " Setting frame delay count failed.";
-    if (require_low_delay_) {
-      // Setting MaxFrameDelayCount fails on low resolutions and arm64 macs,
-      // but we can use accelerated encoder anyway. See: crbug.com/1195177
-      return false;
+  if (session_property_setter.IsSupported(
+          kVTCompressionPropertyKey_MaxFrameDelayCount)) {
+    rv &= session_property_setter.Set(
+        kVTCompressionPropertyKey_MaxFrameDelayCount,
+        static_cast<int>(kNumInputBuffers));
+  } else {
+    DLOG(WARNING) << "MaxFrameDelayCount is not supported";
+  }
+
+  if (num_temporal_layers_ == 2) {
+    if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
+      if (!session_property_setter.IsSupported(
+              kVTCompressionPropertyKey_BaseLayerFrameRateFraction)) {
+        DLOG(ERROR) << "BaseLayerFrameRateFraction is not supported";
+        return false;
+      }
+      rv &= session_property_setter.Set(
+          kVTCompressionPropertyKey_BaseLayerFrameRateFraction, 0.5);
+      DLOG_IF(ERROR, !rv) << " Setting BaseLayerFrameRate property failed.";
+    } else {
+      DLOG(ERROR) << "SVC encoding is not supported on this OS version.";
+      rv = false;
     }
   }
 

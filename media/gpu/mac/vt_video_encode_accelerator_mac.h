@@ -111,6 +111,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_ = 0;
   int32_t frame_rate_ = 0;
+  int num_temporal_layers_ = 1;
   VideoCodecProfile h264_profile_;
 
   media::Bitrate bitrate_;
