@@ -81,6 +81,7 @@ for std in ${STD}; do
           /usr/local/bin/bazel test ... \
             --compilation_mode=\"${compilation_mode}\" \
             --copt=\"${exceptions_mode}\" \
+            --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \
             --copt=-Werror \
             --define=\"absl=1\" \
             --distdir=\"/bazel-distdir\" \

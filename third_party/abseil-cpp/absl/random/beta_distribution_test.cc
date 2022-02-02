@@ -54,7 +54,7 @@ using RealTypes =
     std::conditional<absl::numeric_internal::IsDoubleDouble(),
                      ::testing::Types<float, double>,
                      ::testing::Types<float, double, long double>>::type;
-TYPED_TEST_CASE(BetaDistributionInterfaceTest, RealTypes);
+TYPED_TEST_SUITE(BetaDistributionInterfaceTest, RealTypes);
 
 TYPED_TEST(BetaDistributionInterfaceTest, SerializeTest) {
   // The threshold for whether std::exp(1/a) is finite.
@@ -432,21 +432,17 @@ std::string ParamName(
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    TestSampleStatisticsCombinations,
-    BetaDistributionTest,
+    TestSampleStatisticsCombinations, BetaDistributionTest,
     ::testing::Combine(::testing::Values(0.1, 0.2, 0.9, 1.1, 2.5, 10.0, 123.4),
                        ::testing::Values(0.1, 0.2, 0.9, 1.1, 2.5, 10.0, 123.4)),
     ParamName);
 
-INSTANTIATE_TEST_SUITE_P(TestSampleStatistics_SelectedPairs,
-                         BetaDistributionTest,
-                         ::testing::Values(std::make_pair(0.5, 1000),
-                                           std::make_pair(1000, 0.5),
-                                           std::make_pair(900, 1000),
-                                           std::make_pair(10000, 20000),
-                                           std::make_pair(4e5, 2e7),
-                                           std::make_pair(1e7, 1e5)),
-                         ParamName);
+INSTANTIATE_TEST_SUITE_P(
+    TestSampleStatistics_SelectedPairs, BetaDistributionTest,
+    ::testing::Values(std::make_pair(0.5, 1000), std::make_pair(1000, 0.5),
+                      std::make_pair(900, 1000), std::make_pair(10000, 20000),
+                      std::make_pair(4e5, 2e7), std::make_pair(1e7, 1e5)),
+    ParamName);
 
 // NOTE: absl::beta_distribution is not guaranteed to be stable.
 TEST(BetaDistributionTest, StabilityTest) {

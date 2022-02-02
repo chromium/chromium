@@ -1258,7 +1258,8 @@ ExpectedStats XorSeedExpectedStats() {
   return {};
 }
 
-TEST(Table, EnsureNonQuadraticTopNXorSeedByProbeSeqLength) {
+// TODO(b/80415403): Figure out why this test is so flaky, esp. on MSVC
+TEST(Table, DISABLED_EnsureNonQuadraticTopNXorSeedByProbeSeqLength) {
   ProbeStatsPerSize stats;
   std::vector<size_t> sizes = {Group::kWidth << 5, Group::kWidth << 10};
   for (size_t size : sizes) {
@@ -1352,7 +1353,8 @@ ExpectedStats LinearTransformExpectedStats() {
   return {};
 }
 
-TEST(Table, EnsureNonQuadraticTopNLinearTransformByProbeSeqLength) {
+// TODO(b/80415403): Figure out why this test is so flaky.
+TEST(Table, DISABLED_EnsureNonQuadraticTopNLinearTransformByProbeSeqLength) {
   ProbeStatsPerSize stats;
   std::vector<size_t> sizes = {Group::kWidth << 5, Group::kWidth << 10};
   for (size_t size : sizes) {

@@ -29,29 +29,16 @@
 #include <type_traits>
 #include <utility>
 
+#if defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
+#include <bit>  // For std::bit_cast.
+#endif  // defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
+
 #include "absl/base/internal/identity.h"
 #include "absl/base/macros.h"
 #include "absl/meta/type_traits.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-
-namespace internal_casts {
-
-template <class Dest, class Source>
-struct is_bitcastable
-    : std::integral_constant<
-          bool,
-          sizeof(Dest) == sizeof(Source) &&
-              type_traits_internal::is_trivially_copyable<Source>::value &&
-              type_traits_internal::is_trivially_copyable<Dest>::value
-#if !ABSL_HAVE_BUILTIN(__builtin_bit_cast)
-              && std::is_default_constructible<Dest>::value
-#endif
-          > {
-};
-
-}  // namespace internal_casts
 
 // implicit_cast()
 //
@@ -123,7 +110,7 @@ constexpr To implicit_cast(typename absl::internal::identity_t<To> to) {
 // floating point value:
 //
 //   float f = 3.14159265358979;
-//   int i = bit_cast<int32_t>(f);
+//   int i = bit_cast<int>(f);
 //   // i = 0x40490fdb
 //
 // Reinterpreting and accessing a value directly as a different type (as shown
@@ -151,48 +138,41 @@ constexpr To implicit_cast(typename absl::internal::identity_t<To> to) {
 // introducing this undefined behavior (since the original value is never
 // accessed in the wrong way).
 //
-// NOTE: The requirements here are more strict than the bit_cast of standard
-// proposal P0476 when __builtin_bit_cast is not available.
-// Specifically, this implementation also requires `Dest` to be
-// default-constructible.
-template <
-    typename Dest, typename Source,
-    typename std::enable_if<internal_casts::is_bitcastable<Dest, Source>::value,
-                            int>::type = 0>
+// The requirements of `absl::bit_cast` are more strict than that of
+// `std::bit_cast` unless compiler support is available. Specifically, without
+// compiler support, this implementation also requires `Dest` to be
+// default-constructible. In C++20, `absl::bit_cast` is replaced by
+// `std::bit_cast`.
+#if defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
+
+using std::bit_cast;
+
+#else  // defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
+
+template <typename Dest, typename Source,
+          typename std::enable_if<
+              sizeof(Dest) == sizeof(Source) &&
+                  type_traits_internal::is_trivially_copyable<Source>::value &&
+                  type_traits_internal::is_trivially_copyable<Dest>::value
+#if !ABSL_HAVE_BUILTIN(__builtin_bit_cast)
+                  && std::is_default_constructible<Dest>::value
+#endif  // !ABSL_HAVE_BUILTIN(__builtin_bit_cast)
+              ,
+              int>::type = 0>
 #if ABSL_HAVE_BUILTIN(__builtin_bit_cast)
 inline constexpr Dest bit_cast(const Source& source) {
   return __builtin_bit_cast(Dest, source);
 }
-#else
+#else  // ABSL_HAVE_BUILTIN(__builtin_bit_cast)
 inline Dest bit_cast(const Source& source) {
   Dest dest;
   memcpy(static_cast<void*>(std::addressof(dest)),
          static_cast<const void*>(std::addressof(source)), sizeof(dest));
   return dest;
 }
-#endif
+#endif  // ABSL_HAVE_BUILTIN(__builtin_bit_cast)
 
-// NOTE: This overload is only picked if the requirements of bit_cast are
-// not met. It is therefore UB, but is provided temporarily as previous
-// versions of this function template were unchecked. Do not use this in
-// new code.
-template <
-    typename Dest, typename Source,
-    typename std::enable_if<
-        !internal_casts::is_bitcastable<Dest, Source>::value,
-        int>::type = 0>
-ABSL_DEPRECATED(
-    "absl::bit_cast type requirements were violated. Update the types "
-    "being used such that they are the same size and are both "
-    "TriviallyCopyable.")
-inline Dest bit_cast(const Source& source) {
-  static_assert(sizeof(Dest) == sizeof(Source),
-                "Source and destination types should have equal sizes.");
-
-  Dest dest;
-  memcpy(&dest, &source, sizeof(dest));
-  return dest;
-}
+#endif  // defined(__cpp_lib_bit_cast) && __cpp_lib_bit_cast >= 201806L
 
 ABSL_NAMESPACE_END
 }  // namespace absl

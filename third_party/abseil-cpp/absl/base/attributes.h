@@ -656,6 +656,10 @@
 //   ABSL_DEPRECATED("Use DoThat() instead")
 //   void DoThis();
 //
+//   enum FooEnum {
+//     kBar ABSL_DEPRECATED("Use kBaz instead"),
+//   };
+//
 // Every usage of a deprecated entity will trigger a warning when compiled with
 // clang's `-Wdeprecated-declarations` option. This option is turned off by
 // default, but the warnings will be reported by clang-tidy.

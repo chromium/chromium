@@ -925,8 +925,8 @@ auto Storage<T, N, A>::Swap(Storage* other_storage_ptr) -> void {
                            inlined_ptr->GetSize());
     }
     ABSL_INTERNAL_CATCH_ANY {
-      allocated_ptr->SetAllocation(
-          {allocated_storage_view.data, allocated_storage_view.capacity});
+      allocated_ptr->SetAllocation(Allocation<A>{
+          allocated_storage_view.data, allocated_storage_view.capacity});
       ABSL_INTERNAL_RETHROW;
     }
 
@@ -934,8 +934,8 @@ auto Storage<T, N, A>::Swap(Storage* other_storage_ptr) -> void {
                                        inlined_ptr->GetInlinedData(),
                                        inlined_ptr->GetSize());
 
-    inlined_ptr->SetAllocation(
-        {allocated_storage_view.data, allocated_storage_view.capacity});
+    inlined_ptr->SetAllocation(Allocation<A>{allocated_storage_view.data,
+                                             allocated_storage_view.capacity});
   }
 
   swap(GetSizeAndIsAllocated(), other_storage_ptr->GetSizeAndIsAllocated());

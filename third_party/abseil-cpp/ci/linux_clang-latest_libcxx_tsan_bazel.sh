@@ -78,6 +78,7 @@ for std in ${STD}; do
           --build_tag_filters="-notsan" \
           --compilation_mode="${compilation_mode}" \
           --copt="${exceptions_mode}" \
+          --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
           --copt="-fsanitize=thread" \
           --copt="-fno-sanitize-blacklist" \
           --copt=-Werror \
