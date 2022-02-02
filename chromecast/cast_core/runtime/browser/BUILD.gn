@@ -267,21 +267,6 @@ cast_source_set("browser_simple") {
   deps = [ ":browser" ]
 }
 
-executable("demo_platform_service") {
-  sources = [
-    "demo_platform_service.cc",
-    "demo_platform_service.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
-    "//third_party/cast_core/public/src/proto/platform:platform_service_proto",
-  ]
-
-  deps = [ "//third_party/grpc:grpc++" ]
-}
-
 # TODO(b/194439829): Upstream additional metrics unit tests.
 cast_source_set("unit_tests") {
   testonly = true
