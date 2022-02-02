@@ -2127,7 +2127,9 @@ class PrefetchProxyTabHelperSpeculationRulesTest
  public:
   PrefetchProxyTabHelperSpeculationRulesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"use_speculation_rules", "true"}});
+        features::kIsolatePrerenders,
+        {{"use_speculation_rules", "true"},
+         {"allow_all_domains_for_extended_preloading", "true"}});
   }
 };
 

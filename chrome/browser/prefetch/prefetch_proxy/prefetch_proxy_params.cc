@@ -277,7 +277,7 @@ bool PrefetchProxyAllowAllDomains() {
 bool PrefetchProxyAllowAllDomainsForExtendedPreloading() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kIsolatePrerenders, "allow_all_domains_for_extended_preloading",
-      true);
+      false);
 }
 
 base::TimeDelta PrefetchProxyCacheableDuration() {
