@@ -134,6 +134,12 @@ void FastPairNotificationController::ShowErrorNotification(
     gfx::Image device_image,
     base::RepeatingClosure launch_bluetooth_pairing,
     base::OnceCallback<void(bool)> on_close) {
+  // Because the pairing notification is pinned, we need to manually remove it
+  // to explicitly say it is done not by the user. This only need to be done
+  // for pinned notifications.
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kFastPairPairingNotificationId, /*by_user=*/false);
+
   std::unique_ptr<message_center::Notification> error_notification =
       CreateNotification(
           kFastPairErrorNotificationId,
