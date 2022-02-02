@@ -163,6 +163,9 @@ extern const char kAssistantConsentSimplifiedTextDescription[];
 extern const char kAssistantConsentV2Name[];
 extern const char kAssistantConsentV2Description[];
 
+extern const char kEnableAutoDisableAccessibilityName[];
+extern const char kEnableAutoDisableAccessibilityDescription[];
+
 extern const char kAutofillAlwaysReturnCloudTokenizedCardName[];
 extern const char kAutofillAlwaysReturnCloudTokenizedCardDescription[];
 
@@ -2086,9 +2089,6 @@ extern const char kAppManagementIntentSettingsDescription[];
 
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
-
-extern const char kEnableAutoDisableAccessibilityName[];
-extern const char kEnableAutoDisableAccessibilityDescription[];
 
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];

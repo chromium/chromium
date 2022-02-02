@@ -5420,14 +5420,14 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-accessibility-live-caption",
      flag_descriptions::kEnableAccessibilityLiveCaptionName,
-     flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsDesktop,
+     flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kLiveCaption)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-auto-disable-accessibility",
      flag_descriptions::kEnableAutoDisableAccessibilityName,
      flag_descriptions::kEnableAutoDisableAccessibilityDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAutoDisableAccessibility)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"cct-incognito", flag_descriptions::kCCTIncognitoName,

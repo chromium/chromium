@@ -713,6 +713,13 @@ const char kDocumentTransitionSlowdownFactorDescription[] =
     "Slows down animations triggered by documentTransition JavaScript API for "
     "debugging.";
 
+const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
+const char kEnableAutoDisableAccessibilityDescription[] =
+    "When accessibility APIs are no longer being requested, automatically "
+    "disables accessibility. This might happen if an assistive technology is "
+    "turned off or if an extension which uses accessibility APIs no longer "
+    "needs them.";
+
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =
@@ -3649,13 +3656,6 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "Enables the live caption feature which generates captions for "
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
-
-const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
-const char kEnableAutoDisableAccessibilityDescription[] =
-    "When accessibility APIs are no longer being requested, automatically "
-    "disables accessibility. This might happen if an assistive technology is "
-    "turned off or if an extension which uses accessibility APIs no longer "
-    "needs them.";
 
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
