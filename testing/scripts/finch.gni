@@ -26,7 +26,7 @@ template("android_wpt_finch_smoke_tests") {
 
     data = [
       "//build/android/",
-      "//testing/scripts/variations_smoke_test_data/webview_test_seed",
+      "//testing/scripts/variations_smoke_test_data/",
       "//tools/android/",
     ]
     data_deps = [
