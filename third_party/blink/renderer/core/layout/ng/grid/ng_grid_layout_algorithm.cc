@@ -3371,6 +3371,12 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
                                 /* builder */ nullptr)) {
           breakpoint_row_set_index = item_row_set_index;
 
+          // We are choosing to add an early breakpoint at a row. Propagate our
+          // space shortage to the column balancer.
+          PropagateSpaceShortage(ConstraintSpace(), *result,
+                                 fragment_relative_block_offset,
+                                 &container_builder_);
+
           // We may have "break-before:avoid" or similar on this row. Instead
           // of just breaking on this row, search upwards for a row with a
           // better EBreakBetween.
