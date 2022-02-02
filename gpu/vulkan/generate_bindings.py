@@ -440,6 +440,11 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
       uint32_t api_version,
       const gfx::ExtensionSet& enabled_extensions);
 
+  // The `Bind*` functions will acquires lock, so should not be called with
+  // with this lock held. Code that writes to members directly should take this
+  // lock as well.
+  base::Lock write_lock;
+
   base::NativeLibrary vulkan_loader_library = nullptr;
 
   // This is used to allow thread safe access to a given vulkan queue when
@@ -582,6 +587,7 @@ VulkanFunctionPointers::~VulkanFunctionPointers() = default;
 
 bool VulkanFunctionPointers::BindUnassociatedFunctionPointers(
   PFN_vkGetInstanceProcAddr proc) {
+  base::AutoLock lock(write_lock);
 
   if (proc) {
     DCHECK(!vulkan_loader_library);
@@ -611,6 +617,7 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
+  base::AutoLock lock(write_lock);
 """)
 
   WriteInstanceFunctionPointerInitialization(
@@ -626,6 +633,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
+  base::AutoLock lock(write_lock);
   // Device functions
 """)
   WriteDeviceFunctionPointerInitialization(out_file, VULKAN_DEVICE_FUNCTIONS)

@@ -34,11 +34,14 @@ bool VulkanImplementationAndroid::InitializeVulkanInstance(bool using_surface) {
   VulkanFunctionPointers* vulkan_function_pointers =
       gpu::GetVulkanFunctionPointers();
 
-  base::NativeLibraryLoadError native_library_load_error;
-  vulkan_function_pointers->vulkan_loader_library = base::LoadNativeLibrary(
-      base::FilePath("libvulkan.so"), &native_library_load_error);
-  if (!vulkan_function_pointers->vulkan_loader_library)
-    return false;
+  {
+    base::AutoLock lock(vulkan_function_pointers->write_lock);
+    base::NativeLibraryLoadError native_library_load_error;
+    vulkan_function_pointers->vulkan_loader_library = base::LoadNativeLibrary(
+        base::FilePath("libvulkan.so"), &native_library_load_error);
+    if (!vulkan_function_pointers->vulkan_loader_library)
+      return false;
+  }
 
   return vulkan_instance_.Initialize(required_extensions, {});
 }
