@@ -57,6 +57,7 @@ mojom("mojom") {
     "screen_manager.mojom",
     "select_file.mojom",
     "structured_metrics_service.mojom",
+    "sync.mojom",
     "system_display.mojom",
     "task_manager.mojom",
     "test_controller.mojom",
