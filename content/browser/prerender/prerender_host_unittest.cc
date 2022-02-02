@@ -115,7 +115,21 @@ PrerenderAttributes GeneratePrerenderAttributes(const GURL& url,
       /*embedder_histogram_suffix=*/"", Referrer(),
       rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
       rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK);
+      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      /*url_match_predicate=*/absl::nullopt);
+}
+
+PrerenderAttributes GeneratePrerenderAttributesWithPredicate(
+    const GURL& url,
+    RenderFrameHostImpl* rfh,
+    base::RepeatingCallback<bool(const GURL&)> url_match_predicate) {
+  return PrerenderAttributes(
+      url, PrerenderTriggerType::kSpeculationRule,
+      /*embedder_histogram_suffix=*/"", Referrer(),
+      rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
+      rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
+      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      std::move(url_match_predicate));
 }
 
 class TestWebContentsDelegate : public WebContentsDelegate {
@@ -449,6 +463,30 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
 #endif
+
+TEST_F(PrerenderHostTest, UrlMatchPredicate) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  base::RepeatingCallback callback =
+      base::BindRepeating([](const GURL&) { return true; });
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributesWithPredicate(kPrerenderingUrl, initiator_rfh,
+                                               callback),
+      *web_contents);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  const GURL kActivatedUrl = GURL("https://example.com/empty.html?activate");
+  ASSERT_NE(kActivatedUrl, kPrerenderingUrl);
+  EXPECT_TRUE(prerender_host->IsUrlMatch(kActivatedUrl));
+  // Even if the predicate always returns true, a cross-origin url shouldn't be
+  // able to activate a prerendered page.
+  EXPECT_FALSE(
+      prerender_host->IsUrlMatch(GURL("https://example2.com/empty.html")));
+}
 
 }  // namespace
 }  // namespace content

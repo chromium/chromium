@@ -159,6 +159,10 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void SetInitialNavigation(NavigationRequest* navigation);
   absl::optional<int64_t> GetInitialNavigationId() const;
 
+  // Returns true if the given `url` indicates the same destination to the
+  // initial_url.
+  bool IsUrlMatch(const GURL& url) const;
+
   // Returns absl::nullopt iff prerendering is initiated by the browser (not by
   // a renderer using Speculation Rules API).
   absl::optional<url::Origin> initiator_origin() const {

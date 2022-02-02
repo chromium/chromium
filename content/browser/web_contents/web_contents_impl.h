@@ -856,7 +856,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
-      ui::PageTransition page_transition) override;
+      ui::PageTransition page_transition,
+      absl::optional<base::RepeatingCallback<bool(const GURL&)>>
+          url_match_predicate = absl::nullopt) override;
 
   // NavigatorDelegate ---------------------------------------------------------
 

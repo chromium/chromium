@@ -96,10 +96,11 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
   }
 
   void SelectAutocompleteMatchAndWaitForActivation(
-      const AutocompleteMatch& match) {
+      const AutocompleteMatch& match,
+      int host_id) {
     GURL url = match.destination_url;
     content::test::PrerenderHostObserver prerender_observer(
-        *GetActiveWebContents(), match.destination_url);
+        *GetActiveWebContents(), host_id);
     omnibox()->model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
                                   url, std::u16string(), 0);
     prerender_observer.WaitForActivation();
@@ -357,7 +358,9 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     data.SetShortName(kSearchDomain16);
     data.SetKeyword(data.short_name());
     data.SetURL(search_engine_server_
-                    .GetURL(kSearchDomain, "/search_page.html?q={searchTerms}")
+                    .GetURL(kSearchDomain,
+                            "/search_page.html?q={searchTerms}&{google:"
+                            "originalQueryForSuggestion}")
                     .spec());
     data.suggestions_url =
         search_suggest_server_.GetURL(kSuggestDomain, "/?q={searchTerms}")
@@ -375,10 +378,8 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchSuggestRequest(
       const net::test_server::HttpRequest& request) {
     std::string content = "";
-    if (request.GetURL().spec().find("prerender2") != std::string::npos) {
-      content = R"([
-      "prerender2",
-      ["prerender222","prerender233"],
+    std::string hints = R"(
+      ["prerender222","prerender223"],
       ["", ""],
       [],
       {
@@ -386,6 +387,11 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
           "pre": 0
         }
       }])";
+    if (request.GetURL().spec().find("prerender22") != std::string::npos) {
+      content = "[\"prerender22\"," + hints;
+    } else if (request.GetURL().spec().find("prerender2") !=
+               std::string::npos) {
+      content = "[\"prerender2\"," + hints;
     }
     auto resp = std::make_unique<net::test_server::BasicHttpResponse>();
     resp->set_code(net::HTTP_OK);
@@ -408,9 +414,10 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     return resp;
   }
 
-  GURL GetSearchUrl(std::string key_word) {
-    return search_engine_server_.GetURL(kSearchDomain,
-                                        "/search_page.html?q=" + key_word);
+  GURL GetSearchUrl(const std::string& query, std::string search_terms) {
+    return search_engine_server_.GetURL(
+        kSearchDomain,
+        "/search_page.html?q=" + search_terms + "&oq=" + query + "&");
   }
 
   AutocompleteController* GetAutocompleteController() {
@@ -434,19 +441,20 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
 // Tests the basic functionality of prerendering a search suggestion with search
 // suggestion hints.
 IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
-                       SearchPrerenderSeggestion) {
+                       SearchPrerenderSuggestion) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   Observe(GetActiveWebContents());
-  std::string search_terms = "prerender2";
-  GURL prerender_url = GetSearchUrl("prerender222");
+  std::string search_query = "prerender2";
+  GURL prerender_url = GetSearchUrl(search_query, "prerender222");
+
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
 
   // Trigger an omnibox suggest that has a prerender hint.
   AutocompleteInput input(
-      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      base::ASCIIToUTF16(search_query), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(chrome_test_utils::GetProfile(this)));
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
@@ -456,6 +464,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 
   // The suggestion service should hint a prerender_url.
   registry_observer.WaitForTrigger(prerender_url);
+  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Ensure there is a search hint.
   auto is_prerender_match = [](const AutocompleteMatch& match) {
@@ -466,7 +476,55 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       std::end(autocomplete_controller->result()), is_prerender_match);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
 
-  SelectAutocompleteMatchAndWaitForActivation(*prerender_match);
+  SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
+  EXPECT_TRUE(IsPrerenderingNavigation());
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerender_url);
+}
+
+// Test that prerender maintain the previous prerendered page if the new
+// prerendering aims to load a same url to the prerendered page.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
+                       SameSuggestion) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  Observe(GetActiveWebContents());
+  std::string search_query_1 = "prerender2";
+  GURL prerender_url = GetSearchUrl(search_query_1, "prerender222");
+
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  // Trigger an omnibox suggest that has a prerender hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_query_1), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(chrome_test_utils::GetProfile(this)));
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+
+  // After receiving `input`, the controller should ask suggestion service for
+  // search suggestion.
+  autocomplete_controller->Start(input);
+
+  // The suggestion service should hint a prerender_url.
+  registry_observer.WaitForTrigger(prerender_url);
+  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  std::string search_query_2 = "prerender22";
+  AutocompleteInput input2(
+      base::ASCIIToUTF16(search_query_2), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(chrome_test_utils::GetProfile(this)));
+  autocomplete_controller->Start(input2);
+  base::RunLoop().RunUntilIdle();
+  // Ensure there is a search hint.
+  auto is_prerender_match = [](const AutocompleteMatch& match) {
+    return BaseSearchProvider::ShouldPrerender(match);
+  };
+  auto prerender_match = std::find_if(
+      std::begin(autocomplete_controller->result()),
+      std::end(autocomplete_controller->result()), is_prerender_match);
+  ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
+  SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerender_url);
 }

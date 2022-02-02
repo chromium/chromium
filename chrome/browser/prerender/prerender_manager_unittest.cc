@@ -41,13 +41,35 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
 
   content::WebContents* GetActiveWebContents() { return web_contents(); }
 
-  GURL GetUrl(const std::string& path) { return test_server_.GetURL(path); }
+  GURL GetSearchSuggestionUrl(const std::string& search_site,
+                              const std::string& original_query,
+                              const std::string& search_terms) {
+    return test_server_.GetURL(search_site + "?q=" + search_terms +
+                               "&oq=" + original_query);
+  }
 
   content::WebContentsTester* web_contents_tester() {
     return content::WebContentsTester::For(web_contents());
   }
 
  protected:
+  AutocompleteMatch CreateSearchSuggestionMatch(
+      const std::string& search_site,
+      const std::string& original_query,
+      const std::string& search_terms) {
+    AutocompleteMatch match;
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        base::UTF8ToUTF16(search_terms));
+    match.search_terms_args->original_query = base::UTF8ToUTF16(original_query);
+    match.destination_url =
+        GetSearchSuggestionUrl(search_site, original_query, search_terms);
+    match.keyword = base::UTF8ToUTF16(original_query);
+    match.RecordAdditionalInfo("should_prerender", "true");
+    return match;
+  }
+
+  GURL GetUrl(const std::string& path) { return test_server_.GetURL(path); }
+
   PrerenderManager* prerender_manager() { return prerender_manager_; }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -61,58 +83,63 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<PrerenderManager> prerender_manager_;
 };
 
-TEST_F(PrerenderManagerTest, StartCleanPrerender) {
-  GURL prerendering_url = GetUrl("/title1.html");
+TEST_F(PrerenderManagerTest, StartCleanSearchSuggestionPrerender) {
+  GURL prerendering_url =
+      GetSearchSuggestionUrl("/title1.html", "pre", "prerender");
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
-
-  prerender_manager()->Start(
-      prerendering_url, PrerenderManager::TriggerReason::kSearchSuggestion);
+  AutocompleteMatch match =
+      CreateSearchSuggestionMatch("/title1.html", "pre", "prerender");
+  prerender_manager()->StartPrerenderAutocompleteMatch(match);
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 }
 
 // Tests that the old prerender will be destroyed when starting prerendering a
-// different url.
-TEST_F(PrerenderManagerTest, StartNewPrerender) {
-  GURL prerendering_url = GetUrl("/title1.html");
+// different search result.
+TEST_F(PrerenderManagerTest, StartNewSuggestionPrerender) {
+  GURL prerendering_url =
+      GetSearchSuggestionUrl("/title1.html", "pre", "prefetch");
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
+  AutocompleteMatch match =
+      CreateSearchSuggestionMatch("/title1.html", "pre", "prefetch");
+  prerender_manager()->StartPrerenderAutocompleteMatch(match);
 
-  prerender_manager()->Start(
-      prerendering_url, PrerenderManager::TriggerReason::kSearchSuggestion);
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
   ASSERT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
   content::test::PrerenderHostObserver host_observer(*GetActiveWebContents(),
                                                      prerender_host_id);
-  GURL prerendering_url2 = GetUrl("/title2.html");
-  prerender_manager()->Start(
-      prerendering_url2, PrerenderManager::TriggerReason::kSearchSuggestion);
+  GURL prerendering_url2 =
+      GetSearchSuggestionUrl("/title1.html", "prer", "prerender");
+  match = CreateSearchSuggestionMatch("/title1.html", "prer", "prerender");
+  prerender_manager()->StartPrerenderAutocompleteMatch(match);
   host_observer.WaitForDestroyed();
   registry_observer.WaitForTrigger(prerendering_url2);
-  EXPECT_TRUE(prerender_manager()->prerender_handle_for_testing());
+  EXPECT_TRUE(prerender_manager()->search_prerender_handle_for_testing());
   EXPECT_EQ(prerendering_url2, prerender_manager()
-                                   ->prerender_handle_for_testing()
+                                   ->search_prerender_handle_for_testing()
                                    ->GetInitialPrerenderingUrl());
 }
 
 // Tests that the old prerender is not destroyed when starting prerendering the
-// same url.
-TEST_F(PrerenderManagerTest, StartSamePrerender) {
-  GURL prerendering_url = GetUrl("/title1.html");
+// same search suggestion.
+TEST_F(PrerenderManagerTest, StartSameSuggestionPrerender) {
+  GURL prerendering_url =
+      GetSearchSuggestionUrl("/title1.html", "pre", "prerender");
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
-
-  prerender_manager()->Start(
-      prerendering_url, PrerenderManager::TriggerReason::kSearchSuggestion);
+  AutocompleteMatch match =
+      CreateSearchSuggestionMatch("/title1.html", "pre", "prerender");
+  prerender_manager()->StartPrerenderAutocompleteMatch(match);
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
-  prerender_manager()->Start(
-      prerendering_url, PrerenderManager::TriggerReason::kSearchSuggestion);
-  EXPECT_TRUE(prerender_manager()->prerender_handle_for_testing());
+  match = CreateSearchSuggestionMatch("/title1.html", "prer", "prerender");
+  prerender_manager()->StartPrerenderAutocompleteMatch(match);
+  EXPECT_TRUE(prerender_manager()->search_prerender_handle_for_testing());
 
   // The created prerender for `prerendering_url` still exists, so the
   // prerender_host_id should be the same.
@@ -122,13 +149,14 @@ TEST_F(PrerenderManagerTest, StartSamePrerender) {
 
 // Tests that the PrerenderHandle is destroyed when the primary page changed.
 TEST_F(PrerenderManagerTest, DestroyedOnNavigateAway) {
-  web_contents_tester()->NavigateAndCommit(GetUrl("/empty.html"));
-  GURL prerendering_url = GetUrl("/title1.html");
+  GURL prerendering_url =
+      GetSearchSuggestionUrl("/title1.html", "pre", "prerende");
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
+  AutocompleteMatch match =
+      CreateSearchSuggestionMatch("/title1.html", "pre", "prerende");
+  prerender_manager()->StartPrerenderAutocompleteMatch(match);
 
-  prerender_manager()->Start(
-      prerendering_url, PrerenderManager::TriggerReason::kSearchSuggestion);
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
@@ -136,7 +164,7 @@ TEST_F(PrerenderManagerTest, DestroyedOnNavigateAway) {
                                                      prerender_host_id);
   web_contents_tester()->NavigateAndCommit(GetUrl("/empty.html"));
   host_observer.WaitForDestroyed();
-  EXPECT_FALSE(prerender_manager()->prerender_handle_for_testing());
+  EXPECT_FALSE(prerender_manager()->search_prerender_handle_for_testing());
 }
 
 }  // namespace

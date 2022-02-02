@@ -21,11 +21,6 @@ class Page;
 class PrerenderManager : public content::WebContentsObserver,
                          public content::WebContentsUserData<PrerenderManager> {
  public:
-  enum TriggerReason {
-    kUrlInputPrediction = 0,
-    kSearchSuggestion = 1,
-  };
-
   PrerenderManager(const PrerenderManager&) = delete;
   PrerenderManager& operator=(const PrerenderManager&) = delete;
 
@@ -36,20 +31,22 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // The entry of prerender.
   // Calling this method will lead to the cancellation of the previous prerender
-  // if the given url is differ from the ongoing one's.
+  // if the given `match`'s search terms are differ from the ongoing one's.
   // TODO(https://crbug.com/1278634): return a TriggerResult enum so that
   // callers can record some metrics if they want.
-  void Start(const GURL& prerendering_url, TriggerReason reason);
+  void StartPrerenderAutocompleteMatch(const AutocompleteMatch& match);
 
-  content::PrerenderHandle* prerender_handle_for_testing() {
-    return prerender_handle_.get();
+  content::PrerenderHandle* search_prerender_handle_for_testing() {
+    return search_prerender_handle_.get();
   }
 
  private:
   explicit PrerenderManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PrerenderManager>;
 
-  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
+  std::unique_ptr<content::PrerenderHandle> search_prerender_handle_;
+  // Stores the search terms that `search_prerender_handle_` is prerendering.
+  std::u16string prerendered_search_terms_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

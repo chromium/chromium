@@ -407,9 +407,10 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
 
   // Find an available host for the navigation URL.
   PrerenderHost* host = nullptr;
-  for (const auto& iter : prerender_host_by_frame_tree_node_id_) {
-    if (iter.second->GetInitialUrl() == navigation_request.GetURL()) {
-      host = iter.second.get();
+  for (const auto& [_, it_prerender_host] :
+       prerender_host_by_frame_tree_node_id_) {
+    if (it_prerender_host->IsUrlMatch(navigation_request.GetURL())) {
+      host = it_prerender_host.get();
       break;
     }
   }

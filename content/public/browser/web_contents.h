@@ -1342,11 +1342,16 @@ class WebContents : public PageNavigator,
   // destruction. If the prerendering failed to start (e.g. if prerendering is
   // disabled, failure happened or because this URL is already being
   // prerendered), this function returns a nullptr.
+  // `url_match_predicate` allows embedders to define their own pedicates for
+  // matching sane-origin URLs during prerendering activation; It would be
+  // useful if embedders want Prerender2 to ignore some parameter mismatches.
   virtual std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
-      ui::PageTransition page_transition) = 0;
+      ui::PageTransition page_transition,
+      absl::optional<base::RepeatingCallback<bool(const GURL&)>>
+          url_match_predicate = absl::nullopt) = 0;
 
  private:
   // This interface should only be implemented inside content.

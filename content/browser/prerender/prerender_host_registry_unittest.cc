@@ -51,7 +51,8 @@ PrerenderAttributes GeneratePrerenderAttributes(
       url, trigger_type, embedder_histogram_suffix, Referrer(),
       rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
       rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK);
+      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      /*url_match_predicate=*/absl::nullopt);
 }
 
 // This definition is needed because this constant is odr-used in gtest macros.

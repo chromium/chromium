@@ -423,9 +423,7 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
     DCHECK(BaseSearchProvider::ShouldPrerender(match));
     PrerenderManager::CreateForWebContents(web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-    prerender_manager->Start(
-        match.destination_url,
-        PrerenderManager::TriggerReason::kSearchSuggestion);
+    prerender_manager->StartPrerenderAutocompleteMatch(match);
   } else {
     gfx::Rect container_bounds = web_contents->GetContainerBounds();
     predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
