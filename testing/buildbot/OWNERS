@@ -5,7 +5,6 @@
 # compile targets) please get a review from someone in //infra/OWNERS.
 file://infra/OWNERS
 
-bsheedy@chromium.org
 jam@chromium.org
 jochen@chromium.org
 sky@chromium.org
