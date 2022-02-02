@@ -204,6 +204,7 @@ public final class EditUrlSuggestionUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @FlakyTest(message = "https://crbug.com/1293353")
     public void testWhatYouTypedWrongUrl_Incognito() {
         verifyWhatYouTypedWrongUrl(/* isIncognito */ true);
     }
