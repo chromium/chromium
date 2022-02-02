@@ -81,7 +81,8 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
     }
   };
 
-  RecordingCookieObserver() = default;
+  RecordingCookieObserver() : run_loop_(std::make_unique<base::RunLoop>()) {}
+
   ~RecordingCookieObserver() override = default;
 
   std::vector<CookieOp>& recorded_activity() { return recorded_activity_; }
@@ -90,6 +91,11 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
     mojo::PendingRemote<mojom::CookieAccessObserver> remote;
     receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
     return remote;
+  }
+
+  void WaitForCallback() {
+    run_loop_->Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   void OnCookiesAccessed(mojom::CookieAccessDetailsPtr details) override {
@@ -102,6 +108,8 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
       op.status = cookie_and_access_result->access_result.status;
       recorded_activity_.push_back(std::move(op));
     }
+
+    run_loop_->QuitClosure().Run();
   }
 
   void Clone(
@@ -112,6 +120,7 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
  private:
   std::vector<CookieOp> recorded_activity_;
   mojo::ReceiverSet<mojom::CookieAccessObserver> receivers_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 // Synchronous proxies to a wrapped RestrictedCookieManager's methods.
@@ -353,6 +362,8 @@ class RestrictedCookieManagerTest
   std::vector<RecordingCookieObserver::CookieOp>& recorded_activity() {
     return recording_client_.recorded_activity();
   }
+
+  void WaitForCallback() { return recording_client_.WaitForCallback(); }
 
   const GURL kDefaultUrl{"https://example.com/"};
   const GURL kDefaultUrlWithPath{"https://example.com/test/"};
@@ -667,6 +678,8 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
             net::MatchesCookieNameValue("cookie-name", "cookie-value")));
   }
 
+  WaitForCallback();
+
   EXPECT_THAT(
       recorded_activity(),
       ElementsAre(MatchesCookieOp(
@@ -693,6 +706,8 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
                                     kDefaultOrigin, std::move(options)),
         IsEmpty());
   }
+
+  WaitForCallback();
 
   EXPECT_THAT(
       recorded_activity(),
@@ -730,6 +745,8 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
         sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
                                     kDefaultOrigin, std::move(options)),
         ElementsAre(net::MatchesCookieNameValue(kCookieName, kCookieValue)));
+
+    WaitForCallback();
 
     EXPECT_THAT(
         recorded_activity(),
@@ -782,6 +799,8 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
                                     kDefaultOrigin, std::move(options)),
         IsEmpty());
 
+    WaitForCallback();
+
     // A change in access result (allowed -> blocked) should generate a new
     // notification.
     EXPECT_EQ(recorded_activity().size(), 2ul);
@@ -799,6 +818,8 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
         sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
                                     kDefaultOrigin, std::move(options)),
         ElementsAre(net::MatchesCookieNameValue(kCookieName, kNewCookieValue)));
+
+    WaitForCallback();
 
     // A change in access result (blocked -> allowed) should generate a new
     // notification.
@@ -843,6 +864,8 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicyWarnActual) {
         IsEmpty());
   }
 
+  WaitForCallback();
+
   EXPECT_THAT(recorded_activity(),
               ElementsAre(MatchesCookieOp(
                   mojom::CookieAccessDetails::Type::kRead,
@@ -868,7 +891,9 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
                                     kDefaultOrigin, std::move(options)),
         ElementsAre(
             net::MatchesCookieNameValue("cookie-name", "cookie-value")));
+    WaitForCallback();
   }
+
   // Same Party. `party_context` contains fps site.
   service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, kDefaultOrigin, kDefaultOrigin,
@@ -885,6 +910,7 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
                                     kDefaultOrigin, std::move(options)),
         ElementsAre(
             net::MatchesCookieNameValue("cookie-name", "cookie-value")));
+    WaitForCallback();
   }
   {
     // Should still be blocked when third-party cookie blocking is enabled.
@@ -898,6 +924,8 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
                                     kDefaultOrigin, std::move(options)),
         IsEmpty());
 
+    WaitForCallback();
+
     // This checks that the cookie access is not double-reported due the
     // warning reason and EXCLUDE_USER_PREFERENCES.
     std::vector<net::CookieInclusionStatus::WarningReason> expected_warnings = {
@@ -905,6 +933,7 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
         net::CookieInclusionStatus::
             WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS,
     };
+
     EXPECT_THAT(
         recorded_activity(),
         ElementsAre(
@@ -938,6 +967,8 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
         sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
                                     kDefaultOrigin, std::move(options)),
         IsEmpty());
+
+    WaitForCallback();
 
     EXPECT_THAT(
         recorded_activity(),
@@ -1070,6 +1101,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
         *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin));
   }
 
+  WaitForCallback();
+
   EXPECT_THAT(
       recorded_activity(),
       ElementsAre(MatchesCookieOp(
@@ -1094,6 +1127,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
         *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin));
   }
 
+  WaitForCallback();
+
   EXPECT_THAT(
       recorded_activity(),
       ElementsAre(
@@ -1116,6 +1151,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
       sync_service_->GetAllForUrl(kDefaultUrlWithPath, kDefaultSiteForCookies,
                                   kDefaultOrigin, std::move(options)),
       ElementsAre(net::MatchesCookieNameValue("A", "B")));
+
+  WaitForCallback();
 
   EXPECT_THAT(
       recorded_activity(),
@@ -1154,6 +1191,8 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
   // Invalid. Should be reported.
   sync_service_->SetCookieFromString(kDefaultUrlWithPath, net::SiteForCookies(),
                                      kDefaultOrigin, "name=value;SameParty");
+
+  WaitForCallback();
 
   EXPECT_THAT(
       recorded_activity(),

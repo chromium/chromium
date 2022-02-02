@@ -439,26 +439,31 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   CookieAccesses* cookie_accesses =
       GetCookieAccessesForURLAndSite(url, site_for_cookies);
 
-  // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
-  // warning reasons once samesite tightening up is rolled out.
-  for (const auto& cookie_and_access_result : excluded_cookies) {
-    if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
-        !cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
-      continue;
-    }
+  auto add_excluded = [&]() {
+    // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
+    // warning reasons once samesite tightening up is rolled out.
+    for (const auto& cookie_and_access_result : excluded_cookies) {
+      if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
+          !cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
+              net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
+        continue;
+      }
 
-    // Skip sending a notification about this cookie access?
-    if (SkipAccessNotificationForCookieItem(cookie_accesses,
-                                            cookie_and_access_result)) {
-      continue;
-    }
+      // Skip sending a notification about this cookie access?
+      if (SkipAccessNotificationForCookieItem(cookie_accesses,
+                                              cookie_and_access_result)) {
+        continue;
+      }
 
-    on_cookies_accessed_result.push_back(
-        mojom::CookieOrLineWithAccessResult::New(
-            mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
-            cookie_and_access_result.access_result));
-  }
+      on_cookies_accessed_result.push_back(
+          mojom::CookieOrLineWithAccessResult::New(
+              mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
+              cookie_and_access_result.access_result));
+    }
+  };
+
+  if (!base::FeatureList::IsEnabled(features::kFasterSetCookie))
+    add_excluded();
 
   if (!maybe_included_cookies.empty())
     result.reserve(maybe_included_cookies.size());
@@ -486,29 +491,30 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
       result.push_back(cookie_item);
     }
 
-    // Skip sending a notification about this cookie access?
-    if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie_item)) {
-      continue;
+    if (!base::FeatureList::IsEnabled(features::kFasterSetCookie)) {
+      // Skip sending a notification about this cookie access?
+      if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie_item)) {
+        continue;
+      }
+
+      on_cookies_accessed_result.push_back(
+          mojom::CookieOrLineWithAccessResult::New(
+              mojom::CookieOrLine::NewCookie(cookie), access_result));
     }
-
-    on_cookies_accessed_result.push_back(
-        mojom::CookieOrLineWithAccessResult::New(
-            mojom::CookieOrLine::NewCookie(cookie), access_result));
   }
 
-  if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
-    cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
-        mojom::CookieAccessDetails::Type::kRead, url, site_for_cookies,
-        std::move(on_cookies_accessed_result), absl::nullopt));
-  }
+  auto notify_observer = [&]() {
+    if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
+      cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
+          mojom::CookieAccessDetails::Type::kRead, url, site_for_cookies,
+          std::move(on_cookies_accessed_result), absl::nullopt));
+    }
+  };
 
-  if (maybe_included_cookies.empty()) {
-    DCHECK(result.empty());
-    std::move(callback).Run({});
-    return;
-  }
+  if (!base::FeatureList::IsEnabled(features::kFasterSetCookie))
+    notify_observer();
 
-  if (IsPartitionedCookiesEnabled()) {
+  if (!maybe_included_cookies.empty() && IsPartitionedCookiesEnabled()) {
     UMA_HISTOGRAM_COUNTS_100(
         "Net.RestrictedCookieManager.PartitionedCookiesInScript",
         base::ranges::count_if(result,
@@ -517,7 +523,28 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
                                }));
   }
 
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(
+      base::FeatureList::IsEnabled(features::kFasterSetCookie)
+          ? result
+          : std::move(result));
+
+  if (base::FeatureList::IsEnabled(features::kFasterSetCookie)) {
+    add_excluded();
+
+    for (auto& cookie : result) {
+      // Skip sending a notification about this cookie access?
+      if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie)) {
+        continue;
+      }
+
+      on_cookies_accessed_result.push_back(
+          mojom::CookieOrLineWithAccessResult::New(
+              mojom::CookieOrLine::NewCookie(cookie.cookie),
+              cookie.access_result));
+    }
+
+    notify_observer();
+  }
 }
 
 void RestrictedCookieManager::SetCanonicalCookie(
