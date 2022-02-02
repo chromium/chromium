@@ -339,10 +339,6 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // happens first.
   virtual void StopAndDeAllocate() = 0;
 
-  // Hints to the source that if it has an alpha channel, that alpha channel
-  // will be ignored and can be discarded.
-  virtual void SetCanDiscardAlpha(bool can_discard_alpha) {}
-
   // Retrieve the photo capabilities and settings of the device (e.g. zoom
   // levels etc). On success, invokes |callback|. On failure, drops callback
   // without invoking it.
