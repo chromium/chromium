@@ -319,6 +319,10 @@ void ScriptResource::SetRevalidatingRequest(
   // streaming.
   DisableStreaming(ScriptStreamer::NotStreamingReason::kRevalidate);
 
+  // For the same reason, disable off-thread cache consumption.
+  cache_consumer_ = nullptr;
+  DisableOffThreadConsumeCache();
+
   TextResource::SetRevalidatingRequest(request);
 }
 
