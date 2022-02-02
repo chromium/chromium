@@ -154,25 +154,3 @@ script_test("mac_signing_tests") {
            "//third_party/catapult/third_party/typ/",
          ]
 }
-
-config("fat_binary_config") {
-  visibility = [ "./*" ]
-
-  # Always build arm64 targets as universal (fat) binaries, since these need to
-  # run on both the install machine and the machine where the diff installers
-  # are created, and the latter is probably not arm64.
-  if (current_cpu == "arm64") {
-    fat_binary_flags = [
-      # Help the compiler find lipo for creating fat binaries.
-      "-B",
-      mac_bin_path,
-
-      "-arch",
-      "x86_64",
-      "-arch",
-      "arm64",
-    ]
-    cflags = fat_binary_flags
-    ldflags = fat_binary_flags
-  }
-}
