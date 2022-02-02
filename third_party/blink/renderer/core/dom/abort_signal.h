@@ -44,6 +44,7 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   // abort_signal.idl
   static AbortSignal* abort(ScriptState*);
   static AbortSignal* abort(ScriptState*, ScriptValue reason);
+  static AbortSignal* timeout(ScriptState*, uint64_t milliseconds);
   ScriptValue reason(ScriptState*) const;
   bool aborted() const { return !abort_reason_.IsEmpty(); }
   void throwIfAborted(ScriptState*, ExceptionState&) const;
@@ -88,6 +89,8 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   void Trace(Visitor*) const override;
 
  private:
+  void AbortTimeoutFired(ScriptState*);
+
   // https://dom.spec.whatwg.org/#abortsignal-abort-reason
   // There is one difference from the spec. The value is empty instead of
   // undefined when this signal is not aborted. This is because

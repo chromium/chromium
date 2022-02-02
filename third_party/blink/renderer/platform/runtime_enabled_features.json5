@@ -111,6 +111,10 @@
       status: "experimental",
     },
     {
+      name: "AbortSignalTimeout",
+      status: "experimental",
+    },
+    {
       name: "Accelerated2dCanvas",
       settable_from_internals: true,
       status: "stable",

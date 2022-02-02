@@ -12,6 +12,12 @@
         Measure,
         NewObject
     ] static AbortSignal abort(optional any reason);
+    [
+        CallWith=ScriptState,
+        MeasureAs=AbortSignalTimeout,
+        NewObject,
+        RuntimeEnabled=AbortSignalTimeout
+    ] static AbortSignal timeout([EnforceRange] unsigned long long milliseconds);
 
     readonly attribute boolean aborted;
     [CallWith=ScriptState] readonly attribute any reason;
