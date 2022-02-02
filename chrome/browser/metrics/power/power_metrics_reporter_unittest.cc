@@ -574,12 +574,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
   // PerformanceMonitor.* histograms is recorded correctly.
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden) {
+TEST_F(PowerMetricsReporterUnitTest,
+       SuffixedHistograms_AllTabsHidden_VideoCapture) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
-  // Values below should be ignored.
   interval_data.time_capturing_video = base::Seconds(1);
+  // Values below should be ignored.
   interval_data.time_playing_video_full_screen_single_monitor =
       base::Seconds(1);
   interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
@@ -602,12 +603,95 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden) {
 
   // Suffixed histograms.
   histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.AllTabsHidden", 2500, 1);
+      "Power.BatteryDischargeRate2.AllTabsHidden_VideoCapture", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.AllTabsHidden",
+      "Power.BatteryDischargeMode.AllTabsHidden_VideoCapture",
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden", 500, 1);
+      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_VideoCapture", 500,
+      1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 0;
+  interval_data.time_capturing_video = base::Seconds(0);
+  interval_data.time_playing_audio = base::Seconds(1);
+  // Values below should be ignored.
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  interval_data.top_level_navigation_count = 1;
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.AllTabsHidden_Audio", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.AllTabsHidden_Audio",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_Audio", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       SuffixedHistograms_AllTabsHidden_NoVideoCaptureOrAudio) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 0;
+  interval_data.time_capturing_video = base::Seconds(0);
+  interval_data.time_playing_audio = base::Seconds(0);
+  // Values below should be ignored.
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  interval_data.top_level_navigation_count = 1;
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.AllTabsHidden_NoVideoCaptureOrAudio", 2500,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.AllTabsHidden_NoVideoCaptureOrAudio",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_"
+      "NoVideoCaptureOrAudio",
+      500, 1);
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.

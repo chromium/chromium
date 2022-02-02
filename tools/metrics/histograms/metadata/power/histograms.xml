@@ -30,7 +30,21 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 
   <variant name="" summary="all intervals"/>
   <variant name=".AllTabsHidden"
-      summary="intervals during which Chrome had tabs, but none visible"/>
+      summary="intervals during which Chrome had tabs, but none visible">
+    <obsolete>
+      01/2022: Replaced with AllTabsHidden_VideoCapture, AllTabsHidden_Audio and
+      AllTabsHidden_NoVideoCaptureOrAudio.
+    </obsolete>
+  </variant>
+  <variant name=".AllTabsHidden_Audio"
+      summary="intervals during which Chrome had no visible tab and there was
+               audio but no video capture"/>
+  <variant name=".AllTabsHidden_NoVideoCaptureOrAudio"
+      summary="intervals during which Chrome had no visible tab and there was
+               no audio and no video capture"/>
+  <variant name=".AllTabsHidden_VideoCapture"
+      summary="intervals during which Chrome had no visible tab and there was
+               video capture"/>
   <variant name=".Audio"
       summary="intervals during which Chrome had at least 1 visible tab and
                was audible, but there was no video playback or video capture"/>

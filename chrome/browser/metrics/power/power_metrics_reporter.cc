@@ -57,8 +57,13 @@ const char* GetScenarioSuffix(
   // description of each scenario in the histograms.xml file.
   if (interval_data.max_tab_count == 0)
     return ".ZeroWindow";
-  if (interval_data.max_visible_window_count == 0)
-    return ".AllTabsHidden";
+  if (interval_data.max_visible_window_count == 0) {
+    if (!interval_data.time_capturing_video.is_zero())
+      return ".AllTabsHidden_VideoCapture";
+    if (!interval_data.time_playing_audio.is_zero())
+      return ".AllTabsHidden_Audio";
+    return ".AllTabsHidden_NoVideoCaptureOrAudio";
+  }
   if (!interval_data.time_capturing_video.is_zero())
     return ".VideoCapture";
   if (!interval_data.time_playing_video_full_screen_single_monitor.is_zero())
