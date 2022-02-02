@@ -478,6 +478,23 @@ void BrowserManager::NewFullscreenWindow(const GURL& url,
   browser_service_->service->NewFullscreenWindow(url, std::move(callback));
 }
 
+void BrowserManager::NewGuestWindow() {
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenGuestWindow));
+  if (result != MaybeStartResult::kRunning)
+    return;
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+
+  if (!NewFullscreenWindowSupported())
+    return;
+
+  browser_service_->service->NewGuestWindow(base::DoNothing());
+}
+
 void BrowserManager::NewTab() {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
       mojom::InitialBrowserAction::kOpenNewTabPageWindow));
@@ -1290,6 +1307,12 @@ void BrowserManager::OpenUrlImpl(
   auto params = OpenUrlParams::New();
   params->disposition = disposition;
   browser_service_->service->OpenUrl(url, std::move(params), base::DoNothing());
+}
+
+bool BrowserManager::IsNewGuestWindowSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kNewGuestWindowMinVersion;
 }
 
 }  // namespace crosapi

@@ -133,6 +133,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   virtual void NewFullscreenWindow(const GURL& url,
                                    NewFullscreenWindowCallback callback);
 
+  // Opens a new window in lacros-chrome with the Guest profile if the Guest
+  // mode is enabled.
+  void NewGuestWindow();
+
   // Similar to NewWindow(), but opens a tab, instead.
   // See crosapi::mojom::BrowserService::NewTab for more details
   void NewTab();
@@ -409,6 +413,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OpenUrlImpl(
       const GURL& url,
       crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition);
+
+  // Returns true if the crosapi interface of the currently running lacros
+  // supports NewGuestWindow API. If lacros is older or lacros is not running,
+  // this returns false.
+  bool IsNewGuestWindowSupported() const;
 
   State state_ = State::NOT_INITIALIZED;
 

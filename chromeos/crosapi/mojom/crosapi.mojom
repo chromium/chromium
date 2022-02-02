@@ -585,6 +585,10 @@ enum InitialBrowserAction {
   // The URLs should be set with BrowserInitParams::startup_urls.
   // Added in M96.
   [MinVersion=3] kOpenWindowWithUrls = 5,
+
+  // Opens a new Guest mode window.
+  // Added in M100.
+  [MinVersion=4] kOpenGuestWindow = 6,
 };
 
 // Whether / how mlservice on-device handwriting is supported.
@@ -895,8 +899,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 63.
-// Next ID: 14
+// Next MinVersion: 64.
+// Next ID: 15
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -932,6 +936,12 @@ interface BrowserService {
   NewWindowForDetachingTab@11(
       mojo_base.mojom.String16 tab_id, mojo_base.mojom.String16 group_id)
           => (CreationResult result, string app_id);
+
+  // Opens a new window in the browser with the Guest profile if the Guest mode
+  // is enabled.
+  // Added in M100.
+  [MinVersion=63]
+  NewGuestWindow@14() => ();
 
   // Opens a new tab in the browser with, currently, the last used profile.
   // This may open a new window, if there's no window. Please see also

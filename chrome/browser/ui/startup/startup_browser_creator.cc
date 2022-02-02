@@ -512,9 +512,19 @@ bool StartupBrowserCreator::InSynchronousProfileLaunch() {
 Profile* StartupBrowserCreator::GetPrivateProfileIfRequested(
     const base::CommandLine& command_line,
     Profile* profile) {
-  if (profiles::IsGuestModeRequested(command_line,
-                                     g_browser_process->local_state(),
-                                     /* show_warning= */ true)) {
+  bool open_guest_profile = profiles::IsGuestModeRequested(
+      command_line, g_browser_process->local_state(),
+      /* show_warning= */ true);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profiles::IsGuestModeEnabled()) {
+    const auto* init_params = chromeos::LacrosService::Get()->init_params();
+    open_guest_profile =
+        open_guest_profile ||
+        init_params->initial_browser_action ==
+            crosapi::mojom::InitialBrowserAction::kOpenGuestWindow;
+  }
+#endif
+  if (open_guest_profile) {
     profile = g_browser_process->profile_manager()->GetProfile(
         ProfileManager::GetGuestProfilePath());
     profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);

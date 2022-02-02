@@ -37,6 +37,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
                  NewWindowCallback callback) override;
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override;
+  void NewGuestWindow(NewGuestWindowCallback callback) override;
   void NewWindowForDetachingTab(
       const std::u16string& tab_id,
       const std::u16string& group_id,

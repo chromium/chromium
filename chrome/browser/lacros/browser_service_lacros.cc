@@ -18,6 +18,8 @@
 #include "chrome/browser/lacros/system_logs/lacros_system_log_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -153,6 +155,13 @@ void BrowserServiceLacros::NewFullscreenWindow(
   ProfileManager::LoadLastUsedProfileAllowedByPolicy(
       base::BindOnce(&BrowserServiceLacros::NewFullscreenWindowWithProfile,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void BrowserServiceLacros::NewGuestWindow(NewGuestWindowCallback callback) {
+  if (profiles::IsGuestModeEnabled())
+    profiles::SwitchToGuestProfile();
+
+  std::move(callback).Run();
 }
 
 void BrowserServiceLacros::NewWindowForDetachingTab(
