@@ -241,11 +241,8 @@ void AppListClientImpl::InvokeSearchResultAction(
   if (!search_controller_)
     return;
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
-  if (result) {
+  if (result)
     search_controller_->InvokeResultAction(result, action);
-    if (result->display_type() == ash::SearchResultDisplayType::kContinue)
-      search_controller_->StartSearch(std::u16string());
-  }
 }
 
 void AppListClientImpl::GetSearchResultContextMenuModel(
