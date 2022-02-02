@@ -246,7 +246,8 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF16ToJavaString(env,
                                card.CardIdentifierStringForAutofillDisplay()),
       ConvertUTF16ToJavaString(env, card.nickname()),
-      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()));
+      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()),
+      static_cast<jint>(card.virtual_card_enrollment_state()));
 }
 
 // static
@@ -301,6 +302,9 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
                   env, Java_CreditCard_getBasicCardIssuerNetwork(env, jcard))));
     }
   }
+  card->set_virtual_card_enrollment_state(
+      static_cast<CreditCard::VirtualCardEnrollmentState>(
+          Java_CreditCard_getVirtualCardEnrollmentState(env, jcard)));
 }
 
 // static

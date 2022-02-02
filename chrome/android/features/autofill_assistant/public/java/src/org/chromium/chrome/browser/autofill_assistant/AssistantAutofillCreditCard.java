@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
+import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -64,13 +65,14 @@ public class AssistantAutofillCreditCard {
     private final long mInstrumentId;
     private final String mNickname;
     private final GURL mCardArtUrl;
+    private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
 
     @CalledByNative
     public AssistantAutofillCreditCard(String guid, String origin, boolean isLocal,
             boolean isCached, String name, String number, String obfuscatedNumber, String month,
             String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
             String billingAddressId, String serverId, long instrumentId, String nickname,
-            GURL cardArtUrl) {
+            GURL cardArtUrl, @VirtualCardEnrollmentState int virtualCardEnrollmentState) {
         mGUID = guid;
         mOrigin = origin;
         mIsLocal = isLocal;
@@ -87,6 +89,7 @@ public class AssistantAutofillCreditCard {
         mInstrumentId = instrumentId;
         mNickname = nickname;
         mCardArtUrl = cardArtUrl;
+        mVirtualCardEnrollmentState = virtualCardEnrollmentState;
     }
 
     @CalledByNative
@@ -171,5 +174,10 @@ public class AssistantAutofillCreditCard {
     @CalledByNative
     public GURL getCardArtUrl() {
         return mCardArtUrl;
+    }
+
+    @CalledByNative
+    public @VirtualCardEnrollmentState int getVirtualCardEnrollmentState() {
+        return mVirtualCardEnrollmentState;
     }
 }

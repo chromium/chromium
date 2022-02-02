@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillEditorBase;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -559,16 +560,18 @@ public class PersonalDataManager {
         private String mCardLabel;
         private String mNickname;
         private GURL mCardArtUrl;
+        private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
 
         @CalledByNative("CreditCard")
         public static CreditCard create(String guid, String origin, boolean isLocal,
                 boolean isCached, String name, String number, String mObfuscatedNumber,
                 String month, String year, String basicCardIssuerNetwork, int iconId,
                 String billingAddressId, String serverId, long instrumentId, String cardLabel,
-                String nickname, GURL cardArtUrl) {
+                String nickname, GURL cardArtUrl,
+                @VirtualCardEnrollmentState int virtualCardEnrollmentState) {
             return new CreditCard(guid, origin, isLocal, isCached, name, number, mObfuscatedNumber,
                     month, year, basicCardIssuerNetwork, iconId, billingAddressId, serverId,
-                    instrumentId, cardLabel, nickname, cardArtUrl);
+                    instrumentId, cardLabel, nickname, cardArtUrl, virtualCardEnrollmentState);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
@@ -577,15 +580,16 @@ public class PersonalDataManager {
                 String serverId) {
             this(guid, origin, isLocal, isCached, name, number, obfuscatedNumber, month, year,
                     basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
-                    /* instrumentId= */ 0,
-                    /* cardLabel= */ obfuscatedNumber, /* nickname= */ "", /* cardArtUrl= */ null);
+                    /* instrumentId= */ 0, /* cardLabel= */ obfuscatedNumber, /* nickname= */ "",
+                    /* cardArtUrl= */ null,
+                    /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
                 String name, String number, String obfuscatedNumber, String month, String year,
                 String basicCardIssuerNetwork, int issuerIconDrawableId, String billingAddressId,
                 String serverId, long instrumentId, String cardLabel, String nickname,
-                GURL cardArtUrl) {
+                GURL cardArtUrl, @VirtualCardEnrollmentState int virtualCardEnrollmentState) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
@@ -603,6 +607,7 @@ public class PersonalDataManager {
             mCardLabel = cardLabel;
             mNickname = nickname;
             mCardArtUrl = cardArtUrl;
+            mVirtualCardEnrollmentState = virtualCardEnrollmentState;
         }
 
         public CreditCard() {
@@ -698,6 +703,11 @@ public class PersonalDataManager {
         @CalledByNative("CreditCard")
         public GURL getCardArtUrl() {
             return mCardArtUrl;
+        }
+
+        @CalledByNative("CreditCard")
+        public @VirtualCardEnrollmentState int getVirtualCardEnrollmentState() {
+            return mVirtualCardEnrollmentState;
         }
 
         public void setGUID(String guid) {

@@ -116,7 +116,7 @@ public class AssistantAutofillUtilChrome {
                 creditCard.getBasicCardIssuerNetwork(), creditCard.getIssuerIconDrawableId(),
                 creditCard.getBillingAddressId(), creditCard.getServerId(),
                 creditCard.getInstrumentId(), /* cardLabel= */ "", creditCard.getNickname(),
-                creditCard.getCardArtUrl());
+                creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState());
     }
 
     /**
@@ -146,7 +146,7 @@ public class AssistantAutofillUtilChrome {
                 creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
                 creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
                 creditCard.getServerId(), creditCard.getInstrumentId(), creditCard.getNickname(),
-                creditCard.getCardArtUrl());
+                creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState());
     }
 
     /**

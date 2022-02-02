@@ -707,7 +707,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillCreditCard(
       ConvertUTF8ToJavaString(env, credit_card.server_id()),
       credit_card.instrument_id(),
       ConvertUTF16ToJavaString(env, credit_card.nickname()),
-      url::GURLAndroid::FromNativeGURL(env, credit_card.card_art_url()));
+      url::GURLAndroid::FromNativeGURL(env, credit_card.card_art_url()),
+      static_cast<jint>(credit_card.virtual_card_enrollment_state()));
 }
 
 void PopulateAutofillCreditCardFromJava(
@@ -771,6 +772,10 @@ void PopulateAutofillCreditCardFromJava(
     credit_card->set_card_art_url(
         *url::GURLAndroid::ToNativeGURL(env, jcard_art_url));
   }
+  credit_card->set_virtual_card_enrollment_state(
+      static_cast<autofill::CreditCard::VirtualCardEnrollmentState>(
+          Java_AssistantAutofillCreditCard_getVirtualCardEnrollmentState(
+              env, jcredit_card)));
 }
 
 }  // namespace ui_controller_android_utils

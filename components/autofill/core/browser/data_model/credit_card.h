@@ -66,7 +66,9 @@ class CreditCard : public AutofillDataModel {
   };
 
   // Whether the card has been enrolled in the virtual card feature. This must
-  // stay in sync with the proto enum in autofill_specifics.proto.
+  // stay in sync with the proto enum in autofill_specifics.proto. A java
+  // IntDef@ is generated from this.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   enum VirtualCardEnrollmentState {
     // State unspecified. This is the default value of this enum. Should not be
     // ever used with cards.

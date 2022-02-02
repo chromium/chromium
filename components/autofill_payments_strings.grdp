@@ -612,6 +612,9 @@
   <message name="IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Label for the negative button for the error dialog.">
     Close
   </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SWITCH_LABEL" desc="The text shown as the label for virtual card enrollment switch in the server card edit page." formatter_data="android_java">
+    Virtual card
+  </message>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a virtual card number id autofilled.">
       Virtual card number not filled in?

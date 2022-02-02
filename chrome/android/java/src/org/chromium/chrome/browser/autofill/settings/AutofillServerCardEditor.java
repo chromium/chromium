@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.R;
@@ -18,7 +21,9 @@ import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
+import org.chromium.components.autofill.VirtualCardEnrollmentState;
 
 /**
  * Server credit card settings.
@@ -50,6 +55,17 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             }
         });
 
+        final LinearLayout mVirtualCardContainerLayout =
+                (LinearLayout) v.findViewById(R.id.virtual_card_ui);
+        if (showVirtualCardEnrollmentSwitch()) {
+            mVirtualCardContainerLayout.setVisibility(View.VISIBLE);
+            ((SwitchCompat) v.findViewById(R.id.virtual_card_enrollment_switch))
+                    .setChecked(mCard.getVirtualCardEnrollmentState()
+                            == VirtualCardEnrollmentState.ENROLLED);
+        } else {
+            mVirtualCardContainerLayout.setVisibility(View.GONE);
+        }
+
         mLocalCopyLabel = v.findViewById(R.id.local_copy_label);
         mClearLocalCopy = v.findViewById(R.id.clear_local_copy);
 
@@ -75,6 +91,14 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
         parent.removeView(mLocalCopyLabel);
         parent.removeView(mClearLocalCopy);
+    }
+
+    private boolean showVirtualCardEnrollmentSwitch() {
+        return (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT)
+                && (mCard.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED
+                        || mCard.getVirtualCardEnrollmentState()
+                                == VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE));
     }
 
     @Override
