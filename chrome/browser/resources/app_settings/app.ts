@@ -31,7 +31,6 @@ export class WebAppSettingsAppElement extends PolymerElement {
     };
   }
 
-  private appId_: string;
   private app_: App|null;
   private iconUrl_: string;
   private showSearch_: boolean;
@@ -60,6 +59,12 @@ export class WebAppSettingsAppElement extends PolymerElement {
 
   private getAppIcon_(app: App|null): string {
     return app ? getAppIcon(app) : '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'web-app-settings-app': WebAppSettingsAppElement;
   }
 }
 

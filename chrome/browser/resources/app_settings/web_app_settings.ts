@@ -3,3 +3,5 @@
 // found in the LICENSE file.
 
 import './app.js';
+
+export {WebAppSettingsAppElement} from './app.js';

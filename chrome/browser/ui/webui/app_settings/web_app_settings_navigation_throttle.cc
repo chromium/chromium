@@ -11,6 +11,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+bool g_disable_throttle_for_testing_ = false;
+
+}  // namespace
+
 // static
 std::unique_ptr<content::NavigationThrottle>
 WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(
@@ -28,6 +34,11 @@ WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(
   return std::make_unique<WebAppSettingsNavigationThrottle>(handle);
 }
 
+// static
+void WebAppSettingsNavigationThrottle::DisableForTesting() {
+  g_disable_throttle_for_testing_ = true;
+}
+
 WebAppSettingsNavigationThrottle::WebAppSettingsNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle) {}
@@ -36,6 +47,9 @@ WebAppSettingsNavigationThrottle::~WebAppSettingsNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 WebAppSettingsNavigationThrottle::WillStartRequest() {
+  if (g_disable_throttle_for_testing_)
+    return content::NavigationThrottle::PROCEED;
+
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

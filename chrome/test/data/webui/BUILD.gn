@@ -459,6 +459,9 @@ if (include_js_tests) {
         "chromeos/personalization_app/personalization_app_controller_browsertest.js",
       ]
     }
+    if (is_win || is_mac || is_linux || is_fuchsia) {
+      sources += [ "app_settings/app_settings_browsertest.js" ]
+    }
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "discards/discards_browsertest.js" ]
     }
@@ -657,6 +660,11 @@ generate_grd("build_grd") {
       "$target_gen_dir/welcome/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
     ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [ "app_settings:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/app_settings/resources.grdp" ]
   }
 
   if (is_chromeos_ash) {

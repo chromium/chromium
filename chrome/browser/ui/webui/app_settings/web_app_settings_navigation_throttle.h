@@ -21,6 +21,8 @@ class WebAppSettingsNavigationThrottle : public content::NavigationThrottle {
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* handle);
 
+  static void DisableForTesting();
+
   explicit WebAppSettingsNavigationThrottle(content::NavigationHandle* handle);
   ~WebAppSettingsNavigationThrottle() override;
 
