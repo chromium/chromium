@@ -43,9 +43,8 @@
 namespace blink {
 
 struct SameSizeAsElementRareData : NodeRareData {
-  gfx::Vector2dF scroll_offset;
-  void* pointers_or_strings[4];
-  Member<void*> members[19];
+  Member<void*> members[10];
+  float scroll_offset[2];
   bool flags[1];
 };
 
@@ -56,7 +55,13 @@ ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)
       should_force_legacy_layout_for_child_(false),
       style_should_force_legacy_layout_(false),
       has_undo_stack_(false),
-      scrollbar_pseudo_element_styles_depend_on_font_metrics_(false) {}
+      scrollbar_pseudo_element_styles_depend_on_font_metrics_(false) {
+  // When The ElementSuperRareData flag is disabled, then always initialize
+  // ElementSuperRareData immediately in order to measure the memory usage
+  // improvements.
+  if (!RuntimeEnabledFeatures::ElementSuperRareDataEnabled())
+    super_rare_data_ = MakeGarbageCollected<ElementSuperRareData>();
+}
 
 ElementRareData::~ElementRareData() {
   DCHECK(!pseudo_element_data_);
@@ -71,13 +76,17 @@ CSSStyleDeclaration& ElementRareData::EnsureInlineCSSStyleDeclaration(
   return *cssom_wrapper_;
 }
 
-InlineStylePropertyMap& ElementRareData::EnsureInlineStylePropertyMap(
+InlineStylePropertyMap& ElementSuperRareData::EnsureInlineStylePropertyMap(
     Element* owner_element) {
   if (!cssom_map_wrapper_) {
     cssom_map_wrapper_ =
         MakeGarbageCollected<InlineStylePropertyMap>(owner_element);
   }
   return *cssom_map_wrapper_;
+}
+InlineStylePropertyMap& ElementRareData::EnsureInlineStylePropertyMap(
+    Element* owner_element) {
+  return EnsureSuperRareData().EnsureInlineStylePropertyMap(owner_element);
 }
 
 AttrNodeList& ElementRareData::EnsureAttrNodeList() {
@@ -86,8 +95,8 @@ AttrNodeList& ElementRareData::EnsureAttrNodeList() {
   return *attr_node_list_;
 }
 
-ElementRareData::ResizeObserverDataMap&
-ElementRareData::EnsureResizeObserverData() {
+ElementSuperRareData::ResizeObserverDataMap&
+ElementSuperRareData::EnsureResizeObserverData() {
   if (!resize_observer_data_) {
     resize_observer_data_ = MakeGarbageCollected<
         HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>>();
@@ -95,7 +104,13 @@ ElementRareData::EnsureResizeObserverData() {
   return *resize_observer_data_;
 }
 
-ElementInternals& ElementRareData::EnsureElementInternals(HTMLElement& target) {
+ElementRareData::ResizeObserverDataMap&
+ElementRareData::EnsureResizeObserverData() {
+  return EnsureSuperRareData().EnsureResizeObserverData();
+}
+
+ElementInternals& ElementSuperRareData::EnsureElementInternals(
+    HTMLElement& target) {
   if (element_internals_)
     return *element_internals_;
   element_internals_ = MakeGarbageCollected<ElementInternals>(target);
@@ -103,26 +118,30 @@ ElementInternals& ElementRareData::EnsureElementInternals(HTMLElement& target) {
 }
 
 void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(super_rare_data_);
   visitor->Trace(dataset_);
-  visitor->Trace(class_list_);
-  visitor->Trace(part_);
   visitor->Trace(shadow_root_);
-  visitor->Trace(edit_context_);
+  visitor->Trace(class_list_);
   visitor->Trace(attribute_map_);
   visitor->Trace(attr_node_list_);
-  visitor->Trace(element_animations_);
-  visitor->Trace(last_intrinsic_size_);
   visitor->Trace(cssom_wrapper_);
-  visitor->Trace(cssom_map_wrapper_);
+  visitor->Trace(element_animations_);
+  visitor->Trace(intersection_observer_data_);
   visitor->Trace(pseudo_element_data_);
+  NodeRareData::TraceAfterDispatch(visitor);
+}
+
+void ElementSuperRareData::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(edit_context_);
+  visitor->Trace(part_);
+  visitor->Trace(cssom_map_wrapper_);
+  visitor->Trace(element_internals_);
   visitor->Trace(accessible_node_);
   visitor->Trace(display_lock_context_);
-  visitor->Trace(custom_element_definition_);
-  visitor->Trace(element_internals_);
-  visitor->Trace(intersection_observer_data_);
-  visitor->Trace(resize_observer_data_);
   visitor->Trace(container_query_data_);
-  NodeRareData::TraceAfterDispatch(visitor);
+  visitor->Trace(resize_observer_data_);
+  visitor->Trace(custom_element_definition_);
+  visitor->Trace(last_intrinsic_size_);
 }
 
 ASSERT_SIZE(ElementRareData, SameSizeAsElementRareData);

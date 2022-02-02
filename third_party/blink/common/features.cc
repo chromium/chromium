@@ -1209,5 +1209,10 @@ const base::Feature kSystemColorChooser{"SystemColorChooser",
 
 const base::Feature kNoForcedFrameUpdatesForWebTests{
     "NoForcedFrameUpdatesForWebTests", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// This flag makes ElementRareData lazily initialize infrequently used fields as
+// another class called ElementSuperRareData to improve memory usage.
+const base::Feature kElementSuperRareData{"ElementSuperRareData",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink

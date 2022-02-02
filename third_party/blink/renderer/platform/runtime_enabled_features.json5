@@ -968,6 +968,10 @@
       status: "stable",
     },
     {
+      name: "ElementSuperRareData",
+      status: "experimental",
+    },
+    {
       name: "EncryptedMediaSessionClosedReason",
       status: "stable",
     },

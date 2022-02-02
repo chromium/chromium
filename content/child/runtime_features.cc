@@ -352,6 +352,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"DialogFocusNewSpecBehavior",
            blink::features::kDialogFocusNewSpecBehavior},
           {"EditingNG", blink::features::kEditingNG},
+          {"ElementSuperRareData", blink::features::kElementSuperRareData},
           {"FileHandling", blink::features::kFileHandlingAPI},
           {"Fledge", blink::features::kFledge},
           {"FontAccess", blink::features::kFontAccess},
