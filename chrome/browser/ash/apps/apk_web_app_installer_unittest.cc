@@ -57,9 +57,9 @@ class FakeApkWebAppInstaller : public ApkWebAppInstaller {
 
   ~FakeApkWebAppInstaller() override = default;
 
-  using ApkWebAppInstaller::has_web_app_info;
+  using ApkWebAppInstaller::has_web_app_install_info;
   using ApkWebAppInstaller::Start;
-  using ApkWebAppInstaller::web_app_info;
+  using ApkWebAppInstaller::web_app_install_info;
 
   const web_app::AppId& id() const { return id_; }
   bool complete_installation_called() const {
@@ -110,17 +110,20 @@ TEST_F(ApkWebAppInstallerTest, IconDecodeCallsWebAppInstallManager) {
   EXPECT_FALSE(apk_web_app_installer.complete_installation_called());
   EXPECT_TRUE(apk_web_app_installer.do_install_called());
 
-  EXPECT_EQ(u"Fake App Title", apk_web_app_installer.web_app_info().title);
+  EXPECT_EQ(u"Fake App Title",
+            apk_web_app_installer.web_app_install_info().title);
   EXPECT_EQ(GURL("https://www.google.com/index.html"),
-            apk_web_app_installer.web_app_info().start_url);
+            apk_web_app_installer.web_app_install_info().start_url);
   EXPECT_EQ(GURL("https://www.google.com/"),
-            apk_web_app_installer.web_app_info().scope);
-  EXPECT_EQ(0xFFAABBCC,
-            static_cast<uint32_t>(
-                apk_web_app_installer.web_app_info().theme_color.value()));
+            apk_web_app_installer.web_app_install_info().scope);
+  EXPECT_EQ(
+      0xFFAABBCC,
+      static_cast<uint32_t>(
+          apk_web_app_installer.web_app_install_info().theme_color.value()));
 
-  EXPECT_EQ(1u, apk_web_app_installer.web_app_info().icon_bitmaps.any.size());
-  EXPECT_FALSE(apk_web_app_installer.web_app_info()
+  EXPECT_EQ(
+      1u, apk_web_app_installer.web_app_install_info().icon_bitmaps.any.size());
+  EXPECT_FALSE(apk_web_app_installer.web_app_install_info()
                    .icon_bitmaps.any.at(kGeneratedIconSize)
                    .drawsNothing());
 }
@@ -139,7 +142,7 @@ TEST_F(ApkWebAppInstallerTest,
   EXPECT_TRUE(apk_web_app_installer.complete_installation_called());
   EXPECT_FALSE(apk_web_app_installer.do_install_called());
 
-  EXPECT_FALSE(apk_web_app_installer.has_web_app_info());
+  EXPECT_FALSE(apk_web_app_installer.has_web_app_install_info());
 }
 
 TEST_F(ApkWebAppInstallerTest,
@@ -162,14 +165,14 @@ TEST_F(ApkWebAppInstallerTest, NullWebAppInfoCallsCompleteInstallation) {
   FakeApkWebAppInstaller apk_web_app_installer(
       profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
 
-  apk_web_app_installer.Start(/*web_app_info=*/nullptr, GetIconBytes());
+  apk_web_app_installer.Start(/*web_app_install_info=*/nullptr, GetIconBytes());
   run_loop.Run();
 
   EXPECT_EQ("", apk_web_app_installer.id());
   EXPECT_TRUE(apk_web_app_installer.complete_installation_called());
   EXPECT_FALSE(apk_web_app_installer.do_install_called());
 
-  EXPECT_FALSE(apk_web_app_installer.has_web_app_info());
+  EXPECT_FALSE(apk_web_app_installer.has_web_app_install_info());
 }
 
 TEST_F(ApkWebAppInstallerTest, NullIconCallsCompleteInstallation) {
@@ -184,7 +187,7 @@ TEST_F(ApkWebAppInstallerTest, NullIconCallsCompleteInstallation) {
   EXPECT_TRUE(apk_web_app_installer.complete_installation_called());
   EXPECT_FALSE(apk_web_app_installer.do_install_called());
 
-  EXPECT_FALSE(apk_web_app_installer.has_web_app_info());
+  EXPECT_FALSE(apk_web_app_installer.has_web_app_install_info());
 }
 
 }  // namespace ash

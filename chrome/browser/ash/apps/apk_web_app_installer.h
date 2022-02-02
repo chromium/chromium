@@ -78,8 +78,12 @@ class ApkWebAppInstaller {
   // Run the installation. Virtual for testing.
   virtual void DoInstall();
 
-  bool has_web_app_info() const { return web_app_info_ != nullptr; }
-  const WebAppInstallInfo& web_app_info() const { return *web_app_info_; }
+  bool has_web_app_install_info() const {
+    return web_app_install_info_ != nullptr;
+  }
+  const WebAppInstallInfo& web_app_install_info() const {
+    return *web_app_install_info_;
+  }
 
  private:
   // If |weak_owner_| is ever invalidated while this class is working,
@@ -91,7 +95,7 @@ class ApkWebAppInstaller {
   InstallFinishCallback callback_;
   base::WeakPtr<Owner> weak_owner_;
 
-  std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  std::unique_ptr<WebAppInstallInfo> web_app_install_info_;
 };
 
 }  // namespace ash
