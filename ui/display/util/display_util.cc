@@ -58,7 +58,7 @@ bool IsDisplaySizeValid(const gfx::Size& physical_size) {
     const gfx::Size size(kInvalidDisplaySizeList[i][0],
                          kInvalidDisplaySizeList[i][1]);
     if (physical_size == size) {
-      VLOG(1) << "Black listed display size detected:" << size.ToString();
+      VLOG(1) << "Invalid display size detected:" << size.ToString();
       return false;
     }
   }
