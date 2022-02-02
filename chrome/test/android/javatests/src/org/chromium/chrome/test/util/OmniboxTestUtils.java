@@ -360,6 +360,7 @@ public class OmniboxTestUtils {
             @Nullable Matcher<String> autocompleteTextMatcher,
             @Nullable Matcher<Integer> autocompleteSelectionStart,
             @Nullable Matcher<Integer> autocompleteSelectionEnd) {
+        waitAnimationsComplete();
         CriteriaHelper.pollUiThread(() -> {
             if (mUrlBar.hasFocus()) {
                 // URL bar is focused. Match against the edit state.
