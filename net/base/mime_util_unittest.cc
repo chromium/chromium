@@ -47,6 +47,7 @@ TEST(MimeUtilTest, GetWellKnownMimeTypeFromExtension) {
       {FILE_PATH_LITERAL("zip"), "application/zip"},
       {FILE_PATH_LITERAL("ics"), "text/calendar"},
       {FILE_PATH_LITERAL("m3u8"), "application/x-mpegurl"},
+      {FILE_PATH_LITERAL("csv"), "text/csv"},
       {FILE_PATH_LITERAL("not an extension / for sure"), nullptr},
       {containsNullByte, nullptr}};
 
@@ -97,6 +98,7 @@ TEST(MimeUtilTest, ExtensionTest) {
                              // android-arm[64]-test and Linux. Possibly more.
          "audio/mpegurl",    // System override for mac.
      }},
+    {FILE_PATH_LITERAL("csv"), {"text/csv"}},
     {FILE_PATH_LITERAL("not an extension / for sure"), {}},
     {containsNullByte, {}}
   };
@@ -385,8 +387,6 @@ TEST(MimeUtilTest, TestParseMimeTypeWithoutParameter) {
   EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\n/plain", nullptr, nullptr));
   EXPECT_FALSE(
       ParseMimeTypeWithoutParameter("text/\nplain ", nullptr, nullptr));
-
-  //EXPECT_TRUE(ParseMimeTypeWithoutParameter("video/mime;parameter"));
 }
 
 TEST(MimeUtilTest, TestIsValidTopLevelMimeType) {

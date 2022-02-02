@@ -175,6 +175,12 @@ static const MimeInfo kPrimaryMappings[] = {
     {"text/xml", "xml"},
     {"video/mp4", "mp4,m4v"},
     {"video/ogg", "ogv,ogm"},
+
+    // This is a primary mapping (overrides the platform) rather than secondary
+    // to work around an issue when Excel is installed on Windows. Excel
+    // registers csv as application/vnd.ms-excel instead of text/csv from RFC
+    // 4180. See https://crbug.com/139105.
+    {"text/csv", "csv"},
 };
 
 // See comments above for details on how this list is used.
@@ -216,7 +222,6 @@ static const MimeInfo kSecondaryMappings[] = {
     {"image/x-xbitmap", "xbm"},
     {"message/rfc822", "eml"},
     {"text/calendar", "ics"},
-    {"text/csv", "csv"},
     {"text/html", "ehtml"},
     {"text/plain", "txt,text"},
     {"text/x-sh", "sh"},
