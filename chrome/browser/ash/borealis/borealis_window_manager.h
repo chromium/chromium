@@ -22,6 +22,16 @@ class Window;
 
 namespace borealis {
 
+// Borealis windows are created with app/startup ids beginning with this.
+extern const char kBorealisWindowPrefix[];
+
+// Base64-encoded shell application id of borealis client when it is in full-
+// screen mode.
+extern const char kFullscreenClientShellId[];
+
+// Base64-encoded application id suffix for borealis client windows.
+extern const char kBorealisClientSuffix[];
+
 // The borealis window manager keeps track of the association of windows to
 // borealis apps. This includes determining which windows belong to a borealis
 // app, what the lifetime of the app is relative to its windows, and the
@@ -37,7 +47,7 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
 
   // Determines if a newly created window should be minimized on creation.
   // TODO(b/210569001): this is intended to be a temporary solution.
-  static bool ShouldNewWindowBeMinimized();
+  static bool ShouldNewWindowBeMinimized(const std::string& window_id);
 
   // An observer for tracking the creation and deletion of anonymous windows.
   class AnonymousAppObserver : public base::CheckedObserver {

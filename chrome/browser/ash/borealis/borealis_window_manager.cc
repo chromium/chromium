@@ -27,19 +27,15 @@
 
 namespace borealis {
 
-namespace {
-
-// Borealis windows are created with app/startup ids beginning with this.
 const char kBorealisWindowPrefix[] = "org.chromium.borealis.";
+const char kFullscreenClientShellId[] =
+    "b3JnLmNocm9taXVtLmJvcmVhbGlzLndtY2xhc3Muc3RlYW0=";
+const char kBorealisClientSuffix[] = "d21jbGFzcy5TdGVhbQ==";
 
+namespace {
 // Anonymous apps do not have a CrOS-standard app_id (i.e. one registered with
 // the GuestOsRegistryService), so to identify them we prepend this.
 const char kBorealisAnonymousPrefix[] = "borealis_anon:";
-
-// Base64-encoded shell application id of borealis client when it is in full-
-// screen mode.
-const char kFullscreenClientShellId[] =
-    "b3JnLmNocm9taXVtLmJvcmVhbGlzLndtY2xhc3Muc3RlYW0=";
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfAppIdKey, nullptr)
 
@@ -116,25 +112,39 @@ bool BorealisWindowManager::IsBorealisWindow(const aura::Window* window) {
 
 // static
 bool BorealisWindowManager::IsBorealisWindowId(const std::string& window_id) {
-  return base::StartsWith(window_id, kBorealisWindowPrefix);
+  return base::StartsWith(window_id, borealis::kBorealisWindowPrefix);
 }
 
 // static
-bool BorealisWindowManager::ShouldNewWindowBeMinimized() {
+bool BorealisWindowManager::ShouldNewWindowBeMinimized(
+    const std::string& window_id) {
+  // Only borealis client windows should be minimized.
+  std::string client_suffix;
+  if (!base::Base64Decode(borealis::kBorealisClientSuffix, &client_suffix))
+    return false;
+  if (!base::EndsWith(window_id, client_suffix, base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+
+  // We only need to create windows as minimized when the active window is a
+  // borealis window in fullscreen.
   aura::Window* active_window = ash::window_util::GetActiveWindow();
   if (!active_window || !IsBorealisWindow(active_window))
-    return false;
-
-  auto* window_state = ash::WindowState::Get(active_window);
-  if (!window_state || !window_state->IsFullscreen())
     return false;
 
   const std::string* active_window_id = GetWindowId(active_window);
   if (!active_window_id)
     return false;
 
+  auto* window_state = ash::WindowState::Get(active_window);
+  if (!window_state || !window_state->IsFullscreen())
+    return false;
+
+  // If the fullscreen window is the borealis client, then we allow windows to
+  // take focus.
   std::string fullscreen_client_id;
-  if (!base::Base64Decode(kFullscreenClientShellId, &fullscreen_client_id))
+  if (!base::Base64Decode(borealis::kFullscreenClientShellId,
+                          &fullscreen_client_id))
     return false;
 
   if (*active_window_id == fullscreen_client_id)
