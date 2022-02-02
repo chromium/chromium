@@ -10,7 +10,6 @@
 
 namespace permissions {
 
-// TODO(andypaicu): when available, replace with actual URL.
 constexpr char kDefaultPredictionServiceUrl[] =
     "https://webpermissionpredictions.googleapis.com/v1:generatePredictions";
 
