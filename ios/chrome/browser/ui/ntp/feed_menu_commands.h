@@ -8,7 +8,7 @@
 // Protocol for actions relating to the NTP feed top-level control menu.
 @protocol FeedMenuCommands
 
-// Opens Discover feed control menu.
+// Opens feed control menu.
 - (void)openFeedMenu;
 
 @end
