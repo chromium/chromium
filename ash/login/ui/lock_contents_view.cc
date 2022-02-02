@@ -1095,6 +1095,7 @@ void LockContentsView::OnSmartLockStateChanged(const AccountId& account_id,
     return;
 
   big_view->auth_user()->SetSmartLockState(state);
+  LayoutAuth(big_view, /*opt_to_hide=*/nullptr, /*animate=*/true);
 }
 
 void LockContentsView::OnSmartLockAuthResult(const AccountId& account_id,
