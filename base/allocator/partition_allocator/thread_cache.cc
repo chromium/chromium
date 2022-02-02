@@ -482,8 +482,14 @@ ThreadCache::~ThreadCache() {
 // static
 void ThreadCache::Delete(void* tcache_ptr) {
   auto* tcache = static_cast<ThreadCache*>(tcache_ptr);
+
+  if (!IsValid(tcache))
+    return;
+
 #if defined(PA_THREAD_CACHE_FAST_TLS)
   g_thread_cache = nullptr;
+#else
+  PartitionTlsSet(g_thread_cache_key, nullptr);
 #endif
 
   auto* root = tcache->root_;
