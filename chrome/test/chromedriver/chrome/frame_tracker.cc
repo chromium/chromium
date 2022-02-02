@@ -164,7 +164,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     if (!type)
       return Status(kUnknownError,
                     "missing target type in Target.attachedToTarget event");
-    if (*type == "iframe") {
+    if (*type == "iframe" || *type == "page") {
       const std::string* target_id =
           params.FindStringPath("targetInfo.targetId");
       if (!target_id)

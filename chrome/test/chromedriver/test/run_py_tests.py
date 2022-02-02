@@ -4053,6 +4053,42 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
     events = self._driver.FindElement('css selector', '#events')
     self.assertEqual('events: touchstart touchend', events.GetText())
 
+class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
+  def setUp(self):
+    self._driver = self.CreateDriver(chrome_switches=['--site-per-process', '--enable-features=FencedFrames:implementation_type/mparch'])
+
+  def testCanSwitchToFencedFrame(self):
+    self._http_server.SetDataForPath('/main.html', bytes("""
+      <!DOCTYPE html>
+        <html>
+          <body>
+            <fencedframe src="/fencedframe.html"></fencedframe>
+          </body>
+        </html>
+      """, 'utf-8'))
+
+    def respondWithFencedFrameContents(request):
+      return {'Supports-Loading-Mode': 'fenced-frame'}, bytes("""
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <button></button>
+          </body>
+        </html>""", 'utf-8')
+    self._http_server.SetCallbackForPath('/fencedframe.html', respondWithFencedFrameContents)
+
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    self._driver.SetTimeouts({'implicit': 2000})
+    fencedframe = self._driver.FindElement('tag name', 'fencedframe')
+    self._driver.SwitchToFrame(fencedframe)
+    button = self._driver.FindElement('tag name', 'button')
+    self.assertIsNotNone(button)
+
+  def tearDown(self):
+    super(ChromeDriverFencedFrame, self).tearDown()
+    self._http_server.SetDataForPath('/main.html', None)
+    self._http_server.SetCallbackForPath('/fencedframe.html', None)
+
 class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
   """Tests for ChromeDriver with the new Site Isolation Chrome feature.
 
