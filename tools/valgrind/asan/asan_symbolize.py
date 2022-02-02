@@ -212,29 +212,6 @@ class macOSBinaryNameFilterPlugin(asan_symbolize.AsanSymbolizerPlugIn):
     return binary_path
 
 
-class CheckUTF8:
-  # This wraps stream and show warnings if stream gets invalid data as utf-8.
-  def __init__(self, stream):
-    self._stream = stream
-
-  def __iter__(self):
-    return self
-
-  def __next__(self):
-
-    l = self._stream.buffer.readline()
-
-    if not l:
-      raise StopIteration
-
-    try:
-      return l.decode()
-    except UnicodeDecodeError:
-      print("WARNING: asan_symbolize.py failed to decode %s (base64 encoded)" %
-            base64.b64encode(l).decode())
-      return ""
-
-
 def main():
   parser = argparse.ArgumentParser(description='Symbolize sanitizer reports.')
   parser.add_argument('--test-summary-json-file',
@@ -276,10 +253,7 @@ def main():
       symbolize_snippets_in_json(args.test_summary_json_file, loop)
     else:
       # Process stdin.
-      if sys.version_info.major > 2:
-        asan_symbolize.logfile = CheckUTF8(sys.stdin)
-      else:
-        asan_symbolize.logfile = sys.stdin
+      asan_symbolize.logfile = sys.stdin
       loop.process_logfile()
 
 
