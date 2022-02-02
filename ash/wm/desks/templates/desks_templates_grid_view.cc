@@ -111,38 +111,14 @@ DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
   return widget;
 }
 
-void DesksTemplatesGridView::UpdateGridUI(
+void DesksTemplatesGridView::PopulateGridUI(
     const std::vector<DeskTemplate*>& desk_templates,
     const gfx::Rect& grid_bounds) {
-  // Check if any of the template items or their name views have overview focus
-  // and notify the highlight controller. This should only be needed when a
-  // template item is deleted, but currently we call `UpdateGridUI` every time
-  // the model changes.
-  // TODO(crbug.com/1266552): Remove this when `UpdateGridUI` is not rebuilt
-  // every time.
-  if (!grid_items_.empty()) {
-    auto* highlight_controller = Shell::Get()
-                                     ->overview_controller()
-                                     ->overview_session()
-                                     ->highlight_controller();
-    if (highlight_controller->IsFocusHighlightVisible()) {
-      // Notify the highlight controller if any of the about to be destroyed
-      // views have overview focus to prevent use-after-free.
-      for (DesksTemplatesItemView* template_view : grid_items_) {
-        if (template_view->IsViewHighlighted()) {
-          highlight_controller->OnViewDestroyingOrDisabling(template_view);
-          break;
-        }
-
-        if (template_view->name_view()->IsViewHighlighted()) {
-          highlight_controller->OnViewDestroyingOrDisabling(
-              template_view->name_view());
-          break;
-        }
-      }
-    }
-  }
-
+  // In the cases where the grid was hidden and needs to be reshown, we will
+  // clear the current views and repopulate the grid with the new
+  // `desk_templates`.
+  // TODO(crbug.com/1291087): Change this logic so that we just go through and
+  // add/update the necessary views.
   RemoveAllChildViews();
   grid_items_.clear();
 
@@ -152,24 +128,8 @@ void DesksTemplatesGridView::UpdateGridUI(
   DCHECK_LE(desk_templates.size(),
             DesksTemplatesPresenter::Get()->GetMaxEntryCount());
 
-  std::vector<std::unique_ptr<DesksTemplatesItemView>> desk_template_views;
-
-  for (DeskTemplate* desk_template : desk_templates) {
-    desk_template_views.push_back(
-        std::make_unique<DesksTemplatesItemView>(desk_template));
-  }
-
-  // Sort the `desk_template_views` into alphabetical order based on template
-  // name, note that accessible name == template name.
-  std::sort(desk_template_views.begin(), desk_template_views.end(),
-            [](const std::unique_ptr<DesksTemplatesItemView>& a,
-               const std::unique_ptr<DesksTemplatesItemView>& b) {
-              return a->GetAccessibleName() < b->GetAccessibleName();
-            });
-
-  // Add each of the templates to the grid.
-  for (auto& view : desk_template_views)
-    grid_items_.push_back(AddChildView(std::move(view)));
+  AddTemplatesToGrid(std::vector<const DeskTemplate*>(desk_templates.begin(),
+                                                      desk_templates.end()));
 
   feedback_button_ = AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&DesksTemplatesGridView::OnFeedbackButtonPressed,
@@ -187,6 +147,53 @@ void DesksTemplatesGridView::UpdateGridUI(
   // this case. If the size changes, the children will be layoutted so we can
   // avoid double work in that case. See https://crbug.com/1275179.
   if (size() == previous_size)
+    Layout();
+}
+
+void DesksTemplatesGridView::AddOrUpdateTemplates(
+    const std::vector<const DeskTemplate*>& new_entries) {
+  // TODO(crbug.com/1291087): Instead of deleting and then adding a new template
+  // view, we should just add a way to directly update the existing view.
+  std::vector<std::string> entries_uuids;
+  for (auto* new_entry : new_entries)
+    entries_uuids.emplace_back(new_entry->uuid().AsLowercaseString());
+
+  // We wait to do a layout until after we both delete and add all the templates
+  // views to the grid.
+  DeleteTemplates(entries_uuids, /*layout=*/false);
+  AddTemplatesToGrid(new_entries);
+
+  Layout();
+}
+
+void DesksTemplatesGridView::DeleteTemplates(
+    const std::vector<std::string>& uuids,
+    bool layout) {
+  OverviewHighlightController* highlight_controller =
+      Shell::Get()
+          ->overview_controller()
+          ->overview_session()
+          ->highlight_controller();
+  DCHECK(highlight_controller);
+
+  for (const std::string& uuid : uuids) {
+    auto iter =
+        std::find_if(grid_items_.begin(), grid_items_.end(),
+                     [uuid](DesksTemplatesItemView* grid_item) {
+                       return uuid == grid_item->uuid().AsLowercaseString();
+                     });
+
+    if (iter == grid_items_.end())
+      continue;
+
+    highlight_controller->OnViewDestroyingOrDisabling(*iter);
+    highlight_controller->OnViewDestroyingOrDisabling((*iter)->name_view());
+
+    RemoveChildView(*iter);
+    grid_items_.erase(iter);
+  }
+
+  if (layout)
     Layout();
 }
 
@@ -264,6 +271,26 @@ void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
   widget_window_->RemoveObserver(this);
   event_handler_.reset();
   widget_window_ = nullptr;
+}
+
+void DesksTemplatesGridView::AddTemplatesToGrid(
+    const std::vector<const DeskTemplate*>& desk_templates) {
+  for (const DeskTemplate* desk_template : desk_templates) {
+    grid_items_.push_back(
+        AddChildView(std::make_unique<DesksTemplatesItemView>(desk_template)));
+  }
+
+  // Sort the `grid_items_` into alphabetical order based on template name.
+  // Note that this doesn't update the order of the child views, but just sorts
+  // the vector. `Layout` is responsible for placing the views in the correct
+  // locations in the grid and callers are expected to call `Layout` after this
+  // function.
+  std::sort(
+      grid_items_.begin(), grid_items_.end(),
+      [](const DesksTemplatesItemView* a, const DesksTemplatesItemView* b) {
+        return a->name_view()->GetAccessibleName() <
+               b->name_view()->GetAccessibleName();
+      });
 }
 
 void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,

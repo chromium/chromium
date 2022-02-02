@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -25,7 +26,6 @@ namespace ash {
 class CloseButton;
 class DesksTemplatesIconContainer;
 class DesksTemplatesNameView;
-class DeskTemplate;
 class PillButton;
 
 // A view that represents each individual template item in the desks templates
@@ -67,13 +67,14 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
  public:
   METADATA_HEADER(DesksTemplatesItemView);
 
-  explicit DesksTemplatesItemView(DeskTemplate* desk_template);
+  explicit DesksTemplatesItemView(const DeskTemplate* desk_template);
   DesksTemplatesItemView(const DesksTemplatesItemView&) = delete;
   DesksTemplatesItemView& operator=(const DesksTemplatesItemView&) = delete;
   ~DesksTemplatesItemView() override;
 
   DeskTemplate* desk_template() const { return desk_template_.get(); }
   DesksTemplatesNameView* name_view() const { return name_view_; }
+  const base::GUID uuid() const { return desk_template_->uuid(); }
 
   // Updates the visibility state of the delete and launch buttons depending on
   // the current mouse or touch event location, or if switch access is enabled.

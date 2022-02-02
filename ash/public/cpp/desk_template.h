@@ -78,7 +78,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // This specifically used in the DeskSyncBridge which requires a map
   // of DeskTemplate unique pointers to be valid and needs to pass
   // that information in DeskModel callbacks.
-  std::unique_ptr<DeskTemplate> Clone();
+  std::unique_ptr<DeskTemplate> Clone() const;
 
   // Indicates the last time the user created or updated this template.
   // If this desk template was never updated since creation, its creation time

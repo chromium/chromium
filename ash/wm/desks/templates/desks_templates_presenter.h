@@ -89,9 +89,19 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   void OnGetAllEntries(desks_storage::DeskModel::GetAllEntriesStatus status,
                        const std::vector<DeskTemplate*>& entries);
 
-  // Callback after deleting an entry. Will then call `GetAllEntries` to update
-  // the UI with the most up to date list of templates.
-  void OnDeleteEntry(desks_storage::DeskModel::DeleteEntryStatus status);
+  // Calls the DeskModel to get a specific template entry, with a callback to
+  // `OnGetEntryByUUID`.
+  void GetEntryByUUID(const std::string& template_uuid);
+
+  // Callback ran after querying the model for a specific entry. Will then call
+  // `AddOrUpdateUIEntries` to update specified template in the UI.
+  void OnGetEntryByUUID(desks_storage::DeskModel::GetEntryByUuidStatus status,
+                        std::unique_ptr<ash::DeskTemplate> entry);
+
+  // Callback after deleting an entry. Will then call `RemoveUIEntries` to
+  // update the UI by removing the deleted template.
+  void OnDeleteEntry(const std::string& template_uuid,
+                     desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Launches DeskTemplate after retrieval from storage.
   void OnGetTemplateForDeskLaunch(
@@ -100,9 +110,17 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
       desks_storage::DeskModel::GetEntryByUuidStatus status,
       std::unique_ptr<DeskTemplate> entry);
 
+  // Callback after adding or updating an entry. Will then call
+  // `AddOrUpdateUIEntries` to update the UI by adding or updating the template.
   void OnAddOrUpdateEntry(
       bool was_update,
+      const std::string& template_uuid,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status);
+
+  // Helper functions for updating the UI.
+  void AddOrUpdateUIEntries(
+      const std::vector<const DeskTemplate*>& new_entries);
+  void RemoveUIEntries(const std::vector<std::string>& uuids);
 
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;

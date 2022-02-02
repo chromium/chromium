@@ -40,8 +40,17 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
 
   // Updates the UI by creating a grid layout and populating the grid with the
   // provided list of desk templates.
-  void UpdateGridUI(const std::vector<DeskTemplate*>& desk_templates,
-                    const gfx::Rect& grid_bounds);
+  void PopulateGridUI(const std::vector<DeskTemplate*>& desk_templates,
+                      const gfx::Rect& grid_bounds);
+
+  // Adds new templates to the grid, and updates existing templates by first
+  // deleting the old `DesksTemplatesItemView` then creating a new one and
+  // adding it.
+  void AddOrUpdateTemplates(
+      const std::vector<const DeskTemplate*>& new_entries);
+
+  // Removes templates from the grid by UUID.
+  void DeleteTemplates(const std::vector<std::string>& uuids, bool layout);
 
   // Returns true if a template name is being modified using an item view's
   // `DesksTemplatesNameView` in this grid.
@@ -56,6 +65,11 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
 
  private:
   friend class DesksTemplatesEventHandler;
+
+  // Adds the list of templates to the grid. Also sorts `grid_items_` in
+  // alphabetical order.
+  void AddTemplatesToGrid(
+      const std::vector<const DeskTemplate*>& desk_templates);
 
   // Updates the visibility state of the hover buttons on all the `grid_items_`
   // as a result of mouse and gesture events.

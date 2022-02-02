@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -138,8 +139,9 @@ void DesksTemplatesPresenter::GetAllEntries() {
 void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
-      template_uuid, base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
-                                    weak_ptr_factory_.GetWeakPtr()));
+      template_uuid,
+      base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
+                     weak_ptr_factory_.GetWeakPtr(), template_uuid));
   cached_saved_template_uuid_.reset();
 }
 
@@ -184,6 +186,9 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
   if (!desk_template)
     return;
 
+  if (is_update)
+    desk_template->set_updated_time(base::Time::Now());
+
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   if (!is_update) {
@@ -193,11 +198,15 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
     cached_saved_template_uuid_.reset();
   }
 
+  // TODO(richui): Look into passing the entire template and not just the
+  // UUID.
+  const std::string template_uuid = desk_template->uuid().AsLowercaseString();
+
   // Save or update `desk_template` as an entry in DeskModel.
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template),
       base::BindOnce(&DesksTemplatesPresenter::OnAddOrUpdateEntry,
-                     weak_ptr_factory_.GetWeakPtr(), is_update));
+                     weak_ptr_factory_.GetWeakPtr(), is_update, template_uuid));
 }
 
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
@@ -206,14 +215,12 @@ void DesksTemplatesPresenter::OnDeskModelDestroying() {
 
 void DesksTemplatesPresenter::EntriesAddedOrUpdatedRemotely(
     const std::vector<const DeskTemplate*>& new_entries) {
-  if (overview_session_->IsShowingDesksTemplatesGrid())
-    GetAllEntries();
+  AddOrUpdateUIEntries(new_entries);
 }
 
 void DesksTemplatesPresenter::EntriesRemovedRemotely(
     const std::vector<std::string>& uuids) {
-  if (overview_session_->IsShowingDesksTemplatesGrid())
-    GetAllEntries();
+  RemoveUIEntries(uuids);
 }
 
 void DesksTemplatesPresenter::OnGetAllEntries(
@@ -233,7 +240,8 @@ void DesksTemplatesPresenter::OnGetAllEntries(
             overview_grid->desks_templates_grid_widget()) {
       auto* grid_view =
           static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-      grid_view->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
+      grid_view->PopulateGridUI(entries,
+                                overview_grid->GetGridEffectiveBounds());
       if (cached_saved_template_uuid_) {
         for (auto* item_view : grid_view->grid_items()) {
           if (cached_saved_template_uuid_ ==
@@ -254,14 +262,34 @@ void DesksTemplatesPresenter::OnGetAllEntries(
     std::move(on_update_ui_closure_for_testing_).Run();
 }
 
+void DesksTemplatesPresenter::GetEntryByUUID(const std::string& template_uuid) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  GetDeskModel()->GetEntryByUUID(
+      template_uuid, base::BindOnce(&DesksTemplatesPresenter::OnGetEntryByUUID,
+                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DesksTemplatesPresenter::OnGetEntryByUUID(
+    desks_storage::DeskModel::GetEntryByUuidStatus status,
+    std::unique_ptr<ash::DeskTemplate> entry) {
+  if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk)
+    return;
+
+  if (!entry)
+    return;
+
+  AddOrUpdateUIEntries({entry.get()});
+}
+
 void DesksTemplatesPresenter::OnDeleteEntry(
+    const std::string& template_uuid,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
     return;
 
   RecordDeleteTemplateHistogram();
   RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
-  GetAllEntries();
+  RemoveUIEntries({template_uuid});
 }
 
 void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
@@ -295,6 +323,7 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
 
 void DesksTemplatesPresenter::OnAddOrUpdateEntry(
     bool was_update,
+    const std::string& template_uuid,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
   // TODO(crbug.com/1284449): Add visible cue when failing to save a desk
   // template.
@@ -303,9 +332,9 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk)
     return;
 
-  // If the templates grid is already shown, just update the entries.
+  // If the templates grid is already shown, just update the entry.
   if (overview_session_->IsShowingDesksTemplatesGrid()) {
-    GetAllEntries();
+    GetEntryByUUID(template_uuid);
     return;
   }
 
@@ -321,6 +350,49 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
     RecordNewTemplateHistogram();
     RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
   }
+}
+
+void DesksTemplatesPresenter::AddOrUpdateUIEntries(
+    const std::vector<const DeskTemplate*>& new_entries) {
+  if (new_entries.empty())
+    return;
+
+  // This updates `should_show_templates_ui_`.
+  UpdateDesksTemplatesUI();
+
+  for (auto& overview_grid : overview_session_->grid_list()) {
+    // Update `DesksTemplatesGridView` with the new or added desk template
+    // entries.
+    if (views::Widget* grid_widget =
+            overview_grid->desks_templates_grid_widget()) {
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
+          ->AddOrUpdateTemplates(new_entries);
+    }
+  }
+
+  if (on_update_ui_closure_for_testing_)
+    std::move(on_update_ui_closure_for_testing_).Run();
+}
+
+void DesksTemplatesPresenter::RemoveUIEntries(
+    const std::vector<std::string>& uuids) {
+  if (uuids.empty())
+    return;
+
+  // This updates `should_show_templates_ui_`.
+  UpdateDesksTemplatesUI();
+
+  for (auto& overview_grid : overview_session_->grid_list()) {
+    // Remove the entries from `DesksTemplatesGridView`.
+    if (views::Widget* grid_widget =
+            overview_grid->desks_templates_grid_widget()) {
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
+          ->DeleteTemplates(uuids, /*layout=*/true);
+    }
+  }
+
+  if (on_update_ui_closure_for_testing_)
+    std::move(on_update_ui_closure_for_testing_).Run();
 }
 
 }  // namespace ash
