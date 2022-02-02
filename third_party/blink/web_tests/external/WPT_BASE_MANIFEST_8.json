@@ -289778,7 +289778,7 @@
       []
      ],
      "dedicated-worker.https-expected.txt": [
-      "883c29a04dfcd6030c7bf83b60deb63e970cd110",
+      "cc01f8a1e618b22c9a3f0f2dd80d1dd665944380",
       []
      ],
      "javascript.https.html.headers": [
@@ -289928,6 +289928,10 @@
        "d0e547b130db1307fe81589f7a2e3706fc1e65ab",
        []
       ],
+      "fetch-and-create-url.html": [
+       "6b0f96221dc47c367a53ffac3b07276070f71892",
+       []
+      ],
       "fetch-in-dedicated-worker.js": [
        "bd60d07952ccbf2f4c6954ce65083ce0eada13f4",
        []
@@ -290047,6 +290051,10 @@
       "worker-owner.js": [
        "d1f172a0b87c73d3591345c9b232bf40b7656eed",
        []
+      ],
+      "worker-support.js": [
+       "860ee6826c2029260c5007f475fcc9368abf5de2",
+       []
       ]
      },
      "sandbox.https.html.headers": [
@@ -290054,7 +290062,7 @@
       []
      ],
      "shared-workers.https-expected.txt": [
-      "f3e13f6fe8eb2fb2737acb85d635f154b04264e1",
+      "8d12b4d8d6918bbacd7677d55ac553f303ceea3f",
       []
      ],
      "srcdoc.https.html.headers": [
@@ -310369,6 +310377,10 @@
      ],
      "self_navigation.html": [
       "beb12f5da551780fcb4378bef4661b9699a5d009",
+      []
+     ],
+     "shared-worker.js": [
+      "f3ef3feb964cb73784c8ec2e31505dfc7aa67a62",
       []
      ],
      "sizes-helper.js": [
@@ -445323,7 +445335,7 @@
       ]
      ],
      "dedicated-worker.https.html": [
-      "cc0c470910bc1915aa0ddb0ae136f0d8579044e6",
+      "1ba624181cb7c23ab0ac61a6b9fa1841d4575710",
       [
        null,
        {}
@@ -445555,7 +445567,7 @@
       ]
      ],
      "shared-workers.https.html": [
-      "82b5e505af13fb5e5826cce4e88689f17939d6c0",
+      "2558f2dd0b40ab8233d6dad58a246210569ef6d9",
       [
        null,
        {}
@@ -473147,7 +473159,7 @@
      ]
     ],
     "MediaStreamTrack-transfer.https.html": [
-     "f0fcdaf529cd1660d2e18f6746d16a722be05564",
+     "9d582f3d9be259ad481133ca1ff6fd2fe2448d6e",
      [
       null,
       {
@@ -496093,6 +496105,13 @@
     ],
     "script-rt-entries.html": [
      "cdd72bd1e25199085c8178b618a00200c86a3de9",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-worker-rt-entry.html": [
+     "194500a09503a46f454d879ec984be0c83dd2bb9",
      [
       null,
       {}
