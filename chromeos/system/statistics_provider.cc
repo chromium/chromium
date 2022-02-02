@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -181,6 +182,19 @@ bool GetInitialTimezoneFromRegionalData(const base::Value& region_dict,
 bool GetInitialLocaleFromRegionalData(const base::Value& region_dict,
                                       std::string* result) {
   return JoinListValuesToString(region_dict, kLocalesPath, result);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class VpdCacheReadResult {
+  kSuccess = 0,
+  KMissing = 1,
+  kParseFailed = 2,
+  kMaxValue = kParseFailed,
+};
+
+void ReportVpdCacheReadResult(VpdCacheReadResult result) {
+  base::UmaHistogramEnumeration("Enterprise.VPDCacheReadResult", result);
 }
 
 }  // namespace
@@ -557,20 +571,36 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
 
   base::FilePath vpd_path;
   base::PathService::Get(chromeos::FILE_VPD, &vpd_path);
-  if (!base::SysInfo::IsRunningOnChromeOS() && !base::PathExists(vpd_path)) {
-    std::string stub_contents = "\"ActivateDate\"=\"2000-01\"\n";
-    int bytes_written =
-        base::WriteFile(vpd_path, stub_contents.c_str(), stub_contents.size());
-    if (bytes_written < static_cast<int>(stub_contents.size())) {
-      PLOG(ERROR) << "Error writing vpd stub " << vpd_path.value();
+  if (!base::PathExists(vpd_path)) {
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      ReportVpdCacheReadResult(VpdCacheReadResult::KMissing);
+      LOG(ERROR) << "Missing FILE_VPD: " << vpd_path;
+    } else {
+      std::string stub_contents = "\"ActivateDate\"=\"2000-01\"\n";
+      int bytes_written = base::WriteFile(vpd_path, stub_contents.c_str(),
+                                          stub_contents.size());
+      if (bytes_written < static_cast<int>(stub_contents.size())) {
+        PLOG(ERROR) << "Error writing VPD stub " << vpd_path.value();
+      }
     }
   }
 
-  parser.GetNameValuePairsFromFile(machine_info_path, kMachineHardwareInfoEq,
-                                   kMachineHardwareInfoDelim);
+  // The machine-info file is generated only for OOBE and enterprise enrollment
+  // and may not be present. See login-manager/init/machine-info.conf.
+  parser.GetNameValuePairsFromFile(machine_info_path,
+                                   NameValuePairsFormat::kMachineInfo);
   parser.GetNameValuePairsFromFile(base::FilePath(kEchoCouponFile),
-                                   kEchoCouponEq, kEchoCouponDelim);
-  parser.GetNameValuePairsFromFile(vpd_path, kVpdEq, kVpdDelim);
+                                   NameValuePairsFormat::kVpdDump);
+  bool vpd_parse_result = parser.GetNameValuePairsFromFile(
+      vpd_path, NameValuePairsFormat::kVpdDump);
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    if (vpd_parse_result) {
+      ReportVpdCacheReadResult(VpdCacheReadResult::kSuccess);
+    } else {
+      ReportVpdCacheReadResult(VpdCacheReadResult::kParseFailed);
+      LOG(ERROR) << "Failed to parse FILE_VPD: " << vpd_path;
+    }
+  }
 
   // Ensure that the hardware class key is present with the expected
   // key name, and if it couldn't be retrieved, that the value is "unknown".

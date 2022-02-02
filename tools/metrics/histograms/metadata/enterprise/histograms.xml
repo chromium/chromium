@@ -2294,6 +2294,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.VPDCacheReadResult" enum="VPDCacheReadResult"
+    expires_after="2023-01-01">
+  <owner>vsavu@google.com</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>The result of Chrome reading the VPD cache on Chrome OS.</summary>
+</histogram>
+
 <histogram name="Enterprise.VpdCheck" units="units" expires_after="2020-07-05">
   <owner>igorcov@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
