@@ -213,9 +213,9 @@ class BuildRule:
         # Add these if, in the future, we want to explicitly mark each
         # third-party crate instead of doing so from the GN template.
         #
-        #self._write(indent,
+        # self._write(indent,
         #  "configs -= [ \"//build/config/compiler:chromium_code\" ]")
-        #self._write(indent,
+        # self._write(indent,
         #  "configs += [ \"//build/config/compiler:no_chromium_code\" ]")
 
         build_rule_usage = build_rule.get_usage(usage)
@@ -281,14 +281,18 @@ class BuildRule:
                     self._write(indent + 2, "\"{}\",".format(o))
                 self._write(indent, "]")
 
-    def generate_gn(self, args: argparse.Namespace) -> str:
+    def generate_gn(self, args: argparse.Namespace, copyright_year: str) -> str:
         """Generate a BUILD.gn file contents.
 
         The BuildRule has all data needed to construct a BUILD file. This
         generates a BUILD.gn file.
+
+        Args:
+            args: The command-line arguments.
+            copyright_year: The year as a string.
         """
         self.out = []
-        self._write(0, consts.GN_HEADER)
+        self._write(0, consts.GN_HEADER.format(year=copyright_year))
 
         for bin in self.bins:
             self._write(0, "cargo_crate(\"{}\") {{".format(bin["name"]))
@@ -317,9 +321,9 @@ class BuildRule:
                     indent,
                     "cargo_crate(\"{}\") {{".format(usage.gn_target_name()))
                 self._write(indent + 2,
-                  "crate_name = \"{}\"".format(
-                      common.crate_name_normalized(
-                          self.crate_name)))  # yapf: disable
+                            "crate_name = \"{}\"".format(
+                                common.crate_name_normalized(
+                                    self.crate_name)))  # yapf: disable
                 self._write(indent + 2, "epoch = \"{}\"".format(self.epoch))
                 self._write(indent + 2,
                             "crate_type = \"{}\"".format(self.lib_type))
@@ -327,9 +331,9 @@ class BuildRule:
                     for c in consts.GN_VISIBILITY_COMMENT.split("\n"):
                         self._write(indent + 2, c)
                     self._write(indent + 2,
-                      "visibility = [ \"{}\" ]".format(
-                          common.gn_third_party_path(
-                              rel_path=["*"])))  # yapf: disable
+                                "visibility = [ \"{}\" ]".format(
+                                    common.gn_third_party_path(
+                                        rel_path=["*"])))  # yapf: disable
                 if usage == cargo.CrateUsage.FOR_TESTS:
                     self._write(indent + 2, "testonly = \"true\"")
                 self._write(indent + 2,

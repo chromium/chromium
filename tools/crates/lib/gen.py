@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from typing import Iterator
 from contextlib import contextmanager
+from datetime import datetime
 from pprint import pprint
 import argparse
 import tempfile
@@ -264,17 +265,34 @@ def run(args: argparse.Namespace):
             build_rule.buildrs_usage.used_on_archs or \
             build_rule.test_usage.used_on_archs
 
+        copyright_year = _get_copyright_year(
+            common.os_crate_version_dir(crate_key.name,
+                                        crate_key.epoch,
+                                        rel_path=["BUILD.gn"]))
         with open(
                 common.os_crate_version_dir(crate_key.name,
                                             crate_key.epoch,
                                             rel_path=["BUILD.gn"]),
                 "w") as build_file:
-            build_file.write(_run_gn_format(build_rule.generate_gn(args)))
+            build_file.write(
+                _run_gn_format(build_rule.generate_gn(args, copyright_year)))
         num_done += 1
     common.print_same_line("Generating BUILD.gn for crates {}/{} ".format(
         num_done, num_total),
                            last_printed,
                            done=True)
+
+
+def _get_copyright_year(path: str) -> str:
+    try:
+        with open(path, "r") as file:
+            top_line = file.readline()
+            m = consts.GN_HEADER_YEAR_REGEX.search(top_line)
+            if m:
+                return m.group("year")
+    except FileNotFoundError:
+        pass
+    return str(datetime.now().year)
 
 
 def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
@@ -671,6 +689,7 @@ def _get_archs_of_interest(cargo_toml: dict, crate_usage_data: PerCrateData,
             targetted_deps += list(target_data["dependencies"].items())
         # Convert the list of (crate name, dependency data) into a more useful
         # list of `cargo.CrateKey`s.
+
         def version_from_maybe_dict(maybe_dict: dict | str) -> str:
             if type(maybe_dict) is dict:
                 return maybe_dict["version"]
@@ -777,7 +796,6 @@ def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
                 extensions.get("build-script-outputs", build_script_outputs))
             for_first_party_code = extensions.get("allow-first-party-usage",
                                                   for_first_party_code)
-
     return CargoTreeDependency(dep_key,
                                full_version=dep_version,
                                crate_path=dep_path,

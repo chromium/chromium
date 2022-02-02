@@ -5,7 +5,6 @@
 
 import os
 import re
-from datetime import datetime
 
 CRATES_IO_VIEW = "https://crates.io/crates/{crate}"
 CRATES_IO_DOWNLOAD = "https://static.crates.io/crates/{crate}/{crate}-{version}.crate"
@@ -68,7 +67,7 @@ name = "fake"
 version = "0.0.0"
 """
 
-# Header at the top of BUILD.gn files. The %YEAR% is substituted with the
+# Header at the top of BUILD.gn files. The {year} is substituted with the
 # appropriate year.
 GN_HEADER = \
 """# Copyright {year} The Chromium Authors. All rights reserved.
@@ -77,7 +76,10 @@ GN_HEADER = \
 
 import("//build/rust/cargo_crate.gni")
 
-""".format(year=str(datetime.now().year))
+"""
+_GN_HEADER_YEAR = r"^# Copyright( \(c\))? (?P<year>[0-9]+) " \
+    r"The Chromium Authors\. All rights reserved\."
+GN_HEADER_YEAR_REGEX = re.compile(_GN_HEADER_YEAR)
 
 # Comment on the skip_unit_tests field in BUILD.gn file output.
 GN_TESTS_COMMENT = \

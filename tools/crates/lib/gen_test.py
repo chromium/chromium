@@ -3,6 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from datetime import datetime
+import io
+import re
+import tempfile
 import toml
 import unittest
 
@@ -57,7 +61,16 @@ class GenTestCase(unittest.TestCase):
     def all_archs(self):
         return set(compiler._RUSTC_ARCH_TO_BUILD_CONDITION.keys())
 
+    def make_args(self):
+        class Args:
+            pass
+
+        args = Args
+        args.verbose = False
+        return args
+
     def test_parse_cargo_tree_dependency_line(self):
+        args = self.make_args()
         lines = CARGO_TREE.split("\n")
 
         # Here we are simulating `cargo tree` on a third-party Cargo.toml file,
@@ -65,47 +78,55 @@ class GenTestCase(unittest.TestCase):
         # is_third_party_toml, and we can give an empty parsed toml file as it
         # won't be used then.
 
-        #cxx v1.0.56 (/path/to/chromium/src/third_party/rust/cxx/v1/crate)
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[0])
+        # cxx v1.0.56 (/path/to/chromium/src/third_party/rust/cxx/v1/crate)
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[0])
         self.assertEqual(r, None)  # not a dependency
 
-        #├── cxxbridge-macro v1.0.56 (proc-macro)
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[1])
+        # ├── cxxbridge-macro v1.0.56 (proc-macro)
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[1])
         expected = gen.CargoTreeDependency(cargo.CrateKey(
             "cxxbridge-macro", "1.0.56"),
+                                           full_version="1.0.56",
                                            is_proc_macro=True)
         self.assertEqual(r, expected)
 
-        #│   ├── proc-macro2 v1.0.32 default,proc-macro,span-locations
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[2])
+        # │   ├── proc-macro2 v1.0.32 default,proc-macro,span-locations
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[2])
         expected = gen.CargoTreeDependency(
             cargo.CrateKey("proc-macro2", "1.0.32"),
+            full_version="1.0.32",
             features=["default", "proc-macro", "span-locations"])
         self.assertEqual(r, expected)
 
-        #│   │   └── unicode-xid v0.2.2 default
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[3])
+        # │   │   └── unicode-xid v0.2.2 default
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[3])
         expected = gen.CargoTreeDependency(cargo.CrateKey(
             "unicode-xid", "0.2.2"),
+                                           full_version="0.2.2",
                                            features=["default"])
         self.assertEqual(r, expected)
 
-        #│   ├── quote v1.0.10 (/path/to/chromium/src/third_party/rust/quote/v1/crate) default,proc-macro
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[4])
-        expected = gen.CargoTreeDependency(cargo.CrateKey("quote", "1.0.10"),
-                                           features=["default", "proc-macro"])
+        # │   ├── quote v1.0.10 (/path/to/chromium/src/third_party/rust/quote/v1/crate) default,proc-macro
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[4])
+        expected = gen.CargoTreeDependency(
+            cargo.CrateKey("quote", "1.0.10"),
+            full_version="1.0.10",
+            crate_path="/path/to/chromium/src/third_party/rust/quote/v1/crate",
+            features=["default", "proc-macro"])
         self.assertEqual(r, expected)
 
-        #│   │   └── proc-macro2 v1.0.32 default,proc-macro,span-locations (*)
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[5])
+        # │   │   └── proc-macro2 v1.0.32 default,proc-macro,span-locations (*)
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[5])
         expected = gen.CargoTreeDependency(
             cargo.CrateKey("proc-macro2", "1.0.32"),
+            full_version="1.0.32",
             features=["default", "proc-macro", "span-locations"])
         self.assertEqual(r, expected)
 
-        #│   └── syn v1.0.81 clone-impls,default,derive,full,parsing,printing,proc-macro,quote
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[6])
+        # │   └── syn v1.0.81 clone-impls,default,derive,full,parsing,printing,proc-macro,quote
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[6])
         expected = gen.CargoTreeDependency(cargo.CrateKey("syn", "1.0.81"),
+                                           full_version="1.0.81",
                                            features=[
                                                "clone-impls", "default",
                                                "derive", "full", "parsing",
@@ -113,32 +134,38 @@ class GenTestCase(unittest.TestCase):
                                            ])
         self.assertEqual(r, expected)
 
-        #│       ├── proc-macro2 v1.0.32 default,proc-macro,span-locations (*)
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[7])
+        # │       ├── proc-macro2 v1.0.32 default,proc-macro,span-locations (*)
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[7])
         expected = gen.CargoTreeDependency(
             cargo.CrateKey("proc-macro2", "1.0.32"),
+            full_version="1.0.32",
             features=["default", "proc-macro", "span-locations"])
         self.assertEqual(r, expected)
 
-        #│       ├── quote v1.0.10 default,proc-macro (*)
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[8])
+        # │       ├── quote v1.0.10 default,proc-macro (*)
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[8])
         expected = gen.CargoTreeDependency(cargo.CrateKey("quote", "1.0.10"),
+                                           full_version="1.0.10",
                                            features=["default", "proc-macro"])
         self.assertEqual(r, expected)
 
-        #│       └── unicode-xid v0.2.2
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[9])
-        expected = gen.CargoTreeDependency(
-            cargo.CrateKey("unicode-xid", "0.2.2"))
+        # │       └── unicode-xid v0.2.2
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False, lines[9])
+        expected = gen.CargoTreeDependency(cargo.CrateKey(
+            "unicode-xid", "0.2.2"),
+                                           full_version="0.2.2")
         self.assertEqual(r, expected)
 
-        #└── link-cplusplus v1.0.5 default
-        r = gen._parse_cargo_tree_dependency_line(dict(), False, lines[10])
+        # └── link-cplusplus v1.0.5 default
+        r = gen._parse_cargo_tree_dependency_line(args, dict(), False,
+                                                  lines[10])
         d = gen.CargoTreeDependency(cargo.CrateKey("link-cplusplus", "1.0.5"),
+                                    full_version="1.0.5",
                                     features=["default"])
         self.assertEqual(r, d)
 
     def test_third_party_toml(self):
+        args = self.make_args()
         THIRD_PARTY_TOML = """
 # This dependency has no extensions
 [dependencies]
@@ -160,9 +187,11 @@ allow-first-party-usage = false
         toml_content = toml.loads(THIRD_PARTY_TOML)
 
         line = "├── cxxbridge-macro v1.0.56 (proc-macro)"
-        r = gen._parse_cargo_tree_dependency_line(toml_content, True, line)
+        r = gen._parse_cargo_tree_dependency_line(args, toml_content, True,
+                                                  line)
         d = gen.CargoTreeDependency(
             cargo.CrateKey("cxxbridge-macro", "1.0.56"),
+            full_version="1.0.56",
             is_proc_macro=True,
             # Deps from third_party.toml are visible to first-party code by
             # default.
@@ -170,9 +199,11 @@ allow-first-party-usage = false
         self.assertEqual(r, d)
 
         line = "├── link-cplusplus v1.0.5 default"
-        r = gen._parse_cargo_tree_dependency_line(toml_content, True, line)
+        r = gen._parse_cargo_tree_dependency_line(args, toml_content, True,
+                                                  line)
         d = gen.CargoTreeDependency(
             cargo.CrateKey("link-cplusplus", "1.0.5"),
+            full_version="1.0.5",
             features=["default"],
             is_for_first_party_code=True,
             # link-cplusplus has build script outputs listed in our
@@ -181,9 +212,11 @@ allow-first-party-usage = false
         self.assertEqual(r, d)
 
         line = "└── syn v1.0.81 clone-impls,default"
-        r = gen._parse_cargo_tree_dependency_line(toml_content, True, line)
+        r = gen._parse_cargo_tree_dependency_line(args, toml_content, True,
+                                                  line)
         d = gen.CargoTreeDependency(
             cargo.CrateKey("syn", "1.0.81"),
+            full_version="1.0.81",
             features=["clone-impls", "default"],
             # Deps from third_party.toml are visible to first-party code unless
             # they opt out explicitly, which our syn dependency has done.
@@ -657,3 +690,19 @@ all-platform-crate = "1"
                 self.assertSetEqual(crate.deps[o].all_deps(),
                                     set(),
                                     msg="For output type {}".format(o))
+
+    def test_copyright_year(self):
+        modern = b"# Copyright 2001 The Chromium Authors. All rights reserved."
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(modern)
+            f.flush()
+            self.assertEqual(gen._get_copyright_year(f.name), "2001")
+
+        ancient = b"# Copyright (c) 2001 The Chromium Authors. All rights reserved."
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(ancient)
+            f.flush()
+            self.assertEqual(gen._get_copyright_year(f.name), "2001")
+
+        self.assertEqual(gen._get_copyright_year("/file/does/not/exist"),
+                         str(datetime.now().year))
