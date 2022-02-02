@@ -338,11 +338,23 @@ chrome.accessibilityPrivate.DictationBubbleIconType = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.DictationBubbleHintType = {
+  TRY_SAYING: 'trySaying',
+  TYPE: 'type',
+  DELETE: 'delete',
+  SELECT_ALL: 'selectAll',
+  UNDO: 'undo',
+  HELP: 'help',
+};
+
+/**
  * @typedef {{
  *   visible: boolean,
  *   icon: !chrome.accessibilityPrivate.DictationBubbleIconType,
  *   text: (string|undefined),
- *   hints: (!Array<string>|undefined)
+ *   hints: (!Array<!chrome.accessibilityPrivate.DictationBubbleHintType>|undefined)
  * }}
  */
 chrome.accessibilityPrivate.DictationBubbleProperties;

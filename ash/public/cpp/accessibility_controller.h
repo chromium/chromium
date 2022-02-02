@@ -23,6 +23,7 @@ namespace ash {
 class AccessibilityControllerClient;
 enum class AccessibilityPanelState;
 enum class DictationToggleSource;
+enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 class SelectToSpeakEventHandlerDelegate;
 enum class SelectToSpeakState;
@@ -191,7 +192,7 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
       bool visible,
       DictationBubbleIconType icon,
       const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<std::string>>& hints) = 0;
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints) = 0;
 
  protected:
   AccessibilityController();

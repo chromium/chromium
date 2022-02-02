@@ -33,7 +33,7 @@ void DictationBubbleController::UpdateBubble(
     bool visible,
     DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<std::string>>& hints) {
+    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
   if (visible) {
     MaybeInitialize();
     Update(icon, text, hints);
@@ -87,7 +87,7 @@ void DictationBubbleController::MaybeInitialize() {
 void DictationBubbleController::Update(
     DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<std::string>>& hints) {
+    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
   DCHECK(dictation_bubble_view_);
   DCHECK(widget_);
 

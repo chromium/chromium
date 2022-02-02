@@ -275,7 +275,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
   ASSERT_TRUE(show_listener.WaitUntilSatisfied());
   EXPECT_TRUE(dictation_bubble_test_helper()->IsVisible());
   EXPECT_TRUE(dictation_bubble_test_helper()->HasVisibleHints(
-      std::vector<std::u16string>{u"One", u"Two", u"Three"}));
+      std::vector<std::u16string>{u"Try saying:", u"\"Type [word / phrase]\"",
+                                  u"\"Help\""}));
   show_listener.Reply("Continue");
 
   ASSERT_TRUE(no_hints_listener.WaitUntilSatisfied());

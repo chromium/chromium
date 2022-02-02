@@ -138,10 +138,11 @@ var availableTests = [
   function testUpdateDictationBubbleWithHints() {
     const update = chrome.accessibilityPrivate.updateDictationBubble;
     const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+    const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
     update({
       visible: true,
       icon: IconType.STANDBY,
-      hints: ['One', 'Two', 'Three']
+      hints: [HintType.TRY_SAYING, HintType.TYPE, HintType.HELP]
     });
     chrome.test.sendMessage('Some hints', (proceed) => {
       update({visible: true, icon: IconType.STANDBY});

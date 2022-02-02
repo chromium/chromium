@@ -17,6 +17,7 @@ const StopEvent = chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
 const SpeechRecognitionType =
     chrome.speechRecognitionPrivate.SpeechRecognitionType;
 const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
 
 /**
  * Main class for the Chrome OS dictation feature.
@@ -336,9 +337,7 @@ export class Dictation {
     this.metricsUtils_ = new MetricsUtils(type, this.localePref_);
     this.metricsUtils_.recordSpeechRecognitionStarted();
 
-    // TODO(crbug.com/1252037): Replace this with message IDs once hint strings
-    // have been finalized and added to the codebase.
-    this.setHintsTimeout_(['Sample hint']);
+    this.setHintsTimeout_([HintType.TRY_SAYING, HintType.TYPE, HintType.HELP]);
   }
 
   /**

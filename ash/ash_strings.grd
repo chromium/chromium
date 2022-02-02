@@ -1198,6 +1198,25 @@ This file contains the strings for ash.
       </message>
       <!-- End of experimental Switch Access feature block -->
 
+      <!-- Dictation UI hint strings -->
+      <message name="IDS_ASH_DICTATION_HINT_TRY_SAYING" desc="A label shown in the Dictation bubble UI telling users what they can say.">
+        Try saying:
+      </message>
+      <message name="IDS_ASH_DICTATION_HINT_TYPE" desc="A hint label in the Dictation bubble UI for typing a word or phrase.">
+        "Type [word / phrase]"
+      </message>
+      <message name="IDS_ASH_DICTATION_HINT_DELETE" desc="A hint label in the Dictation bubble UI for performing the delete command.">
+        "Delete"
+      </message>
+      <message name="IDS_ASH_DICTATION_HINT_SELECT_ALL" desc="A hint label in the Dictation bubble UI for performing the select all command.">
+        "Select all"
+      </message>
+      <message name="IDS_ASH_DICTATION_HINT_UNDO" desc="A hint label in the Dictation bubble UI for performing the undo command.">
+        "Undo"
+      </message>
+      <message name="IDS_ASH_DICTATION_HINT_HELP" desc="A hint label in the Dictation bubble UI for performing the help command.">
+        "Help"
+      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD" desc="The label used in the accessibility menu of the system tray to toggle on/off the onscreen keyboard.">
         On-screen keyboard

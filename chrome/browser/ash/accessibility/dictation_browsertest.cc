@@ -1293,7 +1293,8 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
   // Hints should show up after a few seconds without speech.
   WaitForVisibility(true);
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
-  WaitForVisibleHints(std::vector<std::u16string>{u"Sample hint"});
+  WaitForVisibleHints(std::vector<std::u16string>{
+      u"Try saying:", u"\"Type [word / phrase]\"", u"\"Help\""});
 }
 
 // TODO(1266696): DictationCommandsExtensionTest.Help is failing on

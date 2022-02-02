@@ -253,7 +253,13 @@
         "id": "DictationBubbleIconType",
         "type": "string",
         "enum": [ "hidden", "standby", "macroSuccess", "macroFail" ],
-        "description": "The icon shown in the Dictation bubble UI"
+        "description": "The icon shown in the Dictation bubble UI."
+      },
+      {
+        "id": "DictationBubbleHintType",
+        "type": "string",
+        "enum": ["trySaying", "type", "delete", "selectAll", "undo", "help"],
+        "description": "Types of hints displayed in the Dictation bubble UI."
       },
       {
         "id": "DictationBubbleProperties",
@@ -274,7 +280,7 @@
           },
           "hints": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": { "$ref": "DictationBubbleHintType" },
             "description": "Array of hints to show in the UI.",
             "optional": true
           }

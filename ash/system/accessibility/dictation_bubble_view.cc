@@ -10,12 +10,13 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "base/strings/utf_string_conversions.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,6 +32,7 @@ namespace ash {
 namespace {
 constexpr int kIconSizeDip = 15;
 constexpr int kSpaceBetweenIconAndTextDip = 10;
+constexpr int kMaxNumHints = 5;
 
 std::unique_ptr<views::ImageView> CreateImageView(
     views::ImageView** destination_view,
@@ -60,6 +62,23 @@ std::unique_ptr<views::Label> CreateLabelView(views::Label** destination_view,
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(false)
       .Build();
+}
+
+int ToMessageId(DictationBubbleHintType hint_type) {
+  switch (hint_type) {
+    case DictationBubbleHintType::kTrySaying:
+      return IDS_ASH_DICTATION_HINT_TRY_SAYING;
+    case DictationBubbleHintType::kType:
+      return IDS_ASH_DICTATION_HINT_TYPE;
+    case DictationBubbleHintType::kDelete:
+      return IDS_ASH_DICTATION_HINT_DELETE;
+    case DictationBubbleHintType::kSelectAll:
+      return IDS_ASH_DICTATION_HINT_SELECT_ALL;
+    case DictationBubbleHintType::kUndo:
+      return IDS_ASH_DICTATION_HINT_UNDO;
+    case DictationBubbleHintType::kHelp:
+      return IDS_ASH_DICTATION_HINT_HELP;
+  }
 }
 
 // View for the Dictation bubble top row. Responsible for displaying icons,
@@ -201,16 +220,20 @@ class ASH_EXPORT HintView : public views::View {
   ~HintView() override = default;
 
   // Updates the text content and visibility of all labels in this view.
-  void Update(const absl::optional<std::vector<std::string>>& hints) {
+  void Update(
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
     if (hints.has_value())
-      DCHECK(hints.value().size() <= 5);
+      DCHECK(hints.value().size() <= kMaxNumHints);
 
     for (size_t i = 0; i < labels_.size(); ++i) {
       bool has_hint_for_index = hints.has_value() && (i < hints.value().size());
-      labels_[i]->SetVisible(has_hint_for_index ? true : false);
-      labels_[i]->SetText(has_hint_for_index
-                              ? base::UTF8ToUTF16(hints.value()[i])
-                              : std::u16string());
+      labels_[i]->SetVisible(has_hint_for_index);
+      if (has_hint_for_index) {
+        labels_[i]->SetText(
+            l10n_util::GetStringUTF16(ToMessageId(hints.value()[i])));
+      } else {
+        labels_[i]->SetText(std::u16string());
+      }
     }
     SizeToPreferredSize();
   }
@@ -259,7 +282,7 @@ DictationBubbleView::~DictationBubbleView() = default;
 void DictationBubbleView::Update(
     DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<std::string>>& hints) {
+    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
   top_row_view_->Update(icon, text);
   hint_view_->Update(hints);
   SizeToContents();

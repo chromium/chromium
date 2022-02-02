@@ -207,6 +207,17 @@ enum class DictationBubbleIconType {
   kMacroFail,
 };
 
+// Hints that can show up in the Dictation bubble UI. This enum should be kept
+// in sync with chrome.accessibilityPrivate.DictationBubbleHintType.
+enum class DictationBubbleHintType {
+  kTrySaying,
+  kType,
+  kDelete,
+  kSelectAll,
+  kUndo,
+  kHelp,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

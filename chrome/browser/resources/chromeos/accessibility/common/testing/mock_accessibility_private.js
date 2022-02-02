@@ -32,6 +32,15 @@ var MockAccessibilityPrivate = {
     MACRO_FAIL: 'macroFail',
   },
 
+  DictationBubbleHintType: {
+    TRY_SAYING: 'trySaying',
+    TYPE: 'type',
+    DELETE: 'delete',
+    SELECT_ALL: 'selectAll',
+    UNDO: 'undo',
+    HELP: 'help',
+  },
+
   SyntheticKeyboardEventType: {KEYDOWN: 'keydown', KEYUP: 'keyup,'},
 
   /** @private {function<number, number>} */

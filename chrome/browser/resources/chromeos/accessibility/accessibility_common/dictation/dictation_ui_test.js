@@ -10,6 +10,7 @@ DictationUIE2ETest = class extends DictationE2ETestBase {
     super();
 
     this.iconType = this.mockAccessibilityPrivate.DictationBubbleIconType;
+    this.hintType = this.mockAccessibilityPrivate.DictationBubbleHintType;
   }
 
   /**
@@ -174,6 +175,6 @@ SYNC_TEST_F('DictationUIE2ETest', 'Hints', async function() {
     visible: true,
     icon: this.iconType.STANDBY,
     text: undefined,
-    hints: ['Sample hint']
+    hints: [this.hintType.TRY_SAYING, this.hintType.TYPE, this.hintType.HELP]
   });
 });

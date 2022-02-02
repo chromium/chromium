@@ -2406,7 +2406,7 @@ void AccessibilityControllerImpl::UpdateDictationBubble(
     bool visible,
     DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<std::string>>& hints) {
+    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
   DCHECK(dictation().enabled());
   DCHECK(dictation_bubble_controller_);
 

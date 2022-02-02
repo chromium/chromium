@@ -62,6 +62,35 @@ namespace {
 namespace accessibility_private = ::extensions::api::accessibility_private;
 using ::ash::AccessibilityManager;
 
+ash::DictationBubbleHintType ConvertDictationHintType(
+    accessibility_private::DictationBubbleHintType hint_type) {
+  switch (hint_type) {
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_TRYSAYING:
+      return ash::DictationBubbleHintType::kTrySaying;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_TYPE:
+      return ash::DictationBubbleHintType::kType;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_DELETE:
+      return ash::DictationBubbleHintType::kDelete;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_SELECTALL:
+      return ash::DictationBubbleHintType::kSelectAll;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_UNDO:
+      return ash::DictationBubbleHintType::kUndo;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_HELP:
+      return ash::DictationBubbleHintType::kHelp;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_NONE:
+      NOTREACHED();
+      return ash::DictationBubbleHintType::kTrySaying;
+      ;
+  }
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -806,16 +835,21 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
       break;
   }
 
-  // Extract text and hints.
+  // Extract text.
   absl::optional<std::u16string> text;
-  absl::optional<std::vector<std::string>> hints;
   if (properties.text)
     text = base::UTF8ToUTF16(*properties.text);
-  // TODO(crbug.com/1252037): Convert string message IDs into ints. Then plumb
-  // vector<int> through and retrieve localized strings when populating
-  // the DictationBubbleView.
-  if (properties.hints)
-    hints = *properties.hints;
+
+  // Extract hints.
+  absl::optional<std::vector<ash::DictationBubbleHintType>> hints;
+  if (properties.hints) {
+    std::vector<ash::DictationBubbleHintType> converted_hints;
+    for (size_t i = 0; i < (*properties.hints).size(); ++i) {
+      converted_hints.push_back(
+          ConvertDictationHintType((*properties.hints)[i]));
+    }
+    hints = converted_hints;
+  }
 
   if (hints.has_value() && hints.value().size() > 5)
     return RespondNow(Error("Should not provide more than five hints."));

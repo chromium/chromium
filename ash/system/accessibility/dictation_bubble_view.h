@@ -26,6 +26,7 @@ class HintView;
 class TopRowView;
 }  // namespace
 
+enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 
 // View for the Dictation bubble.
@@ -39,9 +40,10 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
 
   // Updates the visibility of all child views, displays the icon/animation
   // specified by `icon`, and updates text content and size of this view.
-  void Update(DictationBubbleIconType icon,
-              const absl::optional<std::u16string>& text,
-              const absl::optional<std::vector<std::string>>& hints);
+  void Update(
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints);
 
   void OnColorModeChanged(bool dark_mode_enabled);
 
