@@ -583,7 +583,7 @@
 <translation id="1606077700029460857">Cambiar configuración del ratón</translation>
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está asociado a un dominio</translation>
-<translation id="1608626060424371292">Eliminar este usuario</translation>
+<translation id="1608626060424371292">Quitar este usuario</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
@@ -2394,7 +2394,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="346431825526753">Esta es una cuenta infantil administrada por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
-<translation id="3470442499439619530">Eliminar este usuario</translation>
+<translation id="3470442499439619530">Quitar este usuario</translation>
 <translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB tipo C para vídeo al mismo tiempo. Usa otro puerto de vídeo.</translation>
 <translation id="3473241910002674503">Desplázate al menú de aplicaciones, vuelve atrás y cambia de aplicación con botones en el modo tablet.</translation>
 <translation id="3473479545200714844">Lupa</translation>
