@@ -225,12 +225,13 @@ export function fakeShimlessRmaServiceTestSuite() {
   test('ChooseManuallyDisableWriteProtectOk', () => {
     let states = [
       {state: State.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
-      {state: State.kUpdateOs, error: RmadErrorCode.kOk},
+      {state: State.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
+      {state: State.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
     return service.chooseManuallyDisableWriteProtect().then((state) => {
-      assertEquals(state.state, State.kUpdateOs);
+      assertEquals(state.state, State.kWaitForManualWPDisable);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
