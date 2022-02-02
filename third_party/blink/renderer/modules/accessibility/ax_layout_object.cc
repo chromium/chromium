@@ -867,6 +867,10 @@ AXObject* AXLayoutObject::NextOnLine() const {
 
   DCHECK(GetLayoutObject());
 
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetLayoutObject())) {
+    return nullptr;
+  }
+
   if (GetLayoutObject()->IsBoxListMarkerIncludingNG()) {
     // A list marker should be followed by a list item on the same line.
     // Note that pseudo content is always included in the tree, so
@@ -1018,6 +1022,10 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
   }
 
   DCHECK(GetLayoutObject());
+
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetLayoutObject())) {
+    return nullptr;
+  }
 
   AXObject* previous_sibling = AccessibilityIsIncludedInTree()
                                    ? PreviousSiblingIncludingIgnored()
