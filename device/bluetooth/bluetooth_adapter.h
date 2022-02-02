@@ -61,6 +61,14 @@ enum class UMABluetoothDiscoverySessionOutcome;
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     : public base::RefCounted<BluetoothAdapter> {
  public:
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  enum class LowEnergyScanSessionHardwareOffloadingStatus {
+    kUndetermined = 0,
+    kNotSupported,
+    kSupported
+  };
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Interface for observing changes from bluetooth adapters.
   class DEVICE_BLUETOOTH_EXPORT Observer {
    public:
@@ -318,6 +326,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
         BluetoothAdapter* adapter,
         BluetoothRemoteGattDescriptor* descriptor,
         const std::vector<uint8_t>& value) {}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Called when the low energy scanning hardware offloading support state
+    // changes.
+    virtual void LowEnergyScanSessionHardwareOffloadingStatusChanged(
+        LowEnergyScanSessionHardwareOffloadingStatus status) {}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   };
 
   // Used to configure a listening service.
@@ -375,12 +390,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   };
 
   enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
-
-  enum class LowEnergyScanSessionHardwareOffloadingStatus {
-    kUndetermined = 0,
-    kNotSupported,
-    kSupported
-  };
 
   // Creates a new adapter. Initialize() must be called before the adapter can
   // be used.
@@ -681,6 +690,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       const std::vector<uint8_t>& value);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void NotifyLowEnergyScanSessionHardwareOffloadingStatusChanged(
+      LowEnergyScanSessionHardwareOffloadingStatus status);
+
   // Set a service allowlist by specifying services UUIDs. When this is called,
   // existing connections will be disconnected and services not in the allowlist
   // will be blocked. Device property |IsBlockedByPolicy| will be True if some

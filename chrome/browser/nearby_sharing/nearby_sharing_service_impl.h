@@ -183,6 +183,9 @@ class NearbySharingServiceImpl
                              bool present) override;
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
+  void LowEnergyScanSessionHardwareOffloadingStatusChanged(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          status) override;
 
   // PowerClient::Observer:
   void SuspendImminent() override;

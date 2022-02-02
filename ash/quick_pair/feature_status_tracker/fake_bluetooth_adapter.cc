@@ -37,6 +37,8 @@ void FakeBluetoothAdapter::SetHardwareOffloadingStatus(
     device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
         hardware_offloading_status) {
   hardware_offloading_status_ = hardware_offloading_status;
+  NotifyLowEnergyScanSessionHardwareOffloadingStatusChanged(
+      hardware_offloading_status);
 }
 
 }  // namespace quick_pair

@@ -41,6 +41,13 @@ void BluetoothEnabledProvider::OnAdapterReceived(
   Update();
 }
 
+void BluetoothEnabledProvider::
+    LowEnergyScanSessionHardwareOffloadingStatusChanged(
+        device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+            status) {
+  Update();
+}
+
 void BluetoothEnabledProvider::Update() {
   if (!HasHardwareSupport()) {
     SetEnabledAndInvokeCallback(/*is_enabled=*/false);

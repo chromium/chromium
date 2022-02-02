@@ -5101,9 +5101,12 @@ TEST_F(BluetoothBlueZTest,
                 kNotSupported);
 }
 
-TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupported) {
+TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupport) {
   GetAdapter();
   ASSERT_TRUE(adapter_->IsPresent());
+
+  // Install an observer;
+  TestBluetoothAdapterObserver observer(adapter_);
 
   BluetoothAdapterBlueZ* adapter_bluez =
       static_cast<BluetoothAdapterBlueZ*>(adapter_.get());
@@ -5115,6 +5118,9 @@ TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupported) {
   // If no properties are returned we should get |kUndetermined| status.
   client->RemoveProperties();
   EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kUndetermined);
+  EXPECT_EQ(observer.last_low_energy_scan_session_hardware_offloading_status(),
             BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
                 kUndetermined);
 
@@ -5130,17 +5136,21 @@ TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupported) {
   EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
             BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
                 kSupported);
-
-  // Ensure that if no properties are returned we still get the cached value.
-  client->RemoveProperties();
-  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+  EXPECT_EQ(observer.last_low_energy_scan_session_hardware_offloading_status(),
             BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
                 kSupported);
 
-  // If the adapter becomes not present we should clear the cached value.
-  fake_bluetooth_adapter_client_->SetPresent(false);
-  GetAdapter();
-  ASSERT_FALSE(adapter_->IsPresent());
+  properties->supported_features.ReplaceValue({});
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kNotSupported);
+  EXPECT_EQ(observer.last_low_energy_scan_session_hardware_offloading_status(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kNotSupported);
+
+  // Ensure that if no properties are returned we get the |kUndetermined|
+  // status.
+  client->RemoveProperties();
   EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
             BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
                 kUndetermined);

@@ -39,6 +39,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#include "device/bluetooth/dbus/bluetooth_advertisement_monitor_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,6 +93,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       public bluez::BluetoothDeviceClient::Observer,
       public bluez::BluetoothInputClient::Observer,
       public bluez::BluetoothAgentManagerClient::Observer,
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      public bluez::BluetoothAdvertisementMonitorManagerClient::Observer,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       public bluez::BluetoothAgentServiceProvider::Delegate {
  public:
   using ErrorCompletionCallback =
@@ -356,6 +360,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void AgentManagerAdded(const dbus::ObjectPath& object_path) override;
   void AgentManagerRemoved(const dbus::ObjectPath& object_path) override;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // bluez::BluetoothAdvertisementMonitorManagerClient::Observer override.
+  void SupportedAdvertisementMonitorFeaturesChanged() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // bluez::BluetoothAgentServiceProvider::Delegate override.
   void Released() override;
   void RequestPinCode(const dbus::ObjectPath& device_path,
@@ -612,10 +621,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // is registered.
   base::queue<std::unique_ptr<BluetoothAdvertisementMonitorServiceProvider>>
       pending_advertisement_monitors_;
-
-  LowEnergyScanSessionHardwareOffloadingStatus
-      low_energy_scan_session_hardware_offloading_status_ =
-          LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Note: This should remain the last member so it'll be destroyed and

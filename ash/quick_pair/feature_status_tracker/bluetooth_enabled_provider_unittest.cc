@@ -82,5 +82,20 @@ TEST_F(BluetoothEnabledProviderTest, NoHardwareSupport) {
   EXPECT_FALSE(provider_->is_enabled());
 }
 
+TEST_F(BluetoothEnabledProviderTest, HardwareSupportBecomesAvailable) {
+  adapter().SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kNotSupported);
+  EXPECT_FALSE(provider_->is_enabled());
+
+  adapter().SetBluetoothIsPowered(true);
+  EXPECT_FALSE(provider_->is_enabled());
+
+  adapter().SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kSupported);
+  EXPECT_TRUE(provider_->is_enabled());
+}
+
 }  // namespace quick_pair
 }  // namespace ash

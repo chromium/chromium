@@ -1326,6 +1326,24 @@ void NearbySharingServiceImpl::AdapterPoweredChanged(
   InvalidateSurfaceState();
 }
 
+void NearbySharingServiceImpl::
+    LowEnergyScanSessionHardwareOffloadingStatusChanged(
+        device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+            status) {
+  if (!IsBackgroundScanningFeatureEnabled()) {
+    return;
+  }
+
+  NS_LOG(VERBOSE)
+      << __func__
+      << ": Bluetooth low energy scan session hardware offloading status : "
+      << (status == device::BluetoothAdapter::
+                        LowEnergyScanSessionHardwareOffloadingStatus::kSupported
+              ? "enabled"
+              : "disabled");
+  InvalidateSurfaceState();
+}
+
 void NearbySharingServiceImpl::SuspendImminent() {
   NS_LOG(VERBOSE) << __func__ << ": Suspend imminent.";
   InvalidateSurfaceState();

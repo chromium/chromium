@@ -298,6 +298,11 @@ void BluetoothAdapterBlueZ::Shutdown() {
   bluez::BluezDBusManager::Get()
       ->GetBluetoothAgentManagerClient()
       ->RemoveObserver(this);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  bluez::BluezDBusManager::Get()
+      ->GetBluetoothAdvertisementMonitorManagerClient()
+      ->RemoveObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   BLUETOOTH_LOG(EVENT) << "Unregistering pairing agent";
   bluez::BluezDBusManager::Get()
@@ -337,6 +342,11 @@ void BluetoothAdapterBlueZ::Init() {
   bluez::BluezDBusManager::Get()->GetBluetoothInputClient()->AddObserver(this);
   bluez::BluezDBusManager::Get()->GetBluetoothAgentManagerClient()->AddObserver(
       this);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  bluez::BluezDBusManager::Get()
+      ->GetBluetoothAdvertisementMonitorManagerClient()
+      ->AddObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Register the pairing agent.
   dbus::Bus* system_bus = bluez::BluezDBusManager::Get()->GetSystemBus();
@@ -965,6 +975,13 @@ void BluetoothAdapterBlueZ::AgentManagerAdded(
 
 void BluetoothAdapterBlueZ::AgentManagerRemoved(
     const dbus::ObjectPath& object_path) {}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void BluetoothAdapterBlueZ::SupportedAdvertisementMonitorFeaturesChanged() {
+  NotifyLowEnergyScanSessionHardwareOffloadingStatusChanged(
+      GetLowEnergyScanSessionHardwareOffloadingStatus());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void BluetoothAdapterBlueZ::Released() {
   BLUETOOTH_LOG(EVENT) << "Released";
@@ -1631,38 +1648,23 @@ BluetoothAdapterBlueZ::GetLowEnergyScanSessionHardwareOffloadingStatus() {
   if (!chromeos::features::IsBluetoothAdvertisementMonitoringEnabled())
     return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 
-  // If the adapter is not present, reset any cached value.
-  if (!IsPresent()) {
-    low_energy_scan_session_hardware_offloading_status_ =
-        LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
-    return low_energy_scan_session_hardware_offloading_status_;
-  }
-
-  // Return the cached value if we've previously looked it up.
-  if (low_energy_scan_session_hardware_offloading_status_ !=
-      LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined)
-    return low_energy_scan_session_hardware_offloading_status_;
+  if (!IsPresent())
+    return LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
 
   BluetoothAdvertisementMonitorManagerClient::Properties* properties =
       bluez::BluezDBusManager::Get()
           ->GetBluetoothAdvertisementMonitorManagerClient()
           ->GetProperties(object_path_);
+
   if (!properties) {
     return LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
   }
 
-  // Cache the response to avoid D-Bus traffic from repeated calls.
-  bool supported = base::Contains(properties->supported_features.value(),
-                                  bluetooth_advertisement_monitor_manager::
-                                      kSupportedFeaturesControllerPatterns);
-  if (supported) {
-    low_energy_scan_session_hardware_offloading_status_ =
-        LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
-  } else {
-    low_energy_scan_session_hardware_offloading_status_ =
-        LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
-  }
-  return low_energy_scan_session_hardware_offloading_status_;
+  return base::Contains(properties->supported_features.value(),
+                        bluetooth_advertisement_monitor_manager::
+                            kSupportedFeaturesControllerPatterns)
+             ? LowEnergyScanSessionHardwareOffloadingStatus::kSupported
+             : LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 

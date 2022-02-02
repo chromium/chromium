@@ -650,6 +650,14 @@ class NearbySharingServiceImplTest : public testing::Test {
                                              powered);
   }
 
+  void SetHardwareSupportState(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          state) {
+    hardware_support_state_ = state;
+    adapter_observer_->LowEnergyScanSessionHardwareOffloadingStatusChanged(
+        state);
+  }
+
   void AddAdapterObserver(device::BluetoothAdapter::Observer* observer) {
     DCHECK(!adapter_observer_);
     adapter_observer_ = observer;
@@ -1320,6 +1328,8 @@ class NearbySharingServiceImplTest : public testing::Test {
       fast_initiation_scanner_factory_;
   bool is_bluetooth_present_ = true;
   bool is_bluetooth_powered_ = true;
+  device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+      hardware_support_state_;
   device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
   scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
       mock_bluetooth_adapter_;
@@ -4758,10 +4768,10 @@ TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_NoHardwareSupport) {
   EXPECT_EQ(0u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 
   fast_initiation_scanner_factory_->SetHardwareSupportAvailable(false);
-
-  // Toggle Bluetooth to trigger InvalidateFastInitiationScanning().
-  SetBluetoothIsPowered(false);
-  SetBluetoothIsPowered(true);
+  // Changes in HardwareSupportState should trigger InvalidateSurfaceState
+  SetHardwareSupportState(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kNotSupported);
 
   // Make sure we stopped scanning and didn't restart.
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());

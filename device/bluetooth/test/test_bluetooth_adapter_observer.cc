@@ -418,6 +418,15 @@ void TestBluetoothAdapterObserver::GattDescriptorValueChanged(
   QuitMessageLoop();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void TestBluetoothAdapterObserver::
+    LowEnergyScanSessionHardwareOffloadingStatusChanged(
+        BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus status) {
+  last_low_energy_scan_session_hardware_offloading_status_ = status;
+  QuitMessageLoop();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void TestBluetoothAdapterObserver::QuitMessageLoop() {
   if (base::RunLoop::IsRunningOnCurrentThread())
     base::RunLoop::QuitCurrentWhenIdleDeprecated();

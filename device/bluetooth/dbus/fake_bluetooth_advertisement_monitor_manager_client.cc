@@ -5,7 +5,9 @@
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -42,6 +44,16 @@ FakeBluetoothAdvertisementMonitorManagerClient::GetProperties(
   return properties_.get();
 }
 
+void FakeBluetoothAdvertisementMonitorManagerClient::AddObserver(
+    Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeBluetoothAdvertisementMonitorManagerClient::RemoveObserver(
+    Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void FakeBluetoothAdvertisementMonitorManagerClient::
     RegisterApplicationServiceProvider(
         FakeBluetoothAdvertisementMonitorApplicationServiceProvider* provider) {
@@ -55,11 +67,27 @@ void FakeBluetoothAdvertisementMonitorManagerClient::InitializeProperties() {
       nullptr,
       bluetooth_advertisement_monitor_manager::
           kBluetoothAdvertisementMonitorManagerInterface,
-      base::DoNothing());
+      base::BindRepeating(
+          &FakeBluetoothAdvertisementMonitorManagerClient::OnPropertyChanged,
+          weak_ptr_factory_.GetWeakPtr(),
+          /*object_path=*/dbus::ObjectPath("")));
 }
 
 void FakeBluetoothAdvertisementMonitorManagerClient::RemoveProperties() {
   properties_.reset();
+}
+
+void FakeBluetoothAdvertisementMonitorManagerClient::OnPropertyChanged(
+    const dbus::ObjectPath& object_path,
+    const std::string& property_name) {
+  DVLOG(2) << "Bluetooth Advertisement Monitor Client property changed: "
+           << object_path.value() << ": " << property_name;
+
+  if (property_name ==
+      bluetooth_advertisement_monitor_manager::kSupportedFeatures) {
+    for (auto& observer : observers_)
+      observer.SupportedAdvertisementMonitorFeaturesChanged();
+  }
 }
 
 }  // namespace bluez

@@ -28,6 +28,9 @@ class BluetoothEnabledProvider : public BaseEnabledProvider,
                              bool powered) override;
   void AdapterPresentChanged(device::BluetoothAdapter* adapter,
                              bool present) override;
+  void LowEnergyScanSessionHardwareOffloadingStatusChanged(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          status) override;
 
   void OnAdapterReceived(scoped_refptr<device::BluetoothAdapter> adapter);
 
