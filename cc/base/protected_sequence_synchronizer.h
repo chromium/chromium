@@ -18,6 +18,9 @@ namespace cc {
 class ProtectedSequenceSynchronizer {
  public:
   ProtectedSequenceSynchronizer() = default;
+  ProtectedSequenceSynchronizer(const ProtectedSequenceSynchronizer&) = delete;
+  ProtectedSequenceSynchronizer& operator=(
+      const ProtectedSequenceSynchronizer&) = delete;
   virtual ~ProtectedSequenceSynchronizer() = default;
 
   // Returns true if the current thread is the owner and producer of these data.
@@ -45,6 +48,10 @@ class ProtectedSequenceForbidden {
   explicit ProtectedSequenceForbidden(Args&&... args)
       : value_(std::forward<Args>(args)...) {}
 
+  ProtectedSequenceForbidden(const ProtectedSequenceForbidden&) = delete;
+  ProtectedSequenceForbidden& operator=(const ProtectedSequenceForbidden&) =
+      delete;
+
   const T& Read(const ProtectedSequenceSynchronizer& synchronizer) const {
     DCHECK(synchronizer.IsOwnerThread());
     return value_;
@@ -70,6 +77,10 @@ class ProtectedSequenceReadable {
   template <typename... Args>
   explicit ProtectedSequenceReadable(Args&&... args)
       : value_(std::forward<Args>(args)...) {}
+
+  ProtectedSequenceReadable(const ProtectedSequenceReadable&) = delete;
+  ProtectedSequenceReadable& operator=(const ProtectedSequenceReadable&) =
+      delete;
 
   const T& Read(const ProtectedSequenceSynchronizer& synchronizer) const {
     DCHECK(synchronizer.IsOwnerThread() || synchronizer.InProtectedSequence());
@@ -100,6 +111,10 @@ class ProtectedSequenceWritable {
   template <typename... Args>
   explicit ProtectedSequenceWritable(Args&&... args)
       : value_(std::forward<Args>(args)...) {}
+
+  ProtectedSequenceWritable(const ProtectedSequenceWritable&) = delete;
+  ProtectedSequenceWritable& operator=(const ProtectedSequenceWritable&) =
+      delete;
 
   const T& Read(const ProtectedSequenceSynchronizer& synchronizer) const {
     DCHECK(synchronizer.IsOwnerThread() || synchronizer.InProtectedSequence());
