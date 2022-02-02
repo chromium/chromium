@@ -11,22 +11,22 @@ Usage:
 
 Outputs filter for all test fixtures in a directory. --class-only avoids an
 overly long filter string.
-$ cat components/mycomp/**test.cc | make-gtest-filter.py --class-only
+$ cat components/mycomp/**test.cc | make_gtest_filter.py --class-only
 
 Outputs filter for all tests in a file.
-$ make-gtest-filter.py ./myfile_unittest.cc
+$ make_gtest_filter.py ./myfile_unittest.cc
 
 Outputs filter for only test at line 123
-$ make-gtest-filter.py --line=123 ./myfile_unittest.cc
+$ make_gtest_filter.py --line=123 ./myfile_unittest.cc
 
 Formats output as a GTest filter file.
-$ make-gtest-filter.py ./myfile_unittest.cc --as-filter-file
+$ make_gtest_filter.py ./myfile_unittest.cc --as-filter-file
 
 Use a JSON failure summary as the input.
-$ make-gtest-filter.py summary.json --from-failure-summary
+$ make_gtest_filter.py summary.json --from-failure-summary
 
 Elide the filter list using wildcards when possible.
-$ make-gtest-filter.py summary.json --from-failure-summary --wildcard-compress
+$ make_gtest_filter.py summary.json --from-failure-summary --wildcard-compress
 """
 
 from __future__ import print_function

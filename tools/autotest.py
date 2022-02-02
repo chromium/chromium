@@ -368,7 +368,7 @@ def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run,
 
 def BuildCppTestFilter(filenames, line):
   make_filter_command = [
-      sys.executable, SRC_DIR / 'tools' / 'make-gtest-filter.py'
+      sys.executable, SRC_DIR / 'tools' / 'make_gtest_filter.py'
   ]
   if line:
     make_filter_command += ['--line', str(line)]
