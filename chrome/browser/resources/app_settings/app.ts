@@ -4,6 +4,7 @@
 
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
 import 'chrome://resources/cr_components/app_management/icons.js';
 
