@@ -31,30 +31,33 @@ enum ForceMajorVersionToMinorPosition {
   kForceEnabled = 2,
 };
 
-// TODO(crbug.com/1291612): Define UserAgentOptions struct here.
+struct UserAgentOptions {
+  bool force_major_version_100 = false;
+  ForceMajorVersionToMinorPosition force_major_to_minor = kDefault;
+};
 
 // Returns the product string, e.g. "Chrome/98.0.4521.0".  If `allow_override`
 // is set to true, it's possible to have a mismatch between the product's
 // version number and the version number in the User-Agent string if there are
 // flag-enabled overrides.
-// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
 std::string GetProduct(
     bool allow_override = false,
     ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the user agent string for Chrome.
-// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
 std::string GetFullUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the reduced user agent string for Chrome.
-// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
 std::string GetReducedUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the full or "reduced" user agent string, depending on the
 // UserAgentReduction enterprise policy and blink::features::kReduceUserAgent
-// TODO(crbug.com/1291612): modify to accept UserAgentOptions instance.
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
 std::string GetUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
@@ -102,6 +105,12 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
 #if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting();
 #endif  // BUILDFLAG(IS_WIN)
+
+// Returns the ForcemajorVersionToMinorPosition enum value corresponding to
+// the provided integer policy value for ForceMajorVersionToMinorPosition.
+// TODO(crbug.com/1290820): Remove this function with policy.
+embedder_support::ForceMajorVersionToMinorPosition GetMajorToMinorFromPrefs(
+    PrefService* pref_service);
 
 }  // namespace embedder_support
 
