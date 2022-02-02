@@ -156,7 +156,10 @@ class CONTENT_EXPORT SignedExchangeHandler {
       const net::X509Certificate* verified_cert);
   bool CheckOCSPStatus(const net::OCSPVerifyResult& ocsp_result);
 
-  void OnVerifyCert(int32_t error_code, const net::CertVerifyResult& cv_result);
+  void OnVerifyCert(int32_t error_code,
+                    const net::CertVerifyResult& cv_result,
+                    bool pkp_bypassed,
+                    const std::string& pinning_failure_log);
   void CheckAbsenceOfCookies(base::OnceClosure callback);
   void OnGetCookies(base::OnceClosure callback,
                     const std::vector<net::CookieWithAccessResult>& results);

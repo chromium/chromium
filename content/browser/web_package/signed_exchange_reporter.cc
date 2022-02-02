@@ -85,6 +85,8 @@ const char* GetResultTypeString(SignedExchangeLoadResult result) {
       // TODO(crbug/910516): Need to update the spec to send the report in this
       // case.
       return kSXGResultHadCookie;
+    case SignedExchangeLoadResult::kPKPViolationError:
+      return kSXGResultCertVerificationError;
   }
   NOTREACHED();
   return kSXGResultFailed;

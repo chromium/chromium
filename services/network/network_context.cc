@@ -1363,6 +1363,78 @@ void NetworkContext::OnSetExpectCTTestReportFailure() {
   outstanding_set_expect_ct_callbacks_.pop();
 }
 
+int NetworkContext::CheckCTComplianceForSignedExchange(
+    net::CertVerifyResult& cert_verify_result,
+    const net::X509Certificate& certificate,
+    const net::HostPortPair& host_port_pair,
+    const net::NetworkIsolationKey& network_isolation_key) {
+  net::X509Certificate* verified_cert = cert_verify_result.verified_cert.get();
+
+  net::ct::SCTList verified_scts;
+  for (const auto& sct_and_status : cert_verify_result.scts) {
+    if (sct_and_status.status == net::ct::SCT_STATUS_OK)
+      verified_scts.push_back(sct_and_status.sct);
+  }
+  cert_verify_result.policy_compliance =
+      url_request_context_->ct_policy_enforcer()->CheckCompliance(
+          verified_cert, verified_scts,
+          net::NetLogWithSource::Make(
+              url_request_context_->net_log(),
+              net::NetLogSourceType::CERT_VERIFIER_JOB));
+
+  // TODO(https://crbug.com/803774): We should determine whether EV & SXG
+  // should be a thing (due to the online/offline signing difference)
+  if (cert_verify_result.cert_status & net::CERT_STATUS_IS_EV &&
+      cert_verify_result.policy_compliance !=
+          net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS &&
+      cert_verify_result.policy_compliance !=
+          net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
+    cert_verify_result.cert_status |= net::CERT_STATUS_CT_COMPLIANCE_FAILED;
+    cert_verify_result.cert_status &= ~net::CERT_STATUS_IS_EV;
+  }
+
+  net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
+      url_request_context_->transport_security_state()->CheckCTRequirements(
+          host_port_pair, cert_verify_result.is_issued_by_known_root,
+          cert_verify_result.public_key_hashes, verified_cert, &certificate,
+          cert_verify_result.scts,
+          net::TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
+          cert_verify_result.policy_compliance, network_isolation_key);
+
+  if (url_request_context_->sct_auditing_delegate() &&
+      url_request_context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {
+    url_request_context_->sct_auditing_delegate()->MaybeEnqueueReport(
+        host_port_pair, verified_cert, cert_verify_result.scts);
+  }
+
+  switch (ct_requirement_status) {
+    case net::TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
+      return net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
+    case net::TransportSecurityState::CT_REQUIREMENTS_MET:
+      return net::OK;
+    case net::TransportSecurityState::CT_NOT_REQUIRED:
+      // CT is not required if the certificate does not chain to a publicly
+      // trusted root certificate.
+      if (!cert_verify_result.is_issued_by_known_root)
+        return net::OK;
+      // For old certificates (issued before 2018-05-01),
+      // CheckCTRequirements() may return CT_NOT_REQUIRED, so we check the
+      // compliance status here.
+      // TODO(https://crbug.com/851778): Remove this condition once we require
+      // signing certificates to have CanSignHttpExchanges extension, because
+      // such certificates should be naturally after 2018-05-01.
+      if (cert_verify_result.policy_compliance ==
+              net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
+          cert_verify_result.policy_compliance ==
+              net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
+        return net::OK;
+      }
+      // Require CT compliance, by overriding CT_NOT_REQUIRED and treat it as
+      // ERR_CERTIFICATE_TRANSPARENCY_REQUIRED.
+      return net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
+  }
+}
+
 void NetworkContext::GetExpectCTState(
     const std::string& domain,
     const net::NetworkIsolationKey& network_isolation_key,
@@ -2657,85 +2729,47 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   auto pending_cert_verify = std::move(iter->second);
   cert_verifier_requests_.erase(iter);
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
+  bool pkp_bypassed = false;
+  std::string pinning_failure_log;
   if (result == net::OK) {
-    net::X509Certificate* verified_cert =
-        pending_cert_verify->result->verified_cert.get();
-
-    net::ct::SCTList verified_scts;
-    for (const auto& sct_and_status : pending_cert_verify->result->scts) {
-      if (sct_and_status.status == net::ct::SCT_STATUS_OK)
-        verified_scts.push_back(sct_and_status.sct);
-    }
-    pending_cert_verify->result->policy_compliance =
-        url_request_context_->ct_policy_enforcer()->CheckCompliance(
-            verified_cert, verified_scts,
-            net::NetLogWithSource::Make(
-                network_service_ ? url_request_context_->net_log() : nullptr,
-                net::NetLogSourceType::CERT_VERIFIER_JOB));
-
-    // TODO(https://crbug.com/803774): We should determine whether EV & SXG
-    // should be a thing (due to the online/offline signing difference)
-    if (pending_cert_verify->result->cert_status & net::CERT_STATUS_IS_EV &&
-        pending_cert_verify->result->policy_compliance !=
-            net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS &&
-        pending_cert_verify->result->policy_compliance !=
-            net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
-      pending_cert_verify->result->cert_status |=
-          net::CERT_STATUS_CT_COMPLIANCE_FAILED;
-      pending_cert_verify->result->cert_status &= ~net::CERT_STATUS_IS_EV;
-    }
-
-    net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
-        url_request_context_->transport_security_state()->CheckCTRequirements(
+#if BUILDFLAG(IS_CT_SUPPORTED)
+    int ct_result = CheckCTComplianceForSignedExchange(
+        *pending_cert_verify->result, *pending_cert_verify->certificate,
+        net::HostPortPair::FromURL(pending_cert_verify->url),
+        pending_cert_verify->network_isolation_key);
+#endif
+    net::TransportSecurityState::PKPStatus pin_validity =
+        url_request_context_->transport_security_state()->CheckPublicKeyPins(
             net::HostPortPair::FromURL(pending_cert_verify->url),
             pending_cert_verify->result->is_issued_by_known_root,
-            pending_cert_verify->result->public_key_hashes, verified_cert,
+            pending_cert_verify->result->public_key_hashes,
             pending_cert_verify->certificate.get(),
-            pending_cert_verify->result->scts,
-            net::TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
-            pending_cert_verify->result->policy_compliance,
-            pending_cert_verify->network_isolation_key);
-
-    if (url_request_context_->sct_auditing_delegate() &&
-        url_request_context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {
-      url_request_context_->sct_auditing_delegate()->MaybeEnqueueReport(
-          net::HostPortPair::FromURL(pending_cert_verify->url), verified_cert,
-          pending_cert_verify->result->scts);
-    }
-
-    switch (ct_requirement_status) {
-      case net::TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
-        result = net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
+            pending_cert_verify->result->verified_cert.get(),
+            net::TransportSecurityState::ENABLE_PIN_REPORTS,
+            pending_cert_verify->network_isolation_key, &pinning_failure_log);
+    switch (pin_validity) {
+      case net::TransportSecurityState::PKPStatus::VIOLATED:
+        pending_cert_verify->result->cert_status |=
+            net::CERT_STATUS_PINNED_KEY_MISSING;
+        result = net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN;
         break;
-      case net::TransportSecurityState::CT_REQUIREMENTS_MET:
+      case net::TransportSecurityState::PKPStatus::BYPASSED:
+        pkp_bypassed = true;
+        [[fallthrough]];
+      case net::TransportSecurityState::PKPStatus::OK:
+        // Do nothing.
         break;
-      case net::TransportSecurityState::CT_NOT_REQUIRED:
-        // CT is not required if the certificate does not chain to a publicly
-        // trusted root certificate.
-        if (!pending_cert_verify->result->is_issued_by_known_root)
-          break;
-        // For old certificates (issued before 2018-05-01),
-        // CheckCTRequirements() may return CT_NOT_REQUIRED, so we check the
-        // compliance status here.
-        // TODO(https://crbug.com/851778): Remove this condition once we require
-        // signing certificates to have CanSignHttpExchanges extension, because
-        // such certificates should be naturally after 2018-05-01.
-        if (pending_cert_verify->result->policy_compliance ==
-                net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
-            pending_cert_verify->result->policy_compliance ==
-                net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
-          break;
-        }
-        // Require CT compliance, by overriding CT_NOT_REQUIRED and treat it as
-        // ERR_CERTIFICATE_TRANSPARENCY_REQUIRED.
-        result = net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
     }
+#if BUILDFLAG(IS_CT_SUPPORTED)
+    if (result != net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN &&
+        ct_result != net::OK)
+      result = ct_result;
+#endif
   }
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
   std::move(pending_cert_verify->callback)
-      .Run(result, *pending_cert_verify->result.get());
+      .Run(result, *pending_cert_verify->result.get(), pkp_bypassed,
+           pinning_failure_log);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
