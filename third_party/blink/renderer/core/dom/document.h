@@ -1503,10 +1503,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   CanvasFontCache* GetCanvasFontCache();
 
-  // Used by unit tests so that all parsing will be main thread for
+  // Used by unit tests so that all parsing will be synchronous for
   // controlling parsing and chunking precisely.
-  static void SetThreadedParsingEnabledForTesting(bool);
-  static bool ThreadedParsingEnabledForTesting();
+  static void SetForceSynchronousParsingForTesting(bool);
+  static bool ForceSynchronousParsingForTesting();
 
   void IncrementNodeCount() { node_count_++; }
   void DecrementNodeCount() {

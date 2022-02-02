@@ -75,9 +75,6 @@ extern const base::Feature kSCTAuditingRetryReports;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kSCTAuditingPersistReports;
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kLoaderDataPipeTuningFeature;
-
 enum class DataPipeAllocationSize {
   kDefaultSizeOnly,
   kLargerSizeIfPossible,

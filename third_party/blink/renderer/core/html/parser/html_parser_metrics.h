@@ -29,11 +29,10 @@ class CORE_EXPORT HTMLParserMetrics {
 
   void AddInput(unsigned length);
 
-  void ReportMetricsAtParseEnd(bool background_parsing);
+  void ReportMetricsAtParseEnd();
 
  private:
-  void ReportBackgroundParsingUMA();
-  void ReportForcedSynchronousParsingUMA();
+  void ReportUMAs();
 
   // UKM System data.
   const int64_t source_id_;

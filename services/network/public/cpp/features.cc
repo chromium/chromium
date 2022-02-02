@@ -194,11 +194,6 @@ const base::Feature kSCTAuditingRetryReports{"SCTAuditingRetryReports",
 const base::Feature kSCTAuditingPersistReports{
     "SCTAuditingPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// This feature is used for tuning several loading-related data pipe
-// parameters. See crbug.com/1041006.
-const base::Feature kLoaderDataPipeTuningFeature{
-    "LoaderDataPipeTuning", base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 // The default Mojo ring buffer size, used to send the content body.
 static constexpr uint32_t kDefaultDataPipeAllocationSize = 512 * 1024;
@@ -211,16 +206,13 @@ static constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
 // small of a number will generate many tasks but setting a too large of a
 // number will lead to thread janks. This value was optimized via Finch:
 // see crbug.com/1041006.
-static constexpr uint32_t kDefaultMaxNumConsumedBytesInTask = 64 * 1024;
-static constexpr uint32_t kLargerMaxNumConsumedBytesInTask = 1024 * 1024;
+static constexpr uint32_t kMaxNumConsumedBytesInTask = 1024 * 1024;
 }  // namespace
 
 // static
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
   // For low-memory devices, always use the (smaller) default buffer size.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
-    return kDefaultDataPipeAllocationSize;
-  if (!base::FeatureList::IsEnabled(features::kLoaderDataPipeTuningFeature))
     return kDefaultDataPipeAllocationSize;
   switch (option) {
     case DataPipeAllocationSize::kDefaultSizeOnly:
@@ -232,9 +224,7 @@ uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
 
 // static
 uint32_t GetLoaderChunkSize() {
-  if (!base::FeatureList::IsEnabled(features::kLoaderDataPipeTuningFeature))
-    return kDefaultMaxNumConsumedBytesInTask;
-  return kLargerMaxNumConsumedBytesInTask;
+  return kMaxNumConsumedBytesInTask;
 }
 
 // Check disk cache to see if the queued requests (especially those don't need

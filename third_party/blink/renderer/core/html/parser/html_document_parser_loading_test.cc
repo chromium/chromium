@@ -14,32 +14,13 @@
 
 namespace blink {
 
-class HTMLDocumentParserSimTest : public SimTest {
- protected:
-  HTMLDocumentParserSimTest()
-      : original_threaded_parsing_(
-            Document::ThreadedParsingEnabledForTesting()) {
-    ResetDiscardedTokenCountForTesting();
-    Document::SetThreadedParsingEnabledForTesting(true);
-  }
-  ~HTMLDocumentParserSimTest() override {
-    Document::SetThreadedParsingEnabledForTesting(original_threaded_parsing_);
-  }
-
- private:
-  bool original_threaded_parsing_;
-};
-
 class HTMLDocumentParserLoadingTest
-    : public HTMLDocumentParserSimTest,
-      public testing::WithParamInterface<ParserSynchronizationPolicy>,
-      private ScopedForceSynchronousHTMLParsingForTest {
+    : public SimTest,
+      public testing::WithParamInterface<ParserSynchronizationPolicy> {
  protected:
-  HTMLDocumentParserLoadingTest()
-      : ScopedForceSynchronousHTMLParsingForTest(GetParam() !=
-                                                 kAllowAsynchronousParsing) {
-    Document::SetThreadedParsingEnabledForTesting(GetParam() !=
-                                                  kForceSynchronousParsing);
+  HTMLDocumentParserLoadingTest() {
+    Document::SetForceSynchronousParsingForTesting(GetParam() ==
+                                                   kForceSynchronousParsing);
     platform_->SetAutoAdvanceNowToPendingTasks(false);
   }
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
@@ -49,7 +30,6 @@ class HTMLDocumentParserLoadingTest
 INSTANTIATE_TEST_SUITE_P(HTMLDocumentParserLoadingTest,
                          HTMLDocumentParserLoadingTest,
                          testing::Values(kAllowDeferredParsing,
-                                         kAllowAsynchronousParsing,
                                          kForceSynchronousParsing));
 
 TEST_P(HTMLDocumentParserLoadingTest,
@@ -429,99 +409,6 @@ TEST_P(HTMLDocumentParserLoadingTest,
 
   css_async_resource.Complete("");
   platform_->RunUntilIdle();
-}
-
-TEST_F(HTMLDocumentParserSimTest, NoRewindNoDocWrite) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <html><body>no doc write
-    </body></html>
-  )HTML");
-
-  test::RunPendingTasks();
-  EXPECT_EQ(0U, GetDiscardedTokenCountForTesting());
-}
-
-TEST_F(HTMLDocumentParserSimTest, RewindBrokenToken) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <script>
-    document.write('<a');
-    </script>
-  )HTML");
-
-  test::RunPendingTasks();
-  EXPECT_EQ(2U, GetDiscardedTokenCountForTesting());
-}
-
-TEST_F(HTMLDocumentParserSimTest, RewindDifferentNamespace) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <script>
-    document.write('<svg>');
-    </script>
-  )HTML");
-
-  test::RunPendingTasks();
-  EXPECT_EQ(2U, GetDiscardedTokenCountForTesting());
-}
-
-TEST_F(HTMLDocumentParserSimTest, NoRewindSaneDocWrite1) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(
-      "<!DOCTYPE html>"
-      "<script>"
-      "document.write('<script>console.log(\'hello world\');<\\/script>');"
-      "</script>");
-
-  test::RunPendingTasks();
-  EXPECT_EQ(0U, GetDiscardedTokenCountForTesting());
-}
-
-TEST_F(HTMLDocumentParserSimTest, NoRewindSaneDocWrite2) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <script>
-    document.write('<p>hello world<\\/p><a>yo');
-    </script>
-  )HTML");
-
-  test::RunPendingTasks();
-  EXPECT_EQ(0U, GetDiscardedTokenCountForTesting());
-}
-
-TEST_F(HTMLDocumentParserSimTest, NoRewindSaneDocWriteWithTitle) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <title></title>
-    <script>document.write('<p>testing');</script>
-    </head>
-    <body>
-    </body>
-    </html>
-  )HTML");
-
-  test::RunPendingTasks();
-  EXPECT_EQ(0U, GetDiscardedTokenCountForTesting());
 }
 
 }  // namespace blink
