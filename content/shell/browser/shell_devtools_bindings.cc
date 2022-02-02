@@ -278,7 +278,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
   // Since we've received message by value, we can take the list.
   base::Value::ListStorage params;
   if (params_value) {
-    params = std::move(*params_value).TakeList();
+    params = std::move(*params_value).TakeListDeprecated();
   }
 
   if (*method == "dispatchProtocolMessage" && params.size() == 1) {

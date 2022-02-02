@@ -1944,7 +1944,7 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
       (include_incognito && !profile_->IsOffTheRecord()) ? nullptr
                                                          : profile_.get();
   auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(*args).TakeList(),
+                                       std::move(*args).TakeListDeprecated(),
                                        restrict_to_browser_context);
   event->will_dispatch_callback = std::move(will_dispatch_callback);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));

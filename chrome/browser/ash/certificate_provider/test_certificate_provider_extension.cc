@@ -221,7 +221,7 @@ void TestCertificateProviderExtension::TriggerSetCertificates() {
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FOR_TEST,
       extensions::api::test::OnMessage::kEventName,
-      std::move(*message).TakeList(), browser_context_);
+      std::move(*message).TakeListDeprecated(), browser_context_);
   extensions::EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id(), std::move(event));
 }

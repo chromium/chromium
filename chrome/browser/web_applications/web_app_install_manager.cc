@@ -607,7 +607,7 @@ void WebAppInstallManager::OnReadErrorLog(Result result,
     return;
 
   ErrorLog early_error_log = std::move(*error_log_);
-  *error_log_ = std::move(error_log).TakeList();
+  *error_log_ = std::move(error_log).TakeListDeprecated();
 
   // Appends the `early_error_log` at the end.
   error_log_->insert(error_log_->end(),

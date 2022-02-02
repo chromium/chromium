@@ -89,7 +89,7 @@ void OnGetSessions(const Status& status,
   ASSERT_EQ(kOk, status.code());
   ASSERT_TRUE(value.get());
   std::vector<base::Value> sessions_list =
-      base::Value::FromUniquePtrValue(std::move(value)).TakeList();
+      base::Value::FromUniquePtrValue(std::move(value)).TakeListDeprecated();
   ASSERT_EQ(static_cast<size_t>(2), sessions_list.size());
 
   const base::Value& session1 = sessions_list[0];

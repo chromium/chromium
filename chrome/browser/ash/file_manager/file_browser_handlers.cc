@@ -390,8 +390,8 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
   event_args->Append(std::move(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FILE_BROWSER_HANDLER_ON_EXECUTE,
-      "fileBrowserHandler.onExecute", std::move(*event_args).TakeList(),
-      profile_);
+      "fileBrowserHandler.onExecute",
+      std::move(*event_args).TakeListDeprecated(), profile_);
   router->DispatchEventToExtension(extension_->id(), std::move(event));
 
   ExecuteDoneOnUIThread(true, "");

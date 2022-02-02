@@ -85,7 +85,7 @@ std::vector<base::Value> ReadJsonListToValues(const std::string& file_name) {
   if (!parsed_content->is_list())
     return {};
 
-  return std::move(*parsed_content).TakeList();
+  return std::move(*parsed_content).TakeListDeprecated();
 }
 
 // This test uses input data of core features and the output of the training

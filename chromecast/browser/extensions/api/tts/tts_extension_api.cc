@@ -146,7 +146,8 @@ void TtsExtensionEventHandler::OnTtsEvent(content::TtsUtterance* utterance,
 
   auto event = std::make_unique<extensions::Event>(
       ::extensions::events::TTS_ON_EVENT, ::events::kOnEvent,
-      std::move(*arguments).TakeList(), utterance->GetBrowserContext());
+      std::move(*arguments).TakeListDeprecated(),
+      utterance->GetBrowserContext());
   event->event_url = utterance->GetSrcUrl();
   extensions::EventRouter::Get(utterance->GetBrowserContext())
       ->DispatchEventToExtension(src_extension_id_, std::move(event));

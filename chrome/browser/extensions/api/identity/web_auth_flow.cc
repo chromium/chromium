@@ -117,7 +117,7 @@ void WebAuthFlow::Start() {
   auto event =
       std::make_unique<Event>(events::IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST,
                               identity_private::OnWebFlowRequest::kEventName,
-                              std::move(*args).TakeList(), profile_);
+                              std::move(*args).TakeListDeprecated(), profile_);
   ExtensionSystem* system = ExtensionSystem::Get(profile_);
 
   extensions::ComponentLoader* component_loader =

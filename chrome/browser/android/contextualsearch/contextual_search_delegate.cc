@@ -473,7 +473,7 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
     // Note that because we've deserialized the json and it's not used later, we
     // can just take the list without worrying about putting it back.
     if (mentions_list && mentions_list->GetList().size() >= 2)
-      ExtractMentionsStartEnd(std::move(*mentions_list).TakeList(),
+      ExtractMentionsStartEnd(std::move(*mentions_list).TakeListDeprecated(),
                               mention_start, mention_end);
   }
 

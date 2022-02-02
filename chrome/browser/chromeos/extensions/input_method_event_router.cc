@@ -50,7 +50,7 @@ void ExtensionInputMethodEventRouter::InputMethodChanged(
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_CHANGED,
-      OnChanged::kEventName, std::move(*args).TakeList(), context_);
+      OnChanged::kEventName, std::move(*args).TakeListDeprecated(), context_);
   router->BroadcastEvent(std::move(event));
 }
 

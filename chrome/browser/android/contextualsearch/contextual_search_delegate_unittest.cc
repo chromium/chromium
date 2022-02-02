@@ -514,8 +514,8 @@ TEST_F(ContextualSearchDelegateTest, ExtractMentionsStartEnd) {
   mentions_list.Append(2);
   int start = 0;
   int end = 0;
-  delegate_->ExtractMentionsStartEnd(std::move(mentions_list).TakeList(),
-                                     &start, &end);
+  delegate_->ExtractMentionsStartEnd(
+      std::move(mentions_list).TakeListDeprecated(), &start, &end);
   EXPECT_EQ(1, start);
   EXPECT_EQ(2, end);
 }

@@ -135,7 +135,7 @@ WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     std::string rect_value_list,
     std::string rect_var_name) {
   EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), rect_value_list));
-  return EvalJs(web_contents, rect_var_name).ExtractList().TakeList();
+  return EvalJs(web_contents, rect_var_name).ExtractList().TakeListDeprecated();
 }
 
 gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(

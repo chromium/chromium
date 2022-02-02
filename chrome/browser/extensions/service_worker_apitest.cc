@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EarlyEventDispatch) {
       events::FOR_TEST, extensions::api::test::OnMessage::kEventName,
       base::JSONReader::Read(R"([{"data": "hello", "lastMessage": true}])")
           .value()
-          .TakeList(),
+          .TakeListDeprecated(),
       profile());
 
   EarlyWorkerMessageSender sender(profile(), kId, std::move(event));

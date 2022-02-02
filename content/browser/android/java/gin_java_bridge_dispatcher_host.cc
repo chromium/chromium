@@ -379,7 +379,8 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
   result->Invoke();
   *error_code = result->GetInvocationError();
   if (result->HoldsPrimitiveResult()) {
-    base::ListValue clone(result->GetPrimitiveResult().Clone().TakeList());
+    base::ListValue clone(
+        result->GetPrimitiveResult().Clone().TakeListDeprecated());
     wrapped_result->Swap(&clone);
   } else if (!result->GetObjectResult().is_null()) {
     GinJavaBoundObject::ObjectID returned_object_id;

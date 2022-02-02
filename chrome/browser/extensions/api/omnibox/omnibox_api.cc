@@ -114,9 +114,9 @@ bool ExtensionOmniboxEventRouter::OnInputChanged(
   args->Append(input);
   args->Append(suggest_id);
 
-  auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_CHANGED,
-                                       omnibox::OnInputChanged::kEventName,
-                                       std::move(*args).TakeList(), profile);
+  auto event = std::make_unique<Event>(
+      events::OMNIBOX_ON_INPUT_CHANGED, omnibox::OnInputChanged::kEventName,
+      std::move(*args).TakeListDeprecated(), profile);
   event_router->DispatchEventToExtension(extension_id, std::move(event));
   return true;
 }
@@ -146,9 +146,9 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
   else
     args->Append(kCurrentTabDisposition);
 
-  auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_ENTERED,
-                                       omnibox::OnInputEntered::kEventName,
-                                       std::move(*args).TakeList(), profile);
+  auto event = std::make_unique<Event>(
+      events::OMNIBOX_ON_INPUT_ENTERED, omnibox::OnInputEntered::kEventName,
+      std::move(*args).TakeListDeprecated(), profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 
@@ -172,9 +172,10 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
   auto args(std::make_unique<base::ListValue>());
   args->Append(suggestion_text);
 
-  auto event = std::make_unique<Event>(events::OMNIBOX_ON_DELETE_SUGGESTION,
-                                       omnibox::OnDeleteSuggestion::kEventName,
-                                       std::move(*args).TakeList(), profile);
+  auto event =
+      std::make_unique<Event>(events::OMNIBOX_ON_DELETE_SUGGESTION,
+                              omnibox::OnDeleteSuggestion::kEventName,
+                              std::move(*args).TakeListDeprecated(), profile);
 
   EventRouter::Get(profile)->DispatchEventToExtension(extension_id,
                                                       std::move(event));

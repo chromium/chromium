@@ -1068,8 +1068,8 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
       kNik_.ToDebugString().c_str(), kOtherNik_.ToDebugString().c_str()));
 
   // Compare disregarding order.
-  auto expected_list = std::move(expected).TakeList();
-  auto actual_list = std::move(actual).TakeList();
+  auto expected_list = std::move(expected).TakeListDeprecated();
+  auto actual_list = std::move(actual).TakeListDeprecated();
   std::sort(expected_list.begin(), expected_list.end());
   std::sort(actual_list.begin(), actual_list.end());
   EXPECT_EQ(expected_list, actual_list);

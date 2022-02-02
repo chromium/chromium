@@ -41,7 +41,7 @@ void DispatchOnEmbedRequestedEventImpl(
   auto event =
       std::make_unique<Event>(events::APP_RUNTIME_ON_EMBED_REQUESTED,
                               app_runtime::OnEmbedRequested::kEventName,
-                              std::move(*args).TakeList(), context);
+                              std::move(*args).TakeListDeprecated(), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
 
@@ -71,9 +71,9 @@ void DispatchOnLaunchedEventImpl(
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   args->Append(std::move(launch_data));
-  auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
-                                       app_runtime::OnLaunched::kEventName,
-                                       std::move(*args).TakeList(), context);
+  auto event = std::make_unique<Event>(
+      events::APP_RUNTIME_ON_LAUNCHED, app_runtime::OnLaunched::kEventName,
+      std::move(*args).TakeListDeprecated(), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
   ExtensionPrefs::Get(context)

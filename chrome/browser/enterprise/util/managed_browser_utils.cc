@@ -84,7 +84,7 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
         ContentSettingsType::AUTO_SELECT_CERTIFICATE, base::Value());
     return {};
   }
-  return std::move(*filters).TakeList();
+  return std::move(*filters).TakeListDeprecated();
 }
 
 // Returns whether the client certificate matches any of the auto-selection

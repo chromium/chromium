@@ -341,7 +341,7 @@ void SendOnMessageEventOnUI(
   }
 
   auto event = std::make_unique<Event>(
-      histogram_value, event_name, std::move(*event_args).TakeList(),
+      histogram_value, event_name, std::move(*event_args).TakeListDeprecated(),
       browser_context, GURL(), EventRouter::USER_GESTURE_UNKNOWN,
       std::move(event_filtering_info));
   event_router->DispatchEventToExtension(extension_id, std::move(event));

@@ -1286,7 +1286,7 @@ Event::~Event() = default;
 
 std::unique_ptr<Event> Event::DeepCopy() const {
   auto copy = std::make_unique<Event>(histogram_value, event_name,
-                                      event_args->Clone().TakeList(),
+                                      event_args->Clone().TakeListDeprecated(),
                                       restrict_to_browser_context, event_url,
                                       user_gesture, filter_info.Clone());
   copy->will_dispatch_callback = will_dispatch_callback;

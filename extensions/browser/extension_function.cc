@@ -525,7 +525,7 @@ void ExtensionFunction::OnQuotaExceeded(std::string violation_error) {
 void ExtensionFunction::SetArgs(base::Value args) {
   DCHECK(args.is_list());
   DCHECK(!args_.has_value());
-  args_ = std::move(args).TakeList();
+  args_ = std::move(args).TakeListDeprecated();
 }
 
 const base::ListValue* ExtensionFunction::GetResultList() const {

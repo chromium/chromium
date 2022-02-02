@@ -186,8 +186,9 @@ Value ArrayPolicyConversions::ToValue() {
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    for (auto& policy :
-         client()->GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS).TakeList()) {
+    for (auto& policy : client()
+                            ->GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS)
+                            .TakeListDeprecated()) {
       all_policies.Append(std::move(policy));
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -197,14 +198,14 @@ Value ArrayPolicyConversions::ToValue() {
   for (auto& policy :
        client()
            ->GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS)
-           .TakeList()) {
+           .TakeListDeprecated()) {
     all_policies.Append(std::move(policy));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& device_policy :
-       client()->GetDeviceLocalAccountPolicies().TakeList())
+       client()->GetDeviceLocalAccountPolicies().TakeListDeprecated())
     all_policies.Append(std::move(device_policy));
 
   Value identity_fields = client()->GetIdentityFields();

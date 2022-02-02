@@ -144,9 +144,9 @@ void EventRouterForwarder::CallEventRouter(
     return;
 #endif
 
-  auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(*event_args).TakeList(),
-                                       restrict_to_profile);
+  auto event = std::make_unique<Event>(
+      histogram_value, event_name, std::move(*event_args).TakeListDeprecated(),
+      restrict_to_profile);
   event->event_url = event_url;
   if (extension_id.empty()) {
     extensions::EventRouter::Get(profile)->BroadcastEvent(std::move(event));

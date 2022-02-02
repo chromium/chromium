@@ -296,10 +296,10 @@ void TabCaptureRegistry::DispatchStatusChangeEvent(
   tab_capture::CaptureInfo info;
   request->GetCaptureInfo(&info);
   args->Append(info.ToValue());
-  auto event =
-      std::make_unique<Event>(events::TAB_CAPTURE_ON_STATUS_CHANGED,
-                              tab_capture::OnStatusChanged::kEventName,
-                              std::move(*args).TakeList(), browser_context_);
+  auto event = std::make_unique<Event>(events::TAB_CAPTURE_ON_STATUS_CHANGED,
+                                       tab_capture::OnStatusChanged::kEventName,
+                                       std::move(*args).TakeListDeprecated(),
+                                       browser_context_);
 
   router->DispatchEventToExtension(request->extension_id(), std::move(event));
 }

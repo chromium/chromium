@@ -71,7 +71,7 @@ base::Value& ValueAppendList(base::Value& v) {
 
 void ValueReserveSize(base::Value& v, size_t len) {
   DCHECK(v.is_list());
-  base::Value::ListStorage l = std::move(v).TakeList();
+  base::Value::ListStorage l = std::move(v).TakeListDeprecated();
   l.reserve(len);
   v = base::Value(std::move(l));
 }

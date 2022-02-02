@@ -40,7 +40,7 @@ void ManagedBookmarksPolicyHandler::ApplyPolicySettings(
     return;
 
   prefs->SetString(prefs::kManagedBookmarksFolderName, GetFolderName(*value));
-  base::Value filtered(FilterBookmarks(std::move(*value).TakeList()));
+  base::Value filtered(FilterBookmarks(std::move(*value).TakeListDeprecated()));
   prefs->SetValue(prefs::kManagedBookmarks, std::move(filtered));
 }
 
@@ -84,7 +84,8 @@ base::Value::ListStorage ManagedBookmarksPolicyHandler::FilterBookmarks(
     if (children) {
       // Ignore the URL if this bookmark has child nodes.
       item.RemoveKey(ManagedBookmarksTracker::kUrl);
-      *children = base::Value(FilterBookmarks(std::move(*children).TakeList()));
+      *children = base::Value(
+          FilterBookmarks(std::move(*children).TakeListDeprecated()));
     } else {
       // Make sure the URL is valid before passing a bookmark to the pref.
       item.RemoveKey(ManagedBookmarksTracker::kChildren);

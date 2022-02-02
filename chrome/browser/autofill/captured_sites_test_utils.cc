@@ -1134,7 +1134,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
     }
 
     base::Value::ListStorage autofill_profile_container =
-        std::move(autofill_profile_container_iter->second).TakeList();
+        std::move(autofill_profile_container_iter->second).TakeListDeprecated();
     if (!SetupSavedAutofillProfile(std::move(autofill_profile_container)))
       return false;
   }
@@ -1149,7 +1149,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
     }
 
     base::Value::ListStorage saved_password_container =
-        std::move(saved_password_container_iter->second).TakeList();
+        std::move(saved_password_container_iter->second).TakeListDeprecated();
     if (!SetupSavedPasswords(std::move(saved_password_container)))
       return false;
   }

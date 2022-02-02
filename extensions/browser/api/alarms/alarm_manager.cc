@@ -54,7 +54,7 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
     args->Append(alarm.js_alarm->ToValue());
     std::unique_ptr<Event> event(
         new Event(events::ALARMS_ON_ALARM, alarms::OnAlarm::kEventName,
-                  std::move(*args).TakeList(), browser_context_));
+                  std::move(*args).TakeListDeprecated(), browser_context_));
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id, std::move(event));
   }

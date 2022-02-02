@@ -277,7 +277,7 @@ void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_SPEAK, tts_engine_events::kOnSpeak,
-      std::move(*args).TakeList(), profile);
+      std::move(*args).TakeListDeprecated(), profile);
   event_router->DispatchEventToExtension(engine_id, std::move(event));
 }
 

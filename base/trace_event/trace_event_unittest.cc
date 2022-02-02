@@ -216,10 +216,10 @@ void TraceEventTestFixture::OnTraceDataCollected(
   }
 
   ASSERT_TRUE(root->is_list());
-  Value::ListStorage root_storage = std::move(*root).TakeList();
+  Value::ListStorage root_storage = std::move(*root).TakeListDeprecated();
 
   // Move items into our aggregate collection
-  Value::ListStorage storage = std::move(trace_parsed_).TakeList();
+  Value::ListStorage storage = std::move(trace_parsed_).TakeListDeprecated();
   storage.reserve(storage.size() + root_storage.size());
   std::move(root_storage.begin(), root_storage.end(),
             std::back_inserter(storage));
@@ -282,7 +282,7 @@ const Value* TraceEventTestFixture::FindMatchingTraceEntry(
 }
 
 void TraceEventTestFixture::DropTracedMetadataRecords() {
-  Value::ListStorage storage = std::move(trace_parsed_).TakeList();
+  Value::ListStorage storage = std::move(trace_parsed_).TakeListDeprecated();
   base::EraseIf(storage, [](const Value& value) {
     if (!value.is_dict())
       return false;

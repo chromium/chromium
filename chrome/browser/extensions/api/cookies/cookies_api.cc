@@ -225,7 +225,8 @@ void CookiesEventRouter::DispatchEvent(
   if (!router)
     return;
   auto event = std::make_unique<Event>(
-      histogram_value, event_name, std::move(*event_args).TakeList(), context);
+      histogram_value, event_name, std::move(*event_args).TakeListDeprecated(),
+      context);
   event->event_url = cookie_domain;
   router->BroadcastEvent(std::move(event));
 }

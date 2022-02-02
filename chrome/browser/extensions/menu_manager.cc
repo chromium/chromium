@@ -747,7 +747,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
         webview_guest ? events::WEB_VIEW_INTERNAL_CONTEXT_MENUS
                       : events::CONTEXT_MENUS,
         webview_guest ? kOnWebviewContextMenus : kOnContextMenus,
-        base::Value(args).TakeList(), context);
+        base::Value(args).TakeListDeprecated(), context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
     event_router->DispatchEventToExtension(item->extension_id(),
                                            std::move(event));
