@@ -290,8 +290,7 @@ ukm::SourceId IOSChromePasswordManagerClient::GetUkmSourceId() {
 PasswordManagerMetricsRecorder*
 IOSChromePasswordManagerClient::GetMetricsRecorder() {
   if (!metrics_recorder_) {
-    metrics_recorder_.emplace(GetUkmSourceId(),
-                              /*navigation_metric_recorder=*/nullptr);
+    metrics_recorder_.emplace(GetUkmSourceId());
   }
   return base::OptionalOrNullptr(metrics_recorder_);
 }

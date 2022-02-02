@@ -19,12 +19,9 @@ typedef autofill::SavePasswordProgressLogger Logger;
 namespace password_manager {
 
 PasswordManagerMetricsRecorder::PasswordManagerMetricsRecorder(
-    ukm::SourceId source_id,
-    std::unique_ptr<NavigationMetricRecorderDelegate>
-        navigation_metric_recorder)
+    ukm::SourceId source_id)
     : ukm_entry_builder_(
-          std::make_unique<ukm::builders::PageWithPassword>(source_id)),
-      navigation_metric_recorder_(std::move(navigation_metric_recorder)) {}
+          std::make_unique<ukm::builders::PageWithPassword>(source_id)) {}
 
 PasswordManagerMetricsRecorder::PasswordManagerMetricsRecorder(
     PasswordManagerMetricsRecorder&& that) noexcept = default;
@@ -42,17 +39,7 @@ PasswordManagerMetricsRecorder& PasswordManagerMetricsRecorder::operator=(
     PasswordManagerMetricsRecorder&& that) = default;
 
 void PasswordManagerMetricsRecorder::RecordUserModifiedPasswordField() {
-  if (!user_modified_password_field_ && navigation_metric_recorder_) {
-    navigation_metric_recorder_->OnUserModifiedPasswordFieldFirstTime();
-  }
   user_modified_password_field_ = true;
-}
-
-void PasswordManagerMetricsRecorder::RecordUserFocusedPasswordField() {
-  if (!user_focused_password_field_ && navigation_metric_recorder_) {
-    navigation_metric_recorder_->OnUserFocusedPasswordFieldFirstTime();
-  }
-  user_focused_password_field_ = true;
 }
 
 void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(

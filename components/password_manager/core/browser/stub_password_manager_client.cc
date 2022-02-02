@@ -143,7 +143,7 @@ ukm::SourceId StubPasswordManagerClient::GetUkmSourceId() {
 PasswordManagerMetricsRecorder*
 StubPasswordManagerClient::GetMetricsRecorder() {
   if (!metrics_recorder_) {
-    metrics_recorder_.emplace(GetUkmSourceId(), nullptr);
+    metrics_recorder_.emplace(GetUkmSourceId());
   }
   return base::OptionalOrNullptr(metrics_recorder_);
 }

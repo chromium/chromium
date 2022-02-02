@@ -408,11 +408,6 @@ void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  // Despite the name, this method is only called on password fields.
-  // (See PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation())
-  if (client_->GetMetricsRecorder()) {
-    client_->GetMetricsRecorder()->RecordUserFocusedPasswordField();
-  }
 #if defined(ON_FOCUS_PING_ENABLED)
   client_->CheckSafeBrowsingReputation(form_action, frame_url);
 #endif
