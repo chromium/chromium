@@ -467,10 +467,26 @@ public class DownloadUtils {
         return false;
     }
 
+    /**
+     * Opens a completed download.
+     * @param filePath File path on disk of the download to open.
+     * @param mimeType MIME type of the downloaded file.
+     * @param downloadGuid Unique GUID of the download.
+     * @param otrProfileID User's OTRProfileID.
+     * @param originalUrl URL which initially triggered the download itself.
+     * @param referer URL of the page which redirected to the download URL.
+     * @param source Where this download was initiated from.
+     */
     @CalledByNative
-    static void openDownload(String filePath, String mimeType, String downloadGuid,
+    public static void openDownload(String filePath, String mimeType, String downloadGuid,
             OTRProfileID otrProfileID, String originalUrl, String referer,
             @DownloadOpenSource int source) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
+                && source == DownloadOpenSource.UNKNOWN
+                && DownloadManagerService.inProgressCCTDownloadsContains(downloadGuid)) {
+            DownloadManagerService.removeCCTDownload(downloadGuid);
+            return;
+        }
         boolean canOpen = DownloadUtils.openFile(filePath, mimeType, downloadGuid, otrProfileID,
                 originalUrl, referer, source, ContextUtils.getApplicationContext());
         if (!canOpen) {

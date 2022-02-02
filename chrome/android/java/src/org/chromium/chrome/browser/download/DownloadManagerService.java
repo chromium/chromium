@@ -91,6 +91,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     public static final long UNKNOWN_BYTES_RECEIVED = -1;
 
     private static final Set<String> sFirstSeenDownloadIds = new HashSet<String>();
+    private static final Set<String> sInProgressCCTDownloadIds = new HashSet<String>();
 
     private static DownloadManagerService sDownloadManagerService;
     private static boolean sIsNetworkListenerDisabled;
@@ -207,6 +208,23 @@ public class DownloadManagerService implements DownloadController.Observer,
     public static boolean hasDownloadManagerService() {
         ThreadUtils.assertOnUiThread();
         return sDownloadManagerService != null;
+    }
+
+    /**
+     * Methods to modify the set of downloads currently being downloaded through the new CCT
+     * downloads UI.
+     * @param guid GUID of the offline item.
+     */
+    public static void addCCTDownload(String guid) {
+        sInProgressCCTDownloadIds.add(guid);
+    }
+
+    public static boolean inProgressCCTDownloadsContains(String guid) {
+        return sInProgressCCTDownloadIds.contains(guid);
+    }
+
+    public static void removeCCTDownload(String guid) {
+        sInProgressCCTDownloadIds.remove(guid);
     }
 
     /**
