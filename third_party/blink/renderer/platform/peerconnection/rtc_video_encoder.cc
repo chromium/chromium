@@ -491,9 +491,6 @@ class RTCVideoEncoder::Impl
   // of the completed frame in |input_buffers_|.
   void EncodeFrameFinished(int index);
 
-  // Checks if the bitrate would overflow when passing from kbps to bps.
-  bool IsBitrateTooHigh(uint32_t bitrate);
-
   // Checks if the frame size is different than hardware accelerator
   // requirements.
   bool RequiresSizeChange(const media::VideoFrame& frame) const;
@@ -658,7 +655,10 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
   async_encode_event_.reset();
 
   // Check for overflow converting bitrate (kilobits/sec) to bits/sec.
-  if (IsBitrateTooHigh(bitrate)) {
+  uint32_t bitrate_bps;
+  if (!ConvertKbpsToBps(bitrate, &bitrate_bps)) {
+    LogAndNotifyError(FROM_HERE, "Overflow converting bitrate from kbps to bps",
+                      media::VideoEncodeAccelerator::kInvalidArgumentError);
     async_init_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERR_PARAMETER);
     return;
   }
@@ -717,7 +717,7 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
   }
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, profile,
-      media::Bitrate::ConstantBitrate(bitrate * 1000), absl::nullopt,
+      media::Bitrate::ConstantBitrate(bitrate_bps), absl::nullopt,
       absl::nullopt, absl::nullopt, is_constrained_h264, storage_type,
       video_content_type_ == webrtc::VideoContentType::SCREENSHARE
           ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
@@ -1422,15 +1422,6 @@ void RTCVideoEncoder::Impl::EncodeFrameFinished(int index) {
   input_buffers_free_.push_back(index);
   if (input_next_frame_)
     EncodeOneFrame();
-}
-
-bool RTCVideoEncoder::Impl::IsBitrateTooHigh(uint32_t bitrate) {
-  uint32_t bitrate_bps = 0;
-  if (ConvertKbpsToBps(bitrate, &bitrate_bps))
-    return false;
-  LogAndNotifyError(FROM_HERE, "Overflow converting bitrate from kbps to bps",
-                    media::VideoEncodeAccelerator::kInvalidArgumentError);
-  return true;
 }
 
 bool RTCVideoEncoder::Impl::RequiresSizeChange(

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -33,6 +34,15 @@ namespace {
 // to estimate bits per second for ~30 fps with ~1/16 compression rate.
 constexpr int kVEADefaultBitratePerPixel = 2;
 
+uint32_t ComputeCheckedDefaultBitrate(const gfx::Size& frame_size) {
+  base::CheckedNumeric<uint32_t> checked_bitrate_product =
+      base::CheckMul<uint32_t>(frame_size.width(), frame_size.height(),
+                               kVEADefaultBitratePerPixel);
+  // If the product has overflowed, clamp it to uint32_t max
+  return checked_bitrate_product.ValueOrDefault(
+      std::numeric_limits<uint32_t>::max());
+}
+
 VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoCodecProfile profile,
     const VideoEncoder::Options& opts,
@@ -42,9 +52,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   if (opts.framerate.has_value())
     initial_framerate = static_cast<uint32_t>(opts.framerate.value());
 
-  uint64_t default_bitrate = opts.frame_size.width() *
-                             opts.frame_size.height() *
-                             kVEADefaultBitratePerPixel;
+  uint32_t default_bitrate = ComputeCheckedDefaultBitrate(opts.frame_size);
   Bitrate bitrate =
       opts.bitrate.value_or(Bitrate::ConstantBitrate(default_bitrate));
   auto config =
@@ -364,10 +372,8 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     return;
   }
 
-  uint32_t default_bitrate = options.frame_size.width() *
-                             options.frame_size.height() *
-                             kVEADefaultBitratePerPixel;
-  auto bitrate =
+  uint32_t default_bitrate = ComputeCheckedDefaultBitrate(options.frame_size);
+  Bitrate bitrate =
       options.bitrate.value_or(Bitrate::ConstantBitrate(default_bitrate));
 
   uint32_t framerate = base::ClampRound<uint32_t>(

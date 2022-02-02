@@ -43,7 +43,7 @@ namespace media {
 
 namespace {
 
-const int32_t kDefaultTargetBitrate = 5000000;
+const uint32_t kDefaultTargetBitrate = 5000000u;
 const size_t kMaxFrameRateNumerator = 30;
 const size_t kMaxFrameRateDenominator = 1;
 const size_t kMaxResolutionWidth = 1920;

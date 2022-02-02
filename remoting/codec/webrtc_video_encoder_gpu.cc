@@ -4,6 +4,7 @@
 
 #include "remoting/codec/webrtc_video_encoder_gpu.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -265,10 +267,12 @@ void WebrtcVideoEncoderGpu::Core::Encode(
   if (params.bitrate_kbps > 0 && params.fps > 0) {
     // TODO(zijiehe): Forward frame_rate from FrameParams.
     bitrate_filter_.SetBandwidthEstimateKbps(params.bitrate_kbps);
+    base::CheckedNumeric<uint32_t> checked_bitrate = base::CheckMul<uint32_t>(
+        std::max(bitrate_filter_.GetTargetBitrateKbps(), 0), 1000);
+    uint32_t bitrate_bps =
+        checked_bitrate.ValueOrDefault(std::numeric_limits<uint32_t>::max());
     video_encode_accelerator_->RequestEncodingParametersChange(
-        media::Bitrate::ConstantBitrate(bitrate_filter_.GetTargetBitrateKbps() *
-                                        1000),
-        params.fps);
+        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps);
   }
   video_encode_accelerator_->Encode(video_frame, params.key_frame);
 }
@@ -351,8 +355,8 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
   // TODO(zijiehe): implement some logical way to set an initial bitrate.
   // Currently we set the bitrate to 8M bits / 1M bytes per frame, and 30 frames
   // per second.
-  media::Bitrate initial_bitrate =
-      media::Bitrate::ConstantBitrate(kTargetFrameRate * 1024 * 1024 * 8);
+  media::Bitrate initial_bitrate = media::Bitrate::ConstantBitrate(
+      static_cast<uint32_t>(kTargetFrameRate * 1024 * 1024 * 8));
 
   const media::VideoEncodeAccelerator::Config config(
       input_format, input_visible_size_, codec_profile_, initial_bitrate);

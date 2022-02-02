@@ -103,7 +103,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
   constexpr gfx::Size kBaseSize(320, 180);
   constexpr uint32_t kBaseBitrateBps = 123456u;
   constexpr uint32_t kMaximumBitrate = 999999u;
-  constexpr ::media::Bitrate kBitrate =
+  const ::media::Bitrate kBitrate =
       ::media::Bitrate::VariableBitrate(kBaseBitrateBps, kMaximumBitrate);
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,

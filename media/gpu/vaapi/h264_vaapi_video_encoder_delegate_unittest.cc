@@ -32,7 +32,7 @@ VideoEncodeAccelerator::Config kDefaultVEAConfig(
     PIXEL_FORMAT_I420,
     gfx::Size(1280, 720),
     H264PROFILE_BASELINE,
-    Bitrate::ConstantBitrate(14000000)
+    Bitrate::ConstantBitrate(14000000u)
     /* = maximum bitrate in bits per second for level 3.1 */,
     VideoEncodeAccelerator::kDefaultFramerate,
     absl::nullopt /* gop_length */,

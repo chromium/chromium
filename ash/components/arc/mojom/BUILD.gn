@@ -415,6 +415,7 @@ source_set("unit_tests") {
   sources = [
     "ime_mojom_traits_unittest.cc",
     "video_accelerator_mojom_traits_unittest.cc",
+    "video_encode_accelerator_mojom_traits_unittest.cc",
   ]
 
   deps = [
