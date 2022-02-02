@@ -26,9 +26,11 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -69,24 +71,30 @@ constexpr int kTimeViewHeight = 20;
 constexpr int kManagedStatusIndicatorSpacing = 8;
 constexpr int kManagedStatusIndicatorSize = 20;
 
-constexpr char kAmPmTimeDateFmtStr[] = "%d:%02d%s, %d-%02d-%02d";
-
-// TODO(crbug.com/1268922): This is a placeholder text format. Update this once
-// specs are done.
 std::u16string GetTimeStr(base::Time timestamp) {
-  base::Time::Exploded exploded_time;
-  timestamp.LocalExplode(&exploded_time);
+  std::u16string date, time, time_str;
 
-  const int noon = 12;
-  int hour = exploded_time.hour % noon;
-  if (hour == 0)
-    hour += noon;
+  // Returns empty if `timestamp` is out of relative date range, which is
+  // yesterday and today as of now. Please see `ui/base/l10n/time_format.h` for
+  // more details.
+  date = ui::TimeFormat::RelativeDate(timestamp, NULL);
+  if (date.empty()) {
+    // Syntax `yMMMdjmm` is used by the File App if it's not a relative date.
+    // Please note, this might be slightly different for different locales.
+    // Examples:
+    //  `en-US` - `Jan 1, 2022, 10:30 AM`
+    //  `zh-CN` - `2022年1月1日 10:30`
+    time_str = base::TimeFormatWithPattern(timestamp, "yMMMdjmm");
+  } else {
+    // If it's a relative date, just append `jmm` to it.
+    // Please note, this might be slightly different for different locales.
+    // Examples:
+    //  `en-US` - `Today 10:30 AM`
+    //  `zh-CN` - `今天 10:30`
+    time_str = date + u" " + base::TimeFormatWithPattern(timestamp, "jmm");
+  }
 
-  std::string time = base::StringPrintf(
-      kAmPmTimeDateFmtStr, hour, exploded_time.minute,
-      (exploded_time.hour >= noon ? "pm" : "am"), exploded_time.year,
-      exploded_time.month, exploded_time.day_of_month);
-  return base::UTF8ToUTF16(time);
+  return time_str;
 }
 
 }  // namespace

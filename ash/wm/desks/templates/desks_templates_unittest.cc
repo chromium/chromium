@@ -2244,7 +2244,7 @@ TEST_F(DesksTemplatesTest, UserTemplateCountRecordsMetricCorrectly) {
 
   // Delete one of the templates which will iterate the histogram's second
   // bucket.
-  DeleteTemplate(GetAllEntries()[0]->uuid(), /*expected_item_count=*/3);
+  DeleteTemplate(GetAllEntries()[0]->uuid(), /*expected_current_item_count=*/3);
 
   histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 1, 1);
   histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 2, 2);
@@ -2384,6 +2384,94 @@ TEST_F(DesksTemplatesTest, TouchForNameView) {
   GetEventGenerator()->GestureTapAt(
       name_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(name_view->HasFocus());
+}
+
+// Tests that the desks templates use the right time string format. It's
+// expected to align with the File App. More details can be found at:
+// https://crbug.com/1268922.
+TEST_F(DesksTemplatesTest, TimeStrFormat) {
+  // Uses `01-01-2022 10:30 AM`, `Today 10:30 AM`, `Yesterday 10:30 AM`, and
+  // ``Tomorrow 10:30 AM`` for test.
+  base::Time time_long_ago, time_today, time_yesterday;
+
+  // 01-01-2022 10:30 AM.
+  base::Time::Exploded exploded_long_ago = {
+      /*year=*/2022,
+      /*month=*/1,
+      /*day_of_week=*/6,
+      /*day_of_month=*/1,
+      /*hour=*/10,
+      /*minute=*/30,
+      /*second=*/0,
+      /*millisecond=*/0,
+  };
+  ASSERT_TRUE(base::Time::FromLocalExploded(exploded_long_ago, &time_long_ago));
+
+  // Today 10:30 AM.
+  base::Time::Exploded exploded_today;
+  base::Time::Now().LocalExplode(&exploded_today);
+  exploded_today.hour = 10;
+  exploded_today.minute = 30;
+  exploded_today.second = 0;
+  exploded_today.millisecond = 0;
+  ASSERT_TRUE(base::Time::FromLocalExploded(exploded_today, &time_today));
+
+  // Yesterday 10:30 AM.
+  base::Time::Exploded exploded_yesterday;
+  (base::Time::Now() - base::Days(1)).LocalExplode(&exploded_yesterday);
+  exploded_yesterday.hour = 10;
+  exploded_yesterday.minute = 30;
+  exploded_yesterday.second = 0;
+  exploded_yesterday.millisecond = 0;
+  ASSERT_TRUE(
+      base::Time::FromLocalExploded(exploded_yesterday, &time_yesterday));
+
+  const std::vector<base::GUID> uuid = {
+      base::GUID::GenerateRandomV4(),
+      base::GUID::GenerateRandomV4(),
+      base::GUID::GenerateRandomV4(),
+  };
+  const std::vector<std::string> name = {
+      "template_1",
+      "template_2",
+      "template_3",
+  };
+  // The expected time string for each template.
+  const std::vector<std::u16string> expected_timestr = {
+      u"Jan 1, 2022, 10:30 AM",
+      u"Today 10:30 AM",
+      u"Yesterday 10:30 AM",
+  };
+  std::vector<base::Time> time = {
+      time_long_ago,
+      time_today,
+      time_yesterday,
+  };
+
+  for (size_t i = 0; i < 3; i++)
+    AddEntry(uuid[i], name[i], time[i]);
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Tests that each template comes with an expected time string format.
+  std::vector<DesksTemplatesItemView*> grid_items =
+      static_cast<DesksTemplatesGridView*>(GetOverviewGridList()
+                                               .front()
+                                               ->desks_templates_grid_widget()
+                                               ->GetContentsView())
+          ->grid_items();
+  for (size_t i = 0; i < 3; i++) {
+    auto iter = std::find_if(grid_items.cbegin(), grid_items.cend(),
+                             [uuid, i](const DesksTemplatesItemView* v) {
+                               return DesksTemplatesItemViewTestApi(v).uuid() ==
+                                      uuid[i];
+                             });
+    ASSERT_NE(grid_items.end(), iter);
+
+    DesksTemplatesItemView* item_view = *iter;
+    EXPECT_EQ(expected_timestr[i],
+              DesksTemplatesItemViewTestApi(item_view).time_view()->GetText());
+  }
 }
 
 }  // namespace ash
