@@ -1125,7 +1125,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R100-14488.0.0",
+        "cros_img": "octopus-release/R100-14490.0.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1136,7 +1136,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R99-14455.0.0",
+        "cros_img": "octopus-release/R99-14469.8.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_DEV",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1169,7 +1169,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R100-14488.0.0",
+        "cros_img": "octopus-release/R100-14490.0.0",
         "name": "ozone_unittests_OCTOPUS_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1179,7 +1179,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R99-14455.0.0",
+        "cros_img": "octopus-release/R99-14469.8.0",
         "name": "ozone_unittests_OCTOPUS_DEV",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1217,7 +1217,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R100-14488.0.0",
+        "cros_img": "kevin-release/R100-14490.0.0",
         "name": "lacros_all_tast_tests_KEVIN_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1228,7 +1228,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R100-14488.0.0",
+        "cros_img": "hana-release/R100-14490.0.0",
         "name": "lacros_all_tast_tests_HANA_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1239,7 +1239,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R100-14488.0.0",
+        "cros_img": "kevin-release/R100-14490.0.0",
         "name": "ozone_unittests_KEVIN_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1249,7 +1249,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R100-14488.0.0",
+        "cros_img": "hana-release/R100-14490.0.0",
         "name": "ozone_unittests_HANA_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1259,7 +1259,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R100-14488.0.0",
+        "cros_img": "kevin-release/R100-14490.0.0",
         "name": "viz_unittests_KEVIN_LKGM",
         "swarming": {},
         "test": "viz_unittests",
@@ -1269,7 +1269,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R100-14488.0.0",
+        "cros_img": "hana-release/R100-14490.0.0",
         "name": "viz_unittests_HANA_LKGM",
         "swarming": {},
         "test": "viz_unittests",
