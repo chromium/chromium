@@ -79,8 +79,9 @@ void SecurityKeyMessageHandler::ProcessSecurityKeyMessage(
   } else if (message_type == SecurityKeyMessageType::REQUEST) {
     HandleSecurityKeyRequest(message->payload());
   } else {
+    // uint8_t is handled as char, so we use uint16_t to show number here.
     LOG(ERROR) << "Unknown message type: "
-               << static_cast<uint8_t>(message_type);
+               << static_cast<uint16_t>(message_type);
     SendMessage(SecurityKeyMessageType::UNKNOWN_COMMAND);
   }
 }
