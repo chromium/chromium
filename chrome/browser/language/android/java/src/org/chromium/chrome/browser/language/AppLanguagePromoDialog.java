@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -237,13 +238,18 @@ public class AppLanguagePromoDialog {
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View row) {
             LanguageItemAdapter adapter = (LanguageItemAdapter) getBindingAdapter();
             adapter.setSelectedLanguage(getBindingAdapterPosition());
+            View positiveButton = row.getRootView().findViewById(R.id.positive_button);
+            if (positiveButton != null) {
+                positiveButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }
         }
 
         public void bindViewHolder(LanguageItem languageItem, boolean checked) {
             mRadioButton.setChecked(checked);
+            mRadioButton.setContentDescription(languageItem.getDisplayName());
             if (languageItem.isSystemDefault()) {
                 // For the system default locale the display name should be the primary TextView.
                 mPrimaryNameTextView.setText(languageItem.getDisplayName());
@@ -519,8 +525,8 @@ public class AppLanguagePromoDialog {
         boolean isOnline = NetworkChangeNotifier.isOnline();
         recordOnlineStatus(isOnline);
 
-        // Only show the prompt if online and accessibility features are not enabled.
-        return isOnline && !isAccessibilityEnabled;
+        // Only show the prompt if online.
+        return isOnline;
     }
 
     /**

@@ -102,6 +102,7 @@ android_resources("java_resources") {
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/widget/android:java_resources",
