@@ -12,6 +12,8 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 
 import {isNonEmptyArray} from '../common/utils.js';
 
+import {ambientReducers} from './ambient/ambient_reducers.js';
+import {AmbientState} from './ambient/ambient_state.js';
 import {PersonalizationActionName} from './personalization_actions.js';
 import {Actions} from './personalization_actions.js';
 import {WallpaperImage} from './personalization_app.mojom-webui.js';
@@ -99,6 +101,7 @@ function errorReducer(
 
 const root = combineReducers<PersonalizationState>({
   error: errorReducer,
+  ambient: combineReducers<AmbientState>(ambientReducers),
   theme: combineReducers<ThemeState>(themeReducers),
   user: combineReducers<UserState>(userReducers),
   wallpaper: combineReducers<WallpaperState>(wallpaperReducers),

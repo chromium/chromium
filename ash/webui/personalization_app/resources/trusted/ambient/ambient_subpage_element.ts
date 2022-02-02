@@ -10,9 +10,17 @@
 import 'chrome://personalization/trusted/ambient/toggle_row.js';
 import 'chrome://personalization/trusted/ambient/topic_source_list.js';
 
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class AmbientSubpage extends PolymerElement {
+import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {setAmbientModeEnabled} from './ambient_controller.js';
+import {getAmbientProvider} from './ambient_interface_provider.js';
+import {AmbientObserver} from './ambient_observer.js';
+import {ToggleRowElement} from './toggle_row.js';
+
+export class AmbientSubpage extends WithPersonalizationStore {
   static get is() {
     return 'ambient-subpage';
   }
@@ -23,7 +31,6 @@ export class AmbientSubpage extends PolymerElement {
 
   static get properties() {
     return {
-      // TODO: Toggle row related, initial values will be read by a provider.
       ambientModeEnabled_: {type: Boolean, value: false},
       description_: {
         type: String,
@@ -33,12 +40,31 @@ export class AmbientSubpage extends PolymerElement {
     };
   }
 
-  private ambientModeEnabled_: boolean;
+  ambientModeEnabled_: boolean;
   private description_: string;
+
+  connectedCallback() {
+    super.connectedCallback();
+    AmbientObserver.initAmbientObserverIfNeeded();
+    this.watch<AmbientSubpage['ambientModeEnabled_']>(
+        'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
+    this.updateFromStore();
+  }
 
   private onClickAmbientModeButton_(event: Event) {
     event.stopPropagation();
-    this.ambientModeEnabled_ = !this.ambientModeEnabled_;
+    this.setAmbientModeEnabled_(!this.ambientModeEnabled_);
+  }
+
+  private onToggleStateChanged_(event: Event) {
+    const toggleRow = event.currentTarget as ToggleRowElement;
+    const ambientModeEnabled = toggleRow!.isChecked();
+    this.setAmbientModeEnabled_(ambientModeEnabled);
+  }
+
+  private setAmbientModeEnabled_(ambientModeEnabled: boolean) {
+    setAmbientModeEnabled(
+        ambientModeEnabled, getAmbientProvider(), this.getStore());
   }
 }
 

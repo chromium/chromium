@@ -21,6 +21,12 @@ static_js_files = [
   "common/constants.ts",
   "common/utils.ts",
 
+  "trusted/ambient/ambient_actions.ts",
+  "trusted/ambient/ambient_controller.ts",
+  "trusted/ambient/ambient_interface_provider.ts",
+  "trusted/ambient/ambient_observer.ts",
+  "trusted/ambient/ambient_reducers.ts",
+  "trusted/ambient/ambient_state.ts",
   "trusted/iframe_api.ts",
   "trusted/personalization_actions.ts",
   "trusted/personalization_app.ts",

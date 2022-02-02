@@ -315,9 +315,21 @@ interface UserProvider {
   SelectProfileImage();
 };
 
+// Receives information whenever there are ambient mode pref changes.
+interface AmbientObserver {
+  // Retrieves information whether ambient mode is enabled.
+  OnAmbientModeEnabledChanged(bool ambient_mode_enabled);
+};
+
 // Provides APIs to expose Ambient mode settings.
 // Used by the Personalization Hub.
-interface AmbientProvider{
-    // Boolean pref for whether ambient mode is enabled.
-    IsAmbientModeEnabled() => (bool enabled);
+interface AmbientProvider {
+  // Boolean pref for whether ambient mode is enabled.
+  IsAmbientModeEnabled() => (bool enabled);
+
+  // Binds a listener to start receiving updates on ambient mode pref changes.
+  SetAmbientObserver(pending_remote<AmbientObserver> observer);
+
+  // Enables or disables ambient mode.
+  SetAmbientModeEnabled(bool enabled);
 };

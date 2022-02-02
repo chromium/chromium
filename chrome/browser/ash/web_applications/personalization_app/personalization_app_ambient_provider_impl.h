@@ -33,6 +33,13 @@ class PersonalizationAppAmbientProviderImpl
 
   // ash::personalization_app::mojom:AmbientProvider:
   void IsAmbientModeEnabled(IsAmbientModeEnabledCallback callback) override;
+  void SetAmbientObserver(
+      mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
+          observer) override;
+  void SetAmbientModeEnabled(bool enabled) override;
+
+  // TODO(b/216307771): Will need to add observer for this.
+  void OnAmbientModeEnabledChanged(bool ambient_mode_enabled);
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>
@@ -40,6 +47,9 @@ class PersonalizationAppAmbientProviderImpl
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
+
+  mojo::Remote<ash::personalization_app::mojom::AmbientObserver>
+      ambient_observer_remote_;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_

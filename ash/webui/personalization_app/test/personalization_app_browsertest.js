@@ -98,6 +98,23 @@ TEST_F('PersonalizationAppBrowserTest', 'HasRootPageUrl', () => {
   testDone();
 });
 
+TEST_F('PersonalizationAppBrowserTest', 'ShowsAmbientPreview', () => {
+  const preview = document.querySelector('personalization-router')
+                      .shadowRoot.querySelector('personalization-main')
+                      .shadowRoot.querySelector('ambient-preview');
+  assertTrue(!!preview);
+  testDone();
+});
+
+TEST_F('PersonalizationAppBrowserTest', 'ShowsAmbientSubpageLink', () => {
+  const ambientSubpageLink =
+      document.querySelector('personalization-router')
+          .shadowRoot.querySelector('personalization-main')
+          .shadowRoot.querySelector('#ambientSubpageLink');
+  assertTrue(!!ambientSubpageLink);
+  testDone();
+});
+
 TEST_F('PersonalizationAppBrowserTest', 'ShowsThemeButtons', () => {
   const theme = document.querySelector('personalization-router')
                     .shadowRoot.querySelector('personalization-main')

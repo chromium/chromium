@@ -30,6 +30,10 @@ export class ToggleRowElement extends PolymerElement {
       description: String,
     };
   }
+
+  isChecked(): boolean {
+    return this.$.toggle.checked;
+  }
 }
 
 customElements.define(ToggleRowElement.is, ToggleRowElement);

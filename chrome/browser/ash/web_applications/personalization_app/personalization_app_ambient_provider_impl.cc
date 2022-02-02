@@ -29,3 +29,28 @@ void PersonalizationAppAmbientProviderImpl::IsAmbientModeEnabled(
   std::move(callback).Run(
       pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
 }
+
+void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
+    mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
+        observer) {
+  // May already be bound if user refreshes page.
+  ambient_observer_remote_.reset();
+  ambient_observer_remote_.Bind(std::move(observer));
+
+  // Call it once to get the current ambient mode.
+  PrefService* pref_service = profile_->GetPrefs();
+  OnAmbientModeEnabledChanged(
+      pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
+}
+
+void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
+    bool enabled) {
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, enabled);
+}
+
+void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged(
+    bool ambient_mode_enabled) {
+  DCHECK(ambient_observer_remote_.is_bound());
+  ambient_observer_remote_->OnAmbientModeEnabledChanged(ambient_mode_enabled);
+}

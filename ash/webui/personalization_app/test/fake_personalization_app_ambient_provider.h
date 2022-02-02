@@ -38,6 +38,10 @@ class FakePersonalizationAppAmbientProvider
 
   // personalization_app::mojom::AmbientProvider
   void IsAmbientModeEnabled(IsAmbientModeEnabledCallback callback) override;
+  void SetAmbientObserver(
+      mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
+          observer) override {}
+  void SetAmbientModeEnabled(bool enabled) override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>

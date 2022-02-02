@@ -4,6 +4,7 @@
 
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 
+import {AmbientActions} from './ambient/ambient_actions.js';
 import {ThemeActions} from './theme/theme_actions.js';
 import {UserActions} from './user/user_actions.js';
 import {WallpaperActions} from './wallpaper/wallpaper_actions.js';
@@ -27,4 +28,4 @@ export function dismissErrorAction(): DismissErrorAction {
 }
 
 export type Actions =
-    ThemeActions|UserActions|WallpaperActions|DismissErrorAction;
+    AmbientActions|ThemeActions|UserActions|WallpaperActions|DismissErrorAction;

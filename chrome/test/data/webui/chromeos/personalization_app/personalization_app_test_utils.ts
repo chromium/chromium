@@ -7,6 +7,7 @@
  * SWA.
  */
 
+import {setAmbientProviderForTesting} from 'chrome://personalization/trusted/ambient/ambient_interface_provider.js';
 import {IFrameApi} from 'chrome://personalization/trusted/iframe_api.js';
 import {emptyState, PersonalizationState} from 'chrome://personalization/trusted/personalization_state.js';
 import {setThemeProviderForTesting} from 'chrome://personalization/trusted/theme/theme_interface_provider.js';
@@ -17,6 +18,7 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
+import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestThemeProvider} from './test_theme_interface_provider.js';
 import {TestUserProvider} from './test_user_interface_provider.js';
@@ -61,6 +63,8 @@ export async function teardownElement(element: HTMLElement|null) {
 export function baseSetup(initialState: PersonalizationState = emptyState()) {
   const wallpaperProvider = new TestWallpaperProvider();
   setWallpaperProviderForTesting(wallpaperProvider);
+  const ambientProvider = new TestAmbientProvider();
+  setAmbientProviderForTesting(ambientProvider);
   const themeProvider = new TestThemeProvider();
   setThemeProviderForTesting(themeProvider);
   const userProvider = new TestUserProvider();
@@ -68,7 +72,13 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   const personalizationStore = new TestPersonalizationStore(initialState);
   personalizationStore.replaceSingleton();
   document.body.innerHTML = '';
-  return {themeProvider, userProvider, wallpaperProvider, personalizationStore};
+  return {
+    ambientProvider,
+    themeProvider,
+    userProvider,
+    wallpaperProvider,
+    personalizationStore
+  };
 }
 
 function getDebugString(w: any) {
