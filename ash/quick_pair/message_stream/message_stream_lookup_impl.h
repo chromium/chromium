@@ -39,29 +39,53 @@ class MessageStreamLookupImpl : public MessageStreamLookup,
   MessageStream* GetMessageStream(const std::string& device_address) override;
 
  private:
+  // Enum class to bind to attempts to create RFCOMM channels for logging which
+  // BluetoothAdapter API triggers succeeded and failed.
+  enum class CreateMessageStreamAttemptType {
+    kDeviceConnectedStateChanged = 0,
+    kDeviceAdded = 1,
+    kDevicePairedChanged = 2,
+    kDeviceChanged = 3,
+  };
+
+  // Helper function to be used in log messages to understand success and errors
+  // for creating RFCOMM channel to the device.
+  std::string CreateMessageStreamAttemptTypeToString(
+      const CreateMessageStreamAttemptType& type);
+
   // device::BluetoothAdapter::Observer
   void DeviceConnectedStateChanged(device::BluetoothAdapter* adapter,
                                    device::BluetoothDevice* device,
                                    bool is_now_connected) override;
   void DeviceRemoved(device::BluetoothAdapter* adapter,
                      device::BluetoothDevice* device) override;
+  void DeviceAdded(device::BluetoothAdapter* adapter,
+                   device::BluetoothDevice* device) override;
+  void DevicePairedChanged(device::BluetoothAdapter* adapter,
+                           device::BluetoothDevice* device,
+                           bool new_paired_status) override;
+  void DeviceChanged(device::BluetoothAdapter* adapter,
+                     device::BluetoothDevice* device) override;
 
   // Helper functions to create and remove message stream objects and open and
   // close RFCOMM channels based on whether the device is connected or
   // disconnected from  the adapter.
-  void CreateMessageStream(device::BluetoothDevice* device);
-  void RemoveMessageStream(const std::string& device_address);
+  void AttemptCreateMessageStream(device::BluetoothDevice* device,
+                                  const CreateMessageStreamAttemptType& type);
+  void AttemptRemoveMessageStream(const std::string& device_address);
 
   // Create RFCOMM connection callbacks.
   void OnConnected(std::string device_address,
                    base::TimeTicks connect_to_service_start_time,
+                   const CreateMessageStreamAttemptType& type,
                    scoped_refptr<device::BluetoothSocket> socket);
-  void OnConnectError(const std::string& error_message);
+  void OnConnectError(const CreateMessageStreamAttemptType& type,
+                      const std::string& error_message);
 
   // Helper function to disconnect socket from a MessageStream instance and
   // destroy the MessageStream instance. Used by both |RemoveMessageStream| and
   // |DeviceRemoved|.
-  void EraseMessageStream(const std::string& device_address);
+  void AttemptEraseMessageStream(const std::string& device_address);
 
   // Callback for disconnected the socket from the MessageStream.
   void OnSocketDisconnected(const std::string& device_address);
