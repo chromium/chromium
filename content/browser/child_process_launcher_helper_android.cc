@@ -26,6 +26,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 
 using base::android::AttachCurrentThread;
@@ -215,6 +216,15 @@ JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(JNIEnv* env) {
          SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
          SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
          SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled();
+}
+
+static jboolean JNI_ChildProcessLauncherHelperImpl_IsNetworkSandboxEnabled(
+    JNIEnv* env) {
+  // We may want to call ContentBrowserClient::ShouldSandboxNetworkService,
+  // but that needs to be called on the UI thread. This function is called on
+  // the launcher thread, not UI thread. Hence we use
+  // sandbox::policy::features::IsNetworkSandboxEnabled.
+  return sandbox::policy::features::IsNetworkSandboxEnabled();
 }
 
 // static

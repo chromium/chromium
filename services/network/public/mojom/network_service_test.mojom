@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
@@ -128,4 +129,7 @@ interface NetworkServiceTest {
   // default.
   [Sync]
   SetSCTAuditingRetryDelay(mojo_base.mojom.TimeDelta? delay) => ();
+
+  // Opens a file with the given `path`, and returns whether it is valid.
+  OpenFile(mojo_base.mojom.FilePath path) => (bool result);
 };

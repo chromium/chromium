@@ -382,6 +382,10 @@ NET_EXPORT extern const base::Feature kExtraCookieValidityChecks;
 // Android.
 NET_EXPORT extern const base::Feature kRecordRadioWakeupTrigger;
 
+// When enabled, certain operations in the HTTP cache are brokered to allow
+// the network process to be sandboxed.
+NET_EXPORT extern const base::Feature kSandboxHttpCache;
+
 }  // namespace features
 }  // namespace net
 

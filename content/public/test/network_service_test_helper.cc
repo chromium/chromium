@@ -284,6 +284,12 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     receivers_.Clear();
   }
 
+  void OpenFile(const base::FilePath& path,
+                base::OnceCallback<void(bool)> callback) override {
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    std::move(callback).Run(file.IsValid());
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {

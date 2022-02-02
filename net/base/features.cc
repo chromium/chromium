@@ -254,5 +254,8 @@ const base::Feature kExtraCookieValidityChecks{
 const base::Feature kRecordRadioWakeupTrigger{
     "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSandboxHttpCache("SandboxHttpCache",
+                                      base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace net
