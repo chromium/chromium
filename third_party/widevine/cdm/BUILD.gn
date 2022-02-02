@@ -49,11 +49,6 @@ if (bundle_widevine_cdm) {
   }
 }
 
-# For ChromeOS Ash build, the CDM is not component updated hence no manifest.
-if (is_chromeos_ash) {
-  widevine_cdm_manifest_and_license_files = []
-}
-
 copy("version_h") {
   visibility = [ ":*" ]  # Depend on ":headers" instead.
   sources = [ widevine_cdm_version_h_file ]

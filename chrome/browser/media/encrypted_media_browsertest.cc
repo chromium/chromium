@@ -282,6 +282,19 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     title_watcher->AlsoWaitForTitle(kEmeRenewalMissingHeader);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MediaBrowserTest::SetUpCommandLine(command_line);
+
+    // Persistent license is supported on ChromeOS when protected media
+    // identifier is allowed which involves a user action. Use this switch to
+    // always allow the identifier for testing purpose. Note that the test page
+    // is hosted on "127.0.0.1". See net::EmbeddedTestServer for details.
+    command_line->AppendSwitchASCII(
+        switches::kUnsafelyAllowProtectedMediaIdentifierForDomain, "127.0.0.1");
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);

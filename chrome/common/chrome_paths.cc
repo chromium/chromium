@@ -321,11 +321,7 @@ bool PathProvider(int key, base::FilePath* result) {
     case chrome::DIR_BUNDLED_WIDEVINE_CDM:
       if (!GetComponentDirectory(&cur))
         return false;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-      // TODO(crbug.com/971433): Move Widevine CDM to a separate folder on
-      // Chrome OS so that the manifest can be included.
       cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       break;
 
     case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM:
