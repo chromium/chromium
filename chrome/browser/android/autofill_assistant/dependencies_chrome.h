@@ -36,6 +36,8 @@ class DependenciesChrome : public Dependencies {
 
   AnnotateDomModelService* GetAnnotateDomModelService(
       content::BrowserContext* browser_context) const override;
+
+  bool IsCustomTab(const content::WebContents& web_contents) const override;
 };
 
 }  // namespace autofill_assistant

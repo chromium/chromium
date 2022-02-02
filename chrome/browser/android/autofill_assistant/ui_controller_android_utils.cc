@@ -23,7 +23,6 @@
 #include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantAutofillCreditCard_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantAutofillProfile_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
-#include "chrome/browser/android/tab_android.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -544,26 +543,18 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
     const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
     jboolean onboarding_shown,
     jboolean is_direct_action,
-    const base::android::JavaRef<jstring>& jinitial_url) {
+    const base::android::JavaRef<jstring>& jinitial_url,
+    const bool is_custom_tab) {
   auto script_parameters = std::make_unique<ScriptParameters>(
       CreateStringMapFromJava(env, jparameter_names, jparameter_values));
   script_parameters->UpdateDeviceOnlyParameters(CreateStringMapFromJava(
       env, jdevice_only_parameter_names, jdevice_only_parameter_values));
   return std::make_unique<TriggerContext>(
       std::move(script_parameters),
-      SafeConvertJavaStringToNative(env, jexperiment_ids),
-      IsCustomTab(web_contents), onboarding_shown, is_direct_action,
+      SafeConvertJavaStringToNative(env, jexperiment_ids), is_custom_tab,
+      onboarding_shown, is_direct_action,
       SafeConvertJavaStringToNative(env, jinitial_url),
       /* is_in_chrome_triggered = */ false);
-}
-
-bool IsCustomTab(content::WebContents* web_contents) {
-  auto* tab_android = TabAndroid::FromWebContents(web_contents);
-  if (!tab_android) {
-    return false;
-  }
-
-  return tab_android->IsCustomTab();
 }
 
 std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,

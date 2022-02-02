@@ -9,6 +9,7 @@
 #include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantStaticDependenciesChrome_jni.h"
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,6 +74,16 @@ AnnotateDomModelService* DependenciesChrome::GetAnnotateDomModelService(
     content::BrowserContext* browser_context) const {
   return AnnotateDomModelServiceFactory::GetInstance()->GetForBrowserContext(
       browser_context);
+}
+
+bool DependenciesChrome::IsCustomTab(
+    const content::WebContents& web_contents) const {
+  auto* tab_android = TabAndroid::FromWebContents(&web_contents);
+  if (!tab_android) {
+    return false;
+  }
+
+  return tab_android->IsCustomTab();
 }
 
 }  // namespace autofill_assistant

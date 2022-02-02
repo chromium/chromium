@@ -43,6 +43,8 @@ class Dependencies {
   virtual AnnotateDomModelService* GetAnnotateDomModelService(
       content::BrowserContext* browser_context) const = 0;
 
+  virtual bool IsCustomTab(const content::WebContents& web_contents) const = 0;
+
  protected:
   Dependencies(
       JNIEnv* env,

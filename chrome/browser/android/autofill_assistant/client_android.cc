@@ -256,7 +256,8 @@ void ClientAndroid::FetchWebsiteActions(
           base::android::JavaParamRef<jobjectArray>(nullptr),
           /* onboarding_shown = */ false,
           /* is_direct_action = */ true,
-          /* jinitial_url = */ nullptr),
+          /* jinitial_url = */ nullptr,
+          /* is_custom_tab = */ dependencies_->IsCustomTab(*GetWebContents())),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
                      weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
 }
@@ -365,7 +366,9 @@ bool ClientAndroid::PerformDirectAction(
       base::android::JavaParamRef<jobjectArray>(nullptr),
       /* onboarding_shown = */ false,
       /* is_direct_action = */ true,
-      /* jinitial_url = */ nullptr);
+      /* jinitial_url = */
+      nullptr,
+      /* is_custom_tab = */ dependencies_->IsCustomTab(*GetWebContents()));
 
   int action_index = FindDirectAction(action_name);
   if (action_index == -1)

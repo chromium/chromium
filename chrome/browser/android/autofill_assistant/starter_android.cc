@@ -233,8 +233,7 @@ bool StarterAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool StarterAndroid::GetIsCustomTab() const {
-  return ui_controller_android_utils::IsCustomTab(
-      const_cast<content::WebContents*>(&GetWebContents()));
+  return dependencies_->IsCustomTab(GetWebContents());
 }
 
 bool StarterAndroid::GetIsTabCreatedByGSA() const {
@@ -280,7 +279,7 @@ void StarterAndroid::Start(
       jparameter_values, jdevice_only_parameter_names,
       jdevice_only_parameter_values,
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
-      jinitial_url);
+      jinitial_url, GetIsCustomTab());
 
   starter_->Start(std::move(trigger_context));
 }
