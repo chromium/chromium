@@ -21,6 +21,7 @@
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -43,6 +44,7 @@
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -346,17 +348,6 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     return;
   }
 
-  // TODO(https://crbug.com/1282637): Compute the client security state based on
-  // the response head and the creator's client security state, just like is
-  // currently done for COEP. Preserve existing functionality in the meantime.
-  worker_client_security_state_ =
-      ancestor_render_frame_host->BuildClientSecurityState();
-
-  // Alias the COEP field inside `worker_client_security_state_` for brevity
-  // below. Note that this is a reference, not a copy.
-  network::CrossOriginEmbedderPolicy& coep =
-      worker_client_security_state_->cross_origin_embedder_policy;
-
   // https://html.spec.whatwg.org/C/#run-a-worker
   if (final_response_url.SchemeIsBlob() ||
       final_response_url.SchemeIs(url::kAboutScheme) ||
@@ -364,19 +355,56 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       // TODO(https://crbug.com/1146362): Inherit from the file creator instead
       // once creator policies are persisted through the filesystem store.
       final_response_url.SchemeIs(url::kFileSystemScheme)) {
-    // > 14.5 If response's url's scheme is a local scheme, then set worker
-    // global scope's embedder policy to owner's embedder policy.
-    coep = creator_client_security_state_->cross_origin_embedder_policy;
-  } else if (main_script_load_params->response_head->parsed_headers) {
+    if (base::FeatureList::IsEnabled(
+            features::kPrivateNetworkAccessForWorkers)) {
+      worker_client_security_state_ = creator_client_security_state_->Clone();
+    } else {
+      // Preserve incorrect functionality if PNA is not enabled.
+      worker_client_security_state_ =
+          ancestor_render_frame_host->BuildClientSecurityState();
+
+      // > 14.5 If response's url's scheme is a local scheme, then set worker
+      // global scope's embedder policy to owner's embedder policy.
+      worker_client_security_state_->cross_origin_embedder_policy =
+          creator_client_security_state_->cross_origin_embedder_policy;
+    }
+  } else if (main_script_load_params) {
+    DCHECK(main_script_load_params->response_head);
+    DCHECK(main_script_load_params->response_head->parsed_headers);
+
+    if (base::FeatureList::IsEnabled(
+            features::kPrivateNetworkAccessForWorkers)) {
+      worker_client_security_state_ =
+          network::mojom::ClientSecurityState::New();
+      worker_client_security_state_->ip_address_space = CalculateIPAddressSpace(
+          final_response_url, main_script_load_params->response_head.get(),
+          GetContentClient()->browser());
+      worker_client_security_state_->is_web_secure_context =
+          network::IsUrlPotentiallyTrustworthy(final_response_url) &&
+          creator_client_security_state_->is_web_secure_context;
+      worker_client_security_state_->private_network_request_policy =
+          DerivePrivateNetworkRequestPolicy(
+              worker_client_security_state_->ip_address_space,
+              worker_client_security_state_->is_web_secure_context);
+    } else {
+      // Preserve incorrect functionality if PNA is not enabled.
+      worker_client_security_state_ =
+          ancestor_render_frame_host->BuildClientSecurityState();
+    }
+
     // > 14.6 Otherwise, set worker global scope's embedder policy to the result
     // of obtaining an embedder policy from response.
-    coep = main_script_load_params->response_head->parsed_headers
-               ->cross_origin_embedder_policy;
+    worker_client_security_state_->cross_origin_embedder_policy =
+        main_script_load_params->response_head->parsed_headers
+            ->cross_origin_embedder_policy;
   }
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       worker_process_host_->GetStoragePartition());
+
   // Create a COEP reporter with worker's policy.
+  const network::CrossOriginEmbedderPolicy& coep =
+      worker_client_security_state_->cross_origin_embedder_policy;
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
       storage_partition->GetWeakPtr(), final_response_url,
       coep.reporting_endpoint, coep.report_only_reporting_endpoint,

@@ -64,7 +64,8 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   // Called with the result of fetching a script upon completion.
   //
   // - `subresource_loader_factories` is never nullptr.
-  // - `main_script_load_params` is nullptr iff the fetch failed.
+  // - `main_script_load_params` is nullptr iff the fetch failed. Otherwise, it
+  //    always contains `response_head` and `response_head->parsed_headers`.
   // - `controller` and `controller_service_worker_object_host` may be nullptr.
   // - `final_response_url` specifies the script response URL.
   using CompletionCallback = base::OnceCallback<void(
