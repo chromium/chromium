@@ -49,6 +49,8 @@ component("app_types") {
   sources = [
     "app_types.cc",
     "app_types.h",
+    "intent_filter.cc",
+    "intent_filter.h",
     "permission.cc",
     "permission.h",
   ]

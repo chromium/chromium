@@ -44,6 +44,7 @@ std::unique_ptr<App> App::Clone() const {
   app->allow_uninstall = allow_uninstall;
   app->has_badge = has_badge;
   app->paused = paused;
+  app->intent_filters = CloneIntentFilters(intent_filters);
 
   return app;
 }
@@ -235,6 +236,14 @@ std::unique_ptr<App> ConvertMojomAppToApp(
   app->allow_uninstall = GetOptionalBool(mojom_app->allow_uninstall);
   app->has_badge = GetOptionalBool(mojom_app->has_badge);
   app->paused = GetOptionalBool(mojom_app->paused);
+
+  for (const auto& mojom_intent_filter : mojom_app->intent_filters) {
+    auto intent_filter =
+        ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter);
+    if (intent_filter) {
+      app->intent_filters.push_back(std::move(intent_filter));
+    }
+  }
 
   return app;
 }

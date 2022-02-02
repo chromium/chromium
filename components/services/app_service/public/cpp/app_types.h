@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -170,6 +171,11 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // will be stopped. This is independent of whether or not the app is ready to
   // be launched (defined by the Readiness field).
   absl::optional<bool> paused;
+
+  // This vector stores all the intent filters defined in this app. Each
+  // intent filter defines a matching criteria for whether an intent can
+  // be handled by this app. One app can have multiple intent filters.
+  IntentFilters intent_filters;
 
   // TODO(crbug.com/1253250): Add other App struct fields.
 

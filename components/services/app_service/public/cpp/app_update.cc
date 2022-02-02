@@ -146,7 +146,7 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   }
   if (!delta->intent_filters.empty()) {
     state->intent_filters.clear();
-    CloneIntentFilters(delta->intent_filters, &state->intent_filters);
+    ::CloneIntentFilters(delta->intent_filters, &state->intent_filters);
   }
   if (delta->resize_locked != apps::mojom::OptionalBool::kUnknown) {
     state->resize_locked = delta->resize_locked;
@@ -216,6 +216,11 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(allow_uninstall);
   SET_OPTIONAL_VALUE(has_badge);
   SET_OPTIONAL_VALUE(paused);
+
+  if (!delta->intent_filters.empty()) {
+    state->intent_filters.clear();
+    state->intent_filters = CloneIntentFilters(delta->intent_filters);
+  }
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -843,9 +848,21 @@ std::vector<apps::mojom::IntentFilterPtr> AppUpdate::IntentFilters() const {
   std::vector<apps::mojom::IntentFilterPtr> intent_filters;
 
   if (mojom_delta_ && !mojom_delta_->intent_filters.empty()) {
-    CloneIntentFilters(mojom_delta_->intent_filters, &intent_filters);
+    ::CloneIntentFilters(mojom_delta_->intent_filters, &intent_filters);
   } else if (mojom_state_ && !mojom_state_->intent_filters.empty()) {
-    CloneIntentFilters(mojom_state_->intent_filters, &intent_filters);
+    ::CloneIntentFilters(mojom_state_->intent_filters, &intent_filters);
+  }
+
+  return intent_filters;
+}
+
+apps::IntentFilters AppUpdate::GetIntentFilters() const {
+  apps::IntentFilters intent_filters;
+
+  if (delta_ && !delta_->intent_filters.empty()) {
+    intent_filters = CloneIntentFilters(delta_->intent_filters);
+  } else if (state_ && !state_->intent_filters.empty()) {
+    intent_filters = CloneIntentFilters(state_->intent_filters);
   }
 
   return intent_filters;

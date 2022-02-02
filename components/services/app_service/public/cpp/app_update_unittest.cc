@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +34,19 @@ PermissionPtr MakePermission(PermissionType permission_type,
 }
 
 bool IsEqual(const Permissions& source, const Permissions& target) {
+  if (source.size() != target.size()) {
+    return false;
+  }
+
+  for (int i = 0; i < static_cast<int>(source.size()); i++) {
+    if (*source[i] != *target[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool IsEqual(const IntentFilters& source, const IntentFilters& target) {
   if (source.size() != target.size()) {
     return false;
   }
@@ -101,6 +115,8 @@ class AppUpdateTest : public testing::Test {
 
   absl::optional<bool> expect_paused_;
 
+  IntentFilters expect_intent_filters_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -158,6 +174,8 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_paused_, u.GetPaused());
 
+    EXPECT_TRUE(IsEqual(expect_intent_filters_, u.GetIntentFilters()));
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -192,6 +210,7 @@ class AppUpdateTest : public testing::Test {
     expect_handles_intents_ = absl::nullopt;
     expect_has_badge_ = absl::nullopt;
     expect_paused_ = absl::nullopt;
+    expect_intent_filters_.clear();
     CheckExpects(u);
 
     if (delta) {
@@ -715,6 +734,64 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_paused_, state->paused);
+      CheckExpects(u);
+    }
+
+    // Intent Filter tests.
+
+    if (state) {
+      IntentFilterPtr intent_filter = std::make_unique<IntentFilter>();
+
+      ConditionValues scheme_condition_values;
+      scheme_condition_values.push_back(
+          std::make_unique<ConditionValue>("https", PatternMatchType::kNone));
+      ConditionPtr scheme_condition = std::make_unique<Condition>(
+          ConditionType::kScheme, std::move(scheme_condition_values));
+
+      ConditionValues host_condition_values;
+      host_condition_values.push_back(std::make_unique<ConditionValue>(
+          "www.google.com", PatternMatchType::kNone));
+      auto host_condition = std::make_unique<Condition>(
+          ConditionType::kHost, std::move(host_condition_values));
+
+      intent_filter->conditions.push_back(std::move(scheme_condition));
+      intent_filter->conditions.push_back(std::move(host_condition));
+
+      state->intent_filters.push_back(intent_filter->Clone());
+      expect_intent_filters_.push_back(intent_filter->Clone());
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      expect_intent_filters_.clear();
+
+      IntentFilterPtr intent_filter = std::make_unique<IntentFilter>();
+
+      ConditionValues scheme_condition_values;
+      scheme_condition_values.push_back(
+          std::make_unique<ConditionValue>("https", PatternMatchType::kNone));
+      ConditionPtr scheme_condition = std::make_unique<Condition>(
+          ConditionType::kScheme, std::move(scheme_condition_values));
+      intent_filter->conditions.push_back(scheme_condition->Clone());
+
+      ConditionValues host_condition_values;
+      host_condition_values.push_back(std::make_unique<ConditionValue>(
+          "www.abc.com", PatternMatchType::kNone));
+      auto host_condition = std::make_unique<Condition>(
+          ConditionType::kHost, std::move(host_condition_values));
+      intent_filter->conditions.push_back(host_condition->Clone());
+
+      intent_filter->conditions.push_back(std::move(scheme_condition));
+      intent_filter->conditions.push_back(std::move(host_condition));
+
+      delta->intent_filters.push_back(intent_filter->Clone());
+      expect_intent_filters_.push_back(intent_filter->Clone());
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_TRUE(IsEqual(expect_intent_filters_, state->intent_filters));
       CheckExpects(u);
     }
   }
