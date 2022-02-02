@@ -53491,6 +53491,7 @@ from previous Chrome versions.
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
   <int value="-365920680" label="ImageCaptureAPI:disabled"/>
   <int value="-365806433" label="BuiltInModuleAll:disabled"/>
+  <int value="-365039598" label="WebBluetooth:disabled"/>
   <int value="-364604989"
       label="LinkManagedNoticeToChromeUIManagementURL:disabled"/>
   <int value="-364587218" label="ResourceLoadScheduler:enabled"/>
@@ -53529,6 +53530,7 @@ from previous Chrome versions.
       label="WebAuthenticationCrosPlatformAuthenticator:enabled"/>
   <int value="-344343842" label="disable-experimental-app-list"/>
   <int value="-343769596" label="ServiceWorkerScriptStreaming:disabled"/>
+  <int value="-343314036" label="WebBluetooth:enabled"/>
   <int value="-342421456" label="EnableOverviewRoundedCorners:disabled"/>
   <int value="-340622848" label="disable-javascript-harmony-shipping"/>
   <int value="-340255045" label="allow-nacl-socket-api"/>

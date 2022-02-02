@@ -2636,6 +2636,10 @@ const char kWallpaperPerDeskName[] =
 const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
 
+const char kWebBluetoothName[] = "Web Bluetooth";
+const char kWebBluetoothDescription[] =
+    "Enables the Web Bluetooth API on platforms without official support";
+
 const char kWebBluetoothNewPermissionsBackendName[] =
     "Use the new permissions backend for Web Bluetooth";
 const char kWebBluetoothNewPermissionsBackendDescription[] =

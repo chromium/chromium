@@ -2918,6 +2918,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-web-bluetooth",
+    "owners": [ "web-bluetooth@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-web-bluetooth-new-permissions-backend",
     "owners": [ "web-bluetooth@google.com" ],
     "expiry_milestone": 100
