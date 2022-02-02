@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -99,6 +100,9 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   //   Since nested shared workers are not supported, for shared workers
   //   `ancestor_render_frame_host` and `creator_render_frame_host` are always
   //   equal.
+  // - `client_security_state` specifies parameters to be passed to the network
+  //   service `URLLoaderFactory`, for use when loading the script. It must not
+  //   be nullptr.
   // - `callback` will be called with the result on the UI thread.
   static void CreateAndStart(
       int worker_process_id,
@@ -110,6 +114,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       const url::Origin& request_initiator,
       const blink::StorageKey& request_initiator_storage_key,
       const net::IsolationInfo& trusted_isolation_info,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
@@ -181,6 +186,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       RenderFrameHostImpl* ancestor_render_frame_host,
       RenderFrameHostImpl* creator_render_frame_host,
       const net::IsolationInfo& trusted_isolation_info,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       std::unique_ptr<network::ResourceRequest> resource_request,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           factory_bundle_for_browser_info,

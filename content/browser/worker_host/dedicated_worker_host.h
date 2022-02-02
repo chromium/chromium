@@ -173,6 +173,12 @@ class DedicatedWorkerHost final
     return reporting_source_;
   }
 
+  // Returns the client security state applied to subresource fetches.
+  // May return nullptr before the script is loaded.
+  const network::mojom::ClientSecurityState* client_security_state() const {
+    return worker_client_security_state_.get();
+  }
+
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
     DCHECK(worker_client_security_state_);

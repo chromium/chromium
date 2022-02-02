@@ -364,7 +364,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           host->instance().storage_key().nonce().has_value()
               ? &host->instance().storage_key().nonce().value()
               : nullptr),
-      credentials_mode, std::move(outside_fetch_client_settings_object),
+      creator.BuildClientSecurityState(), credentials_mode,
+      std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,
       service_worker_context_, service_worker_handle_raw,
       std::move(blob_url_loader_factory), url_loader_factory_override_,

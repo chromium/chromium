@@ -239,9 +239,10 @@ void DedicatedWorkerHost::StartScriptLoad(
     return;
   }
 
-  // If this is a nested worker, there is no creator frame.
   RenderFrameHostImpl* creator_render_frame_host = nullptr;
+  DedicatedWorkerHost* creator_worker = nullptr;
   if (creator_render_frame_host_id_) {
+    // This is not a nested worker, it has a creator frame.
     creator_render_frame_host =
         RenderFrameHostImpl::FromID(*creator_render_frame_host_id_);
     if (!creator_render_frame_host) {
@@ -249,7 +250,28 @@ void DedicatedWorkerHost::StartScriptLoad(
           script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
       return;
     }
+  } else {
+    // The creator of this worker is a dedicated worker.
+    DCHECK(creator_worker_token_);
+
+    creator_worker =
+        service_->GetDedicatedWorkerHostFromToken(*creator_worker_token_);
+    if (!creator_worker) {
+      ScriptLoadStartFailed(
+          script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+      return;
+    }
   }
+
+  // At this point there is either a creator frame or a creator worker.
+  //
+  // This may change at some point in the future if dedicated workers can be
+  // nested inside shared workers, as the HTML spec dictates. For now, nesting
+  // is only supported for dedicated workers inside dedicated workers, so the
+  // following invariant holds. If and when this changes, conditionals below
+  // should be revisited to account for the novel possibility of a creator
+  // shared worker.
+  DCHECK_NE(creator_render_frame_host == nullptr, creator_worker == nullptr);
 
   // Set if the subresource loader factories support file URLs so that we can
   // recreate the factories after Network Service crashes.
@@ -270,23 +292,18 @@ void DedicatedWorkerHost::StartScriptLoad(
       service_worker_handle_->set_parent_container_host(
           creator_render_frame_host->GetLastCommittedServiceWorkerHost());
     } else {
-      // The creator of this worker is a dedicated worker.
-      DCHECK(creator_worker_token_);
-
-      DedicatedWorkerHost* creator_worker =
-          service_->GetDedicatedWorkerHostFromToken(
-              creator_worker_token_.value());
-      if (!creator_worker) {
-        ScriptLoadStartFailed(
-            script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
-        return;
-      }
-
       base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
           creator_worker->service_worker_handle()->container_host();
-
       service_worker_handle_->set_parent_container_host(creator_container_host);
     }
+  }
+
+  network::mojom::ClientSecurityStatePtr client_security_state;
+  if (creator_render_frame_host) {
+    client_security_state =
+        creator_render_frame_host->BuildClientSecurityState();
+  } else {
+    client_security_state = creator_worker->client_security_state()->Clone();
   }
 
   // Get a storage domain.
@@ -300,7 +317,8 @@ void DedicatedWorkerHost::StartScriptLoad(
       nearest_ancestor_render_frame_host->ComputeSiteForCookies(),
       creator_origin_, storage_key_,
       nearest_ancestor_render_frame_host->GetIsolationInfoForSubresources(),
-      credentials_mode, std::move(outside_fetch_client_settings_object),
+      std::move(client_security_state), credentials_mode,
+      std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kWorker,
       storage_partition_impl->GetServiceWorkerContext(),
       service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
