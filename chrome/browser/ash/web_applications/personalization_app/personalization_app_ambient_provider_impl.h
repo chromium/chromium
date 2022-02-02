@@ -45,11 +45,10 @@ class PersonalizationAppAmbientProviderImpl
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>
       ambient_receiver_{this};
 
-  // Pointer to profile of user that opened personalization SWA. Not owned.
-  Profile* const profile_ = nullptr;
-
   mojo::Remote<ash::personalization_app::mojom::AmbientObserver>
       ambient_observer_remote_;
+
+  raw_ptr<Profile> const profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_

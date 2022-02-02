@@ -328,9 +328,9 @@ interface AmbientProvider {
   // Boolean pref for whether ambient mode is enabled.
   IsAmbientModeEnabled() => (bool enabled);
 
-  // Binds a listener to start receiving updates on ambient mode pref changes.
-  SetAmbientObserver(pending_remote<AmbientObserver> observer);
-
   // Enables or disables ambient mode.
   SetAmbientModeEnabled(bool enabled);
+
+  // Binds a listener to start receiving updates on ambient mode pref changes.
+  SetAmbientObserver(pending_remote<AmbientObserver> observer);
 };

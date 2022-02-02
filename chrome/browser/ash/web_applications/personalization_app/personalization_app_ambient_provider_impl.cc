@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_ambient_provider_impl.h"
 
+#include <utility>
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -46,6 +47,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
 void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
     bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
+  DCHECK(pref_service);
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, enabled);
 }
 

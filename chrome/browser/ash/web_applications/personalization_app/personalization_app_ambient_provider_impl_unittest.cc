@@ -99,3 +99,20 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, IsAmbientModeEnabled) {
   ambient_provider_remote().FlushForTesting();
   EXPECT_TRUE(called);
 }
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, SetAmbientModeEnabled) {
+  PrefService* pref_service = profile()->GetPrefs();
+  EXPECT_TRUE(pref_service);
+  // Clear pref.
+  pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
+
+  ambient_provider_remote()->SetAmbientModeEnabled(true);
+  ambient_provider_remote().FlushForTesting();
+  EXPECT_TRUE(
+      pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
+
+  ambient_provider_remote()->SetAmbientModeEnabled(false);
+  ambient_provider_remote().FlushForTesting();
+  EXPECT_FALSE(
+      pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
+}
