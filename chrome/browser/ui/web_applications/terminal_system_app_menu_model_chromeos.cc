@@ -47,7 +47,10 @@ bool TerminalSystemAppMenuModel::IsCommandIdEnabled(int command_id) const {
 void TerminalSystemAppMenuModel::ExecuteCommand(int command_id,
                                                 int event_flags) {
   if (command_id == IDC_TERMINAL_LINUX) {
-    chrome::NewTab(browser());
+    chrome::AddTabAt(browser(),
+                     crostini::GenerateTerminalURL(browser()->profile()),
+                     /*idx=*/-1,
+                     /*foreground=*/true);
   } else if (command_id == IDC_TERMINAL_SSH) {
     chrome::AddTabAt(browser(),
                      GURL("chrome-untrusted://terminal/html/terminal_ssh.html"),
