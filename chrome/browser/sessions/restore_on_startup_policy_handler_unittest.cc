@@ -144,6 +144,16 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_URLs) {
   EXPECT_TRUE(errors().empty());
 }
 
+TEST_F(RestoreOnStartupPolicyHandlerTest,
+       CheckPolicySettings_RestoreLastSessionAndURLs) {
+  // Specify the LastAndURLs value.
+  SetPolicyValue(key::kRestoreOnStartup,
+                 base::Value(SessionStartupPref::kPrefValueLastAndURLs));
+  // Checking should succeed with no errors.
+  EXPECT_TRUE(CheckPolicySettings());
+  EXPECT_TRUE(errors().empty());
+}
+
 TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_NewTab) {
   // Specify the NewTab value.
   SetPolicyValue(key::kRestoreOnStartup,

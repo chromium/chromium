@@ -188,14 +188,25 @@ TEST(StartupTabProviderTest, GetPinnedTabsForState_Negative) {
 }
 
 TEST(StartupTabProviderTest, GetPreferencesTabsForState) {
-  SessionStartupPref pref(SessionStartupPref::Type::URLS);
-  pref.urls = {GURL(u"https://www.google.com")};
+  SessionStartupPref pref_urls(SessionStartupPref::Type::URLS);
+  SessionStartupPref pref_last_and_urls(
+      SessionStartupPref::Type::LAST_AND_URLS);
+  pref_urls.urls = {GURL(u"https://www.google.com")};
+  pref_last_and_urls.urls = {GURL(u"https://www.google.com")};
 
   StartupTabs output =
-      StartupTabProviderImpl::GetPreferencesTabsForState(pref, false);
+      StartupTabProviderImpl::GetPreferencesTabsForState(pref_urls, false);
 
   ASSERT_EQ(1U, output.size());
   EXPECT_EQ("www.google.com", output[0].url.host());
+  EXPECT_EQ(StartupTab::Type::kNormal, output[0].type);
+
+  output = StartupTabProviderImpl::GetPreferencesTabsForState(
+      pref_last_and_urls, false);
+
+  ASSERT_EQ(1U, output.size());
+  EXPECT_EQ("www.google.com", output[0].url.host());
+  EXPECT_EQ(StartupTab::Type::kFromLastAndUrlsStartupPref, output[0].type);
 }
 
 TEST(StartupTabProviderTest, GetPreferencesTabsForState_WrongType) {

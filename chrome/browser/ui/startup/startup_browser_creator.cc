@@ -716,7 +716,7 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
     if (entry && entry->IsSigninRequired())
       pref.type = SessionStartupPref::LAST;
   }
-  if (pref.ShouldRestoreLastSession() &&
+  if ((pref.ShouldRestoreLastSession() && !pref.ShouldOpenUrls()) &&
       (profile->IsGuestSession() || profile->IsOffTheRecord())) {
     // We don't store session information when incognito. If the user has
     // chosen to restore last session and launched incognito, fallback to

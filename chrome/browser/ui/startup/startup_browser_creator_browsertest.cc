@@ -251,6 +251,14 @@ bool HasInfoBar(infobars::ContentInfoBarManager* infobar_manager,
   return false;
 }
 
+void WaitForLoadStopForBrowser(Browser* browser) {
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
+    EXPECT_TRUE(content::WaitForLoadStop(contents));
+  }
+}
+
 struct StartupBrowserCreatorFlagTypeValue {
   std::string flag;
   infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier;
@@ -1355,6 +1363,94 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   // profile_home2 was not launched since it would've only opened the home page.
   ASSERT_EQ(0u, chrome::GetBrowserCount(profile_home2));
+}
+
+// If startup pref is set as LAST_AND_URLS, startup urls should be opened in a
+// new browser window separated from the last-session-restored browser.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // Create a new profile.
+  base::FilePath dest_path =
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("New Profile"));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  Profile* profile = profile_manager->GetProfile(dest_path);
+  ASSERT_TRUE(profile);
+
+  DisableWelcomePages({profile});
+
+  const GURL t1_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL t2_url = embedded_test_server()->GetURL("/title2.html");
+  const GURL t3_url = embedded_test_server()->GetURL("/title3.html");
+
+  // Set the profiles to open both urls and last visited pages.
+  SessionStartupPref startup_pref(SessionStartupPref::LAST_AND_URLS);
+  std::vector<GURL> urls_to_open;
+  urls_to_open.push_back(t1_url);
+  urls_to_open.push_back(t2_url);
+  startup_pref.urls = urls_to_open;
+  SessionStartupPref::SetStartupPref(profile, startup_pref);
+
+  // Open |t3_url| in a tab.
+  Browser* new_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  TabStripModel* tab_strip_model = new_browser->tab_strip_model();
+  ui_test_utils::NavigateToURLWithDisposition(
+      new_browser, t3_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, tab_strip_model->count());
+  EXPECT_EQ(t3_url,
+            tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
+
+  // Close the browser without deleting |profile|.
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(new_browser);
+
+  // Close the main browser.
+  CloseBrowserAsynchronously(browser());
+
+  // Do a simple non-process-startup browser launch.
+  base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
+
+  StartupBrowserCreator browser_creator;
+  std::vector<Profile*> last_opened_profiles;
+  last_opened_profiles.push_back(browser()->profile());
+  last_opened_profiles.push_back(profile);
+
+  base::RunLoop run_loop;
+  browser_creator.Start(
+      dummy, profile_manager->user_data_dir(),
+      {browser()->profile(), StartupProfileMode::kBrowserWindow},
+      last_opened_profiles);
+  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  run_loop.Run();
+
+  // |profile| restored the last open pages and opened the urls in an active new
+  // window.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(profile));
+  Browser* pref_urls_opened_browser =
+      chrome::FindLastActiveWithProfile(profile);
+  ASSERT_TRUE(pref_urls_opened_browser);
+  Browser* last_session_opened_browser =
+      FindOneOtherBrowserForProfile(profile, pref_urls_opened_browser);
+  ASSERT_TRUE(last_session_opened_browser);
+  // Check the last-session-restored browser.
+  EXPECT_NO_FATAL_FAILURE(
+      WaitForLoadStopForBrowser(last_session_opened_browser));
+  tab_strip_model = last_session_opened_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  EXPECT_EQ(t3_url, tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
+  // Check the pref-urls-opened browser.
+  EXPECT_NO_FATAL_FAILURE(WaitForLoadStopForBrowser(pref_urls_opened_browser));
+  tab_strip_model = pref_urls_opened_browser->tab_strip_model();
+  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+  EXPECT_EQ(t1_url, tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
+  EXPECT_EQ(t2_url, tab_strip_model->GetWebContentsAt(1)->GetVisibleURL());
+  EXPECT_EQ(0, tab_strip_model->active_index());
 }
 
 // This tests that opening multiple profiles with session restore enabled,

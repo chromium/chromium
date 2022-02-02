@@ -316,9 +316,12 @@ void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
           ExitType::kCrashed &&
       !::full_restore::HasAppTypeBrowser(profile()->GetPath()) &&
       session_startup_pref.ShouldRestoreLastSession()) {
+    StartupTabs startup_tabs;
+    if (session_startup_pref.type == SessionStartupPref::LAST_AND_URLS)
+      startup_tabs = session_startup_pref.ToStartupTabs();
     // Restore the app type browsers only when the web apps are ready.
     SessionRestore::RestoreSession(profile(), nullptr,
-                                   SessionRestore::RESTORE_APPS, StartupTabs());
+                                   SessionRestore::RESTORE_APPS, startup_tabs);
   }
 
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile());

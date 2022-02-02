@@ -454,6 +454,8 @@ TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_Startup) {
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);
   SessionStartupPref pref_last(SessionStartupPref::Type::LAST);
   SessionStartupPref pref_urls(SessionStartupPref::Type::URLS);
+  SessionStartupPref pref_last_and_urls(
+      SessionStartupPref::Type::LAST_AND_URLS);
 
   // The most typical case: startup, not recovering from a crash, no switches.
   // Test each pref with and without command-line tabs.
@@ -480,12 +482,23 @@ TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_Startup) {
   output = Creator::DetermineBrowserOpenBehavior(
       pref_last, Creator::PROCESS_STARTUP | Creator::HAS_CMD_LINE_TABS);
   EXPECT_EQ(Creator::BrowserOpenBehavior::SYNCHRONOUS_RESTORE, output);
+
+  output = Creator::DetermineBrowserOpenBehavior(pref_last_and_urls,
+                                                 Creator::PROCESS_STARTUP);
+  EXPECT_EQ(Creator::BrowserOpenBehavior::SYNCHRONOUS_RESTORE, output);
+
+  output = Creator::DetermineBrowserOpenBehavior(
+      pref_last_and_urls,
+      Creator::PROCESS_STARTUP | Creator::HAS_CMD_LINE_TABS);
+  EXPECT_EQ(Creator::BrowserOpenBehavior::SYNCHRONOUS_RESTORE, output);
 }
 
 TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_CmdLineTabs) {
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);
   SessionStartupPref pref_last(SessionStartupPref::Type::LAST);
   SessionStartupPref pref_urls(SessionStartupPref::Type::URLS);
+  SessionStartupPref pref_last_and_urls(
+      SessionStartupPref::Type::LAST_AND_URLS);
 
   // Command line tabs after startup should prompt use of existing window,
   // regardless of pref.
@@ -498,6 +511,10 @@ TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_CmdLineTabs) {
   EXPECT_EQ(Creator::BrowserOpenBehavior::USE_EXISTING, output);
 
   output = Creator::DetermineBrowserOpenBehavior(pref_last,
+                                                 Creator::HAS_CMD_LINE_TABS);
+  EXPECT_EQ(Creator::BrowserOpenBehavior::USE_EXISTING, output);
+
+  output = Creator::DetermineBrowserOpenBehavior(pref_last_and_urls,
                                                  Creator::HAS_CMD_LINE_TABS);
   EXPECT_EQ(Creator::BrowserOpenBehavior::USE_EXISTING, output);
 
@@ -520,6 +537,8 @@ TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_NotStartup) {
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);
   SessionStartupPref pref_last(SessionStartupPref::Type::LAST);
   SessionStartupPref pref_urls(SessionStartupPref::Type::URLS);
+  SessionStartupPref pref_last_and_urls(
+      SessionStartupPref::Type::LAST_AND_URLS);
 
   // Launch after startup without command-line tabs should always create a new
   // window.
@@ -531,5 +550,8 @@ TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_NotStartup) {
   EXPECT_EQ(Creator::BrowserOpenBehavior::NEW, output);
 
   output = Creator::DetermineBrowserOpenBehavior(pref_urls, 0);
+  EXPECT_EQ(Creator::BrowserOpenBehavior::NEW, output);
+
+  output = Creator::DetermineBrowserOpenBehavior(pref_last_and_urls, 0);
   EXPECT_EQ(Creator::BrowserOpenBehavior::NEW, output);
 }

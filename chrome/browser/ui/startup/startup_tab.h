@@ -15,6 +15,8 @@ struct StartupTab {
     kNormal,
     // The tab is pinned.
     kPinned,
+    // The url is from the LAST_AND_URLS startup pref.
+    kFromLastAndUrlsStartupPref,
   };
 
   explicit StartupTab(const GURL& url, Type type = Type::kNormal);

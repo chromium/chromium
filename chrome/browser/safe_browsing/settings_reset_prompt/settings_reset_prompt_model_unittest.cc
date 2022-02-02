@@ -296,6 +296,15 @@ TEST_F(SettingsResetPromptModelTest, StartupUrls) {
     EXPECT_THAT(model->startup_urls(),
                 UnorderedElementsAre(GURL(kStartupUrl1), GURL(kStartupUrl2)));
   }
+
+  // Should return the list of startup URLs if startup type is set to
+  // |SessionStartupPref::LAST_AND_URLS|.
+  SetStartupType(SessionStartupPref::LAST_AND_URLS);
+  {
+    ModelPointer model = CreateModel();
+    EXPECT_THAT(model->startup_urls(),
+                UnorderedElementsAre(GURL(kStartupUrl1), GURL(kStartupUrl2)));
+  }
 }
 
 TEST_F(SettingsResetPromptModelTest, StartupUrlsToReset) {
@@ -326,6 +335,15 @@ TEST_F(SettingsResetPromptModelTest, StartupUrlsToReset) {
                 ElementsAre(GURL(kStartupUrl2)));
   }
 
+  {
+    ModelPointer model = CreateModel({kStartupUrl1, kStartupUrl2});
+    EXPECT_THAT(model->startup_urls_to_reset(),
+                UnorderedElementsAre(GURL(kStartupUrl1), GURL(kStartupUrl2)));
+  }
+
+  // Should return the URLs that have a match in the config when startup type is
+  // set to |SessionStartupPref::LAST_AND_URLS|.
+  SetStartupType(SessionStartupPref::LAST_AND_URLS);
   {
     ModelPointer model = CreateModel({kStartupUrl1, kStartupUrl2});
     EXPECT_THAT(model->startup_urls_to_reset(),

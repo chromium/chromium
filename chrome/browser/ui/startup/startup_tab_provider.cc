@@ -341,8 +341,11 @@ StartupTabs StartupTabProviderImpl::GetPreferencesTabsForState(
   StartupTabs tabs;
   if (pref.ShouldOpenUrls() && !pref.urls.empty() &&
       !profile_has_other_tabbed_browser) {
-    for (const auto& url : pref.urls)
-      tabs.emplace_back(url);
+    for (const auto& url : pref.urls) {
+      tabs.emplace_back(url, pref.type == SessionStartupPref::LAST_AND_URLS
+                                 ? StartupTab::Type::kFromLastAndUrlsStartupPref
+                                 : StartupTab::Type::kNormal);
+    }
   }
   return tabs;
 }

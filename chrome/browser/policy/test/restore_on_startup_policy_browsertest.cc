@@ -14,6 +14,7 @@
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -110,6 +111,27 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
       expected_urls_.push_back(GURL(url));
   }
 
+  void LastAndListOfURLs() {
+    // Verifies that policy can set the startup pages to "the last session and a
+    // list of URLs". |expected_urls_| will be restored from the last session.
+    // |expected_urls_in_new_window_| will be opened on a policy-designated new
+    // window.
+    base::ListValue urls;
+    for (const auto* url : kRestoredURLs) {
+      urls.Append(url);
+      expected_urls_.emplace_back(url);
+      expected_urls_in_new_window_.emplace_back(url);
+    }
+    PolicyMap policies;
+    policies.Set(key::kRestoreOnStartup, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(SessionStartupPref::kPrefValueLastAndURLs),
+                 nullptr);
+    policies.Set(key::kRestoreOnStartupURLs, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, urls.Clone(), nullptr);
+    provider_.UpdateChromePolicy(policies);
+  }
+
   void Blocked() {
     // Verifies that URLs are blocked during session restore.
     PolicyMap policies;
@@ -129,8 +151,23 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
       expected_urls_.emplace_back(url_string);
   }
 
+  // Check if |kRestoredURLs| are opened on the current browser.
+  bool AreRestoredURLsOpened() const {
+    TabStripModel* model = browser()->tab_strip_model();
+    if (model->count() != base::size(kRestoredURLs))
+      return false;
+    for (int i = 0; i < model->count(); ++i) {
+      if (model->GetWebContentsAt(i)->GetVisibleURL() != kRestoredURLs[i])
+        return false;
+    }
+    return true;
+  }
+
   // URLs that are expected to be loaded.
   std::vector<GURL> expected_urls_;
+
+  // URLs that are expected to be loaded in a new window.
+  std::vector<GURL> expected_urls_in_new_window_;
 
   // True if the loaded URLs should be blocked by policy.
   bool blocked_ = false;
@@ -141,9 +178,15 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, PRE_RunTest) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage,
                                                true);
 
+  // If policy urls are set, those might be opened at startup. Because
+  // some tabs are already opened, we don't need to navigate or open more tabs
+  // for verification of tab restoration.
+  if (AreRestoredURLsOpened())
+    return;
+
   // Open some tabs to verify if they are restored after the browser restarts.
-  // Most policy settings override this, except kPrefValueLast which enforces
-  // a restore.
+  // Most policy settings override this, except kPrefValueLast and
+  // kPrefValueLastAndURLs which enforce a restore.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kRestoredURLs[0])));
   for (size_t i = 1; i < base::size(kRestoredURLs); ++i) {
     content::WindowedNotificationObserver observer(
@@ -171,6 +214,22 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
       EXPECT_EQ(expected_urls_[i], web_contents->GetLastCommittedURL());
     }
   }
+  // Policy urls should be opened on a new window if the startup policy is set
+  // as kPrefValueLastAndURLs.
+  if (!expected_urls_in_new_window_.empty()) {
+    ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+    Browser* pref_urls_opened_browser =
+        chrome::FindLastActiveWithProfile(browser()->profile());
+    ASSERT_TRUE(pref_urls_opened_browser);
+    TabStripModel* model = pref_urls_opened_browser->tab_strip_model();
+    int size = static_cast<int>(expected_urls_in_new_window_.size());
+    EXPECT_EQ(size, model->count());
+    resource_coordinator::WaitForTransitionToLoaded(model);
+    for (int i = 0; i < size && i < model->count(); ++i) {
+      content::WebContents* web_contents = model->GetWebContentsAt(i);
+      EXPECT_EQ(expected_urls_[i], web_contents->GetURL());
+    }
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -179,5 +238,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(&RestoreOnStartupPolicyTest::ListOfURLs,
                     &RestoreOnStartupPolicyTest::NTP,
                     &RestoreOnStartupPolicyTest::Last,
+                    &RestoreOnStartupPolicyTest::LastAndListOfURLs,
                     &RestoreOnStartupPolicyTest::Blocked));
 }  // namespace policy

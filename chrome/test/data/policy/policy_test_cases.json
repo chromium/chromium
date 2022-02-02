@@ -4149,6 +4149,16 @@
             "value": 5
           }
         }
+      },
+      {
+        "policies": {
+          "RestoreOnStartup": 6
+        },
+        "prefs": {
+          "session.restore_on_startup": {
+            "value": 6
+          }
+        }
       }
     ]
   },

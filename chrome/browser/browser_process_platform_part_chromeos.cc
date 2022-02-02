@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -105,12 +106,44 @@ void BrowserProcessPlatformPart::BrowserRestoreObserver::OnBrowserAdded(
     Browser* browser) {
   // If |browser| is the only browser, restores urls based on the on startup
   // setting.
-  if (BrowserList::GetInstance()->size() == 1)
-    RestoreUrls(browser);
+  if (BrowserList::GetInstance()->size() == 1 && ShouldRestoreUrls(browser)) {
+    if (ShouldOpenUrlsInNewBrowser(browser)) {
+      // Delay creating a new browser until |browser| is activated.
+      on_session_restored_callback_subscription_ =
+          SessionRestore::RegisterOnSessionRestoredCallback(base::BindRepeating(
+              &BrowserProcessPlatformPart::BrowserRestoreObserver::
+                  OnSessionRestoreDone,
+              base::Unretained(this)));
+    } else {
+      RestoreUrls(browser);
+    }
+  }
+
+  // If the startup urls from LAST_AND_URLS pref are already opened in a new
+  // browser, skip opening the same browser.
+  if (browser->creation_source() ==
+      Browser::CreationSource::kLastAndUrlsStartupPref) {
+    DCHECK(on_session_restored_callback_subscription_);
+    on_session_restored_callback_subscription_ = {};
+  }
+}
+
+void BrowserProcessPlatformPart::BrowserRestoreObserver::OnSessionRestoreDone(
+    Profile* profile,
+    int num_tabs_restored) {
+  // Ensure this callback to be called exactly once.
+  on_session_restored_callback_subscription_ = {};
+
+  // All browser windows are created. Open startup urls in a new browser.
+  auto create_params = Browser::CreateParams(profile, /*user_gesture*/ false);
+  Browser* browser = Browser::Create(create_params);
+  RestoreUrls(browser);
+  browser->window()->Show();
+  browser->window()->Activate();
 }
 
 bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
-    Browser* browser) {
+    Browser* browser) const {
   Profile* profile = browser->profile();
 
   // Only open urls for regular sign in users.
@@ -122,8 +155,15 @@ bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
   }
 
   // If during the restore process, or restore from a crash, don't launch urls.
-  if (SessionRestore::IsRestoring(profile) || HasPendingUncleanExit(profile))
+  // However, in case of LAST_AND_URLS startup setting, urls should be opened
+  // even when the restore session is in progress.
+  SessionStartupPref pref =
+      SessionStartupPref::GetStartupPref(browser->profile()->GetPrefs());
+  if ((SessionRestore::IsRestoring(profile) &&
+       pref.type != SessionStartupPref::LAST_AND_URLS) ||
+      HasPendingUncleanExit(profile)) {
     return false;
+  }
 
   // App windows should not be restored.
   auto window_type = WindowTypeForBrowserType(browser->type());
@@ -138,21 +178,28 @@ bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
   if (browser->creation_source() == Browser::CreationSource::kStartupCreator)
     return false;
 
+  // If the startup setting is not open urls, don't launch urls.
+  if (!pref.ShouldOpenUrls() || pref.urls.empty())
+    return false;
+
   return true;
+}
+
+// If the startup setting is both the restore last session and the open urls,
+// those should be opened in a new browser.
+bool BrowserProcessPlatformPart::BrowserRestoreObserver::
+    ShouldOpenUrlsInNewBrowser(Browser* browser) const {
+  SessionStartupPref pref =
+      SessionStartupPref::GetStartupPref(browser->profile()->GetPrefs());
+  return pref.type == SessionStartupPref::LAST_AND_URLS;
 }
 
 void BrowserProcessPlatformPart::BrowserRestoreObserver::RestoreUrls(
     Browser* browser) {
   DCHECK(browser);
-  if (!ShouldRestoreUrls(browser))
-    return;
 
-  // If the startup setting is not open urls, don't launch urls.
   SessionStartupPref pref =
       SessionStartupPref::GetStartupPref(browser->profile()->GetPrefs());
-  if (pref.type != SessionStartupPref::Type::URLS || pref.urls.empty())
-    return;
-
   std::vector<GURL> urls;
   for (const auto& url : pref.urls)
     urls.push_back(url);

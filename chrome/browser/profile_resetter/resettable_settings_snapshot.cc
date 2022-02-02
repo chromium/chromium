@@ -191,6 +191,10 @@ std::unique_ptr<reset_report::ChromeResetReport> SerializeSettingsReportToProto(
         report->set_startup_type(
             reset_report::ChromeResetReport_SessionStartupType_URLS);
         break;
+      case SessionStartupPref::LAST_AND_URLS:
+        report->set_startup_type(
+            reset_report::ChromeResetReport_SessionStartupType_LAST_AND_URLS);
+        break;
     }
   }
 
@@ -274,6 +278,10 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
     case SessionStartupPref::URLS:
       startup_type =
           l10n_util::GetStringUTF16(IDS_SETTINGS_ON_STARTUP_OPEN_SPECIFIC);
+      break;
+    case SessionStartupPref::LAST_AND_URLS:
+      startup_type = l10n_util::GetStringUTF16(
+          IDS_SETTINGS_ON_STARTUP_CONTINUE_AND_OPEN_SPECIFIC);
       break;
     default:
       break;

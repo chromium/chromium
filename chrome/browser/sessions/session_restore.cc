@@ -649,7 +649,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       last_normal_browser = browser_to_activate;
 
     if (last_normal_browser && !startup_tabs_.empty())
-      AppendURLsToBrowser(last_normal_browser, startup_tabs_);
+      browser_to_activate = OpenStartupUrls(last_normal_browser, startup_tabs_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-CreatingTabs-End", false);
@@ -896,6 +896,33 @@ class SessionRestoreImpl : public BrowserListObserver {
       is_first_tab = false;
       Navigate(&params);
     }
+  }
+
+  // Normally opens |startup_tabs| in |last_normal_browser|, but if there are
+  // urls set from LAST_AND_URLS startup pref, those are opened in a new
+  // browser. Returns the browser to activate.
+  Browser* OpenStartupUrls(Browser* last_normal_browser,
+                           const StartupTabs& startup_tabs) {
+    Browser* browser_to_activate = last_normal_browser;
+    StartupTabs normal_startup_tabs, startup_tabs_from_last_and_urls_pref;
+    for (const StartupTab& startup_tab : startup_tabs) {
+      if (startup_tab.type == StartupTab::Type::kFromLastAndUrlsStartupPref)
+        startup_tabs_from_last_and_urls_pref.push_back(startup_tab);
+      else
+        normal_startup_tabs.push_back(startup_tab);
+    }
+    if (last_normal_browser && !normal_startup_tabs.empty())
+      AppendURLsToBrowser(last_normal_browser, normal_startup_tabs);
+    if (!startup_tabs_from_last_and_urls_pref.empty()) {
+      Browser::CreateParams params =
+          Browser::CreateParams(profile_, /*user_gesture*/ false);
+      params.creation_source = Browser::CreationSource::kLastAndUrlsStartupPref;
+      Browser* new_browser = Browser::Create(params);
+      AppendURLsToBrowser(new_browser, startup_tabs_from_last_and_urls_pref);
+      new_browser->window()->Show();
+      browser_to_activate = new_browser;
+    }
+    return browser_to_activate;
   }
 
   // Invokes TabRestored on the SessionService for all tabs in browser after

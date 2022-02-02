@@ -156,10 +156,19 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
    private:
     // Returns true, if the url defined in the on startup setting should be
     // opened. Otherwise, returns false.
-    bool ShouldRestoreUrls(Browser* browser);
+    bool ShouldRestoreUrls(Browser* browser) const;
+
+    // Returns true, if the url defined in the on startup setting should be
+    // opened in a new browser. Otherwise, returns false.
+    bool ShouldOpenUrlsInNewBrowser(Browser* browser) const;
 
     // Restores urls based on the on startup setting.
     void RestoreUrls(Browser* browser);
+
+    // Called when a session is restored.
+    void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
+
+    base::CallbackListSubscription on_session_restored_callback_subscription_;
   };
 
   void CreateProfileHelper();

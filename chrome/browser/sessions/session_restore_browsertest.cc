@@ -2365,6 +2365,34 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
   EXPECT_EQ(GetUrl3(), tab_strip_model->GetWebContentsAt(2)->GetURL());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// This test does not apply to ChromeOS as ChromeOS does not consider command
+// line urls while determining startup tabs.
+IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
+                       PRE_StartupPrefSetAsLastAndURLs) {
+  SessionStartupPref pref(SessionStartupPref::LAST_AND_URLS);
+  pref.urls = {GetUrl1()};
+  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl2(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+}
+
+// The startup pref urls shouldn't be opened if a command line url is supplied.
+IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
+                       StartupPrefSetAsLastAndURLs) {
+  EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(2, tab_strip_model->count());
+  // The first tab is restored from the last session.
+  EXPECT_EQ(GetUrl2(), tab_strip_model->GetWebContentsAt(0)->GetURL());
+  // The second tab is opened from the command line url.
+  EXPECT_EQ(command_line_url_, tab_strip_model->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(1, tab_strip_model->active_index());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 class MultiOriginSessionRestoreTest : public SessionRestoreTest {
  public:
   MultiOriginSessionRestoreTest()

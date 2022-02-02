@@ -26,6 +26,7 @@ enum PrefValues {
   CONTINUE = 1,
   OPEN_NEW_TAB = 5,
   OPEN_SPECIFIC = 4,
+  CONTINUE_AND_OPEN_SPECIFIC = 6,
 }
 
 const SettingsOnStartupPageElementBase = WebUIListenerMixin(PolymerElement);
@@ -75,10 +76,24 @@ export class SettingsOnStartupPageElement extends
   /**
    * Determine whether to show the user defined startup pages.
    * @param restoreOnStartup Enum value from PrefValues.
-   * @return Whether the open specific pages is selected.
+   * @return Whether the "open specific pages" or "continue and open specific
+   *     pages" is selected.
    */
   private showStartupUrls_(restoreOnStartup: PrefValues): boolean {
-    return restoreOnStartup === PrefValues.OPEN_SPECIFIC;
+    return restoreOnStartup === PrefValues.OPEN_SPECIFIC ||
+        restoreOnStartup === PrefValues.CONTINUE_AND_OPEN_SPECIFIC;
+  }
+
+  /**
+   * Determine whether to show "continue and open specific pages" option.
+   * @param restoreOnStartup pref.
+   * @return Whether the restoreOnStartup pref is recommended or enforced by
+   *     policy.
+   */
+  private showContinueAndOpenSpecific_(pref: chrome.settingsPrivate.PrefObject):
+      boolean {
+    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED ||
+        pref.enforcement === chrome.settingsPrivate.Enforcement.RECOMMENDED;
   }
 }
 

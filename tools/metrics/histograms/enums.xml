@@ -80291,6 +80291,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Continue from last opened pages"/>
   <int value="4" label="Open URLs"/>
   <int value="5" label="Open new tab page"/>
+  <int value="6" label="Continue from last opened pages and open URLs"/>
 </enum>
 
 <enum name="SessionStartupType">

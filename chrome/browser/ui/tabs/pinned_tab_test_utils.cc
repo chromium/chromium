@@ -16,6 +16,9 @@ std::string TabToString(const StartupTab& tab) {
     case StartupTab::Type::kPinned:
       type_description = "pinned";
       break;
+    case StartupTab::Type::kFromLastAndUrlsStartupPref:
+      type_description = "from LAST_AND_URLS startup pref";
+      break;
   }
   return tab.url.spec() + ":" + type_description;
 }
