@@ -415,7 +415,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesStamp.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesUma.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ResolvedSearchTerm.java",
-  "java/src/org/chromium/chrome/browser/contextualsearch/SecondTapMlOverride.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/SelectionClientManager.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ShortTextRunSuppression.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/SmallTextSuppression.java",

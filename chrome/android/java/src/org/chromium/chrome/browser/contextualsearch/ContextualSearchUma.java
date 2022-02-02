@@ -1028,15 +1028,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Log whether results were seen due to a Tap that was allowed to override an ML suppression.
-     * @param wasSearchContentViewSeen If the panel was opened.
-     */
-    static void logSecondTapMlOverrideResultsSeen(boolean wasSearchContentViewSeen) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearchSecondTapMlOverrideSeen", wasSearchContentViewSeen);
-    }
-
-    /**
      * Logs whether results were seen based on the duration of the Tap, for both short and long
      * durations.
      * @param wasSearchContentViewSeen If the panel was opened.

@@ -73,7 +73,6 @@ extern const base::Feature kContextualSearchLiteralSearchTap;
 extern const base::Feature kContextualSearchLongpressResolve;
 extern const base::Feature kContextualSearchMlTapSuppression;
 extern const base::Feature KContextualSearchNewSettings;
-extern const base::Feature kContextualSearchSecondTap;
 extern const base::Feature kContextualSearchTapDisableOverride;
 extern const base::Feature kContextualSearchThinWebViewImplementation;
 extern const base::Feature kContextualSearchTranslations;

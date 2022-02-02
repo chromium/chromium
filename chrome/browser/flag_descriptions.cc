@@ -3061,12 +3061,6 @@ const char kContextualSearchRankerQueryName[] =
 const char kContextualSearchRankerQueryDescription[] =
     "Enables prediction of tap gestures using Assist-Ranker machine learning.";
 
-const char kContextualSearchSecondTapName[] =
-    "Contextual Search second tap triggering";
-const char kContextualSearchSecondTapDescription[] =
-    "Enables triggering on a second tap gesture even when Ranker would "
-    "normally suppress that tap.";
-
 const char kContextualSearchThinWebViewImplementationName[] =
     "Use Contextual Search ThinWebView implementation";
 const char kContextualSearchThinWebViewImplementationDescription[] =

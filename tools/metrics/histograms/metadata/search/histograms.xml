@@ -984,6 +984,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.ContextualSearchSecondTapMlOverrideSeen" enum="Boolean"
     expires_after="M77">
+  <obsolete>
+    Removed as of 01/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

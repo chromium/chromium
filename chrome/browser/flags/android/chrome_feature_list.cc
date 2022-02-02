@@ -213,7 +213,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchLongpressResolve,
     &kContextualSearchMlTapSuppression,
     &KContextualSearchNewSettings,
-    &kContextualSearchSecondTap,
     &kContextualSearchTapDisableOverride,
     &kContextualSearchThinWebViewImplementation,
     &kContextualSearchTranslations,
@@ -572,9 +571,6 @@ const base::Feature kContextualSearchMlTapSuppression{
 
 const base::Feature KContextualSearchNewSettings{
     "ContextualSearchNewSettings", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kContextualSearchSecondTap{
-    "ContextualSearchSecondTap", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchTapDisableOverride{
     "ContextualSearchTapDisableOverride", base::FEATURE_DISABLED_BY_DEFAULT};

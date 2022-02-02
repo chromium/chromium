@@ -1519,7 +1519,8 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Ranker is only used for Tap triggering.
+    @DisabledTest(message = "https://crbug.com/1291065")
+    // TODO(donnd): remove with Ranker support.
     public void testResolvingSearchRankerLogging() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
