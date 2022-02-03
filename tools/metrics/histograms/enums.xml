@@ -28469,6 +28469,7 @@ Called by update_document_policy_enum.py.-->
   <int value="949" label="UserAgentForceMajorVersionToMinorPosition"/>
   <int value="950" label="AllHttpAuthSchemesAllowedForOrigins"/>
   <int value="951" label="WindowPlacementAlwaysAllowed"/>
+  <int value="952" label="ReportDevicePeripherals"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

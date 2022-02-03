@@ -134,6 +134,7 @@ const char* const kKnownSettings[] = {
     kReportDeviceFanInfo,
     kReportDeviceHardwareStatus,
     kReportDeviceLocation,
+    kReportDevicePeripherals,
     kReportDevicePowerStatus,
     kReportDeviceStorageStatus,
     kReportDeviceNetworkConfiguration,
@@ -719,6 +720,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (reporting_policy.has_report_running_kiosk_app()) {
       new_values_cache->SetBoolean(kReportRunningKioskApp,
                                    reporting_policy.report_running_kiosk_app());
+    }
+    if (reporting_policy.has_report_peripherals()) {
+      new_values_cache->SetBoolean(kReportDevicePeripherals,
+                                   reporting_policy.report_peripherals());
     }
     if (reporting_policy.has_report_power_status()) {
       new_values_cache->SetBoolean(kReportDevicePowerStatus,

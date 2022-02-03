@@ -11836,6 +11836,9 @@
   "ReportDeviceCrashReportInfo": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "ReportDevicePeripherals": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "ReportDevicePowerStatus": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

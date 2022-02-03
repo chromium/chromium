@@ -288,6 +288,19 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceAudioStatusCheckingRateMs) {
                                key::kReportDeviceAudioStatusCheckingRateMs,
                                std::move(event_checking_rate_ms_value));
 }
+TEST_F(DevicePolicyDecoderTest, ReportDevicePeripherals) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kReportDevicePeripherals);
+
+  base::Value report_peripherals_value(true);
+  device_policy.mutable_device_reporting()->set_report_peripherals(
+      report_peripherals_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kReportDevicePeripherals,
+                               std::move(report_peripherals_value));
+}
 
 TEST_F(DevicePolicyDecoderTest, EnableDeviceGranularReporting) {
   em::ChromeDeviceSettingsProto device_policy;

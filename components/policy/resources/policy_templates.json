@@ -965,6 +965,7 @@
         'ReportDeviceTimezoneInfo',
         'ReportDeviceMemoryInfo',
         'ReportDeviceBacklightInfo',
+        'ReportDevicePeripherals',
         'ReportDevicePowerStatus',
         'ReportDeviceSecurityStatus',
         'ReportDeviceStorageStatus',
@@ -11037,6 +11038,37 @@
       'desc': '''Setting the policy to Enabled has enrolled devices report hardware statistics and identifiers related to power.
 
       Setting the policy to Disabled or leaving it unset means enrolled devices don't report power statistics.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
+    },
+    {
+      'name': 'ReportDevicePeripherals',
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'tylergarrett@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:101-'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'default': False,
+      'items': [
+        {
+          'value': True,
+          'caption': 'Report information about peripherals that are plugged into the device',
+        },
+        {
+          'value': False,
+          'caption': 'Do not report information about peripherals that are plugged into the device',
+        },
+      ],
+      'example_value': False,
+      'id': 952,
+      'caption': '''Report peripheral details''',
+      'tags': ['admin-sharing'],
+      'desc': '''Setting the policy to True has enrolled devices report information related to peripherals that are plugged into the device.
+
+      Setting the policy to False or leaving it unset means enrolled devices don't report peripherals information.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -30195,6 +30227,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'ReportDeviceMemoryInfo': 'device_reporting.report_memory_info',
     'ReportDeviceBacklightInfo': 'device_reporting.report_backlight_info',
     'ReportDeviceStorageStatus': 'device_reporting.report_storage_status',
+    'ReportDevicePeripherals': 'device_reporting.report_peripherals',
     'ReportDevicePowerStatus': 'device_reporting.report_power_status',
     'DeviceOpenNetworkConfiguration': 'open_network_configuration.open_network_configuration',
     'DeviceBootOnAcEnabled': 'device_boot_on_ac.enabled',
@@ -30629,6 +30662,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'ReportDeviceTimezoneInfo',
         'ReportDeviceMemoryInfo',
         'ReportDeviceBacklightInfo',
+        'ReportDevicePeripherals',
         'ReportDevicePowerStatus',
         'ReportDeviceSecurityStatus',
         'ReportDeviceStorageStatus',
@@ -30743,6 +30777,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 951,
+  'highest_id_currently_used': 952,
   'highest_atomic_group_id_currently_used': 41
 }

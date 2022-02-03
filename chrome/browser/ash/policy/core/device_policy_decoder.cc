@@ -799,6 +799,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_crash_report_info()), nullptr);
     }
+    if (container.has_report_peripherals()) {
+      policies->Set(key::kReportDevicePeripherals, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.report_peripherals()), nullptr);
+    }
     if (container.has_report_power_status()) {
       policies->Set(key::kReportDevicePowerStatus, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,

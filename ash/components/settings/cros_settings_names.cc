@@ -160,6 +160,10 @@ const char kReportDeviceNetworkInterfaces[] =
 const char kReportDeviceNetworkStatus[] =
     "cros.device_status.report_network_status";
 
+// A boolean pref that determines whether the device peripherals should be
+// included in reports to the telemetry API.
+const char kReportDevicePeripherals[] = "cros.device_status.report_peripherals";
+
 // A boolean pref that determines whether the device power status should be
 // included in status reports to the device management server.
 const char kReportDevicePowerStatus[] =
