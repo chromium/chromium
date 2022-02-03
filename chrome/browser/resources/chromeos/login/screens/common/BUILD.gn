@@ -40,6 +40,7 @@ group("polymer3_elements") {
     ":recommend_apps_old_module",
     ":saml_confirm_password_module",
     ":signin_fatal_error_module",
+    ":smart_privacy_protection_module",
     ":sync_consent_module",
     ":tpm_error_module",
     ":user_creation_module",
@@ -89,6 +90,7 @@ js_type_check("closure_compile_module_local") {
     ":recommend_apps_old.m",
     ":saml_confirm_password.m",
     ":signin_fatal_error.m",
+    ":smart_privacy_protection.m",
     ":sync_consent.m",
     ":tpm_error.m",
     ":user_creation.m",
@@ -101,7 +103,9 @@ js_type_check("closure_compile_module_local") {
 js_type_check("closure_compile_module_multidevice_setup") {
   is_polymer3 = true
   closure_flags = default_closure_args
-  deps = [ ":multidevice_setup.m" ]
+  deps = [
+    ":multidevice_setup.m",
+  ]
 }
 
 ###############################
@@ -544,6 +548,19 @@ js_library("signin_fatal_error.m") {
   extra_deps = [ ":signin_fatal_error_module" ]
 }
 
+js_library("smart_privacy_protection.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/smart_privacy_protection.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":smart_privacy_protection_module" ]
+}
+
 js_library("sync_consent.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/sync_consent.m.js" ]
   deps = [
@@ -834,6 +851,14 @@ polymer_modulizer("saml_confirm_password") {
 polymer_modulizer("signin_fatal_error") {
   js_file = "signin_fatal_error.js"
   html_file = "signin_fatal_error.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("smart_privacy_protection") {
+  js_file = "smart_privacy_protection.js"
+  html_file = "smart_privacy_protection.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

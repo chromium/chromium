@@ -94,6 +94,7 @@
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
+#include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
@@ -168,6 +169,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
@@ -764,6 +766,11 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  append(std::make_unique<SmartPrivacyProtectionScreen>(
+      oobe_ui->GetView<SmartPrivacyProtectionScreenHandler>(),
+      base::BindRepeating(&WizardController::OnSmartPrivacyProtectionScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   return result;
 }
 
@@ -1186,6 +1193,13 @@ void WizardController::OnHWDataCollectionScreenExit(
   OnScreenExit(HWDataCollectionView::kScreenId,
                HWDataCollectionScreen::GetResultString(result));
   ShowFingerprintSetupScreen();
+}
+
+void WizardController::OnSmartPrivacyProtectionScreenExit(
+    SmartPrivacyProtectionScreen::Result result) {
+  OnScreenExit(SmartPrivacyProtectionView::kScreenId,
+               SmartPrivacyProtectionScreen::GetResultString(result));
+  ShowParentalHandoffScreen();
 }
 
 void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
@@ -1696,7 +1710,7 @@ void WizardController::OnAssistantOptInFlowScreenExit(
     AssistantOptInFlowScreen::Result result) {
   OnScreenExit(AssistantOptInFlowScreenView::kScreenId,
                AssistantOptInFlowScreen::GetResultString(result));
-  ShowParentalHandoffScreen();
+  AdvanceToScreen(SmartPrivacyProtectionView::kScreenId);
 }
 
 void WizardController::OnMultiDeviceSetupScreenExit(
@@ -2133,7 +2147,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == OsInstallScreenView::kScreenId ||
              screen_id == OsTrialScreenView::kScreenId ||
              screen_id == ParentalHandoffScreenView::kScreenId ||
-             screen_id == HWDataCollectionView::kScreenId) {
+             screen_id == HWDataCollectionView::kScreenId ||
+             screen_id == SmartPrivacyProtectionView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

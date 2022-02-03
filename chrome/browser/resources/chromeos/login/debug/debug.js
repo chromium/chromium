@@ -535,6 +535,10 @@ cr.define('cr.ui.login.debug', function() {
       ]
     },
     {
+      id: 'smart-privacy-protection',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'reset',
       kind: ScreenKind.OTHER,
       states: [

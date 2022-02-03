@@ -2051,6 +2051,8 @@ source_set("chromeos") {
     "../ash/login/screens/reset_screen.h",
     "../ash/login/screens/signin_fatal_error_screen.cc",
     "../ash/login/screens/signin_fatal_error_screen.h",
+    "../ash/login/screens/smart_privacy_protection_screen.cc",
+    "../ash/login/screens/smart_privacy_protection_screen.h",
     "../ash/login/screens/sync_consent_screen.cc",
     "../ash/login/screens/sync_consent_screen.h",
     "../ash/login/screens/terms_of_service_screen.cc",
@@ -3632,7 +3634,9 @@ source_set("chromeos") {
   }
 
   if (enable_hibernate) {
-    deps += [ "//chromeos/dbus/hiberman" ]
+    deps += [
+      "//chromeos/dbus/hiberman",
+    ]
   }
 }
 

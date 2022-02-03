@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
+#include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
@@ -356,6 +357,8 @@ class WizardController : public OobeUI::Observer {
       ConsolidatedConsentScreen::Result result);
   void OnGuestTosScreenExit(GuestTosScreen::Result result);
   void OnHWDataCollectionScreenExit(HWDataCollectionScreen::Result result);
+  void OnSmartPrivacyProtectionScreenExit(
+      SmartPrivacyProtectionScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

@@ -4095,6 +4095,32 @@
     Accept and continue
   </message>
 
+  <!-- Smart privacy protection OOBE screen -->
+  <message name="IDS_SMART_PRIVACY_PROTECTION_TITLE" desc="Title of the smart privacy protection screen.">
+    Guard your privacy with Smart Privacy Protection
+  </message>
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK" desc="Title of the screen lock section.">
+    Smart screen lock
+  </message>
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK_DESCRIPTION" desc="Description of the lock screen feature.">
+    When you leave your computer, the screen is automatically locked to protect your privacy.
+  </message>
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION" desc="Title of the snooping detection section.">
+    Snooping detection
+  </message>
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION_DESCRIPTION" desc="Description of the snooping detection feature.">
+    Detect when someone is snooping your screen from behind, and protect privacy by masking notifications.
+  </message>
+  <message name="IDS_SMART_PRIVACY_PROTECTION_CONTENT" desc="Description of the privacy protection feature.">
+    Smart Privacy Protection uses built-in sensor to detect human presence. The data is encrypted and securely processed, then completely deleted after used. Google doesn’t access this data.
+  </message>
+  <message name="IDS_SMART_PRIVACY_PROTECTION_TURN_ON_BUTTON" desc="Label on a button to turn on the smart privacy protection feature and continue.">
+    Turn on
+  </message>
+  <message name="IDS_SMART_PRIVACY_PROTECTION_TURN_OFF_BUTTON" desc="Label on a button to turn off the smart privacy protection feature and continue.">
+    No Thanks
+  </message>
+
   <!-- Supervision transition OOBE screen. -->
   <message name="IDS_ADDING_MANAGEMENT_TITLE" desc="Title of the management transition OOBE scree when user transitions to managed state. MANAGER can be a domain or an email address.">
     Setting up management by <ph name="MANAGER">$1<ex>example.com</ex></ph>
