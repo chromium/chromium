@@ -228,8 +228,6 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<DlpContentManagerTestHelper> helper_;
   base::HistogramTester histogram_tester_;
   MockDlpRulesManager* mock_rules_manager_;
-
- private:
   std::vector<DlpPolicyEvent> events_;
 };
 
@@ -909,12 +907,18 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kWarn, 1u);
 
   // Hit Enter to "Share anyway".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_RETURN, /*control=*/false,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare)));
 
   EXPECT_TRUE(helper_->HasContentCachedForRestriction(
       web_contents, DlpRulesManager::Restriction::kScreenShare));
@@ -922,6 +926,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // should not trigger a new warning.
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_EQ(events_.size(), 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
@@ -958,6 +963,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kWarn, 1u);
 
   // Hit Esc to "Cancel".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -969,6 +976,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // should not trigger a new warning.
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kWarn, 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
@@ -1124,7 +1133,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
 
   StartTabScreenShare(web_contents, blink::mojom::MediaStreamRequestResult::OK);
-
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
+                  DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare)));
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareBlockedNotificationId));
   EXPECT_TRUE(helper_->HasContentCachedForRestriction(
@@ -1149,7 +1165,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
 
   StartTabScreenShare(
       web_contents, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
-
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kWarn, 1u);
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareBlockedNotificationId));
   EXPECT_FALSE(helper_->HasAnyContentCached());

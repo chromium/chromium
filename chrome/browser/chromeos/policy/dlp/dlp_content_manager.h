@@ -241,7 +241,7 @@ class DlpContentManager : public DlpContentObserver {
   // also saves the |confidential_contents| that were allowed to be shared by
   // the user to avoid future warnings.
   void OnDlpScreenShareWarnDialogReply(
-      const DlpConfidentialContents& confidential_contents,
+      const ConfidentialContentsInfo& info,
       base::WeakPtr<ScreenShareInfo> screen_share,
       bool should_proceed);
 

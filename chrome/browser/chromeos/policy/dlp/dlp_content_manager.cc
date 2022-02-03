@@ -383,13 +383,20 @@ void DlpContentManager::ProcessScreenShareRestriction(
       std::move(callback).Run(true);
       return;
     }
+
+    ReportWarningEvent(info.restriction_info.url,
+                       DlpRulesManager::Restriction::kScreenShare);
+
+    auto reporting_callback = base::BindOnce(
+        &MaybeReportWarningProceededEvent, info.restriction_info.url,
+        DlpRulesManager::Restriction::kScreenShare, reporting_manager_);
     // base::Unretained(this) is safe here because DlpContentManager is
     // initialized as a singleton that's always available in the system.
     warn_notifier_->ShowDlpScreenShareWarningDialog(
         base::BindOnce(&DlpContentManager::OnDlpWarnDialogReply,
                        base::Unretained(this), info.confidential_contents,
                        DlpRulesManager::Restriction::kScreenShare,
-                       std::move(callback)),
+                       std::move(reporting_callback).Then(std::move(callback))),
         info.confidential_contents, application_title);
     return;
   }
@@ -458,11 +465,15 @@ void DlpContentManager::CheckRunningScreenShares() {
         screen_share->Pause();
         screen_share->HideNotifications();
       }
+
+      ReportWarningEvent(info.restriction_info.url,
+                         DlpRulesManager::Restriction::kScreenShare);
+
       // base::Unretained(this) is safe here because DlpContentManager is
       // initialized as a singleton that's always available in the system.
       warn_notifier_->ShowDlpScreenShareWarningDialog(
           base::BindOnce(&DlpContentManager::OnDlpScreenShareWarnDialogReply,
-                         base::Unretained(this), info.confidential_contents,
+                         base::Unretained(this), info,
                          screen_share->GetWeakPtr()),
           info.confidential_contents, screen_share->GetApplicationTitle());
       return;
@@ -477,7 +488,7 @@ void DlpContentManager::CheckRunningScreenShares() {
 }
 
 void DlpContentManager::OnDlpScreenShareWarnDialogReply(
-    const DlpConfidentialContents& confidential_contents,
+    const ConfidentialContentsInfo& info,
     base::WeakPtr<ScreenShareInfo> screen_share,
     bool should_proceed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -488,8 +499,12 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
     return;
 
   if (should_proceed) {
+    ReportWarningProceededEvent(info.restriction_info.url,
+                                DlpRulesManager::Restriction::kScreenShare,
+                                reporting_manager_);
+
     screen_share->Resume();
-    for (const auto& content : confidential_contents.GetContents()) {
+    for (const auto& content : info.confidential_contents.GetContents()) {
       user_allowed_contents_cache_.Cache(
           content, DlpRulesManager::Restriction::kScreenShare);
     }
@@ -500,6 +515,8 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
   }
 }
 
+// TODO(1293512): Consider moving reporting of warning proceeded events inside
+// OnDlpWarnDialogReply().
 void DlpContentManager::OnDlpWarnDialogReply(
     const DlpConfidentialContents& confidential_contents,
     DlpRulesManager::Restriction restriction,
