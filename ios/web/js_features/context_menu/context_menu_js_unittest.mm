@@ -68,7 +68,7 @@ const CGPoint kPointOutsideShadowDomLink = {50.0, 75.0};
 // A point in the web view's coordinate space outside of the document bounds.
 const CGPoint kPointOutsideDocument = {150.0, 150.0};
 
-// A base64 encoded svg image of a blue square.
+// A base64 encoded svg image of a 600x600 blue square.
 const char kImageSource[] =
     "data:image/"
     "svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiI"
@@ -77,6 +77,12 @@ const char kImageSource[] =
     "aHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSI+"
     "CjxyZWN0IHdpZHRoPSI"
     "2MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjMDA2NmZmIi8+Cjwvc3ZnPg==";
+
+// Natural width of kImageSource after styling
+const double kImageNaturalWidth = 84.0;
+
+// Natural height of kImageSource after styling
+const double kImageNaturalHeight = 25.0;
 
 // Alt text on image element for accessibility.
 const char kImageAlt[] = "Some alt text for an image";
@@ -300,6 +306,10 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementAtPoint) {
   expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
   expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetDoubleKey(kContextMenuElementNaturalWidth,
+                              kImageNaturalWidth);
+  expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
+                              kImageNaturalHeight);
 
   CheckElementResult(kPointOnImage, expected_value);
 }
@@ -318,7 +328,30 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementWithTitleAtPoint) {
   expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
   expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetDoubleKey(kContextMenuElementNaturalWidth,
+                              kImageNaturalWidth);
+  expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
+                              kImageNaturalHeight);
   expected_value.SetStringKey(kContextMenuElementTitle, image_title);
+
+  CheckElementResult(kPointOnImage, expected_value);
+}
+
+// Tests that the correct natural size is found for an image.
+TEST_F(ContextMenuJsFindElementAtPointTest,
+       FindImageElementWithNaturalSizeAtPoint) {
+  NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  base::Value expected_value(base::Value::Type::DICTIONARY);
+  expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
+  expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
+  expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
+  expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetDoubleKey(kContextMenuElementNaturalWidth,
+                              kImageNaturalWidth);
+  expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
+                              kImageNaturalHeight);
 
   CheckElementResult(kPointOnImage, expected_value);
 }
@@ -363,6 +396,10 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindLinkImageAtPointForFileUrl) {
   expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
   expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetDoubleKey(kContextMenuElementNaturalWidth,
+                              kImageNaturalWidth);
+  expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
+                              kImageNaturalHeight);
   expected_value.SetStringKey(kContextMenuElementHyperlink, image_link);
 
   CheckElementResult(kPointOnImage, expected_value);
@@ -510,6 +547,10 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
   expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetDoubleKey(kContextMenuElementNaturalWidth,
+                              kImageNaturalWidth);
+  expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
+                              kImageNaturalHeight);
 
   // Make sure the returned JSON does not have an 'href' key.
   CheckElementResult(kPointOnImage, expected_value);

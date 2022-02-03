@@ -17,5 +17,7 @@ const char kContextMenuElementTitle[] = "title";
 const char kContextMenuElementReferrerPolicy[] = "referrerPolicy";
 const char kContextMenuElementInnerText[] = "innerText";
 const char kContextMenuElementAlt[] = "alt";
+const char kContextMenuElementNaturalWidth[] = "naturalWidth";
+const char kContextMenuElementNaturalHeight[] = "naturalHeight";
 
 }  // namespace web

@@ -67,6 +67,18 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
     params.alt_text = base::SysUTF8ToNSString(*alt_text);
   }
 
+  absl::optional<double> natural_width =
+      element->FindDoubleKey(web::kContextMenuElementNaturalWidth);
+  if (natural_width.has_value()) {
+    params.natural_width = *natural_width;
+  }
+
+  absl::optional<double> natural_height =
+      element->FindDoubleKey(web::kContextMenuElementNaturalHeight);
+  if (natural_height.has_value()) {
+    params.natural_height = *natural_height;
+  }
+
   return params;
 }
 

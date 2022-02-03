@@ -40,6 +40,14 @@ extern const char kContextMenuElementInnerText[];
 // only).
 extern const char kContextMenuElementAlt[];
 
+// Optional key. Represents element's naturalWidth attribute if present (<img>
+// element only).
+extern const char kContextMenuElementNaturalWidth[];
+
+// Optional key. Represents element's naturalHeight attribute if present (<img>
+// element only).
+extern const char kContextMenuElementNaturalHeight[];
+
 }  // namespace web
 
 #endif  // IOS_WEB_JS_FEATURES_CONTEXT_MENU_CONTEXT_MENU_CONSTANTS_H_

@@ -73,6 +73,14 @@ var getResponseForImageElement = function(element) {
     }
   parent = parent.parentNode;
   }
+  // Copy the image natural width, if any.
+  if (element.naturalWidth) {
+    result.naturalWidth = element.naturalWidth;
+  }
+  // Copy the image natural height, if any.
+  if (element.naturalHeight) {
+    result.naturalHeight = element.naturalHeight;
+  }
   return result;
 };
 

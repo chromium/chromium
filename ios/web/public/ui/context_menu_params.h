@@ -53,6 +53,12 @@ struct ContextMenuParams {
 
   // The text for the "alt" attribute of an HTML img element. Can be null.
   NSString* alt_text;
+
+  // The natural width of the HTML img element. Can be null = 0.
+  double natural_width;
+
+  // The natural height of the HTML img element. Can be null = 0.
+  double natural_height;
 };
 
 }  // namespace web

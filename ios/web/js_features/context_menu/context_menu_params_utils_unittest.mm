@@ -27,6 +27,8 @@ const char kTitle[] = "title";
 const char kReferrerPolicy[] = "always";
 const char kLinkText[] = "link text";
 const char kAlt[] = "alt text";
+const double kNaturalWidth = 200.0;
+const double kNaturalHeight = 300.0;
 }
 
 namespace web {
@@ -46,6 +48,8 @@ TEST_F(ContextMenuParamsUtilsTest, EmptyParams) {
   EXPECT_NSEQ(params.link_text, nil);
   EXPECT_NSEQ(params.title_attribute, nil);
   EXPECT_NSEQ(params.alt_text, nil);
+  EXPECT_NEAR(params.natural_width, 0.0, DBL_EPSILON);
+  EXPECT_NEAR(params.natural_height, 0.0, DBL_EPSILON);
 }
 
 // Tests the parsing of the element NSDictionary.
@@ -57,6 +61,8 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
   element_dict.SetStringKey(kContextMenuElementReferrerPolicy, kReferrerPolicy);
   element_dict.SetStringKey(kContextMenuElementInnerText, kLinkText);
   element_dict.SetStringKey(kContextMenuElementAlt, kAlt);
+  element_dict.SetDoubleKey(kContextMenuElementNaturalWidth, kNaturalWidth);
+  element_dict.SetDoubleKey(kContextMenuElementNaturalHeight, kNaturalHeight);
   ContextMenuParams params =
       ContextMenuParamsFromElementDictionary(&element_dict);
 
@@ -71,6 +77,9 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
 
   EXPECT_NSEQ(params.title_attribute, @(kTitle));
   EXPECT_NSEQ(params.alt_text, @(kAlt));
+
+  EXPECT_NEAR(params.natural_width, kNaturalWidth, DBL_EPSILON);
+  EXPECT_NEAR(params.natural_height, kNaturalHeight, DBL_EPSILON);
 }
 
 
