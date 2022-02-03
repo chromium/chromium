@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
 
 namespace network_hints {

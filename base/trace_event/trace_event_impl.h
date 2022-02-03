@@ -17,6 +17,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/thread_instruction_count.h"

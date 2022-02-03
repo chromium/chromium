@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_WEBUI_MOJO_FACADE_H_
 #define IOS_WEB_WEBUI_MOJO_FACADE_H_
 
+#include <objc/objc.h>
+
 #include <map>
 #include <memory>
 #include <string>

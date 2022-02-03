@@ -29,6 +29,8 @@ namespace internal {
 class DelayTimerBase;
 }
 class DeadlineTimer;
+class TimeDelta;
+class TimeTicks;
 
 namespace subtle {
 
