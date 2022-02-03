@@ -1897,6 +1897,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="287205682142673348">Poortdoorschakeling</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> toevoegen…</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
+<translation id="2873995907777332853">Details tonen over het blokkeren van alle cookies</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
 <translation id="2875698561019555027">(Chrome-foutpagina's)</translation>
 <translation id="2876336351874743617">Vinger 2</translation>
@@ -2203,6 +2204,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3189187154924005138">Grote cursor</translation>
 <translation id="3190558889382726167">Wachtwoord opgeslagen</translation>
 <translation id="3192947282887913208">Audiobestanden</translation>
+<translation id="3194786596445804250">Details tonen over het blokkeren van cookies van derden</translation>
 <translation id="3197453258332670132">Gerelateerde informatie voor je tekstselectie bekijken door met de rechtermuisknop te klikken of de selectie lang ingedrukt te houden</translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3200061262156232574">In je winkelwagentje</translation>
@@ -5296,6 +5298,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6455264371803474013">Op specifieke sites</translation>
 <translation id="6455894534188563617">&amp;Nieuwe map</translation>
 <translation id="645705751491738698">JavaScript blijven blokkeren</translation>
+<translation id="6458347417133445570">Details tonen over het toestaan van alle cookies</translation>
 <translation id="6458701200018867744">Upload mislukt (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Gebruik selectie voor zoekactie</translation>
 <translation id="6459799433792303855">Het actieve venster is verplaatst naar een ander scherm.</translation>
@@ -6727,6 +6730,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>
 <translation id="7920482456679570420">Woorden toevoegen waarvan je wilt dat de spellingcontrole deze overslaat</translation>
+<translation id="7922935920104868876">Details tonen over het blokkeren van cookies van derden in de incognitomodus</translation>
 <translation id="7924358170328001543">Fout bij doorschakelen van poort</translation>
 <translation id="7925108652071887026">Gegevens van Automatisch invullen</translation>
 <translation id="792514962475806987">Vastgezet zoomniveau:</translation>

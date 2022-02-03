@@ -1895,6 +1895,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="287205682142673348">Transferimi i portës</translation>
 <translation id="287286579981869940">Shto <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
+<translation id="2873995907777332853">Shfaq detajet për bllokimin e të gjitha kukive</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
 <translation id="2875698561019555027">(Faqet e gabimit të Chrome)</translation>
 <translation id="2876336351874743617">Gishti 2</translation>
@@ -2201,6 +2202,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3189187154924005138">Kursori i madh</translation>
 <translation id="3190558889382726167">Fjalëkalimi u ruajt</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
+<translation id="3194786596445804250">Shfaq detajet për bllokimin e kukive të palëve të treta</translation>
 <translation id="3197453258332670132">Me një klikim me butonin djathtas ose një shtypje të gjatë, shfaq informacione përkatëse për zgjedhjen e tekstit</translation>
 <translation id="3199127022143353223">Serverët</translation>
 <translation id="3200061262156232574">Në grumbullin tënd të artikujve të blerjes</translation>
@@ -5296,6 +5298,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6455264371803474013">Në sajte të caktuara</translation>
 <translation id="6455894534188563617">&amp;Dosje e re</translation>
 <translation id="645705751491738698">Vazhdo bllokimin e JavaScript</translation>
+<translation id="6458347417133445570">Shfaq detajet për lejimin e të gjitha kukive</translation>
 <translation id="6458701200018867744">Ngarkimi dështoi (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Përdor përzgjedhjen për të gjetur</translation>
 <translation id="6459799433792303855">Dritarja aktive u zhvendos në një ekran tjetër.</translation>
@@ -6727,6 +6730,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> mund ta shikojë skedarin <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Shto fjalët që dëshiron të kapërcejë kontrolli drejtshkrimor</translation>
+<translation id="7922935920104868876">Shfaq detajet për bllokimin e kukive të palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="7924358170328001543">Gabim në transferimin e portës</translation>
 <translation id="7925108652071887026">Plotëso automatikisht të dhënat</translation>
 <translation id="792514962475806987">Niveli i zmadhimit të stacionimit:</translation>

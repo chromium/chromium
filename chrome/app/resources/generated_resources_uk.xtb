@@ -1915,6 +1915,7 @@
 <translation id="287205682142673348">Переадресація порту</translation>
 <translation id="287286579981869940">Додати <ph name="PROVIDER_NAME" />…</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
+<translation id="2873995907777332853">Показувати деталі про блокування всіх файлів cookie</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
 <translation id="2875698561019555027">(сторінки Chrome із повідомленням про помилку)</translation>
 <translation id="2876336351874743617">Палець 2</translation>
@@ -2221,6 +2222,7 @@
 <translation id="3189187154924005138">Великий курсор</translation>
 <translation id="3190558889382726167">Пароль збережено</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
+<translation id="3194786596445804250">Показувати деталі про блокування сторонніх файлів cookie</translation>
 <translation id="3197453258332670132">Коли ви натискаєте вибраний текст правою кнопкою миші або втримуєте його, відображається пов’язана з ним інформація</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3200061262156232574">У вашому кошику для покупок</translation>
@@ -5317,6 +5319,7 @@
 <translation id="6455264371803474013">На певних сайтах</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
 <translation id="645705751491738698">Продовжити блокування JavaScript</translation>
+<translation id="6458347417133445570">Показувати деталі про дозвіл на всі файли cookie</translation>
 <translation id="6458701200018867744">Помилка завантаження (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Використати виділення для пошуку</translation>
 <translation id="6459799433792303855">Активне вікно переміщено на інший дисплей</translation>
@@ -6750,6 +6753,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920363873148656176">Сайт <ph name="ORIGIN" /> може переглядати файл "<ph name="FILENAME" />"</translation>
 <translation id="7920482456679570420">Додайте слова, які потрібно пропускати під час перевірки орфографії</translation>
+<translation id="7922935920104868876">Показувати деталі про блокування сторонніх файлів cookie в анонімному режимі</translation>
 <translation id="7924358170328001543">Не вдалося переадресувати порт</translation>
 <translation id="7925108652071887026">Дані автозаповнення</translation>
 <translation id="792514962475806987">Рівень масштабування закріпленої лупи:</translation>

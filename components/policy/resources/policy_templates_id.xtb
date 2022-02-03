@@ -4539,6 +4539,28 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="631183702829488873">Saat diaktifkan, fitur ini akan menampilkan tombol di layar login dan layar kunci yang mengizinkan sandi untuk ditampilkan.
           Fitur ini ditampilkan sebagai ikon mata di kolom teks sandi. Tombol tidak akan muncul saat fitur dinonaktifkan.
       </translation>
+<translation id="6313108604615108577">Kebijakan ini mengontrol apakah versi utama string
+      Agen Pengguna akan dibekukan ke 99.
+
+      Header permintaan Agen Pengguna memungkinkan situs mengidentifikasi aplikasi,
+      sistem operasi, vendor, dan/atau versi agen pengguna yang meminta.
+      Beberapa situs membuat asumsi tentang cara header ini diformat dan mungkin
+      mengalami masalah dengan string versi yang menyertakan tiga angka pada
+      posisi utama (misalnya, 100.0.0.0).
+
+      Jika kebijakan ini disetel ke 'Default' atau tidak disetel, setelan browser
+      untuk versi utama string Agen Pengguna akan kembali ke defaultnya.
+      Jika kebijakan disetel ke 'ForceDisabled', string Agen Pengguna tidak akan membekukan
+      versi utama.
+      Jika kebijakan disetel ke 'ForceEnabled', string Agen Pengguna akan selalu melaporkan
+      versi utama sebagai 99 dan menyertakan versi utama browser di posisi
+      minor. Misalnya, versi browser 101.0.0.0 akan mengirimkan header permintaan
+      Agen Pengguna yang melaporkan versi 99.101.0.0.
+
+      Kebijakan ini bersifat sementara dan tidak akan digunakan lagi di masa mendatang. Perhatikan bahwa
+      jika kebijakan ini dan
+      <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> diaktifkan,
+      string versi Agen Pengguna akan selalu 99.0.0.0.</translation>
 <translation id="6313170479290171718">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Jika kebijakan disetel ke Benar (True), keyboard virtual akan diaktifkan saat login. Jika kebijakan disetel ke Salah (False), keyboard virtual akan dinonaktifkan saat login.
@@ -4965,6 +4987,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       chrome://flags dan cara lain untuk menonaktifkan dan mengaktifkan fitur browser akan tetap berperilaku sebagaimana mestinya terlepas dari apakah kebijakan ini disetel ke Aktif atau Nonaktif.</translation>
 <translation id="6794083666143216172">Mengizinkan asal mengkueri atribut perangkat</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
+<translation id="6796215185873669533">Mengembalikan setelan browser untuk versi string Agen Pengguna ke defaultnya.</translation>
 <translation id="6800181452282128474">Jangan kueri Server Quirks</translation>
 <translation id="68031099365512050">Laporkan status audio</translation>
 <translation id="6810445994095397827">Cekal JavaScript di situs ini</translation>
@@ -5286,6 +5309,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7070525176564511548">Sandi harus dimasukkan setiap minggu (168 jam)</translation>
 <translation id="7072208053150563108">Tingkat perubahan sandi mesin</translation>
 <translation id="7072567600438630966">Izinkan pengaktifan Phone Hub.</translation>
+<translation id="7074437930865599190">Membekukan versi utama string Agen Pengguna ke 99</translation>
 <translation id="7079519252486108041">Cekal pop-up di situs ini</translation>
 <translation id="707988220162760379">Selalu buka file PDF menggunakan penampil PDF eksternal</translation>
 <translation id="7081784525008938771">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna tidak akan dianggap tidak ada aktivitas saat video diputar. Hal ini mencegah tercapainya waktu tunggu penundaan tidak ada aktivitas, penundaan peredupan layar, penundaan penonaktifan layar, dan penundaan penguncian layar, serta mencegah diambilnya tindakan terkait.
@@ -5991,6 +6015,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Secara default, ekstensi atau aplikasi Android tidak dapat menggunakan kunci yang ditujukan untuk pemakaian dalam perusahaan, hal ini setara dengan menyetel allowCorporateKeyUsage ke Salah (False) untuk ekstensi atau aplikasi Android tersebut. Hanya jika allowCorporateKeyUsage disetel ke Benar (True) untuk suatu ekstensi atau aplikasi Android, ekstensi atau aplikasi Android tersebut dapat menggunakan kunci platform apa pun yang ditujukan untuk pemakaian dalam perusahaan, guna menandai data arbitrer. Izin ini hanya boleh diberikan jika ekstensi atau aplikasi Android dipercaya untuk mengamankan akses ke kunci dari para penyerang.</translation>
 <translation id="7933141401888114454">Mengaktifkan pembuatan pengguna yang dilindungi</translation>
 <translation id="793473937901685727">Menyetel ketersediaan sertifikat untuk aplikasi ARC</translation>
+<translation id="7936302526928951356">String Agen Pengguna tidak akan membekukan versi utama.</translation>
 <translation id="7937766917976512374">Izinkan atau tolak penangkapan video</translation>
 <translation id="7941975817681987555">Jangan memprediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="7951605113561734721">Menentukan sertifikat klien di seluruh perangkat yang seharusnya didaftarkan menggunakan protokol pengelolaan perangkat.</translation>
@@ -6780,6 +6805,7 @@ Kebijakan akan dihapus pada M75.</translation>
       Setiap item daftar kebijakan merupakan string yang berisi ID ekstensi dan, terkadang, URL "update" yang dipisahkan titik koma (;). ID ekstensi adalah string 32 huruf yang ditemukan, misalnya, di chrome://extensions saat dalam mode Developer. Jika ditentukan, URL "update" akan mengarah ke dokumen XML Manifes Update (https://developer.chrome.com/extensions/autoupdate). Secara default, URL update Chrome Web Store akan digunakan. URL "update" yang disetel dalam kebijakan ini hanya digunakan untuk penginstalan awal; update ekstensi berikutnya akan menggunakan URL update dalam manifes ekstensi.
 
        Catatan: Kebijakan ini tidak berlaku untuk mode Samaran. Baca tentang ekstensi hosting (https://developer.chrome.com/extensions/hosting).</translation>
+<translation id="8827275450034266143">String Agen Pengguna akan membekukan versi utama sebagai 99 dan menyertakan versi utama browser di posisi minor.</translation>
 <translation id="8827366480126575426">Protokol untuk pengendali protokol.</translation>
 <translation id="8827417642396462482">Izinkan jenis kueri DNS tambahan</translation>
 <translation id="8831911834413504983">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat menjalankan JavaScript.

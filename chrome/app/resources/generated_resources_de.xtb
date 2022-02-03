@@ -1895,6 +1895,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="287205682142673348">Portweiterleitung</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> hinzufügen...</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
+<translation id="2873995907777332853">Informationen zum Blockieren aller Cookies aufrufen</translation>
 <translation id="2874939134665556319">Vorheriger Titel</translation>
 <translation id="2875698561019555027">(Chrome-Fehlerseiten)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
@@ -2201,6 +2202,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
 <translation id="3190558889382726167">Passwort gespeichert</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
+<translation id="3194786596445804250">Informationen zum Blockieren von Drittanbieter-Cookies aufrufen</translation>
 <translation id="3197453258332670132">Wenn Sie rechts klicken oder lange drücken, werden verknüpfte Informationen zum ausgewählten Text angezeigt</translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3200061262156232574">In meinem Einkaufswagen</translation>
@@ -5294,6 +5296,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6455264371803474013">Auf bestimmten Websites</translation>
 <translation id="6455894534188563617">&amp;Neuer Ordner</translation>
 <translation id="645705751491738698">JavaScript weiterhin blockieren</translation>
+<translation id="6458347417133445570">Informationen zum Zulassen aller Cookies aufrufen</translation>
 <translation id="6458701200018867744">Upload fehlgeschlagen (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Auswahl für Suche übernehmen</translation>
 <translation id="6459799433792303855">Aktives Fenster auf anderen Bildschirm verschoben.</translation>
@@ -6726,6 +6729,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> darf <ph name="FILENAME" /> aufrufen</translation>
 <translation id="7920482456679570420">Hier fügen Sie Wörter hinzu, die bei der Rechtschreibprüfung übersprungen werden sollen</translation>
+<translation id="7922935920104868876">Informationen zum Blockieren von Drittanbieter-Cookies im Inkognitomodus aufrufen</translation>
 <translation id="7924358170328001543">Fehler bei der Portweiterleitung</translation>
 <translation id="7925108652071887026">AutoFill-Daten</translation>
 <translation id="792514962475806987">Zoomstufe für angedockte Lupe:</translation>

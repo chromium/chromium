@@ -1900,6 +1900,7 @@
 <translation id="287205682142673348">Пераадрасацыя партоў</translation>
 <translation id="287286579981869940">Дадаць: <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
+<translation id="2873995907777332853">Паказаць падрабязныя звесткі пра блакіроўку ўсіх файлаў cookie</translation>
 <translation id="2874939134665556319">Папярэдні трэк</translation>
 <translation id="2875698561019555027">(Старонкі памылак Chrome)</translation>
 <translation id="2876336351874743617">Палец 2</translation>
@@ -2206,6 +2207,7 @@
 <translation id="3189187154924005138">Вялікі курсор</translation>
 <translation id="3190558889382726167">Пароль захаваны</translation>
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
+<translation id="3194786596445804250">Паказаць падрабязныя звесткі пра блакіроўку старонніх файлаў cookie</translation>
 <translation id="3197453258332670132">Па націсканні правай кнопкай мышы або доўгім націсканні паказваць звязаную інфармацыю пра вылучаны вамі тэкст</translation>
 <translation id="3199127022143353223">Серверы</translation>
 <translation id="3200061262156232574">У вашым кошыку</translation>
@@ -5299,6 +5301,7 @@
 <translation id="6455264371803474013">На канкрэтных сайтах</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
 <translation id="645705751491738698">Працягнуць блакіраваць JavaScript</translation>
+<translation id="6458347417133445570">Паказаць падрабязныя звесткі пра дазвол выкарыстоўваць усе файлы cookie</translation>
 <translation id="6458701200018867744">Збой запампоўвання (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Выкарыстаць вылучанае для пошуку</translation>
 <translation id="6459799433792303855">Актыўнае акно перамешчана на іншы дысплэй.</translation>
@@ -6731,6 +6734,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920363873148656176">Сайт <ph name="ORIGIN" /> можа праглядаць файл <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Дадайце словы, правапіс якіх не трэба правяраць</translation>
+<translation id="7922935920104868876">Паказаць падрабязныя звесткі пра блакіроўку старонніх файлаў cookie у рэжыме інкогніта</translation>
 <translation id="7924358170328001543">Памылка пераадрасацыі партоў</translation>
 <translation id="7925108652071887026">Даныя аўтазапаўнення</translation>
 <translation id="792514962475806987">Маштаб прыстыкаванай лупы:</translation>

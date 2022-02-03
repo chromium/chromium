@@ -1895,6 +1895,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="287205682142673348">Redirección de puertos</translation>
 <translation id="287286579981869940">Agregar <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Apagar</translation>
+<translation id="2873995907777332853">Mostrar detalles sobre cómo bloquear todas las cookies</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875698561019555027">(Páginas de error de Chrome)</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
@@ -2201,6 +2202,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Se guardó la contraseña</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
+<translation id="3194786596445804250">Mostrar detalles sobre cómo bloquear cookies de terceros</translation>
 <translation id="3197453258332670132">Para ver información relacionada sobre la selección de texto, haz clic con el botón derecho en ella o mantenla presionada.</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">En tu carrito de compras</translation>
@@ -5296,6 +5298,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
 <translation id="645705751491738698">Continuar con el bloqueo de JavaScript</translation>
+<translation id="6458347417133445570">Mostrar detalles sobre cómo permitir todas las cookies</translation>
 <translation id="6458701200018867744">No se pudo realizar la descarga (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Usar la selección para buscar</translation>
 <translation id="6459799433792303855">La ventana activa se movió a otra pantalla.</translation>
@@ -6729,6 +6732,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> puede ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Agrega las palabras que quieras que el corrector ortográfico omita</translation>
+<translation id="7922935920104868876">Mostrar detalles sobre cómo bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="7924358170328001543">Se produjo un error al reenviar el puerto</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="792514962475806987">Nivel de zoom en vista acoplada:</translation>

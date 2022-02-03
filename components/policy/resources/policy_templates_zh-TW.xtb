@@ -4440,6 +4440,15 @@
 <translation id="631183702829488873">啟用這項功能後，你會在登入畫面和鎖定畫面上看到允許顯示密碼的按鈕。
           這個按鈕會在密碼文字欄位中顯示為眼睛圖示。如果停用這項功能，此按鈕就不會顯示。
       </translation>
+<translation id="6313108604615108577">這項政策可控管是否要將 User-Agent 字串的主要版本凍結為 99。
+
+      網站會透過 User-Agent 要求標頭識別應用程式、作業系統、供應商和/或要求的使用者代理程式版本。
+      某些網站會假設這個標頭的格式，因此可能會在主要位置納入三位數的版本字串 (例如 100.0.0.0)，進而發生問題。
+
+      如果將這項政策設為「停用」或不設定，系統會將 User-Agent 字串的主要版本預設為瀏覽器設定。如果設為「ForceDisabled」，User-Agent 字串將不會凍結主要版本。
+      如果設為「ForceEnabled」，User-Agent 字串會一律將主要版本回報為 99，並在次要位置納入瀏覽器的主要版本。舉例來說，瀏覽器版本 101.0.0.0 會傳送 User-Agent 要求標頭，將版本資訊回報為 99.101.0.0。
+
+      這項政策僅是暫時性措施，日後將遭到移除。請注意，如果同時啟用這項政策和 <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> 政策，則 User-Agent 版本字串會一律顯示為 99.0.0.0。</translation>
 <translation id="6313170479290171718">這項政策已遭淘汰，請改用 <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> 政策。
 
       將這項政策設為 True，即可在登入時啟用螢幕小鍵盤。將這項政策設為 False，即可在登入時停用螢幕小鍵盤。
@@ -4862,6 +4871,7 @@
       無論這項政策設為啟用或停用，chrome://flags 和其他開啟/關閉瀏覽器功能的方法都能正常運作。</translation>
 <translation id="6794083666143216172">同意讓來源查詢裝置屬性</translation>
 <translation id="6795485990775913659">只在 PIN 碼停用時允許列印</translation>
+<translation id="6796215185873669533">將 User-Agent 字串版本預設為瀏覽器設定值。</translation>
 <translation id="6800181452282128474">不向 Quirks Server 發送查詢</translation>
 <translation id="68031099365512050">回報音訊狀態</translation>
 <translation id="6810445994095397827">封鎖這些網站的 JavaScript</translation>
@@ -5184,6 +5194,7 @@
 <translation id="7070525176564511548">每週 (168 小時) 需輸入一次密碼</translation>
 <translation id="7072208053150563108">裝置密碼變更頻率</translation>
 <translation id="7072567600438630966">允許啟用 Phone Hub 功能。</translation>
+<translation id="7074437930865599190">將 User-Agent 字串的主要版本凍結為 99</translation>
 <translation id="7079519252486108041">封鎖這些網站的彈出式視窗</translation>
 <translation id="707988220162760379">一律使用外部 PDF 檢視器開啟 PDF 檔案</translation>
 <translation id="7081784525008938771">如果將這項政策設為啟用或不設定，系統在視訊播放期間不會將使用者狀態視為閒置。這麼做可防止系統因達到閒置延遲時間、螢幕調暗延遲時間、螢幕關閉延遲時間和螢幕鎖定延遲時間限制，而採取相應動作。
@@ -5883,6 +5894,7 @@
       根據預設，擴充功能或 Android 應用程式無法使用企業專用的金鑰 (等同於將 allowCorporateKeyUsage 設為 False)。擴充功能或 Android 應用程式只有在 allowCorporateKeyUsage 設為 True 時，才能使用企業專用的平台金鑰簽署任意資料。為了確保攻擊者無法獲得金鑰存取權，這項權限只應授予信任的擴充功能或 Android 應用程式。</translation>
 <translation id="7933141401888114454">啟用建立受監管使用者的功能</translation>
 <translation id="793473937901685727">設定 ARC 應用程式的憑證可用性</translation>
+<translation id="7936302526928951356">User-Agent 字串不會凍結主要版本。</translation>
 <translation id="7937766917976512374">允許或拒絕擷取視訊</translation>
 <translation id="7941975817681987555">無論使用任何網路連線，皆不預測網路動作</translation>
 <translation id="7951605113561734721">指定應使用裝置管理通訊協定註冊的裝置通用用戶端憑證。</translation>
@@ -6659,6 +6671,7 @@
       這項政策的每個清單項目都是一行字串，其中包含以分號 (;) 區隔的擴充功能 ID 和「更新」網址 (選用)。擴充功能 ID 為 32 個字母的字串，你可以在開發人員模式下前往 chrome://extensions 等位置查看這類字串。「更新」網址 (如有指定) 應指向更新資訊清單 XML 文件 ( https://developer.chrome.com/extensions/autoupdate )。根據預設，系統會使用 Chrome 線上應用程式商店的更新網址。這項政策設定的「更新」網址僅適用於初次安裝，後續的擴充功能更新將使用擴充功能資訊清單中的更新網址。
 
        注意：這項政策不適用於無痕模式。請前往以下頁面，參閱有關代管擴充功能的資訊：https://developer.chrome.com/extensions/hosting。</translation>
+<translation id="8827275450034266143">User-Agent 字串會將主要版本凍結為 99，並在次要位置納入瀏覽器的主要版本。</translation>
 <translation id="8827366480126575426">通訊協定處理常式的通訊協定。</translation>
 <translation id="8827417642396462482">允許其他 DNS 查詢類型</translation>
 <translation id="8831911834413504983">你可以透過這項政策設定網址模式清單，用於指定可執行 JavaScript 的網站。

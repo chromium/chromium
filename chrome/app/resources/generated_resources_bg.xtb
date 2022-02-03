@@ -1909,6 +1909,7 @@
 <translation id="287205682142673348">Пренасочване на портове</translation>
 <translation id="287286579981869940">Добавяне на <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Изключване</translation>
+<translation id="2873995907777332853">Показване на подробностите за блокирането на всички „бисквитки“</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
 <translation id="2875698561019555027">(Страници с грешки в Chrome)</translation>
 <translation id="2876336351874743617">Пръст 2</translation>
@@ -2215,6 +2216,7 @@
 <translation id="3189187154924005138">Голям курсор</translation>
 <translation id="3190558889382726167">Паролата бе запазена</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
+<translation id="3194786596445804250">Показване на подробностите за блокирането на „бисквитки“ на трети страни</translation>
 <translation id="3197453258332670132">Показване на сродна информация за избрания от вас текст посредством кликване с десния бутон или продължително натискане</translation>
 <translation id="3199127022143353223">Сървъри</translation>
 <translation id="3200061262156232574">В пазарската ви кошница</translation>
@@ -5313,6 +5315,7 @@
 <translation id="6455264371803474013">На конкретни сайтове</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
 <translation id="645705751491738698">Блокирането на JavaScript да продължи</translation>
+<translation id="6458347417133445570">Показване на подробностите за разрешаването на всички „бисквитки“</translation>
 <translation id="6458701200018867744">Качването не бе успешно (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Използване на избраното за търсене</translation>
 <translation id="6459799433792303855">Активният прозорец е преместен на друг екран.</translation>
@@ -6746,6 +6749,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да преглежда <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Добавете думи, които да се пропускат при проверка на правописа</translation>
+<translation id="7922935920104868876">Показване на подробностите за блокирането на „бисквитки“ на трети страни в режим „инкогнито“</translation>
 <translation id="7924358170328001543">Грешка при пренасочване на порта</translation>
 <translation id="7925108652071887026">Автоматично попълване на данни</translation>
 <translation id="792514962475806987">Ниво на мащаба при прикрепен режим:</translation>

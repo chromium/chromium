@@ -1913,6 +1913,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="287205682142673348">Portvidarebefordran</translation>
 <translation id="287286579981869940">Lägg till <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Stäng av</translation>
+<translation id="2873995907777332853">VIsa information om att blockera alla cookies</translation>
 <translation id="2874939134665556319">Föregående spår</translation>
 <translation id="2875698561019555027">(Felsidor i Chrome)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
@@ -2219,6 +2220,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3189187154924005138">Stor markör</translation>
 <translation id="3190558889382726167">Lösenordet sparades</translation>
 <translation id="3192947282887913208">Ljudfiler</translation>
+<translation id="3194786596445804250">Visa information om att blockera cookies från tredje part</translation>
 <translation id="3197453258332670132">Visa information om den markerade texten när du högerklickar eller trycker länge</translation>
 <translation id="3199127022143353223">Servrar</translation>
 <translation id="3200061262156232574">I kundvagnen</translation>
@@ -5315,6 +5317,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6455264371803474013">På valda webbplatser</translation>
 <translation id="6455894534188563617">&amp;Ny mapp</translation>
 <translation id="645705751491738698">Fortsätt blockera JavaScript</translation>
+<translation id="6458347417133445570">Visa information om att tillåta alla cookies</translation>
 <translation id="6458701200018867744">Uppladdningen misslyckades (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Använd markering för sökning</translation>
 <translation id="6459799433792303855">Det aktiva fönstret har flyttats till en annan skärm.</translation>
@@ -6748,6 +6751,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7919210519031517829"><ph name="DURATION" /> sek</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> har visningsbehörighet till <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Lägg till ord som ska hoppas över vid stavningskontrollen</translation>
+<translation id="7922935920104868876">Visa information om att blockera cookies från tredje part i inkognitoläge</translation>
 <translation id="7924358170328001543">Det gick inte att vidarebefordra porten</translation>
 <translation id="7925108652071887026">Fyll i uppgifter automatiskt</translation>
 <translation id="792514962475806987">Zoomnivå för dockad skärmförstoring</translation>

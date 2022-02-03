@@ -1913,6 +1913,7 @@
 <translation id="287205682142673348">पोर्ट फ़ॉरवर्डिंग</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> जोड़ें...</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
+<translation id="2873995907777332853">सभी कुकी को ब्लॉक करने से जुड़ी जानकारी दिखाएं</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
 <translation id="2875698561019555027">(Chrome गड़बड़ी पृष्‍ठ)</translation>
 <translation id="2876336351874743617">उंगली दो</translation>
@@ -2219,6 +2220,7 @@
 <translation id="3189187154924005138">बड़ा कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेव किया गया</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
+<translation id="3194786596445804250">तीसरे पक्ष की कुकी को ब्लॉक करने से जुड़ी जानकारी दिखाएं</translation>
 <translation id="3197453258332670132">दायां क्लिक करने या दबाकर रखने पर, आपके चुने गए टेक्स्ट से जुड़ी जानकारी दिखती है</translation>
 <translation id="3199127022143353223">सर्वर</translation>
 <translation id="3200061262156232574">आपके शॉपिंग कार्ट में</translation>
@@ -5314,6 +5316,7 @@
 <translation id="6455264371803474013">कुछ खास साइटों पर</translation>
 <translation id="6455894534188563617">&amp;नया फ़ोल्डर</translation>
 <translation id="645705751491738698">JavaScript को अवरोधित करना जारी रखें</translation>
+<translation id="6458347417133445570">सभी कुकी को अनुमति देने से जुड़ी जानकारी दिखाएं</translation>
 <translation id="6458701200018867744">अपलोड नहीं हो सका (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">ढूंढने के लिए चुनाव का उपयोग करें</translation>
 <translation id="6459799433792303855">चालू विंडो को किसी दूसरे डिसप्ले में ले जाया गया.</translation>
@@ -6746,6 +6749,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकंड</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> को देख सकती है</translation>
 <translation id="7920482456679570420">जिन शब्दों को आप वर्तनी जांच में शामिल नहीं करना चाहते उन्हें जोड़ें</translation>
+<translation id="7922935920104868876">गुप्त मोड में तीसरे पक्ष की कुकी को ब्लॉक करने से जुड़ी जानकारी दिखाएं</translation>
 <translation id="7924358170328001543">पोर्ट को फ़ॉरवर्ड करने में गड़बड़ी हुई</translation>
 <translation id="7925108652071887026">स्‍वत:-भरण डेटा</translation>
 <translation id="792514962475806987">डॉक किया गया ज़ूम स्तर:</translation>

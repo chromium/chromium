@@ -1914,6 +1914,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="287205682142673348">Encaminhamento de portas</translation>
 <translation id="287286579981869940">Adicionar <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Desligar</translation>
+<translation id="2873995907777332853">Mostrar detalhes sobre bloquear todos os cookies</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2875698561019555027">Páginas de erro do Chrome</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
@@ -2220,6 +2221,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Senha salva</translation>
 <translation id="3192947282887913208">Arquivos de áudio</translation>
+<translation id="3194786596445804250">Mostrar detalhes sobre bloquear cookies de terceiros</translation>
 <translation id="3197453258332670132">Ao clicar com o botão direito do mouse ou tocar na tela e mantê-la pressionada, informações relacionadas à seleção de texto são exibidas</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">No seu carrinho de compras</translation>
@@ -5318,6 +5320,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
 <translation id="645705751491738698">Continuar bloqueando JavaScript</translation>
+<translation id="6458347417133445570">Mostrar detalhes sobre permitir todos os cookies</translation>
 <translation id="6458701200018867744">Falha no upload (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Usar seleção para buscar</translation>
 <translation id="6459799433792303855">A janela ativa foi movida para outra tela.</translation>
@@ -6751,6 +6754,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Adicione palavras a serem puladas pela verificação ortográfica</translation>
+<translation id="7922935920104868876">Mostrar detalhes sobre o bloqueio de cookies de terceiros no modo de navegação anônima</translation>
 <translation id="7924358170328001543">Erro ao encaminhar a porta</translation>
 <translation id="7925108652071887026">Dados do preenchimento automático</translation>
 <translation id="792514962475806987">Nível de zoom da lupa em área fixa:</translation>

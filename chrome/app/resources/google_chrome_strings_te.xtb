@@ -163,7 +163,7 @@
 <translation id="4895437082222824641">కొత్త Chrome &amp;ట్యాబ్‌లో లింక్‌ను తెరువు</translation>
 <translation id="4953650215774548573">Google Chromeను మీ డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="495931528404527476">Chromeలో</translation>
-<translation id="4970761609246024540">Chrome ప్రొఫైల్‌లకు స్వాగతం</translation>
+<translation id="4970761609246024540">Chrome ప్రొఫైళ్లకు స్వాగతం</translation>
 <translation id="4990567037958725628">Google Chrome కేనరీ</translation>
 <translation id="5062123544085870375">Chrome OSను మళ్లీ ప్రారంభించండి</translation>
 <translation id="5132929315877954718">Google Chrome కోసం గొప్ప యాప్‌లు, ఆటలు, ఎక్స్‌టెన్షన్‌లు మరియు థీమ్‌లను కనుగొనండి.</translation>
@@ -225,7 +225,7 @@
 <translation id="6943584222992551122">ఈ వ్యక్తి బ్రౌజింగ్ డేటా ఈ పరికరం నుండి తొలగించబడుతుంది. డేటాను పునరుద్ధరించడానికి, <ph name="USER_EMAIL" />గా Chromeకి సైన్ ఇన్ చేయండి.</translation>
 <translation id="6967962315388095737">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome బీటా కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="6989339256997917931">Google Chrome నవీకరింబడింది, కానీ మీరు దీన్ని కనీసం 30 రోజులు ఉయోగించలేరు.</translation>
-<translation id="7025800014283535195">మీరు ఇక్కడ Chrome ప్రొఫైల్‌ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
+<translation id="7025800014283535195">మీరు ఇక్కడ Chrome ప్రొఫైళ్ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
 <translation id="7062128746136194023">Chromeలో సైట్‌లు, యాప్‌లు, ఎక్స్‌టెన్షన్‌లకు సంబంధించిన అనుమతులను మీ తల్లి/తండ్రి ఆఫ్ చేశారు. ఈ <ph name="EXTENSION_TYPE_PARAMETER" />ను జోడించడానికి అనుమతి లేదు.</translation>
 <translation id="7085332316435785646">Google సర్వీస్‌లలో మరింత వ్యక్తిగతీకరించిన అనుభవం కోసం Chrome హిస్టరీని చేర్చాలో, లేదో ఎంచుకోండి</translation>
 <translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
@@ -285,7 +285,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ఈ వర్క్ ప్రొఫైల్, మీ వ్యక్తిగత ప్రొఫైల్ నుండి పూర్తిగా భిన్నంగా ఉంది.</translation>
 <translation id="8556340503434111824">Google Chrome యొక్క కొత్త వెర్షన్ అందుబాటులో ఉంది, ఇది మునుపటి కంటే వేగవంతంగా ఉంటుంది.</translation>
-<translation id="8571790202382503603">మీ మొత్తం Chrome అంశాలను మీ Chrome ప్రొఫైల్‌లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
+<translation id="8571790202382503603">మీ మొత్తం Chrome అంశాలను మీ Chrome ప్రొఫైళ్లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
 <translation id="8614913330719544658">Google Chrome స్పందించడం లేదు. ఇప్పుడే పునఃప్రారంభించాలా?</translation>
 <translation id="861702415419836452">మీ పరిసరాల 3D మ్యాప్‌ను సృష్టించడానికి Chromeకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 నిమిషంలో Chrome తిరిగి ప్రారంభించబడుతుంది}other{# నిమిషాల్లో Chrome తిరిగి ప్రారంభించబడుతుంది}}</translation>
@@ -293,7 +293,7 @@
 <translation id="8641606876632989680">చోరీకి గురైన పాస్‌వర్డ్‌తో మీరు సైన్ ఇన్ చేసినప్పుడు, Chrome తెలియజేస్తుంది</translation>
 <translation id="8669527147644353129">Google Chrome సహాయకారుడు</translation>
 <translation id="8679801911857917785">ఇది మీరు Chromeని ప్రారంభించేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
-<translation id="8686817260976772516">మీ మొత్తం Chrome అంశాలను Chrome ప్రొఫైల్‌లతో విభజించవచ్చు. స్నేహితులు, ఫ్యామిలీ కోసం ప్రొఫైల్‌లను క్రియేట్ చేయండి, లేదా ఆఫీస్, వినోదం మధ్య విభజించండి.</translation>
+<translation id="8686817260976772516">మీ మొత్తం Chrome అంశాలను Chrome ప్రొఫైళ్లతో విభజించవచ్చు. స్నేహితులు, ఫ్యామిలీ కోసం ప్రొఫైళ్లను క్రియేట్ చేయండి, లేదా ఆఫీస్, వినోదం మధ్య విభజించండి.</translation>
 <translation id="8712767363896337380">దాదాపుగా అప్‌డేట్ అయ్యి ఉంది! అప్‌డేట్ చేయడాన్ని పూర్తి చేయడానికి Chromeను రీ-లాంచ్ చేయండి.</translation>
 <translation id="873133009373065397">Google Chrome డిఫాల్ట్ బ్రౌజర్‌ను నిశ్చయించలేదు లేదా సెట్ చేయలేదు</translation>
 <translation id="8823341990149967727">Chrome కాలం చెల్లినది</translation>
@@ -313,5 +313,5 @@
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చు</translation>
 <translation id="940313311831216333">మీ అన్ని పరికరాలలో మీ Chrome సంబంధిత అంశాలను యాక్సెస్ చేయడానికి, సైన్ ఇన్ చేసి, ఆపై సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="989369509083708165">మీ డిఫాల్ట్ బ్రౌజర్ Google Chrome</translation>
-<translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome ప్రొఫైల్‌ల మధ్య స్విచ్ అవ్వగలదు</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome ప్రొఫైళ్ల మధ్య స్విచ్ అవ్వగలదు</translation>
 </translationbundle>

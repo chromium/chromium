@@ -4457,6 +4457,16 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
         Als dit beleid is ingesteld op False of niet is ingesteld, kan de gebruiker blijven werken terwijl de verificatie ongeldig is.</translation>
 <translation id="631183702829488873">Als deze functie aanstaat, wordt een knop getoond op het inlog- en vergrendelscherm waarmee het wachtwoord kan worden getoond.
           De knop wordt getoond als een oog in het tekstveld voor het wachtwoord. De knop is afwezig als de functie uitstaat.</translation>
+<translation id="6313108604615108577">Dit beleid bepaalt of de hoofdversie van de tekenreeks voor User-agent moet worden vastgezet op 99.
+
+      Met de verzoekheader voor user-agent kunnen websites de app, het besturingssysteem, de leverancier en/of de versie van de aanvragende user-agent identificeren.
+      Sommige websites doen aannames over de verwachte opmaak van deze kop en kunnen problemen krijgen met versiereeksen die 3 cijfers in de hoofdpositie bevatten (bijv. 100.0.0.0).
+
+      Als je het beleid instelt op Default of niet instelt, worden de standaard browserinstellingen gebruikt voor de hoofdversie van de tekenreeks voor User-agent.
+      Als je dit instelt op ForceDisabled, wordt de hoofdversie niet vastgezet door de tekenreeks voor User-agent.
+      Als je dit instelt op ForceEnabled, meldt de tekenreeks voor User-agent altijd de hoofdversie als 99 en wordt de hoofdversie van de browser opgenomen in de secundaire positie. Browserversie 101.0.0.0 zou bijvoorbeeld een verzoekheader voor User-agent sturen die versie 99.101.0.0 meldt.
+
+      Dit beleid is tijdelijk en wordt in de toekomst beëindigd. Houd er rekening mee dat als dit beleid en <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> aanstaan, de tekenreeks voor de User-agent-versie altijd 99.0.0.0 is.</translation>
 <translation id="6313170479290171718">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Als je het beleid instelt op True, staat het schermtoetsenbord aan bij het inloggen. Als je het beleid instelt op False, staat het schermtoetsenbord uit bij het inloggen.
@@ -4882,6 +4892,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
 <translation id="6794083666143216172">Toestaan dat de herkomst query's voor apparaatkenmerken kan uitvoeren</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
+<translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
 <translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
@@ -5200,6 +5211,7 @@ Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de table
 <translation id="7070525176564511548">Het wachtwoord moet elke week (168 uur) worden opgegeven</translation>
 <translation id="7072208053150563108">Wijzigingsfrequentie van computerwachtwoord</translation>
 <translation id="7072567600438630966">Toestaan dat Phone Hub wordt aangezet.</translation>
+<translation id="7074437930865599190">Hoofdversie van tekenreeks voor User-agent vastzetten op 99</translation>
 <translation id="7079519252486108041">Pop-ups blokkeren op deze sites</translation>
 <translation id="707988220162760379">Pdf-bestanden altijd openen met een externe pdf-viewer</translation>
 <translation id="7081784525008938771">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er video wordt afgespeeld. Hiermee wordt voorkomen dat de vertraging voor het dimmen, uitzetten en vergrendelen van het scherm wordt bereikt en dat de bijbehorende acties worden uitgevoerd.
@@ -5906,6 +5918,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Een extensie of Android-app kan standaard geen sleutel gebruiken die is bedoeld voor zakelijk gebruik. Dit staat gelijk aan het instellen van allowCorporateKeyUsage op False voor die extensie of Android-app. Alleen als allowCorporateKeyUsage voor een extensie of Android-app is ingesteld op True kan deze elke platformsleutel gebruiken die is gemarkeerd voor zakelijk gebruik om willekeurige gegevens te ondertekenen. Geef deze toestemming alleen als je er zeker van bent dat de extensie of de Android-app de toegang tot de sleutel voldoende beveiligt tegen aanvallers.</translation>
 <translation id="7933141401888114454">Aanmaak van bewaakte gebruikers aanzetten</translation>
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
+<translation id="7936302526928951356">De tekenreeks voor User-agent zet de hoofdversie niet vast.</translation>
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
 <translation id="7951605113561734721">Specificeert clientcertificaten voor het hele apparaat die moeten worden ingeschreven via het protocol voor apparaatbeheer.</translation>
@@ -6694,6 +6707,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest ( https://developer.chrome.com/extensions/autoupdate ). Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
 
        Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
+<translation id="8827275450034266143">De tekenreeks voor User-agent zet de hoofdversie vast op 99 en neemt de hoofdversie van de browser op in de secundaire positie.</translation>
 <translation id="8827366480126575426">Het protocol voor de protocolhandler.</translation>
 <translation id="8827417642396462482">Aanvullende DNS-zoekopdrachttypen toestaan</translation>
 <translation id="8831911834413504983">Als je het beleid instelt, kun je een lijst met URL-patronen instellen om op te geven welke sites JavaScript mogen uitvoeren.

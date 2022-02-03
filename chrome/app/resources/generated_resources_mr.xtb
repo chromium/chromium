@@ -1912,6 +1912,7 @@
 <translation id="287205682142673348">पोर्ट फॉरवर्डिंग</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> जोडा...</translation>
 <translation id="2872961005593481000">बंद करा</translation>
+<translation id="2873995907777332853">सर्व कुकी ब्लॉक करण्यासंबंधित तपशील दाखवा</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
 <translation id="2875698561019555027">(Chrome एरर पेज)</translation>
 <translation id="2876336351874743617">दुसरे बोट</translation>
@@ -2218,6 +2219,7 @@
 <translation id="3189187154924005138">मोठा कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेव्ह केला</translation>
 <translation id="3192947282887913208">ऑडिओ फाइल</translation>
+<translation id="3194786596445804250">तृतीय पक्ष कुकी ब्लॉक करण्यासंबंधित तपशील दाखवा</translation>
 <translation id="3197453258332670132">राइट क्लिक केल्यामुळे किंवा दाबून ठेवल्यामुळे, तुमच्या मजकूर निवडीशी संबंधित माहिती दाखवते</translation>
 <translation id="3199127022143353223">सर्व्हर</translation>
 <translation id="3200061262156232574">तुमच्या शॉपिंग कार्टमध्ये</translation>
@@ -5313,6 +5315,7 @@
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
 <translation id="645705751491738698">JavaScript अवरोधित करणे सुरू ठेवा</translation>
+<translation id="6458347417133445570">सर्व कुकींना अनुमती देण्यासंबंधित तपशील दाखवा</translation>
 <translation id="6458701200018867744">अपलोड करता आले नाही (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">शोधण्यासाठी निवड वापरा</translation>
 <translation id="6459799433792303855">ॲक्टिव्ह विंडो दुसऱ्या डिस्प्लेवर हलवली आहे.</translation>
@@ -6744,6 +6747,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7919210519031517829"><ph name="DURATION" /> से</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> पाहता येते</translation>
 <translation id="7920482456679570420">तुम्हाला स्पेल चेकने वगळायला हवे असलेले शब्द जोडा</translation>
+<translation id="7922935920104868876">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक करण्यासंबंधित तपशील दाखवा</translation>
 <translation id="7924358170328001543">पोर्ट फॉरवर्ड करताना एरर आली</translation>
 <translation id="7925108652071887026">स्वयं-भरण डेटा</translation>
 <translation id="792514962475806987">डॉक केलेली झूम पातळी:</translation>

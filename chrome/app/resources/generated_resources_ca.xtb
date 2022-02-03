@@ -1897,6 +1897,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="287205682142673348">Redirecció de ports</translation>
 <translation id="287286579981869940">Afegeix <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Apaga</translation>
+<translation id="2873995907777332853">Mostra els detalls sobre com es bloquegen totes les galetes</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875698561019555027">(Pàgines d'error de Chrome)</translation>
 <translation id="2876336351874743617">Dit 2</translation>
@@ -2203,6 +2204,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3189187154924005138">Cursor gran</translation>
 <translation id="3190558889382726167">S'ha desat la contrasenya</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
+<translation id="3194786596445804250">Mostra els detalls sobre com es permeten les galetes de tercers</translation>
 <translation id="3197453258332670132">Si mantens el text premut o hi fas clic amb el botó dret, es mostrarà informació relacionada amb el text seleccionat</translation>
 <translation id="3199127022143353223">Servidors</translation>
 <translation id="3200061262156232574">Al carretó electrònic</translation>
@@ -5299,6 +5301,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6455264371803474013">En llocs web específics</translation>
 <translation id="6455894534188563617">Carpeta &amp;nova</translation>
 <translation id="645705751491738698">Continua bloquejant JavaScript</translation>
+<translation id="6458347417133445570">Mostra els detalls sobre com es permeten totes les galetes</translation>
 <translation id="6458701200018867744">Ha fallat la pujada (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilitza la selecció per a la cerca</translation>
 <translation id="6459799433792303855">La finestra activa s'ha mogut a una altra pantalla.</translation>
@@ -6732,6 +6735,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pot veure <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Afegeix paraules que vulguis que el corrector ortogràfic passi per alt</translation>
+<translation id="7922935920104868876">Mostra els detalls sobre com es bloquegen les galetes de tercers en mode d'incògnit</translation>
 <translation id="7924358170328001543">Error en redireccionar el port</translation>
 <translation id="7925108652071887026">Dades d'emplenament automàtic</translation>
 <translation id="792514962475806987">Nivell de zoom acoblat:</translation>

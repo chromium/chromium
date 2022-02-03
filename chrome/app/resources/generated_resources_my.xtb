@@ -1911,6 +1911,7 @@
 <translation id="287205682142673348">ပို့တ် ထပ်ဆင့်ပို့ခြင်း</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> ထပ်ထည့်ရန်...</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
+<translation id="2873995907777332853">ကွတ်ကီးအားလုံး ပိတ်ထားခြင်းအကြောင်း အသေးစိတ်ပြပါ</translation>
 <translation id="2874939134665556319">ယခင်တစ်ပုဒ်</translation>
 <translation id="2875698561019555027">(Chrome အမှား စာမျက်နှာများ)</translation>
 <translation id="2876336351874743617">လက်ချောင်း ၂</translation>
@@ -2217,6 +2218,7 @@
 <translation id="3189187154924005138">ကာဆာ အကြီး</translation>
 <translation id="3190558889382726167">စကားဝှက် သိမ်းဆည်းပြီး၏</translation>
 <translation id="3192947282887913208">အသံ ဖိုင်များ</translation>
+<translation id="3194786596445804250">ပြင်ပကုမ္ပဏီကွတ်ကီးများ ပိတ်ထားခြင်းအကြောင်း အသေးစိတ်ပြပါ</translation>
 <translation id="3197453258332670132">ညာဘက်ခလုတ်ကို နှိပ်လျှင် (သို့) ကြာရှည်စွာဖိထားလျှင် သင့်စာသားရွေးချယ်မှုအတွက် ဆက်စပ်သော အချက်အလက်ကို ပြနိုင်သည်</translation>
 <translation id="3199127022143353223">ဆာဗာများ</translation>
 <translation id="3200061262156232574">သင်၏ဈေးခြင်းတောင်းတွင်</translation>
@@ -5312,6 +5314,7 @@
 <translation id="6455264371803474013">ရွေးထားသည့် ဝဘ်ဆိုက်များတွင်</translation>
 <translation id="6455894534188563617">&amp;ဖိုင်တွဲအသစ်</translation>
 <translation id="645705751491738698">JavaScript အား ဆက်လက် ပိတ်ဆို့ထားရန်</translation>
+<translation id="6458347417133445570">ကွတ်ကီးအားလုံး ခွင့်ပြုခြင်းအကြောင်း အသေးစိတ်ပြပါ</translation>
 <translation id="6458701200018867744">အပ်လုဒ်လုပ်ခြင်း မအောင်မြင်ပါ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)။</translation>
 <translation id="6459488832681039634">ရှာဖွေမှု အတွက် ရွေးချယ်ခြင်းအသုံးပြုရန်</translation>
 <translation id="6459799433792303855">လက်ရှိဖွင့်ထားသည့်ဝင်းဒိုးကို အခြားမျက်နှာပြင်ပြသမှုသို့ ရွှေ့ထားသည်။</translation>
@@ -6743,6 +6746,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />စက္ကန့်</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> သည် <ph name="FILENAME" /> ကို ကြည့်နိုင်သည်</translation>
 <translation id="7920482456679570420">စာလုံးပေါင်းစစ်ဆေးခြင်း ကျော်သွားစေလိုသည့် စာလုံးများ ထည့်နိုင်သည်</translation>
+<translation id="7922935920104868876">ရုပ်ဖျက်မုဒ်တွင် ပြင်ပကုမ္ပဏီကွတ်ကီးများ ပိတ်ထားခြင်းအကြောင်း အသေးစိတ်ပြပါ</translation>
 <translation id="7924358170328001543">ပို့တ်ထပ်ဆင့်ပို့ရာတွင် အမှားဖြစ်သွားသည်</translation>
 <translation id="7925108652071887026">အလိုအလျောက်ဖြည့် ဒေတာ</translation>
 <translation id="792514962475806987">နေရာချထားသည့် ဇူးမ်အဆင့်−</translation>

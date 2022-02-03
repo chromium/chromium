@@ -77,10 +77,10 @@
 <translation id="3349211344363550267">మీరు ఈ ఫైల్‌ను డౌన్‌లోడ్ చేయవద్దు లేదా తెరవవద్దని Chromium సిఫార్సు చేస్తుంది</translation>
 <translation id="3350761136195634146">ఈ ఖాతాతో ఇప్పటికే ఒక Chromium ప్రొఫైల్ ఉంది</translation>
 <translation id="3406848076815591792">ప్రస్తుతం ఉన్న Chromium ప్రొఫైల్‌కు స్విచ్ చేయాలా?</translation>
-<translation id="3430503420100763906">మీ మొత్తం Chromium అంశాలను Chromium ప్రొఫైల్‌లతో విభజించవచ్చు. స్నేహితులు, ఫ్యామిలీ కోసం ప్రొఫైల్‌లను క్రియేట్ చేయండి, లేదా ఆఫీస్, వినోదం మధ్య విభజించండి.</translation>
+<translation id="3430503420100763906">మీ మొత్తం Chromium అంశాలను Chromium ప్రొఫైళ్లతో విభజించవచ్చు. స్నేహితులు, ఫ్యామిలీ కోసం ప్రొఫైళ్లను క్రియేట్ చేయండి, లేదా ఆఫీస్, వినోదం మధ్య విభజించండి.</translation>
 <translation id="347328004046849135">చోరీకి గురైన పాస్‌వర్డ్‌తో మీరు సైన్ ఇన్ చేసినప్పుడు Chromium మీకు తెలియజేస్తుంది</translation>
 <translation id="3474745554856756813">ఇది ఈ పరికరం నుండి <ph name="ITEMS_COUNT" /> అంశాలను తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromiumకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
-<translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium ప్రొఫైల్‌ల మధ్య స్విచ్ చేయగలదు</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium ప్రొఫైళ్ల మధ్య స్విచ్ చేయగలదు</translation>
 <translation id="3509308970982693815">దయచేసి అన్ని Chromium విండోలను మూసివేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="3575459661164320785">మీ కంప్యూటర్‌లో మీ భద్రతకు హాని కలిగించే సాఫ్ట్‌వేర్‌ ఉంది. మీ బ్రౌజర్‌ని మళ్లీ సాధారణంగా పని చేసేలా చేయడానికి Chromium దానిని తీసివేసి, మీ సెట్టింగ్‌లను పునరుద్ధరించి, ఎక్స్‌టెన్షన్‌లను నిలిపివేయగలదు.</translation>
 <translation id="3639635944603682591">ఈ వ్యక్తి బ్రౌజింగ్ డేటా‌ ఈ పరికరం నుండి తొలగించబడుతుంది. డేటాను పునరుద్ధరించడానికి, <ph name="USER_EMAIL" />గా Chromiumకు సైన్ ఇన్ చేయండి.</translation>
@@ -164,7 +164,7 @@
 <translation id="6120345080069858279">Chromium ఈ పాస్‌వర్డ్‌ను మీ Google ఖాతాలో సేవ్ చేస్తుంది. మీరు దీనిని గుర్తుంచుకోవాల్సిన అవసరం లేదు.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> హానికరం, కావున Chromium దాన్ని బ్లాక్ చేసింది.</translation>
 <translation id="6134968993075716475">సురక్షిత బ్రౌజింగ్ ఆఫ్ చేయబడింది. దాన్ని ఆన్ చేయమని Chromium సిఫార్సు చేస్తోంది.</translation>
-<translation id="6145820983052037069">మీరు ఇక్కడ Chromium ప్రొఫైల్‌ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
+<translation id="6145820983052037069">మీరు ఇక్కడ Chromium ప్రొఫైళ్ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
 <translation id="6183079672144801177">మీ <ph name="TARGET_DEVICE_NAME" />లో మీరు Chromiumకు సైన్ ఇన్ చేశారని నిర్ధారించుకుని, ఆపై మళ్లీ పంపడానికి ట్రై చేయండి.</translation>
 <translation id="6212496753309875659">ఈ కంప్యూటర్‌లో ఇప్పటికే మరింత తాజాదైన Chromium వెర్షన్ ఉంది. సాఫ్ట్‌వేర్ పని చేయకపోతే, దయచేసి Chromiumను అన్ఇన్‌స్టాల్ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ఇప్పుడు తిరిగి ప్రారంభించబడుతుంది}=1{1 సెకనులో Chromium తిరిగి ప్రారంభించబడుతుంది}other{# సెకన్లలో Chromium తిరిగి ప్రారంభించబడుతుంది}}</translation>
@@ -182,7 +182,7 @@
 <translation id="6373523479360886564">మీరు ఖచ్చితంగా Chromiumను అన్ఇన్‌స్టాల్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="6403826409255603130">Chromium అనేది మెరుపు వేగంతో వెబ్‌పేజీలను మరియు యాప్‌ల‌ను అమలు చేసే వెబ్ బ్రౌజర్. ఇది వేగవంతమైనది, స్థిరమైనది మరియు ఉపయోగించడానికి సులభమైనది. Chromiumలో రూపొందించిన మాల్‌వేర్‌ మరియు ఫిషింగ్ రక్షణతో మరింత సురక్షితంగా వెబ్‌లో బ్రౌజ్ చేయండి.</translation>
 <translation id="6434250628340475518">Chromium OS సిస్టమ్</translation>
-<translation id="6455857529632101747">Chromium ప్రొఫైల్‌లకు స్వాగతం</translation>
+<translation id="6455857529632101747">Chromium ప్రొఫైళ్లకు స్వాగతం</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 సెకనులో పునఃప్రారంభమవుతుంది}other{Chromium # సెకన్లలో పునఃప్రారంభమవుతుంది}}</translation>
 <translation id="6475912303565314141">ఇది మీరు Chromiumని ప్రారంభించేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="6510925080656968729">Chromiumను అన్ఇన్‌స్టాల్ చేయి</translation>
@@ -222,7 +222,7 @@
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="734373864078049451">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chromium అంశాలు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేశారు.</translation>
-<translation id="7398989605938454041">మీ మొత్తం Chromium అంశాలను, మీరు Chromium ప్రొఫైల్‌లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
+<translation id="7398989605938454041">మీ మొత్తం Chromium అంశాలను, మీరు Chromium ప్రొఫైళ్లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
 <translation id="7448255348454382571">Chromium OSని మళ్లీ ప్రారంభించండి</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">ఈ సైట్ కోసం మీ కెమెరాను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>

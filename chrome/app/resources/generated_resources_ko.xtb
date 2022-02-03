@@ -1913,6 +1913,7 @@
 <translation id="287205682142673348">포트 전달</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> 추가...</translation>
 <translation id="2872961005593481000">종료</translation>
+<translation id="2873995907777332853">모든 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2875698561019555027">(Chrome 오류 페이지)</translation>
 <translation id="2876336351874743617">손가락 2</translation>
@@ -2219,6 +2220,7 @@
 <translation id="3189187154924005138">큰 커서</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
+<translation id="3194786596445804250">서드 파티 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="3197453258332670132">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 선택한 텍스트에 관한 관련 정보가 표시됩니다.</translation>
 <translation id="3199127022143353223">서버</translation>
 <translation id="3200061262156232574">장바구니 항목</translation>
@@ -5312,6 +5314,7 @@
 <translation id="6455264371803474013">특정 사이트에서</translation>
 <translation id="6455894534188563617">새 폴더(&amp;N)</translation>
 <translation id="645705751491738698">자바스크립트 계속 차단</translation>
+<translation id="6458347417133445570">모든 쿠키 허용에 관한 세부정보 표시</translation>
 <translation id="6458701200018867744">업로드 실패(<ph name="WEBRTC_LOG_UPLOAD_TIME" />)</translation>
 <translation id="6459488832681039634">선택 부분으로 찾기</translation>
 <translation id="6459799433792303855">활성 창이 다른 디스플레이로 이동했습니다.</translation>
@@ -6745,6 +6748,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />초</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="7920482456679570420">맞춤법 검사를 건너뛸 단어를 추가합니다.</translation>
+<translation id="7922935920104868876">시크릿 모드에서 서드 파티 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="7924358170328001543">포트 전달 중 오류 발생</translation>
 <translation id="7925108652071887026">데이터 자동완성</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>

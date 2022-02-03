@@ -1899,6 +1899,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="287205682142673348">Přesměrování portů</translation>
 <translation id="287286579981869940">Přidat <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Vypnout</translation>
+<translation id="2873995907777332853">Zobrazit podrobnosti o blokování všech souborů cookie</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
 <translation id="2875698561019555027">(Chybové stránky Chromu)</translation>
 <translation id="2876336351874743617">Prst 2</translation>
@@ -2205,6 +2206,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3189187154924005138">Velký kurzor</translation>
 <translation id="3190558889382726167">Heslo uloženo</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
+<translation id="3194786596445804250">Zobrazit podrobnosti o blokování souborů cookie třetích stran</translation>
 <translation id="3197453258332670132">Zobrazit kliknutím pravým tlačítkem nebo dlouhým stisknutím informace o vybraném textu</translation>
 <translation id="3199127022143353223">Servery</translation>
 <translation id="3200061262156232574">V nákupním košíku</translation>
@@ -5299,6 +5301,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6455264371803474013">Na konkrétních webech</translation>
 <translation id="6455894534188563617">&amp;Nová složka</translation>
 <translation id="645705751491738698">Pokračovat v blokování JavaScriptu</translation>
+<translation id="6458347417133445570">Zobrazit podrobnosti o povolení všech souborů cookie</translation>
 <translation id="6458701200018867744">Nahrávání se nezdařilo (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Pro hledání použít výběr</translation>
 <translation id="6459799433792303855">Aktivní okno bylo přesunuto na jinou obrazovku.</translation>
@@ -6731,6 +6734,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> může číst soubor <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Přidat slova, která má kontrola pravopisu přeskakovat</translation>
+<translation id="7922935920104868876">Zobrazit podrobnosti o blokování souborů cookie třetí strany v anonymním režimu</translation>
 <translation id="7924358170328001543">Při přesměrování portu došlo k chybě</translation>
 <translation id="7925108652071887026">Data automatického vyplňování</translation>
 <translation id="792514962475806987">Úroveň přiblížení zadokované lupy:</translation>

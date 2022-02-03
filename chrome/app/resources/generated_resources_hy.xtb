@@ -1899,6 +1899,7 @@
 <translation id="287205682142673348">Միացքի փոխանցում</translation>
 <translation id="287286579981869940">Ավելացնել <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Անջատել</translation>
+<translation id="2873995907777332853">Իմանալ ավելին բոլոր քուքիներն արգելափակելու մասին</translation>
 <translation id="2874939134665556319">Նախորդը</translation>
 <translation id="2875698561019555027">(Chrome սխալների էջեր)</translation>
 <translation id="2876336351874743617">Մատ 2</translation>
@@ -2205,6 +2206,7 @@
 <translation id="3189187154924005138">Մեծ նշորդ</translation>
 <translation id="3190558889382726167">Գաղտնաբառը պահվեց</translation>
 <translation id="3192947282887913208">Աուդիո ֆայլեր</translation>
+<translation id="3194786596445804250">Իմանալ ավելին կողմնակի կայքերի քուքիներն արգելափակելու մասին</translation>
 <translation id="3197453258332670132">Մկնիկի աջ կոճակը սեղմելու կամ երկար սեղմելու դեպքում կցուցադրվեն տեղեկություններ ընտրված տեքստի մասին</translation>
 <translation id="3199127022143353223">Սերվերներ</translation>
 <translation id="3200061262156232574">Ձեր գնումների զամբյուղում</translation>
@@ -5303,6 +5305,7 @@
 <translation id="6455264371803474013">Որոշակի կայքերում</translation>
 <translation id="6455894534188563617">&amp;Նոր պանակ</translation>
 <translation id="645705751491738698">Շարունակել JavaScript-ի արգելափակումը</translation>
+<translation id="6458347417133445570">Իմանալ ավելին բոլոր քուքիները թույլատրելու մասին</translation>
 <translation id="6458701200018867744">Չհաջողվեց վերբեռնել (<ph name="WEBRTC_LOG_UPLOAD_TIME" />):</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Ակտիվ պատուհանը տեղափոխվել է այլ էկրան։</translation>
@@ -6734,6 +6737,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> վ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> կայքը կարող է դիտել <ph name="FILENAME" /> ֆայլը</translation>
 <translation id="7920482456679570420">Ավելացրեք բառեր, որոնք անհրաժեշտ է բաց թողնել ուղղագրությունը ստուգելիս</translation>
+<translation id="7922935920104868876">Իմանալ ավելին ինկոգնիտո ռեժիմում կողմնակի կայքերի քուքիներն արգելափակելու մասին</translation>
 <translation id="7924358170328001543">Չհաջողվեց փոխանցել միացքը</translation>
 <translation id="7925108652071887026">Ինքնալրացման տվյալները</translation>
 <translation id="792514962475806987">Ամրացված խոշորացույցի մասշտաբը՝</translation>

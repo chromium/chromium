@@ -4458,6 +4458,16 @@
 <translation id="631183702829488873">如果您启用了该功能，用户便会在登录屏幕和锁定屏幕上看到一个用于显示密码的按钮。
          这个按钮会在密码文本字段中显示为眼睛图标。如果您停用了该功能，这个按钮将不会显示。
       </translation>
+<translation id="6313108604615108577">此政策可控制是否要将 User-Agent 字符串的主要版本冻结为 99。
+
+      网站会通过 User-Agent 请求标头识别应用、操作系统、供应商和/或请求的用户代理的版本。
+      有些网站会对这种标头的格式做出假设，因此可能会在主要位置纳入三位数的版本字符串（如 100.0.0.0）时遇到问题。
+
+      如果此政策设置为“默认”或未设置，系统会将 User-Agent 字符串的主要版本默认设为浏览器设置。
+      如果设置为“ForceDisabled”，User-Agent 字符串将不会冻结主要版本。
+      如果设置为“ForceEnabled”，User-Agent 字符串会一律将主要版本回报为 99，并在次要位置纳入浏览器的主要版本。例如，浏览器版本 101.0.0.0 会发送一个 User-Agent 请求标头，将版本回报为 99.101.0.0。
+
+      此政策只是暂时性措施，日后会被弃用。请注意，如果同时启用此政策和<ph name="USER_AGENT_REDUCTION_POLICY_NAME" />政策，则 User-Agent 版本字符串会一律显示为 99.0.0.0。</translation>
 <translation id="6313170479290171718">此政策已被弃用，请改用 <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> 政策。
 
       如果此政策设为 True，系统会在登录时开启屏幕键盘。如果此政策设为 False，系统会在登录时关闭屏幕键盘。
@@ -4883,6 +4893,7 @@
       无论此政策是已启用还是已停用，chrome://flags 和任何其他可用于开启和关闭浏览器功能的方法都能正常起作用。</translation>
 <translation id="6794083666143216172">允许来源查询设备属性</translation>
 <translation id="6795485990775913659">仅允许在没有 PIN 码的情况下打印</translation>
+<translation id="6796215185873669533">将 User-Agent 字符串版本默认设为浏览器设置。</translation>
 <translation id="6800181452282128474">不向 Quirks Server 发送查询</translation>
 <translation id="68031099365512050">报告音频状态</translation>
 <translation id="6810445994095397827">在这些网站上阻止 JavaScript</translation>
@@ -5204,6 +5215,7 @@
 <translation id="7070525176564511548">每周（168 小时）必须输入一次密码</translation>
 <translation id="7072208053150563108">设备密码更改率</translation>
 <translation id="7072567600438630966">允许启用 Phone Hub。</translation>
+<translation id="7074437930865599190">将 User-Agent 字符串的主要版本冻结为 99</translation>
 <translation id="7079519252486108041">在这些网站上阻止弹出式窗口</translation>
 <translation id="707988220162760379">始终使用外部 PDF 查看器打开 PDF 文件</translation>
 <translation id="7081784525008938771">如果此政策已启用或未设置，播放视频时设备不会被视为闲置。这样，系统就不会开始应用闲置延迟时间、屏幕变暗延迟时间、屏幕关闭延迟时间和锁定延迟时间，也不会执行相应的操作。
@@ -5908,6 +5920,7 @@
       默认情况下，扩展程序或 Android 应用无权使用此类密钥（相当于针对扩展程序或 Android 应用将 allowCorporateKeyUsage 设为 False）。只有在针对某个扩展程序或 Android 应用将 allowCorporateKeyUsage 设为 True 的情况下，该扩展程序/应用才能利用被标记为供企业使用的平台密钥签署任意数据。为了防范黑客盗用密钥，切勿将这项权限授予不信任的扩展程序或 Android 应用。</translation>
 <translation id="7933141401888114454">允许创建受监管用户</translation>
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
+<translation id="7936302526928951356">User-Agent 字符串不会冻结主要版本。</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
 <translation id="7951605113561734721">指定应使用设备管理协议注册的设备级客户端证书。</translation>
@@ -6687,6 +6700,7 @@
       此政策的每个列表项都是一个字符串，其中包含一个扩展程序 ID 和一个可选的“更新”网址（这两者之间以英文分号 [;] 分隔）。扩展程序 ID 是一个由 32 个字母构成的字符串；若想查看该字符串，一种方法是在开发者模式下访问 chrome://extensions。“更新”网址（若指定）应指向一个更新清单 XML 文档 (https://developer.chrome.com/extensions/autoupdate)。默认情况下，系统会使用 Chrome 网上应用店的更新网址。此政策中设置的“更新”网址仅用于初次安装；扩展程序的后续更新将会使用该扩展程序的清单中的更新网址。
 
        请注意：此政策不适用于无痕模式。了解如何托管扩展程序 (https://developer.chrome.com/extensions/hosting)。</translation>
+<translation id="8827275450034266143">User-Agent 字符串会将主要版本冻结为 99，并在次要位置纳入浏览器的主要版本。</translation>
 <translation id="8827366480126575426">协议处理程序所对应的协议。</translation>
 <translation id="8827417642396462482">允许其他 DNS 查询类型</translation>
 <translation id="8831911834413504983">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以运行 JavaScript。

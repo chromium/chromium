@@ -4500,6 +4500,16 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="631183702829488873">Wenn diese Funktion aktiviert ist, erscheint auf dem Start- und Sperrbildschirm eine Schaltfläche zum Anzeigen des Passworts.
           Sie wird im Textfeld für das Passwort als Augensymbol dargestellt. Die Schaltfläche wird nicht angezeigt, wenn die Funktion deaktiviert ist.
       </translation>
+<translation id="6313108604615108577">Über diese Richtlinie wird festgelegt, ob die Hauptversion im User-Agent-String als „99“ festgeschrieben wird.
+
+      Anhand des User-Agent-Anfrageheaders können Websites die Anwendung, das Betriebssystem, den Anbieter und/oder die Version des anfragenden User-Agents identifizieren.
+      Einige Websites gehen von einer bestimmten Formatierung dieses Headers aus. Daher können Probleme mit Versionsstrings auftreten, bei denen für die Hauptversion drei Ziffern verwendet werden (z. B. 100.0.0.0).
+
+      Wird die Richtlinie auf „Default“ gesetzt oder nicht konfiguriert, werden standardmäßig die Browsereinstellungen für die Hauptversion im User-Agent-String verwendet.
+      Ist sie auf „ForceDisabled“ gesetzt, wird die Hauptversion nicht im User-Agent-String festgeschrieben.
+      Wenn sie auf „ForceEnabled“ gesetzt ist, wird die Hauptversion im User-Agent-String immer als „99“ und die Hauptversion des Browsers an zweiter Stelle (Nebenversion) angegeben. Für Browserversion 101.0.0.0 würde im User-Agent-Anfrageheader z. B. „99.101.0.0“ als Version gesendet.
+
+      Diese Richtlinie ist temporär und wird in Zukunft eingestellt. Wenn sowohl diese Richtlinie als auch „<ph name="USER_AGENT_REDUCTION_POLICY_NAME" />“ aktiviert sind, ist die Version im User-Agent-String immer „99.0.0.0“.</translation>
 <translation id="6313170479290171718">Diese Richtlinie ist veraltet. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Wenn Sie die Richtlinie auf „True“ setzen, wird die Bildschirmtastatur bei der Anmeldung aktiviert. Wenn Sie die Richtlinie auf „False“ setzen, wird die Bildschirmtastatur bei der Anmeldung deaktiviert.
@@ -4926,6 +4936,7 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
       „chrome://flags“ und alle weiteren Möglichkeiten zum Aktivieren oder Deaktivieren von Browserfunktionen funktionieren weiter wie gewohnt, unabhängig davon, ob diese Richtlinie aktiviert oder deaktiviert ist.</translation>
 <translation id="6794083666143216172">Ursprüngen erlauben, Geräteattribute anzufragen</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
+<translation id="6796215185873669533">Standardmäßig Browsereinstellungen für die Hauptversion im User-Agent-String verwenden.</translation>
 <translation id="6800181452282128474">Keine Anfragen an Quirks Server stellen</translation>
 <translation id="68031099365512050">Audiostatus melden</translation>
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>
@@ -5248,6 +5259,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="7070525176564511548">Passworteingabe wöchentlich erforderlich (alle 168 Stunden)</translation>
 <translation id="7072208053150563108">Änderungsrate des Computerpassworts</translation>
 <translation id="7072567600438630966">Aktivieren von Phone Hub zulassen.</translation>
+<translation id="7074437930865599190">Hauptversion im User-Agent-String als „99“ festschreiben</translation>
 <translation id="7079519252486108041">Pop-ups auf diesen Websites blockieren</translation>
 <translation id="707988220162760379">PDF-Dateien immer mit einem externen PDF-Viewer öffnen</translation>
 <translation id="7081784525008938771">Wenn die Richtlinie aktiviert wird oder nicht konfiguriert ist, gilt der Nutzer während der Videowiedergabe nicht als inaktiv. Dadurch wird verhindert, dass der Countdown für Inaktivität sowie zum Dimmen, Abschalten oder Sperren des Bildschirms gestartet wird und nach Ablauf der Zeit entsprechende Aktionen ausgeführt werden.
@@ -5951,6 +5963,7 @@ werden abgelehnt.</translation>
       Eine Erweiterung oder Android-App kann Schlüssel, die für die geschäftliche Nutzung bestimmt sind, standardmäßig nicht verwenden. Dies entspricht der Festlegung von „False“ für „allowCorporateKeyUsage“ bei der entsprechenden Erweiterung oder Android-App. Nur wenn „allowCorporateKeyUsage“ für eine Erweiterung oder Android-App auf „True“ gesetzt ist, kann sie alle Plattformschlüssel nutzen, die für die geschäftliche Nutzung bestimmt sind, um beliebige Daten zu signieren. Diese Berechtigung sollte nur dann gewährt werden, wenn der Zugriff auf den Schlüssel durch die Erweiterung oder Android-App sicher vor Angreifern schützt wird.</translation>
 <translation id="7933141401888114454">Erstellung von betreuten Nutzern aktivieren</translation>
 <translation id="793473937901685727">Verfügbarkeit von Zertifikaten für ARC-Apps festlegen</translation>
+<translation id="7936302526928951356">Im User-Agent-String wird die Hauptversion nicht festgeschrieben.</translation>
 <translation id="7937766917976512374">Videoaufzeichnung gestatten oder ablehnen</translation>
 <translation id="7941975817681987555">Netzwerkaktionen nicht über Netzwerkverbindungen vervollständigen</translation>
 <translation id="7951605113561734721">Diese Richtlinie gibt geräteübergreifende Clientzertifikate an, die über das Geräteverwaltungsprotokoll registriert werden sollen.</translation>
@@ -6754,6 +6767,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Jedes Listenelement der Richtlinie ist ein String mit einer Erweiterungs-ID und einer optionalen Update-URL, die durch ein Semikolon (;) getrennt sind. Die Erweiterungs-ID ist der String mit 32 Buchstaben, den Sie beispielsweise im Entwicklermodus unter chrome://extensions sehen. Die Update-URL sollte, sofern festgelegt, auf ein XML-Dokument mit einem Update-Manifest verweisen (https://developer.chrome.com/extensions/autoupdate). Standardmäßig kommt die Update-URL des Chrome Web Store zum Einsatz. Die in dieser Richtlinie festgelegte Update-URL wird nur für die Erstinstallation verwendet. In nachfolgenden Updates der Erweiterung kommt die Update-URL zum Einsatz, die im Manifest der Erweiterung angegeben wurde.
 
        Hinweis: Diese Richtlinie gilt nicht für den Inkognitomodus. Informationen zum Hosting von Erweiterungen finden Sie unter https://developer.chrome.com/extensions/hosting.</translation>
+<translation id="8827275450034266143">Im User-Agent-String wird die Hauptversion als „99“ festgeschrieben und die Hauptversion des Browsers an zweiter Stelle (Nebenversion) angegeben.</translation>
 <translation id="8827366480126575426">Protokoll für den Protokoll-Handler.</translation>
 <translation id="8827417642396462482">Zusätzliche DNS-Abfragetypen erlauben</translation>
 <translation id="8831911834413504983">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites JavaScript ausführen dürfen.

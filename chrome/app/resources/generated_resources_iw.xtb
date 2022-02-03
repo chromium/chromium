@@ -1913,6 +1913,7 @@
 <translation id="287205682142673348">העברה ליציאה אחרת</translation>
 <translation id="287286579981869940">הוספת <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">כיבוי</translation>
+<translation id="2873995907777332853">‏הצגת פרטים על חסימה של כל קובצי ה-cookie</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
 <translation id="2875698561019555027">‏(דפי שגיאה ב-Chrome)</translation>
 <translation id="2876336351874743617">אצבע שנייה</translation>
@@ -2219,6 +2220,7 @@
 <translation id="3189187154924005138">סמן גדול</translation>
 <translation id="3190558889382726167">הסיסמה נשמרה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
+<translation id="3194786596445804250">‏הצגת פרטים על חסימת קובצי cookie של צדדים שלישיים</translation>
 <translation id="3197453258332670132">בלחיצה ימנית או בלחיצה ארוכה, יוצג מידע שקשור לטקסט שבחרת</translation>
 <translation id="3199127022143353223">שרתים</translation>
 <translation id="3200061262156232574">בעגלת הקניות שלך</translation>
@@ -5315,6 +5317,7 @@
 <translation id="6455264371803474013">באתרים ספציפיים</translation>
 <translation id="6455894534188563617">&amp;תיקייה חדשה</translation>
 <translation id="645705751491738698">‏אני רוצה להמשיך לחסום JavaScript</translation>
+<translation id="6458347417133445570">‏הצגת פרטים על אישור של כל קובצי ה-cookie</translation>
 <translation id="6458701200018867744">ההעלאה נכשלה (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">שימוש בבחירה לחיפוש</translation>
 <translation id="6459799433792303855">החלון הפעיל הועבר אל צג אחר.</translation>
@@ -6747,6 +6750,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> שנ'</translation>
 <translation id="7920363873148656176">ל-<ph name="ORIGIN" /> יש אפשרות להציג את <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">הוספת מילים שיש לדלג עליהן בבדיקות איות</translation>
+<translation id="7922935920104868876">‏הצגת פרטים על חסימת קובצי cookie של צדדים שלישיים במצב פרטי</translation>
 <translation id="7924358170328001543">שגיאה בהעברת היציאה</translation>
 <translation id="7925108652071887026">נתוני מילוי אוטומטי</translation>
 <translation id="792514962475806987">רמת זום במצב מעוגן:</translation>

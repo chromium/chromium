@@ -4508,6 +4508,16 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="631183702829488873">Se attivata, questa funzionalità mostra un pulsante nella schermata di accesso e di blocco per la visualizzazione della password.
           È rappresentata con un'icona a forma di occhio nel campo della password. Il pulsante non è presente quando la funzionalità è disattivata.
       </translation>
+<translation id="6313108604615108577">Questo criterio consente di stabilire se bloccare o meno la versione principale della stringa dello user agent a 99.
+
+      L'intestazione della richiesta dello user agent consente ai siti web di identificare l'applicazione, il sistema operativo, il fornitore e/o la versione dello user agent richiedente.
+      Alcuni siti web fanno supposizioni in merito al tipo di formattazione dell'intestazione e potrebbero riscontrare problemi con le stringhe di versione che includono tre cifre nella posizione principale (ad esempio 100.0.0.0).
+
+      Se il criterio viene impostato su "Predefinito" o se non viene configurato, per la versione principale della stringa dello user agent verranno usate per impostazione predefinita le impostazioni del browser.
+      Se viene impostato su "ForceDisabled", la stringa dello user agent non bloccherà la versione principale.
+      Se viene impostato su "ForceEnabled", la stringa dello user agent segnalerà sempre la versione principale 99 e includerà la versione principale del browser nella posizione secondaria. Ad esempio, la versione del browser 101.0.0.0 invierebbe un'intestazione della richiesta dello user agent che segnala la versione 99.101.0.0.
+
+      Questo criterio è temporaneo e verrà ritirato in futuro. Tieni presente che se questo criterio e il criterio <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> sono entrambi attivi, la stringa della versione dello user agent sarà sempre 99.0.0.0.</translation>
 <translation id="6313170479290171718">Questo criterio è deprecato. Utilizza il criterio <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Se il criterio è impostato su True, la tastiera sullo schermo è attivata all'accesso. Se il criterio è impostato su False, la tastiera sullo schermo è disattivata all'accesso.
@@ -4935,6 +4945,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       chrome://flags e qualsiasi altro metodo per attivare e disattivare le funzionalità del browser continueranno a comportarsi come previsto a prescindere dall'attivazione o meno di questo criterio.</translation>
 <translation id="6794083666143216172">Consenti alle origini di richiedere gli attributi dei dispositivi</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
+<translation id="6796215185873669533">Usa per impostazione predefinita le impostazioni del browser per la versione della stringa dello user agent.</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
 <translation id="68031099365512050">Viene segnalato lo stato dell'audio</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
@@ -5256,6 +5267,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="7070525176564511548">Richiedi l'inserimento della password ogni settimana (168 ore)</translation>
 <translation id="7072208053150563108">Frequenza di modifica della password del computer</translation>
 <translation id="7072567600438630966">Consenti l'attivazione di Phone Hub</translation>
+<translation id="7074437930865599190">Blocca la versione principale della stringa dello user agent a 99</translation>
 <translation id="7079519252486108041">Blocca popup su questi siti</translation>
 <translation id="707988220162760379">Apri sempre i file PDF utilizzando un visualizzatore PDF esterno</translation>
 <translation id="7081784525008938771">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di video. In questo modo non viene raggiunto il ritardo di inattività, oscuramento dello schermo, spegnimento dello schermo e blocco dello schermo e non vengono compiute le azioni corrispondenti.
@@ -5963,6 +5975,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Per impostazione predefinita, un'estensione o un'app per Android non può utilizzare una chiave destinata all'uso aziendale, il che equivale a impostare il criterio allowCorporateKeyUsage su Falso per tale estensione. Solo se il criterio allowCorporateKeyUsage viene impostato su Vero per un'estensione o un'app per Android può utilizzare qualsiasi chiave della piattaforma contrassegnata per uso aziendale per firmare dati arbitrari. L'autorizzazione viene concessa solo se l'estensione o l'app per Android viene considerata protetta dall'accesso alla chiave di potenziali utenti malintenzionati.</translation>
 <translation id="7933141401888114454">Attivazione della creazione di utenti controllati</translation>
 <translation id="793473937901685727">Imposta la disponibilità dei certificati per le app ARC</translation>
+<translation id="7936302526928951356">La stringa dello user agent non bloccherà la versione principale.</translation>
 <translation id="7937766917976512374">Consenti o nega acquisizione video</translation>
 <translation id="7941975817681987555">Non prevedere le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="7951605113561734721">Consente di specificare i certificati client a livello di dispositivo che dovrebbero essere registrati usando il protocollo di gestione del dispositivo.</translation>
@@ -6747,6 +6760,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Ogni elemento nell'elenco del criterio è una stringa contenente un ID estensione e, facoltativamente, un URL "di aggiornamento" separati da punto e virgola (;). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo chrome://extensions quando è attiva la modalità sviluppatore. Se specificato, l'URL "di aggiornamento" deve indirizzare a un documento XML manifest di aggiornamento (https://developer.chrome.com/extensions/autoupdate). Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store. L'URL "di aggiornamento" impostato in questo criterio viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento nel file manifest dell'estensione.
 
        Nota: questo criterio non viene applicato alla Modalità di navigazione in incognito. Leggi ulteriori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
+<translation id="8827275450034266143">La stringa dello user agent bloccherà la versione principale a 99 e includerà la versione principale del browser nella posizione secondaria.</translation>
 <translation id="8827366480126575426">Il protocollo del gestore di protocollo.</translation>
 <translation id="8827417642396462482">Sono consentiti tipi di query DNS aggiuntivi</translation>
 <translation id="8831911834413504983">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono eseguire JavaScript.

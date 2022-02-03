@@ -1896,6 +1896,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="287205682142673348">Bağlantı noktası yönlendirme</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> Sağlayıcısını Ekle...</translation>
 <translation id="2872961005593481000">Kapat</translation>
+<translation id="2873995907777332853">Tüm çerezleri engelleme ile ilgili ayrıntıları göster</translation>
 <translation id="2874939134665556319">Önceki parça</translation>
 <translation id="2875698561019555027">(Chrome hata sayfaları)</translation>
 <translation id="2876336351874743617">2. parmak</translation>
@@ -2202,6 +2203,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3189187154924005138">Büyük imleç</translation>
 <translation id="3190558889382726167">Şifre kaydedildi</translation>
 <translation id="3192947282887913208">Ses Dosyaları</translation>
+<translation id="3194786596445804250">Üçüncü taraf çerezleri engelleme ile ilgili ayrıntıları göster</translation>
 <translation id="3197453258332670132">Sağ tıklama veya uzun basma ile seçiminizle ilgili bilgileri gösterin</translation>
 <translation id="3199127022143353223">Sunucular</translation>
 <translation id="3200061262156232574">Alışveriş sepetinizdekiler</translation>
@@ -5298,6 +5300,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6455264371803474013">Belirli sitelerde</translation>
 <translation id="6455894534188563617">&amp;Yeni Klasör</translation>
 <translation id="645705751491738698">JavaScript'i engellemeye devam et</translation>
+<translation id="6458347417133445570">Tüm çerezlere izin verme ile ilgili ayrıntıları göster</translation>
 <translation id="6458701200018867744">Yükleme başarısız oldu (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Bul için Seçim'i Kullan</translation>
 <translation id="6459799433792303855">Etkin pencere başka bir ekrana taşındı.</translation>
@@ -6729,6 +6732,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7919210519031517829"><ph name="DURATION" /> sn.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> dosyasını görüntüleyebilir</translation>
 <translation id="7920482456679570420">Yazım denetiminin atlamasını istediğiniz kelimeleri ekleyin</translation>
+<translation id="7922935920104868876">Gizli modda üçüncü taraf çerezleri engelleme ile ilgili ayrıntıları göster</translation>
 <translation id="7924358170328001543">Bağlantı noktası yönlendirme hatası</translation>
 <translation id="7925108652071887026">Verileri otomatik doldur</translation>
 <translation id="792514962475806987">Yerleştirilmişken yakınlaştırma düzeyi:</translation>

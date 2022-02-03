@@ -1913,6 +1913,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="287205682142673348">Framsending gáttar</translation>
 <translation id="287286579981869940">Bæta <ph name="PROVIDER_NAME" /> við...</translation>
 <translation id="2872961005593481000">Slökkva</translation>
+<translation id="2873995907777332853">Sýna upplýsingar um að loka á öll fótspor</translation>
 <translation id="2874939134665556319">Fyrra lag</translation>
 <translation id="2875698561019555027">(Chrome villusíður)</translation>
 <translation id="2876336351874743617">Fingur 2</translation>
@@ -2219,6 +2220,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3189187154924005138">Stór bendill</translation>
 <translation id="3190558889382726167">Aðgangsorð vistað</translation>
 <translation id="3192947282887913208">Hljóðskrár</translation>
+<translation id="3194786596445804250">Sýna upplýsingar um að loka á fótspor þriðju aðila</translation>
 <translation id="3197453258332670132">Viðeigandi upplýsingar um valinn texta birtast þegar þú hægrismellir eða heldur inni</translation>
 <translation id="3199127022143353223">Netþjónar</translation>
 <translation id="3200061262156232574">Í innkaupakörfunni þinni</translation>
@@ -5315,6 +5317,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6455264371803474013">Á tilteknum vefsvæðum</translation>
 <translation id="6455894534188563617">&amp;Ný mappa</translation>
 <translation id="645705751491738698">Halda áfram að loka fyrir JavaScript</translation>
+<translation id="6458347417133445570">Sýna upplýsingar um að leyfa öll fótspor</translation>
 <translation id="6458701200018867744">Flutningur mistókst (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Nota val til að leita</translation>
 <translation id="6459799433792303855">Virkur gluggi færður á annan skjá.</translation>
@@ -6748,6 +6751,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> getur skoðað <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Bættu við orðum sem þú vilt að villuleitin sleppi</translation>
+<translation id="7922935920104868876">Sýna upplýsingar um að loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="7924358170328001543">Villa við framsendingu gáttar</translation>
 <translation id="7925108652071887026">Gögn sjálfvirkrar útfyllingar</translation>
 <translation id="792514962475806987">Aðdráttur í föstum glugga:</translation>

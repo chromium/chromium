@@ -1904,6 +1904,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="287205682142673348">Pordisiire</translation>
 <translation id="287286579981869940">Lisa <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
+<translation id="2873995907777332853">Kuva üksikasjad kõigi küpsisefailide blokeerimise kohta</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
 <translation id="2875698561019555027">(Chrome'i vealehed)</translation>
 <translation id="2876336351874743617">2. sõrm</translation>
@@ -2210,6 +2211,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3189187154924005138">Suur kursor</translation>
 <translation id="3190558889382726167">Parool salvestati</translation>
 <translation id="3192947282887913208">Helifailid</translation>
+<translation id="3194786596445804250">Kuva üksikasjad kolmanda osapoole küpsisefailide blokeerimise kohta</translation>
 <translation id="3197453258332670132">Paremkliki või pika vajutusega kuvatakse valitud teksti kohta seotud teavet</translation>
 <translation id="3199127022143353223">Serverid</translation>
 <translation id="3200061262156232574">Teie ostukorvis</translation>
@@ -5305,6 +5307,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6455264371803474013">Konkreetsetel saitidel</translation>
 <translation id="6455894534188563617">&amp;Uus kaust</translation>
 <translation id="645705751491738698">Jätka JavaScripti blokeerimist</translation>
+<translation id="6458347417133445570">Kuva üksikasjad kõigi küpsisefailide lubamise kohta</translation>
 <translation id="6458701200018867744">Üleslaadimine nurjus (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Kasuta otsimiseks valikut</translation>
 <translation id="6459799433792303855">Aktiivne aken teisaldati teisele ekraanile.</translation>
@@ -6738,6 +6741,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> saab vaadata faili <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Lisage sõnad, mille soovite lasta õigekirjakontrollil vahele jätta</translation>
+<translation id="7922935920104868876">Kuva üksikasjad kolmanda osapoole küpsisefailide blokeerimise kohta inkognito režiimis</translation>
 <translation id="7924358170328001543">Viga pordi edastamisel</translation>
 <translation id="7925108652071887026">Andmete automaatne täitmine</translation>
 <translation id="792514962475806987">Dokitud luubi suumitase:</translation>

@@ -1903,6 +1903,7 @@
 <translation id="287205682142673348">إعادة توجيه المنفذ</translation>
 <translation id="287286579981869940">جارٍ إضافة <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
+<translation id="2873995907777332853">عرض تفاصيل حظر جميع ملفات تعريف الارتباط</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
 <translation id="2875698561019555027">‏(صفحات الخطأ في Chrome)</translation>
 <translation id="2876336351874743617">إصبع 2</translation>
@@ -2209,6 +2210,7 @@
 <translation id="3189187154924005138">مؤشّر الماوس الكبير</translation>
 <translation id="3190558889382726167">تم حفظ كلمة المرور</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
+<translation id="3194786596445804250">عرض تفاصيل حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3197453258332670132">يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار لعرض المعلومات ذات الصلة بالنص الذي اختَرته.</translation>
 <translation id="3199127022143353223">الخوادم</translation>
 <translation id="3200061262156232574">المنتجات داخل سلّة التسوّق</translation>
@@ -5302,6 +5304,7 @@
 <translation id="6455264371803474013">على مواقع إلكترونية محددة</translation>
 <translation id="6455894534188563617">&amp;مجلد جديد</translation>
 <translation id="645705751491738698">‏متابعة منع تشغيل JavaScript</translation>
+<translation id="6458347417133445570">عرض تفاصيل السماح بجميع ملفات تعريف الارتباط</translation>
 <translation id="6458701200018867744">تعذَّر التحميل (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">استخدام التحديد للبحث</translation>
 <translation id="6459799433792303855">تم نقل نافذة نشطة إلى شاشة عرض أخرى.</translation>
@@ -6736,6 +6739,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> ثوانٍ</translation>
 <translation id="7920363873148656176">بإمكان <ph name="ORIGIN" /> عرض الملف <ph name="FILENAME" />.</translation>
 <translation id="7920482456679570420">يُرجى إضافة كلمات تريد أن يتخطاها التدقيق الإملائي.</translation>
+<translation id="7922935920104868876">عرض تفاصيل حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفّح المتخفي</translation>
 <translation id="7924358170328001543">خطأ في إعادة توجيه المنفذ</translation>
 <translation id="7925108652071887026">ملء البيانات تلقائيًا</translation>
 <translation id="792514962475806987">مستوى التكبير الذي تم إرساؤه:</translation>

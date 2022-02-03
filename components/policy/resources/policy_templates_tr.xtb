@@ -4491,6 +4491,28 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="631183702829488873">Etkinleştirildiğinde bu özellik, giriş ve kilit ekranında şifrenin görüntülenmesini sağlayan bir düğme gösterir.
           Bu düğme, şifre metin alanında göz simgesi olarak gösterilir. Özellik devre dışı bırakıldığında bu düğme gösterilmez.
       </translation>
+<translation id="6313108604615108577">Bu politika, User-Agent dizesi ana sürümünün 99'da
+      dondurulup dondurulmayacağını kontrol eder.
+
+      User-Agent istek başlığı sayesinde web siteleri, istekte bulunan kullanıcı
+      aracısının uygulamasını, işletim sistemini, tedarikçisini ve/veya sürümünü tanımlayabilir.
+      Bazı web siteleri, bu başlığın nasıl biçimlendirildiğiyle ilgili varsayımlarda bulunur
+      ve ana konumda (ör. 100.0.0.0) üç basamak içeren sürüm dizeleriyle
+      ilgili sorunlarla karşılaşabilir.
+
+      Bu politika "Varsayılan" değerine ayarlanır veya ayarlanmadan bırakılırsa
+      User-Agent dizesi ana sürümü için varsayılan olarak tarayıcı ayarları kullanılır.
+      Politika "ForceDisabled" değerine ayarlanırsa User-Agent dizesi, ana
+      sürümü dondurmaz.
+      Politika "ForceEnabled" değerine ayarlanırsa User-Agent dizesi, ana sürümü
+      her zaman 99 olarak raporlar ve tarayıcının ana sürümünü ikincil konuma
+      dahil eder. Örneğin, 101.0.0.0 tarayıcı sürümü, 99.101.0.0 sürümünü raporlayan
+      bir User-Agent istek başlığı gönderir.
+
+      Bu politika geçici olup gelecekte kullanımdan kaldırılacaktır. Bu politika
+      ve <ph name="USER_AGENT_REDUCTION_POLICY_NAME" />
+      politikası birlikte etkinleştirildiğinde User-Agent
+      sürüm dizesinin her zaman 99.0.0.0 olacağını unutmayın.</translation>
 <translation id="6313170479290171718">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasını kullanın.
 
       Politikayı Doğru değerine ayarlamak, oturum açma ekranında dokunmatik klavyeyi açık tutar. Politikayı Yanlış değerine ayarlamak, oturum açma ekranında dokunmatik klavyeyi kapalı tutar.
@@ -4917,6 +4939,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       chrome://flags ve tarayıcı özelliklerini açıp kapatmak için kullanılan herhangi başka bir yöntem, bu politikanın Etkin ya da Devre Dışı olmasından bağımsız olarak, beklendiği şekilde davranacaktır.</translation>
 <translation id="6794083666143216172">Kaynakların cihaz özelliklerini sorgulamasına izin ver</translation>
 <translation id="6795485990775913659">Yalnızca PIN olmadan yazdırmaya izin ver</translation>
+<translation id="6796215185873669533">User-Agent dizesi sürümü için varsayılan olarak tarayıcı ayarlarını kullan.</translation>
 <translation id="6800181452282128474">Quirks Sunucularını sorgulama</translation>
 <translation id="68031099365512050">Ses durumunu bildir</translation>
 <translation id="6810445994095397827">Bu sitelerde JavaScript'i engelle</translation>
@@ -5238,6 +5261,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7070525176564511548">Her hafta (168 saatte bir) şifre girilmesi gerekiyor</translation>
 <translation id="7072208053150563108">Makine şifresi değişim hızı</translation>
 <translation id="7072567600438630966">Telefon Merkezi'nin etkinleştirilmesine izin ver.</translation>
+<translation id="7074437930865599190">User-Agent dizesi ana sürümünü 99'da dondur</translation>
 <translation id="7079519252486108041">Bu sitelerde pop-up'ları engelle</translation>
 <translation id="707988220162760379">PDF dosyalarını her zaman harici bir PDF görüntüleyici kullanarak aç</translation>
 <translation id="7081784525008938771">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa video oynatılırken kullanıcı boşta olarak algılanmaz. Böylece hiçbir zaman boşta kalma gecikmesi, ekran karartma gecikmesi, ekran kapatma gecikmesi ve ekran kilitleme gecikmesi süreleri dolmaz ve ilgili işlemler uygulanmaz.
@@ -5947,6 +5971,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Varsayılan olarak bir uzantı ya da Android uygulaması, şirket kullanımı için atanmış bir anahtarı kullanamaz. Bu, söz konusu uzantı ya da Android uygulaması için allowCorporateKeyUsage politikasını Yanlış değerine ayarlamayla eş değerdir. Yalnızca, bir uzantı ya da Android uygulaması için allowCorporateKeyUsage politikası Doğru değerine ayarlandığında, söz konusu uzantı ya da Android uygulaması rastgele verileri imzalamak amacıyla, şirket kullanımı için işaretlenen platform anahtarlarını kullanabilir. Saldırganlara karşı anahtar erişimi güvenliği sağlamak için bu izin yalnızca uzantıya ya da Android uygulamasına güveniliyorsa verilmelidir.</translation>
 <translation id="7933141401888114454">Denetlenen kullanıcılar oluşturmayı etkinleştir</translation>
 <translation id="793473937901685727">ARC uygulamaları için sertifika kullanılabilirliğini ayarla</translation>
+<translation id="7936302526928951356">User-Agent dizesi, ana sürümü dondurmaz.</translation>
 <translation id="7937766917976512374">Video yakalamaya izin verme veya reddetme</translation>
 <translation id="7941975817681987555">Ağ bağlantılarında ağ işlemlerini tahmin etme</translation>
 <translation id="7951605113561734721">Cihaz yönetim protokolü kullanılarak kaydolunması gereken, cihaz genelinde istemci sertifikalarını belirtir.</translation>
@@ -6731,6 +6756,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Politikaya ait her liste öğesi, noktalı virgülle (;) ayrılmış bir uzantı kimliği ve isteğe bağlı bir "güncelleme" URL'si içeren bir dizedir. Uzantı kimliği, örneğin Geliştirici modundayken chrome://extensions adresinde bulunabilen 32 harfli bir dizedir. Belirtilmişse "güncelleme" URL'si bir Güncelleme Manifest XML dokümanına işaret etmelidir. (https://developer.chrome.com/extensions/autoupdate). Varsayılan olarak Chrome Web Mağazası'nın güncelleme URL'si kullanılır. Bu politikada ayarlanan "güncelleme" URL'si yalnızca ilk yükleme için kullanılır. Uzantının sonraki güncellemelerinde ise uzantının manifest dosyasındaki güncelleme URL'si kullanılır.
 
        Not: Bu politika gizli mod için geçerli değildir. Uzantıların barındırılması (https://developer.chrome.com/extensions/hosting) ile ilgili bilgi edinin.</translation>
+<translation id="8827275450034266143">User-Agent dizesi, ana sürümü 99 olarak dondurur ve tarayıcının ana sürümünü ikincil konuma dahil eder.</translation>
 <translation id="8827366480126575426">Protokol işleyicinin protokolü.</translation>
 <translation id="8827417642396462482">İlave DNS sorgu türlerine izin ver</translation>
 <translation id="8831911834413504983">Politikayı ayarlamak, JavaScript çalıştırabilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.

@@ -1201,6 +1201,7 @@
 <translation id="7663313374500954251">このブラウザは、<ph name="PARENT_NAME" /> によって管理されています。</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="766587987807204883">記事がここに表示されます。これらの記事はオフラインでも読むことができます</translation>
+<translation id="768232549260819724">GIF をコピーしました</translation>
 <translation id="7682724950699840886">推奨される対策: デバイスに十分な空き容量があることを確認し、再度エクスポートを試します。</translation>
 <translation id="768618399695552958">アクセスしたページの一部はプリロードされています。ページが Google サイトからリンクされている場合、Google サーバーを介してプリロードされる可能性があります。</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> でメールを作成</translation>
@@ -1381,6 +1382,7 @@
 <translation id="8570677896027847510">ファイルを安全にダウンロードできません</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8572344201470131220">画像をコピーしました</translation>
+<translation id="8580884231102452214">GIF をコピー</translation>
 <translation id="8583805026567836021">アカウント データをクリア中</translation>
 <translation id="859046281437143747">[その他のオプション] から価格をトラッキングできます</translation>
 <translation id="860043288473659153">カード名義人</translation>

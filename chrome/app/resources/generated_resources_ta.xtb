@@ -1913,6 +1913,7 @@
 <translation id="287205682142673348">போர்ட் அனுப்புதல்</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />ஐச் சேர்...</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
+<translation id="2873995907777332853">அனைத்துக் குக்கீகளையும் தடுப்பது குறித்த விவரங்களைக் காட்டு</translation>
 <translation id="2874939134665556319">முந்தைய டிராக்</translation>
 <translation id="2875698561019555027">(Chrome பிழைப் பக்கங்கள்)</translation>
 <translation id="2876336351874743617">விரல் 2</translation>
@@ -2219,6 +2220,7 @@
 <translation id="3189187154924005138">பெரிய கர்சர்</translation>
 <translation id="3190558889382726167">கடவுச்சொல் சேமிக்கப்பட்டது</translation>
 <translation id="3192947282887913208">ஆடியோ ஃபைல்கள் </translation>
+<translation id="3194786596445804250">மூன்றாம் தரப்புக் குக்கீகளைத் தடுப்பது குறித்த விவரங்களைக் காட்டு</translation>
 <translation id="3197453258332670132">வலது கிளிக் செய்தோ நீண்ட நேரம் அழுத்தியோ, நீங்கள் தேர்ந்தெடுக்கும் உரைக்கான தொடர்புடைய தகவலைப் பார்க்கலாம்</translation>
 <translation id="3199127022143353223">சேவைகங்கள்</translation>
 <translation id="3200061262156232574">உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவை</translation>
@@ -5316,6 +5318,7 @@
 <translation id="6455264371803474013">குறிப்பிட்ட தளங்களில் மட்டும்</translation>
 <translation id="6455894534188563617">&amp;புதிய ஃபோல்டர்</translation>
 <translation id="645705751491738698">JavaScript ஐத் தடுப்பதைத் தொடர்க</translation>
+<translation id="6458347417133445570">அனைத்துக் குக்கீகளையும் அனுமதிப்பது குறித்த விவரங்களைக் காட்டு</translation>
 <translation id="6458701200018867744">பதிவேற்ற முடியவில்லை (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">தேடுவதற்கு தேர்ந்தெடுத்ததைப் பயன்படுத்து</translation>
 <translation id="6459799433792303855">செயலில் உள்ள சாளரம், மற்றொரு திரைக்கு நகர்த்தப்பட்டது.</translation>
@@ -6749,6 +6752,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />வி</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> தளத்தால் <ph name="FILENAME" /> ஃபைலைப் பார்க்க முடியும்</translation>
 <translation id="7920482456679570420">எழுத்துப் பிழை சரிபார்ப்பான் அம்சம் தவிர்க்கவேண்டும் என நீங்கள் விரும்பும் சொற்களைச் சேர்க்கவும்</translation>
+<translation id="7922935920104868876">மறைநிலைப் பயன்முறையில் மூன்றாம் தரப்புக் குக்கீகளைத் தடுப்பது குறித்த விவரங்களைக் காட்டு</translation>
 <translation id="7924358170328001543">போர்ட்டை அனுப்புவதில் பிழை</translation>
 <translation id="7925108652071887026">தன்னிரப்பி தரவு</translation>
 <translation id="792514962475806987">டாக் செய்யப்பட்ட பெரிதாக்கியின் அளவை மாற்றுவதற்கான நிலை:</translation>

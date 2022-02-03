@@ -1912,6 +1912,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="287205682142673348">Chuyển tiếp cổng</translation>
 <translation id="287286579981869940">Thêm <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Tắt</translation>
+<translation id="2873995907777332853">Hiện thông tin chi tiết về việc chặn mọi cookie</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
 <translation id="2875698561019555027">(Các trang lỗi của Chrome)</translation>
 <translation id="2876336351874743617">Ngón tay số 2</translation>
@@ -2218,6 +2219,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3189187154924005138">Con trỏ lớn</translation>
 <translation id="3190558889382726167">Đã lưu mật khẩu</translation>
 <translation id="3192947282887913208">Tệp âm thanh</translation>
+<translation id="3194786596445804250">Hiện thông tin chi tiết về việc chặn cookie bên thứ ba</translation>
 <translation id="3197453258332670132">Khi bạn nhấp chuột phải hoặc nhấn và giữ, thông tin liên quan của văn bản bạn chọn sẽ xuất hiện</translation>
 <translation id="3199127022143353223">Máy chủ</translation>
 <translation id="3200061262156232574">Trong giỏ hàng của bạn</translation>
@@ -5314,6 +5316,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6455264371803474013">Trên các trang web cụ thể</translation>
 <translation id="6455894534188563617">&amp;Thư mục mới</translation>
 <translation id="645705751491738698">Tiếp tục chặn JavaScript</translation>
+<translation id="6458347417133445570">Hiện thông tin chi tiết về việc chấp nhận mọi cookie</translation>
 <translation id="6458701200018867744">Không tải lên được (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Sử dụng Phần lựa chọn cho Tìm kiếm</translation>
 <translation id="6459799433792303855">Cửa sổ đang hoạt động được di chuyển sang màn hình khác.</translation>
@@ -6747,6 +6750,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> giây</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> có thể xem <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Thêm các từ mà bạn muốn tính năng kiểm tra lỗi chính tả bỏ qua</translation>
+<translation id="7922935920104868876">Hiện thông tin chi tiết về việc chặn cookie bên thứ ba trong chế độ Ẩn danh</translation>
 <translation id="7924358170328001543">Lỗi khi chuyển tiếp cổng</translation>
 <translation id="7925108652071887026">Tự động điền dữ liệu</translation>
 <translation id="792514962475806987">Mức thu phóng ở vị trí cố định:</translation>
