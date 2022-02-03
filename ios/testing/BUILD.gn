@@ -116,6 +116,7 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/console_with_iframe.html",
     "data/http_server_files/context_menu.html",
     "data/http_server_files/destination.html",
+    "data/http_server_files/download_test_page.html",
     "data/http_server_files/fullscreen.html",
     "data/http_server_files/generic.pkpass",
     "data/http_server_files/history.html",

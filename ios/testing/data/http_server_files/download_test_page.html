@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <a download="example.gif" id="data">DataURL</a>
+    <a download="example.gif" id="blob">BlobURL</a>
+    <a id="pdf" download="test.pdf" href="/single_page_wide.pdf">PDF</a>
+    
+    <script>
+    (async () => {
+    const dataURL =
+      "data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
+    const blob = await (await fetch(dataURL)).blob();
+    console.log(blob)
+    const blobURL = URL.createObjectURL(blob);
+    const hrefs = [dataURL, blobURL];
+
+    document.querySelectorAll("a").forEach((a, i) => {
+      a.href = hrefs[i];
+    });
+  })();
+</script>
+</body>
+</html>
