@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -341,10 +342,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteInactiveProfile) {
 
   // Create an additional profile.
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, new_path);
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
 
@@ -370,10 +368,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
 
   // Create an additional profile.
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, new_path);
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
 
@@ -405,13 +400,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_DeleteAllProfiles) {
 
   // Create an additional profile.
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
-
-  // Run the message loop to allow profile creation to take place; the loop is
-  // terminated by OnUnblockOnProfileCreation when the profile is created.
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, new_path);
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
 
@@ -448,13 +437,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, ProfileFromProfileKey) {
 
   // Create an additional profile.
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
-
-  // Run the message loop to allow profile creation to take place; the loop is
-  // terminated by OnUnblockOnProfileCreation when the profile is created.
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, new_path);
 
   Profile* profile2 = profile_manager->GetProfile(new_path);
 
@@ -555,14 +538,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, SwitchToProfile) {
   // Create an additional profile.
   base::FilePath path_profile2 =
       profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      path_profile2,
-      base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
-
-  // Run the message loop to allow profile creation to take place; the loop is
-  // terminated by OnUnblockOnProfileCreation when the profile is created.
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, path_profile2);
 
   BrowserList* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());

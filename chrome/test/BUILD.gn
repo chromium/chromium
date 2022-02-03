@@ -130,6 +130,8 @@ static_library("test_support") {
     "../browser/password_manager/password_manager_test_util.h",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.cc",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h",
+    "../browser/profiles/profile_test_util.cc",
+    "../browser/profiles/profile_test_util.h",
     "../browser/search_engines/template_url_service_factory_test_util.cc",
     "../browser/search_engines/template_url_service_factory_test_util.h",
     "../browser/search_engines/template_url_service_test_util.cc",
@@ -9947,7 +9949,6 @@ if (is_chromeos_ash) {
 
 if (is_linux || is_mac || is_win) {
   script_test("variations_smoke_tests") {
-
     if (is_linux) {
       script = "//testing/xvfb.py"
     } else {

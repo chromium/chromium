@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -43,22 +44,10 @@ class ChromeMainTest : public InProcessBrowserTest {
   }
 
   Profile* CreateProfile(const base::FilePath& basename) {
-    Profile* created_profile = nullptr;
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath profile_path =
         profile_manager->user_data_dir().Append(basename);
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        profile_path, base::BindLambdaForTesting(
-                          [&run_loop, &created_profile](
-                              Profile* profile, Profile::CreateStatus status) {
-                            if (status != Profile::CREATE_STATUS_INITIALIZED)
-                              return;
-                            created_profile = profile;
-                            run_loop.Quit();
-                          }));
-    run_loop.Run();
-    return created_profile;
+    return profiles::testing::CreateProfileSync(profile_manager, profile_path);
   }
 
   // Gets the relaunch command line with the kProfileEmail switch.

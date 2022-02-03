@@ -4,9 +4,7 @@
 
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -18,6 +16,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -109,16 +108,7 @@ void SetUpSecondaryProfileForPreTest(
   base::FilePath profile_path =
       profile_manager->user_data_dir().Append(profile_dir_basename);
 
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      profile_path,
-      base::BindLambdaForTesting(
-          [&run_loop](Profile* profile, Profile::CreateStatus status) {
-            if (status != Profile::CREATE_STATUS_INITIALIZED)
-              return;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
   // Mark newly created profile as active.
   ProfileAttributesEntry* entry =
@@ -138,15 +128,9 @@ void SetUpSecondaryProfileForPreTest(
 }
 
 void CreateBrowserForProfileDir(const base::FilePath& profile_dir_basename) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath profile_path =
-      profile_manager->user_data_dir().Append(profile_dir_basename);
-
-  base::RunLoop run_loop;
-  profiles::SwitchToProfile(
-      profile_path, /*always_create=*/true,
-      base::BindRepeating([](Profile*) {}).Then(run_loop.QuitClosure()));
-  run_loop.Run();
+  profiles::testing::SwitchToProfileSync(
+      g_browser_process->profile_manager()->user_data_dir().Append(
+          profile_dir_basename));
 }
 
 }  // namespace
