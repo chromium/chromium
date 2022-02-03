@@ -8,7 +8,6 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace cc {
