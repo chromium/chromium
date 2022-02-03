@@ -757,6 +757,7 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
 
 void OverviewGrid::RemoveAllItemsForDesksTemplatesLaunch() {
   for (auto& item : window_list_) {
+    item->RevertHideForDesksTemplatesGrid(/*animate=*/false);
     item->RestoreWindow(/*reset_tranform=*/true,
                         /*was_desks_templates_grid_showing=*/true);
   }
@@ -1723,7 +1724,8 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   // Fade in the widget from its current opacity.
   // TODO(crbug.com/1277160): Consider adding animate flag to determine whether
   // to disable animations.
-  PerformFadeInLayer(desks_templates_grid_widget_->GetLayer());
+  PerformFadeInLayer(desks_templates_grid_widget_->GetLayer(),
+                     /*animate=*/true);
 
   UpdateSaveDeskAsTemplateButton();
 
@@ -1774,6 +1776,7 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
   // done fade in the supporting widgets and revert the overview item hides.
   PerformFadeOutLayer(
       desks_templates_grid_widget_->GetLayer(),
+      /*animate=*/true,
       base::BindOnce(&OverviewGrid::OnDesksTemplatesGridFadedOut,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1856,6 +1859,7 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
     if (save_desk_as_template_widget_) {
       PerformFadeOutLayer(
           save_desk_as_template_widget_->GetLayer(),
+          /*animate=*/true,
           base::BindOnce(&OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut,
                          weak_ptr_factory_.GetWeakPtr()));
     }
@@ -1879,7 +1883,8 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   // `StopAnimating()` is a no-op if there is no animation in progress.
   save_desk_as_template_widget_->GetLayer()->GetAnimator()->StopAnimating();
   save_desk_as_template_widget_->Show();
-  PerformFadeInLayer(save_desk_as_template_widget_->GetLayer());
+  PerformFadeInLayer(save_desk_as_template_widget_->GetLayer(),
+                     /*animate=*/true);
 
   // Disable the create templates button if the current number of templates has
   // reached the max or the current desk has only unsupported apps.

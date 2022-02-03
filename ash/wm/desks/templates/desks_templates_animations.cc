@@ -53,12 +53,23 @@ void FadeOutLayer(ui::Layer* layer,
 
 }  // namespace
 
-void PerformFadeInLayer(ui::Layer* layer) {
+void PerformFadeInLayer(ui::Layer* layer, bool animate) {
+  if (!animate) {
+    layer->SetOpacity(1.f);
+    return;
+  }
+
   FadeInLayer(layer, kFadeInDurationMs);
 }
 
 void PerformFadeOutLayer(ui::Layer* layer,
+                         bool animate,
                          base::OnceClosure on_animation_ended_callback) {
+  if (!animate) {
+    layer->SetOpacity(0.f);
+    return;
+  }
+
   FadeOutLayer(layer, std::move(on_animation_ended_callback),
                kFadeOutDurationMs);
 }

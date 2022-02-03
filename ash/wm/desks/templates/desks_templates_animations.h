@@ -14,14 +14,15 @@ class Layer;
 
 namespace ash {
 
-// Animates the desks templates grid when it is shown, fading out current
-// overview items and widgets, and fading in the grid.
-void PerformFadeInLayer(ui::Layer* layer);
+// Immediately shows `layer` if `animate` is false. Does a linear fade in of
+// `layer` if `animate` is true.
+void PerformFadeInLayer(ui::Layer* layer, bool animate);
 
-// Animates linear fade out of overview items.
-void PerformFadeOutLayer(
-    ui::Layer* layer,
-    base::OnceClosure on_animation_ended_callback = base::DoNothing());
+// Immediately hides `layer` if `animate` is false. Does a linear fade out of
+// `layer` if `animate` is true.
+void PerformFadeOutLayer(ui::Layer* layer,
+                         bool animate,
+                         base::OnceClosure on_animation_ended_callback);
 
 }  // namespace ash
 

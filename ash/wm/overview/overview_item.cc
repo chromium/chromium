@@ -221,17 +221,11 @@ void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
   GetWindow()->SetProperty(kForceVisibleInMiniViewKey, true);
 
   DCHECK(item_widget_);
-  if (animate)
-    PerformFadeOutLayer(item_widget_->GetLayer());
-  else
-    item_widget_->GetLayer()->SetOpacity(0.f);
+  PerformFadeOutLayer(item_widget_->GetLayer(), animate, base::DoNothing());
 
   for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
     transient_child->SetProperty(kForceVisibleInMiniViewKey, true);
-    if (animate)
-      PerformFadeOutLayer(transient_child->layer());
-    else
-      transient_child->layer()->SetOpacity(0.f);
+    PerformFadeOutLayer(transient_child->layer(), animate, base::DoNothing());
   }
 
   item_widget_event_blocker_ =
@@ -241,19 +235,12 @@ void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
 
 void OverviewItem::RevertHideForDesksTemplatesGrid(bool animate) {
   // `item_widget_` may be null during shutdown if the window is minimized.
-  if (item_widget_) {
-    if (animate)
-      PerformFadeInLayer(item_widget_->GetLayer());
-    else
-      item_widget_->GetLayer()->SetOpacity(1.f);
-  }
+  if (item_widget_)
+    PerformFadeInLayer(item_widget_->GetLayer(), animate);
 
   for (aura::Window* transient_child :
        GetTransientTreeIterator(transform_window_.window())) {
-    if (animate)
-      PerformFadeInLayer(transient_child->layer());
-    else
-      transient_child->layer()->SetOpacity(1.f);
+    PerformFadeInLayer(transient_child->layer(), animate);
   }
 
   item_widget_event_blocker_.reset();

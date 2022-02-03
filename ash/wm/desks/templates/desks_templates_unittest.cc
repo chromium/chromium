@@ -2336,7 +2336,7 @@ TEST_F(DesksTemplatesTest, NoAnimationWhenRemovingDesk) {
 
 // Tests that windows have their opacity reset after being hidden and then going
 // to a different desk. Regression test for https://crbug.com/1292174.
-TEST_F(DesksTemplatesTest, WindowOpacityResetAfterViewing) {
+TEST_F(DesksTemplatesTest, WindowOpacityResetAfterImmediateExit) {
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
 
   // Create and a new desk, and create a couple of test windows on the active
@@ -2367,6 +2367,53 @@ TEST_F(DesksTemplatesTest, WindowOpacityResetAfterViewing) {
   EXPECT_EQ(1.f, test_window1->layer()->opacity());
   EXPECT_EQ(1.f, test_window2->layer()->opacity());
   EXPECT_EQ(1.f, test_window3->layer()->opacity());
+}
+
+// Tests that windows have their opacity reset after being hidden and then
+// leaving overview. Regression test for https://crbug.com/1292773.
+TEST_F(DesksTemplatesTest, WindowOpacityResetAfterLeavingOverview) {
+  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  AddEntry(uuid, "template", base::Time::Now());
+
+  // Create and a new desk, and create a couple of test windows on the active
+  // desk.
+  DesksController* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  auto test_window1 = CreateAppWindow();
+  auto test_window2 = CreateAppWindow();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+  ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window1.get()));
+  ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window2.get()));
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // The windows are hidden to show the templates grid.
+  ASSERT_EQ(0.f, test_window1->layer()->opacity());
+  ASSERT_EQ(0.f, test_window2->layer()->opacity());
+
+  // The bug did not repro with zero duration as the animation callback to
+  // reshow the windows would happen immediately.
+  ui::ScopedAnimationDurationScaleMode animation(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Launch a new desk.
+  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
+  WaitForDesksTemplatesUI();
+
+  views::Widget* desks_templates_grid_widget =
+      GetOverviewGridList()[0]->desks_templates_grid_widget();
+  desks_templates_grid_widget->GetLayer()->GetAnimator()->StopAnimating();
+  ASSERT_FALSE(desks_templates_grid_widget->IsVisible());
+  ASSERT_EQ(3u, desks_controller->desks().size());
+
+  // Tests that after exiting overview, the windows have their opacities
+  // restored.
+  ToggleOverview();
+  WaitForOverviewExitAnimation();
+  ASSERT_FALSE(InOverviewSession());
+  EXPECT_EQ(1.f, test_window1->layer()->opacity());
+  EXPECT_EQ(1.f, test_window2->layer()->opacity());
 }
 
 // Tests that the desks templates name view can accept touch events and get
