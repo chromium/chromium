@@ -133,6 +133,16 @@ void StartSmartSelectionActionMenu::HandleTextSelectionActions(
     std::vector<ArcIntentHelperMojoDelegate::TextSelectionAction> actions) {
   actions_ = std::move(actions);
 
+  // If there is no item to add to menu, the following steps can be skipped.
+  //
+  // This condition is for avoiding accessing to null menu.
+  // Menu might be null when RequestTextSelectionActions runs synchronously and
+  // menu is not yet created. This might happen when RequestTextSelectionActions
+  // API is not sent via mojo, and it can be detected by checking if the result
+  // given by RequestTextSelectionActions is empty.
+  if (actions_.empty())
+    return;
+
   for (size_t i = 0; i < actions_.size(); ++i) {
     proxy_->UpdateMenuItem(
         IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1 + i,
