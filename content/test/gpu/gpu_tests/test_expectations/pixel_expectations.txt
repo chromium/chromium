@@ -303,9 +303,6 @@ crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Fuchsia issues
-crbug.com/1157136 [ fuchsia skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
-
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
 # Failing on Nexus 5; haven't investigated why yet.
