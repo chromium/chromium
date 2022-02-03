@@ -91302,6 +91302,58 @@
       ]
      ],
      "container-queries": {
+      "canvas-as-container-001.html": [
+       "5e1d595e98b972cd97117ddec5609c8b8c0b1bef",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "canvas-as-container-002.html": [
+       "3e817a6415acee1e9a9fb257889ef89ab6d5512a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "canvas-as-container-003.html": [
+       "6a54e4a4059137d85277f499b02f01822add9b63",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "canvas-as-container-004.html": [
+       "86296346aa9bce38180bb8247e5d839d0656a630",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "change-display-in-container.html": [
        "41bba3411b22496b16bb79c8f8fed76f863af648",
        [
@@ -244810,7 +244862,7 @@
         []
        ],
        "text-fragment-target-auto.html": [
-        "d07ede5a546007e327d353ed599489ddfe574481",
+        "53a22f5fd8d1cdb8838535354549e117576d7e52",
         []
        ]
       },
@@ -361153,6 +361205,20 @@
       ],
       "backdrop-invalidation.html": [
        "acb5b2b1408240452589e539fc7a977a815ef619",
+       [
+        null,
+        {}
+       ]
+      ],
+      "canvas-as-container-005.html": [
+       "c85a9cd0ef0ebcc6199f22c0b7346a4d01b42b88",
+       [
+        null,
+        {}
+       ]
+      ],
+      "canvas-as-container-006.html": [
+       "5b15a403410bf9076dadb837aae449cbf51a2c71",
        [
         null,
         {}
