@@ -80,6 +80,9 @@ void WebAppUninstallJob::StopAppRegistryModification() {
 void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
   DCHECK(state_ == State::kPendingDataDeletion);
   hooks_uninstalled_ = true;
+  // TODO(https://crbug.com/1293234): Remove after flakiness is solved.
+  DLOG_IF(ERROR, errors.any())
+      << "OS integration errors for " << app_id_ << ": " << errors.to_string();
   base::UmaHistogramBoolean("WebApp.Uninstall.OsHookSuccess", errors.none());
   errors_ = errors_ || errors.any();
   MaybeFinishUninstall();
@@ -88,6 +91,8 @@ void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
 void WebAppUninstallJob::OnIconDataDeleted(bool success) {
   DCHECK(state_ == State::kPendingDataDeletion);
   app_data_deleted_ = true;
+  // TODO(https://crbug.com/1293234): Remove after flakiness is solved.
+  DLOG_IF(ERROR, !success) << "Error deleting icon data for " << app_id_;
   base::UmaHistogramBoolean("WebApp.Uninstall.IconDataSuccess", success);
   errors_ = errors_ || !success;
   MaybeFinishUninstall();
