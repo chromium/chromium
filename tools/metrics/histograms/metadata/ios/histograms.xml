@@ -973,6 +973,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"
+    expires_after="2023-01-30">
+  <owner>gambard@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Tracks the default mode used by the webview when a page is loaded. True when
+    the default mode is Mobile (vs Default).
+  </summary>
+</histogram>
+
 <histogram name="IOS.PageLoadCount.Counts"
     enum="IOSPageLoadCountNavigationType" expires_after="2022-06-12">
   <owner>gambard@chromium.org</owner>

@@ -17159,6 +17159,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileDefaultPageModeSettingsBack">
+  <owner>gambard@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when user goes back from Default Page Mode Settings UI to Content
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileDefaultPageModeSettingsClose">
+  <owner>gambard@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Default Page Mode UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobileDefaultPageModeSettingsToggled">
+  <owner>gambard@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when the user selects a default mode (Mobile/Desktop) for page
+    load. iOS only.
+  </description>
+</action>
+
 <action name="MobileDownloadFileUIInstallGoogleDrive">
   <obsolete>
     Removed in 12/2019 after adds of IOSDownloadFileUIGoogleDrive's histogram.

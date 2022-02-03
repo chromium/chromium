@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller.h"
 
+#include "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 
@@ -74,6 +75,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
+  base::RecordAction(
+      base::UserMetricsAction("MobileDefaultPageModeSettingsClose"));
+
   [self.delegate didSelectMode:chosenMode];
 }
 
@@ -94,6 +98,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
+  base::RecordAction(
+      base::UserMetricsAction("MobileDefaultPageModeSettingsToggled"));
   [self reloadCellsForItems:[self.tableViewModel itemsInSectionWithIdentifier:
                                                      SectionIdentifierMode]
            withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -102,11 +108,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/1276922): Add UserAction recording.
+  base::RecordAction(
+      base::UserMetricsAction("MobileDefaultPageModeSettingsClose"));
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/1276922): Add UserAction recording.
+  base::RecordAction(
+      base::UserMetricsAction("MobileDefaultPageModeSettingsBack"));
 }
 
 @end

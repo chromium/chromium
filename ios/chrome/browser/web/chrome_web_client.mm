@@ -10,6 +10,7 @@
 #import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
 #include "base/mac/bundle_locations.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -416,8 +417,11 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
       ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
   ContentSetting setting = settings_map->GetContentSetting(
       url, url, ContentSettingsType::REQUEST_DESKTOP_SITE);
-  return (setting == CONTENT_SETTING_ALLOW) ? web::UserAgentType::DESKTOP
-                                            : web::UserAgentType::MOBILE;
+  bool use_desktop_agent = setting == CONTENT_SETTING_ALLOW;
+  base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
+                            !use_desktop_agent);
+  return use_desktop_agent ? web::UserAgentType::DESKTOP
+                           : web::UserAgentType::MOBILE;
 }
 
 bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {

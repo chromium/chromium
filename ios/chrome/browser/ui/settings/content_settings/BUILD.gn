@@ -54,6 +54,7 @@ source_set("content_settings_ui") {
     "default_page_mode_table_view_controller_delegate.h",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
