@@ -1126,36 +1126,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.ZeroSuggest.Eligible.OnProfileOpen"
-    enum="BooleanSupported" expires_after="2022-01-02">
-  <obsolete>
-    Since Q1 2022
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Whether the user has settings configured so that the current page URL could
-    be sent to the suggest server to request contextual suggestions. For
-    example, this is only supported for users who have Google as their default
-    search engine (unmodified version of Google), have search suggest enabled,
-    and are signed-in and syncing without a custom passphrase. There are other
-    criteria too. Recorded on profile open. Note that opening an incognito
-    window (if none are currently open under the given profile) counts as
-    opening a new profile.
-
-    Some additional guidelines: unlike Omnibox.ZeroSuggest.Eligible.OnFocus,
-    because this is recorded on profile open, users cannot be declared
-    ineligible because they have an incognito window open (it's impossible to
-    have an incognito window open for a given profile at the time of profile
-    open) and also cannot be declared ineligible because the user is viewing a
-    search results page. (We test this on-profile-open using an arbitrary URL.)
-
-    Recorded regardless of whether contextual or non-contextual zero suggest is
-    currently enabled on the user's platform. However, if zero suggest (in all
-    forms) is entirely disabled, the user will be perpetually ineligible.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.ZeroSuggestRequests.NonPrefetch"
     enum="OmniboxZeroSuggestRequests" expires_after="2022-06-05">
   <owner>mahmadi@chromium.org</owner>

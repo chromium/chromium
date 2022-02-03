@@ -56,11 +56,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="JankMetricsScenarios">
-  <variant name="">
-    <obsolete>
-      Renamed to .Total
-    </obsolete>
-  </variant>
   <variant name=".NewTabPage" summary="while NTP is open"/>
   <variant name=".OmniboxFocus" summary="while Omnibox is focused"/>
   <variant name=".OpenLinkInNewTab"

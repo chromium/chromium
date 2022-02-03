@@ -30,20 +30,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".NoSavedFrames_Loaded"
       summary="Same as NoSavedFrames with the destination tab being loaded
                (frozen or not frozen)"/>
-  <variant name=".NoSavedFrames_Loaded_Frozen"
-      summary="Same as NoSavedFrames with the destination tab being loaded and
-               frozen.">
-    <obsolete>
-      Frozen is no longer a supported state.
-    </obsolete>
-  </variant>
-  <variant name=".NoSavedFrames_Loaded_NotFrozen"
-      summary="Same as NoSavedFrames with the destination tab being loaded and
-               not frozen.">
-    <obsolete>
-      Frozen is no longer a supported state.
-    </obsolete>
-  </variant>
   <variant name=".NoSavedFrames_NotLoaded"
       summary="Same as WithSavedFrames with the destination tab being
                unloaded."/>
