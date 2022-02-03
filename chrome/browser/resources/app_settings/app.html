@@ -30,6 +30,11 @@
     <h1 class="cr-title-text">[[app_.title]]</h1>
   </div>
   <div class="permission-list">
+    <app-management-window-mode
+      class="permission-card-row separated-row"
+      window-mode-label="$i18n{appManagementWindowModeLabel}"
+      app="[[app_]]">
+    </app-management-window-mode>
     <app-management-permission-item
         class="permission-card-row separated-row header-text"
         app="[[app_]]"

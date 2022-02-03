@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {App} from './app_management.mojom-webui.js';
-import {AppManagementUserAction, AppType, OptionalBool} from './constants.js';
+import {AppManagementUserAction, AppType, OptionalBool, WindowMode} from './constants.js';
 import {PermissionType, PermissionTypeIndex} from './permission_constants.js';
 import {isPermissionEnabled} from './permission_util.js';
 
@@ -122,4 +122,21 @@ export function recordAppManagementUserAction(
   const enumLength = Object.keys(AppManagementUserAction).length;
   chrome.metricsPrivate.recordEnumerationValue(
       histogram, userAction, enumLength);
+}
+
+function convertWindowModeToBool(windowMode: WindowMode): boolean {
+  switch (windowMode) {
+    case WindowMode.kBrowser:
+      return false;
+    case WindowMode.kWindow:
+      return true;
+    default:
+      assertNotReached();
+      return false;
+  }
+}
+
+export function getWindowModeBoolean(windowMode: WindowMode): boolean {
+  assert(windowMode !== WindowMode.kUnknown, 'Window Mode Not Set');
+  return convertWindowModeToBool(windowMode);
 }

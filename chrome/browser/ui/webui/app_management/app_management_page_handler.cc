@@ -281,11 +281,13 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
 void AppManagementPageHandler::SetWindowMode(
     const std::string& app_id,
     apps::mojom::WindowMode window_mode) {
+  // On ChromeOS, apps should always open in a new window,
+  // hence window mode changes are not allowed.
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-      app_id, std::move(window_mode));
+      app_id, window_mode);
 #endif
 }
 

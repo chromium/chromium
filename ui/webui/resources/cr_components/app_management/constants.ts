@@ -70,4 +70,6 @@ export enum AppManagementUserAction {
   PreferredAppTurnedOff = 22,
   SupportedLinksListShown = 23,
   OverlappingAppsDialogShown = 24,
+  WindowModeChangedToBrowser = 25,
+  WindowModeChangedToWindow = 26,
 }

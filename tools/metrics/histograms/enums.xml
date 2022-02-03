@@ -3627,6 +3627,8 @@ Unknown properties are collapsed to zero. -->
   <int value="22" label="Preferred App turned off"/>
   <int value="23" label="Supported Links list shown"/>
   <int value="24" label="Overlapping apps dialog shown"/>
+  <int value="25" label="Window mode changed to browser"/>
+  <int value="26" label="Window mode changed to window"/>
 </enum>
 
 <enum name="AppMenuHighlightItem">
