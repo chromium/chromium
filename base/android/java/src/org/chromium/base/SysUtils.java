@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -161,7 +160,6 @@ public class SysUtils {
                 || pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     private static boolean detectLowEndDevice() {
         assert CommandLine.isInitialized();
         if (CommandLine.getInstance().hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)) {

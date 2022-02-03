@@ -4,8 +4,6 @@
 
 package org.chromium.printing;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
@@ -23,7 +21,6 @@ import android.print.PrintDocumentInfo;
  * {@link PrintDocumentAdapter#onLayout} and {@link PrintDocumentAdapter#onWrite}. This class helps
  * bypassing the limitation.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
     private PdfGenerator mPdfGenerator;
 
