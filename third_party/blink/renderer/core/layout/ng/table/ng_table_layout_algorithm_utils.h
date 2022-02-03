@@ -13,7 +13,7 @@ namespace blink {
 
 class NGBlockNode;
 class NGBoxFragment;
-class NGConstraintSpace;
+class NGConstraintSpaceBuilder;
 class NGTableBorders;
 enum class NGCacheSlot;
 struct LogicalSize;
@@ -30,11 +30,11 @@ class NGTableAlgorithmUtils {
            align == EVerticalAlign::kLength;
   }
 
-  // Creates a constraint-space for a table-cell.
+  // Creates a constraint space builder for a table-cell.
   //
   // In order to make the cache as effective as possible, we try and keep
   // creating the constraint-space for table-cells as consistent as possible.
-  static NGConstraintSpace CreateTableCellConstraintSpace(
+  static NGConstraintSpaceBuilder CreateTableCellConstraintSpaceBuilder(
       const WritingDirectionMode table_writing_direction,
       const NGBlockNode cell,
       const NGBoxStrut& cell_borders,

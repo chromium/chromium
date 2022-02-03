@@ -961,10 +961,6 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
     }
   }
 
-  // At this point, perform any final table-cell adjustments needed.
-  if (ConstraintSpace().IsTableCell())
-    FinalizeForTableCell(unconstrained_intrinsic_block_size);
-
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinalizeForFragmentation();
     if (status != NGBreakStatus::kContinue) {
@@ -980,6 +976,10 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   container_builder_.CheckNoBlockFragmentation();
 #endif
   }
+
+  // At this point, perform any final table-cell adjustments needed.
+  if (ConstraintSpace().IsTableCell())
+    FinalizeForTableCell(unconstrained_intrinsic_block_size);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
@@ -2223,6 +2223,11 @@ void NGBlockLayoutAlgorithm::FinalizeForTableCell(
 
   container_builder_.SetTableCellColumnIndex(
       ConstraintSpace().TableCellColumnIndex());
+
+  // If we're resuming after a break, there'll be no alignment, since the
+  // fragment will start at the block-start edge of the fragmentainer then.
+  if (IsResumingLayout(BreakToken()))
+    return;
 
   switch (Style().VerticalAlign()) {
     case EVerticalAlign::kTop:

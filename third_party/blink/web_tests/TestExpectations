@@ -1607,11 +1607,8 @@ virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentat
 
 ### Tests failing with LayoutNGTableFragmentation enabled:
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
-crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/balance-table-with-fractional-height-row.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/multicol-table-cell-height-002.xht [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/multicol-table-cell-vertical-align-001.xht [ Failure ]
-crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/table-cell-content-change-000.html [ Failure ]
-crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/table-cell-content-change-001.html [ Failure ]
 
 ### With LayoutNGPrinting enabled:
 

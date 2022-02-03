@@ -191,14 +191,15 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     // possible. The one exception is "is_hidden_for_paint". This is set to
     // true if a cell should be hidden within a collapsed column. If this is
     // the case, the size is almost certainly different causing a second layout.
-    return NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
-        table_writing_direction, cell, cell_borders,
-        {cell_inline_size, kIndefiniteSize}, cell_percentage_inline_size,
-        /* alignment_baseline */ absl::nullopt, start_column,
-        /* is_initial_block_size_indefinite */ true,
-        is_table_block_size_specified,
-        /* is_hidden_for_paint */ false, has_collapsed_borders,
-        NGCacheSlot::kMeasure);
+    return NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
+               table_writing_direction, cell, cell_borders,
+               {cell_inline_size, kIndefiniteSize}, cell_percentage_inline_size,
+               /* alignment_baseline */ absl::nullopt, start_column,
+               /* is_initial_block_size_indefinite */ true,
+               is_table_block_size_specified,
+               /* is_hidden_for_paint */ false, has_collapsed_borders,
+               NGCacheSlot::kMeasure)
+        .ToConstraintSpace();
   };
 
   // TODO(layout-ng) Scrollbars should be frozen when computing row sizes.
@@ -450,7 +451,8 @@ void ComputeSectionInlineConstraints(
 }  // namespace
 
 // static
-NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
+NGConstraintSpaceBuilder
+NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
     const NGBlockNode cell,
     const NGBoxStrut& cell_borders,
@@ -500,7 +502,7 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
       !has_collapsed_borders && cell_style.EmptyCells() == EEmptyCells::kHide);
   builder.SetCacheSlot(cache_slot);
 
-  return builder.ToConstraintSpace();
+  return builder;
 }
 
 // Computes maximum possible number of non-mergeable columns.

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_CHILD_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_CHILD_ITERATOR_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
@@ -32,7 +33,8 @@ class CORE_EXPORT NGBlockChildIterator {
 
  public:
   NGBlockChildIterator(NGLayoutInputNode first_child,
-                       const NGBlockBreakToken* break_token);
+                       const NGBlockBreakToken* break_token,
+                       bool calculate_child_idx = false);
 
   // Returns the next input node which should be laid out, along with its
   // respective break token.
@@ -44,23 +46,31 @@ class CORE_EXPORT NGBlockChildIterator {
       const NGInlineBreakToken* previous_inline_break_token = nullptr);
 
  private:
+  void AdvanceToNextChild(const NGLayoutInputNode&);
+
   NGLayoutInputNode next_unstarted_child_;
+  NGLayoutInputNode tracked_child_ = nullptr;
   const NGBlockBreakToken* break_token_;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
   // track of the next child break token to inspect.
   wtf_size_t child_token_idx_;
+
+  absl::optional<wtf_size_t> child_idx_;
 };
 
 struct NGBlockChildIterator::Entry {
   STACK_ALLOCATED();
 
  public:
-  Entry(NGLayoutInputNode node, const NGBreakToken* token)
-      : node(node), token(token) {}
+  Entry(NGLayoutInputNode node,
+        const NGBreakToken* token,
+        absl::optional<wtf_size_t> index = absl::nullopt)
+      : node(node), token(token), index(index) {}
 
   NGLayoutInputNode node;
   const NGBreakToken* token;
+  absl::optional<wtf_size_t> index;
 
   bool operator==(const NGBlockChildIterator::Entry& other) const {
     return node == other.node && token == other.token;
