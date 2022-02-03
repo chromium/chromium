@@ -485,7 +485,7 @@
     ],
     "matches": ["<all_urls>"]
   },{
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
       // Allow only terminal_ssh.html in Terminal System Web App.
@@ -555,7 +555,7 @@
       "chrome://file-manager/*"
     ]
   },{
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
       // Allow only terminal_ssh.html in Terminal System Web App.
