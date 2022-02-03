@@ -639,11 +639,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     case InitStageSafeMode:
       [self addPostSafeModeAgents];
       break;
-    case InitStageEnterprise:
-      break;
     case InitStageBrowserObjectsForBackgroundHandlers:
       [self startUpBrowserBackgroundInitialization];
       [appState queueTransitionToNextInitStage];
+      break;
+    case InitStageEnterprise:
       break;
     case InitStageBrowserObjectsForUI:
       // When adding a new initialization flow, consider setting

@@ -111,10 +111,10 @@
       break;
     case InitStageSafeMode:
       break;
-    case InitStageEnterprise:
-      break;
     case InitStageBrowserObjectsForBackgroundHandlers:
       [appState queueTransitionToNextInitStage];
+      break;
+    case InitStageEnterprise:
       break;
     case InitStageBrowserObjectsForUI:
       [appState queueTransitionToNextInitStage];
