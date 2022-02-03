@@ -256,12 +256,9 @@ BlockFileHeader* BlockHeader::Header() {
 
 // ------------------------------------------------------------------------
 
-BlockFiles::BlockFiles(const base::FilePath& path)
-    : init_(false), zero_buffer_(nullptr), path_(path) {}
+BlockFiles::BlockFiles(const base::FilePath& path) : path_(path) {}
 
 BlockFiles::~BlockFiles() {
-  if (zero_buffer_)
-    delete[] zero_buffer_;
   CloseFiles();
 }
 
@@ -343,19 +340,18 @@ void BlockFiles::DeleteBlock(Addr address, bool deep) {
   if (!address.is_initialized() || address.is_separate_file())
     return;
 
-  if (!zero_buffer_) {
-    zero_buffer_ = new char[Addr::BlockSizeForFileType(BLOCK_4K) * 4];
-    memset(zero_buffer_, 0, Addr::BlockSizeForFileType(BLOCK_4K) * 4);
-  }
   MappedFile* file = GetFile(address);
   if (!file)
     return;
+
+  if (zero_buffer_.empty())
+    zero_buffer_.resize(Addr::BlockSizeForFileType(BLOCK_4K) * 4, 0);
 
   size_t size = address.BlockSize() * address.num_blocks();
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
   if (deep)
-    file->Write(zero_buffer_, size, offset);
+    file->Write(zero_buffer_.data(), size, offset);
 
   BlockHeader file_header(file);
   file_header.DeleteMapBlock(address.start_block(), address.num_blocks());

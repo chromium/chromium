@@ -151,8 +151,8 @@ class NET_EXPORT_PRIVATE BlockFiles {
   // Returns the filename for a given file index.
   base::FilePath Name(int index);
 
-  bool init_;
-  raw_ptr<char> zero_buffer_;  // Buffer to speed-up cleaning deleted entries.
+  bool init_ = false;
+  std::vector<char> zero_buffer_;  // Speed-up cleaning deleted entries.
   base::FilePath path_;  // Path to the backing folder.
   std::vector<scoped_refptr<MappedFile>> block_files_;  // The actual files.
   std::unique_ptr<base::ThreadChecker> thread_checker_;
