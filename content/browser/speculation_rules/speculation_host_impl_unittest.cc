@@ -25,7 +25,9 @@ class PrerenderWebContentsDelegate : public WebContentsDelegate {
  public:
   PrerenderWebContentsDelegate() = default;
 
-  bool IsPrerender2Supported() override { return true; }
+  bool IsPrerender2Supported(WebContents& web_contents) override {
+    return true;
+  }
 };
 
 class SpeculationHostImplTest : public RenderViewHostImplTestHarness {

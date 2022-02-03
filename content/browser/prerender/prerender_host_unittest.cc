@@ -136,7 +136,9 @@ class TestWebContentsDelegate : public WebContentsDelegate {
  public:
   TestWebContentsDelegate() = default;
   ~TestWebContentsDelegate() override = default;
-  bool IsPrerender2Supported() override { return true; }
+  bool IsPrerender2Supported(WebContents& web_contents) override {
+    return true;
+  }
 };
 
 class PrerenderHostTest : public RenderViewHostImplTestHarness {

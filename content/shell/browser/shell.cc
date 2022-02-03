@@ -584,7 +584,7 @@ bool Shell::IsBackForwardCacheSupported() {
   return true;
 }
 
-bool Shell::IsPrerender2Supported() {
+bool Shell::IsPrerender2Supported(WebContents& web_contents) {
   return true;
 }
 

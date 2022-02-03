@@ -114,11 +114,14 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
   if (!registry_ || candidates.empty())
     return;
   DCHECK(blink::features::IsPrerender2Enabled());
-  WebContentsDelegate* web_contents_delegate =
-      content::WebContents::FromRenderFrameHost(render_frame_host())
-          ->GetDelegate();
+
+  // TODO(https://crbug.com/1292422): Move this check into
+  // PrerenderHostRegistry::CreateAndStartHost().
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host());
+  WebContentsDelegate* web_contents_delegate = web_contents->GetDelegate();
   if (!web_contents_delegate ||
-      !web_contents_delegate->IsPrerender2Supported()) {
+      !web_contents_delegate->IsPrerender2Supported(*web_contents)) {
     return;
   }
 
@@ -130,7 +133,6 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
 
-    auto* web_contents = WebContents::FromRenderFrameHost(rfhi);
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(
             it->url, PrerenderTriggerType::kSpeculationRule,

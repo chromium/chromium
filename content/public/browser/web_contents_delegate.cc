@@ -338,7 +338,7 @@ bool WebContentsDelegate::IsBackForwardCacheSupported() {
   return false;
 }
 
-bool WebContentsDelegate::IsPrerender2Supported() {
+bool WebContentsDelegate::IsPrerender2Supported(WebContents& web_contents) {
   return false;
 }
 

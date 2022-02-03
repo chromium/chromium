@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents_delegate.h"
 
 namespace {
 
@@ -193,10 +194,12 @@ void AutocompleteActionPredictor::StartPrerendering(
   if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
     // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.
-    // TODO(https://crbug.com/1269204): Move this check into
-    // WebContentsDelegate::IsPrerender2Supported after exposing TriggerType to
-    // embedders.
-    if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
+    // TODO(https://crbug.com/1292422): Move this check into
+    // content::PrerenderHostRegistry::CreateAndStartHost().
+    content::WebContentsDelegate* web_contents_delegate =
+        web_contents.GetDelegate();
+    if (!web_contents_delegate ||
+        !web_contents_delegate->IsPrerender2Supported(web_contents)) {
       return;
     }
 
