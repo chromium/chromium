@@ -433,23 +433,29 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     return;
   }
 
-  if (IsA<HTMLFencedFrameElement>(element) &&
-      !features::IsFencedFramesMPArchBased()) {
-    // Force the inside-display to `flow`, but honors the outside-display.
-    switch (DisplayOutside(style.Display())) {
-      case EDisplay::kInline:
-      case EDisplay::kContents:
-        style.SetDisplay(EDisplay::kInlineBlock);
-        break;
-      case EDisplay::kBlock:
-        style.SetDisplay(EDisplay::kBlock);
-        break;
-      case EDisplay::kNone:
-        break;
-      default:
-        NOTREACHED();
-        style.SetDisplay(EDisplay::kInlineBlock);
-        break;
+  if (IsA<HTMLFencedFrameElement>(element)) {
+    // Force the effective CSS `zoom` property to 1, so that the CSS `zoom`
+    // property does not leak to fencedframe `window.innerWidth` and
+    // `window.innerHeight`. crbug.com/1285327
+    style.SetEffectiveZoom(1);
+
+    if (!features::IsFencedFramesMPArchBased()) {
+      // Force the inside-display to `flow`, but honors the outside-display.
+      switch (DisplayOutside(style.Display())) {
+        case EDisplay::kInline:
+        case EDisplay::kContents:
+          style.SetDisplay(EDisplay::kInlineBlock);
+          break;
+        case EDisplay::kBlock:
+          style.SetDisplay(EDisplay::kBlock);
+          break;
+        case EDisplay::kNone:
+          break;
+        default:
+          NOTREACHED();
+          style.SetDisplay(EDisplay::kInlineBlock);
+          break;
+      }
     }
   }
 
