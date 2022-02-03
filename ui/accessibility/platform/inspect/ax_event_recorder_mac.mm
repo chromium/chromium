@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder_mac.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_mac.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -12,14 +12,14 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 
-namespace content {
+namespace ui {
 
 // Callback function registered using AXObserverCreate.
 static void EventReceivedThunk(AXObserverRef observer_ref,
@@ -27,14 +27,12 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
                                CFStringRef notification,
                                CFDictionaryRef user_info,
                                void* refcon) {
-  AccessibilityEventRecorderMac* this_ptr =
-      static_cast<AccessibilityEventRecorderMac*>(refcon);
+  AXEventRecorderMac* this_ptr = static_cast<AXEventRecorderMac*>(refcon);
   this_ptr->EventReceived(element, notification, user_info);
 }
 
-AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
-    base::ProcessId pid,
-    const AXTreeSelector& selector)
+AXEventRecorderMac::AXEventRecorderMac(base::ProcessId pid,
+                                       const AXTreeSelector& selector)
     : observer_run_loop_source_(nullptr) {
   AXUIElementRef node = nil;
   if (pid) {
@@ -43,7 +41,7 @@ AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
       LOG(FATAL) << "Failed to get AXUIElement for pid " << pid;
     }
   } else {
-    std::tie(node, pid) = ui::FindAXUIElement(selector);
+    std::tie(node, pid) = FindAXUIElement(selector);
     if (!node) {
       LOG(FATAL) << "Failed to get AXUIElement for selector";
     }
@@ -116,24 +114,24 @@ AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
                      kCFRunLoopDefaultMode);
 }
 
-AccessibilityEventRecorderMac::~AccessibilityEventRecorderMac() {
+AXEventRecorderMac::~AXEventRecorderMac() {
   CFRunLoopRemoveSource(CFRunLoopGetCurrent(), observer_run_loop_source_,
                         kCFRunLoopDefaultMode);
 }
 
-void AccessibilityEventRecorderMac::AddNotification(NSString* notification) {
+void AXEventRecorderMac::AddNotification(NSString* notification) {
   AXObserverAddNotification(observer_ref_, application_,
                             base::mac::NSToCFCast(notification), this);
 }
 
-void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
-                                                  CFStringRef notification,
-                                                  CFDictionaryRef user_info) {
+void AXEventRecorderMac::EventReceived(AXUIElementRef element,
+                                       CFStringRef notification,
+                                       CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
 
   auto formatter = ui::AXTreeFormatterMac();
   formatter.SetPropertyFilters(property_filters_,
-                               ui::AXTreeFormatter::kFiltersDefaultSet);
+                               AXTreeFormatter::kFiltersDefaultSet);
 
   std::string element_str =
       formatter.FormatTree(formatter.BuildNode(static_cast<id>(element)));
@@ -153,8 +151,7 @@ void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
   OnEvent(log);
 }
 
-std::string
-AccessibilityEventRecorderMac::SerializeTextSelectionChangedProperties(
+std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
     CFDictionaryRef user_info) {
   if (user_info == nil)
     return {};
@@ -167,17 +164,17 @@ AccessibilityEventRecorderMac::SerializeTextSelectionChangedProperties(
         auto* value = static_cast<NSObject*>(raw_value);
         auto* serialized_info = static_cast<std::vector<std::string>*>(context);
         std::string value_string;
-        if ([key isEqual:ui::NSAccessibilityTextStateChangeTypeKey]) {
-          value_string = ToString(static_cast<ui::AXTextStateChangeType>(
+        if ([key isEqual:NSAccessibilityTextStateChangeTypeKey]) {
+          value_string = ToString(static_cast<AXTextStateChangeType>(
               [static_cast<NSNumber*>(value) intValue]));
-        } else if ([key isEqual:ui::NSAccessibilityTextSelectionDirection]) {
-          value_string = ToString(static_cast<ui::AXTextSelectionDirection>(
+        } else if ([key isEqual:NSAccessibilityTextSelectionDirection]) {
+          value_string = ToString(static_cast<AXTextSelectionDirection>(
               [static_cast<NSNumber*>(value) intValue]));
-        } else if ([key isEqual:ui::NSAccessibilityTextSelectionGranularity]) {
-          value_string = ToString(static_cast<ui::AXTextSelectionGranularity>(
+        } else if ([key isEqual:NSAccessibilityTextSelectionGranularity]) {
+          value_string = ToString(static_cast<AXTextSelectionGranularity>(
               [static_cast<NSNumber*>(value) intValue]));
-        } else if ([key isEqual:ui::NSAccessibilityTextEditType]) {
-          value_string = ToString(static_cast<ui::AXTextEditType>(
+        } else if ([key isEqual:NSAccessibilityTextEditType]) {
+          value_string = ToString(static_cast<AXTextEditType>(
               [static_cast<NSNumber*>(value) intValue]));
         } else {
           return;
@@ -194,4 +191,4 @@ AccessibilityEventRecorderMac::SerializeTextSelectionChangedProperties(
   return base::JoinString(serialized_info, " ");
 }
 
-}  // namespace content
+}  // namespace ui

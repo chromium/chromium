@@ -4,9 +4,9 @@
 
 #include "content/public/browser/ax_inspect_factory.h"
 
-#include "content/browser/accessibility/accessibility_event_recorder_mac.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 
 namespace content {
@@ -58,7 +58,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
 
   switch (type) {
     case ui::AXApiType::kMac:
-      return std::make_unique<AccessibilityEventRecorderMac>(pid, selector);
+      return std::make_unique<ui::AXEventRecorderMac>(pid, selector);
     default:
       NOTREACHED() << "Unsupported API type " << type;
   }
