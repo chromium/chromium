@@ -53,12 +53,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174734): Remove.
   NOTIFICATION_EXTENSION_INSTALL_ERROR,
 
-  // Sent when an bookmarks extensions API function was successfully invoked.
-  // The source is the id of the extension that invoked the function, and the
-  // details are a pointer to the const BookmarksFunction in question.
-  // TODO(https://crbug.com/1174748): Remove.
-  NOTIFICATION_EXTENSION_BOOKMARKS_API_INVOKED,
-
   // Sent when the extension updater starts checking for updates to installed
   // extensions. The source is a BrowserContext*, and there are no details.
   // TODO(https://crbug.com/1174753): Remove.

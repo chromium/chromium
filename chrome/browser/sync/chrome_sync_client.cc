@@ -177,7 +177,8 @@ base::RepeatingClosure GetDumpStackClosure() {
 
 }  // namespace
 
-ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
+ChromeSyncClient::ChromeSyncClient(Profile* profile)
+    : profile_(profile), extensions_activity_monitor_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   profile_web_data_service_ =
