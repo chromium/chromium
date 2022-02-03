@@ -156,9 +156,9 @@ namespace {
 
 class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
  public:
-  static CastDataSource* GetInstance() {
+  static CastDataSource& GetInstance() {
     static base::NoDestructor<CastDataSource> instance;
-    return instance.get();
+    return *instance;
   }
 
   CastDataSource(const CastDataSource&) = delete;
@@ -268,7 +268,7 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
 CastTracingAgent::CastTracingAgent() {
   tracing::PerfettoTracedProcess::Get()->AddDataSource(
-      CastDataSource::GetInstance());
+      &CastDataSource::GetInstance());
 }
 
 CastTracingAgent::~CastTracingAgent() = default;

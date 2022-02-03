@@ -43,25 +43,25 @@ void TestStartupRuleExists(const BackgroundTracingConfigImpl& config,
 }  // namespace
 
 TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
-  BackgroundStartupTracingObserver* observer =
+  BackgroundStartupTracingObserver& observer =
       BackgroundStartupTracingObserver::GetInstance();
   std::unique_ptr<TestPreferenceManagerImpl> test_preferences(
       new TestPreferenceManagerImpl);
   TestPreferenceManagerImpl* preferences = test_preferences.get();
-  observer->SetPreferenceManagerForTesting(std::move(test_preferences));
+  observer.SetPreferenceManagerForTesting(std::move(test_preferences));
 
   // Empty config without preference set should not do anything.
   std::unique_ptr<content::BackgroundTracingConfigImpl> config_impl;
-  config_impl = observer->IncludeStartupConfigIfNeeded(std::move(config_impl));
+  config_impl = observer.IncludeStartupConfigIfNeeded(std::move(config_impl));
   EXPECT_FALSE(config_impl);
-  EXPECT_FALSE(observer->enabled_in_current_session());
+  EXPECT_FALSE(observer.enabled_in_current_session());
 
   // Empty config with preference set should create a startup config, and reset
   // preference.
   EXPECT_FALSE(preferences->GetBackgroundStartupTracingEnabled());
   preferences->SetBackgroundStartupTracingEnabled(true);
-  config_impl = observer->IncludeStartupConfigIfNeeded(std::move(config_impl));
-  EXPECT_TRUE(observer->enabled_in_current_session());
+  config_impl = observer.IncludeStartupConfigIfNeeded(std::move(config_impl));
+  EXPECT_TRUE(observer.enabled_in_current_session());
   EXPECT_FALSE(preferences->GetBackgroundStartupTracingEnabled());
   ASSERT_TRUE(config_impl);
   EXPECT_EQ(1u, config_impl->rules().size());
@@ -71,8 +71,8 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
 
   // Startup config with preference set should keep config and preference same.
   preferences->SetBackgroundStartupTracingEnabled(true);
-  config_impl = observer->IncludeStartupConfigIfNeeded(std::move(config_impl));
-  EXPECT_TRUE(observer->enabled_in_current_session());
+  config_impl = observer.IncludeStartupConfigIfNeeded(std::move(config_impl));
+  EXPECT_TRUE(observer.enabled_in_current_session());
   EXPECT_TRUE(preferences->GetBackgroundStartupTracingEnabled());
   ASSERT_TRUE(config_impl);
   EXPECT_EQ(1u, config_impl->rules().size());
@@ -81,8 +81,8 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
   // Startup config without preference set should keep config and set
   // preference.
   preferences->SetBackgroundStartupTracingEnabled(false);
-  config_impl = observer->IncludeStartupConfigIfNeeded(std::move(config_impl));
-  EXPECT_FALSE(observer->enabled_in_current_session());
+  config_impl = observer.IncludeStartupConfigIfNeeded(std::move(config_impl));
+  EXPECT_FALSE(observer.enabled_in_current_session());
   EXPECT_TRUE(preferences->GetBackgroundStartupTracingEnabled());
   ASSERT_TRUE(config_impl);
   EXPECT_EQ(1u, config_impl->rules().size());
@@ -103,8 +103,8 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
   ASSERT_TRUE(config_impl);
 
   preferences->SetBackgroundStartupTracingEnabled(false);
-  config_impl = observer->IncludeStartupConfigIfNeeded(std::move(config_impl));
-  EXPECT_FALSE(observer->enabled_in_current_session());
+  config_impl = observer.IncludeStartupConfigIfNeeded(std::move(config_impl));
+  EXPECT_FALSE(observer.enabled_in_current_session());
   EXPECT_FALSE(preferences->GetBackgroundStartupTracingEnabled());
   EXPECT_EQ(1u, config_impl->rules().size());
   TestStartupRuleExists(*config_impl, false);
@@ -112,8 +112,8 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
   // A custom config with preference set should include startup config and
   // disable preference.
   preferences->SetBackgroundStartupTracingEnabled(true);
-  config_impl = observer->IncludeStartupConfigIfNeeded(std::move(config_impl));
-  EXPECT_TRUE(observer->enabled_in_current_session());
+  config_impl = observer.IncludeStartupConfigIfNeeded(std::move(config_impl));
+  EXPECT_TRUE(observer.enabled_in_current_session());
   EXPECT_FALSE(preferences->GetBackgroundStartupTracingEnabled());
   ASSERT_TRUE(config_impl);
   EXPECT_EQ(2u, config_impl->rules().size());

@@ -94,7 +94,7 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
     : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
       trigger_handle_ids_(0) {
-  AddEnabledStateObserver(BackgroundStartupTracingObserver::GetInstance());
+  AddEnabledStateObserver(&BackgroundStartupTracingObserver::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
   AddEnabledStateObserver(&BackgroundReachedCodeTracingObserver::GetInstance());
 #endif
@@ -145,7 +145,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   std::unique_ptr<BackgroundTracingConfigImpl> config_impl(
       static_cast<BackgroundTracingConfigImpl*>(config.release()));
   config_impl = BackgroundStartupTracingObserver::GetInstance()
-                    ->IncludeStartupConfigIfNeeded(std::move(config_impl));
+                    .IncludeStartupConfigIfNeeded(std::move(config_impl));
 #if BUILDFLAG(IS_ANDROID)
   config_impl = BackgroundReachedCodeTracingObserver::GetInstance()
                     .IncludeReachedCodeConfigIfNeeded(std::move(config_impl));
@@ -157,7 +157,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   } else
 #endif
       if (BackgroundStartupTracingObserver::GetInstance()
-              ->enabled_in_current_session()) {
+              .enabled_in_current_session()) {
     // Anonymize data for startup tracing by default. We currently do not
     // support storing the config in preferences for next session.
     data_filtering = DataFiltering::ANONYMIZE_DATA;

@@ -1714,7 +1714,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       new TestStartupPreferenceManagerImpl);
   TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
   BackgroundStartupTracingObserver::GetInstance()
-      ->SetPreferenceManagerForTesting(std::move(preferences_moved));
+      .SetPreferenceManagerForTesting(std::move(preferences_moved));
   preferences->SetBackgroundStartupTracingEnabled(false);
 
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -1763,7 +1763,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, RunStartupTracing) {
       new TestStartupPreferenceManagerImpl);
   TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
   BackgroundStartupTracingObserver::GetInstance()
-      ->SetPreferenceManagerForTesting(std::move(preferences_moved));
+      .SetPreferenceManagerForTesting(std::move(preferences_moved));
   preferences->SetBackgroundStartupTracingEnabled(true);
 
   base::Value dict(base::Value::Type::DICTIONARY);

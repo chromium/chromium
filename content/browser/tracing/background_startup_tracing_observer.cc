@@ -5,6 +5,7 @@
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -33,11 +34,10 @@ class PreferenceManagerImpl
 }  // namespace
 
 // static
-BackgroundStartupTracingObserver*
+BackgroundStartupTracingObserver&
 BackgroundStartupTracingObserver::GetInstance() {
-  static BackgroundStartupTracingObserver* instance =
-      new BackgroundStartupTracingObserver;
-  return instance;
+  static base::NoDestructor<BackgroundStartupTracingObserver> instance;
+  return *instance;
 }
 
 // static
