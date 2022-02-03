@@ -340,25 +340,23 @@ class VectorBufferBase {
   const T* Buffer() const { return buffer_; }
   wtf_size_t capacity() const { return capacity_; }
 
+  static constexpr bool NeedsToClearUnusedSlots() {
+    // Tracing and finalization access all slots of a vector backing. In case
+    // there's work to be done there unused slots should be cleared.
+    return Allocator::kIsGarbageCollected &&
+           (IsTraceableInCollectionTrait<VectorTraits<T>>::value ||
+            VectorTraits<T>::kNeedsDestruction);
+  }
+
   void ClearUnusedSlots(T* from, T* to) {
-    // If the vector backing is garbage-collected and needs tracing or
-    // finalizing, we clear out the unused slots so that the visitor or the
-    // finalizer does not cause a problem when visiting the unused slots.
-    static_assert(
-        !Allocator::kIsGarbageCollected ||
-            IsTraceableInCollectionTrait<VectorTraits<T>>::value,
-        "Type in garbage collected vectors should be traceable in collection");
-    if constexpr (Allocator::kIsGarbageCollected)
+    if constexpr (NeedsToClearUnusedSlots()) {
       AtomicMemzero(reinterpret_cast<void*>(from), sizeof(T) * (to - from));
+    }
   }
 
   void CheckUnusedSlots(const T* from, const T* to) {
 #if DCHECK_IS_ON() && !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
-    static_assert(
-        !Allocator::kIsGarbageCollected ||
-            IsTraceableInCollectionTrait<VectorTraits<T>>::value,
-        "Type in garbage collected vectors should be traceable in collection");
-    if constexpr (Allocator::kIsGarbageCollected) {
+    if constexpr (NeedsToClearUnusedSlots()) {
       const unsigned char* unused_area =
           reinterpret_cast<const unsigned char*>(from);
       const unsigned char* end_address =
@@ -1672,15 +1670,31 @@ void Vector<T, inlineCapacity, Allocator>::ReserveCapacity(
     Base::AllocateBuffer(new_capacity);
     return;
   }
-  wtf_size_t old_capacity = capacity();
-  // The Allocator::isGarbageCollected check is not needed.  The check is just
-  // a static hint for a compiler to indicate that Base::expandBuffer returns
-  // false if Allocator is a PartitionAllocator.
-  if (Allocator::kIsGarbageCollected && Base::ExpandBuffer(new_capacity)) {
-    DCHECK_LE(old_capacity, capacity());
-    ANNOTATE_CHANGE_CAPACITY(begin(), old_capacity, size_, capacity());
-    return;
+
+  if constexpr (Allocator::kIsGarbageCollected) {
+    wtf_size_t old_capacity = capacity();
+    // Unpoison container annotations. Note that in the case of sizeof(T) < 8,
+    // size_ = 1, old_capacity = 1, this may leave behind state in ASAN's shadow
+    // memory. The additional transition after expanding ensures that this state
+    // is cleared.
+    //
+    // Details see
+    //   https://github.com/llvm-mirror/compiler-rt/blob/master/lib/asan/asan_poisoning.cpp#L354
+    MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), old_capacity, size_,
+                                       old_capacity);
+    if (Base::ExpandBuffer(new_capacity)) {
+      // The following transition clears out old ASAN shadow memory state in the
+      // case mentioned above.
+      new_capacity = capacity();
+      DCHECK_LE(old_capacity, new_capacity);
+      ANNOTATE_CHANGE_SIZE(begin(), new_capacity, old_capacity, new_capacity);
+      // Finally, assuming new capacity, re-poison with the used size.
+      ANNOTATE_CHANGE_SIZE(begin(), new_capacity, new_capacity, size_);
+    }
+    // In case expansion failed, there's no need to adjust container
+    // annotations, as the buffer is freed right away.
   }
+
   // Reallocating a backing buffer may resurrect a dead object.
   CHECK(Allocator::IsAllocationAllowed());
 
@@ -2034,8 +2048,6 @@ std::enable_if_t<A::kIsGarbageCollected>
 Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
   static_assert(Allocator::kIsGarbageCollected,
                 "Garbage collector must be enabled.");
-  static_assert(IsTraceableInCollectionTrait<VectorTraits<T>>::value,
-                "Type must be traceable in collection");
 
   const T* buffer = BufferSafe();
 

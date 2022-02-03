@@ -3249,4 +3249,20 @@ TEST_F(HeapTest, CollectNodeAndCssStatistics) {
   EXPECT_LE(css_bytes_before + sizeof(FakeCSSValue), css_bytes_after);
 }
 
+TEST_F(HeapTest, ContainerAnnotationOnTinyBacking) {
+  // Regression test: https://crbug.com/1292392
+  //
+  // This test aims to check that ASAN container annotations work for backing
+  // with sizeof(T) < 8 (which is smaller than ASAN's shadow granularity), size
+  // =1, and capacity = 1.
+  HeapVector<uint32_t> vector;
+  DCHECK_EQ(0u, vector.capacity());
+  vector.ReserveCapacity(1);
+  DCHECK_EQ(1u, vector.capacity());
+  // The following push_back() should not crash, even with container
+  // annotations. The critical path expands the backing without allocating a new
+  // one.
+  vector.ReserveCapacity(2);
+}
+
 }  // namespace blink
