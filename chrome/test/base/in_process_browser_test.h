@@ -196,12 +196,19 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Convenience methods for adding tabs to a Browser. Returns true if the
   // navigation succeeded. |check_navigation_success| is ignored and will be
   // removed as part of check_navigation_success http://crbug.com/1014186.
-  bool AddTabAtIndexToBrowser(Browser* browser,
-                              int index,
-                              const GURL& url,
-                              ui::PageTransition transition,
-                              bool check_navigation_success);
-  bool AddTabAtIndex(int index, const GURL& url, ui::PageTransition transition);
+  // Do not add new usages of the version with |check_navigation_success|.
+  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+                                            int index,
+                                            const GURL& url,
+                                            ui::PageTransition transition,
+                                            bool check_navigation_success);
+  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+                                            int index,
+                                            const GURL& url,
+                                            ui::PageTransition transition);
+  [[nodiscard]] bool AddTabAtIndex(int index,
+                                   const GURL& url,
+                                   ui::PageTransition transition);
 
   // Sets up default command line that will be used to launch the child browser
   // process with an in-process test. Called by SetUp() after SetUpCommandLine()

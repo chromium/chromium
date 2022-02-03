@@ -557,6 +557,14 @@ bool InProcessBrowserTest::AddTabAtIndexToBrowser(
     const GURL& url,
     ui::PageTransition transition,
     bool check_navigation_success) {
+  return AddTabAtIndexToBrowser(browser, index, url, transition);
+}
+
+bool InProcessBrowserTest::AddTabAtIndexToBrowser(
+    Browser* browser,
+    int index,
+    const GURL& url,
+    ui::PageTransition transition) {
   NavigateParams params(browser, url, transition);
   params.tabstrip_index = index;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
