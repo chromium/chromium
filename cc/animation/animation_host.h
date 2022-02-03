@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/keyframe_model.h"
+#include "cc/base/protected_sequence_synchronizer.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/geometry/box_f.h"
@@ -75,13 +76,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   // Parent LayerTreeHost or LayerTreeHostImpl.
   MutatorHostClient* mutator_host_client() {
-    DCHECK(!mutator_host_client_ ||
-           mutator_host_client_->RunsOnCurrentThread());
+    DCHECK(IsOwnerThread() || InProtectedSequence());
     return mutator_host_client_;
   }
   const MutatorHostClient* mutator_host_client() const {
-    DCHECK(!mutator_host_client_ ||
-           mutator_host_client_->RunsOnCurrentThread());
+    DCHECK(IsOwnerThread() || InProtectedSequence());
     return mutator_host_client_;
   }
 
@@ -92,7 +91,9 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void SetNeedsCommit();
   void SetNeedsPushProperties();
-  bool needs_push_properties() const { return needs_push_properties_; }
+  bool needs_push_properties() const {
+    return needs_push_properties_.Read(*this);
+  }
 
   // MutatorHost implementation.
   std::unique_ptr<MutatorHost> CreateImplInstance() const override;
@@ -263,15 +264,18 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // if there is no match.
   WorkletAnimation* FindWorkletAnimation(WorkletAnimationId id);
 
-  ElementToAnimationsMap element_to_animations_map_;
-  AnimationsList ticking_animations_;
+  ProtectedSequenceReadable<ElementToAnimationsMap> element_to_animations_map_;
+  ProtectedSequenceReadable<AnimationsList> ticking_animations_;
 
   // A list of all timelines which this host owns.
   using IdToTimelineMap =
       std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
-  IdToTimelineMap id_to_timeline_map_;
+  ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;
 
-  raw_ptr<MutatorHostClient> mutator_host_client_;
+  // AnimationHosts's ProtectedSequenceSynchronizer implementation is
+  // implemented using this member. As such the various helpers can not be used
+  // to protect access (otherwise we would get infinite recursion).
+  raw_ptr<MutatorHostClient> mutator_host_client_ = nullptr;
 
   // This is only non-null within the call scope of PushPropertiesTo().
   const PropertyTrees* property_trees_ = nullptr;
@@ -280,23 +284,26 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // will be non-null for a given AnimationHost instance (the former if
   // thread_instance_ == ThreadInstance::MAIN, the latter if thread_instance_ ==
   // ThreadInstance::IMPL).
-  std::unique_ptr<ScrollOffsetAnimations> scroll_offset_animations_;
-  std::unique_ptr<ScrollOffsetAnimationsImpl> scroll_offset_animations_impl_;
+  ProtectedSequenceReadable<std::unique_ptr<ScrollOffsetAnimations>>
+      scroll_offset_animations_;
+  ProtectedSequenceReadable<std::unique_ptr<ScrollOffsetAnimationsImpl>>
+      scroll_offset_animations_impl_;
 
   const ThreadInstance thread_instance_;
 
-  bool needs_push_properties_;
+  ProtectedSequenceWritable<bool> needs_push_properties_{false};
 
-  std::unique_ptr<LayerTreeMutator> mutator_;
+  ProtectedSequenceReadable<std::unique_ptr<LayerTreeMutator>> mutator_;
 
-  size_t main_thread_animations_count_ = 0;
-  bool current_frame_had_raf_ = false;
-  bool next_frame_has_pending_raf_ = false;
-  bool has_canvas_invalidation_ = false;
-  bool has_inline_style_mutation_ = false;
-  bool has_smil_animation_ = false;
+  ProtectedSequenceReadable<size_t> main_thread_animations_count_{0};
+  ProtectedSequenceReadable<bool> current_frame_had_raf_{false};
+  ProtectedSequenceReadable<bool> next_frame_has_pending_raf_{false};
+  ProtectedSequenceReadable<bool> has_canvas_invalidation_{false};
+  ProtectedSequenceReadable<bool> has_inline_style_mutation_{false};
+  ProtectedSequenceReadable<bool> has_smil_animation_{false};
 
-  PendingThroughputTrackerInfos pending_throughput_tracker_infos_;
+  ProtectedSequenceWritable<PendingThroughputTrackerInfos>
+      pending_throughput_tracker_infos_;
 
   base::WeakPtrFactory<AnimationHost> weak_factory_{this};
 };

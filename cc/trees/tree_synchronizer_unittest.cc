@@ -119,6 +119,10 @@ void ExpectTreesAreIdentical(Layer* root_layer,
 class TreeSynchronizerTest : public testing::Test {
  public:
   void ResetLayerTreeHost(const LayerTreeSettings& settings) {
+    // Explicitly destroy `host_` as ~LayerTreeHost() may clobber state
+    // on animation_host_ that was installed by the newly created
+    // LayerTreeHost.
+    host_.reset();
     host_ = FakeLayerTreeHost::Create(&client_, &task_graph_runner_,
                                       animation_host_.get(), settings);
     host_->InitializeSingleThreaded(&single_thread_client_,

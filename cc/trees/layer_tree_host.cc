@@ -158,8 +158,6 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
   pending_commit_state_->needs_full_tree_sync = true;
   pending_commit_state_->debug_state = settings_.initial_debug_state;
 
-  params.mutator_host->SetMutatorHostClient(this);
-
   rendering_stats_instrumentation_->set_record_rendering_stats(
       pending_commit_state_->debug_state.RecordRenderingStats());
 }
@@ -224,6 +222,8 @@ void LayerTreeHost::SetTaskRunnerProviderForTesting(
     std::unique_ptr<TaskRunnerProvider> task_runner_provider) {
   DCHECK(!task_runner_provider_);
   task_runner_provider_ = std::move(task_runner_provider);
+  // This is done in InitializeProxy(), but not all tests call it.
+  mutator_host_->SetMutatorHostClient(this);
 }
 
 void LayerTreeHost::SetUIResourceManagerForTesting(
@@ -235,6 +235,8 @@ void LayerTreeHost::InitializeProxy(std::unique_ptr<Proxy> proxy) {
   TRACE_EVENT0("cc", "LayerTreeHost::InitializeForReal");
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
+
+  mutator_host_->SetMutatorHostClient(this);
 
   proxy_ = std::move(proxy);
   proxy_->Start();

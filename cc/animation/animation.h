@@ -163,7 +163,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation> {
   raw_ptr<AnimationTimeline> animation_timeline_;
   raw_ptr<AnimationDelegate> animation_delegate_;
 
-  int id_;
+  const int id_;
   std::unique_ptr<KeyframeEffect> keyframe_effect_;
 };
 

@@ -64,10 +64,10 @@ class AnimationHostTest : public AnimationTimelinesTest {
 // animation_unittest.cc.
 
 TEST_F(AnimationHostTest, SyncTimelinesAddRemove) {
-  std::unique_ptr<AnimationHost> host(
-      AnimationHost::CreateForTesting(ThreadInstance::MAIN));
-  std::unique_ptr<AnimationHost> host_impl(
-      AnimationHost::CreateForTesting(ThreadInstance::IMPL));
+  TestHostClient host_client(ThreadInstance::MAIN);
+  AnimationHost* host = host_client.host();
+  TestHostClient host_impl_client(ThreadInstance::IMPL);
+  AnimationHost* host_impl = host_impl_client.host();
 
   const int timeline_id = AnimationIdProvider::NextTimelineId();
   scoped_refptr<AnimationTimeline> timeline(
@@ -77,30 +77,30 @@ TEST_F(AnimationHostTest, SyncTimelinesAddRemove) {
 
   EXPECT_FALSE(host_impl->GetTimelineById(timeline_id));
 
-  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
+  host->PushPropertiesTo(host_impl, client_.GetPropertyTrees());
 
   scoped_refptr<AnimationTimeline> timeline_impl =
       host_impl->GetTimelineById(timeline_id);
   EXPECT_TRUE(timeline_impl);
   EXPECT_EQ(timeline_impl->id(), timeline_id);
 
-  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
+  host->PushPropertiesTo(host_impl, client_.GetPropertyTrees());
   EXPECT_EQ(timeline_impl, host_impl->GetTimelineById(timeline_id));
 
   host->RemoveAnimationTimeline(timeline.get());
   EXPECT_FALSE(timeline->animation_host());
 
-  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
+  host->PushPropertiesTo(host_impl, client_.GetPropertyTrees());
   EXPECT_FALSE(host_impl->GetTimelineById(timeline_id));
 
   EXPECT_FALSE(timeline_impl->animation_host());
 }
 
 TEST_F(AnimationHostTest, ImplOnlyTimeline) {
-  std::unique_ptr<AnimationHost> host(
-      AnimationHost::CreateForTesting(ThreadInstance::MAIN));
-  std::unique_ptr<AnimationHost> host_impl(
-      AnimationHost::CreateForTesting(ThreadInstance::IMPL));
+  TestHostClient host_client(ThreadInstance::MAIN);
+  AnimationHost* host = host_client.host();
+  TestHostClient host_impl_client(ThreadInstance::IMPL);
+  AnimationHost* host_impl = host_impl_client.host();
 
   const int timeline_id1 = AnimationIdProvider::NextTimelineId();
   const int timeline_id2 = AnimationIdProvider::NextTimelineId();
@@ -114,7 +114,7 @@ TEST_F(AnimationHostTest, ImplOnlyTimeline) {
   host->AddAnimationTimeline(timeline.get());
   host_impl->AddAnimationTimeline(timeline_impl.get());
 
-  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
+  host->PushPropertiesTo(host_impl, client_.GetPropertyTrees());
 
   EXPECT_TRUE(host->GetTimelineById(timeline_id1));
   EXPECT_TRUE(host_impl->GetTimelineById(timeline_id2));
@@ -417,10 +417,10 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
 }
 
 TEST_F(AnimationHostTest, PushPropertiesToImpl) {
-  std::unique_ptr<AnimationHost> host(
-      AnimationHost::CreateForTesting(ThreadInstance::MAIN));
-  std::unique_ptr<AnimationHost> host_impl(
-      AnimationHost::CreateForTesting(ThreadInstance::IMPL));
+  TestHostClient host_client(ThreadInstance::MAIN);
+  AnimationHost* host = host_client.host();
+  TestHostClient host_impl_client(ThreadInstance::IMPL);
+  AnimationHost* host_impl = host_impl_client.host();
 
   host->SetHasCanvasInvalidation(true);
   host->SetHasInlineStyleMutation(true);
@@ -428,7 +428,7 @@ TEST_F(AnimationHostTest, PushPropertiesToImpl) {
   EXPECT_FALSE(host_impl->HasCanvasInvalidation());
   EXPECT_FALSE(host_impl->HasJSAnimation());
 
-  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
+  host->PushPropertiesTo(host_impl, client_.GetPropertyTrees());
   EXPECT_TRUE(host_impl->HasCanvasInvalidation());
   EXPECT_TRUE(host_impl->HasJSAnimation());
 }
