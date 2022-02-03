@@ -293,13 +293,6 @@ const int kMainIntentCheckDelay = 1;
   }
 }
 
-#pragma mark - optionals from UIApplicationDelegate required by ChromeInternal
-
-// TODO(crbug.com/1227456): Remove when fixed in ChromeInternal
-- (UIWindow*)window {
-  return GetAnyKeyWindow();
-}
-
 #pragma mark - Testing methods
 
 - (MainController*)mainController {
