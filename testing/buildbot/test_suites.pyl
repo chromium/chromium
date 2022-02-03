@@ -3896,6 +3896,10 @@
       'ios_showcase_eg2tests_module': {},
     },
 
+    'ios_remoting_fyi_unittests': {
+      'ios_remoting_unittests': {},
+    },
+
     'ios_screen_size_dependent_tests': {
       'base_unittests': {},
       'components_unittests': {},
@@ -7163,6 +7167,15 @@
         'variants': [
           'SIM_IPHONE_X_15_0',
           'SIM_IPAD_AIR_2_15_0',
+        ]
+      },
+    },
+
+    'ios_webrtc_fyi_tests': {
+      'ios_remoting_fyi_unittests': {
+        'variants': [
+          'SIM_IPHONE_X_14_5',
+          'SIM_IPAD_AIR_3RD_GEN_14_5',
         ]
       },
     },

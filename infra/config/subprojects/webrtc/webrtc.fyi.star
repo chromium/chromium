@@ -137,16 +137,14 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI ios-device",
-    executable = "recipe:webrtc/chromium_ios",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    xcode = xcode.x12d4e,
+    xcode = xcode.x13main,
 )
 
 builder(
     name = "WebRTC Chromium FYI ios-simulator",
-    executable = "recipe:webrtc/chromium_ios",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    xcode = xcode.x12d4e,
+    xcode = xcode.x13main,
 )

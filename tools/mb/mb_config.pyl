@@ -712,6 +712,8 @@
       'WebRTC Chromium FYI Mac Builder (dbg)': 'debug_bot',
       'WebRTC Chromium FYI Win Builder': 'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs',
       'WebRTC Chromium FYI Win Builder (dbg)': 'debug_bot_x86_no_com_init_hooks_with_codecs',
+      'WebRTC Chromium FYI ios-device': 'ios_device_release_compile_only',
+      'WebRTC Chromium FYI ios-simulator': 'ios_simulator_debug_static_bot_xctest',
     },
 
     'chromium.win': {

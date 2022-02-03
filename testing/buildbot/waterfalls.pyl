@@ -6006,6 +6006,20 @@
           'gtest_tests': 'webrtc_chromium_gtests',
         },
       },
+      'WebRTC Chromium FYI ios-device': {},
+      'WebRTC Chromium FYI ios-simulator': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_webrtc_fyi_tests',
+        },
+      },
     },
   },
   {
