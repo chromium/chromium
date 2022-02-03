@@ -47,16 +47,9 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  // TODO(crbug.com/1281695): Add issuer legal message as well to the footnote.
-  const LegalMessageLines google_legal_message =
-      controller_->GetVirtualCardEnrollmentFields()->google_legal_message;
-  if (!google_legal_message.empty()) {
-    legal_message_view_ = SetFootnoteView(std::make_unique<LegalMessageView>(
-        google_legal_message,
-        base::BindRepeating(&VirtualCardEnrollBubbleViews::LegalMessageClicked,
-                            base::Unretained(this))));
-    legal_message_view_->SetID(DialogViewId::FOOTNOTE_VIEW);
-  }
+  raw_ptr<views::View> legal_message_view =
+      SetFootnoteView(CreateLegalMessageView());
+  legal_message_view->SetID(DialogViewId::FOOTNOTE_VIEW);
 }
 
 void VirtualCardEnrollBubbleViews::Show(DisplayReason reason) {
@@ -193,6 +186,34 @@ VirtualCardEnrollBubbleViews::CreateMainContentView() {
 
 void VirtualCardEnrollBubbleViews::Init() {
   AddChildView(CreateMainContentView());
+}
+
+std::unique_ptr<views::View>
+VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
+  auto legal_message_view = std::make_unique<views::BoxLayoutView>();
+  legal_message_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  legal_message_view->SetBetweenChildSpacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
+
+  const LegalMessageLines google_legal_message =
+      controller_->GetVirtualCardEnrollmentFields()->google_legal_message;
+  const LegalMessageLines issuser_legal_message =
+      controller_->GetVirtualCardEnrollmentFields()->issuer_legal_message;
+
+  DCHECK(!google_legal_message.empty());
+  legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
+      google_legal_message,
+      base::BindRepeating(&VirtualCardEnrollBubbleViews::LegalMessageClicked,
+                          base::Unretained(this))));
+
+  if (!issuser_legal_message.empty()) {
+    legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
+        issuser_legal_message,
+        base::BindRepeating(&VirtualCardEnrollBubbleViews::LegalMessageClicked,
+                            base::Unretained(this))));
+  }
+  return legal_message_view;
 }
 
 void VirtualCardEnrollBubbleViews::LearnMoreLinkClicked() {

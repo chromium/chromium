@@ -61,13 +61,13 @@ class VirtualCardEnrollBubbleViews : public AutofillBubbleBase,
   ~VirtualCardEnrollBubbleViews() override;
 
  private:
+  std::unique_ptr<views::View> CreateLegalMessageView();
+
   void LearnMoreLinkClicked();
 
   void LegalMessageClicked(const GURL& url);
 
   raw_ptr<VirtualCardEnrollBubbleController> controller_;
-
-  raw_ptr<LegalMessageView> legal_message_view_ = nullptr;
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;
