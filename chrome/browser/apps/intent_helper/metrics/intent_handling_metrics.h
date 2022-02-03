@@ -9,7 +9,7 @@
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
@@ -129,6 +129,7 @@ class IntentHandlingMetrics {
   static void RecordIntentPickerIconEvent(IntentPickerIconEvent event);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1275075): Support metrices in Lacros.
   static void RecordExternalProtocolMetrics(arc::Scheme scheme,
                                             apps::PickerEntryType entry_type,
                                             bool accepted,

@@ -19,7 +19,7 @@
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

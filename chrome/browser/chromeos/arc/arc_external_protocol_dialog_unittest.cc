@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"

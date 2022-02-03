@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 
 #include <map>
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
@@ -34,6 +34,10 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#endif
 
 using content::WebContents;
 
@@ -492,7 +496,9 @@ void OnIntentPickerClosed(
   // blocking fashion.
   WebContents* web_contents =
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
+#endif
 
   if (web_contents) {
     if (intent_picker_type == apps::IntentPickerBubbleType::kClickToCall) {
@@ -507,12 +513,14 @@ void OnIntentPickerClosed(
     DCHECK_EQ(apps::IntentPickerCloseReason::OPEN_APP, reason);
     DCHECK(!should_persist);
     HandleDeviceSelection(web_contents, devices, selected_app_package, url);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
         Scheme::TEL, entry_type, /*accepted=*/true, should_persist);
     if (context) {
       apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
           context, entry_type, reason, should_persist);
     }
+#endif
     return;
   }
 
@@ -573,6 +581,7 @@ void OnIntentPickerClosed(
       break;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::map<base::StringPiece, Scheme> string_to_scheme = {
       {"bitcoin", Scheme::BITCOIN}, {"geo", Scheme::GEO},
       {"im", Scheme::IM},           {"irc", Scheme::IRC},
@@ -591,6 +600,7 @@ void OnIntentPickerClosed(
   auto scheme_it = string_to_scheme.find(scheme);
   if (scheme_it != string_to_scheme.end())
     url_scheme = scheme_it->second;
+  // TODO(crbug.com/1275075): Support ARC metrics in Lacros.
   apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
       url_scheme, entry_type, protocol_accepted, should_persist);
 
@@ -598,6 +608,7 @@ void OnIntentPickerClosed(
     apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
         context, entry_type, reason, should_persist);
   }
+#endif
 }
 
 // Called when ARC returned activity icons for the |handlers|.
@@ -699,6 +710,7 @@ void OnUrlHandlerList(
   if (HandleUrl(render_process_host_id, routing_id, url, handlers,
                 handlers.size(), &result, safe_to_bypass_ui,
                 mojo_delegate.get())) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     WebContents* web_contents =
         tab_util::GetWebContentsByID(render_process_host_id, routing_id);
     auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
@@ -709,6 +721,7 @@ void OnUrlHandlerList(
           apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
           /*should_persist=*/false);
     }
+#endif
     return std::move(handled_cb).Run(/*handled=*/true);
   }
 

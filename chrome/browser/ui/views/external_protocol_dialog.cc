@@ -48,7 +48,7 @@ std::u16string GetMessageTextForOrigin(
 
 }  // namespace
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // static
 void ExternalProtocolHandler::RunExternalProtocolDialog(
     const GURL& url,
@@ -70,7 +70,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   new ExternalProtocolDialog(web_contents, url, program_name, initiating_origin,
                              std::move(initiator_document));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 ExternalProtocolDialog::ExternalProtocolDialog(
     WebContents* web_contents,

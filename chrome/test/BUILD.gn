@@ -6493,8 +6493,14 @@ test("unit_tests") {
   }
 
   if (is_chromeos) {
-    sources += [ "../browser/chromeos/arc/open_with_menu_unittest.cc" ]
-    deps += [ "//components/arc/common" ]
+    sources += [
+      "../browser/chromeos/arc/arc_external_protocol_dialog_unittest.cc",
+      "../browser/chromeos/arc/open_with_menu_unittest.cc",
+    ]
+    deps += [
+      "//components/arc/common",
+      "//components/arc/common:arc_test_support",
+    ]
   }
 
   if (is_chromeos_lacros) {
