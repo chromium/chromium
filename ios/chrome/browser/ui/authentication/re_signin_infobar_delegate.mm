@@ -70,6 +70,16 @@ ReSignInInfoBarDelegate::CreateInfoBarDelegate(
   // Returns null if user does not need to be prompted to sign in again.
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  // Don't show the notification if sign-in is not supported.
+  switch (authService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      return nullptr;
+  }
   if (!authService->ShouldReauthPromptForSignInAndSync())
     return nullptr;
   // Returns null if user has already signed in via some other path.
