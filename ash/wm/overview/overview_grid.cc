@@ -803,9 +803,13 @@ void OverviewGrid::SetBoundsAndUpdatePositions(
     const gfx::Rect& bounds_in_screen,
     const base::flat_set<OverviewItem*>& ignored_items,
     bool animate) {
+  const bool bounds_updated = bounds_in_screen != bounds_;
   bounds_ = bounds_in_screen;
   MaybeUpdateDesksWidgetBounds();
   PositionWindows(animate, ignored_items);
+
+  if (bounds_updated && desks_templates_grid_widget_)
+    desks_templates_grid_widget_->SetBounds(GetGridEffectiveBounds());
 }
 
 void OverviewGrid::RearrangeDuringDrag(
@@ -1040,11 +1044,6 @@ void OverviewGrid::OnDisplayMetricsChanged() {
     return;
   SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
                               /*ignored_items=*/{}, /*animate=*/false);
-
-  // This needs to be done after `SetBoundsAndUpdatePositions` since it needs
-  // `bounds_` to have its new value.
-  if (desks_templates_grid_widget_)
-    desks_templates_grid_widget_->SetBounds(GetGridEffectiveBounds());
 }
 
 void OverviewGrid::OnUserWorkAreaInsetsChanged(aura::Window* root_window) {
