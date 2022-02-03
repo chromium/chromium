@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page.h"
@@ -54,7 +55,14 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
+// crbug.com/1293674
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OpeningFileIsProhibited DISABLED_OpeningFileIsProhibited
+#else
+#define MAYBE_OpeningFileIsProhibited OpeningFileIsProhibited
+#endif
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
+                       MAYBE_OpeningFileIsProhibited) {
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   content::GetNetworkService()->BindTestInterface(
