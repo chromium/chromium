@@ -6773,6 +6773,17 @@ crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/m
 crbug.com/1220114 external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 crbug.com/1228959 [ Linux ] virtual/scroll-unification/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
 
+# Temporarily disabled to unblock crrev.com/c/3345001
+crbug.com/1270316 http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Skip ]
+crbug.com/1270316 http/tests/inspector-protocol/target/target-auction-worklet.js [ Skip ]
+crbug.com/1270316 inspector-protocol/debugger/async-stacks-for-load-and-error-events.js [ Skip ]
+crbug.com/1270316 inspector-protocol/debugger/domdebugger-webgl-breakpoint.js [ Skip ]
+crbug.com/1270316 inspector-protocol/debugger/message-channel-async-stack.js [ Skip ]
+crbug.com/1270316 inspector-protocol/debugger/wasm-compiled-streaming-breaks.js [ Skip ]
+crbug.com/1270316 inspector-protocol/worker/worker-constructor-async-stacks.js [ Skip ]
+crbug.com/1270316 inspector-protocol/worker/worker-on-message-async-stacks.js [ Skip ]
+crbug.com/1270316 inspector-protocol/worker/worker-post-message-async-stacks.js [ Skip ]
+
 # A number of http/tests/inspector-protocol/network tests are flaky.
 crbug.com/1228246 http/tests/inspector-protocol/network/disable-interception-midway.js [ Crash Failure Pass Skip Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-frame-id.js [ Crash Failure Pass Skip Timeout ]
