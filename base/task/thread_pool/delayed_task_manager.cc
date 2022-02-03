@@ -37,7 +37,8 @@ DelayedTaskManager::DelayedTask& DelayedTaskManager::DelayedTask::operator=(
 
 bool DelayedTaskManager::DelayedTask::operator>(
     const DelayedTask& other) const {
-  return task > other.task;
+  return std::tie(task.delayed_run_time, task.sequence_num) >
+         std::tie(other.task.delayed_run_time, other.task.sequence_num);
 }
 
 bool DelayedTaskManager::DelayedTask::IsScheduled() const {

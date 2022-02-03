@@ -83,7 +83,8 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
       // WakeUpResolution::kLow is always used for throttled tasks since those
       // tasks can tolerate having their execution being delayed.
       return base::sequence_manager::WakeUp{
-          allowed_run_time, base::sequence_manager::WakeUpResolution::kLow};
+          allowed_run_time, base::sequence_manager::WakeUp::kDefaultLeeway,
+          base::sequence_manager::WakeUpResolution::kLow};
     }
   }
   if (!next_wake_up.has_value())
@@ -96,7 +97,9 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
     allowed_run_time = desired_run_time;
 
   return base::sequence_manager::WakeUp{
-      allowed_run_time, base::sequence_manager::WakeUpResolution::kLow};
+      allowed_run_time, next_wake_up->leeway,
+      base::sequence_manager::WakeUpResolution::kLow,
+      next_wake_up->delay_policy};
 }
 
 void TaskQueueThrottler::OnHasImmediateTask() {

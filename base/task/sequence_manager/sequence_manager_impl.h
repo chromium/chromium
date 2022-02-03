@@ -143,14 +143,15 @@ class BASE_EXPORT SequenceManagerImpl
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
-  absl::optional<WakeUp> GetNextWakeUp() const override;
+  absl::optional<WakeUp> GetNextDelayedWakeUp() const override;
+  void FlushReadyDelayedTasks() override;
 
   // SequencedTaskSource implementation:
   absl::optional<SelectedTask> SelectNextTask(
       SelectTaskOption option = SelectTaskOption::kDefault) override;
   void DidRunTask() override;
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override;
-  TimeTicks GetNextTaskTime(
+  absl::optional<WakeUp> GetPendingWakeUp(
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) const override;
   bool HasPendingHighResolutionTasks() override;
@@ -359,9 +360,14 @@ class BASE_EXPORT SequenceManagerImpl
   // metadata to |pending_task| before it is moved into the queue.
   void WillQueueTask(Task* pending_task, const char* task_queue_name);
 
-  // Delayed Tasks with run_times <= Now() are enqueued onto the work queue and
-  // reloads any empty work queues.
-  void MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now);
+  // Enqueues onto delayed WorkQueues all delayed tasks which must run now
+  // (cannot be postponed) and possibly some delayed tasks which can run now but
+  // could be postponed (due to how tasks are stored, it is not possible to
+  // retrieve all such tasks efficiently) and reloads any empty work queues. If
+  // `full_sweep`, all delayed tasks which can run now are enqueued
+  // (inefficient, test-only).
+  void MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now,
+                                         bool full_sweep = false);
 
   void NotifyWillProcessTask(ExecutingTask* task, LazyNow* time_before_task);
   void NotifyDidProcessTask(ExecutingTask* task, LazyNow* time_after_task);
@@ -419,14 +425,15 @@ class BASE_EXPORT SequenceManagerImpl
   // Returns a wake-up for the next delayed task which is not ripe for
   // execution, or nullopt if `option` is `kSkipDelayedTask` or there
   // are no such tasks (immediate tasks don't count).
-  absl::optional<WakeUp> GetNextWakeUpWithOption(SelectTaskOption option) const;
+  absl::optional<WakeUp> GetNextDelayedWakeUpWithOption(
+      SelectTaskOption option) const;
 
   // Given a `wake_up` describing when the next delayed task should run, returns
-  // the time at which the thread should wake up. is_immediate() if the next
-  // task can run immediately, or nullopt if there are no delayed tasks or a
-  // `time_domain` is used.
-  TimeTicks AdjustWakeUp(absl::optional<WakeUp> wake_up,
-                         LazyNow* lazy_now) const;
+  // a wake up that should be scheduled on the thread. `is_immediate()` if the
+  // wake up should run immediately. `nullopt` if no wake up is required because
+  // `wake_up` is `nullopt` or a `time_domain` is used.
+  absl::optional<WakeUp> AdjustWakeUp(absl::optional<WakeUp> wake_up,
+                                      LazyNow* lazy_now) const;
 
 #if DCHECK_IS_ON()
   void LogTaskDebugInfo(const internal::WorkQueue* work_queue) const;

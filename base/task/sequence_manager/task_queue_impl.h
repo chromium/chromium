@@ -215,13 +215,19 @@ class BASE_EXPORT TaskQueueImpl {
   // removed.
   bool RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
 
-  // Enqueues any delayed tasks which should be run now on the
-  // `delayed_work_queue`, setting each task's enqueue order to `enqueue_order`.
-  // Must be called from the main thread.
+  // Enqueues in `delayed_work_queue` all delayed tasks which must run now
+  // (cannot be postponed) and possibly some delayed tasks which can run now but
+  // could be postponed (due to how tasks are stored, it is not possible to
+  // retrieve all such tasks efficiently). If `full_sweep`, all delayed tasks
+  // which can run now are enqueued (inefficient, test-only). Must be called
+  // from the main thread.
   void MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now,
-                                        EnqueueOrder enqueue_order);
+                                        EnqueueOrder enqueue_order,
+                                        bool full_sweep = false);
 
-  void OnWakeUp(LazyNow* lazy_now, EnqueueOrder enqueue_order);
+  void OnWakeUp(LazyNow* lazy_now,
+                EnqueueOrder enqueue_order,
+                bool full_sweep = false);
 
   const WakeUpQueue* wake_up_queue() const {
     return main_thread_only().wake_up_queue;
@@ -410,7 +416,10 @@ class BASE_EXPORT TaskQueueImpl {
     Value AsValue(TimeTicks now) const;
 
    private:
-    IntrusiveHeap<Task, std::greater<>> queue_;
+    struct Compare {
+      bool operator()(const Task& lhs, const Task& rhs) const;
+    };
+    IntrusiveHeap<Task, Compare> queue_;
 
     // Number of pending tasks in the queue that need high resolution timing.
     int pending_high_res_tasks_ = 0;
