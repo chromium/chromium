@@ -23,8 +23,8 @@ class ModernLinkerJni implements ModernLinker.Natives {
     }
 
     @Override
-    public boolean useRelros(Linker.LibInfo libInfo) {
-        return nativeUseRelros(libInfo);
+    public boolean useRelros(long localLoadAddress, Linker.LibInfo remoteLibInfo) {
+        return nativeUseRelros(localLoadAddress, remoteLibInfo);
     }
 
     @Override
@@ -34,7 +34,8 @@ class ModernLinkerJni implements ModernLinker.Natives {
 
     private static native boolean nativeLoadLibrary(
             String libFilePath, Linker.LibInfo libInfo, boolean spawnRelroRegion);
-    private static native boolean nativeUseRelros(Linker.LibInfo libInfo);
+    private static native boolean nativeUseRelros(
+            long localLoadAddress, Linker.LibInfo remoteLibInfo);
     private static native int nativeGetRelroSharingResult();
 
     @CalledByNative
