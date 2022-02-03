@@ -484,46 +484,58 @@ apps::mojom::WindowInfoPtr SetSessionId(
   return window_info;
 }
 
-apps::mojom::OptionalBool IsResizeLocked(ArcAppListPrefs* prefs,
-                                         const std::string& app_id) {
-  // Set kUnknown to resize lock state until the Mojo connection to ARC++ has
-  // been established. This prevents Chrome and ARC++ from having inconsistent
+absl::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
+                                     const std::string& app_id) {
+  // Set null to resize lock state until the Mojo connection to ARC++ has been
+  // established. This prevents Chrome and ARC++ from having inconsistent
   // states.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager) {
-    return apps::mojom::OptionalBool::kUnknown;
+    return absl::nullopt;
   }
 
   // If we don't have the connection (e.g. for non-supported Android versions),
-  // returns unknown.
+  // returns null.
   auto* compatibility_mode =
       arc_service_manager->arc_bridge_service()->compatibility_mode();
   if (!compatibility_mode->IsConnected()) {
-    return apps::mojom::OptionalBool::kUnknown;
+    return absl::nullopt;
   }
 
   // Check if |SetResizeLockState| is available to see if Android is ready to
   // be synchronized. Otherwise we need to hide the corresponding setting by
-  // returning unknown.
+  // returning null.
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(compatibility_mode, SetResizeLockState);
   if (!instance) {
-    return apps::mojom::OptionalBool::kUnknown;
+    return absl::nullopt;
   }
 
   auto resize_lock_state = prefs->GetResizeLockState(app_id);
   switch (resize_lock_state) {
     case arc::mojom::ArcResizeLockState::ON:
-      return apps::mojom::OptionalBool::kTrue;
+      return true;
     case arc::mojom::ArcResizeLockState::OFF:
-      return apps::mojom::OptionalBool::kFalse;
+      return false;
     case arc::mojom::ArcResizeLockState::UNDEFINED:
     case arc::mojom::ArcResizeLockState::READY:
     // FULLY_LOCKED means the resize-lock-related features are not available
     // including the resizability toggle in the app management page.
     case arc::mojom::ArcResizeLockState::FULLY_LOCKED:
-      return apps::mojom::OptionalBool::kUnknown;
+      return absl::nullopt;
   }
+}
+
+// TODO(crbug.com/1253250): Remove and use GetResizeLocked.
+apps::mojom::OptionalBool IsResizeLocked(ArcAppListPrefs* prefs,
+                                         const std::string& app_id) {
+  auto resize_locked = GetResizeLocked(prefs, app_id);
+  if (!resize_locked.has_value()) {
+    return apps::mojom::OptionalBool::kUnknown;
+  }
+
+  return resize_locked.value() ? apps::mojom::OptionalBool::kTrue
+                               : apps::mojom::OptionalBool::kFalse;
 }
 
 bool IsWebAppShellPackage(Profile* profile,
@@ -1591,6 +1603,8 @@ std::unique_ptr<App> ArcApps::CreateApp(
     app->intent_filters = apps_util::CreateIntentFiltersFromArcBridge(
         app_info.package_name, intent_helper_bridge);
   }
+
+  app->resize_locked = GetResizeLocked(prefs, app_id);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

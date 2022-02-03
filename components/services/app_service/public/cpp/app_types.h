@@ -177,6 +177,10 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // be handled by this app. One app can have multiple intent filters.
   IntentFilters intent_filters;
 
+  // Whether the app can be free resized. If this is true, various resizing
+  // operations will be restricted.
+  absl::optional<bool> resize_locked;
+
   // TODO(crbug.com/1253250): Add other App struct fields.
 
   // When adding new fields to the App type, the `Clone` function and the

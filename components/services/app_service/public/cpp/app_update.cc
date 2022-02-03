@@ -222,6 +222,8 @@ void AppUpdate::Merge(App* state, const App* delta) {
     state->intent_filters = CloneIntentFilters(delta->intent_filters);
   }
 
+  SET_OPTIONAL_VALUE(resize_locked);
+
   // When adding new fields to the App type, this function should also be
   // updated.
 }
@@ -882,6 +884,10 @@ apps::mojom::OptionalBool AppUpdate::ResizeLocked() const {
   if (mojom_state_)
     return mojom_state_->resize_locked;
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetResizeLocked() const {
+  GET_VALUE_WITH_FALLBACK(resize_locked, absl::nullopt);
 }
 
 bool AppUpdate::ResizeLockedChanged() const {

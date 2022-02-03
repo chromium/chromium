@@ -45,6 +45,7 @@ std::unique_ptr<App> App::Clone() const {
   app->has_badge = has_badge;
   app->paused = paused;
   app->intent_filters = CloneIntentFilters(intent_filters);
+  app->resize_locked = resize_locked;
 
   return app;
 }
@@ -244,6 +245,8 @@ std::unique_ptr<App> ConvertMojomAppToApp(
       app->intent_filters.push_back(std::move(intent_filter));
     }
   }
+
+  app->resize_locked = GetOptionalBool(mojom_app->resize_locked);
 
   return app;
 }
