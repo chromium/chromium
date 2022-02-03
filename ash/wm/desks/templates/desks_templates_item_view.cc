@@ -582,9 +582,7 @@ void DesksTemplatesItemView::OnTemplateNameChanged(
   name_view_->SetAccessibleName(new_name);
   SetAccessibleName(new_name);
 
-  // This will trigger `name_view_` to compute its new preferred bounds and
-  // invalidate the layout for `this`.
-  name_view_->OnContentsChanged();
+  Layout();
 }
 
 views::View* DesksTemplatesItemView::GetView() {

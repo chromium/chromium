@@ -1756,7 +1756,6 @@ TEST_F(DesksTemplatesTest, TemplateNameChangeAborted) {
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 
   // Empty text fields will also revert back to the original name.
-  ClickOnView(name_view);
   SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   SendKey(ui::VKEY_BACK);
   SendKey(ui::VKEY_RETURN);
