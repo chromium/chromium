@@ -175,6 +175,9 @@
             "blink_perf.layout": {
                 "end": 19,
                 "abridged": false
+            },
+            "blink_perf.webcodecs": {
+                "abridged": false
             }
         }
     },

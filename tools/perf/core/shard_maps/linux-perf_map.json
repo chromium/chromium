@@ -534,6 +534,9 @@
     },
     "24": {
         "benchmarks": {
+            "blink_perf.webcodecs": {
+                "abridged": false
+            },
             "v8.browsing_desktop": {
                 "begin": 21,
                 "abridged": false

@@ -331,6 +331,9 @@
     },
     "22": {
         "benchmarks": {
+            "blink_perf.webcodecs": {
+                "abridged": false
+            },
             "system_health.memory_desktop": {
                 "begin": 71,
                 "end": 78,

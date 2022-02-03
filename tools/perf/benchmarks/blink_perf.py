@@ -723,7 +723,7 @@ class BlinkPerfWebCodecs(_BlinkPerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_blink_perf.webcodecs'
+    return 'blink_perf.webcodecs'
 
 
 @benchmark.Info(
