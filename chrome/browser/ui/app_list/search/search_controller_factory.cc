@@ -131,9 +131,11 @@ std::unique_ptr<SearchController> CreateSearchController(
             kMaxAppShortcutResults, profile, list_controller));
   }
 
-  // Enable the Continue section providers only in the productivity launcher,
-  // and only if the enable_continue parameter is true (the default).
-  if (ash::features::IsProductivityLauncherEnabled() &&
+  // Enable zero-state files aka. the Continue section if:
+  // - unconditionally in the old launcher.
+  // - in the productivity launcher only if the enable_continue parameter is
+  //   true (the default).
+  if (!ash::features::IsProductivityLauncherEnabled() ||
       base::GetFieldTrialParamByFeatureAsBool(
           ash::features::kProductivityLauncher, "enable_continue", true)) {
     size_t zero_state_files_group_id =
