@@ -725,7 +725,7 @@ class QuotaManagerImpl::BucketDataDeleter {
         callback_(std::move(callback)),
         completion_closure_(std::move(completion_closure)) {
     DCHECK(manager_);
-    // TODO(crbug/1292216): Convert back into DCHECKS one issue is resolved.
+    // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
     CHECK(callback_);
     CHECK(completion_closure_);
   }
@@ -741,7 +741,8 @@ class QuotaManagerImpl::BucketDataDeleter {
   void Run() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
-    DCHECK(!run_called_) << __func__ << " already called";
+    // TODO(crbug/1292216): Convert back into DCHECK once issue is resolved.
+    CHECK(!run_called_) << __func__ << " already called";
     run_called_ = true;
 #endif  // DCHECK_IS_ON()
 
@@ -788,7 +789,10 @@ class QuotaManagerImpl::BucketDataDeleter {
       FinishDeletion();
   }
 
-  bool completed() { return !callback_; }
+  bool completed() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return !callback_;
+  }
 
  private:
   void DidDeleteBucketData(int tracing_id,
@@ -807,8 +811,10 @@ class QuotaManagerImpl::BucketDataDeleter {
 
   void FinishDeletion() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(crbug/1292216): Convert back into DCHECKS one issue is resolved.
+    // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
     CHECK_EQ(remaining_clients_, 0u);
+    CHECK(callback_) << __func__ << " called after Complete";
+    CHECK(completion_closure_) << __func__ << " called after Complete";
 
     // Only remove the bucket from the database if we didn't skip any client
     // types.
@@ -830,7 +836,8 @@ class QuotaManagerImpl::BucketDataDeleter {
 
   void Complete(bool success) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(crbug/1292216): Convert back into DCHECKS one issue is resolved.
+    // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
+    CHECK_EQ(remaining_clients_, 0u);
     CHECK(callback_);
     CHECK(completion_closure_);
 
@@ -839,6 +846,8 @@ class QuotaManagerImpl::BucketDataDeleter {
                 : blink::mojom::QuotaStatusCode::kErrorInvalidModification);
 
     // Deletes `this`.
+    // TODO(crbug/1292216): Delete once issue is resolved.
+    CHECK(completion_closure_);
     std::move(completion_closure_).Run(this);
   }
 
@@ -849,8 +858,9 @@ class QuotaManagerImpl::BucketDataDeleter {
   int error_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   size_t remaining_clients_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   int skipped_clients_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-  StatusCallback callback_;
-  base::OnceCallback<void(BucketDataDeleter*)> completion_closure_;
+  StatusCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceCallback<void(BucketDataDeleter*)> completion_closure_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if DCHECK_IS_ON()
   bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
