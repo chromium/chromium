@@ -1054,18 +1054,8 @@ void LockContentsView::OnFingerprintStateChanged(const AccountId& account_id,
   if (!big_view || !big_view->auth_user())
     return;
 
-  // TODO(crbug.com/893298): Re-enable animation once the error bubble supports
-  // being displayed on the left. This also requires that we dynamically
-  // track/update the position of the bubble, or alternatively we set the bubble
-  // location to the target animation position and not the current position.
-  bool animate = true;
-  if (user_state->fingerprint_state ==
-      FingerprintState::DISABLED_FROM_TIMEOUT) {
-    animate = false;
-  }
-
   big_view->auth_user()->SetFingerprintState(user_state->fingerprint_state);
-  LayoutAuth(big_view, nullptr /*opt_to_hide*/, animate);
+  LayoutAuth(big_view, nullptr /*opt_to_hide*/, true /*animate*/);
 }
 
 void LockContentsView::OnFingerprintAuthResult(const AccountId& account_id,
