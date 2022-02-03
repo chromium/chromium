@@ -5,6 +5,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
@@ -48,6 +49,7 @@ class ChromeProtocolHandlerRegistryTest : public testing::Test {
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ChromeProtocolHandlerRegistryTest, ExtensionHandler) {
   GURL chrome_extension_handler_url(
       "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/test.html");
@@ -64,3 +66,4 @@ TEST_F(ChromeProtocolHandlerRegistryTest, ExtensionHandler) {
       "news", chrome_extension_handler_url,
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 }
+#endif

@@ -17,13 +17,16 @@
 #include "content/public/common/origin_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/constants.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif
 
 namespace chrome_common {
 
@@ -96,6 +99,7 @@ TEST(ChromeContentClientTest, FindMostRecent) {
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 TEST(ChromeContentClientTest, AdditionalSchemes) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_TRUE(url::IsStandard(
       extensions::kExtensionScheme,
       url::Component(0, strlen(extensions::kExtensionScheme))));
@@ -105,6 +109,7 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
   url::Origin origin = url::Origin::Create(extension_url);
   EXPECT_EQ("chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef",
             origin.Serialize());
+#endif
 
   // IsUrlPotentiallyTrustworthy assertions test for https://crbug.com/734581.
   constexpr const char* kChromeLayerUrlsRegisteredAsSecure[] = {

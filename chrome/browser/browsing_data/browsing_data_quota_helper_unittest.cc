@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -169,19 +170,20 @@ TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
 
 TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
   static const storage::MockStorageKeyData kStorageKeys[] = {
-      {"http://example.com/", StorageType::kTemporary, 1},
-      {"https://example.com/", StorageType::kTemporary, 10},
-      {"http://example.com/", StorageType::kPersistent, 100},
-      {"https://example.com/", StorageType::kSyncable, 1},
-      {"http://example2.com/", StorageType::kTemporary, 1000},
-      {"chrome-extension://abcdefghijklmnopqrstuvwxyz/",
-       StorageType::kTemporary, 10000},
-      {"chrome-extension://abcdefghijklmnopqrstuvwxyz/",
-       StorageType::kPersistent, 100000},
-      {"devtools://abcdefghijklmnopqrstuvwxyz/", StorageType::kTemporary,
-       10000},
-      {"devtools://abcdefghijklmnopqrstuvwxyz/", StorageType::kPersistent,
-       100000},
+    {"http://example.com/", StorageType::kTemporary, 1},
+    {"https://example.com/", StorageType::kTemporary, 10},
+    {"http://example.com/", StorageType::kPersistent, 100},
+    {"https://example.com/", StorageType::kSyncable, 1},
+    {"http://example2.com/", StorageType::kTemporary, 1000},
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"chrome-extension://abcdefghijklmnopqrstuvwxyz/", StorageType::kTemporary,
+     10000},
+    {"chrome-extension://abcdefghijklmnopqrstuvwxyz/", StorageType::kPersistent,
+     100000},
+#endif
+    {"devtools://abcdefghijklmnopqrstuvwxyz/", StorageType::kTemporary, 10000},
+    {"devtools://abcdefghijklmnopqrstuvwxyz/", StorageType::kPersistent,
+     100000},
   };
 
   RegisterClient(kStorageKeys);

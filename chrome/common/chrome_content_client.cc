@@ -46,7 +46,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/constants.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
 #include "media/media_buildflags.h"
@@ -68,6 +67,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -264,8 +267,11 @@ void ChromeContentClient::AddContentDecryptionModules(
 // Example standard schemes: https://, chrome-extension://, chrome://, file://
 // Example nonstandard schemes: mailto:, data:, javascript:, about:
 static const char* const kChromeStandardURLSchemes[] = {
-    extensions::kExtensionScheme, chrome::kChromeNativeScheme,
-    chrome::kChromeSearchScheme,  dom_distiller::kDomDistillerScheme,
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    extensions::kExtensionScheme,
+#endif
+    chrome::kChromeNativeScheme,        chrome::kChromeSearchScheme,
+    dom_distiller::kDomDistillerScheme,
 #if BUILDFLAG(IS_ANDROID)
     content::kAndroidAppScheme,
 #endif
@@ -279,19 +285,25 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   schemes->extension_schemes.push_back(extensions::kExtensionScheme);
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
+#endif
   schemes->savable_schemes.push_back(chrome::kChromeSearchScheme);
   schemes->savable_schemes.push_back(dom_distiller::kDomDistillerScheme);
 
   // chrome-search: resources shouldn't trigger insecure content warnings.
   schemes->secure_schemes.push_back(chrome::kChromeSearchScheme);
 
-  // Treat as secure because communication with them is entirely in the browser,
-  // so there is no danger of manipulation or eavesdropping on communication
-  // with them by third parties.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Treat extensions as secure because communication with them is entirely in
+  // the browser, so there is no danger of manipulation or eavesdropping on
+  // communication with them by third parties.
   schemes->secure_schemes.push_back(extensions::kExtensionScheme);
+#endif
 
   // chrome-native: is a scheme used for placeholder navigations that allow
   // UIs to be drawn with platform native widgets instead of HTML.  These pages

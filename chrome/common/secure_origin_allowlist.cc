@@ -9,13 +9,19 @@
 
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
+#endif
 
 namespace secure_origin_allowlist {
 
 std::set<std::string> GetSchemesBypassingSecureContextCheck() {
   std::set<std::string> schemes;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   schemes.insert(extensions::kExtensionScheme);
+#endif
   return schemes;
 }
 
