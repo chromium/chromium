@@ -40,7 +40,7 @@ namespace {
 // if it is set). This should never be decreased since that will cause CT
 // enforcement to eventually stop. This should also only be increased if Chrome
 // is compatible with the version it is being incremented to.
-const uint64_t kMaxSupportedCTCompatibilityVersion = 1;
+const uint64_t kMaxSupportedCTCompatibilityVersion = 2;
 
 const char kGoogleOperatorName[] = "Google";
 
