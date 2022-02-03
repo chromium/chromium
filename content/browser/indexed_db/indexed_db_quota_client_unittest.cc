@@ -205,6 +205,16 @@ TEST_F(IndexedDBQuotaClientTest, DeleteStorageKey) {
   EXPECT_EQ(50, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 }
 
+TEST_F(IndexedDBQuotaClientTest, GetStorageKeyUsageForNonexistentKey) {
+  IndexedDBQuotaClient client(*idb_context());
+
+  AddFakeIndexedDB(kStorageKeyA, 1000);
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(client, kTemp);
+  EXPECT_EQ(storage_keys.size(), 1ul);
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
+  EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
+}
+
 TEST_F(IndexedDBQuotaClientTest, IncognitoQuota) {
   auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
       /*in_memory=*/true, base::FilePath(), base::ThreadTaskRunnerHandle::Get(),

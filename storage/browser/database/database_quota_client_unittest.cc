@@ -46,9 +46,9 @@ static const blink::mojom::StorageType kTemp =
 // Mocks DatabaseTracker methods used by DatabaseQuotaClient.
 class MockDatabaseTracker : public DatabaseTracker {
  public:
-  MockDatabaseTracker()
+  explicit MockDatabaseTracker(bool is_incognito)
       : DatabaseTracker(base::FilePath(),
-                        /*is_incognito=*/false,
+                        is_incognito,
                         /*special_storage_policy=*/nullptr,
                         /*quota_manager_proxy=*/nullptr,
                         DatabaseTracker::CreatePassKey()) {}
@@ -126,7 +126,7 @@ class MockDatabaseTracker : public DatabaseTracker {
 };
 
 // Base class for our test fixtures.
-class DatabaseQuotaClientTest : public testing::Test {
+class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
  public:
   const blink::StorageKey kStorageKeyA;
   const blink::StorageKey kStorageKeyB;
@@ -139,7 +139,8 @@ class DatabaseQuotaClientTest : public testing::Test {
             blink::StorageKey::CreateFromStringForTesting("http://host:8000")),
         kStorageKeyOther(
             blink::StorageKey::CreateFromStringForTesting("http://other")),
-        mock_tracker_(base::MakeRefCounted<MockDatabaseTracker>()) {}
+        mock_tracker_(
+            base::MakeRefCounted<MockDatabaseTracker>(is_incognito())) {}
 
   void TearDown() override {
     base::RunLoop run_loop;
@@ -150,6 +151,8 @@ class DatabaseQuotaClientTest : public testing::Test {
                                            }));
     run_loop.Run();
   }
+
+  bool is_incognito() const { return GetParam(); }
 
   static int64_t GetStorageKeyUsage(mojom::QuotaClient& client,
                                     const blink::StorageKey& storage_key,
@@ -203,7 +206,7 @@ class DatabaseQuotaClientTest : public testing::Test {
   base::WeakPtrFactory<DatabaseQuotaClientTest> weak_factory_{this};
 };
 
-TEST_F(DatabaseQuotaClientTest, GetStorageKeyUsage) {
+TEST_P(DatabaseQuotaClientTest, GetStorageKeyUsage) {
   DatabaseQuotaClient client(*mock_tracker_);
 
   EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
@@ -214,7 +217,7 @@ TEST_F(DatabaseQuotaClientTest, GetStorageKeyUsage) {
   EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 }
 
-TEST_F(DatabaseQuotaClientTest, GetStorageKeysForType) {
+TEST_P(DatabaseQuotaClientTest, GetStorageKeysForType) {
   DatabaseQuotaClient client(*mock_tracker_);
 
   EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
@@ -226,7 +229,7 @@ TEST_F(DatabaseQuotaClientTest, GetStorageKeysForType) {
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
 }
 
-TEST_F(DatabaseQuotaClientTest, DeleteStorageKeyData) {
+TEST_P(DatabaseQuotaClientTest, DeleteStorageKeyData) {
   DatabaseQuotaClient client(*mock_tracker_);
 
   mock_tracker_->set_async_delete(false);
@@ -239,5 +242,9 @@ TEST_F(DatabaseQuotaClientTest, DeleteStorageKeyData) {
             DeleteStorageKeyData(client, kTemp, kStorageKeyA));
   EXPECT_EQ(2, mock_tracker_->delete_called_count());
 }
+
+INSTANTIATE_TEST_SUITE_P(DatabaseQuotaClientTests,
+                         DatabaseQuotaClientTest,
+                         testing::Bool());
 
 }  // namespace storage
