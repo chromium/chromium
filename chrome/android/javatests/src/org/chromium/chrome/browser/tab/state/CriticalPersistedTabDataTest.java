@@ -339,10 +339,10 @@ public class CriticalPersistedTabDataTest {
                 PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                         CriticalPersistedTabData.class, tab.isIncognito());
 
-                ByteBuffer serialized =
+                SerializedCriticalPersistedTabData serialized =
                         CriticalPersistedTabData.restore(tab.getId(), tab.isIncognito());
                 CriticalPersistedTabData deserialized = new CriticalPersistedTabData(
-                        tab, serialized, config.getStorage(), config.getId());
+                        tab, serialized.getByteBuffer(), config.getStorage(), config.getId());
                 Assert.assertEquals(EXPECTED_TITLE,
                         deserialized.getWebContentsState().getDisplayTitleFromState());
                 Assert.assertEquals(

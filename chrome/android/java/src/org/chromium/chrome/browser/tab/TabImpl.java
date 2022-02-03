@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -68,8 +69,6 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
-
-import java.nio.ByteBuffer;
 
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}.
@@ -223,7 +222,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     @SuppressLint("HandlerLeak")
     TabImpl(int id, boolean incognito, @Nullable @TabLaunchType Integer launchType,
-            @Nullable ByteBuffer serializedCriticalPersistedTabData) {
+            @Nullable SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
         mIsTabSaveEnabledSupplier.set(false);
         mId = TabIdManager.getInstance().generateValidId(id);
         mIncognito = incognito;
