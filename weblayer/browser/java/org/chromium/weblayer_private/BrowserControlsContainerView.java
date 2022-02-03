@@ -438,20 +438,24 @@ class BrowserControlsContainerView extends FrameLayout {
     // has been moved to not overlap BrowserControlsContainerView anyway.
     @Override
     public boolean onDragEvent(DragEvent event) {
-        return true;
+        return onEventCommon();
     }
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
-        return true;
+        return onEventCommon();
     }
     @Override
     public boolean onHoverEvent(MotionEvent event) {
-        return true;
+        return onEventCommon();
     }
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return true;
+        return onEventCommon();
+    }
+    private boolean onEventCommon() {
+        // "Opaque" to events (ie return true as handled) only if visible.
+        return mView != null && mView.getVisibility() == View.VISIBLE;
     }
 
     /* package */ State getState() {
