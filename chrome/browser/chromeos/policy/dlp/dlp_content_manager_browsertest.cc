@@ -456,8 +456,8 @@ class DlpContentManagerReportingBrowserTest
       cloned_tab_observer_;
 };
 
-// TODO(crbug.com/1291074): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1291074): Flaky on ChromeOS Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PrintingRestricted DISABLED_PrintingRestricted
 #else
 #define MAYBE_PrintingRestricted PrintingRestricted
@@ -507,8 +507,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
 }
 
+// TODO(crbug.com/1291074): Flaky on ChromeOS Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PrintingReported DISABLED_PrintingReported
+#else
+#define MAYBE_PrintingReported PrintingReported
+#endif
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
-                       PrintingReported) {
+                       MAYBE_PrintingReported) {
   SetupDlpRulesManager();
   SetupReportQueue();
   SetAddRecordCheck(
