@@ -1762,6 +1762,129 @@
             ]
         }
     ],
+    "Collections": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ReadLater__SemiIntegrated",
+                    "params": {
+                        "allow_bookmark_type_swapping": "true",
+                        "autodismiss_enabled": "true",
+                        "bookmark_in_app_menu": "false",
+                        "bookmark_visuals_enabled": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ReadLater__DedicatedSaveFlow",
+                    "params": {
+                        "allow_bookmark_type_swapping": "false",
+                        "autodismiss_enabled": "true",
+                        "bookmark_in_app_menu": "true",
+                        "bookmark_visuals_enabled": "true",
+                        "reading_list_in_app_menu": "true",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ReadLater__NoCustomTab",
+                    "params": {
+                        "reading_list_in_app_menu": "false",
+                        "use_cct": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "WallE__BookmarkMenuItem",
+                    "params": {
+                        "bookmark_in_app_menu": "true",
+                        "bookmark_visuals_enabled": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksRefresh",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "WallE__BookmarksRefresh",
+                    "params": {
+                        "bookmark_in_app_menu": "false",
+                        "bookmark_visuals_enabled": "true",
+                        "reading_list_in_app_menu": "false",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksRefresh",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        }
+    ],
     "CombineResponseBody": [
         {
             "platforms": [
@@ -5187,77 +5310,6 @@
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
                         "QueryTilesInOmnibox"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReadLater": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledContextMenuWithRootAsDefault",
-                    "params": {
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "ReadLater"
-                    ],
-                    "disable_features": [
-                        "BookmarkBottomSheet",
-                        "BookmarksImprovedSaveFlow",
-                        "BookmarksRefresh"
-                    ]
-                },
-                {
-                    "name": "EnabledContextMenuWithRootAsDefault_20211206",
-                    "params": {
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "ReadLater"
-                    ],
-                    "disable_features": [
-                        "BookmarkBottomSheet"
-                    ]
-                },
-                {
-                    "name": "EnabledDedicatedSaveFlow",
-                    "params": {
-                        "autodismiss_enabled": "true",
-                        "bookmark_in_app_menu": "true",
-                        "bookmark_visuals_enabled": "true",
-                        "reading_list_in_app_menu": "true",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "BookmarksImprovedSaveFlow",
-                        "BookmarksRefresh",
-                        "ReadLater"
-                    ],
-                    "disable_features": [
-                        "BookmarkBottomSheet"
-                    ]
-                },
-                {
-                    "name": "EnabledSemiIntegrated",
-                    "params": {
-                        "allow_bookmark_type_swapping": "true",
-                        "autodismiss_enabled": "true",
-                        "bookmark_in_app_menu": "false",
-                        "bookmark_visuals_enabled": "true",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "BookmarksImprovedSaveFlow",
-                        "BookmarksRefresh",
-                        "ReadLater"
-                    ],
-                    "disable_features": [
-                        "BookmarkBottomSheet"
                     ]
                 }
             ]
