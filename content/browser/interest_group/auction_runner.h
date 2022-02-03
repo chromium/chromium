@@ -131,9 +131,8 @@ class CONTENT_EXPORT AuctionRunner {
   // Runs an entire FLEDGE auction.
   //
   // Arguments:
-  // `auction_worklet_manager`, `auction_worklet_manager_delegate`, and
-  // `interest_group_manager` must remain valid until the
-  //  AuctionRunner is destroyed.
+  // `auction_worklet_manager` and `interest_group_manager` must remain valid
+  //  until the  AuctionRunner is destroyed.
   //
   // `auction_config` is the configuration provided by client JavaScript in
   //  the renderer in order to initiate the auction.
@@ -144,16 +143,11 @@ class CONTENT_EXPORT AuctionRunner {
   //
   // `browser_signals` signals from the browser about the auction that are the
   //  same for all worklets.
-  //
-  // `frame_origin` is the origin running the auction (not the top frame
-  //  origin), used as the initiator in network requests.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
-      AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
       InterestGroupManagerImpl* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-      const url::Origin& frame_origin,
       RunAuctionCallback callback);
 
   ~AuctionRunner();
@@ -220,13 +214,10 @@ class CONTENT_EXPORT AuctionRunner {
     absl::optional<GURL> seller_debug_win_report_url;
   };
 
-  AuctionRunner(
-      AuctionWorkletManager* auction_worklet_manager,
-      AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
-      InterestGroupManagerImpl* interest_group_manager,
-      blink::mojom::AuctionAdConfigPtr auction_config,
-      const url::Origin& frame_origin,
-      RunAuctionCallback callback);
+  AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
+                InterestGroupManagerImpl* interest_group_manager,
+                blink::mojom::AuctionAdConfigPtr auction_config,
+                RunAuctionCallback callback);
 
   // Checks that the seller is allowed to partipate in an auction, and starts
   // retrieving all interest groups owned buyer origins listed in
@@ -357,8 +348,6 @@ class CONTENT_EXPORT AuctionRunner {
       AuctionWorkletManager::FatalErrorCallback fatal_error_callback);
 
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
-  const raw_ptr<AuctionWorkletManager::Delegate>
-      auction_worklet_manager_delegate_;
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   // Configuration.
@@ -367,7 +356,6 @@ class CONTENT_EXPORT AuctionRunner {
   // Decremented each time OnInterestGroupRead() is invoked. The auction is
   // started once this hits 0.
   size_t num_pending_buyers_ = 0;
-  const url::Origin frame_origin_;
   RunAuctionCallback callback_;
 
   // True once a seller worklet has been received from the

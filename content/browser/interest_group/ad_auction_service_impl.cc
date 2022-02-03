@@ -295,11 +295,9 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   }
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
-      &auction_worklet_manager_, this, &GetInterestGroupManager(),
-      std::move(config),
+      &auction_worklet_manager_, &GetInterestGroupManager(), std::move(config),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
-      /*frame_origin=*/origin(),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback)));
   auctions_.insert(std::move(auction));

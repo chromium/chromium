@@ -933,7 +933,7 @@ class AuctionRunnerTest : public testing::Test,
   // Helper to create an auction config with the specified values.
   blink::mojom::AuctionAdConfigPtr CreateAuctionConfig(
       const GURL& seller_decision_logic_url,
-      std::vector<url::Origin> buyers) {
+      absl::optional<std::vector<url::Origin>> buyers) {
     blink::mojom::AuctionAdConfigPtr auction_config =
         blink::mojom::AuctionAdConfig::New();
     auction_config->seller = url::Origin::Create(seller_decision_logic_url);
@@ -1022,9 +1022,8 @@ class AuctionRunnerTest : public testing::Test,
 
     auction_run_loop_ = std::make_unique<base::RunLoop>();
     auction_runner_ = AuctionRunner::CreateAndStart(
-        auction_worklet_manager_.get(), this, interest_group_manager_.get(),
+        auction_worklet_manager_.get(), interest_group_manager_.get(),
         std::move(auction_config), IsInterestGroupApiAllowedCallback(),
-        frame_origin_,
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));
   }
@@ -1295,7 +1294,8 @@ class AuctionRunnerTest : public testing::Test,
   const std::string kBidder2Name{"Another Ad Thing"};
   const GURL kBidder2TrustedSignalsUrl{"https://anotheradthing.com/signals2"};
 
-  std::vector<url::Origin> interest_group_buyers_ = {kBidder1, kBidder2};
+  absl::optional<std::vector<url::Origin>> interest_group_buyers_ = {
+      {kBidder1, kBidder2}};
 
   // Origins which are not allowed to take part in auctions, as the
   // corresponding participant types.
@@ -1342,6 +1342,24 @@ class AuctionRunnerTest : public testing::Test,
   // Which worklet to pause, if any.
   GURL pause_worklet_url_;
 };
+
+// Runs an auction with an empty buyers field.
+TEST_F(AuctionRunnerTest, NullBuyers) {
+  interest_group_buyers_->clear();
+  RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(-1, result_.bidder1_bid_count);
+  EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+}
 
 // Runs the standard auction, but without adding any interest groups to the
 // manager.

@@ -140,32 +140,24 @@ AuctionRunner::BidState::BidState(BidState&&) = default;
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
-    AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
     InterestGroupManagerImpl* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-    const url::Origin& frame_origin,
     RunAuctionCallback callback) {
-  std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      auction_worklet_manager, auction_worklet_manager_delegate,
-      interest_group_manager, std::move(auction_config), frame_origin,
-      std::move(callback)));
+  std::unique_ptr<AuctionRunner> instance(
+      new AuctionRunner(auction_worklet_manager, interest_group_manager,
+                        std::move(auction_config), std::move(callback)));
   instance->StartAuction(is_interest_group_api_allowed_callback);
   return instance;
 }
 
-AuctionRunner::AuctionRunner(
-    AuctionWorkletManager* auction_worklet_manager,
-    AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
-    InterestGroupManagerImpl* interest_group_manager,
-    blink::mojom::AuctionAdConfigPtr auction_config,
-    const url::Origin& frame_origin,
-    RunAuctionCallback callback)
+AuctionRunner::AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
+                             InterestGroupManagerImpl* interest_group_manager,
+                             blink::mojom::AuctionAdConfigPtr auction_config,
+                             RunAuctionCallback callback)
     : auction_worklet_manager_(auction_worklet_manager),
-      auction_worklet_manager_delegate_(auction_worklet_manager_delegate),
       interest_group_manager_(interest_group_manager),
       auction_config_(std::move(auction_config)),
-      frame_origin_(frame_origin),
       callback_(std::move(callback)) {}
 
 AuctionRunner::~AuctionRunner() = default;
