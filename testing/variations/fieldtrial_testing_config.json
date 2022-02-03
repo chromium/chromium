@@ -2140,6 +2140,28 @@
             ]
         }
     ],
+    "DefaultStyleSheetsEarlyInit": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220201",
+                    "enable_features": [
+                        "DefaultStyleSheetsEarlyInit"
+                    ]
+                }
+            ]
+        }
+    ],
     "DelayFirstParkingOfStrings": [
         {
             "platforms": [
@@ -2691,6 +2713,28 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DynamicBufferQueueAllocation"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EarlyBodyLoad": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EarlyBodyLoad"
                     ]
                 }
             ]
