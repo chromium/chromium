@@ -2533,7 +2533,7 @@ void DocumentLoader::CreateParserPostCommit() {
     if (frame_ && body_loader_ && !loading_main_document_from_mhtml_archive_ &&
         !loading_url_as_empty_document_ && url_.ProtocolIsInHTTPFamily() &&
         !is_static_data_ && frame_->IsMainFrame() &&
-        !document->IsPrefetchOnly()) {
+        !document->IsPrefetchOnly() && MimeType() == "text/html") {
       waiting_for_document_loader_ = true;
       StartLoadingBodyWithCodeCache();
 
