@@ -29,6 +29,7 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -47,6 +48,7 @@ import java.util.Arrays;
 @Config(manifest = Config.NONE,
         shadows = {SplashActivityTest.MockLaunchHostBrowserSelector.class,
                 CustomAndroidOsShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public final class SplashActivityTest {
     public static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";
 
