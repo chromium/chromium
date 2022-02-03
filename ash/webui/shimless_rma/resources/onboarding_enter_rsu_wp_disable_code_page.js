@@ -129,6 +129,10 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     super.ready();
     this.getRsuChallengeAndHwid_();
     this.setRsuInstructionsText_();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** @private */
@@ -183,10 +187,9 @@ export class OnboardingEnterRsuWpDisableCodePage extends
    * @param {!Event} event
    */
   onRsuCodeChanged_(event) {
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: !this.rsuCodeIsPlausible_()},
-        ));
+    // Set to false whenever the user changes the code to remove the red invalid
+    // warning.
+    this.rsuCodeInvalid_ = false;
   }
 
   /**
@@ -199,12 +202,13 @@ export class OnboardingEnterRsuWpDisableCodePage extends
 
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
-    if (this.rsuCode_) {
-      return this.shimlessRmaService_.setRsuDisableWriteProtectCode(
-          this.rsuCode_);
-    } else {
+    if (this.rsuCode_.length !== this.rsuCodeExpectedLength_) {
+      this.rsuCodeInvalid_ = true;
       return Promise.reject(new Error('No RSU code set'));
     }
+
+    return this.shimlessRmaService_.setRsuDisableWriteProtectCode(
+        this.rsuCode_);
   }
 
   /** @private */
