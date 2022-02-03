@@ -48,23 +48,49 @@ namespace quick_pair {
 RetroactivePairingDetectorImpl::RetroactivePairingDetectorImpl(
     PairerBroker* pairer_broker,
     MessageStreamLookup* message_stream_lookup)
-    : message_stream_lookup_(message_stream_lookup) {
+    : pairer_broker_(pairer_broker),
+      message_stream_lookup_(message_stream_lookup) {
   // If there is no signed in user, don't enabled the retroactive pairing
-  // scenario, so don't initiate any objects or observations.
+  // scenario, so don't initiate any objects or observations, but store the
+  // pointers in the case that we get logged in later on.
   if (!ShouldBeEnabledForLoginStatus(
           Shell::Get()->session_controller()->login_status())) {
     QP_LOG(VERBOSE)
         << __func__
         << ": No logged in user to enable retroactive pairing scenario";
+
+    // Observe log in events in the case the login was delayed.
+    shell_observation_.Observe(Shell::Get()->session_controller());
     return;
   }
+
+  retroactive_pairing_detector_instatiated_ = true;
 
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&RetroactivePairingDetectorImpl::OnGetAdapter,
                      weak_ptr_factory_.GetWeakPtr()));
 
   message_stream_lookup_observation_.Observe(message_stream_lookup_);
-  pairer_broker_observation_.Observe(pairer_broker);
+  pairer_broker_observation_.Observe(pairer_broker_);
+}
+
+void RetroactivePairingDetectorImpl::OnLoginStatusChanged(
+    LoginStatus login_status) {
+  if (!ShouldBeEnabledForLoginStatus(login_status) || !pairer_broker_ ||
+      !message_stream_lookup_ || retroactive_pairing_detector_instatiated_) {
+    return;
+  }
+
+  QP_LOG(VERBOSE)
+      << __func__
+      << ": Logged in user, instantiate retroactive pairing scenario.";
+
+  device::BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce(&RetroactivePairingDetectorImpl::OnGetAdapter,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  message_stream_lookup_observation_.Observe(message_stream_lookup_);
+  pairer_broker_observation_.Observe(pairer_broker_);
 }
 
 void RetroactivePairingDetectorImpl::OnGetAdapter(

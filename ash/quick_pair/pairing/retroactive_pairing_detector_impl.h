@@ -9,6 +9,8 @@
 
 #include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
@@ -39,7 +41,8 @@ class RetroactivePairingDetectorImpl final
       public device::BluetoothAdapter::Observer,
       public PairerBroker::Observer,
       public MessageStreamLookup::Observer,
-      public MessageStream::Observer {
+      public MessageStream::Observer,
+      public SessionObserver {
  public:
   RetroactivePairingDetectorImpl(PairerBroker* pairer_broker,
                                  MessageStreamLookup* message_stream_lookup);
@@ -67,6 +70,9 @@ class RetroactivePairingDetectorImpl final
     std::string model_id;
     std::string ble_address;
   };
+
+  // SessionObserver:
+  void OnLoginStatusChanged(LoginStatus login_status) override;
 
   // device::BluetoothAdapter::Observer
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
@@ -131,10 +137,18 @@ class RetroactivePairingDetectorImpl final
   base::flat_map<std::string, RetroactivePairingInformation>
       device_pairing_information_;
 
+  // Helps us keep track of whether the RetroactivePairingDetector has already
+  // been instantiated when we get a logged-in event from the SessionObserver
+  // so we can determine if we need to instantiate the objects.
+  bool retroactive_pairing_detector_instatiated_ = false;
+
+  PairerBroker* pairer_broker_ = nullptr;
   MessageStreamLookup* message_stream_lookup_ = nullptr;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::ObserverList<RetroactivePairingDetector::Observer> observers_;
 
+  base::ScopedObservation<SessionController, SessionObserver>
+      shell_observation_{this};
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};
