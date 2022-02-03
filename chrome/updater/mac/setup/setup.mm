@@ -337,12 +337,6 @@ void CleanAfterInstallFailure(UpdaterScope scope) {
 
 bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path,
                                 const base::FilePath& updater_executable_path) {
-  if (!base::PathExists(updater_bundle_path)) {
-    VPLOG(1) << "Updater bundle path not found: "
-             << updater_bundle_path.value();
-    return false;
-  }
-
   if (!base::mac::RemoveQuarantineAttribute(updater_bundle_path)) {
     VPLOG(1) << "Could not remove com.apple.quarantine for the bundle.";
     return false;

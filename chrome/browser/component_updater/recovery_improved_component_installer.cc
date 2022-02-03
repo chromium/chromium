@@ -183,7 +183,8 @@ RecoveryImprovedInstallerPolicy::GetInstallerAttributes() const {
 
 void RegisterRecoveryImprovedComponent(ComponentUpdateService* cus,
                                        PrefService* prefs) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(sorin): enable recovery component for macOS. crbug/687231.
+#if BUILDFLAG(IS_WIN)
   DVLOG(1) << "Registering RecoveryImproved component.";
 
   // |cus| keeps a reference to the |installer| in the CrxComponent instance.

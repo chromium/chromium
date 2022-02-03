@@ -47,13 +47,11 @@
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/component_updater/recovery_component_installer.h"
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#else
+#include "chrome/browser/component_updater/recovery_component_installer.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
@@ -98,12 +96,10 @@ void RegisterComponentsForUpdate() {
 
 #if BUILDFLAG(IS_WIN)
   RegisterRecoveryImprovedComponent(cus, g_browser_process->local_state());
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-  RegisterRecoveryImprovedComponent(cus, g_browser_process->local_state());
+#else
+  // TODO(crbug.com/687231): Implement the Improved component on Mac, etc.
   RegisterRecoveryComponent(cus, g_browser_process->local_state());
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
   RegisterMediaFoundationWidevineCdmComponent(cus);
