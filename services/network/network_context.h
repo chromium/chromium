@@ -503,10 +503,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return proxy_lookup_requests_.size();
   }
 
-  NetworkServiceProxyDelegate* proxy_delegate() const {
-    return proxy_delegate_;
-  }
-
   void set_network_qualities_pref_delegate_for_testing(
       std::unique_ptr<NetworkQualitiesPrefDelegate>
           network_qualities_pref_delegate) {
