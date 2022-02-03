@@ -589,22 +589,6 @@ class PredictionManagerTest : public PredictionManagerTestBase {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
-TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
-  base::HistogramTester histogram_tester;
-  CreatePredictionManager();
-
-  prediction_manager()->SetPredictionModelFetcherForTesting(
-      BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchSuccessWithModels));
-
-  FakeOptimizationTargetModelObserver observer;
-  prediction_manager()->AddObserverForOptimizationTargetModel(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
-  SetStoreInitialized();
-
-  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
-}
-
 TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   base::HistogramTester histogram_tester;
 
@@ -625,6 +609,11 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
                       /* have_models_in_store= */ false);
 
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  // Make sure the test histogram is recorded. We don't check for value here
+  // since that is too much toil for someone whenever they add a new version.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
+      features::IsModelDownloadingEnabled() ? 1 : 0);
 
   EXPECT_TRUE(prediction_manager()->GetRegisteredOptimizationTargets().contains(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));

@@ -337,6 +337,11 @@ void PredictionManager::FetchModels() {
   if (registered_optimization_targets_and_metadata_.empty())
     return;
 
+  // TODO(crbug/1245793): Do not fetch models if model downloading is not
+  // enabled. This is not done currently since there are too many tests that
+  // depend on the fetch always going out even in the non-downloads case and the
+  // overall cleanup is already in progress.
+
   if (prediction_model_download_manager_) {
     bool download_service_available =
         prediction_model_download_manager_->IsAvailableForDownloads();
@@ -378,20 +383,15 @@ void PredictionManager::FetchModels() {
 
   proto::ModelInfo base_model_info;
   if (features::IsModelDownloadingEnabled()) {
-    // TODO(crbug/1204614): Tidy these up so only the current version is sent to
-    // the server.
-    base_model_info.add_supported_model_engine_versions(
-        proto::MODEL_ENGINE_VERSION_TFLITE_2_3_0);
-    base_model_info.add_supported_model_engine_versions(
-        proto::MODEL_ENGINE_VERSION_TFLITE_2_3_0_1);
-    base_model_info.add_supported_model_engine_versions(
-        proto::MODEL_ENGINE_VERSION_TFLITE_2_4);
-    base_model_info.add_supported_model_engine_versions(
-        proto::MODEL_ENGINE_VERSION_TFLITE_2_7);
-    base_model_info.add_supported_model_engine_versions(
-        proto::MODEL_ENGINE_VERSION_TFLITE_2_8);
+    // There should only be one supported model engine version at a time.
     base_model_info.add_supported_model_engine_versions(
         proto::MODEL_ENGINE_VERSION_TFLITE_2_9);
+    // This histogram is used for integration tests. Do not remove.
+    // Update this to be 10000 if/when we exceed 100 model engine versions.
+    LOCAL_HISTOGRAM_COUNTS_100(
+        "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
+        static_cast<int>(
+            *base_model_info.supported_model_engine_versions().begin()));
   }
 
   std::string debug_msg;
