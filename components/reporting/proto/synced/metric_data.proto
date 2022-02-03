@@ -320,12 +320,6 @@ message UsbTelemetry {
   // List of names of USB categories the device falls under
   // https://www.usb.org/defined-class-codes
   repeated string categories = 5;
-  // Class ID
-  // https://www.usb.org/defined-class-codes
-  optional int32 class_id = 6;
-  // Subclass ID
-  // https://www.usb.org/defined-class-codes
-  optional int32 subclass_id = 7;
 }
 
 // Indicates one of the following conditions occurred on the device, data
