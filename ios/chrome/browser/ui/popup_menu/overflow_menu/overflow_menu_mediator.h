@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 #import "ios/chrome/browser/ui/follow/follow_action_state.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -19,7 +20,6 @@ class Tracker;
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 class BrowserPolicyConnectorIOS;
-@class OverflowMenuModel;
 class OverlayPresenter;
 class PrefService;
 @protocol FindInPageCommands;
