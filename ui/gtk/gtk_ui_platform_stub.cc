@@ -31,6 +31,12 @@ GdkWindow* GtkUiPlatformStub::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return nullptr;
 }
 
+bool GtkUiPlatformStub::ExportWindowHandle(
+    gfx::AcceleratedWidget window_id,
+    base::OnceCallback<void(std::string)> callback) {
+  return false;
+}
+
 bool GtkUiPlatformStub::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {

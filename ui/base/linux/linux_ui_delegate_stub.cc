@@ -4,8 +4,6 @@
 
 #include "ui/base/linux/linux_ui_delegate_stub.h"
 
-#include "base/callback.h"
-
 namespace ui {
 
 LinuxUiDelegateStub::LinuxUiDelegateStub() = default;
@@ -14,12 +12,6 @@ LinuxUiDelegateStub::~LinuxUiDelegateStub() = default;
 
 LinuxUiBackend LinuxUiDelegateStub::GetBackend() const {
   return LinuxUiBackend::kStub;
-}
-
-bool LinuxUiDelegateStub::ExportWindowHandle(
-    gfx::AcceleratedWidget window_id,
-    base::OnceCallback<void(std::string)> callback) {
-  return false;
 }
 
 }  // namespace ui

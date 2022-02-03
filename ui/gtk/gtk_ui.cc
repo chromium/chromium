@@ -59,13 +59,12 @@
 #include "ui/gtk/nav_button_provider_gtk.h"
 #include "ui/gtk/printing/print_dialog_gtk.h"
 #include "ui/gtk/printing/printing_gtk_util.h"
-#include "ui/gtk/select_file_dialog_linux_gtk.h"
+#include "ui/gtk/select_file_dialog_impl.h"
 #include "ui/gtk/settings_provider_gtk.h"
 #include "ui/gtk/window_frame_provider_gtk.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -324,7 +323,7 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
 
 }  // namespace
 
-GtkUi::GtkUi() : window_frame_actions_() {
+GtkUi::GtkUi() {
   using Action = views::LinuxUI::WindowFrameAction;
   using ActionSource = views::LinuxUI::WindowFrameActionSource;
 
@@ -346,7 +345,7 @@ GtkUi::GtkUi() : window_frame_actions_() {
 
   // This creates an extra thread that may race against GtkInitFromCommandLine,
   // so this must be done after to avoid the race condition.
-  ShellDialogLinux::Initialize();
+  SelectFileDialogImpl::Initialize();
 
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
@@ -357,6 +356,8 @@ GtkUi::GtkUi() : window_frame_actions_() {
 GtkUi::~GtkUi() {
   DCHECK_EQ(g_gtk_ui, this);
   g_gtk_ui = nullptr;
+
+  SelectFileDialogImpl::Shutdown();
 }
 
 // static
@@ -692,7 +693,7 @@ void GtkUi::GetDefaultFontDescription(std::string* family_out,
 ui::SelectFileDialog* GtkUi::CreateSelectFileDialog(
     ui::SelectFileDialog::Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
-  return new SelectFileDialogLinuxGtk(listener, std::move(policy));
+  return SelectFileDialogImpl::Create(listener, std::move(policy));
 }
 
 views::LinuxUI::WindowFrameAction GtkUi::GetWindowFrameAction(
