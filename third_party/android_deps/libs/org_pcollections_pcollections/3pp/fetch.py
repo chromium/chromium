@@ -12,7 +12,8 @@ import argparse
 import json
 import os
 import re
-import urllib2
+
+from six.moves import urllib
 
 _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/pcollections'
@@ -27,7 +28,7 @@ def do_latest():
         return
     maven_metadata_url = '{}/{}/{}/maven-metadata.xml'.format(
         _REPO_URL, _GROUP_NAME, _MODULE_NAME)
-    metadata = urllib2.urlopen(maven_metadata_url).read()
+    metadata = urllib.request.urlopen(maven_metadata_url).read().decode('utf-8')
     # Do not parse xml with the python included parser since it is susceptible
     # to maliciously crafted xmls. Only use regular expression parsing to be
     # safe. RE should be enough to handle what we need to extract.
