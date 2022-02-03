@@ -22,10 +22,10 @@
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(os_android)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#endif  // defined(os_android)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;

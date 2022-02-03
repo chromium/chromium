@@ -1678,7 +1678,7 @@ gfx::PresentationFeedback ExampleFeedback() {
       base::TimeTicks() + base::Milliseconds(42), base::Microseconds(18),
       gfx::PresentationFeedback::Flags::kVSync |
           gfx::PresentationFeedback::Flags::kHWCompletion);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   feedback.ca_layer_error_code = gfx::kCALayerFailedQuadBlendMode;
 #endif
   return feedback;

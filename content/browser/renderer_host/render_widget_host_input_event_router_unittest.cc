@@ -1497,7 +1497,7 @@ TEST_P(DelegatedInkPointTest, IgnoreEnterAndExitEvents) {
 
 // This test confirms that points can be forwarded when using delegated ink in
 // a child frame, such as an OOPIF.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ForwardPointsToChildFrame DISABLED_ForwardPointsToChildFrame
 #else
 #define MAYBE_ForwardPointsToChildFrame ForwardPointsToChildFrame

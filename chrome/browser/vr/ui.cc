@@ -915,6 +915,6 @@ __attribute__((visibility("default"))) UiInterface* CreateUi(
                 ui_initial_state);
 }
 }  // extern "C"
-#endif  // defined(OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace vr
