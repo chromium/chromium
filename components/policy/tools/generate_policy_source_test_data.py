@@ -190,7 +190,14 @@ EXPECTED_POLICY_CONSTANTS_HEADER = '''
 
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
-#include "components/policy/proto/cloud_policy.pb.h"
+
+namespace enterprise_management {
+class BooleanPolicyProto;
+class CloudPolicySettings;
+class IntegerPolicyProto;
+class StringListPolicyProto;
+class StringPolicyProto;
+}
 
 namespace em = enterprise_management;
 
