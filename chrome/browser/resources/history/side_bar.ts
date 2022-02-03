@@ -20,7 +20,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
 import {MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
 import {Page, TABBED_PAGES} from './router.js';
@@ -134,7 +134,7 @@ export class HistorySideBarElement extends PolymerElement {
    * Relocates the user to the clear browsing data section of the settings page.
    */
   private onClearBrowsingDataTap_(e: Event) {
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('InitClearBrowsingData');
     browserService.openClearBrowsingData();
     this.$['cbd-ripple'].upAction();

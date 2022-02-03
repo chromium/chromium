@@ -21,7 +21,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {BROWSING_GAP_TIME, UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import {HistoryItemElement, searchResultsTitle} from './history_item.js';
@@ -265,7 +265,7 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('RemoveSelected');
     if (this.queryState.searchTerm !== '') {
       browserService.recordAction('SearchResultRemove');
@@ -353,7 +353,7 @@ export class HistoryListElement extends HistoryListElementBase {
   // Event listeners:
 
   private onDialogConfirmTap_() {
-    BrowserService.getInstance().recordAction('ConfirmRemoveSelected');
+    BrowserServiceImpl.getInstance().recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
     const dialog = this.$.dialog.getIfExists();
@@ -362,7 +362,7 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   private onDialogCancelTap_() {
-    BrowserService.getInstance().recordAction('CancelRemoveSelected');
+    BrowserServiceImpl.getInstance().recordAction('CancelRemoveSelected');
 
     const dialog = this.$.dialog.getIfExists();
     assert(dialog);
@@ -415,7 +415,7 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   private onMoreFromSiteTap_() {
-    BrowserService.getInstance().recordAction('EntryMenuShowMoreFromSite');
+    BrowserServiceImpl.getInstance().recordAction('EntryMenuShowMoreFromSite');
 
     assert(this.$.sharedMenu.getIfExists());
     this.fire_('change-query', {search: this.actionMenuModel_!.item.domain});
@@ -430,18 +430,18 @@ export class HistoryListElement extends HistoryListElementBase {
                                   }));
 
     this.pendingDelete = true;
-    return BrowserService.getInstance().removeVisits(removalList);
+    return BrowserServiceImpl.getInstance().removeVisits(removalList);
   }
 
   private onRemoveBookmarkTap_() {
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.removeBookmark(this.actionMenuModel_!.item.url);
     this.fire_('remove-bookmark-stars', this.actionMenuModel_!.item.url);
     this.closeMenu_();
   }
 
   private onRemoveFromHistoryTap_() {
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('EntryMenuRemoveFromHistory');
 
     assert(!this.pendingDelete);
@@ -477,7 +477,7 @@ export class HistoryListElement extends HistoryListElementBase {
         }, 1);
       }
 
-      const browserService = BrowserService.getInstance();
+      const browserService = BrowserServiceImpl.getInstance();
       browserService.recordHistogram(
           'HistoryPage.RemoveEntryPosition',
           Math.min(index, UMA_MAX_BUCKET_VALUE), UMA_MAX_BUCKET_VALUE);

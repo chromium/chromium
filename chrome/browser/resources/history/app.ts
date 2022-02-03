@@ -29,7 +29,7 @@ import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scr
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {BrowserService} from './browser_service.js';
+import {BrowserService, BrowserServiceImpl} from './browser_service.js';
 import {HistoryPageViewHistogram} from './constants.js';
 import {ForeignSession, QueryResult, QueryState} from './externs.js';
 import {HistoryListElement} from './history_list.js';
@@ -101,7 +101,7 @@ export function listenForPrivilegedLinkClicks() {
 
       if ((anchor.protocol === 'file:' || anchor.protocol === 'about:') &&
           (e.button === 0 || e.button === 1)) {
-        BrowserService.getInstance().navigateToUrl(
+        BrowserServiceImpl.getInstance().navigateToUrl(
             anchor.href, anchor.target, e);
         e.preventDefault();
       }
@@ -270,7 +270,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         'foreign-sessions-changed',
         (sessionList: Array<ForeignSession>) =>
             this.setForeignSessions_(sessionList));
-    this.browserService_ = BrowserService.getInstance();
+    this.browserService_ = BrowserServiceImpl.getInstance();
     this.shadowRoot!.querySelector('history-query-manager')!.initialize();
     this.browserService_!.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserService} from 'chrome://history/history.js';
+import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
@@ -16,7 +16,7 @@ suite('<history-toolbar>', function() {
   setup(function() {
     document.body.innerHTML = '';
     window.history.replaceState({}, '', '/');
-    BrowserService.setInstance(new TestBrowserService());
+    BrowserServiceImpl.setInstance(new TestBrowserService());
 
     app = document.createElement('history-app');
     document.body.appendChild(app);

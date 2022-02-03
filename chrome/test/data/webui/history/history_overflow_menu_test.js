@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {TestBrowserService} from './test_browser_service.js';
 
 suite('#overflow-menu', function() {
@@ -15,7 +15,7 @@ suite('#overflow-menu', function() {
   setup(function() {
     document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    BrowserService.setInstance(testService);
+    BrowserServiceImpl.setInstance(testService);
 
     const app = document.createElement('history-app');
     document.body.appendChild(app);

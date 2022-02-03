@@ -6,18 +6,41 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {RESULTS_PER_PAGE} from './constants.js';
 import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
 
-type RemoveVisitsRequest = Array<{
+export type RemoveVisitsRequest = Array<{
   url: string,
   timestamps: Array<number>,
 }>;
+
+export type QueryResult = {
+  info: HistoryQuery,
+  value: HistoryEntry[],
+};
 
 /**
  * @fileoverview Defines a singleton object, history.BrowserService, which
  * provides access to chrome.send APIs.
  */
 
-export class BrowserService {
-  /** @return {!Promise<!Array<!ForeignSession>>} */
+export interface BrowserService {
+  getForeignSessions(): Promise<ForeignSession[]>;
+  removeBookmark(url: string): void;
+  removeVisits(removalList: RemoveVisitsRequest): Promise<void>;
+  openForeignSessionAllTabs(sessionTag: string): void;
+  openForeignSessionTab(
+      sessionTag: string, windowId: number, tabId: number, e: MouseEvent): void;
+  deleteForeignSession(sessionTag: string): void;
+  openClearBrowsingData(): void;
+  recordHistogram(histogram: string, value: number, max: number): void;
+  recordAction(action: string): void;
+  recordTime(histogram: string, time: number): void;
+  navigateToUrl(url: string, target: string, e: MouseEvent): void;
+  otherDevicesInitialized(): void;
+  queryHistoryContinuation(): Promise<QueryResult>;
+  queryHistory(searchTerm: string): Promise<QueryResult>;
+  startSignInFlow(): void;
+}
+
+export class BrowserServiceImpl implements BrowserService {
   getForeignSessions() {
     return sendWithPromise('getForeignSessions');
   }
@@ -30,11 +53,10 @@ export class BrowserService {
    * @return Promise that is resolved when items are deleted
    *     successfully or rejected when deletion fails.
    */
-  removeVisits(removalList: RemoveVisitsRequest): Promise<void> {
+  removeVisits(removalList: RemoveVisitsRequest) {
     return sendWithPromise('removeVisits', removalList);
   }
 
-  /** @param {string} sessionTag */
   openForeignSessionAllTabs(sessionTag: string) {
     chrome.send('openForeignSession', [sessionTag]);
   }
@@ -84,15 +106,11 @@ export class BrowserService {
     chrome.send('otherDevicesInitialized');
   }
 
-  /**
-   * @return {!Promise<{info: !HistoryQuery, value: !Array<!HistoryEntry>}>}
-   */
   queryHistoryContinuation() {
     return sendWithPromise('queryHistoryContinuation');
   }
 
-  queryHistory(searchTerm: string):
-      Promise<{info: HistoryQuery, value: Array<HistoryEntry>}> {
+  queryHistory(searchTerm: string) {
     return sendWithPromise('queryHistory', searchTerm, RESULTS_PER_PAGE);
   }
 
@@ -101,7 +119,7 @@ export class BrowserService {
   }
 
   static getInstance(): BrowserService {
-    return instance || (instance = new BrowserService());
+    return instance || (instance = new BrowserServiceImpl());
   }
 
   static setInstance(obj: BrowserService) {

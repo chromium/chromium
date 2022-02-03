@@ -5,7 +5,7 @@
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {HistoryEntry, HistoryQuery, QueryResult} from './externs.js';
 import {QueryState} from './externs.js';
 import {HistoryRouterElement} from './router.js';
@@ -85,7 +85,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
     this.set('queryState.querying', true);
     this.set('queryState.incremental', incremental);
 
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     const promise = incremental ?
         browserService.queryHistoryContinuation() :
         browserService.queryHistory(this.queryState.searchTerm);
@@ -131,7 +131,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
   private searchTermChanged_() {
     // TODO(tsergeant): Ignore incremental searches in this metric.
     if (this.queryState.searchTerm) {
-      BrowserService.getInstance().recordAction('Search');
+      BrowserServiceImpl.getInstance().recordAction('Search');
     }
   }
 }

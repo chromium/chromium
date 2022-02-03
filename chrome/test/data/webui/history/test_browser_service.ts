@@ -2,12 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService, ForeignSession, QueryResult, RemoveVisitsRequest} from 'chrome://history/history.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {createHistoryInfo} from './test_util.js';
 
-export class TestBrowserService extends TestBrowserProxy {
+export class TestBrowserService extends TestBrowserProxy implements
+    BrowserService {
+  histogramMap: {[key: string]: {[key: string]: number}} = {};
+  actionMap: {[key: string]: number} = {};
+  private delayedRemove_: PromiseResolver<void>|null = null;
+  private delayedQueryResult_: PromiseResolver<QueryResult>|null = null;
+  private ignoreNextQuery_: boolean = false;
+  private foreignSessions_: ForeignSession[] = [];
+  private queryResult_: QueryResult;
+
   constructor() {
     super([
       'deleteForeignSession',
@@ -16,21 +27,13 @@ export class TestBrowserService extends TestBrowserProxy {
       'navigateToUrl',
       'openForeignSessionTab',
       'otherDevicesInitialized',
-      'recordHistogram',
-      'removeVisits',
       'queryHistory',
       'queryHistoryContinuation',
+      'recordHistogram',
+      'removeVisits',
+      'startSignInFlow',
     ]);
-    this.histogramMap = {};
-    this.actionMap = {};
-    /** @private {?PromiseResolver} */
-    this.delayedRemove_ = null;
-    /** @private {?PromiseResolver} */
-    this.delayedQueryResult_ = null;
-    this.ignoreNextQuery_ = false;
-    /** @private {!Array<!ForeignSession>} */
-    this.foreignSessions_ = [];
-    /** @private {!{info: !HistoryQuery, value: !Array<!HistoryEntry>}} */
+
     this.queryResult_ = {info: createHistoryInfo(), value: []};
   }
 
@@ -51,25 +54,21 @@ export class TestBrowserService extends TestBrowserProxy {
     this.ignoreNextQuery_ = true;
   }
 
-  /** @override */
-  deleteForeignSession(sessionTag) {
+  deleteForeignSession(sessionTag: string) {
     this.methodCalled('deleteForeignSession', sessionTag);
   }
 
-  /** @override */
   getForeignSessions() {
     this.methodCalled('getForeignSessions');
     return Promise.resolve(this.foreignSessions_);
   }
 
-  /** @param {!Array<!ForeignSession>} sessions */
-  setForeignSessions(sessions) {
+  setForeignSessions(sessions: ForeignSession[]) {
     this.foreignSessions_ = sessions;
   }
 
-  /** @override */
-  removeVisits(visits) {
-    this.methodCalled('removeVisits', visits);
+  removeVisits(removalList: RemoveVisitsRequest) {
+    this.methodCalled('removeVisits', removalList);
     if (this.delayedRemove_) {
       return this.delayedRemove_.promise;
     }
@@ -78,35 +77,31 @@ export class TestBrowserService extends TestBrowserProxy {
 
   // Resolves the removeVisits promise. delayRemove() must be called first.
   finishRemoveVisits() {
-    this.delayedRemove_.resolve();
+    this.delayedRemove_!.resolve();
     this.delayedRemove_ = null;
   }
 
   // Resolves the queryHistory promise. delayQueryHistory() must be called
   // first.
   finishQueryHistory() {
-    this.delayedQueryResult_.resolve(this.queryResult_);
+    this.delayedQueryResult_!.resolve(this.queryResult_);
     this.delayedQueryResult_ = null;
   }
 
-  /** @override */
   historyLoaded() {
     this.methodCalled('historyLoaded');
   }
 
-  /** @override */
-  navigateToUrl(url, target, e) {
+  navigateToUrl(url: string, _target: string, _e: MouseEvent) {
     this.methodCalled('navigateToUrl', url);
   }
 
-  /** @override */
   openClearBrowsingData() {}
 
-  /** @override */
   openForeignSessionAllTabs() {}
 
-  /** @override */
-  openForeignSessionTab(sessionTag, windowId, tabId, e) {
+  openForeignSessionTab(
+      sessionTag: string, windowId: number, tabId: number, e: MouseEvent) {
     this.methodCalled('openForeignSessionTab', {
       sessionTag: sessionTag,
       windowId: windowId,
@@ -115,18 +110,15 @@ export class TestBrowserService extends TestBrowserProxy {
     });
   }
 
-  /** @override */
   otherDevicesInitialized() {
     this.methodCalled('otherDevicesInitialized');
   }
 
-  /** @param {{info: !HistoryQuery, value: !Array<!QueryResult>}} queryResult */
-  setQueryResult(queryResult) {
+  setQueryResult(queryResult: QueryResult) {
     this.queryResult_ = queryResult;
   }
 
-  /** @override */
-  queryHistory(searchTerm) {
+  queryHistory(searchTerm: string) {
     if (!this.ignoreNextQuery_) {
       this.methodCalled('queryHistory', searchTerm);
     } else {
@@ -138,14 +130,12 @@ export class TestBrowserService extends TestBrowserProxy {
     return Promise.resolve(this.queryResult_);
   }
 
-  /** @override */
   queryHistoryContinuation() {
     this.methodCalled('queryHistoryContinuation');
     return Promise.resolve(this.queryResult_);
   }
 
-  /** @override */
-  recordAction(action) {
+  recordAction(action: string) {
     if (!(action in this.actionMap)) {
       this.actionMap[action] = 0;
     }
@@ -153,25 +143,22 @@ export class TestBrowserService extends TestBrowserProxy {
     this.actionMap[action]++;
   }
 
-  /** @override */
-  recordHistogram(histogram, value, max) {
+  recordHistogram(histogram: string, value: number, max: number) {
     assertTrue(value <= max);
 
     if (!(histogram in this.histogramMap)) {
       this.histogramMap[histogram] = {};
     }
 
-    if (!(value in this.histogramMap[histogram])) {
-      this.histogramMap[histogram][value] = 0;
+    if (!(value in this.histogramMap[histogram]!)) {
+      this.histogramMap[histogram]![value] = 0;
     }
 
-    this.histogramMap[histogram][value]++;
+    this.histogramMap[histogram]![value]++;
     this.methodCalled('recordHistogram');
   }
 
-  /** @override */
   recordTime() {}
-
-  /** @override */
   removeBookmark() {}
+  startSignInFlow() {}
 }

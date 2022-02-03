@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl, BrowserService, MetricsProxyImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl, BrowserServiceImpl, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
@@ -37,7 +37,7 @@ import {TestBrowserService} from './test_browser_service.js';
     setup(function() {
       window.history.replaceState({}, '', '/');
       document.body.innerHTML = '';
-      BrowserService.setInstance(new TestBrowserService());
+      BrowserServiceImpl.setInstance(new TestBrowserService());
       BrowserProxyImpl.setInstance(new TestBrowserProxy());
       MetricsProxyImpl.setInstance(new TestMetricsProxy());
       app = document.createElement('history-app');

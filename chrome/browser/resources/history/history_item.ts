@@ -19,7 +19,7 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 import {HistoryEntry} from './externs.js';
 import {getTemplate} from './history_item.html.js';
@@ -253,7 +253,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
       focusWithoutInk(this.$['menu-button']);
     }
 
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.removeBookmark(this.item.url);
     browserService.recordAction('BookmarkStarClicked');
 
@@ -279,7 +279,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * Record metrics when a result is clicked.
    */
   private onLinkClick_() {
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('EntryLinkClick');
 
     if (this.searchTerm) {
@@ -316,7 +316,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   onLinkRightClick_() {
-    BrowserService.getInstance().recordAction('EntryLinkRightClick');
+    BrowserServiceImpl.getInstance().recordAction('EntryLinkRightClick');
   }
 
   /**

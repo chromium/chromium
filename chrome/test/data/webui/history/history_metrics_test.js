@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserService, ensureLazyLoaded, HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded, HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -23,8 +23,8 @@ suite('Metrics', function() {
   setup(async () => {
     document.body.innerHTML = '';
 
-    BrowserService.setInstance(new TestBrowserService());
-    testService = BrowserService.getInstance();
+    BrowserServiceImpl.setInstance(new TestBrowserService());
+    testService = BrowserServiceImpl.getInstance();
 
     actionMap = testService.actionMap;
     histogramMap = testService.histogramMap;

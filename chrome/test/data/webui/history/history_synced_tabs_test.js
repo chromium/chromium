@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -35,7 +35,7 @@ suite('<history-synced-device-manager>', function() {
     document.body.innerHTML = '';
     window.history.replaceState({}, '', '/');
     testService = new TestBrowserService();
-    BrowserService.setInstance(testService);
+    BrowserServiceImpl.setInstance(testService);
 
     // Need to ensure lazy_load.html has been imported so that the device
     // manager custom element is defined.
@@ -257,7 +257,7 @@ suite('<history-synced-device-manager>', function() {
         })
         .then(args => {
           assertEquals('Chromebook', args.sessionTag, 'sessionTag is correct');
-          assertEquals('123', args.windowId, 'windowId is correct');
+          assertEquals(123, args.windowId, 'windowId is correct');
           assertEquals(456, args.tabId, 'tabId is correct');
           assertFalse(args.e.altKey, 'altKey is defined');
           assertFalse(args.e.ctrlKey, 'ctrlKey is defined');

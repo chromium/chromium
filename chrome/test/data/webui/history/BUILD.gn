@@ -24,8 +24,8 @@ non_preprocessed_files = [
   "history_toolbar_test.js",
   "link_click_test.js",
   "searched_label_test.js",
-  "test_browser_service.js",
-  "test_util.js",
+  "test_browser_service.ts",
+  "test_util.ts",
 ]
 
 generate_grd("build_grdp") {

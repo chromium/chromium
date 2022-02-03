@@ -39,9 +39,9 @@ export type HistoryEntry = {
   time: number,
   title: string,
   url: string,
-  debug: HistoryEntryDebug,
   selected: boolean,
   readableTimestamp: string,
+  debug?: HistoryEntryDebug,
 };
 
 /**

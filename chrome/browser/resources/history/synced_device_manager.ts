@@ -20,7 +20,7 @@ import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSession, ForeignSessionTab} from './externs.js';
 import {HistorySyncedDeviceCardElement} from './synced_device_card.js';
@@ -117,8 +117,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     this.focusGrid_ = new FocusGrid();
 
     // Update the sign in state.
-    BrowserService.getInstance().otherDevicesInitialized();
-    BrowserService.getInstance().recordHistogram(
+    BrowserServiceImpl.getInstance().otherDevicesInitialized();
+    BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.INITIALIZED,
         SyncedTabsHistogram.LIMIT);
   }
@@ -180,13 +180,13 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 
   private onSignInTap_() {
-    BrowserService.getInstance().startSignInFlow();
+    BrowserServiceImpl.getInstance().startSignInFlow();
   }
 
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
     this.actionMenuModel_ = e.detail.tag;
     this.$.menu.get().showAt(e.detail.target);
-    BrowserService.getInstance().recordHistogram(
+    BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.SHOW_SESSION_MENU,
         SyncedTabsHistogram.LIMIT);
   }
@@ -194,7 +194,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   private onOpenAllTap_() {
     const menu = this.$.menu.getIfExists();
     assert(menu);
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.OPEN_ALL,
         SyncedTabsHistogram.LIMIT);
@@ -229,7 +229,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   private onDeleteSessionTap_() {
     const menu = this.$.menu.getIfExists();
     assert(menu);
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HIDE_FOR_NOW,
         SyncedTabsHistogram.LIMIT);
@@ -265,7 +265,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
       signInAllowed: boolean): boolean {
     const show = !signInState && !guestSession && signInAllowed;
     if (show) {
-      BrowserService.getInstance().recordAction(
+      BrowserServiceImpl.getInstance().recordAction(
           'Signin_Impression_FromRecentTabs');
     }
 
@@ -300,7 +300,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
 
     if (sessionList.length > 0 && !this.hasSeenForeignData_) {
       this.hasSeenForeignData_ = true;
-      BrowserService.getInstance().recordHistogram(
+      BrowserServiceImpl.getInstance().recordHistogram(
           SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HAS_FOREIGN_DATA,
           SyncedTabsHistogram.LIMIT);
     }

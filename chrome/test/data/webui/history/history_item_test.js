@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
@@ -29,7 +29,7 @@ suite('<history-item> unit test', function() {
 
   setup(function() {
     document.body.innerHTML = '';
-    BrowserService.setInstance(new TestBrowserService());
+    BrowserServiceImpl.setInstance(new TestBrowserService());
 
     item = document.createElement('history-item');
     item.item = TEST_HISTORY_RESULTS[0];
@@ -73,7 +73,7 @@ suite('<history-item> integration test', function() {
   setup(function() {
     document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    BrowserService.setInstance(testService);
+    BrowserServiceImpl.setInstance(testService);
 
     const app = document.createElement('history-app');
     document.body.appendChild(app);
