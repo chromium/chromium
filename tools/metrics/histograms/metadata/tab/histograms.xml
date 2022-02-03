@@ -320,30 +320,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs{CloseAllTabsDialogType}"
-    units="Boolean" expires_after="2022-06-30">
+<histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs" units="Boolean"
+    expires_after="2022-06-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
     Records the whether the &quot;Close all tabs&quot; action was taken when
     close all tabs confirmation dialog was shown through App Menu &gt; Close all
-    tabs. This is only recorded for Android. {CloseAllTabsDialogType}
+    tabs. This is only recorded for Android.
   </summary>
-  <token key="CloseAllTabsDialogType">
-    <variant name=".CannotUndoWarning"
-        summary="A warning about being unable to undo close all tabs is shown
-                 in addition to the default message. The undo close all
-                 action cannot be undone when using a custom homepage."/>
-    <variant name=".Default"
-        summary="The default close all tabs message is shown alerting users
-                 that this action will close all tabs and lose any unsaved
-                 data."/>
-    <variant name=".NoWarningImmediateExit"
-        summary="The default message is shown, but no additional warning
-                 about being unable to undo close all tabs is shown. Undo
-                 will not be possible due to having a custom homepage."/>
-  </token>
 </histogram>
 
 <histogram name="Tab.Count.Guest" units="units" expires_after="2022-06-19">

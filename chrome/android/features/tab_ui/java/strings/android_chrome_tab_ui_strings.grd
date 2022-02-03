@@ -501,10 +501,7 @@
         Close all tabs?
       </message>
       <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the message of the dialog.">
-        Close all tabs and lose any unsaved data?
-      </message>
-      <message name="IDS_CLOSE_ALL_TABS_DIALOG_WARNING_MESSAGE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the message of the dialog if closing cannot be undone.">
-        WARNING: This action cannot be undone. Close all tabs and lose any unsaved data?
+       You can find your closed tabs in Recent tabs under the Chrome main menu
       </message>
     </messages>
   </release>

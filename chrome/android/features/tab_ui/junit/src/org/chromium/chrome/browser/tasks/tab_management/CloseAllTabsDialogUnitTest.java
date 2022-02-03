@@ -25,11 +25,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -85,7 +83,6 @@ public class CloseAllTabsDialogUnitTest {
     private Context mContext;
     private MockModalDialogManager mMockModalDialogManager;
     private boolean mRunnableCalled;
-    private boolean mShowWarning;
 
     @Mock
     private UmaRecorder mUmaRecorder;
@@ -99,20 +96,11 @@ public class CloseAllTabsDialogUnitTest {
         mRunnableCalled = false;
     }
 
-    private void setShowWarning(boolean enableWarning) {
-        mShowWarning = enableWarning;
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CLOSE_ALL_TABS_MODAL_DIALOG,
-                CloseAllTabsDialog.SHOW_CANNOT_UNDO_WARNING, Boolean.toString(enableWarning));
-        FeatureList.setTestValues(testValues);
-    }
-
     private ModalDialogManager getModalDialogManager() {
         return mMockModalDialogManager;
     }
 
-    private void verifyModel(boolean willExitOnCloseAll) {
-        final boolean showCannotUndoWarning = willExitOnCloseAll && mShowWarning;
+    private void verifyModel() {
         assertEquals(
                 ModalDialogManager.ModalDialogType.APP, mMockModalDialogManager.getDialogType());
 
@@ -120,9 +108,7 @@ public class CloseAllTabsDialogUnitTest {
         assertNotNull(model);
         assertEquals(mContext.getString(R.string.close_all_tabs_dialog_title),
                 model.get(ModalDialogProperties.TITLE));
-        assertEquals(mContext.getString(showCannotUndoWarning
-                                     ? R.string.close_all_tabs_dialog_warning_message
-                                     : R.string.close_all_tabs_dialog_message),
+        assertEquals(mContext.getString(R.string.close_all_tabs_dialog_message),
                 model.get(ModalDialogProperties.MESSAGE));
         assertEquals(mContext.getString(R.string.menu_close_all_tabs),
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
@@ -133,71 +119,35 @@ public class CloseAllTabsDialogUnitTest {
                 model.get(ModalDialogProperties.BUTTON_STYLES));
     }
 
-    private void verifyDismissed(boolean willExitOnCloseAll, boolean positiveAction) {
+    private void verifyDismissed(boolean positiveAction) {
         assertNull(mMockModalDialogManager.getDialogModel());
         assertEquals(-1, mMockModalDialogManager.getDialogType());
         verify(mUmaRecorder, times(1))
-                .recordBooleanHistogram("Tab.CloseAllTabsDialog.ClosedAllTabs."
-                                + ((willExitOnCloseAll && mShowWarning)
-                                                ? "CannotUndoWarning"
-                                                : (willExitOnCloseAll ? "NoWarningImmediateExit"
-                                                                      : "Default")),
-                        positiveAction);
+                .recordBooleanHistogram("Tab.CloseAllTabsDialog.ClosedAllTabs", positiveAction);
     }
 
     @Test
     @SmallTest
     public void testDialog() {
-        setShowWarning(false);
-        final boolean willExitOnCloseAll = false;
-        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
-                () -> { mRunnableCalled = true; }, willExitOnCloseAll);
-        verifyModel(willExitOnCloseAll);
+        CloseAllTabsDialog.show(
+                mContext, this::getModalDialogManager, () -> { mRunnableCalled = true; });
+        verifyModel();
 
         mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.POSITIVE);
         assertTrue(mRunnableCalled);
-        verifyDismissed(willExitOnCloseAll, true);
-    }
-
-    @Test
-    @SmallTest
-    public void testDialogWithWarning() {
-        setShowWarning(true);
-        final boolean willExitOnCloseAll = true;
-        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
-                () -> { mRunnableCalled = true; }, willExitOnCloseAll);
-        verifyModel(willExitOnCloseAll);
-
-        mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.NEGATIVE);
-        assertFalse(mRunnableCalled);
-        verifyDismissed(willExitOnCloseAll, false);
-    }
-
-    @Test
-    @SmallTest
-    public void testDialogImmediateExitNoWarning() {
-        setShowWarning(false);
-        final boolean willExitOnCloseAll = true;
-        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
-                () -> { mRunnableCalled = true; }, willExitOnCloseAll);
-        verifyModel(willExitOnCloseAll);
-
-        mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.NEGATIVE);
-        assertFalse(mRunnableCalled);
-        verifyDismissed(willExitOnCloseAll, false);
+        verifyDismissed(true);
     }
 
     @Test
     @SmallTest
     public void testDismissNoButton() {
-        final boolean willExitOnCloseAll = false;
-        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
-                () -> { mRunnableCalled = true; }, willExitOnCloseAll);
-        verifyModel(willExitOnCloseAll);
+        CloseAllTabsDialog.show(
+                mContext, this::getModalDialogManager, () -> { mRunnableCalled = true; });
+        verifyModel();
 
         mMockModalDialogManager.dismissDialog(mMockModalDialogManager.getDialogModel(),
                 DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         assertFalse(mRunnableCalled);
-        verifyDismissed(willExitOnCloseAll, false);
+        verifyDismissed(false);
     }
 }

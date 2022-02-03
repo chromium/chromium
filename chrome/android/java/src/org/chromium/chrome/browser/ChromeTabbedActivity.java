@@ -2060,9 +2060,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         } else if (id == R.id.close_all_tabs_menu_id) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLOSE_ALL_TABS_MODAL_DIALOG)) {
                 CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
-                        ()
-                                -> getTabModelSelector().closeAllTabs(),
-                        HomepageManager.shouldCloseAppWithZeroTabs());
+                        () -> getTabModelSelector().closeAllTabs());
             } else {
                 // Close both incognito and normal tabs.
                 getTabModelSelector().closeAllTabs();

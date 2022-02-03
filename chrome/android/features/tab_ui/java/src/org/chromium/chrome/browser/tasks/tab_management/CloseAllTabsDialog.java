@@ -6,12 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -22,25 +19,15 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Manages the close all tabs modal dialog.
  */
 public class CloseAllTabsDialog {
-    @VisibleForTesting
-    static final String SHOW_CANNOT_UNDO_WARNING = "show_cannot_undo_warning";
-
     private CloseAllTabsDialog() {}
 
     /**
      * Shows a modal dialog to confirm or cancel the close all tabs action.
      */
     public static void show(Context context,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, Runnable onCloseAll,
-            boolean willExitOnCloseAll) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, Runnable onCloseAll) {
         assert modalDialogManagerSupplier.hasValue();
         final ModalDialogManager manager = modalDialogManagerSupplier.get();
-
-        // Show the cannot undo warning if the app will exit on close all and the param is enabled.
-        final boolean showCannotUndoWarning = willExitOnCloseAll
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLOSE_ALL_TABS_MODAL_DIALOG, SHOW_CANNOT_UNDO_WARNING,
-                        true);
 
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override
@@ -64,11 +51,7 @@ public class CloseAllTabsDialog {
                 }
 
                 // Assess whether a stricter warning has any impact on close all tabs behavior.
-                RecordHistogram.recordBooleanHistogram("Tab.CloseAllTabsDialog.ClosedAllTabs."
-                                + (showCannotUndoWarning
-                                                ? "CannotUndoWarning"
-                                                : (willExitOnCloseAll ? "NoWarningImmediateExit"
-                                                                      : "Default")),
+                RecordHistogram.recordBooleanHistogram("Tab.CloseAllTabsDialog.ClosedAllTabs",
                         dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
             }
         };
@@ -79,9 +62,7 @@ public class CloseAllTabsDialog {
                         .with(ModalDialogProperties.TITLE,
                                 context.getString(R.string.close_all_tabs_dialog_title))
                         .with(ModalDialogProperties.MESSAGE,
-                                context.getString(showCannotUndoWarning
-                                                ? R.string.close_all_tabs_dialog_warning_message
-                                                : R.string.close_all_tabs_dialog_message))
+                                context.getString(R.string.close_all_tabs_dialog_message))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.menu_close_all_tabs))
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
