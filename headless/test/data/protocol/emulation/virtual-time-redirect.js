@@ -35,11 +35,10 @@
       FetchHelper.makeContentResponse(`.test { color: blue; }`, "text/css")
   );
 
-  dp.Emulation.onVirtualTimeBudgetExpired(_ => testRunner.completeTest());
-
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending', budget: 5000,
-      waitForNavigation: true});
-  dp.Page.navigate({url: 'http://test.com/index.html'});
+  await dp.Page.navigate({url: 'http://test.com/index.html'});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending', budget: 5000});
+  await dp.Emulation.onceVirtualTimeBudgetExpired();
+  testRunner.completeTest();
 })

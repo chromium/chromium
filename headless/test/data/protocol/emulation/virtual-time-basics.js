@@ -8,8 +8,8 @@
   dp.Emulation.onVirtualTimeBudgetExpired(data => testRunner.completeTest());
 
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
+  await dp.Page.navigate({url: testRunner.url('/resources/blank.html')});
   await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending',
-      budget: 1000, waitForNavigation: true});
-  dp.Page.navigate({url: testRunner.url('/resources/blank.html')});
+    policy: 'pauseIfNetworkFetchesPending',
+    budget: 1000});
 })

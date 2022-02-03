@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  let VirtualTimeController =
+  const VirtualTimeController =
       await testRunner.loadScript('virtual-time-controller.js');
 
-  let {page, session, dp} = await testRunner.startWithFrameControl(
+  const {page, session, dp} = await testRunner.startWithFrameControl(
     `Tests virtual time controller operation.`);
 
   await dp.Runtime.enable();
@@ -17,26 +17,17 @@
     testRunner.log(text);
   });
 
-  let expirationCount = 0;
   const vtc = new VirtualTimeController(testRunner, dp, 25);
-  await vtc.grantInitialTime(100, 1000, onInstalled, onExpired);
-
-  async function onInstalled(virtualTimeBase){
-    testRunner.log(`onInstalled:`);
-  }
-
-  async function onExpired(totalElapsedTime) {
+  await vtc.initialize(1000);
+  testRunner.log(`onInstalled:`);
+  await dp.Page.navigate({url: testRunner.url(
+    'resources/virtual-time-controller-test.html')});
+  for (let expirationCount = 0; expirationCount < 3; ++expirationCount) {
+    const totalElapsedTime = await vtc.grantTime(
+        expirationCount === 0 ? 100 : 50);
     testRunner.log(`onExpired: ${totalElapsedTime}`);
     if (expirationCount === 0)
       await session.evaluate('startRAF()');
-
-    if (++expirationCount < 3) {
-      await vtc.grantTime(50, onExpired);
-    } else {
-      testRunner.completeTest();
-    }
   }
-
-  dp.Page.navigate({url: testRunner.url(
-      'resources/virtual-time-controller-test.html')});
+  testRunner.completeTest();
 })

@@ -34,12 +34,8 @@
   //   | openssl sha256 -binary \
   //   | openssl base64
 
-  await virtualTimeController.grantInitialTime(500, 1000,
-    null,
-    async () => {
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://example.com/');
+  await virtualTimeController.grantTime(500);
+  testRunner.completeTest();
 })

@@ -49,44 +49,14 @@
         </filter>
       </svg>`);
 
-  await virtualTimeController.grantInitialTime(500, 1000,
-    null,
-    async () => {
-      const frameTimeTicks = virtualTimeController.currentFrameTime();
-      const screenshotData =
-          (await dp.HeadlessExperimental.beginFrame(
-              {frameTimeTicks, screenshot: {format: 'png'}}))
-          .result.screenshotData;
-      await logScreenShotData(screenshotData);
-      testRunner.completeTest();
-    }
-  );
-
-  function logScreenShotData(pngBase64) {
-    const image = new Image();
-
-    let callback;
-    let promise = new Promise(fulfill => callback = fulfill);
-    image.onload = function() {
-      testRunner.log(`Screenshot size: `
-          + `${image.naturalWidth} x ${image.naturalHeight}`);
-      const canvas = document.createElement('canvas');
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0);
-      for (let n = 0; n < 25; ++n) {
-        const rgba = ctx.getImageData(n, n, 1, 1).data;
-        testRunner.log(`rgba @(${n},${n}): ${rgba}`);
-      }
-
-      callback();
-    }
-
-    image.src = `data:image/png;base64,${pngBase64}`;
-
-    return promise;
-  }
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://www.example.com/');
+  await virtualTimeController.grantTime(5000);
+  const frameTimeTicks = virtualTimeController.currentFrameTime();
+  const ctx = await virtualTimeController.captureScreenshot();
+  for (let n = 0; n < 25; ++n) {
+    const rgba = ctx.getImageData(n, n, 1, 1).data;
+    testRunner.log(`rgba @(${n},${n}): ${rgba}`);
+  }
+  testRunner.completeTest();
 })

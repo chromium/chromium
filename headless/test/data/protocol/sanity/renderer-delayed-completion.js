@@ -27,14 +27,11 @@
       </body>
       </html>`);
 
-  await virtualTimeController.grantInitialTime(3000 + 100, 1000,
-    null,
-    async () => {
-      testRunner.log(await session.evaluate(
-          `document.getElementById('content').innerHTML.trim()`));
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://example.com/foobar');
+  await virtualTimeController.grantTime(3000 + 100);
+  testRunner.log(await session.evaluate(
+    `document.getElementById('content').innerHTML.trim()`));
+  testRunner.completeTest();
+
 })

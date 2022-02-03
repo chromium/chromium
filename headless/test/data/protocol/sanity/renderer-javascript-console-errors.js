@@ -42,12 +42,8 @@
         `${details.text} ${details.exception.description.replace(/\n.*/, '')}`);
   });
 
-  await virtualTimeController.grantInitialTime(500, 1000,
-    null,
-    async () => {
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://example.com/foobar');
+  await virtualTimeController.grantTime(500);
+  testRunner.completeTest();
 })

@@ -11,19 +11,16 @@
   const helper = new FetchHelper(testRunner, dp);
   await helper.enable();
 
-  dp.Emulation.onVirtualTimeBudgetExpired(data => testRunner.completeTest());
+  helper.onceRequest('http://test.com/index.html').fulfill(
+    FetchHelper.makeContentResponse(`
+        <iframe src="detach-frame-iframe.html"
+        width="400" height="200" id="iframe1"></iframe>`)
+  );
 
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending', budget: 5000,
-      waitForNavigation: true});
-  dp.Page.navigate({url: 'http://test.com/index.html'});
-
-  await helper.onceRequest('http://test.com/index.html').fulfill(
-      FetchHelper.makeContentResponse(`
-          <iframe src="detach-frame-iframe.html"
-          width="400" height="200" id="iframe1"></iframe>`)
-  );
+  await dp.Page.navigate({url: 'http://test.com/index.html'});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending', budget: 5000});
 
   await helper.onceRequest('http://test.com/detach-frame-iframe.html').fulfill(
       FetchHelper.makeContentResponse(`
@@ -35,11 +32,12 @@
   // we need to detach iframe with the request in-flight.
   const params = (await dp.Fetch.onceRequestPaused()).params;
   await session.evaluate(`document.getElementById('iframe1').remove()`);
-  await dp.Fetch.fulfillRequest({
+  dp.Fetch.fulfillRequest({
     requestId: params.requesId,
     responseCode: 200,
     responseHeaders: [{name: 'Content-type', value: 'text/css'}],
     body: btoa(`.test { color: blue; }`)
   });
-
+  await dp.Emulation.onceVirtualTimeBudgetExpired();
+  testRunner.completeTest();
 })

@@ -67,33 +67,29 @@
   // requested url logging to ensure test's stability.
   httpInterceptor.setDisableRequestedUrlsLogging(true);
 
-  await virtualTimeController.grantInitialTime(1000, 1000,
-    null,
-    async () => {
-      testRunner.log(await session.evaluate(
-        `document.getElementById('frameA').contentDocument.body.innerHTML`));
-      testRunner.log(await session.evaluate(
-        `document.getElementById('frameB').contentDocument.` +
-        `getElementById('iframe').contentDocument.body.innerHTML`));
-
-      frameNavigationHelper.logFrames();
-      frameNavigationHelper.logScheduledNavigations();
-
-      httpInterceptor.hasRequestedUrls([
-          'http://www.example.com/',
-          'http://www.example.com/1',
-          'http://www.example.com/frameA/',
-          'http://www.example.com/frameA/1',
-          'http://www.example.com/frameA/2',
-          'http://www.example.com/frameB/',
-          'http://www.example.com/iframe/',
-          'http://www.example.com/iframe/1',
-          'http://www.example.com/iframe/2',
-          'http://www.example.com/iframe/3']);
-
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://www.example.com/');
+  await virtualTimeController.grantTime(1000);
+  testRunner.log(await session.evaluate(
+    `document.getElementById('frameA').contentDocument.body.innerHTML`));
+  testRunner.log(await session.evaluate(
+    `document.getElementById('frameB').contentDocument.` +
+    `getElementById('iframe').contentDocument.body.innerHTML`));
+
+  frameNavigationHelper.logFrames();
+  frameNavigationHelper.logScheduledNavigations();
+
+  httpInterceptor.hasRequestedUrls([
+      'http://www.example.com/',
+      'http://www.example.com/1',
+      'http://www.example.com/frameA/',
+      'http://www.example.com/frameA/1',
+      'http://www.example.com/frameA/2',
+      'http://www.example.com/frameB/',
+      'http://www.example.com/iframe/',
+      'http://www.example.com/iframe/1',
+      'http://www.example.com/iframe/2',
+      'http://www.example.com/iframe/3']);
+
+  testRunner.completeTest();
 })

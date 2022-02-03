@@ -15,12 +15,9 @@
       `<!DOCTYPE html><p>Pass</p>`,
       ['HTTP/1.1 302 Found', 'Location: http://']);
 
-  await virtualTimeController.grantInitialTime(1000, 1000,
-    null,
-    async () => {
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://www.example.com/');
+  await virtualTimeController.grantTime(1000);
+
+  testRunner.completeTest();
 })

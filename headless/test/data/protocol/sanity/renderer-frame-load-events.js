@@ -50,32 +50,29 @@
   // requested url logging to ensure test's stability.
   httpInterceptor.setDisableRequestedUrlsLogging(true);
 
-  await virtualTimeController.grantInitialTime(500, 1000,
-    null,
-    async () => {
-      testRunner.log(await session.evaluate(
-        `document.getElementById('frameA').contentDocument.body.innerText`));
-      testRunner.log(await session.evaluate(
-        `document.getElementById('frameB').contentDocument.` +
-        `getElementById('iframe').contentDocument.body.innerHTML`));
-
-      frameNavigationHelper.logFrames();
-      frameNavigationHelper.logScheduledNavigations();
-
-      httpInterceptor.hasRequestedUrls([
-          'http://example.com/',
-          'http://example.com/1',
-          'http://example.com/frameA/',
-          'http://example.com/frameA/1',
-          'http://example.com/frameB/',
-          'http://example.com/frameB/1',
-          'http://example.com/frameB/1/iframe/',
-          'http://example.com/frameB/1/iframe/1'
-      ]);
-
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://example.com/');
+  await virtualTimeController.grantTime(500);
+
+  testRunner.log(await session.evaluate(
+    `document.getElementById('frameA').contentDocument.body.innerText`));
+  testRunner.log(await session.evaluate(
+    `document.getElementById('frameB').contentDocument.` +
+    `getElementById('iframe').contentDocument.body.innerHTML`));
+
+  frameNavigationHelper.logFrames();
+  frameNavigationHelper.logScheduledNavigations();
+
+  httpInterceptor.hasRequestedUrls([
+      'http://example.com/',
+      'http://example.com/1',
+      'http://example.com/frameA/',
+      'http://example.com/frameA/1',
+      'http://example.com/frameB/',
+      'http://example.com/frameB/1',
+      'http://example.com/frameB/1/iframe/',
+      'http://example.com/frameB/1/iframe/1'
+  ]);
+
+  testRunner.completeTest();
 })

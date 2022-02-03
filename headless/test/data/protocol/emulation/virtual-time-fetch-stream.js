@@ -27,9 +27,8 @@
   });
 
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending', budget: 5000,
-      waitForNavigation: true});
   await dp.Page.navigate({url: 'http://test.com/index.html'});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending', budget: 5000});
   await session.evaluateAsync(`fetch('/fetch')`);
 })

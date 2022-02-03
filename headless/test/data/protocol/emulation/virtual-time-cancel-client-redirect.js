@@ -37,10 +37,6 @@ const html = `
   const virtualTimeTicksBase =
      (await dp.Emulation.setVirtualTimePolicy({policy: 'pause'}))
          .result.virtualTimeTicksBase;
-  dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending',
-      budget: virtualTimeChunkSize,
-      waitForNavigation: true});
 
   let frameTimeTicks = 0;
   dp.Emulation.onVirtualTimeBudgetExpired(async e => {
@@ -57,7 +53,10 @@ const html = `
         policy: 'pauseIfNetworkFetchesPending', budget: virtualTimeChunkSize});
   });
 
-  dp.Page.navigate({url: 'http://test.com/index.html'});
+  await dp.Page.navigate({url: 'http://test.com/index.html'});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending',
+    budget: virtualTimeChunkSize});
 
   const params = (await dp.Runtime.onceConsoleAPICalled()).params;
   testRunner.log(`page says: ${params.args[0].value}`);
