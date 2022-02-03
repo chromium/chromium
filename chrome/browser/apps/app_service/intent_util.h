@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,6 +27,7 @@
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
+class ArcIntentHelperBridge;
 class IntentFilter;
 }
 #endif
@@ -59,9 +61,27 @@ apps::mojom::IntentFilterPtr CreateFileFilter(
     const std::string& activity_name = "",
     bool include_directories = false);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Create intent filters from `package_name` and `intent_helper_bridge`.
+apps::IntentFilters CreateIntentFiltersFromArcBridge(
+    const std::string& package_name,
+    arc::ArcIntentHelperBridge* intent_helper_bridge);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Create intent filters for `app_id`. The `app_scope` is needed because
+// currently the correct app scope is not provided through WebApp API for
+// shortcuts.
+apps::IntentFilters CreateIntentFiltersForWebApp(
+    const web_app::AppId& app_id,
+    bool is_note_taking_web_app,
+    const GURL& app_scope,
+    const apps::ShareTarget* app_share_target,
+    const apps::FileHandlers* enabled_file_handlers);
+
 // Create intent filters for |web_app|.
 // The |scope| is needed because currently the correct app scope is not
 // provided through WebApp API for shortcuts.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
     const web_app::AppId& app_id,
     bool is_note_taking_web_app,
@@ -71,11 +91,23 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
 
 // Create intent filters for a Chrome app (extension-based) e.g. for
 // file_handlers.
+apps::IntentFilters CreateIntentFiltersForChromeApp(
+    const extensions::Extension* extension);
+
+// Create intent filters for a Chrome app (extension-based) e.g. for
+// file_handlers.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
     const extensions::Extension* extension);
 
 // Create intent filters for an Extension (is_extension() == true) e.g. for
 // file_browser_handlers.
+apps::IntentFilters CreateIntentFiltersForExtension(
+    const extensions::Extension* extension);
+
+// Create intent filters for an Extension (is_extension() == true) e.g. for
+// file_browser_handlers.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
     const extensions::Extension* extension);
 

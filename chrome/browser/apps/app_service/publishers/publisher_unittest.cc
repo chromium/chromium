@@ -24,10 +24,12 @@
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/test/fake_app_instance.h"
@@ -50,6 +52,7 @@ namespace {
 
 const base::Time kLastLaunchTime = base::Time::Now();
 const base::Time kInstallTime = base::Time::Now();
+const char kUrl[] = "https://example.com/";
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 scoped_refptr<extensions::Extension> MakeExtensionApp(
@@ -147,6 +150,40 @@ bool IsEqual(const apps::Permissions& source, const apps::Permissions& target) {
   return true;
 }
 
+apps::IntentFilters CreateIntentFilters() {
+  const GURL url(kUrl);
+  apps::IntentFilters filters;
+  apps::IntentFilterPtr filter = std::make_unique<apps::IntentFilter>();
+
+  apps::ConditionValues values1;
+  values1.push_back(std::make_unique<apps::ConditionValue>(
+      apps_util::kIntentActionView, apps::PatternMatchType::kNone));
+  filter->conditions.push_back(std::make_unique<apps::Condition>(
+      apps::ConditionType::kAction, std::move(values1)));
+
+  apps::ConditionValues values2;
+  values2.push_back(std::make_unique<apps::ConditionValue>(
+      url.scheme(), apps::PatternMatchType::kNone));
+  filter->conditions.push_back(std::make_unique<apps::Condition>(
+      apps::ConditionType::kScheme, std::move(values2)));
+
+  apps::ConditionValues values3;
+  values3.push_back(std::make_unique<apps::ConditionValue>(
+      url.host(), apps::PatternMatchType::kNone));
+  filter->conditions.push_back(std::make_unique<apps::Condition>(
+      apps::ConditionType::kHost, std::move(values3)));
+
+  apps::ConditionValues values4;
+  values4.push_back(std::make_unique<apps::ConditionValue>(
+      url.path(), apps::PatternMatchType::kPrefix));
+  filter->conditions.push_back(std::make_unique<apps::Condition>(
+      apps::ConditionType::kPattern, std::move(values4)));
+
+  filters.push_back(std::move(filter));
+
+  return filters;
+}
+
 }  // namespace
 
 namespace apps {
@@ -185,7 +222,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 
   std::string CreateWebApp(const std::string& app_name) {
-    const GURL kAppUrl("https://example.com/");
+    const GURL kAppUrl(kUrl);
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->title = base::UTF8ToUTF16(app_name);
@@ -210,6 +247,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
       EXPECT_EQ(source, target);
     }
   }
+
   void VerifyApp(AppType app_type,
                  const std::string& app_id,
                  const std::string& name,
@@ -274,6 +312,22 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     ASSERT_NE(cache.states_.end(), cache.states_.find(app_id));
     EXPECT_EQ(apps::Readiness::kUninstalledByUser,
               cache.states_[app_id]->readiness);
+  }
+
+  void VerifyIntentFilters(const std::string& app_id) {
+    apps::IntentFilters source = CreateIntentFilters();
+
+    apps::IntentFilters target;
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->AppRegistryCache()
+        .ForApp(app_id, [&target](const apps::AppUpdate& update) {
+          target = update.GetIntentFilters();
+        });
+
+    EXPECT_EQ(source.size(), target.size());
+    for (int i = 0; i < static_cast<int>(source.size()); i++) {
+      EXPECT_EQ(*source[i], *target[i]);
+    }
   }
 
  private:
@@ -571,6 +625,7 @@ TEST_F(PublisherTest, WebAppsOnApps) {
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*has_badge=*/false, /*paused=*/false);
+  VerifyIntentFilters(app_id);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

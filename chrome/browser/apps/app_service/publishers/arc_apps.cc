@@ -50,6 +50,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -1581,6 +1582,15 @@ std::unique_ptr<App> ArcApps::CreateApp(
 
   app->has_badge = app_notifications_.HasNotification(app_id);
   app->paused = paused_apps_.IsPaused(app_id);
+
+  auto* intent_helper_bridge =
+      arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
+  if (intent_helper_bridge &&
+      app_info.package_name !=
+          arc::ArcIntentHelperBridge::kArcIntentHelperPackageName) {
+    app->intent_filters = apps_util::CreateIntentFiltersFromArcBridge(
+        app_info.package_name, intent_helper_bridge);
+  }
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

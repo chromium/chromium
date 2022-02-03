@@ -67,6 +67,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -822,6 +823,15 @@ std::unique_ptr<App> ExtensionAppsChromeOs::CreateApp(
 
   app->has_badge = app_notifications_.HasNotification(extension->id());
   app->paused = paused;
+
+  bool is_quickoffice =
+      extension->is_extension() &&
+      extension->id() == extension_misc::kQuickOfficeComponentExtensionId;
+  if (extension->is_app() || is_quickoffice) {
+    app->intent_filters = apps_util::CreateIntentFiltersForChromeApp(extension);
+  } else if (extension->is_extension()) {
+    app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);
+  }
 
   return app;
 }
