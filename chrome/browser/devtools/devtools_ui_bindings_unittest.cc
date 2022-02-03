@@ -40,10 +40,6 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "?service-backend=ws://localhost:9222/services",
        "devtools://devtools/"
        "?service-backend=ws://localhost:9222/services"},
-      {"devtools://devtools/?dockSide=undocked",
-       "devtools://devtools/?dockSide=undocked"},
-      {"devtools://devtools/?dockSide=dock-to-bottom", "devtools://devtools/"},
-      {"devtools://devtools/?dockSide=bottom", "devtools://devtools/"},
       {"devtools://devtools/?remoteBase="
        "http://example.com:1234/remote-base#hash",
        "devtools://devtools/?remoteBase="

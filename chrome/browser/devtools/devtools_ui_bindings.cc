@@ -342,10 +342,6 @@ std::string SanitizeFrontendQueryParam(
   if (key == "ws" || key == "service-backend")
     return SanitizeEndpoint(value);
 
-  // Only support undocked for old frontends.
-  if (key == "dockSide" && value == "undocked")
-    return value;
-
   if (key == "panel" &&
       (value == "elements" || value == "console" || value == "sources"))
     return value;

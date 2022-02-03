@@ -230,22 +230,21 @@ BrowserWindow* DevToolsToolboxDelegate::GetInspectedBrowserWindow() {
 // static
 GURL DecorateFrontendURL(const GURL& base_url) {
   std::string frontend_url = base_url.spec();
-  std::string url_string(
-      frontend_url +
-      ((frontend_url.find("?") == std::string::npos) ? "?" : "&") +
-      "dockSide=undocked");  // TODO(dgozman): remove this support in M38.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(switches::kDevToolsFlags)) {
-    url_string += "&" + command_line->GetSwitchValueASCII(
-        switches::kDevToolsFlags);
+    frontend_url = frontend_url +
+                   ((frontend_url.find("?") == std::string::npos) ? "?" : "&") +
+                   command_line->GetSwitchValueASCII(switches::kDevToolsFlags);
   }
 
   if (command_line->HasSwitch(switches::kCustomDevtoolsFrontend)) {
-    url_string += "&debugFrontend=true";
+    frontend_url = frontend_url +
+                   ((frontend_url.find("?") == std::string::npos) ? "?" : "&") +
+                   "debugFrontend=true";
   }
 
-  return GURL(url_string);
+  return GURL(frontend_url);
 }
 
 }  // namespace
@@ -1039,7 +1038,6 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       close_on_detach_(true),
       // This initialization allows external front-end to work without changes.
       // We don't wait for docking call, but instead immediately show undocked.
-      // Passing "dockSide=undocked" parameter ensures proper UI.
       life_stage_(can_dock ? kNotLoaded : kIsDockedSet),
       action_on_load_(DevToolsToggleAction::NoOp()),
       intercepted_page_beforeunload_(false),
