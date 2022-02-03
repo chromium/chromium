@@ -480,7 +480,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
         GetFailedReportDelay(report.failed_send_attempts());
     if (delay.has_value()) {
       should_retry = true;
-      report.set_report_time(report.report_time() + *delay);
+      report.set_report_time(base::Time::Now() + *delay);
     }
   }
 
