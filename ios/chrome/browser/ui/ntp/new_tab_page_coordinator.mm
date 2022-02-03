@@ -260,11 +260,13 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   self.ntpMediator = [self createNTPMediator];
 
   // Creating the DiscoverFeedService will start the Discover feed.
-  DiscoverFeedService* discoverFeedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+  // TODO(crbug.com/1264872): Move this to Chrome launch code.
+  DiscoverFeedServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
 
-  self.feedMetricsRecorder = discoverFeedService->GetFeedMetricsRecorder();
+  self.feedMetricsRecorder = ios::GetChromeBrowserProvider()
+                                 .GetDiscoverFeedProvider()
+                                 ->GetFeedMetricsRecorder();
 
   self.contentSuggestionsCoordinator =
       [self createContentSuggestionsCoordinator];

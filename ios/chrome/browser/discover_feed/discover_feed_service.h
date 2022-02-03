@@ -28,10 +28,6 @@ class DiscoverFeedService : public KeyedService,
 
   ~DiscoverFeedService() override;
 
-  // Returns the FeedMetricsRecorder to be used by the Feed, a single instance
-  // of FeedMetricsRecorder needs to be used per BrowserState.
-  FeedMetricsRecorder* GetFeedMetricsRecorder();
-
   // KeyedService:
   void Shutdown() override;
 

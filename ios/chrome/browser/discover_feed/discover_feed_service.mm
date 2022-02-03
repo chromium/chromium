@@ -28,15 +28,11 @@ DiscoverFeedService::DiscoverFeedService(
   discover_config.authService = authentication_service;
   discover_config.prefService = pref_service;
   discover_config.metricsRecorder = feed_metrics_recorder_;
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StartFeed(
+  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StartFeedService(
       discover_config);
 }
 
 DiscoverFeedService::~DiscoverFeedService() {}
-
-FeedMetricsRecorder* DiscoverFeedService::GetFeedMetricsRecorder() {
-  return feed_metrics_recorder_;
-}
 
 void DiscoverFeedService::Shutdown() {
   identity_manager_observation_.Reset();
