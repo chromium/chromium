@@ -209,15 +209,15 @@ void SharedWorkerHost::Start(
   started_ = true;
   final_response_url_ = final_response_url;
 
+  // `network::mojom::ClientSecurityState` contains a worker-relevant subset of
+  // the policy container. https://crbug.com/1177199 tracks using
+  // `PolicyContainerPolicies` for workers instead.
+  //
+  // https://html.spec.whatwg.org/C/#initialize-worker-policy-container
   worker_client_security_state_ = network::mojom::ClientSecurityState::New();
-  if (final_response_url.SchemeIsBlob() ||
-      final_response_url.SchemeIs(url::kAboutScheme) ||
-      final_response_url.SchemeIs(url::kDataScheme) ||
-      // TODO(https://crbug.com/1146362): Inherit from the file creator instead
-      // once creator policies are persisted through the filesystem store.
-      final_response_url.SchemeIs(url::kFileSystemScheme)) {
-    // > 13.6 If response's url's scheme is a local scheme, then set worker
-    // global scope's embedder policy to owner's embedder policy.
+  if (final_response_url.SchemeIsLocal()) {
+    // TODO(https://crbug.com/1146362): Inherit from the file creator instead
+    // once creator policies are persisted through the filesystem store.
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
       worker_client_security_state_ =
@@ -227,6 +227,7 @@ void SharedWorkerHost::Start(
           creator_client_security_state_->cross_origin_embedder_policy;
     }
   } else {
+    // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
       worker_client_security_state_->ip_address_space = CalculateIPAddressSpace(
@@ -240,10 +241,7 @@ void SharedWorkerHost::Start(
               worker_client_security_state_->ip_address_space,
               worker_client_security_state_->is_web_secure_context);
     }
-    // https://html.spec.whatwg.org/C/#run-a-worker
     if (main_script_load_params->response_head->parsed_headers) {
-      // > 13.7 Otherwise, set worker global scope's embedder policy to the
-      // result of obtaining an embedder policy from response.
       worker_client_security_state_->cross_origin_embedder_policy =
           main_script_load_params->response_head->parsed_headers
               ->cross_origin_embedder_policy;

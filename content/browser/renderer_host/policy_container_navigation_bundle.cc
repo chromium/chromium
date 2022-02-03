@@ -15,16 +15,6 @@
 namespace content {
 namespace {
 
-// Returns whether |url| has a local scheme - i.e. a document that commits with
-// |url| should inherit its policies from the initiator or the parent frame.
-//
-// If |url| is not `about:srcdoc` and this function returns true, then the
-// document should inherit its policies from the initiator.
-bool HasLocalScheme(const GURL& url) {
-  return url.SchemeIs(url::kAboutScheme) || url.SchemeIs(url::kDataScheme) ||
-         url.SchemeIs(url::kBlobScheme) || url.SchemeIs(url::kFileSystemScheme);
-}
-
 // Returns a copy of |parent|'s policies, or nullopt if |parent| is nullptr.
 std::unique_ptr<PolicyContainerPolicies> GetParentPolicies(
     RenderFrameHostImpl* parent) {
@@ -204,7 +194,7 @@ PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
 
 std::unique_ptr<PolicyContainerPolicies>
 PolicyContainerNavigationBundle::ComputeInheritedPolicies(const GURL& url) {
-  DCHECK(HasLocalScheme(url)) << "No inheritance allowed for non-local schemes";
+  DCHECK(url.SchemeIsLocal()) << url << " should not inherit policies";
 
   if (url.IsAboutSrcdoc()) {
     DCHECK(parent_policies_)
@@ -223,7 +213,7 @@ std::unique_ptr<PolicyContainerPolicies>
 PolicyContainerNavigationBundle::ComputeFinalPolicies(const GURL& url) {
   // Policies are either inherited from another document for local scheme, or
   // directly set from the delivered response.
-  if (!HasLocalScheme(url))
+  if (!url.SchemeIsLocal())
     return delivered_policies_->Clone();
 
   // For a local scheme, history policies should not incorporate delivered ones

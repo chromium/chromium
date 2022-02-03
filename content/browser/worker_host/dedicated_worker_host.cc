@@ -367,12 +367,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   }
 
   // https://html.spec.whatwg.org/C/#run-a-worker
-  if (final_response_url.SchemeIsBlob() ||
-      final_response_url.SchemeIs(url::kAboutScheme) ||
-      final_response_url.SchemeIs(url::kDataScheme) ||
-      // TODO(https://crbug.com/1146362): Inherit from the file creator instead
-      // once creator policies are persisted through the filesystem store.
-      final_response_url.SchemeIs(url::kFileSystemScheme)) {
+  if (final_response_url.SchemeIsLocal()) {
+    // TODO(https://crbug.com/1146362): Inherit from the file creator instead
+    // once creator policies are persisted through the filesystem store.
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
       worker_client_security_state_ = creator_client_security_state_->Clone();

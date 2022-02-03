@@ -876,6 +876,20 @@ TEST(GURLTest, SchemeIsBlob) {
   EXPECT_FALSE(GURL("http://bar/").SchemeIsBlob());
 }
 
+TEST(GURLTest, SchemeIsLocal) {
+  EXPECT_TRUE(GURL("BLOB://BAR/").SchemeIsLocal());
+  EXPECT_TRUE(GURL("blob://bar/").SchemeIsLocal());
+  EXPECT_TRUE(GURL("DATA:TEXT/HTML,BAR").SchemeIsLocal());
+  EXPECT_TRUE(GURL("data:text/html,bar").SchemeIsLocal());
+  EXPECT_TRUE(GURL("ABOUT:BAR").SchemeIsLocal());
+  EXPECT_TRUE(GURL("about:bar").SchemeIsLocal());
+  EXPECT_TRUE(GURL("FILESYSTEM:HTTP://FOO.EXAMPLE/BAR").SchemeIsLocal());
+  EXPECT_TRUE(GURL("filesystem:http://foo.example/bar").SchemeIsLocal());
+
+  EXPECT_FALSE(GURL("http://bar/").SchemeIsLocal());
+  EXPECT_FALSE(GURL("file:///bar").SchemeIsLocal());
+}
+
 // Tests that the 'content' of the URL is properly extracted. This can be
 // complex in cases such as multiple schemes (view-source:http:) or for
 // javascript URLs. See GURL::GetContent for more details.
