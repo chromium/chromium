@@ -94,8 +94,9 @@ class WatcherDispatcher : public Dispatcher {
   //
   // NOTE: This pointer is only used to index |ready_watches_| and may point to
   // an invalid object. It must therefore never be dereferenced. Use void*
-  // instead of raw_ptr<void> as the latter could trip dangling pointer checks.
-  const void* last_watch_to_block_arming_ = 0;
+  // instead of Watch* to enforce the intention to not dereference it. Don't use
+  // raw_ptr<> as it could trip dangling pointer checks.
+  const void* last_watch_to_block_arming_ = nullptr;
 };
 
 }  // namespace core
