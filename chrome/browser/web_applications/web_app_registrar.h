@@ -293,6 +293,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
   void NotifyWebAppUserDisplayModeChanged(const AppId& app_id,
                                           DisplayMode user_display_mode);
+  void NotifyWebAppRunOnOsLoginModeChanged(
+      const AppId& app_id,
+      RunOnOsLoginMode run_on_os_login_mode);
 
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(

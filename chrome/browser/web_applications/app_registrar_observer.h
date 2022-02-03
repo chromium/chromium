@@ -76,6 +76,9 @@ class AppRegistrarObserver : public base::CheckedObserver {
                                           const base::Time& time) {}
   virtual void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                               DisplayMode user_display_mode) {}
+  virtual void OnWebAppRunOnOsLoginModeChanged(
+      const AppId& app_id,
+      RunOnOsLoginMode run_on_os_login_mode) {}
 };
 
 }  // namespace web_app

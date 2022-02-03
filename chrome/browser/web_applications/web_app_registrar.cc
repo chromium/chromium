@@ -175,6 +175,13 @@ void WebAppRegistrar::NotifyWebAppUserDisplayModeChanged(
     observer.OnWebAppUserDisplayModeChanged(app_id, user_display_mode);
 }
 
+void WebAppRegistrar::NotifyWebAppRunOnOsLoginModeChanged(
+    const AppId& app_id,
+    RunOnOsLoginMode run_on_os_login_mode) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppRunOnOsLoginModeChanged(app_id, run_on_os_login_mode);
+}
+
 void WebAppRegistrar::NotifyAppRegistrarShutdown() {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnAppRegistrarShutdown();

@@ -218,11 +218,15 @@ void WebAppSyncBridge::SetAppUserDisplayMode(const AppId& app_id,
 
 void WebAppSyncBridge::SetAppRunOnOsLoginMode(const AppId& app_id,
                                               RunOnOsLoginMode mode) {
-  ScopedRegistryUpdate update(this);
-  WebApp* web_app = update->UpdateApp(app_id);
-  if (web_app)
-    web_app->SetRunOnOsLoginMode(mode);
+  {
+    ScopedRegistryUpdate update(this);
+    WebApp* web_app = update->UpdateApp(app_id);
+    if (web_app)
+      web_app->SetRunOnOsLoginMode(mode);
+  }
+  registrar_->NotifyWebAppRunOnOsLoginModeChanged(app_id, mode);
 }
+
 void WebAppSyncBridge::SetAppWindowControlsOverlayEnabled(const AppId& app_id,
                                                           bool enabled) {
   ScopedRegistryUpdate update(this);

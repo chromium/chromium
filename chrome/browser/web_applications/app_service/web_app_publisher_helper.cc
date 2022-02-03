@@ -1151,6 +1151,23 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
   delegate_->PublishWebApp(std::move(app));
 }
 
+void WebAppPublisherHelper::PublishRunOnOsLoginModeUpdate(
+    const std::string& app_id,
+    RunOnOsLoginMode run_on_os_login_mode) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return;
+  }
+
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = app_type();
+  app->app_id = app_id;
+  // The runOnOsLogin mode is currently not defined in this CL
+  // hence this function just publishes a normal WebApp.
+  // Changes are plumbed in the next CL.
+  delegate_->PublishWebApp(std::move(app));
+}
+
 std::string WebAppPublisherHelper::GenerateShortcutId() {
   return base::NumberToString(shortcut_id_generator_.GenerateNextId().value());
 }
@@ -1273,6 +1290,12 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
     const AppId& app_id,
     DisplayMode user_display_mode) {
   PublishWindowModeUpdate(app_id, user_display_mode);
+}
+
+void WebAppPublisherHelper::OnWebAppRunOnOsLoginModeChanged(
+    const AppId& app_id,
+    RunOnOsLoginMode run_on_os_login_mode) {
+  PublishRunOnOsLoginModeUpdate(app_id, run_on_os_login_mode);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
