@@ -64,7 +64,7 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
 
 }  // namespace
 
-// https://drafts.csswg.org/web-animations/#dom-animatable-animate
+// https://w3.org/TR/web-animations-1/#dom-animatable-animate
 Animation* Animatable::animate(
     ScriptState* script_state,
     const ScriptValue& keyframes,
@@ -110,6 +110,7 @@ Animation* Animatable::animate(
   return animation;
 }
 
+// https://w3.org/TR/web-animations-1/#dom-animatable-animate
 Animation* Animatable::animate(ScriptState* script_state,
                                const ScriptValue& keyframes,
                                ExceptionState& exception_state) {
@@ -133,6 +134,7 @@ Animation* Animatable::animate(ScriptState* script_state,
   return element->GetDocument().Timeline().Play(effect, exception_state);
 }
 
+// https://w3.org/TR/web-animations-1/#dom-animatable-getanimations
 HeapVector<Member<Animation>> Animatable::getAnimations(
     GetAnimationsOptions* options) {
   bool use_subtree = options && options->subtree();

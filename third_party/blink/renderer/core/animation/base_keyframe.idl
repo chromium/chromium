@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://drafts.csswg.org/web-animations/#dictdef-basekeyframe
+// https://w3.org/TR/web-animations-1/#dictdef-basekeyframe
 
 enum CompositeOperationOrAuto {"replace", "add", "accumulate", "auto"};
 

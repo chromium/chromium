@@ -56,7 +56,7 @@ enum TimingUpdateReason {
 };
 
 // Represents the content of an Animation and its fractional timing state.
-// https://drafts.csswg.org/web-animations/#the-animationeffect-interface
+// https://w3.org/TR/web-animations-1/#the-animationeffect-interface
 class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
   // Calls Attach/Detach, GetAnimation, UpdateInheritedTime.

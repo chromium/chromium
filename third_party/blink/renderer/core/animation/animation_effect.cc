@@ -75,7 +75,7 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       DCHECK_GE(active_duration, AnimationTimeDelta());
 
       // Per the spec, the end time has a lower bound of 0.0:
-      // https://drafts.csswg.org/web-animations-1/#end-time
+      // https://w3.org/TR/web-animations-1/#end-time
       const AnimationTimeDelta end_time =
           std::max(timing_.start_delay + active_duration + timing_.end_delay,
                    AnimationTimeDelta());
@@ -144,7 +144,7 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       normalized_->iteration_duration, timing_.iteration_count);
 
   // Per the spec, the end time has a lower bound of 0.0:
-  // https://drafts.csswg.org/web-animations-1/#end-time
+  // https://w3.org/TR/web-animations-1/#end-time#end-time
   normalized_->end_time =
       std::max(normalized_->start_delay + normalized_->active_duration +
                    normalized_->end_delay,

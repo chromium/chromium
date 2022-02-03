@@ -40,7 +40,7 @@ class V8ObjectBuilder;
 //     underlying value. If this is 'auto', the keyframe effect composite
 //     operation is used instead.
 //
-// For spec details, refer to: https://drafts.csswg.org/web-animations/#keyframe
+// For spec details, refer to: https://w3.org/TR/web-animations-1/#keyframe
 //
 // Implementation-wise the base Keyframe class captures the offset, composite
 // operation, and timing function. It is left to subclasses to define and store

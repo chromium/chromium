@@ -49,7 +49,7 @@ class SampledEffect;
 class V8UnionKeyframeEffectOptionsOrUnrestrictedDouble;
 
 // Represents the effect of an Animation on an Element's properties.
-// https://drafts.csswg.org/web-animations/#keyframe-effect
+// https://w3.org/TR/web-animations-1/#keyframe-effects
 class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   DEFINE_WRAPPERTYPEINFO();
 

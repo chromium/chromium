@@ -242,6 +242,10 @@ void KeyframeEffect::setComposite(String composite_string) {
   InvalidateAndNotifyOwner();
 }
 
+// Returns a list of 'ComputedKeyframes'. A ComputedKeyframe consists of the
+// normal keyframe data combined with the computed offset for the given
+// keyframe.
+// https://w3.org/TR/web-animations-1/#dom-keyframeeffect-getkeyframes
 HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     ScriptState* script_state) {
   if (Animation* animation = GetAnimation())
@@ -251,11 +255,6 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
   if (!model_->HasFrames() || !script_state->ContextIsValid())
     return computed_keyframes;
 
-  // getKeyframes() returns a list of 'ComputedKeyframes'. A ComputedKeyframe
-  // consists of the normal keyframe data combined with the computed offset for
-  // the given keyframe.
-  //
-  // https://w3c.github.io/web-animations/#dom-keyframeeffectreadonly-getkeyframes
   KeyframeVector keyframes = ignore_css_keyframes_
                                  ? model_->GetFrames()
                                  : model_->GetComputedKeyframes(EffectTarget());

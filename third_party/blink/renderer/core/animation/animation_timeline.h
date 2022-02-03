@@ -50,7 +50,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsCSSScrollTimeline() const { return false; }
   virtual bool IsActive() const = 0;
   virtual AnimationTimeDelta ZeroTime() = 0;
-  // https://drafts.csswg.org/web-animations/#monotonically-increasing-timeline
+  // https://w3.org/TR/web-animations-1/#monotonically-increasing-timeline
   // A timeline is monotonically increasing if its reported current time is
   // always greater than or equal than its previously reported current time.
   bool IsMonotonicallyIncreasing() const { return IsDocumentTimeline(); }

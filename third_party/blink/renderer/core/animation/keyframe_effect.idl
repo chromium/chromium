@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://drafts.csswg.org/web-animations/#the-keyframeeffect-interface
+// https://w3.org/TR/web-animations-1/#the-keyframeeffect-interface
 
 enum CompositeOperation { "replace", "add", "accumulate" };
 

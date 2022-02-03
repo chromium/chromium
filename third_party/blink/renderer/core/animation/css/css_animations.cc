@@ -1954,7 +1954,8 @@ const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll() {
 }
 
 // Properties that affect animations are not allowed to be affected by
-// animations. https://drafts.csswg.org/web-animations/#not-animatable-section
+// animations.
+// https://w3.org/TR/web-animations-1/#animating-properties
 bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kAnimation:

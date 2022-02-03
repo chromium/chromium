@@ -441,7 +441,7 @@ bool GetPropertyIndexedKeyframeValues(const v8::Local<v8::Object>& keyframe,
 // Implements the procedure to "process a keyframes argument" from the
 // web-animations spec for an object form keyframes argument.
 //
-// See https://drafts.csswg.org/web-animations/#processing-a-keyframes-argument
+// See https://w3.org/TR/web-animations-1/#processing-a-keyframes-argument
 StringKeyframeVector ConvertObjectForm(Element* element,
                                        Document& document,
                                        const v8::Local<v8::Object>& v8_keyframe,
