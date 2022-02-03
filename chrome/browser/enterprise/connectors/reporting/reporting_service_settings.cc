@@ -75,6 +75,24 @@ ReportingServiceSettings::ReportingServiceSettings(
       enabled_event_names_.insert(event_name);
     }
   }
+
+  const base::Value* enabled_opt_in_events_value =
+      settings_value.FindListKey(kKeyEnabledOptInEvents);
+  if (enabled_opt_in_events_value) {
+    for (const base::Value& event : enabled_opt_in_events_value->GetList()) {
+      DCHECK(event.is_dict());
+      const std::string* name = event.FindStringKey(kKeyOptInEventName);
+      const base::Value* url_patterns_value =
+          event.FindListKey(kKeyOptInEventUrlPatterns);
+
+      DCHECK(url_patterns_value->is_list());
+      for (const base::Value& url_pattern : url_patterns_value->GetList()) {
+        DCHECK(url_pattern.is_string());
+
+        enabled_opt_in_events_[*name].push_back(url_pattern.GetString());
+      }
+    }
+  }
 }
 
 absl::optional<ReportingSettings>
@@ -90,6 +108,10 @@ ReportingServiceSettings::GetReportingSettings() const {
 
   settings.enabled_event_names.insert(enabled_event_names_.begin(),
                                       enabled_event_names_.end());
+
+  settings.enabled_opt_in_events.insert(enabled_opt_in_events_.begin(),
+                                        enabled_opt_in_events_.end());
+
   return settings;
 }
 

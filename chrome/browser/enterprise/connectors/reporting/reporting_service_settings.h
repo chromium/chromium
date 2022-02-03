@@ -46,6 +46,10 @@ class ReportingServiceSettings {
 
   // The events that are enabled for the current service provider.
   std::set<std::string> enabled_event_names_;
+
+  // The enabled opt-in events for the current service provider, mapping to the
+  // URL patterns that represent on which URL they are enabled.
+  std::map<std::string, std::vector<std::string>> enabled_opt_in_events_;
 };
 
 }  // namespace enterprise_connectors

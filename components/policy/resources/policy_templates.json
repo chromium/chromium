@@ -24917,12 +24917,29 @@
               'type': 'array',
               'items': { 'type': 'string' },
             },
+            'enabled_opt_in_events': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'name': { 'type': 'string' },
+                  'url_patterns': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  },
+                },
+              },
+            },
           },
         },
       },
       'example_value': [{
         'service_provider': 'Google',
         'enabled_event_names': ['passwordChangedEvent', 'sensitiveDataEvent'],
+        'enabled_opt_in_events': [
+          { 'name': 'loginEvent', 'url_patterns': ['*'] },
+          { 'name': 'passwordBreachEvent', 'url_patterns': ['example.com', 'other.example.com'] },
+        ],
       }],
       'features': {
         'dynamic_refresh': True,
