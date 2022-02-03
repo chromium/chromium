@@ -27,6 +27,7 @@ import {BrowserProxy} from './browser_proxy.js';
 import {States} from './constants.js';
 import {MojomData} from './data.js';
 import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
+import {getTemplate} from './manager.html.js';
 import {SearchService} from './search_service.js';
 import {DownloadsToolbarElement} from './toolbar.js';
 
@@ -49,6 +50,10 @@ const DownloadsManagerElementBase = FindShortcutMixin(PolymerElement);
 export class DownloadsManagerElement extends DownloadsManagerElementBase {
   static get is() {
     return 'downloads-manager';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -368,10 +373,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   // Override FindShortcutMixin methods.
   searchInputHasFocus() {
     return this.$.toolbar.isSearchFocused();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

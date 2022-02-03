@@ -22,13 +22,14 @@ import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {HTMLEscape} from 'chrome://resources/js/util.m.js';
-import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {DangerType, States} from './constants.js';
 import {MojomData} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {IconLoaderImpl} from './icon_loader.js';
+import {getTemplate} from './item.html.js';
 
 export interface DownloadsItemElement {
   $: {
@@ -47,6 +48,10 @@ const DownloadsItemElementBase =
 export class DownloadsItemElement extends DownloadsItemElementBase {
   static get is() {
     return 'downloads-item';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -626,10 +631,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         (element as HTMLElement).focus();
       }
     });
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

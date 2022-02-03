@@ -24,6 +24,7 @@ import {BrowserProxy} from './browser_proxy.js';
 import {MojomData} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
+import {getTemplate} from './toolbar.html.js';
 
 export interface DownloadsToolbarElement {
   $: {
@@ -36,6 +37,10 @@ export interface DownloadsToolbarElement {
 export class DownloadsToolbarElement extends PolymerElement {
   static get is() {
     return 'downloads-toolbar';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -122,10 +127,6 @@ export class DownloadsToolbarElement extends PolymerElement {
   private updateClearAll_() {
     this.shadowRoot!.querySelector<HTMLButtonElement>('.clear-all')!.hidden =
         !this.canClearAll();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 
