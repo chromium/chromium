@@ -57,7 +57,8 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-callbacks.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class UnguessableToken;
@@ -66,6 +67,10 @@ class UnguessableToken;
 namespace ukm {
 class UkmRecorder;
 }  // namespace ukm
+
+namespace v8 {
+class MicrotaskQueue;
+}  // namespace v8
 
 namespace blink {
 
