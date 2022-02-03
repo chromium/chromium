@@ -204,7 +204,9 @@ WebVector<WebFormElement> WebDocument::Forms() const {
   form_elements.ReserveCapacity(forms->length());
   for (Element* element : *forms) {
     // Strange but true, sometimes node can be 0.
-    if (auto* html_form_element = DynamicTo<HTMLFormElement>(element))
+    // TODO(https://crbug.com/1293602): This shouldn't be possible. Investigate
+    // if it happens and why and simplify the code.
+    if (auto* html_form_element = ::blink::DynamicTo<HTMLFormElement>(element))
       form_elements.emplace_back(html_form_element);
   }
   return form_elements;

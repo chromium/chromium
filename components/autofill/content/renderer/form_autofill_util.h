@@ -146,10 +146,10 @@ GURL GetCanonicalActionForForm(const blink::WebFormElement& form);
 GURL GetDocumentUrlWithoutAuth(const blink::WebDocument& document);
 
 // Returns true if |element| is a month input element.
-bool IsMonthInput(const blink::WebInputElement* element);
+bool IsMonthInput(const blink::WebInputElement& element);
 
 // Returns true if |element| is a text input element.
-bool IsTextInput(const blink::WebInputElement* element);
+bool IsTextInput(const blink::WebInputElement& element);
 
 // Returns true if |element| is a select element.
 bool IsSelectElement(const blink::WebFormControlElement& element);
@@ -158,11 +158,11 @@ bool IsSelectElement(const blink::WebFormControlElement& element);
 bool IsTextAreaElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a checkbox or a radio button element.
-bool IsCheckableElement(const blink::WebInputElement* element);
+bool IsCheckableElement(const blink::WebInputElement& element);
 
 // Returns true if |element| is one of the input element types that can be
 // autofilled. {Text, Radiobutton, Checkbox}.
-bool IsAutofillableInputElement(const blink::WebInputElement* element);
+bool IsAutofillableInputElement(const blink::WebInputElement& element);
 
 // Returns true if |element| is one of the element types that can be autofilled.
 // {Text, Radiobutton, Checkbox, Select, TextArea}.

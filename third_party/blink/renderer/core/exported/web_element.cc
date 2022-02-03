@@ -213,7 +213,8 @@ WebString WebElement::GetComputedValue(const WebString& property_name) {
 }
 
 void WebElement::UseCountParamUrlUsageIfNeeded(bool is_pdf) const {
-  if (auto* object = DynamicTo<HTMLObjectElement>(ConstUnwrap<Element>()))
+  if (auto* object =
+          ::blink::DynamicTo<HTMLObjectElement>(ConstUnwrap<Element>()))
     object->UseCountParamUrlUsageIfNeeded(is_pdf);
 }
 

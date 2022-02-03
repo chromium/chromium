@@ -113,6 +113,9 @@ class BLINK_EXPORT WebNode {
   template <typename T>
   const T ToConst() const;
 
+  template <typename T>
+  T DynamicTo() const;
+
 #if INSIDE_BLINK
   WebNode(Node*);
   WebNode& operator=(Node*);
@@ -133,11 +136,13 @@ class BLINK_EXPORT WebNode {
   WebPrivatePtr<Node> private_;
 };
 
-#define DECLARE_WEB_NODE_TYPE_CASTS(type) \
-  template <>                             \
-  BLINK_EXPORT type WebNode::To<type>();  \
-  template <>                             \
-  BLINK_EXPORT const type WebNode::ToConst<type>() const
+#define DECLARE_WEB_NODE_TYPE_CASTS(type)                 \
+  template <>                                             \
+  BLINK_EXPORT type WebNode::To<type>();                  \
+  template <>                                             \
+  BLINK_EXPORT const type WebNode::ToConst<type>() const; \
+  template <>                                             \
+  BLINK_EXPORT type WebNode::DynamicTo<type>() const
 
 #if INSIDE_BLINK
 #define DEFINE_WEB_NODE_TYPE_CASTS(type, predicate)        \
@@ -153,6 +158,14 @@ class BLINK_EXPORT WebNode {
     SECURITY_DCHECK(IsNull() || (predicate));              \
     type result;                                           \
     result.WebNode::Assign(*this);                         \
+    return result;                                         \
+  }                                                        \
+  template <>                                              \
+  BLINK_EXPORT type WebNode::DynamicTo<type>() const {     \
+    type result;                                           \
+    if (!IsNull() && (predicate)) {                        \
+      result.WebNode::Assign(*this);                       \
+    }                                                      \
     return result;                                         \
   }
 #endif

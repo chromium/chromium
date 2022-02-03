@@ -93,19 +93,18 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
   for (const WebFormControlElement& element : form.GetFormControlElements()) {
     // We're only interested in the presence
     // of <input type="hidden" /> elements.
-    static base::NoDestructor<WebString> kHidden("hidden");
-    const blink::WebInputElement* input = blink::ToWebInputElement(&element);
-    if (!input || input->FormControlTypeForAutofill() != *kHidden)
+    const WebInputElement input = element.DynamicTo<WebInputElement>();
+    if (input.IsNull() || input.FormControlTypeForAutofill() != "hidden")
       continue;
 
     // There must be a hidden input named "rart".
-    if (input->FormControlName() == "rart")
+    if (input.FormControlName() == "rart")
       has_rart_field = true;
 
     // There must be a hidden input named "continue", whose value points
     // to a password (or password testing) site.
-    if (input->FormControlName() == "continue" &&
-        re2::RE2::PartialMatch(input->Value().Utf8(),
+    if (input.FormControlName() == "continue" &&
+        re2::RE2::PartialMatch(input.Value().Utf8(),
                                g_password_site_matcher.Get())) {
       has_continue_field = true;
     }

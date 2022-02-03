@@ -128,23 +128,22 @@ void InferUsernameFieldData(
 
   for (const blink::WebFormControlElement& control_element :
        all_control_elements) {
-    const blink::WebInputElement* input_element =
-        ToWebInputElement(&control_element);
-    if (!input_element || input_element->IsPasswordFieldForAutofill())
+    const WebInputElement input_element =
+        control_element.DynamicTo<WebInputElement>();
+    if (input_element.IsNull() || input_element.IsPasswordFieldForAutofill())
       continue;
-    const std::u16string element_name =
-        input_element->NameForAutofill().Utf16();
+    const std::u16string element_name = input_element.NameForAutofill().Utf16();
     for (size_t i = next_element_range_begin; i < form_data.fields.size();
          ++i) {
       const FormFieldData& field_data = form_data.fields[i];
-      if (input_element->NameForAutofill().IsEmpty())
+      if (input_element.NameForAutofill().IsEmpty())
         continue;
 
       // Find matching field data and web input element.
       if (field_data.name == element_name) {
         next_element_range_begin = i + 1;
         possible_usernames_data->push_back(
-            ComputeUsernameFieldData(*input_element, field_data));
+            ComputeUsernameFieldData(input_element, field_data));
         break;
       }
     }

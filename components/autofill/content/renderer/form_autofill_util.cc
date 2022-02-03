@@ -809,7 +809,7 @@ std::vector<std::string> AncestorTagNames(
 bool InferLabelForElement(const WebFormControlElement& element,
                           std::u16string* label,
                           FormFieldData::LabelSource* label_source) {
-  if (IsCheckableElement(ToWebInputElement(&element))) {
+  if (IsCheckableElement(element.DynamicTo<WebInputElement>())) {
     if (InferLabelFromNext(element, label, label_source))
       return true;
   }
@@ -1109,7 +1109,11 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // Only autofill empty fields (or those with the field's default value
     // attribute) and the field that initiated the filling, i.e. the field the
     // user is currently editing and interacting with.
-    const WebInputElement* input_element = ToWebInputElement(&element);
+    // TODO(https://crbug.com/1293625): It's unclear if this code can always
+    // assume an input element. There are no null checks below, so this would
+    // just crash if the expectation is violated. Once To<T>() properly CHECKs,
+    // update this to use To<>().
+    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
     static base::NoDestructor<WebString> kValue("value");
     static base::NoDestructor<WebString> kPlaceholder("placeholder");
 
@@ -1250,16 +1254,16 @@ void FillFormField(const FormFieldData& data,
   if (!data.is_autofilled)
     return;
 
-  WebInputElement* input_element = ToWebInputElement(field);
+  WebInputElement input_element = field->DynamicTo<WebInputElement>();
 
   if (IsCheckableElement(input_element)) {
-    input_element->SetChecked(IsChecked(data.check_status), true);
+    input_element.SetChecked(IsChecked(data.check_status), true);
   } else {
     std::u16string value = data.value;
     if (IsTextInput(input_element) || IsMonthInput(input_element)) {
       // If the maxlength attribute contains a negative value, maxLength()
       // returns the default maxlength value.
-      TruncateString(&value, input_element->MaxLength());
+      TruncateString(&value, input_element.MaxLength());
     }
     field->SetAutofillValue(blink::WebString::FromUTF16(value));
   }
@@ -1295,13 +1299,13 @@ void PreviewFormField(const FormFieldData& data,
   // Preview input, textarea and select fields. For input fields, excludes
   // checkboxes and radio buttons, as there is no provision for
   // setSuggestedCheckedValue in WebInputElement.
-  WebInputElement* input_element = ToWebInputElement(field);
+  WebInputElement input_element = field->DynamicTo<WebInputElement>();
   if (IsTextInput(input_element) || IsMonthInput(input_element)) {
     // If the maxlength attribute contains a negative value, maxLength()
     // returns the default maxlength value.
-    input_element->SetSuggestedValue(blink::WebString::FromUTF16(
-        data.value.substr(0, input_element->MaxLength())));
-    input_element->SetAutofillState(WebAutofillState::kPreviewed);
+    input_element.SetSuggestedValue(blink::WebString::FromUTF16(
+        data.value.substr(0, input_element.MaxLength())));
+    input_element.SetAutofillState(WebAutofillState::kPreviewed);
   } else if (IsTextAreaElement(*field) || IsSelectElement(*field)) {
     field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
     field->SetAutofillState(WebAutofillState::kPreviewed);
@@ -1830,45 +1834,39 @@ GURL GetDocumentUrlWithoutAuth(const WebDocument& document) {
   return full_origin.ReplaceComponents(rep);
 }
 
-bool IsMonthInput(const WebInputElement* element) {
-  static base::NoDestructor<WebString> kMonth("month");
-  return element && !element->IsNull() &&
-         element->FormControlTypeForAutofill() == *kMonth;
+bool IsMonthInput(const WebInputElement& element) {
+  return !element.IsNull() && element.FormControlTypeForAutofill() == "month";
 }
 
 // All text fields, including password fields, should be extracted.
-bool IsTextInput(const WebInputElement* element) {
-  return element && !element->IsNull() && element->IsTextField();
+bool IsTextInput(const WebInputElement& element) {
+  return !element.IsNull() && element.IsTextField();
 }
 
 bool IsSelectElement(const WebFormControlElement& element) {
-  // Static for improved performance.
-  static base::NoDestructor<WebString> kSelectOne("select-one");
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == *kSelectOne;
+         element.FormControlTypeForAutofill() == "select-one";
 }
 
 bool IsTextAreaElement(const WebFormControlElement& element) {
-  // Static for improved performance.
-  static base::NoDestructor<WebString> kTextArea("textarea");
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == *kTextArea;
+         element.FormControlTypeForAutofill() == "textarea";
 }
 
-bool IsCheckableElement(const WebInputElement* element) {
-  if (!element || element->IsNull())
+bool IsCheckableElement(const WebInputElement& element) {
+  if (element.IsNull())
     return false;
 
-  return element->IsCheckbox() || element->IsRadioButton();
+  return element.IsCheckbox() || element.IsRadioButton();
 }
 
-bool IsAutofillableInputElement(const WebInputElement* element) {
+bool IsAutofillableInputElement(const WebInputElement& element) {
   return IsTextInput(element) || IsMonthInput(element) ||
          IsCheckableElement(element);
 }
 
 bool IsAutofillableElement(const WebFormControlElement& element) {
-  const WebInputElement* input_element = ToWebInputElement(&element);
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   return IsAutofillableInputElement(input_element) ||
          IsSelectElement(element) || IsTextAreaElement(element);
 }
@@ -2006,7 +2004,7 @@ void WebFormControlElementToFormField(
   if (!IsAutofillableElement(element))
     return;
 
-  const WebInputElement* input_element = ToWebInputElement(&element);
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
       IsSelectElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
@@ -2021,10 +2019,10 @@ void WebFormControlElementToFormField(
 
   if (IsAutofillableInputElement(input_element)) {
     if (IsTextInput(input_element))
-      field->max_length = input_element->MaxLength();
+      field->max_length = input_element.MaxLength();
 
     SetCheckStatus(field, IsCheckableElement(input_element),
-                   input_element->IsChecked());
+                   input_element.IsChecked());
   } else if (IsTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else if (extract_mask & EXTRACT_OPTIONS) {
@@ -2042,8 +2040,9 @@ void WebFormControlElementToFormField(
     }
   }
   if (extract_mask & EXTRACT_DATALIST) {
-    if (auto* input = blink::ToWebInputElement(&element)) {
-      GetDataListSuggestions(*input, &field->datalist_values,
+    if (WebInputElement input = element.DynamicTo<WebInputElement>();
+        !input.IsNull()) {
+      GetDataListSuggestions(input, &field->datalist_values,
                              &field->datalist_labels);
     }
   }
@@ -2328,7 +2327,8 @@ void ClearPreviewedElements(
 
     // Clear the suggested value. For the initiating node, also restore the
     // original value.
-    WebInputElement* input_element = ToWebInputElement(&control_element);
+    WebInputElement input_element =
+        control_element.DynamicTo<WebInputElement>();
     if (IsTextInput(input_element) || IsMonthInput(input_element) ||
         IsTextAreaElement(control_element)) {
       control_element.SetSuggestedValue(WebString());

@@ -1166,9 +1166,8 @@ TEST_F(PasswordGenerationAgentTest, GenerationAvailableByRendererIds) {
   std::vector<WebInputElement> password_elements;
   for (const char* id : kPasswordElementsIds) {
     WebElement element = GetElementById(id);
-    WebInputElement* input = ToWebInputElement(&element);
-    ASSERT_TRUE(input);
-    password_elements.push_back(*input);
+    WebInputElement input = element.To<WebInputElement>();
+    password_elements.push_back(input);
   }
 
   // Simulate that the browser informs about eligible for generation form.

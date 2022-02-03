@@ -403,16 +403,17 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
 
   control_element.SetAutofillState(WebAutofillState::kNotFilled);
 
-  WebInputElement* web_input_element = ToWebInputElement(&control_element);
+  WebInputElement web_input_element =
+      control_element.DynamicTo<WebInputElement>();
   if (form_util::IsTextInput(web_input_element) ||
       form_util::IsMonthInput(web_input_element)) {
-    web_input_element->SetAutofillValue(blink::WebString());
+    web_input_element.SetAutofillValue(blink::WebString());
 
     // Clearing the value in the focused node (above) can cause the selection
     // to be lost. We force the selection range to restore the text cursor.
-    if (element == *web_input_element) {
-      size_t length = web_input_element->Value().length();
-      web_input_element->SetSelectionRange(length, length);
+    if (element == web_input_element) {
+      size_t length = web_input_element.Value().length();
+      web_input_element.SetSelectionRange(length, length);
     }
   } else if (form_util::IsTextAreaElement(control_element)) {
     control_element.SetAutofillValue(blink::WebString());
@@ -428,7 +429,7 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
     }
   } else {
     WebInputElement input_element = control_element.To<WebInputElement>();
-    DCHECK(form_util::IsCheckableElement(&input_element));
+    DCHECK(form_util::IsCheckableElement(input_element));
     auto checkable_element_it = initial_checked_state_.find(
         FieldRendererId(input_element.UniqueRendererFormControlId()));
     if (checkable_element_it != initial_checked_state_.end() &&
@@ -606,7 +607,7 @@ size_t FormCache::ScanFormControlElements(
       ++num_editable_elements;
     } else {
       const WebInputElement input_element = element.ToConst<WebInputElement>();
-      if (!form_util::IsCheckableElement(&input_element))
+      if (!form_util::IsCheckableElement(input_element))
         ++num_editable_elements;
     }
   }
@@ -620,14 +621,15 @@ void FormCache::SaveInitialValues(
       const WebSelectElement select_element =
           element.ToConst<WebSelectElement>();
       initial_select_values_.insert(
-          std::make_pair(select_element.UniqueRendererFormControlId(),
-                         select_element.Value().Utf16()));
+          {FieldRendererId(select_element.UniqueRendererFormControlId()),
+           select_element.Value().Utf16()});
     } else {
-      const WebInputElement* input_element = ToWebInputElement(&element);
+      const WebInputElement input_element =
+          element.DynamicTo<WebInputElement>();
       if (form_util::IsCheckableElement(input_element)) {
         initial_checked_state_.insert(
-            std::make_pair(input_element->UniqueRendererFormControlId(),
-                           input_element->IsChecked()));
+            {FieldRendererId(input_element.UniqueRendererFormControlId()),
+             input_element.IsChecked()});
       }
     }
   }

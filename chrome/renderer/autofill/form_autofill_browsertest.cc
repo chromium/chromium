@@ -2122,8 +2122,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements.push_back(GetInputElementById("email"));
     elements.push_back(GetInputElementById("email2"));
     elements.push_back(GetInputElementById("phone"));
-    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
-    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+    WebInputElement firstname = elements[0].To<WebInputElement>();
+    WebInputElement lastname = elements[1].To<WebInputElement>();
 
     // Set the auto-filled attribute.
     for (WebFormControlElement& e : elements) {
@@ -2173,8 +2173,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements.push_back(GetInputElementById("email"));
     elements.push_back(GetInputElementById("email2"));
     elements.push_back(GetInputElementById("phone"));
-    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
-    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+    WebInputElement firstname = elements[0].To<WebInputElement>();
+    WebInputElement lastname = elements[1].To<WebInputElement>();
 
     // Set the auto-filled attribute.
     for (WebFormControlElement& e : elements) {
@@ -2223,8 +2223,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements.push_back(GetInputElementById("email"));
     elements.push_back(GetInputElementById("email2"));
     elements.push_back(GetInputElementById("phone"));
-    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
-    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+    WebInputElement firstname = elements[0].To<WebInputElement>();
+    WebInputElement lastname = elements[1].To<WebInputElement>();
 
     // Set the auto-filled attribute.
     for (WebFormControlElement& e : elements) {

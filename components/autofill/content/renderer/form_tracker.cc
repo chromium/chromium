@@ -53,7 +53,8 @@ void FormTracker::AjaxSucceeded() {
 
 void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  DCHECK(ToWebInputElement(&element) || form_util::IsTextAreaElement(element));
+  DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
+         form_util::IsTextAreaElement(element));
 
   if (ignore_control_changes_)
     return;
@@ -63,8 +64,8 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   if (!element.Focused())
     return;
 
-  const WebInputElement* input_element = ToWebInputElement(&element);
-  if (!input_element)
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  if (input_element.IsNull())
     return;
 
   // Disregard text changes that aren't caused by user gestures or pastes. Note

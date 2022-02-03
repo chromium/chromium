@@ -166,10 +166,4 @@ WebInputElement::operator HTMLInputElement*() const {
   return blink::To<HTMLInputElement>(private_.Get());
 }
 
-WebInputElement* ToWebInputElement(WebElement* web_element) {
-  if (!IsA<HTMLInputElement>(*web_element->Unwrap<Element>()))
-    return nullptr;
-
-  return static_cast<WebInputElement*>(web_element);
-}
 }  // namespace blink

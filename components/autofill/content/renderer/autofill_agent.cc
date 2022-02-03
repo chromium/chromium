@@ -321,11 +321,11 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
     return;
   }
 
-  const WebInputElement* input = ToWebInputElement(&element);
+  const WebInputElement input = element.DynamicTo<WebInputElement>();
 
   bool focus_moved_to_new_form = false;
   if (!last_interacted_form_.IsNull() &&
-      (!input || last_interacted_form_ != input->Form())) {
+      (input.IsNull() || last_interacted_form_ != input.Form())) {
     // The focused element is not part of the last interacted form (could be
     // in a different form).
     GetAutofillDriver().FocusNoLongerOnForm(/*had_interacted_form=*/true);
@@ -347,11 +347,11 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   if (focus_moved_to_new_form)
     return;
 
-  if (!input || !input->IsEnabled() || input->IsReadOnly() ||
-      !input->IsTextField())
+  if (input.IsNull() || !input.IsEnabled() || input.IsReadOnly() ||
+      !input.IsTextField())
     return;
 
-  element_ = *input;
+  element_ = input;
 
   FormData form;
   FormFieldData field;
@@ -633,10 +633,10 @@ void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
     return;
   }
 
-  WebInputElement* input_element = ToWebInputElement(&element_);
-  if (input_element) {
-    DoFillFieldWithValue(value, *input_element);
-    input_element->SetAutofillState(WebAutofillState::kAutofilled);
+  WebInputElement input_element = element_.DynamicTo<WebInputElement>();
+  if (!input_element.IsNull()) {
+    DoFillFieldWithValue(value, input_element);
+    input_element.SetAutofillState(WebAutofillState::kAutofilled);
   }
 }
 
@@ -647,9 +647,9 @@ void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
     return;
   }
 
-  WebInputElement* input_element = ToWebInputElement(&element_);
-  if (input_element)
-    DoPreviewFieldWithValue(value, *input_element);
+  WebInputElement input_element = element_.DynamicTo<WebInputElement>();
+  if (!input_element.IsNull())
+    DoPreviewFieldWithValue(value, input_element);
 }
 
 void AutofillAgent::SetSuggestionAvailability(
@@ -660,21 +660,21 @@ void AutofillAgent::SetSuggestionAvailability(
     return;
   }
 
-  WebInputElement* input_element = ToWebInputElement(&element_);
-  if (input_element) {
+  WebInputElement input_element = element_.DynamicTo<WebInputElement>();
+  if (!input_element.IsNull()) {
     switch (state) {
       case autofill::mojom::AutofillState::kAutofillAvailable:
-        WebAXObject::FromWebNode(*input_element)
+        WebAXObject::FromWebNode(input_element)
             .HandleAutofillStateChanged(
                 blink::WebAXAutofillState::kAutofillAvailable);
         return;
       case autofill::mojom::AutofillState::kAutocompleteAvailable:
-        WebAXObject::FromWebNode(*input_element)
+        WebAXObject::FromWebNode(input_element)
             .HandleAutofillStateChanged(
                 blink::WebAXAutofillState::kAutocompleteAvailable);
         return;
       case autofill::mojom::AutofillState::kNoSuggestions:
-        WebAXObject::FromWebNode(*input_element)
+        WebAXObject::FromWebNode(input_element)
             .HandleAutofillStateChanged(
                 blink::WebAXAutofillState::kNoSuggestions);
         return;
@@ -691,8 +691,8 @@ void AutofillAgent::AcceptDataListSuggestion(
     return;
   }
 
-  WebInputElement* input_element = ToWebInputElement(&element_);
-  if (!input_element) {
+  WebInputElement input_element = element_.DynamicTo<WebInputElement>();
+  if (input_element.IsNull()) {
     // For reasons not understood yet, this is triggered on elements which are
     // not input elements.
 
@@ -706,8 +706,8 @@ void AutofillAgent::AcceptDataListSuggestion(
   std::u16string new_value = suggested_value;
   // If this element takes multiple values then replace the last part with
   // the suggestion.
-  if (input_element->IsMultiple() && input_element->IsEmailField()) {
-    std::u16string value = input_element->EditingValue().Utf16();
+  if (input_element.IsMultiple() && input_element.IsEmailField()) {
+    std::u16string value = input_element.EditingValue().Utf16();
     std::vector<base::StringPiece16> parts = base::SplitStringPiece(
         value, u",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (parts.size() == 0)
@@ -726,7 +726,7 @@ void AutofillAgent::AcceptDataListSuggestion(
 
     new_value = base::JoinString(parts, u",");
   }
-  DoFillFieldWithValue(new_value, *input_element);
+  DoFillFieldWithValue(new_value, input_element);
 }
 
 void AutofillAgent::FillPasswordSuggestion(const std::u16string& username,
@@ -784,11 +784,11 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
   if (!element.SuggestedValue().IsEmpty())
     return;
 
-  const WebInputElement* input_element = ToWebInputElement(&element);
-  if (input_element) {
-    if (!input_element->IsTextField())
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  if (!input_element.IsNull()) {
+    if (!input_element.IsTextField())
       return;
-    if (!input_element->SuggestedValue().IsEmpty())
+    if (!input_element.SuggestedValue().IsEmpty())
       return;
   } else {
     DCHECK(form_util::IsTextAreaElement(element));
@@ -812,7 +812,7 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
   element_ = element;
   if (form_util::IsAutofillableInputElement(input_element) &&
       password_autofill_agent_->ShowSuggestions(
-          *input_element, ShowAll(options.show_full_suggestion_list),
+          input_element, ShowAll(options.show_full_suggestion_list),
           GenerationShowing(is_generation_popup_possibly_visible_))) {
     is_popup_possibly_visible_ = true;
     return;
@@ -829,8 +829,8 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
   // match a regex). In this specific case we are actually interested in whether
   // the field is currently a password field, not whether it has ever been a
   // password field.
-  if (input_element &&
-      input_element->IsPasswordField /*disable presubmit*/ () &&
+  if (!input_element.IsNull() &&
+      input_element.IsPasswordField /*disable presubmit*/ () &&
       !query_password_suggestion_) {
     return;
   }
@@ -907,7 +907,8 @@ void AutofillAgent::QueryAutofillSuggestions(
   if (!frame)
     return;
 
-  DCHECK(ToWebInputElement(&element) || form_util::IsTextAreaElement(element));
+  DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
+         form_util::IsTextAreaElement(element));
 
   static int query_counter = 0;
   autofill_query_id_ = query_counter++;
@@ -937,9 +938,10 @@ void AutofillAgent::QueryAutofillSuggestions(
   }
 
   if (!base::FeatureList::IsEnabled(features::kAutofillExtractAllDatalists)) {
-    if (const WebInputElement* input_element = ToWebInputElement(&element)) {
+    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+    if (!input_element.IsNull()) {
       // Find the datalist values and send them to the browser process.
-      form_util::GetDataListSuggestions(*input_element, &field.datalist_values,
+      form_util::GetDataListSuggestions(input_element, &field.datalist_values,
                                         &field.datalist_labels);
     }
   }
@@ -1124,8 +1126,8 @@ void AutofillAgent::FormControlElementClicked(
       FieldRendererId(element.UniqueRendererFormControlId());
   was_last_action_fill_ = false;
 
-  const WebInputElement* input_element = ToWebInputElement(&element);
-  if (!input_element && !form_util::IsTextAreaElement(element))
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  if (input_element.IsNull() && !form_util::IsTextAreaElement(element))
     return;
 
 #if defined(ANDROID)
@@ -1155,7 +1157,7 @@ void AutofillAgent::HandleFocusChangeComplete() {
   // to ensure focus is on a field where text can be entered.
   if ((focused_node_was_last_clicked_ || is_screen_reader_enabled_) &&
       !focused_element.IsNull() && focused_element.IsFormControlElement() &&
-      (form_util::IsTextInput(blink::ToWebInputElement(&focused_element)) ||
+      (form_util::IsTextInput(focused_element.DynamicTo<WebInputElement>()) ||
        focused_element.HasHTMLTagName("textarea"))) {
     FormControlElementClicked(focused_element.ToConst<WebFormControlElement>());
   }
@@ -1213,7 +1215,7 @@ void AutofillAgent::OnProvisionallySaveForm(
     }
 
     if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
-      OnTextFieldDidChange(*ToWebInputElement(&element));
+      OnTextFieldDidChange(element.ToConst<WebInputElement>());
     } else {
       FormData form_data;
       FormFieldData field;

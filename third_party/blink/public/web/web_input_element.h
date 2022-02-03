@@ -111,14 +111,6 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
 
 DECLARE_WEB_NODE_TYPE_CASTS(WebInputElement);
 
-// This returns 0 if the specified WebElement is not a WebInputElement.
-BLINK_EXPORT WebInputElement* ToWebInputElement(WebElement*);
-// This returns 0 if the specified WebElement is not a WebInputElement.
-BLINK_EXPORT inline const WebInputElement* ToWebInputElement(
-    const WebElement* element) {
-  return ToWebInputElement(const_cast<WebElement*>(element));
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_INPUT_ELEMENT_H_

@@ -134,7 +134,7 @@ bool WebNode::IsCommentNode() const {
 }
 
 bool WebNode::IsFocusable() const {
-  auto* element = DynamicTo<Element>(private_.Get());
+  auto* element = ::blink::DynamicTo<Element>(private_.Get());
   if (!element)
     return false;
   if (!private_->GetDocument().HaveRenderBlockingResourcesLoaded())
