@@ -361,7 +361,15 @@ void FrameFetchContext::PrepareRequest(
           network::GetClientHintToNameMap()
               .at(network::mojom::blink::WebClientHintsType::kUAReduced)
               .c_str()) == "?1";
-  String user_agent = ua_reduced ? GetReducedUserAgent() : GetUserAgent();
+  const bool ua_full =
+      request.HttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kFullUserAgent)
+              .c_str()) == "?1";
+
+  String user_agent =
+      ua_full ? GetFullUserAgent()
+              : (ua_reduced ? GetReducedUserAgent() : GetUserAgent());
   base::UmaHistogramBoolean("Blink.Fetch.ReducedUserAgent", ua_reduced);
   request.SetHTTPUserAgent(AtomicString(user_agent));
 
@@ -700,6 +708,12 @@ String FrameFetchContext::GetUserAgent() const {
   return GetFrame()->Loader().UserAgent();
 }
 
+String FrameFetchContext::GetFullUserAgent() const {
+  if (GetResourceFetcherProperties().IsDetached())
+    return frozen_state_->user_agent;
+  return GetFrame()->Loader().FullUserAgent();
+}
+
 String FrameFetchContext::GetReducedUserAgent() const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->user_agent;
@@ -739,15 +753,20 @@ FetchContext* FrameFetchContext::Detach() {
   if (GetResourceFetcherProperties().IsDetached())
     return this;
 
+  // If the Sec-CH-UA-Full client hint header is set on the request, then the
+  // full User-Agent string should be set on the User-Agent request header.
   // If the Sec-CH-UA-Reduced client hint header is set on the request, then the
   // reduced User-Agent string should also be set on the User-Agent request
   // header.
   const ClientHintsPreferences& client_hints_prefs =
       GetClientHintsPreferences();
   String user_agent = client_hints_prefs.ShouldSend(
-                          network::mojom::WebClientHintsType::kUAReduced)
-                          ? GetReducedUserAgent()
-                          : GetUserAgent();
+                          network::mojom::WebClientHintsType::kFullUserAgent)
+                          ? GetFullUserAgent()
+                          : client_hints_prefs.ShouldSend(
+                                network::mojom::WebClientHintsType::kUAReduced)
+                                ? GetReducedUserAgent()
+                                : GetUserAgent();
 
   frozen_state_ = MakeGarbageCollected<FrozenState>(
       Url(), GetContentSecurityPolicy(), GetSiteForCookies(),

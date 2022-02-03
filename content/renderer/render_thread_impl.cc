@@ -968,6 +968,24 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
       blink::WebImageGenerator::CreateAsSkImageGenerator);
 }
 
+void RenderThreadImpl::InitializeRenderer(
+    const std::string& user_agent,
+    const std::string& full_user_agent,
+    const std::string& reduced_user_agent,
+    const blink::UserAgentMetadata& user_agent_metadata,
+    const std::vector<std::string>& cors_exempt_header_list) {
+  DCHECK(user_agent_.IsNull());
+  DCHECK(reduced_user_agent_.IsNull());
+  DCHECK(full_user_agent_.IsNull());
+
+  user_agent_ = WebString::FromUTF8(user_agent);
+  GetContentClient()->renderer()->DidSetUserAgent(user_agent);
+  full_user_agent_ = WebString::FromUTF8(full_user_agent);
+  reduced_user_agent_ = WebString::FromUTF8(reduced_user_agent);
+  user_agent_metadata_ = user_agent_metadata;
+  cors_exempt_header_list_ = cors_exempt_header_list;
+}
+
 void RenderThreadImpl::RegisterSchemes() {
   // chrome:
   WebString chrome_scheme(WebString::FromASCII(kChromeUIScheme));
@@ -1286,6 +1304,12 @@ blink::WebString RenderThreadImpl::GetUserAgent() {
   DCHECK(!user_agent_.IsNull());
 
   return user_agent_;
+}
+
+blink::WebString RenderThreadImpl::GetFullUserAgent() {
+  DCHECK(!full_user_agent_.IsNull());
+
+  return full_user_agent_;
 }
 
 blink::WebString RenderThreadImpl::GetReducedUserAgent() {
@@ -1700,27 +1724,6 @@ void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
 #endif
 }
 
-void RenderThreadImpl::SetUserAgent(const std::string& user_agent) {
-  DCHECK(user_agent_.IsNull());
-  user_agent_ = WebString::FromUTF8(user_agent);
-  GetContentClient()->renderer()->DidSetUserAgent(user_agent);
-}
-
-void RenderThreadImpl::SetReducedUserAgent(const std::string& user_agent) {
-  DCHECK(reduced_user_agent_.IsNull());
-  reduced_user_agent_ = WebString::FromUTF8(user_agent);
-}
-
-void RenderThreadImpl::SetUserAgentMetadata(
-    const blink::UserAgentMetadata& user_agent_metadata) {
-  user_agent_metadata_ = user_agent_metadata;
-}
-
-void RenderThreadImpl::SetCorsExemptHeaderList(
-    const std::vector<std::string>& list) {
-  cors_exempt_header_list_ = list;
-}
-
 void RenderThreadImpl::UpdateScrollbarTheme(
     mojom::UpdateScrollbarThemeParamsPtr params) {
 #if BUILDFLAG(IS_MAC)
@@ -1802,15 +1805,14 @@ void RenderThreadImpl::PurgePluginListCache(bool reload_pages) {
 
 void RenderThreadImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  TRACE_EVENT("memory", "RenderThreadImpl::OnMemoryPressure",
-              [&](perfetto::EventContext ctx) {
-                auto* event =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-                auto* data = event->set_chrome_memory_pressure_notification();
-                data->set_level(
-                    base::trace_event::MemoryPressureLevelToTraceEnum(
-                        memory_pressure_level));
-              });
+  TRACE_EVENT(
+      "memory", "RenderThreadImpl::OnMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
+            memory_pressure_level));
+      });
   if (blink_platform_impl_)
     blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
   if (memory_pressure_level ==

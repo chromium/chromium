@@ -451,46 +451,47 @@ const std::string SerializeHeaderString(const T& value) {
 }
 
 // Returns true iff the `url` is embedded inside a frame that has the
-// Sec-CH-UA-Reduced client hint and thus, is enrolled in the
-// UserAgentReduction Origin Trial.
+// corresponding Sec-CH-UA-Reduced or Sec-CH-UA-Full client hint and thus, is
+// enrolled in the UserAgentReduction or SendFullUserAgentAfterReduction Origin
+// Trial.
 //
-// TODO(crbug.com/1258063): Remove when the UserAgentReduction Origin Trial is
-// finished.
-bool IsUserAgentReductionEnabledForEmbeddedFrame(
+// TODO(crbug.com/1258063): Remove when the UserAgentReduction and
+// SendFullUserAgentAfterReduction Origin Trial is finished.
+bool AreUserAgentOriginTrialHintsEnabledForFrame(
     const GURL& url,
     const GURL& main_frame_url,
     FrameTreeNode* frame_tree_node,
-    ClientHintsControllerDelegate* delegate) {
-  bool is_embedder_ua_reduced = false;
+    ClientHintsControllerDelegate* delegate,
+    WebClientHintsType hint_type) {
+  bool is_embedder_in_ua_origin_trial = false;
   RenderFrameHostImpl* current = frame_tree_node->current_frame_host();
   while (current) {
     const GURL& current_url = (current == frame_tree_node->current_frame_host())
                                   ? url
                                   : current->GetLastCommittedURL();
 
-    // Don't use Sec-CH-UA-Reduced from third-party origins if third-party
-    // cookies are blocked, so that we don't reveal any more user data than
-    // is allowed by the cookie settings.
+    // Don't use Sec-CH-UA-Reduced or Sec-CH-UA-Full from third-party origins if
+    // third-party cookies are blocked, so that we don't reveal any more user
+    // data than is allowed by the cookie settings.
     if (url::IsSameOriginWith(current_url, main_frame_url) ||
         !delegate->AreThirdPartyCookiesBlocked(current_url)) {
       blink::EnabledClientHints current_url_hints;
       delegate->GetAllowedClientHintsFromSource(current_url,
                                                 &current_url_hints);
-      if ((is_embedder_ua_reduced =
-               base::Contains(current_url_hints.GetEnabledHints(),
-                              WebClientHintsType::kUAReduced))) {
+      if ((is_embedder_in_ua_origin_trial = base::Contains(
+               current_url_hints.GetEnabledHints(), hint_type))) {
         break;
       }
     }
 
     current = current->GetParent();
   }
-  return is_embedder_ua_reduced;
+  return is_embedder_in_ua_origin_trial;
 }
 
-// TODO(crbug.com/1258063): Delete this function when the UserAgentReduction
-// Origin Trial is finished.
-void RemoveAllClientHintsExceptUaReduced(
+// TODO(crbug.com/1258063): Delete this function when the UserAgentReduction and
+// SendFullUserAgentAfterReduction Origin Trial is finished.
+void RemoveAllClientHintsExceptUaReducedOrUaDeprecation(
     const GURL& url,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,
@@ -501,7 +502,8 @@ void RemoveAllClientHintsExceptUaReduced(
       frame_tree_node->frame_tree()->GetMainFrame();
 
   for (auto it = accept_ch->begin(); it != accept_ch->end();) {
-    if (*it == WebClientHintsType::kUAReduced) {
+    if (*it == WebClientHintsType::kUAReduced ||
+        *it == WebClientHintsType::kFullUserAgent) {
       ++it;
     } else {
       it = accept_ch->erase(it);
@@ -555,8 +557,12 @@ struct ClientHintsExtendedData {
     // TODO(crbug.com/1258063): Remove once the UserAgentReduction Origin Trial
     // is finished.
     if (frame_tree_node && !is_main_frame) {
-      is_embedder_ua_reduced = IsUserAgentReductionEnabledForEmbeddedFrame(
-          url, main_frame_url, frame_tree_node, delegate);
+      is_embedder_ua_reduced = AreUserAgentOriginTrialHintsEnabledForFrame(
+          url, main_frame_url, frame_tree_node, delegate,
+          WebClientHintsType::kUAReduced);
+      is_embedder_ua_full = AreUserAgentOriginTrialHintsEnabledForFrame(
+          url, main_frame_url, frame_tree_node, delegate,
+          WebClientHintsType::kFullUserAgent);
     }
 
     // Record the time spent getting the client hints.
@@ -573,6 +579,14 @@ struct ClientHintsExtendedData {
   // receive the reduced User-Agent header, so we want to also send the reduced
   // User-Agent for the embedded request as well.
   bool is_embedder_ua_reduced = false;
+  // If true, one of the ancestor requests in the path to this request had
+  // Sec-CH-UA-Full in their Accept-CH cache.  Only applies to embedded
+  // requests (top-level requests will always set this to false).
+  //
+  // If an embedder of a request has Sec-CH-UA-Full, it means it will
+  // receive the full User-Agent header, so we want to also send the full
+  // User-Agent for the embedded request as well.
+  bool is_embedder_ua_full = false;
   url::Origin resource_origin;
   bool is_main_frame = false;
   GURL main_frame_url;
@@ -581,17 +595,17 @@ struct ClientHintsExtendedData {
 };
 
 bool SkipPermissionPolicyCheck(WebClientHintsType type) {
-  // TODO(crbug/1282230): Add || type == WebClientHintsType::kFullUserAgent;
-  return type == WebClientHintsType::kUAReduced;
+  return type == WebClientHintsType::kUAReduced ||
+         type == WebClientHintsType::kFullUserAgent;
 }
 
 bool IsClientHintEnabled(const ClientHintsExtendedData& data,
                          WebClientHintsType type) {
   return blink::IsClientHintSentByDefault(type) || data.hints.IsEnabled(type) ||
          (type == WebClientHintsType::kUAReduced &&
-          data.is_embedder_ua_reduced);
-  // TODO(crbug/1282230): Add || (type == WebClientHintsType::kFullUserAgent &&
-  // data.is_embedder_ua_full);
+          data.is_embedder_ua_reduced) ||
+         (type == WebClientHintsType::kFullUserAgent &&
+          data.is_embedder_ua_full);
 }
 
 bool IsClientHintAllowed(const ClientHintsExtendedData& data,
@@ -763,6 +777,10 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       AddUAHeader(headers, WebClientHintsType::kUAFullVersionList,
                   ua_metadata->SerializeBrandFullVersionList());
     }
+    if (ShouldAddClientHint(data, WebClientHintsType::kFullUserAgent)) {
+      AddUAHeader(headers, WebClientHintsType::kFullUserAgent,
+                  SerializeHeaderString(true));
+    }
   } else if (call_type == ClientUaHeaderCallType::kAfterCreated) {
     RemoveClientHintHeader(WebClientHintsType::kUA, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAMobile, headers);
@@ -775,6 +793,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     RemoveClientHintHeader(WebClientHintsType::kUAReduced, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAFullVersionList, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAWoW64, headers);
+    RemoveClientHintHeader(WebClientHintsType::kFullUserAgent, headers);
   }
 }
 
@@ -989,9 +1008,9 @@ ParseAndPersistAcceptCHForNavigation(
   // TODO(crbug.com/1258063): Delete this call when the UserAgentReduction
   // Origin Trial is finished.
   if (!frame_tree_node->IsMainFrame()) {
-    RemoveAllClientHintsExceptUaReduced(url, frame_tree_node, delegate,
-                                        &accept_ch, &main_frame_url,
-                                        &third_party_url);
+    RemoveAllClientHintsExceptUaReducedOrUaDeprecation(
+        url, frame_tree_node, delegate, &accept_ch, &main_frame_url,
+        &third_party_url);
     if (accept_ch.empty()) {
       // There are is no Sec-CH-UA-Reduced in Accept-CH for the embedded frame,
       // so nothing should be persisted.
@@ -1032,6 +1051,10 @@ std::vector<WebClientHintsType> LookupAcceptCHForCommit(
   if (data.is_embedder_ua_reduced &&
       !base::Contains(hints, WebClientHintsType::kUAReduced)) {
     hints.push_back(WebClientHintsType::kUAReduced);
+  }
+  if (data.is_embedder_ua_full &&
+      !base::Contains(hints, WebClientHintsType::kFullUserAgent)) {
+    hints.push_back(WebClientHintsType::kFullUserAgent);
   }
   return hints;
 }

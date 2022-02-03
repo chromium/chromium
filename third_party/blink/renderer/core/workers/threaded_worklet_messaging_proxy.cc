@@ -60,10 +60,14 @@ void ThreadedWorkletMessagingProxy::Initialize(
   DCHECK(csp);
 
   LocalFrameClient* frame_client = window->GetFrame()->Client();
+  // For now we should prioritize to send full UA string if opted into both
+  // Reduction and SendFullUserAgentAfterReduction Origin Trial
   const String user_agent =
-      RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
-          ? frame_client->ReducedUserAgent()
-          : frame_client->UserAgent();
+      RuntimeEnabledFeatures::SendFullUserAgentAfterReductionEnabled(window)
+          ? frame_client->FullUserAgent()
+          : (RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
+                 ? frame_client->ReducedUserAgent()
+                 : frame_client->UserAgent());
 
   auto global_scope_creation_params =
       std::make_unique<GlobalScopeCreationParams>(

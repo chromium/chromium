@@ -36,6 +36,13 @@ String NavigatorBase::platform() const {
   if (execution_context)
     execution_context->ReportNavigatorUserAgentAccess();
 
+  // If the User-Agent string is opted into the SendFullUserAgentAfterReduction,
+  // platform should be a full value.
+  if (RuntimeEnabledFeatures::SendFullUserAgentAfterReductionEnabled(
+          execution_context)) {
+    return NavigatorID::platform();
+  }
+
   // If the User-Agent string is frozen, platform should be a value
   // matching the frozen string per https://github.com/WICG/ua-client-hints.
   // See content::frozen_user_agent_strings.

@@ -1889,6 +1889,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::string GetUserAgentBasedOnPolicy(
       content::BrowserContext* context);
 
+  // Returns the full user agent string. Defaults to |GetUserAgent|. Content
+  // may cache this value.
+  virtual std::string GetFullUserAgent();
+
   // Returns the reduced user agent string. Defaults to |GetUserAgent|. Content
   // may cache this value.
   virtual std::string GetReducedUserAgent();

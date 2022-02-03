@@ -384,6 +384,9 @@ std::string GetUserAgent(
     LOG(WARNING) << "Ignored invalid value for flag --" << kUserAgent;
   }
 
+  if (base::FeatureList::IsEnabled(blink::features::kFullUserAgent))
+    return GetFullUserAgent();
+
   if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
     return GetReducedUserAgent(force_major_to_minor);
 

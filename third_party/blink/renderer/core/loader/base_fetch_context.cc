@@ -463,6 +463,17 @@ void BaseFetchContext::AddClientHintsIfNecessary(
               .c_str(),
           SerializeBoolHeader(true));
     }
+
+    if (ShouldSendClientHint(
+            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kFullUserAgent,
+            hints_preferences)) {
+      request.SetHttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kFullUserAgent)
+              .c_str(),
+          SerializeBoolHeader(true));
+    }
   }
 
   if (ShouldSendClientHint(
@@ -691,13 +702,15 @@ bool BaseFetchContext::ShouldSendClientHint(
       base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty)) {
     origin_ok = true;
   } else {
-    // For subresource requests, if the parent frame has Sec-CH-UA-Reduced,
-    // then send Sec-CH-UA-Reduced in the fetch request, regardless of the
-    // permissions policy.
-    origin_ok = type == network::mojom::blink::WebClientHintsType::kUAReduced ||
-                (policy && policy->IsFeatureEnabledForOrigin(
-                               GetClientHintToPolicyFeatureMap().at(type),
-                               resource_origin));
+    // For subresource requests, if the parent frame has Sec-CH-UA-Reduced or
+    // Sec-CH-UA-Full, then send Sec-CH-UA-Reduced or Sec-CH-UA-Full in the
+    // fetch request, regardless of the permissions policy.
+    origin_ok =
+        type == network::mojom::blink::WebClientHintsType::kUAReduced ||
+        type == network::mojom::blink::WebClientHintsType::kFullUserAgent ||
+        (policy &&
+         policy->IsFeatureEnabledForOrigin(
+             GetClientHintToPolicyFeatureMap().at(type), resource_origin));
   }
 
   if (!origin_ok)

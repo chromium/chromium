@@ -1067,6 +1067,10 @@ std::string ContentBrowserClient::GetUserAgentBasedOnPolicy(
   return GetUserAgent();
 }
 
+std::string ContentBrowserClient::GetFullUserAgent() {
+  return GetUserAgent();
+}
+
 std::string ContentBrowserClient::GetReducedUserAgent() {
   return GetUserAgent();
 }

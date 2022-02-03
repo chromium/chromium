@@ -419,12 +419,6 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
       continue;
     }
 
-    // TODO(crbug.com/1286857): `Sec-CH-UA-Full` client hint isn't yet in
-    // request, which trigger a restart, will add in following CL.
-    if (hint == mojom::WebClientHintsType::kFullUserAgent) {
-      continue;
-    }
-
     const std::string header = GetClientHintToNameMap().at(hint);
     if (!headers.HasHeader(header))
       hints.push_back(hint);
