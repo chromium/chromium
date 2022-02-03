@@ -6,25 +6,14 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
+#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class UrlParamFiltererTest : public ::testing::Test {};
 
-url_param_filter::ClassificationMap CreateClassificationMap(
-    std::map<std::string, std::vector<std::string>> source) {
-  url_param_filter::ClassificationMap result;
-  for (auto i : source) {
-    url_param_filter::FilterClassification classification;
-    for (auto j : i.second) {
-      url_param_filter::FilterParameter* parameter =
-          classification.add_parameters();
-      parameter->set_name(j);
-    }
-    result[i.first] = classification;
-  }
-  return result;
-}
 TEST_F(UrlParamFiltererTest, FilterUrlEmptyClassifications) {
   GURL source = GURL{"http://source.xyz"};
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
@@ -39,9 +28,15 @@ TEST_F(UrlParamFiltererTest, FilterUrlNoChanges) {
   GURL source = GURL{"http://source.xyz"};
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap({{"destination.xyz", {"plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // If classifications are passed in, but the destination URL doesn't contain
   // any blocked params, don't modify it.
@@ -55,7 +50,10 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceBlocked) {
   GURL source = GURL{"https://source.xyz"};
   GURL destination = GURL{"https://destination.xyz?plzblock=123&nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
 
   // Navigations from source.xyz with a param called plzblock should have that
   // param removed, regardless of destination.
@@ -71,7 +69,10 @@ TEST_F(UrlParamFiltererTest, FilterUrlMultipleSourceBlocked) {
   GURL destination =
       GURL{"https://destination.xyz?plzblock=123&plzblock1=321&nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock", "plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock", "plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
 
   // Navigations from source.xyz with a param called plzblock or plzblock1
   // should have those params removed, regardless of destination.
@@ -86,7 +87,10 @@ TEST_F(UrlParamFiltererTest, FilterUrlDestinationBlocked) {
   GURL source = GURL{"https://source.xyz"};
   GURL destination = GURL{"https://destination.xyz?plzblock=123&nochange=asdf"};
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap({{"destination.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // Navigations to destination.xyz with a param called plzblock should have
   // that param removed, regardless of source.
@@ -102,7 +106,10 @@ TEST_F(UrlParamFiltererTest, FilterUrlMultipleDestinationBlocked) {
   GURL destination =
       GURL{"https://destination.xyz?plzblock=123&plzblock1=321&nochange=asdf"};
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap({{"destination.xyz", {"plzblock", "plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock", "plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // Navigations to destination.xyz with a param called plzblock and/or
   // plzblock1 should have those param removed, regardless of source.
@@ -118,9 +125,15 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationBlocked) {
   GURL destination =
       GURL{"https://destination.xyz?plzblock=123&plzblock1=321&nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap({{"destination.xyz", {"plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // Both source and destination have associated URL param filtering rules. Only
   // nochange should remain.
@@ -139,9 +152,15 @@ TEST_F(UrlParamFiltererTest,
       "destination.xyz?plzblock=123&plzblock1=321&nochange=asdf&laternochange="
       "fdsa"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap({{"destination.xyz", {"plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // Both source and destination have associated URL param filtering rules. Only
   // nochange should remain.
@@ -159,9 +178,15 @@ TEST_F(UrlParamFiltererTest, FilterUrlSubdomainsApplied) {
       "https://"
       "subdomain.destination.xyz?plzblock=123&plzblock1=321&nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap({{"destination.xyz", {"plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   GURL expected = GURL{"https://subdomain.destination.xyz?nochange=asdf"};
   GURL result = url_param_filter::FilterUrl(source, destination,
@@ -175,9 +200,15 @@ TEST_F(UrlParamFiltererTest, FilterUrlCaseIgnored) {
   GURL destination =
       GURL{"https://destination.xyz?PlZbLoCk=123&PLZBLOCK1=321&nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap({{"destination.xyz", {"plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // The disallowed params PlZbLoCk and PLZBLOCK1 should be removed.
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
@@ -195,10 +226,15 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrl) {
       "3Fplzblock1%"
       "3D123%26nochange%3Dasdf&PLZBLOCK1=321&nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap(
-          {{"destination.xyz", {"plzblock1"}}, {"source.xyz", {"plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}, {"source.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // The nested URL pattern is commonly observed; we do not want the parameter
   // to leak.
@@ -221,10 +257,15 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlNotNeedingFiltering) {
       "3Fnochange%"
       "3Dasdf&PLZBLOCK1=321&nochange=asdf"};
   url_param_filter::ClassificationMap source_classification_map =
-      CreateClassificationMap({{"source.xyz", {"plzblock"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
   url_param_filter::ClassificationMap destination_classification_map =
-      CreateClassificationMap(
-          {{"destination.xyz", {"plzblock1"}}, {"source.xyz", {"plzblock1"}}});
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}, {"source.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
 
   // The nested URL does not have filtered parameters and should be left alone.
   GURL expected = GURL{
@@ -235,5 +276,36 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlNotNeedingFiltering) {
   GURL result = url_param_filter::FilterUrl(source, destination,
                                             source_classification_map,
                                             destination_classification_map);
+  ASSERT_EQ(result, expected);
+}
+
+TEST_F(UrlParamFiltererTest, FeatureDeactivated) {
+  GURL source = GURL{"http://source.xyz"};
+  GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
+  // When the feature is not explicitly activated, the 2-parameter version of
+  // the function should be inert.
+  GURL result = url_param_filter::FilterUrl(source, expected);
+
+  ASSERT_EQ(result, expected);
+}
+
+TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
+  GURL source = GURL{"http://source.xyz"};
+  GURL destination =
+      GURL{"https://destination.xyz?plzblock=1&plzblock1=2&nochange=asdf"};
+
+  std::string encoded_classification =
+      url_param_filter::CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"source.xyz", {"plzblock"}}}, {{"destination.xyz", {"plzblock1"}}});
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  // With the flag set, the URL should be filtered.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled,
+      {{"classifications", encoded_classification}});
+
+  GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
+  GURL result = url_param_filter::FilterUrl(source, destination);
+
   ASSERT_EQ(result, expected);
 }

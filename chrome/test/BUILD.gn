@@ -138,6 +138,8 @@ static_library("test_support") {
     "../browser/search_engines/template_url_service_test_util.h",
     "../browser/signin/identity_test_environment_profile_adaptor.cc",
     "../browser/signin/identity_test_environment_profile_adaptor.h",
+    "../browser/url_param_filter/url_param_filter_test_helper.cc",
+    "../browser/url_param_filter/url_param_filter_test_helper.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
     "base/chrome_render_view_test.cc",

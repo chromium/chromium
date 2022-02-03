@@ -659,6 +659,9 @@ const base::Feature kIncognitoClearBrowsingDataDialogForDesktop{
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIncognitoParamFilterEnabled{
+    "IncognitoParamFilterEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, shows a demo of in-product help in a WebUI context.
 const base::Feature kIPHInWebUIDemo{"IPHInWebUIDemo",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

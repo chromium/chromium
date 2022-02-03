@@ -6,9 +6,13 @@
 
 #include <vector>
 
+#include "base/base64.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
+#include "chrome/common/chrome_features.h"
 #include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -95,6 +99,42 @@ GURL FilterUrl(const GURL& source_url,
   result = result.ReplaceComponents(replacements);
   return result;
 }
+
+url_param_filter::ClassificationMap GetClassifications(
+    url_param_filter::FilterClassification_SiteRole role) {
+  base::FieldTrialParams params;
+  base::GetFieldTrialParamsByFeature(features::kIncognitoParamFilterEnabled,
+                                     &params);
+  auto classification_arg = params.find("classifications");
+  url_param_filter::FilterClassifications classifications;
+  url_param_filter::ClassificationMap map;
+  if (classification_arg != params.end()) {
+    std::string out;
+    base::Base64Decode(classification_arg->second, &out);
+    if (classifications.ParseFromString(out)) {
+      for (auto i : classifications.classifications()) {
+        if (i.site_role() == role) {
+          map[i.site()] = i;
+        }
+      }
+    }
+  }
+  return map;
+}
+const url_param_filter::ClassificationMap& GetSourceClassifications() {
+  static const base::NoDestructor<url_param_filter::ClassificationMap>
+      source_classifications(
+          GetClassifications(url_param_filter::FilterClassification_SiteRole::
+                                 FilterClassification_SiteRole_SOURCE));
+  return *source_classifications;
+}
+const url_param_filter::ClassificationMap& GetDestinationClassifications() {
+  static const base::NoDestructor<url_param_filter::ClassificationMap>
+      destination_classifications(
+          GetClassifications(url_param_filter::FilterClassification_SiteRole::
+                                 FilterClassification_SiteRole_DESTINATION));
+  return *destination_classifications;
+}
 }  // anonymous namespace
 
 GURL FilterUrl(const GURL& source_url,
@@ -103,6 +143,14 @@ GURL FilterUrl(const GURL& source_url,
                const ClassificationMap& destination_classification_map) {
   return FilterUrl(source_url, destination_url, source_classification_map,
                    destination_classification_map, true);
+}
+
+GURL FilterUrl(const GURL& source_url, const GURL& destination_url) {
+  if (base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
+    return FilterUrl(source_url, destination_url, GetSourceClassifications(),
+                     GetDestinationClassifications());
+  }
+  return destination_url;
 }
 
 }  // namespace url_param_filter
