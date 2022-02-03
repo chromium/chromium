@@ -154,12 +154,10 @@ void PowerMetricsReporter::ReportHistograms(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval) {
+    BatteryDischarge battery_discharge) {
   const std::vector<const char*> suffixes = GetSuffixes(interval_data);
   ReportCPUHistograms(metrics, suffixes);
-  ReportBatteryHistograms(interval_duration, discharge_mode,
-                          discharge_rate_during_interval, suffixes);
+  ReportBatteryHistograms(interval_duration, battery_discharge, suffixes);
 #if BUILDFLAG(IS_MAC)
   RecordCoalitionData(metrics, suffixes);
 #endif
@@ -167,8 +165,7 @@ void PowerMetricsReporter::ReportHistograms(
 
 void PowerMetricsReporter::ReportBatteryHistograms(
     base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval,
+    BatteryDischarge battery_discharge,
     const std::vector<const char*>& suffixes) {
   // Ratio by which the time elapsed can deviate from
   // |performance_monitor::ProcessMonitor::kGatherInterval| without invalidating
@@ -177,32 +174,32 @@ void PowerMetricsReporter::ReportBatteryHistograms(
   constexpr double kTolerablePositiveDrift = (1. + kTolerableTimeElapsedRatio);
   constexpr double kTolerableNegativeDrift = (1. - kTolerableTimeElapsedRatio);
 
-  if (discharge_mode == BatteryDischargeMode::kDischarging &&
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
       interval_duration > performance_monitor::ProcessMonitor::kGatherInterval *
                               kTolerablePositiveDrift) {
     // Too much time passed since the last record. Either the task took
     // too long to get executed or system sleep took place.
-    discharge_mode = BatteryDischargeMode::kInvalidInterval;
+    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
   }
 
-  if (discharge_mode == BatteryDischargeMode::kDischarging &&
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
       interval_duration < performance_monitor::ProcessMonitor::kGatherInterval *
                               kTolerableNegativeDrift) {
     // The recording task executed too early after the previous one, possibly
     // because the previous task took too long to execute.
-    discharge_mode = BatteryDischargeMode::kInvalidInterval;
+    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
   }
 
   for (const char* suffix : suffixes) {
     base::UmaHistogramEnumeration(
         base::JoinString({kBatteryDischargeModeHistogramName, suffix}, ""),
-        discharge_mode);
+        battery_discharge.mode);
 
-    if (discharge_mode == BatteryDischargeMode::kDischarging) {
-      DCHECK(discharge_rate_during_interval.has_value());
+    if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
+      DCHECK(battery_discharge.rate.has_value());
       base::UmaHistogramCounts1000(
           base::JoinString({kBatteryDischargeRateHistogramName, suffix}, ""),
-          *discharge_rate_during_interval);
+          *battery_discharge.rate);
     }
   }
 }
@@ -228,11 +225,9 @@ void PowerMetricsReporter::OnBatteryStateAndMetricsSampled(
   base::UmaHistogramMicrosecondsTimes(kBatterySamplingDelayHistogramName,
                                       now - scheduled_time);
 
-  auto discharge_mode_and_rate =
-      GetBatteryDischargeRateDuringInterval(battery_state, interval_duration);
-  ReportUKMsAndHistograms(metrics, interval_duration,
-                          discharge_mode_and_rate.first,
-                          discharge_mode_and_rate.second);
+  auto battery_discharge =
+      GetBatteryDischargeDuringInterval(battery_state, interval_duration);
+  ReportUKMsAndHistograms(metrics, interval_duration, battery_discharge);
 
   if (on_battery_sampled_for_testing_)
     std::move(on_battery_sampled_for_testing_).Run();
@@ -241,8 +236,7 @@ void PowerMetricsReporter::OnBatteryStateAndMetricsSampled(
 void PowerMetricsReporter::ReportUKMsAndHistograms(
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval) const {
+    BatteryDischarge battery_discharge) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_store_.MaybeValid());
 
@@ -269,11 +263,11 @@ void PowerMetricsReporter::ReportUKMsAndHistograms(
   base::UmaHistogramBoolean(kMainScreenBrightnessAvailableHistogramName,
                             main_screen_brightness.has_value());
 
-  ReportUKMs(interval_data, metrics, interval_duration, discharge_mode,
-             discharge_rate_during_interval, main_screen_brightness);
+  ReportUKMs(interval_data, metrics, interval_duration, battery_discharge,
+             main_screen_brightness);
 
-  ReportHistograms(interval_data, metrics, interval_duration, discharge_mode,
-                   discharge_rate_during_interval);
+  ReportHistograms(interval_data, metrics, interval_duration,
+                   battery_discharge);
 }
 
 // static
@@ -291,8 +285,7 @@ void PowerMetricsReporter::ReportUKMs(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
-    BatteryDischargeMode discharge_mode,
-    absl::optional<int64_t> discharge_rate_during_interval,
+    BatteryDischarge battery_discharge,
     absl::optional<int64_t> main_screen_brightness) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_store_.MaybeValid());
@@ -322,10 +315,10 @@ void PowerMetricsReporter::ReportUKMs(
   // interval duration.
   builder.SetUptimeSeconds(ukm::GetExponentialBucketMinForUserTiming(
       interval_data.uptime_at_interval_end.InSeconds()));
-  builder.SetBatteryDischargeMode(static_cast<int64_t>(discharge_mode));
-  if (discharge_mode == BatteryDischargeMode::kDischarging) {
-    DCHECK(discharge_rate_during_interval.has_value());
-    builder.SetBatteryDischargeRate(*discharge_rate_during_interval);
+  builder.SetBatteryDischargeMode(static_cast<int64_t>(battery_discharge.mode));
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
+    DCHECK(battery_discharge.rate.has_value());
+    builder.SetBatteryDischargeRate(*battery_discharge.rate);
   }
   builder.SetCPUTimeMs(metrics.cpu_usage * interval_duration.InMilliseconds());
 #if BUILDFLAG(IS_MAC)
@@ -370,8 +363,8 @@ void PowerMetricsReporter::ReportUKMs(
   builder.Record(ukm_recorder);
 }
 
-std::pair<PowerMetricsReporter::BatteryDischargeMode, absl::optional<int64_t>>
-PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
+PowerMetricsReporter::BatteryDischarge
+PowerMetricsReporter::GetBatteryDischargeDuringInterval(
     const BatteryLevelProvider::BatteryState& new_battery_state,
     base::TimeDelta interval_duration) {
   auto previous_battery_state =

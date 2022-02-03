@@ -75,21 +75,24 @@ class PowerMetricsReporter
     kMaxValue = kMacFullyCharged
   };
 
+  struct BatteryDischarge {
+    PowerMetricsReporter::BatteryDischargeMode mode;
+    // Discharge rate in 1/10000 of full capacity per minute.
+    absl::optional<int64_t> rate;
+  };
+
   // Report battery and CPU metrics to generic histograms and histograms with a
   // scenario suffix derived from |interval_data|.
   static void ReportHistograms(
       const UsageScenarioDataStore::IntervalData& interval_data,
       const performance_monitor::ProcessMonitor::Metrics& metrics,
       base::TimeDelta interval_duration,
-      BatteryDischargeMode discharge_mode,
-      absl::optional<int64_t> discharge_rate_during_interval);
+      BatteryDischarge battery_discharge);
 
   // Report battery metrics to histograms with |suffixes|.
-  static void ReportBatteryHistograms(
-      base::TimeDelta interval_duration,
-      BatteryDischargeMode discharge_mode,
-      absl::optional<int64_t> discharge_rate_during_interval,
-      const std::vector<const char*>& suffixes);
+  static void ReportBatteryHistograms(base::TimeDelta interval_duration,
+                                      BatteryDischarge battery_discharge,
+                                      const std::vector<const char*>& suffixes);
 
   // Report CPU histograms to histograms with |suffixes|.
   static void ReportCPUHistograms(
@@ -112,22 +115,19 @@ class PowerMetricsReporter
   void ReportUKMs(const UsageScenarioDataStore::IntervalData& interval_data,
                   const performance_monitor::ProcessMonitor::Metrics& metrics,
                   base::TimeDelta interval_duration,
-                  BatteryDischargeMode discharge_mode,
-                  absl::optional<int64_t> discharge_rate_during_interval,
+                  BatteryDischarge battery_discharge,
                   absl::optional<int64_t> main_screen_brightness) const;
 
   void ReportUKMsAndHistograms(
       const performance_monitor::ProcessMonitor::Metrics& metrics,
       base::TimeDelta interval_duration,
-      BatteryDischargeMode discharge_mode,
-      absl::optional<int64_t> discharge_rate_during_interval) const;
+      BatteryDischarge battery_discharge) const;
 
   // Computes and returns the battery discharge mode and rate during the
   // interval, and reset |battery_state_| to the current state. If the discharge
   // rate isn't valid, the returned value is nullopt and the reason is indicated
   // per BatteryDischargeMode.
-  std::pair<BatteryDischargeMode, absl::optional<int64_t>>
-  GetBatteryDischargeRateDuringInterval(
+  BatteryDischarge GetBatteryDischargeDuringInterval(
       const BatteryLevelProvider::BatteryState& new_battery_state,
       base::TimeDelta interval_duration);
 

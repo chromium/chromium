@@ -50,10 +50,14 @@ class PowerMetricsReporterAccess : public PowerMetricsReporter {
  public:
   // Expose members of PowerMetricsReporter publicly on
   // PowerMetricsReporterAccess.
+  using PowerMetricsReporter::BatteryDischarge;
   using PowerMetricsReporter::BatteryDischargeMode;
   using PowerMetricsReporter::ReportBatteryHistograms;
   using PowerMetricsReporter::ReportHistograms;
 };
+
+using BatteryDischargeMode = PowerMetricsReporterAccess::BatteryDischargeMode;
+using BatteryDischarge = PowerMetricsReporterAccess::BatteryDischarge;
 
 // TODO(sebmarchand|etiennep): Move this to a test util file.
 class FakeBatteryLevelProvider : public BatteryLevelProvider {
@@ -238,8 +242,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kBatteryDischargeRateName, 1000);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
-      static_cast<int64_t>(
-          PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging));
+      static_cast<int64_t>(BatteryDischargeMode::kDischarging));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kCPUTimeMsName,
       kExpectedMetricsCollectionInterval.InSeconds() * 1000 *
@@ -313,9 +316,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kDischarging, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
@@ -377,13 +379,11 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
       entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
-      static_cast<int64_t>(
-          PowerMetricsReporterAccess::BatteryDischargeMode::kPluggedIn));
+      static_cast<int64_t>(BatteryDischargeMode::kPluggedIn));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kPluggedIn, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kPluggedIn, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
@@ -407,13 +407,11 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
       entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
-      static_cast<int64_t>(
-          PowerMetricsReporterAccess::BatteryDischargeMode::kStateChanged));
+      static_cast<int64_t>(BatteryDischargeMode::kStateChanged));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kStateChanged, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kStateChanged, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
@@ -436,14 +434,12 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
       entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
-      static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
-                               kChargeLevelUnavailable));
+      static_cast<int64_t>(BatteryDischargeMode::kChargeLevelUnavailable));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(
       kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kChargeLevelUnavailable,
-      1);
+      BatteryDischargeMode::kChargeLevelUnavailable, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
@@ -466,13 +462,11 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
       entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
-      static_cast<int64_t>(
-          PowerMetricsReporterAccess::BatteryDischargeMode::kNoBattery));
+      static_cast<int64_t>(BatteryDischargeMode::kNoBattery));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kNoBattery, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kNoBattery, 1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -500,13 +494,12 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
       entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
-      static_cast<int64_t>(
-          PowerMetricsReporterAccess::BatteryDischargeMode::kMacFullyCharged));
+      static_cast<int64_t>(BatteryDischargeMode::kMacFullyCharged));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kMacFullyCharged, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kMacFullyCharged,
+                                       1);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -534,14 +527,12 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
       entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
-      static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
-                               kBatteryLevelIncreased));
+      static_cast<int64_t>(BatteryDischargeMode::kBatteryLevelIncreased));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(
       kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kBatteryLevelIncreased,
-      1);
+      BatteryDischargeMode::kBatteryLevelIncreased, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
@@ -551,22 +542,20 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
   // Suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.ZeroWindow",
                                        2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.ZeroWindow",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.ZeroWindow",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.ZeroWindow", 500, 1);
 
@@ -591,13 +580,12 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
@@ -606,7 +594,7 @@ TEST_F(PowerMetricsReporterUnitTest,
       "Power.BatteryDischargeRate2.AllTabsHidden_VideoCapture", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeMode.AllTabsHidden_VideoCapture",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+      BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_VideoCapture", 500,
       1);
@@ -631,13 +619,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
@@ -646,7 +633,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
       "Power.BatteryDischargeRate2.AllTabsHidden_Audio", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeMode.AllTabsHidden_Audio",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+      BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_Audio", 500, 1);
 
@@ -671,13 +658,12 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
@@ -687,7 +673,7 @@ TEST_F(PowerMetricsReporterUnitTest,
       1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeMode.AllTabsHidden_NoVideoCaptureOrAudio",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+      BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_"
       "NoVideoCaptureOrAudio",
@@ -713,13 +699,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
@@ -728,7 +713,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
       "Power.BatteryDischargeRate2.VideoCapture", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeMode.VideoCapture",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+      BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.VideoCapture", 500, 1);
 
@@ -752,13 +737,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
@@ -767,7 +751,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
       "Power.BatteryDischargeRate2.FullscreenVideo", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeMode.FullscreenVideo",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+      BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.FullscreenVideo", 500, 1);
 
@@ -792,13 +776,12 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
@@ -807,7 +790,7 @@ TEST_F(PowerMetricsReporterUnitTest,
       "Power.BatteryDischargeRate2.EmbeddedVideo_NoNavigation", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeMode.EmbeddedVideo_NoNavigation",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+      BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.EmbeddedVideo_NoNavigation", 500,
       1);
@@ -833,13 +816,12 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
@@ -848,7 +830,7 @@ TEST_F(PowerMetricsReporterUnitTest,
       "Power.BatteryDischargeRate2.EmbeddedVideo_WithNavigation", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeMode.EmbeddedVideo_WithNavigation",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+      BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.EmbeddedVideo_WithNavigation", 500,
       1);
@@ -873,22 +855,20 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
   // Suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Audio",
                                        2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.Audio",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Audio",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.Audio", 500, 1);
 
@@ -912,22 +892,20 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
   // Suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Navigation",
                                        2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.Navigation",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Navigation",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.Navigation", 500, 1);
 
@@ -950,22 +928,20 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
   // Suffixed histograms.
   histogram_tester_.ExpectUniqueSample(
       "Power.BatteryDischargeRate2.Interaction", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.Interaction",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Interaction",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.Interaction", 500, 1);
 
@@ -988,22 +964,20 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
   // Non-suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
                                        500, 1);
 
   // Suffixed histograms.
   histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Passive",
                                        2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.Passive",
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Passive",
+                                       BatteryDischargeMode::kDischarging, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceMonitor.AverageCPU2.Total.Passive", 500, 1);
 
@@ -1017,13 +991,13 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) -
           base::Seconds(1),
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kInvalidInterval, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kInvalidInterval,
+                                       1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
@@ -1032,14 +1006,13 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) +
           base::Seconds(1),
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kDischarging, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
@@ -1048,13 +1021,13 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) +
           base::Seconds(1),
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kInvalidInterval, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kInvalidInterval,
+                                       1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
@@ -1063,14 +1036,13 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) -
           base::Seconds(1),
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
+      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
-  histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kDischarging, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
