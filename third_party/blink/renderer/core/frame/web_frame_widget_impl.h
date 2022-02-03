@@ -106,6 +106,15 @@ class CORE_EXPORT WebFrameWidgetImpl
       public FrameWidget,
       public PageWidgetEventHandler {
  public:
+  struct PromiseCallbacks {
+    base::OnceCallback<void(base::TimeTicks)> swap_time_callback;
+    base::OnceCallback<void(base::TimeTicks)> presentation_time_callback;
+#if BUILDFLAG(IS_MAC)
+    base::OnceCallback<void(gfx::CALayerResult)>
+        core_animation_error_code_callback;
+#endif
+  };
+
   WebFrameWidgetImpl(
       base::PassKey<WebLocalFrame>,
       CrossVariantMojoAssociatedRemote<
@@ -640,11 +649,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
 
-  void NotifySwapAndPresentationTime(
-      base::OnceCallback<void(base::TimeTicks)> swap_callback,
-      base::OnceCallback<void(base::TimeTicks)> presentation_callback,
-      base::OnceCallback<void(gfx::CALayerResult)>
-          core_animation_error_code_callback);
+  void NotifySwapAndPresentationTime(PromiseCallbacks callbacks);
 
   // WidgetBaseClient overrides.
   void BeginCommitCompositorFrame() override;
