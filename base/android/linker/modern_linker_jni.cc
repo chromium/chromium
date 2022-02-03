@@ -524,7 +524,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
     return false;
   }
 
-  if (other_lib_info.load_address_ == 0) {
+  if (load_address_ == 0) {
     LOG_ERROR("Load address reset. Second attempt to load the library?");
     s_relro_sharing_status = RelroSharingStatus::EXTERNAL_LOAD_ADDRESS_RESET;
     return false;
