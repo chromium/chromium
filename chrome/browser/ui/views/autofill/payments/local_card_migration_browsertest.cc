@@ -1083,9 +1083,9 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
   EXPECT_TRUE(GetLocalCardMigrationIconView()->GetVisible());
   EXPECT_TRUE(GetLocalCardMigrationOfferBubbleViews()->GetVisible());
 
-  AddTabAtIndexToBrowser(GetBrowser(0), 1, GURL("http://example.com/"),
-                         ui::PAGE_TRANSITION_TYPED,
-                         /*check_navigation_success=*/true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(GetBrowser(0), 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/true));
   TabStripModel* tab_model = GetBrowser(0)->tab_strip_model();
   tab_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
   WaitForAnimationToComplete();

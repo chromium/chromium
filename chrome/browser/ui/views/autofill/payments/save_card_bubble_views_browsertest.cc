@@ -2150,9 +2150,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_TRUE(GetSaveCardBubbleViews()->GetVisible());
 
-  AddTabAtIndexToBrowser(GetBrowser(0), 1, GURL("http://example.com/"),
-                         ui::PAGE_TRANSITION_TYPED,
-                         /*check_navigation_success=*/true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(GetBrowser(0), 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/true));
   TabStripModel* tab_model = GetBrowser(0)->tab_strip_model();
   tab_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
   WaitForAnimationToEnd();
