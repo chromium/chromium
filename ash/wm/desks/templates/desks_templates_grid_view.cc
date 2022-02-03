@@ -32,9 +32,10 @@ namespace ash {
 
 namespace {
 
-// Maximum number of columns for items when width >= height.
+// Items are laid out in landscape mode when the aspect ratio of the view is
+// above this number.
+constexpr float kAspectRatioLimit = 1.38f;
 constexpr int kLandscapeMaxColumns = 3;
-// Ditto for when width < height.
 constexpr int kPortraitMaxColumns = 2;
 
 constexpr int kGridPaddingDp = 25;
@@ -214,8 +215,11 @@ void DesksTemplatesGridView::Layout() {
 
   const size_t count = grid_items_.size();
   const gfx::Size grid_item_size = grid_items_[0]->GetPreferredSize();
-  const size_t max_column_count =
-      width() >= height() ? kLandscapeMaxColumns : kPortraitMaxColumns;
+  const float aspect_ratio =
+      static_cast<float>(width()) / std::max(height(), 1);
+  const size_t max_column_count = aspect_ratio > kAspectRatioLimit
+                                      ? kLandscapeMaxColumns
+                                      : kPortraitMaxColumns;
   const size_t column_count = std::min(count, max_column_count);
   const size_t row_count =
       (count / max_column_count) + ((count % max_column_count) == 0 ? 0 : 1);
