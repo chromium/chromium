@@ -182,6 +182,8 @@ source_set("field_trial") {
   deps = [ "//base" ]
 }
 
+# If you want to depend on this target you should depend on :webrtc_component
+# instead (which has a public dependency on this target).
 source_set("task_queue_factory") {
   visibility = [ ":*" ]
   sources = [
