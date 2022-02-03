@@ -92,6 +92,7 @@ class SharingHubBubbleView;
 namespace ui {
 class ColorProvider;
 class NativeTheme;
+class ThemeProvider;
 }
 
 namespace views {
@@ -204,6 +205,9 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns the native theme associated with the frame.
   virtual ui::NativeTheme* GetNativeTheme() = 0;
+
+  // Returns the ThemeProvider associated with the frame.
+  virtual const ui::ThemeProvider* GetThemeProvider() const = 0;
 
   // Returns the ColorProvider associated with the frame.
   virtual const ui::ColorProvider* GetColorProvider() const = 0;

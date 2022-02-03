@@ -1203,6 +1203,10 @@ ui::NativeTheme* BrowserView::GetNativeTheme() {
   return views::ClientView::GetNativeTheme();
 }
 
+const ui::ThemeProvider* BrowserView::GetThemeProvider() const {
+  return views::ClientView::GetThemeProvider();
+}
+
 const ui::ColorProvider* BrowserView::GetColorProvider() const {
   return views::ClientView::GetColorProvider();
 }

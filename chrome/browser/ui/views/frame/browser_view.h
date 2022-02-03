@@ -400,6 +400,7 @@ class BrowserView : public BrowserWindow,
   bool DoBrowserControlsShrinkRendererSize(
       const content::WebContents* contents) const override;
   ui::NativeTheme* GetNativeTheme() override;
+  const ui::ThemeProvider* GetThemeProvider() const override;
   const ui::ColorProvider* GetColorProvider() const override;
   ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
