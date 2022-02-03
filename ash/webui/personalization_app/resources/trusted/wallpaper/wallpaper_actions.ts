@@ -230,7 +230,7 @@ export function setDailyRefreshCollectionIdAction(collectionId: string|null):
 export type SetGooglePhotosAlbumAction = Action&{
   name: WallpaperActionName.SET_GOOGLE_PHOTOS_ALBUM;
   albumId: string;
-  photos: unknown[];
+  photos: GooglePhotosPhoto[]|null;
 };
 
 /**
@@ -238,7 +238,8 @@ export type SetGooglePhotosAlbumAction = Action&{
  * specified id. May be called with null on error.
  */
 export function setGooglePhotosAlbumAction(
-    albumId: string, photos: unknown[]): SetGooglePhotosAlbumAction {
+    albumId: string,
+    photos: GooglePhotosPhoto[]|null): SetGooglePhotosAlbumAction {
   return {albumId, photos, name: WallpaperActionName.SET_GOOGLE_PHOTOS_ALBUM};
 }
 
@@ -258,9 +259,7 @@ export type SetGooglePhotosCountAction = Action&{
   count: number|null;
 };
 
-/**
- * Sets the count of Google Photos photos. May be called with null on error.
- */
+/** Sets the count of Google Photos photos. May be called with null on error. */
 export function setGooglePhotosCountAction(count: number|
                                            null): SetGooglePhotosCountAction {
   return {count, name: WallpaperActionName.SET_GOOGLE_PHOTOS_COUNT};

@@ -97,6 +97,8 @@ export class TestWallpaperProvider extends
   private googlePhotosAlbums_: GooglePhotosAlbum[]|undefined = [];
   private googlePhotosCount_: number = 0;
   private googlePhotosPhotos_: GooglePhotosPhoto[]|undefined = [];
+  private googlePhotosPhotosByAlbumId_:
+      Record<string, GooglePhotosPhoto[]|undefined> = {};
   localImages: FilePath[]|null;
   localImageData: Record<string, string>;
   currentWallpaper: CurrentWallpaper;
@@ -153,12 +155,13 @@ export class TestWallpaperProvider extends
     return Promise.resolve({count});
   }
 
-  fetchGooglePhotosPhotos() {
-    this.methodCalled('fetchGooglePhotosPhotos');
+  fetchGooglePhotosPhotos(albumId: string) {
+    this.methodCalled('fetchGooglePhotosPhotos', albumId);
     const response = new FetchGooglePhotosPhotosResponse();
     response.photos =
         loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ?
-        this.googlePhotosPhotos_ :
+        albumId ? this.googlePhotosPhotosByAlbumId_[albumId] :
+                  this.googlePhotosPhotos_ :
         undefined;
     response.resumeToken = undefined;
     return Promise.resolve({response});
@@ -242,6 +245,11 @@ export class TestWallpaperProvider extends
 
   setGooglePhotosPhotos(googlePhotosPhotos: GooglePhotosPhoto[]|undefined) {
     this.googlePhotosPhotos_ = googlePhotosPhotos;
+  }
+
+  setGooglePhotosPhotosByAlbumId(
+      albumId: string, googlePhotosPhotos: GooglePhotosPhoto[]|undefined) {
+    this.googlePhotosPhotosByAlbumId_[albumId] = googlePhotosPhotos;
   }
 
   setImages(images: WallpaperImage[]) {

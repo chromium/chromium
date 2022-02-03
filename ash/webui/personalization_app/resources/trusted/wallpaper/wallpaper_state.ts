@@ -30,7 +30,7 @@ export interface GooglePhotosState {
   count: number|null|undefined;
   albums: GooglePhotosAlbum[]|null|undefined;
   photos: GooglePhotosPhoto[]|null|undefined;
-  photosByAlbumId: Record<string, unknown[]|null|undefined>;
+  photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>;
 }
 
 /**

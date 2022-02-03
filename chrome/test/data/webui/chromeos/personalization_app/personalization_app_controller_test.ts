@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {GooglePhotosAlbum} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, GooglePhotosPhoto} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import * as wallpaperAction from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
 import {fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -190,8 +190,18 @@ suite('Personalization app controller', () => {
   });
 
   test('sets Google Photos album in store', async () => {
+    loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: true});
+
     const album = new GooglePhotosAlbum();
     album.id = '9bd1d7a3-f995-4445-be47-53c5b58ce1cb';
+
+    const photos: GooglePhotosPhoto[] = [{
+      id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      date: {data: []},
+      url: {url: 'foo.com'}
+    }];
+
+    wallpaperProvider.setGooglePhotosPhotosByAlbumId(album.id, photos);
 
     // Attempts to `fetchGooglePhotosAlbum()` will fail unless the entire list
     // of Google Photos albums has already been fetched and saved to the store.
@@ -213,7 +223,7 @@ suite('Personalization app controller', () => {
           {
             name: 'set_google_photos_album',
             albumId: album.id,
-            photos: Array.from({length: 1000}),
+            photos: photos,
           },
         ],
         personalizationStore.actions);
@@ -260,7 +270,7 @@ suite('Personalization app controller', () => {
               ],
               photos: undefined,
               photosByAlbumId: {
-                [album.id]: Array.from({length: 1000}),
+                [album.id]: photos,
               },
             },
           },

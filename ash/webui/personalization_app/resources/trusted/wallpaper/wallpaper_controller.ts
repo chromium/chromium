@@ -66,17 +66,29 @@ async function fetchAllImagesForCollections(
  * specified id and saves it to the store.
  */
 export async function fetchGooglePhotosAlbum(
-    _: WallpaperProviderInterface, store: PersonalizationStore,
+    provider: WallpaperProviderInterface, store: PersonalizationStore,
     albumId: string): Promise<void> {
   store.dispatch(action.beginLoadGooglePhotosAlbumAction(albumId));
 
-  // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
-  // request that returns a list of 1,000 Google Photos photos.
-  return new Promise(resolve => setTimeout(() => {
-                       store.dispatch(action.setGooglePhotosAlbumAction(
-                           albumId, Array.from({length: 1000})));
-                       resolve();
-                     }, 1000));
+  let photos: Array<GooglePhotosPhoto>|null = [];
+  let resumeToken: string|null|undefined = null;
+
+  // TODO(b/216882690): Support incremental load of photos as the user scrolls
+  // through their library as opposed to loading them all at once.
+  do {
+    const {response} =
+        await provider.fetchGooglePhotosPhotos(albumId, resumeToken) as
+        {response: FetchGooglePhotosPhotosResponse};
+    if (!Array.isArray(response.photos)) {
+      console.warn('Failed to fetch Google Photos album');
+      photos = null;
+      break;
+    }
+    photos.push(...response.photos);
+    resumeToken = response.resumeToken;
+  } while (resumeToken);
+
+  store.dispatch(action.setGooglePhotosAlbumAction(albumId, photos));
 }
 
 /** Fetches the list of Google Photos albums and saves it to the store. */
@@ -121,14 +133,13 @@ async function fetchGooglePhotosPhotos(
   store.dispatch(action.beginLoadGooglePhotosPhotosAction());
 
   let photos: Array<GooglePhotosPhoto>|null = [];
-  const albumId: string|null|undefined = null;
   let resumeToken: string|null|undefined = null;
 
   // TODO(b/216882690): Support incremental load of photos as the user scrolls
   // through their library as opposed to loading them all at once.
   do {
-    const {response} =
-        await provider.fetchGooglePhotosPhotos(albumId, resumeToken) as
+    const {response} = await provider.fetchGooglePhotosPhotos(
+                           /*albumId=*/ null, resumeToken) as
         {response: FetchGooglePhotosPhotosResponse};
     if (!Array.isArray(response.photos)) {
       console.warn('Failed to fetch Google Photos photos');

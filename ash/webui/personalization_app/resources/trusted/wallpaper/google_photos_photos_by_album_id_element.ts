@@ -14,36 +14,11 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import {WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore, WithPersonalizationStore} from '../personalization_store.js';
 
 import {fetchGooglePhotosAlbum} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-
-let fetchGooglePhotosAlbumFunction = fetchGooglePhotosAlbum;
-
-type WallpaperControllerFunctionPromisesForTesting = {
-  fetchGooglePhotosAlbum: Promise<any[]>,
-};
-
-/**
- * TODO(dmblack): Remove once mojo provider is used to fetch data.
- * Mocks out wallpaper controller functions for testing. Returns promises that
- * are resolved when the function is called by |GooglePhotosPhotosByAlbumId|.
- */
-export function promisifyWallpaperControllerFunctionsForTesting():
-    WallpaperControllerFunctionPromisesForTesting {
-  const resolvers: Record<string, (args: any[]) => void> = {};
-  const promises = {
-    fetchGooglePhotosAlbum: new Promise<any[]>(
-        resolve => resolvers[fetchGooglePhotosAlbum.name] = resolve),
-  };
-  fetchGooglePhotosAlbumFunction = (...args: any): Promise<void> => {
-    resolvers[fetchGooglePhotosAlbum.name](args);
-    return Promise.resolve();
-  };
-  return promises;
-}
 
 export interface GooglePhotosPhotosByAlbumId {
   $: {grid: IronListElement;};
@@ -89,10 +64,10 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   hidden: boolean;
 
   /** The list of photos for the currently selected album id. */
-  private album_: unknown[]|null|undefined;
+  private album_: GooglePhotosPhoto[]|null|undefined;
 
   /** The list of photos by album id. */
-  private photosByAlbumId_: Record<string, unknown[]|null|undefined>;
+  private photosByAlbumId_: Record<string, GooglePhotosPhoto[]|null|undefined>;
 
   /** Whether the list of photos by album id is currently loading. */
   private photosByAlbumIdLoading_: Record<string, boolean>;
@@ -127,7 +102,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   }
 
   /** Invoked to compute |album_|. */
-  private computeAlbum_(): number[]|null|undefined {
+  private computeAlbum_(): GooglePhotosPhoto[]|null {
     // If no album is currently selected or if the currently selected album is
     // still loading then there is nothing to display.
     if (!this.albumId || this.photosByAlbumIdLoading_[this.albumId]) {
@@ -137,13 +112,13 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     // If the currently selected album has not already been fetched, do so
     // though there is still nothing to display.
     if (!this.photosByAlbumId_.hasOwnProperty(this.albumId)) {
-      fetchGooglePhotosAlbumFunction(
+      fetchGooglePhotosAlbum(
           this.wallpaperProvider_, this.getStore(), this.albumId);
       return null;
     }
 
     // Once the currently selected album has been fetched it can be displayed.
-    return this.photosByAlbumId_[this.albumId]?.map((_, i) => i + 1);
+    return this.photosByAlbumId_[this.albumId]!;
   }
 }
 
