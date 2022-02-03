@@ -140,6 +140,8 @@ class MainView : public views::Button {
   METADATA_HEADER(MainView);
 
   explicit MainView(PressedCallback callback) : Button(std::move(callback)) {
+    SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
     SetInstallFocusRingOnFocus(false);
     set_suppress_default_focus_handling();
 
@@ -295,9 +297,8 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // The view itself is not focused for retry-mode, so should not be announced
   // by the screen reader.
   if (retry_label_) {
-    node_data->role = ax::mojom::Role::kNone;
-    node_data->SetName(std::string());
-    node_data->SetDescription(std::string());
+    node_data->AddState(ax::mojom::State::kIgnored);
+    node_data->SetNameExplicitlyEmpty();
     return;
   }
 
