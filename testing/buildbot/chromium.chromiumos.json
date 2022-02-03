@@ -3565,7 +3565,6 @@
           "--lacros-chrome-path=lacros_clang_x64"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [],
