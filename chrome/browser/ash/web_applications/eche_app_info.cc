@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_eche_bundle_resources.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_eche_bundle_resources.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

@@ -10,6 +10,8 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
+ash_webui_grit_output_dir = "$root_gen_dir/ash/webui"
+
 # Convenience template for WebUIs using generate_grd.
 # TODO(calamity): Further deduplicate with non-generated grit targets.
 template("ash_generated_grit") {
@@ -22,13 +24,14 @@ template("ash_generated_grit") {
 
     # These arguments are needed since the grd is generated at build time.
     enable_input_discovery_for_gn_analyze = false
+
     outputs = [
-      "ash_$target_name.pak",
-      "grit/ash_$target_name.h",
+      "ash_${target_name}.pak",
+      "grit/ash_${target_name}.h",
       "grit/ash_${target_name}_map.cc",
       "grit/ash_${target_name}_map.h",
     ]
-    output_dir = "$root_gen_dir/ash"
+    output_dir = "$ash_webui_grit_output_dir"
   }
 }
 
@@ -133,7 +136,7 @@ grit("scanning_app_resources") {
     "grit/ash_scanning_app_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 grit("diagnostics_app_resources") {
@@ -151,7 +154,7 @@ grit("diagnostics_app_resources") {
     "grit/ash_diagnostics_app_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts
@@ -165,7 +168,7 @@ grit("help_app_resources") {
     "grit/ash_help_app_resources_map.h",
     "ash_help_app_resources.pak",
   ]
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 
   deps = [
     "//ash/webui/help_app_ui:mojo_bindings_js",
@@ -228,7 +231,7 @@ grit("media_app_resources") {
     "grit/ash_media_app_resources.h",
     "ash_media_app_resources.pak",
   ]
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 
   use_brotli = true
 
@@ -279,7 +282,7 @@ grit("print_management_resources") {
     "ash_print_management_resources.pak",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 # Resources used by chrome-untrusted://projector SWA.
@@ -341,7 +344,7 @@ grit("eche_bundle_resources") {
     "grit/ash_eche_bundle_resources_map.h",
     "ash_eche_bundle_resources.pak",
   ]
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 # Resources used by chrome://connectivity-diagnostics
@@ -361,7 +364,7 @@ grit("connectivity_diagnostics_resources") {
     "grit/connectivity_diagnostics_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 grit("multidevice_debug_resources") {
@@ -375,5 +378,5 @@ grit("multidevice_debug_resources") {
     "ash_multidevice_debug_resources.pak",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }

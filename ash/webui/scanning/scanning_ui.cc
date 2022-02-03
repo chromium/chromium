@@ -9,10 +9,10 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_scanning_app_resources.h"
-#include "ash/grit/ash_scanning_app_resources_map.h"
 #include "ash/webui/common/backend/accessibility_features.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
+#include "ash/webui/grit/ash_scanning_app_resources.h"
+#include "ash/webui/grit/ash_scanning_app_resources_map.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_app_delegate.h"
 #include "ash/webui/scanning/scanning_metrics_handler.h"

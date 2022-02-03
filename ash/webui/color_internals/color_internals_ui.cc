@@ -4,9 +4,9 @@
 
 #include "ash/webui/color_internals/color_internals_ui.h"
 
-#include "ash/grit/ash_color_internals_resources.h"
-#include "ash/grit/ash_color_internals_resources_map.h"
 #include "ash/webui/color_internals/url_constants.h"
+#include "ash/webui/grit/ash_color_internals_resources.h"
+#include "ash/webui/grit/ash_color_internals_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

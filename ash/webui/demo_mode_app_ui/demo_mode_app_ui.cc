@@ -4,10 +4,10 @@
 
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
 
-#include "ash/grit/ash_demo_mode_app_resources.h"
-#include "ash/grit/ash_demo_mode_app_resources_map.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_page_handler.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_demo_mode_app_resources.h"
+#include "ash/webui/grit/ash_demo_mode_app_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"

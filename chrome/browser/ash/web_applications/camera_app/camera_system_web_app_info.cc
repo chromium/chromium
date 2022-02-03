@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/grit/ash_camera_app_resources.h"
 #include "ash/webui/camera_app_ui/resources/strings/grit/ash_camera_app_strings.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_camera_app_resources.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

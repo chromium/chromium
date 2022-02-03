@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/grit/ash_media_app_resources.h"
+#include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/media_app_page_handler.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"

@@ -4,8 +4,8 @@
 
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 
-#include "ash/grit/ash_os_feedback_resources.h"
-#include "ash/grit/ash_os_feedback_resources_map.h"
+#include "ash/webui/grit/ash_os_feedback_resources.h"
+#include "ash/webui/grit/ash_os_feedback_resources_map.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"

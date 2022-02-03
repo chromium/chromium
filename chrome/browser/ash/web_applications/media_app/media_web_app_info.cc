@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_media_app_resources.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"

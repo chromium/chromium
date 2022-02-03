@@ -4,11 +4,11 @@
 
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 
-#include "ash/grit/ash_camera_app_resources_map.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/webui/camera_app_ui/camera_app_helper_impl.h"
 #include "ash/webui/camera_app_ui/resources.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_camera_app_resources_map.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"

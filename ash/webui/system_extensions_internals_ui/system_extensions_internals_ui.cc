@@ -4,8 +4,8 @@
 
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 
-#include "ash/grit/ash_system_extensions_internals_resources.h"
-#include "ash/grit/ash_system_extensions_internals_resources_map.h"
+#include "ash/webui/grit/ash_system_extensions_internals_resources.h"
+#include "ash/webui/grit/ash_system_extensions_internals_resources_map.h"
 #include "ash/webui/system_extensions_internals_ui/url_constants.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"

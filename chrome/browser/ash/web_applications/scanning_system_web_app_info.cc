@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/grit/ash_scanning_app_resources.h"
+#include "ash/webui/grit/ash_scanning_app_resources.h"
 #include "ash/webui/scanning/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"

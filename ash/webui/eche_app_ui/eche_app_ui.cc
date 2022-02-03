@@ -4,12 +4,12 @@
 
 #include <memory>
 
-#include "ash/grit/ash_eche_app_resources.h"
-#include "ash/grit/ash_eche_bundle_resources.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "ash/webui/eche_app_ui/eche_app_ui.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_eche_app_resources.h"
+#include "ash/webui/grit/ash_eche_bundle_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

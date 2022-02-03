@@ -1,6 +1,4 @@
 include_rules = [
-  "+ash/grit/ash_scanning_app_resources.h",
-  "+ash/grit/ash_scanning_app_resources_map.h",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+ui/base",
   "+ui/gfx",
