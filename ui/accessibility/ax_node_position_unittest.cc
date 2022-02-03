@@ -3448,12 +3448,12 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   ASSERT_NE(nullptr, inline_box2_position);
   ASSERT_TRUE(inline_box2_position->IsTextPosition());
 
-  TestPositionType test_position = root_position->LowestCommonAncestor(
+  TestPositionType test_position = root_position->LowestCommonAncestorPosition(
       *null_position.get(), ax::mojom::MoveDirection::kForward);
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsNullPosition());
 
-  test_position = root_position->LowestCommonAncestor(
+  test_position = root_position->LowestCommonAncestorPosition(
       *root_position.get(), ax::mojom::MoveDirection::kForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
@@ -3462,7 +3462,7 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   // be unchanged.
   EXPECT_EQ(3, test_position->child_index());
 
-  test_position = button_position->LowestCommonAncestor(
+  test_position = button_position->LowestCommonAncestorPosition(
       *text_field_position.get(), ax::mojom::MoveDirection::kForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
@@ -3470,7 +3470,7 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   // The child index should point to the button.
   EXPECT_EQ(0, test_position->child_index());
 
-  test_position = static_text2_position->LowestCommonAncestor(
+  test_position = static_text2_position->LowestCommonAncestorPosition(
       *static_text1_position.get(), ax::mojom::MoveDirection::kForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
@@ -3478,7 +3478,7 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   // The child index should point to the second static text node.
   EXPECT_EQ(2, test_position->child_index());
 
-  test_position = static_text1_position->LowestCommonAncestor(
+  test_position = static_text1_position->LowestCommonAncestorPosition(
       *text_field_position.get(), ax::mojom::MoveDirection::kForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
@@ -3486,14 +3486,14 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   // The child index should point to the first static text node.
   EXPECT_EQ(0, test_position->child_index());
 
-  test_position = inline_box1_position->LowestCommonAncestor(
+  test_position = inline_box1_position->LowestCommonAncestorPosition(
       *inline_box2_position.get(), ax::mojom::MoveDirection::kForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_EQ(text_field_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
 
-  test_position = inline_box2_position->LowestCommonAncestor(
+  test_position = inline_box2_position->LowestCommonAncestorPosition(
       *inline_box1_position.get(), ax::mojom::MoveDirection::kForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());

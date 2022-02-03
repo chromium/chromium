@@ -894,7 +894,7 @@ BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(
 // thoroughly tested and convert to tree positions.
 BrowserAccessibility::AXPosition
 BrowserAccessibility::CreatePositionForSelectionAt(int offset) const {
-  return CreateTextPositionAt(offset)->AsTextSelectionPosition();
+  return CreateTextPositionAt(offset)->AsDomSelectionPosition();
 }
 
 const std::string& BrowserAccessibility::GetName() const {

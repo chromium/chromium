@@ -1117,7 +1117,7 @@ bool content::IsNSRange(id value) {
 
   // "ax::mojom::MoveDirection" is only relevant on platforms that use object
   // replacement characters in the accessibility tree. Mac is not one of them.
-  const AXPosition caretPosition = range.focus()->LowestCommonAncestor(
+  const AXPosition caretPosition = range.focus()->LowestCommonAncestorPosition(
       *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
   DCHECK(!caretPosition->IsNullPosition())
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
@@ -1675,7 +1675,7 @@ bool content::IsNSRange(id value) {
 
   // "ax::mojom::MoveDirection" is only relevant on platforms that use object
   // replacement characters in the accessibility tree. Mac is not one of them.
-  const AXPosition startPosition = range.anchor()->LowestCommonAncestor(
+  const AXPosition startPosition = range.anchor()->LowestCommonAncestorPosition(
       *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
   DCHECK(!startPosition->IsNullPosition())
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
@@ -1692,9 +1692,9 @@ bool content::IsNSRange(id value) {
 
   BrowserAccessibilityManager* manager = _owner->manager();
   manager->SetSelection(BrowserAccessibility::AXRange(
-      _owner->CreateTextPositionAt(range.location)->AsTextSelectionPosition(),
+      _owner->CreateTextPositionAt(range.location)->AsDomSelectionPosition(),
       _owner->CreateTextPositionAt(NSMaxRange(range))
-          ->AsTextSelectionPosition()));
+          ->AsDomSelectionPosition()));
 }
 
 - (id)selectedTextMarkerRange {
@@ -3149,8 +3149,8 @@ bool content::IsNSRange(id value) {
     if (range.IsNull())
       return;
     BrowserAccessibilityManager* manager = _owner->manager();
-    manager->SetSelection(AXRange(range.anchor()->AsTextSelectionPosition(),
-                                  range.focus()->AsTextSelectionPosition()));
+    manager->SetSelection(AXRange(range.anchor()->AsDomSelectionPosition(),
+                                  range.focus()->AsDomSelectionPosition()));
   }
 }
 

@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/stack.h"
 #include "base/i18n/break_iterator.h"
 #include "base/no_destructor.h"
@@ -381,6 +382,7 @@ class AXPosition {
     return str + " annotated_text=" + base::UTF16ToUTF8(annotated_text);
   }
 
+  AXPositionKind kind() const { return kind_; }
   AXTreeID tree_id() const { return tree_id_; }
   AXNodeID anchor_id() const { return anchor_id_; }
 
@@ -408,7 +410,6 @@ class AXPosition {
     return 0;
   }
 
-  AXPositionKind kind() const { return kind_; }
   int child_index() const { return child_index_; }
   int text_offset() const { return text_offset_; }
   ax::mojom::TextAffinity affinity() const { return affinity_; }
@@ -490,24 +491,23 @@ class AXPosition {
 
   bool IsLeafTextPosition() const { return IsTextPosition() && IsLeaf(); }
 
-  bool IsUnignoredTextListMarker() const {
-    return GetAnchorRole() == ax::mojom::Role::kListMarker &&
-           !GetAnchor()->IsIgnored() && !AnchorUnignoredChildCount();
-  }
-
   bool IsLeaf() const {
     if (IsNullPosition())
       return false;
     // Unignored text list markers expose text on their own, and all their
     // descendants are ignored. Make sure they are treated as leaves, not empty
     // containers.
-    if (IsUnignoredTextListMarker())
+    if (IsInUnignoredTextListMarker())
       return true;
     return !AnchorChildCount() || IsInEmptyObject();
   }
 
   // Returns true if this is a valid position, e.g. the child_index_ or
   // text_offset_ is within a valid range.
+  //
+  // A position is always valid at creation time, but could become invalid after
+  // a tree update. For performance reasons, we don't check for validity every
+  // time a position is used, expecting clients to use this method instead.
   bool IsValid() const {
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
@@ -630,64 +630,6 @@ class AXPosition {
     }
   }
 
-  bool AtStartOfSentence() const {
-    AXPositionInstance text_position;
-    if (!AtEndOfAnchor()) {
-      // We could get a leaf text position at the end of its anchor, where
-      // sentence start offsets would surely not be present. In such cases, we
-      // need to normalize to the start of the next leaf anchor. We avoid making
-      // this change when we are at the end of our anchor because this could
-      // effectively shift the position forward.
-      text_position = AsLeafTextPositionBeforeCharacter();
-    } else {
-      text_position = AsLeafTextPosition();
-    }
-
-    switch (text_position->kind_) {
-      case AXPositionKind::NULL_POSITION:
-        return false;
-      case AXPositionKind::TREE_POSITION:
-        NOTREACHED();
-        return false;
-      case AXPositionKind::TEXT_POSITION: {
-        const std::vector<int32_t>& sentence_starts =
-            text_position->GetAnchor()->GetIntListAttribute(
-                ax::mojom::IntListAttribute::kSentenceStarts);
-        return base::Contains(sentence_starts,
-                              int32_t{text_position->text_offset_});
-      }
-    }
-  }
-
-  bool AtEndOfSentence() const {
-    AXPositionInstance text_position;
-    if (!AtStartOfAnchor()) {
-      // We could get a leaf text position at the start of its anchor, where
-      // sentence end offsets would surely not be present. In such cases, we
-      // need to normalize to the end of the previous leaf anchor. We avoid
-      // making this change when we are at the start of our anchor because this
-      // could effectively shift the position backward.
-      text_position = AsLeafTextPositionAfterCharacter();
-    } else {
-      text_position = AsLeafTextPosition();
-    }
-
-    switch (text_position->kind_) {
-      case AXPositionKind::NULL_POSITION:
-        return false;
-      case AXPositionKind::TREE_POSITION:
-        NOTREACHED();
-        return false;
-      case AXPositionKind::TEXT_POSITION: {
-        const std::vector<int32_t>& sentence_ends =
-            text_position->GetAnchor()->GetIntListAttribute(
-                ax::mojom::IntListAttribute::kSentenceEnds);
-        return base::Contains(sentence_ends,
-                              int32_t{text_position->text_offset_});
-      }
-    }
-  }
-
   bool AtStartOfLine() const {
     AXPositionInstance text_position = AsLeafTextPosition();
     switch (text_position->kind_) {
@@ -795,6 +737,135 @@ class AXPosition {
         // The current anchor might be followed by a soft line break.
         return text_position->AtEndOfAnchor() &&
                text_position->CreateNextLeafTextPosition()->AtEndOfLine();
+    }
+  }
+
+  AXBoundaryType GetFormatStartBoundaryType() const {
+    // Since formats are stored on text anchors, the start of a format boundary
+    // must be at the start of an anchor.
+    if (IsNullPosition() || !AtStartOfAnchor())
+      return AXBoundaryType::kNone;
+
+    // Treat the first iterable node as a format boundary.
+    if (CreatePreviousLeafTreePosition(
+            base::BindRepeating(&AbortMoveAtRootBoundary))
+            ->IsNullPosition()) {
+      return AXBoundaryType::kContentStart;
+    }
+
+    // Ignored positions cannot be format boundaries.
+    if (IsIgnored())
+      return AXBoundaryType::kNone;
+
+    // Iterate over anchors until a format boundary is found. This will return a
+    // null position upon crossing a boundary. Make sure the previous position
+    // is not on an ignored node.
+    AXPositionInstance previous_position = Clone();
+    do {
+      previous_position = previous_position->CreatePreviousLeafTreePosition(
+          base::BindRepeating(&AbortMoveAtFormatBoundary));
+    } while (previous_position->IsIgnored());
+
+    if (previous_position->IsNullPosition())
+      return AXBoundaryType::kUnitBoundary;
+
+    return AXBoundaryType::kNone;
+  }
+
+  bool AtStartOfFormat() const {
+    return GetFormatStartBoundaryType() != AXBoundaryType::kNone;
+  }
+
+  AXBoundaryType GetFormatEndBoundaryType() const {
+    // Since formats are stored on text anchors, the end of a format break must
+    // be at the end of an anchor.
+    if (IsNullPosition() || !AtEndOfAnchor())
+      return AXBoundaryType::kNone;
+
+    // Treat the last iterable node as a format boundary
+    if (CreateNextLeafTreePosition(
+            base::BindRepeating(&AbortMoveAtRootBoundary))
+            ->IsNullPosition())
+      return AXBoundaryType::kContentEnd;
+
+    // Ignored positions cannot be format boundaries.
+    if (IsIgnored())
+      return AXBoundaryType::kNone;
+
+    // Iterate over anchors until a format boundary is found. This will return a
+    // null position upon crossing a boundary. Make sure the next position is
+    // not on an ignored node.
+    AXPositionInstance next_position = Clone();
+    do {
+      next_position = next_position->CreateNextLeafTreePosition(
+          base::BindRepeating(&AbortMoveAtFormatBoundary));
+    } while (next_position->IsIgnored());
+
+    if (next_position->IsNullPosition())
+      return AXBoundaryType::kUnitBoundary;
+
+    return AXBoundaryType::kNone;
+  }
+
+  bool AtEndOfFormat() const {
+    return GetFormatEndBoundaryType() != AXBoundaryType::kNone;
+  }
+
+  bool AtStartOfSentence() const {
+    AXPositionInstance text_position;
+    if (!AtEndOfAnchor()) {
+      // We could get a leaf text position at the end of its anchor, where
+      // sentence start offsets would surely not be present. In such cases, we
+      // need to normalize to the start of the next leaf anchor. We avoid making
+      // this change when we are at the end of our anchor because this could
+      // effectively shift the position forward.
+      text_position = AsLeafTextPositionBeforeCharacter();
+    } else {
+      text_position = AsLeafTextPosition();
+    }
+
+    switch (text_position->kind_) {
+      case AXPositionKind::NULL_POSITION:
+        return false;
+      case AXPositionKind::TREE_POSITION:
+        NOTREACHED();
+        return false;
+      case AXPositionKind::TEXT_POSITION: {
+        const std::vector<int32_t>& sentence_starts =
+            text_position->GetAnchor()->GetIntListAttribute(
+                ax::mojom::IntListAttribute::kSentenceStarts);
+        return base::Contains(sentence_starts,
+                              int32_t{text_position->text_offset_});
+      }
+    }
+  }
+
+  bool AtEndOfSentence() const {
+    AXPositionInstance text_position;
+    if (!AtStartOfAnchor()) {
+      // We could get a leaf text position at the start of its anchor, where
+      // sentence end offsets would surely not be present. In such cases, we
+      // need to normalize to the end of the previous leaf anchor. We avoid
+      // making this change when we are at the start of our anchor because this
+      // could effectively shift the position backward.
+      text_position = AsLeafTextPositionAfterCharacter();
+    } else {
+      text_position = AsLeafTextPosition();
+    }
+
+    switch (text_position->kind_) {
+      case AXPositionKind::NULL_POSITION:
+        return false;
+      case AXPositionKind::TREE_POSITION:
+        NOTREACHED();
+        return false;
+      case AXPositionKind::TEXT_POSITION: {
+        const std::vector<int32_t>& sentence_ends =
+            text_position->GetAnchor()->GetIntListAttribute(
+                ax::mojom::IntListAttribute::kSentenceEnds);
+        return base::Contains(sentence_ends,
+                              int32_t{text_position->text_offset_});
+      }
     }
   }
 
@@ -936,6 +1007,52 @@ class AXPosition {
     }
   }
 
+  // Returns true if this position is at the start or right before content that
+  // is laid out using "display: inline-block".
+  bool AtStartOfInlineBlock() const {
+    AXPositionInstance text_position = AsLeafTextPosition();
+    switch (text_position->kind_) {
+      case AXPositionKind::NULL_POSITION:
+        return false;
+      case AXPositionKind::TREE_POSITION:
+        NOTREACHED();
+        return false;
+      case AXPositionKind::TEXT_POSITION: {
+        if (text_position->AtStartOfAnchor()) {
+          AXPositionInstance previous_position =
+              text_position->CreatePreviousLeafTreePosition();
+
+          // Check that this position is not the start of the first anchor.
+          if (!previous_position->IsNullPosition()) {
+            previous_position = text_position->CreatePreviousLeafTreePosition(
+                base::BindRepeating(&AbortMoveAtStartOfInlineBlock));
+
+            // If we get a null position here it means we have crossed an inline
+            // block's start, thus this position is located at such start.
+            if (previous_position->IsNullPosition())
+              return true;
+          }
+        }
+        if (text_position->AtEndOfAnchor()) {
+          AXPositionInstance next_position =
+              text_position->CreateNextLeafTreePosition();
+
+          // Check that this position is not the end of the last anchor.
+          if (!next_position->IsNullPosition()) {
+            next_position = text_position->CreateNextLeafTreePosition(
+                base::BindRepeating(&AbortMoveAtStartOfInlineBlock));
+
+            // If we get a null position here it means we have crossed an inline
+            // block's start, thus this position is located at such start.
+            if (next_position->IsNullPosition())
+              return true;
+          }
+        }
+        return false;
+      }
+    }
+  }
+
   // Page boundaries are only supported in certain content types, e.g. PDF
   // documents.
   bool AtStartOfPage() const {
@@ -1025,121 +1142,6 @@ class AXPosition {
     return *CreatePositionAtEndOfAXTree() == *this;
   }
 
-  AXBoundaryType GetFormatStartBoundaryType() const {
-    // Since formats are stored on text anchors, the start of a format boundary
-    // must be at the start of an anchor.
-    if (IsNullPosition() || !AtStartOfAnchor())
-      return AXBoundaryType::kNone;
-
-    // Treat the first iterable node as a format boundary.
-    if (CreatePreviousLeafTreePosition(
-            base::BindRepeating(&AbortMoveAtRootBoundary))
-            ->IsNullPosition()) {
-      return AXBoundaryType::kContentStart;
-    }
-
-    // Ignored positions cannot be format boundaries.
-    if (IsIgnored())
-      return AXBoundaryType::kNone;
-
-    // Iterate over anchors until a format boundary is found. This will return a
-    // null position upon crossing a boundary. Make sure the previous position
-    // is not on an ignored node.
-    AXPositionInstance previous_position = Clone();
-    do {
-      previous_position = previous_position->CreatePreviousLeafTreePosition(
-          base::BindRepeating(&AbortMoveAtFormatBoundary));
-    } while (previous_position->IsIgnored());
-
-    if (previous_position->IsNullPosition())
-      return AXBoundaryType::kUnitBoundary;
-
-    return AXBoundaryType::kNone;
-  }
-
-  bool AtStartOfFormat() const {
-    return GetFormatStartBoundaryType() != AXBoundaryType::kNone;
-  }
-
-  AXBoundaryType GetFormatEndBoundaryType() const {
-    // Since formats are stored on text anchors, the end of a format break must
-    // be at the end of an anchor.
-    if (IsNullPosition() || !AtEndOfAnchor())
-      return AXBoundaryType::kNone;
-
-    // Treat the last iterable node as a format boundary
-    if (CreateNextLeafTreePosition(
-            base::BindRepeating(&AbortMoveAtRootBoundary))
-            ->IsNullPosition())
-      return AXBoundaryType::kContentEnd;
-
-    // Ignored positions cannot be format boundaries.
-    if (IsIgnored())
-      return AXBoundaryType::kNone;
-
-    // Iterate over anchors until a format boundary is found. This will return a
-    // null position upon crossing a boundary. Make sure the next position is
-    // not on an ignored node.
-    AXPositionInstance next_position = Clone();
-    do {
-      next_position = next_position->CreateNextLeafTreePosition(
-          base::BindRepeating(&AbortMoveAtFormatBoundary));
-    } while (next_position->IsIgnored());
-
-    if (next_position->IsNullPosition())
-      return AXBoundaryType::kUnitBoundary;
-
-    return AXBoundaryType::kNone;
-  }
-
-  bool AtEndOfFormat() const {
-    return GetFormatEndBoundaryType() != AXBoundaryType::kNone;
-  }
-
-  bool AtStartOfInlineBlock() const {
-    AXPositionInstance text_position = AsLeafTextPosition();
-    switch (text_position->kind_) {
-      case AXPositionKind::NULL_POSITION:
-        return false;
-      case AXPositionKind::TREE_POSITION:
-        NOTREACHED();
-        return false;
-      case AXPositionKind::TEXT_POSITION: {
-        if (text_position->AtStartOfAnchor()) {
-          AXPositionInstance previous_position =
-              text_position->CreatePreviousLeafTreePosition();
-
-          // Check that this position is not the start of the first anchor.
-          if (!previous_position->IsNullPosition()) {
-            previous_position = text_position->CreatePreviousLeafTreePosition(
-                base::BindRepeating(&AbortMoveAtStartOfInlineBlock));
-
-            // If we get a null position here it means we have crossed an inline
-            // block's start, thus this position is located at such start.
-            if (previous_position->IsNullPosition())
-              return true;
-          }
-        }
-        if (text_position->AtEndOfAnchor()) {
-          AXPositionInstance next_position =
-              text_position->CreateNextLeafTreePosition();
-
-          // Check that this position is not the end of the last anchor.
-          if (!next_position->IsNullPosition()) {
-            next_position = text_position->CreateNextLeafTreePosition(
-                base::BindRepeating(&AbortMoveAtStartOfInlineBlock));
-
-            // If we get a null position here it means we have crossed an inline
-            // block's start, thus this position is located at such start.
-            if (next_position->IsNullPosition())
-              return true;
-          }
-        }
-        return false;
-      }
-    }
-  }
-
   // Returns true if this position is at the start of all content. This might
   // refer to e.g. a single webpage (made up of multiple iframes), or a PDF
   // document. Note that the current webpage could be made up of multiple
@@ -1193,7 +1195,7 @@ class AXPosition {
   // Also, this method uses position instead of tree logic to traverse the tree,
   // because positions can handle moving across multiple trees, while trees
   // cannot.
-  AXPositionInstance LowestCommonAncestor(
+  AXPositionInstance LowestCommonAncestorPosition(
       const AXPosition& other,
       ax::mojom::MoveDirection move_direction) const {
     return CreateAncestorPosition(LowestCommonAnchor(other), move_direction);
@@ -1634,8 +1636,9 @@ class AXPosition {
     return text_position;
   }
 
-  // Converts to a text position that is suitable for passing into renderer
-  // as a selection endpoint.
+  // Converts to a text position that is suitable for passing into the renderer
+  // as a selection endpoint. In other words, converts to a position that is
+  // suitable for setting as a DOM selection range endpoint.
   //
   // When blink is asked to set selection, it expects a text position to be
   // anchored to the text node (otherwise a generic tree position is assumed
@@ -1645,10 +1648,11 @@ class AXPosition {
   // text-fields: an attempt to select the text beyond the first line results
   // in a wrong selection which looks as if the text offset was counted through
   // the first line only.
-  AXPositionInstance AsTextSelectionPosition() const {
-    if (IsNullPosition()) {
+  // TODO(nektar): Make this work in plain text fields too.
+  AXPositionInstance AsDomSelectionPosition() const {
+    if (IsNullPosition())
       return Clone();
-    }
+
     AXPositionInstance text_position = AsLeafTextPosition();
     if (text_position->GetAnchor() && text_position->GetAnchor()->GetRole() ==
                                           ax::mojom::Role::kInlineTextBox) {
@@ -2892,10 +2896,26 @@ class AXPosition {
         base::BindRepeating(&AtEndOfLinePredicate));
   }
 
+  AXPositionInstance CreateNextFormatStartPosition(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryStartPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        base::BindRepeating(&AtStartOfFormatPredicate),
+        base::BindRepeating(&AtEndOfFormatPredicate));
+  }
+
   AXPositionInstance CreatePreviousFormatStartPosition(
       AXBoundaryBehavior boundary_behavior) const {
     return CreateBoundaryStartPosition(
         boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        base::BindRepeating(&AtStartOfFormatPredicate),
+        base::BindRepeating(&AtEndOfFormatPredicate));
+  }
+
+  AXPositionInstance CreateNextFormatEndPosition(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryEndPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfFormatPredicate),
         base::BindRepeating(&AtEndOfFormatPredicate));
   }
@@ -2908,20 +2928,40 @@ class AXPosition {
         base::BindRepeating(&AtEndOfFormatPredicate));
   }
 
-  AXPositionInstance CreateNextFormatStartPosition(
+  AXPositionInstance CreateNextSentenceStartPosition(
       AXBoundaryBehavior boundary_behavior) const {
     return CreateBoundaryStartPosition(
         boundary_behavior, ax::mojom::MoveDirection::kForward,
-        base::BindRepeating(&AtStartOfFormatPredicate),
-        base::BindRepeating(&AtEndOfFormatPredicate));
+        base::BindRepeating(&AtStartOfSentencePredicate),
+        base::BindRepeating(&AtEndOfSentencePredicate),
+        base::BindRepeating(&GetSentenceStartOffsetsFunc));
   }
 
-  AXPositionInstance CreateNextFormatEndPosition(
+  AXPositionInstance CreatePreviousSentenceStartPosition(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryStartPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        base::BindRepeating(&AtStartOfSentencePredicate),
+        base::BindRepeating(&AtEndOfSentencePredicate),
+        base::BindRepeating(&GetSentenceStartOffsetsFunc));
+  }
+
+  AXPositionInstance CreateNextSentenceEndPosition(
       AXBoundaryBehavior boundary_behavior) const {
     return CreateBoundaryEndPosition(
         boundary_behavior, ax::mojom::MoveDirection::kForward,
-        base::BindRepeating(&AtStartOfFormatPredicate),
-        base::BindRepeating(&AtEndOfFormatPredicate));
+        base::BindRepeating(&AtStartOfSentencePredicate),
+        base::BindRepeating(&AtEndOfSentencePredicate),
+        base::BindRepeating(&GetSentenceEndOffsetsFunc));
+  }
+
+  AXPositionInstance CreatePreviousSentenceEndPosition(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryEndPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        base::BindRepeating(&AtStartOfSentencePredicate),
+        base::BindRepeating(&AtEndOfSentencePredicate),
+        base::BindRepeating(&GetSentenceEndOffsetsFunc));
   }
 
   AXPositionInstance CreateNextParagraphStartPosition(
@@ -3335,42 +3375,6 @@ class AXPosition {
     return unignored_position;
   }
 
-  AXPositionInstance CreateNextSentenceStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
-    return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
-        base::BindRepeating(&AtStartOfSentencePredicate),
-        base::BindRepeating(&AtEndOfSentencePredicate),
-        base::BindRepeating(&GetSentenceStartOffsetsFunc));
-  }
-
-  AXPositionInstance CreatePreviousSentenceStartPosition(
-      AXBoundaryBehavior boundary_behavior) const {
-    return CreateBoundaryStartPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
-        base::BindRepeating(&AtStartOfSentencePredicate),
-        base::BindRepeating(&AtEndOfSentencePredicate),
-        base::BindRepeating(&GetSentenceStartOffsetsFunc));
-  }
-
-  AXPositionInstance CreateNextSentenceEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
-    return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kForward,
-        base::BindRepeating(&AtStartOfSentencePredicate),
-        base::BindRepeating(&AtEndOfSentencePredicate),
-        base::BindRepeating(&GetSentenceEndOffsetsFunc));
-  }
-
-  AXPositionInstance CreatePreviousSentenceEndPosition(
-      AXBoundaryBehavior boundary_behavior) const {
-    return CreateBoundaryEndPosition(
-        boundary_behavior, ax::mojom::MoveDirection::kBackward,
-        base::BindRepeating(&AtStartOfSentencePredicate),
-        base::BindRepeating(&AtEndOfSentencePredicate),
-        base::BindRepeating(&GetSentenceEndOffsetsFunc));
-  }
-
   // Uses depth-first pre-order traversal.
   AXPositionInstance CreateNextAnchorPosition() const {
     return CreateNextAnchorPosition(
@@ -3635,8 +3639,9 @@ class AXPosition {
     // equivalent positions going to erroneously have the same lowest common
     // ancestor position when converted to tree positions as the ones they had
     // before the conversion?" In other words, when will
-    // "this->AsTreePosition()->LowestCommonAncestor(*other.AsTreePosition()) ==
-    // other.AsTreePosition()->LowestCommonAncestor(*this->AsTreePosition())"?
+    // "this->AsTreePosition()->LowestCommonAncestorPosition(*other.AsTreePosition())
+    // ==
+    // other.AsTreePosition()->LowestCommonAncestorPosition(*this->AsTreePosition())"?
     // The answer is either when they have the same anchor and at least one is a
     // text position, (a case that was dealt with in the previous block), or
     // when at least one is a text position and one is an ancestor position of
@@ -3781,10 +3786,11 @@ class AXPosition {
         // would create a kDownstream position.
 
         AXPositionInstance this_text_position_ancestor =
-            LowestCommonAncestor(other, ax::mojom::MoveDirection::kBackward);
+            LowestCommonAncestorPosition(other,
+                                         ax::mojom::MoveDirection::kBackward);
         AXPositionInstance other_text_position_ancestor =
-            other.LowestCommonAncestor(*this,
-                                       ax::mojom::MoveDirection::kBackward);
+            other.LowestCommonAncestorPosition(
+                *this, ax::mojom::MoveDirection::kBackward);
         DCHECK(this_text_position_ancestor->IsTextPosition());
         DCHECK(other_text_position_ancestor->IsTextPosition());
 
@@ -4461,6 +4467,11 @@ class AXPosition {
                                    const AXPosition& move_to,
                                    const AXMoveType type,
                                    const AXMoveDirection direction)>;
+
+  bool IsInUnignoredTextListMarker() const {
+    return GetAnchorRole() == ax::mojom::Role::kListMarker &&
+           !GetAnchor()->IsIgnored() && !AnchorUnignoredChildCount();
+  }
 
   // A text span is defined by a series of inline text boxes that make up a
   // single static text object.

@@ -12,6 +12,9 @@
 
 namespace ui {
 
+// Returns a human-readable representation of `AXPositionKind`.
+AX_EXPORT std::string ToString(const AXPositionKind kind);
+
 // AXNodePosition includes implementations of AXPosition methods which require
 // knowledge of the AXPosition AXNodeType (which is unknown by AXPosition).
 class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {

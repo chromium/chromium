@@ -903,10 +903,11 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL();
 
   const AXPositionInstance start_common_ancestor =
-      start()->LowestCommonAncestor(*end(),
-                                    ax::mojom::MoveDirection::kBackward);
+      start()->LowestCommonAncestorPosition(
+          *end(), ax::mojom::MoveDirection::kBackward);
   const AXPositionInstance end_common_ancestor =
-      end()->LowestCommonAncestor(*start(), ax::mojom::MoveDirection::kForward);
+      end()->LowestCommonAncestorPosition(*start(),
+                                          ax::mojom::MoveDirection::kForward);
   if (start_common_ancestor->IsNullPosition() ||
       end_common_ancestor->IsNullPosition()) {
     return E_INVALIDARG;
@@ -1187,7 +1188,7 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByPage(
   // Note that the "ax::mojom::MoveDirection" should not matter when calculating
   // the ancestor position for use when navigating by page or document, so we
   // use a backward direction as the default.
-  AXPositionInstance common_ancestor = start()->LowestCommonAncestor(
+  AXPositionInstance common_ancestor = start()->LowestCommonAncestorPosition(
       *end(), ax::mojom::MoveDirection::kBackward);
   if (!common_ancestor->GetAnchor()->tree()->HasPaginationSupport())
     return MoveEndpointByDocument(std::move(endpoint), count, units_moved);

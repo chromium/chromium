@@ -36,6 +36,19 @@ ScopedAXEmbeddedObjectBehaviorSetter::~ScopedAXEmbeddedObjectBehaviorSetter() {
 
 }  // namespace testing
 
+std::string ToString(const AXPositionKind kind) {
+  static constexpr auto kKindToString =
+      base::MakeFixedFlatMap<AXPositionKind, const char*>(
+          {{AXPositionKind::NULL_POSITION, "NullPosition"},
+           {AXPositionKind::TREE_POSITION, "TreePosition"},
+           {AXPositionKind::TEXT_POSITION, "TextPosition"}});
+
+  const auto* iter = kKindToString.find(kind);
+  if (iter == std::end(kKindToString))
+    return std::string();
+  return iter->second;
+}
+
 // static
 AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     const AXNode& node,
