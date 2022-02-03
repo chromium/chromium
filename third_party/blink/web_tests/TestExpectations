@@ -7593,3 +7593,6 @@ crbug.com/1038139 [ Mac ] virtual/gpu-rasterization/images/2-comp.html [ Failure
 
 # Need implementation of blocking=render attribute
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/render-blocked-apis-by-preload-link.tentative.html [ Skip ]
+
+# Sheriff 2022-02-03
+crbug.com/1293878 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Skip ]
