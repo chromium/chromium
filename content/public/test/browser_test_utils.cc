@@ -232,10 +232,8 @@ bool ExecuteScriptWithUserGestureControl(RenderFrameHost* frame,
   }
 
   DCHECK_EQ(base::Value::Type::STRING, value->type());
-  std::string actual_response;
-  if (value->GetAsString(&actual_response))
-    DCHECK_EQ(expected_response, actual_response);
-
+  if (value->is_string())
+    DCHECK_EQ(expected_response, value->GetString());
   return true;
 }
 
@@ -1461,9 +1459,15 @@ bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
   // Prerendering pages will never have user gesture.
   bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
                       RenderFrameHost::LifecycleState::kPrerendering;
-  return ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
-                             ISOLATED_WORLD_ID_GLOBAL, &value) &&
-         value && value->GetAsString(result);
+  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
+                           ISOLATED_WORLD_ID_GLOBAL, &value)) {
+    return false;
+  }
+  if (value && value->is_string()) {
+    *result = value->GetString();
+    return true;
+  }
+  return false;
 }
 
 bool ExecuteScriptWithoutUserGestureAndExtractBool(
@@ -1487,9 +1491,16 @@ bool ExecuteScriptWithoutUserGestureAndExtractString(
     std::string* result) {
   DCHECK(result);
   std::unique_ptr<base::Value> value;
-  return ExecuteScriptHelper(adapter.render_frame_host(), script, false,
-                             ISOLATED_WORLD_ID_GLOBAL, &value) &&
-         value && value->GetAsString(result);
+  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, false,
+                           ISOLATED_WORLD_ID_GLOBAL, &value)) {
+    return false;
+  }
+
+  if (value && value->is_string()) {
+    *result = value->GetString();
+    return true;
+  }
+  return false;
 }
 
 // EvalJsResult methods.
