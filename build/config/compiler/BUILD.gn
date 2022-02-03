@@ -1575,6 +1575,13 @@ config("prevent_unsafe_narrowing") {
       "-Wsign-compare",
       "-Wsign-conversion",
     ]
+    if (!is_nacl) {
+      cflags += [
+        # Avoid bugs of the form `if (size_t i = size; i >= 0; --i)` while
+        # fixing types to be sign-correct.
+        "-Wtautological-unsigned-zero-compare",
+      ]
+    }
   }
 }
 
