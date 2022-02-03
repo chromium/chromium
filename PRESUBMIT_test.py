@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import os.path
 import subprocess
 import unittest
@@ -506,9 +507,26 @@ class UserMetricsActionTest(unittest.TestCase):
 
 
 class PydepsNeedsUpdatingTest(unittest.TestCase):
+  class MockPopen:
+    def __init__(self, stdout_func):
+      self._stdout_func = stdout_func
 
-  class MockSubprocess(object):
+    def wait(self):
+      self.stdout = io.StringIO(self._stdout_func())
+      return 0
+
+  class MockSubprocess:
     CalledProcessError = subprocess.CalledProcessError
+    PIPE = 0
+
+    def __init__(self):
+      self._popen_func = None
+
+    def SetPopenCallback(self, func):
+      self._popen_func = func
+
+    def Popen(self, cmd, *args, **kwargs):
+      return PydepsNeedsUpdatingTest.MockPopen(lambda: self._popen_func(cmd))
 
   def _MockParseGclientArgs(self, is_android=True):
     return lambda: {'checkout_android': 'true' if is_android else 'false' }
@@ -604,11 +622,11 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None, encoding=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --output A.pydeps A --output ""', cmd)
       return self.checker._file_cache['A.pydeps']
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(0, len(results), 'Unexpected results: %r' % results)
@@ -622,14 +640,16 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None, encoding=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --output A.pydeps A --output ""', cmd)
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(1, len(results))
+    # Check that --output "" is not included.
+    self.assertNotIn('""', str(results[0]))
     self.assertIn('File is stale', str(results[0]))
 
   def testRelevantPyTwoChanges(self):
@@ -641,10 +661,10 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('C.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None, encoding=None):
+    def popen_callback(cmd):
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(2, len(results))
@@ -660,11 +680,11 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('D.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None, encoding=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --output D.pydeps D --output ""', cmd)
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
     PRESUBMIT._ParseGclientArgs = self._MockParseGclientArgs(is_android=False)
 
     results = self._RunCheck()
@@ -687,11 +707,11 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None, encoding=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --gn-paths A --output A.pydeps --output ""', cmd)
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(1, len(results))
