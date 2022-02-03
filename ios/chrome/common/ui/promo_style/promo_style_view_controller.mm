@@ -8,8 +8,8 @@
 #include "base/i18n/rtl.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
-#import "ios/chrome/common/ui/promo_style/highlighted_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #include "ios/chrome/common/ui/util/device_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -43,7 +43,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 // UIView that wraps the scrollable content.
 @property(nonatomic, strong) UIView* scrollContentView;
 @property(nonatomic, strong) UILabel* subtitleLabel;
-@property(nonatomic, strong) HighlightedButton* primaryActionButton;
+@property(nonatomic, strong) HighlightButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 
@@ -521,7 +521,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
-    _primaryActionButton = [[HighlightedButton alloc] initWithFrame:CGRectZero];
+    _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
     _primaryActionButton.contentEdgeInsets =
         UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];

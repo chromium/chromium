@@ -8,8 +8,6 @@ import("//build/config/ios/ios_sdk.gni")
 source_set("promo_style") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "highlighted_button.h",
-    "highlighted_button.mm",
     "promo_style_view_controller.h",
     "promo_style_view_controller.mm",
     "promo_style_view_controller_delegate.h",
@@ -21,6 +19,7 @@ source_set("promo_style") {
     "//ios/chrome/app/strings",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/resources:help_icon",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
