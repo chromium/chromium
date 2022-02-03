@@ -37,7 +37,7 @@ class BASE_EXPORT WakeUpQueue {
   // Returns a wake-up for the next pending delayed task (pending delayed tasks
   // that are ripe may be ignored). If there are no such tasks (immediate tasks
   // don't count) or queues are disabled it returns nullopt.
-  absl::optional<WakeUp> GetNextDelayedWakeUp() const;
+  absl::optional<WakeUp> GetNextWakeUp() const;
 
   // Debug info.
   Value AsValue(TimeTicks now) const;
@@ -50,11 +50,9 @@ class BASE_EXPORT WakeUpQueue {
   bool empty() const { return wake_up_queue_.empty(); }
 
   // Moves ready delayed tasks in TaskQueues to delayed WorkQueues, consuming
-  // expired wake-ups in the process. If `full_sweep`, all queues are visited
-  // regardless of their next wake-up (inefficient, test-only).
+  // expired wake-ups in the process.
   void MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now,
-                                         EnqueueOrder enqueue_order,
-                                         bool full_sweep = false);
+                                         EnqueueOrder enqueue_order);
 
   // Schedule `queue` to wake up at certain time. Repeating calls with the same
   // `queue` invalidate previous requests. Nullopt `wake_up` cancels a
@@ -67,7 +65,7 @@ class BASE_EXPORT WakeUpQueue {
   virtual void UnregisterQueue(internal::TaskQueueImpl* queue) = 0;
 
   // Removes all canceled delayed tasks from the front of the queue. After
-  // calling this, GetNextDelayedWakeUp() is guaranteed to return a wake up time
+  // calling this, GetNextWakeUp() is guaranteed to return a wake up time
   // for a non-canceled task.
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
 
@@ -81,14 +79,6 @@ class BASE_EXPORT WakeUpQueue {
   virtual void OnNextWakeUpChanged(LazyNow* lazy_now,
                                    absl::optional<WakeUp> next_wake_up) = 0;
 
-  // Helpers for MoveReadyDelayedTasksToWorkQueues. Returns true if
-  // any queue was notified and following queues need to be updated.
-  bool MoveReadyDelayedTasksToWorkQueuesImpl(LazyNow* lazy_now,
-                                             EnqueueOrder enqueue_order);
-  bool MoveReadyDelayedTasksToWorkQueuesFullSweepImpl(
-      LazyNow* lazy_now,
-      EnqueueOrder enqueue_order);
-
   virtual const char* GetName() const = 0;
 
  private:
@@ -99,7 +89,7 @@ class BASE_EXPORT WakeUpQueue {
     internal::TaskQueueImpl* queue;
 
     bool operator>(const ScheduledWakeUp& other) const {
-      return wake_up.latest_time() > other.wake_up.latest_time();
+      return wake_up > other.wake_up;
     }
 
     void SetHeapHandle(HeapHandle handle) {

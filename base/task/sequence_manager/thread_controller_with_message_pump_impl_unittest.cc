@@ -131,20 +131,19 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
 
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override {}
 
-  absl::optional<WakeUp> GetPendingWakeUp(
-      LazyNow* lazy_now,
-      SelectTaskOption option) const override {
+  TimeTicks GetNextTaskTime(LazyNow* lazy_now,
+                            SelectTaskOption option) const override {
     if (tasks_.empty())
-      return absl::nullopt;
+      return TimeTicks::Max();
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
         !tasks_.front().delayed_run_time.is_null()) {
-      return absl::nullopt;
+      return TimeTicks::Max();
     }
     if (tasks_.front().delayed_run_time.is_null())
-      return WakeUp{};
+      return TimeTicks();
     if (lazy_now->Now() > tasks_.front().delayed_run_time)
-      return WakeUp{};
-    return WakeUp{tasks_.front().delayed_run_time};
+      return TimeTicks();
+    return tasks_.front().delayed_run_time;
   }
 
   void AddTask(Location posted_from,
@@ -271,14 +270,14 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork) {
   EXPECT_CALL(*message_pump_, ScheduleDelayedWork(Seconds(123)));
 
   LazyNow lazy_now(&clock_);
-  thread_controller_.SetNextDelayedDoWork(&lazy_now, WakeUp{Seconds(123)});
+  thread_controller_.SetNextDelayedDoWork(&lazy_now, Seconds(123));
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork_CapAtOneDay) {
   EXPECT_CALL(*message_pump_, ScheduleDelayedWork(Days(1)));
 
   LazyNow lazy_now(&clock_);
-  thread_controller_.SetNextDelayedDoWork(&lazy_now, WakeUp{Days(2)});
+  thread_controller_.SetNextDelayedDoWork(&lazy_now, Days(2));
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, DelayedWork_CapAtOneDay) {

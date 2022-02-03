@@ -678,11 +678,8 @@ void TaskEnvironment::FastForwardBy(TimeDelta delta) {
     // FastForwardToNextTaskOrCap isn't affected by canceled tasks.
     sequence_manager_->ReclaimMemory();
   } while (mock_time_domain_->FastForwardToNextTaskOrCap(
-               sequence_manager_->GetNextDelayedWakeUp(), fast_forward_until) !=
+               sequence_manager_->GetNextWakeUp(), fast_forward_until) !=
            MockTimeDomain::NextTaskSource::kNone);
-  // Ensure to run all tasks that can run before |fast_forward_until|.
-  sequence_manager_->FlushReadyDelayedTasks();
-  RunUntilIdle();
 
   if (task_tracker_ && !could_run_tasks)
     task_tracker_->DisallowRunTasks();
@@ -734,7 +731,7 @@ TimeDelta TaskEnvironment::NextMainThreadPendingTaskDelay() const {
   if (!sequence_manager_->IsIdleForTesting())
     return TimeDelta();
   absl::optional<sequence_manager::WakeUp> wake_up =
-      sequence_manager_->GetNextDelayedWakeUp();
+      sequence_manager_->GetNextWakeUp();
   return wake_up ? wake_up->time - lazy_now.Now() : TimeDelta::Max();
 }
 

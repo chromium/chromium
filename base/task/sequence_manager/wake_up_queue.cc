@@ -47,8 +47,10 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
   DCHECK_EQ(queue->wake_up_queue(), this);
   DCHECK(queue->IsQueueEnabled() || !wake_up);
 
-  absl::optional<WakeUp> previous_wake_up = GetNextDelayedWakeUp();
+  absl::optional<TimeTicks> previous_wake_up;
   absl::optional<WakeUpResolution> previous_queue_resolution;
+  if (!wake_up_queue_.empty())
+    previous_wake_up = wake_up_queue_.top().wake_up.time;
   if (queue->heap_handle().IsValid()) {
     previous_queue_resolution =
         wake_up_queue_.at(queue->heap_handle()).wake_up.resolution;
@@ -69,7 +71,9 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
       wake_up_queue_.erase(queue->heap_handle());
   }
 
-  absl::optional<WakeUp> new_wake_up = GetNextDelayedWakeUp();
+  absl::optional<TimeTicks> new_wake_up;
+  if (!wake_up_queue_.empty())
+    new_wake_up = wake_up_queue_.top().wake_up.time;
 
   if (previous_queue_resolution &&
       *previous_queue_resolution == WakeUpResolution::kHigh) {
@@ -80,19 +84,23 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
   DCHECK_GE(pending_high_res_wake_up_count_, 0);
 
   if (new_wake_up != previous_wake_up)
-    OnNextWakeUpChanged(lazy_now, GetNextDelayedWakeUp());
+    OnNextWakeUpChanged(lazy_now, GetNextWakeUp());
 }
 
-void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now,
-                                                    EnqueueOrder enqueue_order,
-                                                    bool full_sweep) {
+void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(
+    LazyNow* lazy_now,
+    EnqueueOrder enqueue_order) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  bool update_needed =
-      full_sweep
-          ? MoveReadyDelayedTasksToWorkQueuesFullSweepImpl(lazy_now,
-                                                           enqueue_order)
-          : MoveReadyDelayedTasksToWorkQueuesImpl(lazy_now, enqueue_order);
-
+  // Wake up any queues with pending delayed work.
+  bool update_needed = false;
+  while (!wake_up_queue_.empty() &&
+         wake_up_queue_.top().wake_up.time <= lazy_now->Now()) {
+    internal::TaskQueueImpl* queue = wake_up_queue_.top().queue;
+    // OnWakeUp() is expected to update the next wake-up for this queue with
+    // SetNextWakeUpForQueue(), thus allowing us to make progress.
+    queue->OnWakeUp(lazy_now, enqueue_order);
+    update_needed = true;
+  }
   if (!update_needed || wake_up_queue_.empty())
     return;
   // If any queue was notified, possibly update following queues. This ensures
@@ -113,18 +121,11 @@ void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now,
   }
 }
 
-absl::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
+absl::optional<WakeUp> WakeUpQueue::GetNextWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (wake_up_queue_.empty())
     return absl::nullopt;
-  WakeUp wake_up = wake_up_queue_.top().wake_up;
-  // `wake_up.resolution` is not meaningful since it may be different from
-  // has_pending_high_resolution_tasks(). Return WakeUpResolution::kLow here to
-  // simplify comparison between wake ups.
-  // TODO(1153139): Drive resolution by DelayPolicy and return
-  // has_pending_high_resolution_tasks() here.
-  wake_up.resolution = WakeUpResolution::kLow;
-  return wake_up;
+  return wake_up_queue_.top().wake_up;
 }
 
 Value WakeUpQueue::AsValue(TimeTicks now) const {
@@ -136,41 +137,6 @@ Value WakeUpQueue::AsValue(TimeTicks now) const {
     state.SetDoubleKey("next_delay_ms", delay.InMillisecondsF());
   }
   return state;
-}
-
-bool WakeUpQueue::MoveReadyDelayedTasksToWorkQueuesFullSweepImpl(
-    LazyNow* lazy_now,
-    EnqueueOrder enqueue_order) {
-  internal::TaskQueueImpl* queue = nullptr;
-  for (size_t i = 0; i < wake_up_queue_.size();) {
-    queue = wake_up_queue_[i].queue;
-    // OnWakeUp() may update the next wake-up for this queue with
-    // SetNextWakeUpForQueue(), thus allowing us to make progress. If not,
-    // `i` is incremented. The same queue may be re-visited twice
-    // and will no-op the second time.
-    queue->OnWakeUp(lazy_now, enqueue_order, true);
-    // OnWakeUp() may have removed the queue from |wake_up_queue_|, making
-    // it smaller.
-    if (i < wake_up_queue_.size() && queue == wake_up_queue_[i].queue) {
-      ++i;
-    }
-  }
-  return true;
-}
-
-bool WakeUpQueue::MoveReadyDelayedTasksToWorkQueuesImpl(
-    LazyNow* lazy_now,
-    EnqueueOrder enqueue_order) {
-  bool update_needed = false;
-  while (!wake_up_queue_.empty() &&
-         wake_up_queue_.top().wake_up.earliest_time() <= lazy_now->Now()) {
-    internal::TaskQueueImpl* queue = wake_up_queue_.top().queue;
-    // OnWakeUp() is expected to update the next wake-up for this queue with
-    // SetNextWakeUpForQueue(), thus allowing us to make progress.
-    queue->OnWakeUp(lazy_now, enqueue_order);
-    update_needed = true;
-  }
-  return update_needed;
 }
 
 DefaultWakeUpQueue::DefaultWakeUpQueue(

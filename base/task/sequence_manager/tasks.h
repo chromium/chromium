@@ -75,26 +75,19 @@ enum class WakeUpResolution { kLow, kHigh };
 
 // Represents a time at which a task wants to run.
 struct WakeUp {
-  static constexpr TimeDelta kDefaultLeeway = Milliseconds(4);
-
-  // is_null() for immediate wake up.
   TimeTicks time;
-  // These are meaningless if is_immediate().
-  TimeDelta leeway;
-  WakeUpResolution resolution = WakeUpResolution::kLow;
-  subtle::DelayPolicy delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
+  WakeUpResolution resolution;
 
   bool operator!=(const WakeUp& other) const {
-    return time != other.time || leeway != other.leeway ||
-           resolution != other.resolution || delay_policy != other.delay_policy;
+    return time != other.time || resolution != other.resolution;
   }
 
   bool operator==(const WakeUp& other) const { return !(*this != other); }
 
-  bool is_immediate() const { return time.is_null(); }
-
-  TimeTicks earliest_time() const;
-  TimeTicks latest_time() const;
+  // Used for a min-heap.
+  bool operator>(const WakeUp& other) const {
+    return std::tie(time, resolution) > std::tie(other.time, other.resolution);
+  }
 };
 
 // PendingTask with extra metadata for SequenceManager.
@@ -103,8 +96,7 @@ struct BASE_EXPORT Task : public PendingTask {
        EnqueueOrder sequence_order,
        EnqueueOrder enqueue_order = EnqueueOrder(),
        TimeTicks queue_time = TimeTicks(),
-       WakeUpResolution wake_up_resolution = WakeUpResolution::kLow,
-       TimeDelta leeway = TimeDelta());
+       WakeUpResolution wake_up_resolution = WakeUpResolution::kLow);
   Task(Task&& move_from);
   ~Task();
   Task& operator=(Task&& other);
@@ -123,16 +115,10 @@ struct BASE_EXPORT Task : public PendingTask {
 
   bool enqueue_order_set() const { return enqueue_order_; }
 
-  TimeTicks earliest_delayed_run_time() const;
-  TimeTicks latest_delayed_run_time() const;
-
   TaskOrder task_order() const;
 
   // OK to dispatch from a nested loop.
   Nestable nestable = Nestable::kNonNestable;
-
-  TimeDelta leeway;
-  subtle::DelayPolicy delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
 
   // Needs high resolution timers.
   bool is_high_res = false;

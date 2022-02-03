@@ -178,9 +178,9 @@ class BASE_EXPORT SequenceManager {
   virtual TimeTicks NowTicks() const = 0;
 
   // Returns a wake-up for the next delayed task which is not ripe for
-  // execution. If there are no such tasks (immediate tasks don't count),
+  // execution. If there are no such tasks (immediate tasks don't count), it
   // returns nullopt.
-  virtual absl::optional<WakeUp> GetNextDelayedWakeUp() const = 0;
+  virtual absl::optional<WakeUp> GetNextWakeUp() const = 0;
 
   // Sets the SingleThreadTaskRunner that will be returned by
   // ThreadTaskRunnerHandle::Get on the main thread.
@@ -266,12 +266,6 @@ class BASE_EXPORT SequenceManager {
   // Removes an observer which reports task execution. Can only be called on the
   // same thread that `this` is running on.
   virtual void RemoveTaskObserver(TaskObserver* task_observer) = 0;
-
-  // Ensures that all delayed tasks that are ready to run now can be returned by
-  // SelectNextTask without time advancing. This is not always the case in
-  // general since a delayed task may be postponed to a later wake up if allowed
-  // by its DelayPolicy.
-  virtual void FlushReadyDelayedTasks() = 0;
 
  protected:
   virtual std::unique_ptr<internal::TaskQueueImpl> CreateTaskQueueImpl(

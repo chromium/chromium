@@ -13,8 +13,7 @@ Task::Task(internal::PostedTask posted_task,
            EnqueueOrder sequence_order,
            EnqueueOrder enqueue_order,
            TimeTicks queue_time,
-           WakeUpResolution resolution,
-           TimeDelta leeway)
+           WakeUpResolution resolution)
     : PendingTask(posted_task.location,
                   std::move(posted_task.callback),
                   queue_time,
@@ -24,10 +23,6 @@ Task::Task(internal::PostedTask posted_task,
                             posted_task.delay_or_delayed_run_time)
                       : base::TimeTicks()),
       nestable(posted_task.nestable),
-      leeway(leeway),
-      delay_policy(posted_task.delay_policy
-                       ? *posted_task.delay_policy
-                       : subtle::DelayPolicy::kFlexibleNoSooner),
       task_type(posted_task.task_type),
       task_runner(std::move(posted_task.task_runner)),
       enqueue_order_(enqueue_order),
@@ -52,20 +47,8 @@ Task::~Task() = default;
 
 Task& Task::operator=(Task&& other) = default;
 
-TimeTicks Task::earliest_delayed_run_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly)
-    return delayed_run_time - leeway;
-  return delayed_run_time;
-}
-
-TimeTicks Task::latest_delayed_run_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner)
-    return delayed_run_time + leeway;
-  return delayed_run_time;
-}
-
 TaskOrder Task::task_order() const {
-  return TaskOrder(enqueue_order(), latest_delayed_run_time(), sequence_num);
+  return TaskOrder(enqueue_order(), delayed_run_time, sequence_num);
 }
 
 void Task::SetHeapHandle(HeapHandle heap_handle) {
@@ -102,18 +85,6 @@ void Task::WillRunTask() {
     return;
 
   delayed_task_handle_delegate_->WillRunTask();
-}
-
-TimeTicks WakeUp::earliest_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly)
-    return time - leeway;
-  return time;
-}
-
-TimeTicks WakeUp::latest_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner)
-    return time + leeway;
-  return time;
 }
 
 namespace internal {

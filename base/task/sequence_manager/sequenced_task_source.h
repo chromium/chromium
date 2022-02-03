@@ -55,15 +55,15 @@ class SequencedTaskSource {
   virtual void DidRunTask() = 0;
 
   // Removes all canceled delayed tasks from the front of the queue. After
-  // calling this, GetPendingWakeUp() is guaranteed to return a ready time for a
+  // calling this, GetNextTaskTime() is guaranteed to return a ready time for a
   // non-canceled task.
   virtual void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) = 0;
 
-  // Returns a WakeUp for the next pending task, is_immediate() if the
-  // next task can run immediately, or nullopt if there are no more immediate or
+  // Returns the ready time for the next pending task, is_null() if the next
+  // task can run immediately, or is_max() if there are no more immediate or
   // delayed tasks. |option| allows control on which kind of tasks can be
   // selected.
-  virtual absl::optional<WakeUp> GetPendingWakeUp(
+  virtual TimeTicks GetNextTaskTime(
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) const = 0;
 
