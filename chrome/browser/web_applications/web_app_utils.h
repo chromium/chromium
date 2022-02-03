@@ -12,7 +12,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_offline.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 
@@ -30,6 +29,15 @@ class BrowserContext;
 namespace web_app {
 
 class WebAppProvider;
+
+namespace default_offline {
+// |alternative_error_page_params| dictionary key values in the
+// |AlternativeErrorPageOverrideInfo| mojom struct.
+const char kMessage[] = "web_app_default_offline_message";
+const char kAppShortName[] = "app_short_name";
+const char kThemeColor[] = "theme_color";
+const char kBackgroundColor[] = "customized_background_color";
+}  // namespace default_offline
 
 // These functions return true if the WebApp System or its subset is allowed
 // for a given profile.

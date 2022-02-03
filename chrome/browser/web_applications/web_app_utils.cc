@@ -142,18 +142,18 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
   // TODO(crbug.com/1285128): Ensure sufficient contrast.
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey(
-      web_app::kThemeColor,
+      default_offline::kThemeColor,
       skia::SkColorToHexString(
           web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK)));
   dict.SetStringKey(
-      web_app::kBackgroundColor,
+      default_offline::kBackgroundColor,
       skia::SkColorToHexString(
           web_app_registrar.GetAppBackgroundColor(*app_id).value_or(
               SK_ColorWHITE)));
-  dict.SetStringKey(web_app::kAppShortName,
+  dict.SetStringKey(default_offline::kAppShortName,
                     web_app_registrar.GetAppShortName(*app_id));
   dict.SetStringKey(
-      web_app::kMessage,
+      default_offline::kMessage,
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
