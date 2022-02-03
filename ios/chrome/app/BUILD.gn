@@ -391,7 +391,6 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web/common:features",
