@@ -30,7 +30,10 @@ namespace autofill_assistant {
 static jlong JNI_AssistantStaticDependenciesChrome_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_object) {
-  return reinterpret_cast<intptr_t>(new DependenciesChrome(env, java_object));
+  // The dynamic_cast is necessary here to safely cast the resulting intptr back
+  // to Dependencies using reinterpret_cast.
+  return reinterpret_cast<intptr_t>(
+      dynamic_cast<Dependencies*>(new DependenciesChrome(env, java_object)));
 }
 
 DependenciesChrome::DependenciesChrome(JNIEnv* env,

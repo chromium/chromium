@@ -18,9 +18,9 @@ namespace autofill_assistant {
 
 std::unique_ptr<Dependencies> Dependencies::CreateFromJavaObject(
     ScopedJavaGlobalRef<jobject> java_object) {
-  const jlong object_ptr = Java_AssistantStaticDependencies_getNativePointer(
-      AttachCurrentThread(), java_object);
-  return base::WrapUnique(reinterpret_cast<Dependencies*>(object_ptr));
+  return base::WrapUnique(reinterpret_cast<Dependencies*>(
+      Java_AssistantStaticDependencies_createNative(AttachCurrentThread(),
+                                                    java_object)));
 }
 
 Dependencies::Dependencies(JNIEnv* env,
