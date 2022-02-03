@@ -45,7 +45,6 @@ constexpr int kImagePreviewBetweenChildSpacing = 2;
 constexpr int kImagePreviewIconCornerRadius = 2;
 constexpr int kImagePreviewPlaceholderIconContentSize = 20;
 constexpr SkAlpha kImagePreviewBackgroundAlphaComponent = 0x32;
-constexpr SkColor kImagePreviewPlaceholderBackgroundColor = gfx::kGoogleBlue050;
 
 constexpr int kHeaderViewBetweenChildSpacing = 12;
 constexpr int kHeaderViewNarrowInsideBorderInsets = 14;

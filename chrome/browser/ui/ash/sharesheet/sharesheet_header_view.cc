@@ -38,6 +38,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -97,8 +98,12 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
  public:
   METADATA_HEADER(SharesheetImagePreview);
   explicit SharesheetImagePreview(size_t file_count) {
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    auto* color_provider = AshColorProvider::Get();
     SetBackground(views::CreateRoundedRectBackground(
-        kImagePreviewPlaceholderBackgroundColor,
+        cros_styles::ResolveColor(cros_styles::ColorName::kHighlightColor,
+                                  color_provider->IsDarkModeEnabled(),
+                                  /*use_debug_colors=*/false),
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kMedium)));
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -125,7 +130,6 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     AddRowToImageContainerView();
     AddRowToImageContainerView();
 
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     for (size_t index = 0; index < grid_icon_count; ++index) {
       // If we have |enumeration|, add it as a label at the bottom right of
       // SharesheetImagePreview.
@@ -135,12 +139,17 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
                 base::StrCat({u"+", base::NumberToString16(enumeration)}),
                 CONTEXT_SHARESHEET_BUBBLE_SMALL, STYLE_SHARESHEET));
         label->SetLineHeight(kImagePreviewFileEnumerationLineHeight);
-        label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
+        label->SetEnabledColor(cros_styles::ResolveColor(
+            cros_styles::ColorName::kTextColorProminent,
+            color_provider->IsDarkModeEnabled(),
+            /*use_debug_colors=*/false));
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+        auto second_tone_icon_color_prominent =
+            AshColorProvider::GetSecondToneColor(
+                color_provider->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kIconColorProminent));
         label->SetBackground(views::CreateRoundedRectBackground(
-            kImagePreviewPlaceholderBackgroundColor,
-            kImagePreviewIconCornerRadius));
+            second_tone_icon_color_prominent, kImagePreviewIconCornerRadius));
         label->SetPreferredSize(kImagePreviewQuarterSize);
         return;
       }
@@ -192,7 +201,8 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         /*thickness=*/1,
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kMedium),
-        GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused)));
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kSeparatorColor)));
   }
 
   void AddRowToImageContainerView() {
