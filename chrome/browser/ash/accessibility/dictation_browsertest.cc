@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
@@ -1295,6 +1296,34 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
   WaitForVisibleHints(std::vector<std::u16string>{
       u"Try saying:", u"\"Type [word / phrase]\"", u"\"Help\""});
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
+  // Toggle Dictation off. Wait for speech recognition to stop and wait for the
+  // UI to disappear.
+  GetManager()->ToggleDictation();
+  WaitForRecognitionStopped();
+  WaitForVisibility(false);
+
+  // Turn on ChromeVox.
+  test::SpeechMonitor sm;
+  EnableChromeVox();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+
+  // Toggle Dictation back on and wait for hints to appear.
+  GetManager()->ToggleDictation();
+  WaitForRecognitionStarted();
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  // Hints should show up after a few seconds without speech.
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleHints(std::vector<std::u16string>{
+      u"Try saying:", u"\"Type [word / phrase]\"", u"\"Help\""});
+
+  // Assert speech from ChromeVox.
+  sm.ExpectSpeechPattern("Try saying*Type*Help*");
+  sm.Replay();
 }
 
 // TODO(1266696): DictationCommandsExtensionTest.Help is failing on
