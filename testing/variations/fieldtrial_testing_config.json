@@ -5778,6 +5778,38 @@
             ]
         }
     ],
+    "ShareUsageRanking": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFixed",
+                    "enable_features": [
+                        "ShareUsageRanking",
+                        "ShareUsageRankingFixedMore"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ShareUsageRanking",
+                        "ShareUsageRankingFixedMore"
+                    ]
+                },
+                {
+                    "name": "EnabledVariable",
+                    "enable_features": [
+                        "ShareUsageRanking"
+                    ],
+                    "disable_features": [
+                        "ShareUsageRankingFixedMore"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedHighlightingIOS": [
         {
             "platforms": [
