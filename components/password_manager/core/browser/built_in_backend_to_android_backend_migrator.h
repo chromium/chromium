@@ -40,8 +40,12 @@ class BuiltInBackendToAndroidBackendMigrator {
   void StartMigrationIfNecessary();
 
  private:
+  struct IsPasswordLess;
   struct BackendAndLoginsResults;
   class MigrationMetricsReporter;
+
+  using PasswordFormPtrFlatSet =
+      base::flat_set<const PasswordForm*, IsPasswordLess>;
 
   // Helper methods to {Add,Update,Remove} |form| in |backend|. This is used to
   // ensure that all the operations are happening inside
@@ -69,6 +73,19 @@ class BuiltInBackendToAndroidBackendMigrator {
   // will replace passwords from the |built_in_backend_| with |B|.
   void MigratePasswordsBetweenAndroidAndBuiltInBackends(
       std::vector<BackendAndLoginsResults> result);
+
+  // Updates both |built_in_backend_| and |android_backend_| such that both
+  // contain the same set of passwords without deleting any password. In
+  // addition, it marks the initial migration as completed.
+  void MergeAndroidBackendAndBuiltInBackend(
+      PasswordFormPtrFlatSet built_in_backend_logins,
+      PasswordFormPtrFlatSet android_logins);
+
+  // Updates |built_in_backend_| such that it contains the same set of passwords
+  // as in |android_backend_|.
+  void MirrorAndroidBackendToBuiltInBackend(
+      PasswordFormPtrFlatSet built_in_backend_logins,
+      PasswordFormPtrFlatSet android_logins);
 
   const raw_ptr<PasswordStoreBackend> built_in_backend_;
   const raw_ptr<PasswordStoreBackend> android_backend_;

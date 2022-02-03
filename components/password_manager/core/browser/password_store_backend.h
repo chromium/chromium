@@ -98,6 +98,13 @@ class PasswordStoreBackend {
   // TODO(crbug.com/1217071): Delete corresponding Impl method from
   //  PasswordStore and the async method on backend_ instead.
 
+  // The completion callback in each of the write operations below receive an
+  // optional PasswordStoreChangeList. In case of success that the changelist
+  // will be populated with the executed changes. An empty changelist indicates
+  // that some error has occurred during the execution. The absence of the
+  // changelist indicates that the used backend (e.g. on Android) cannot
+  // confirm of the execution and a re-fetch is required to know the current
+  // state of the backend.
   virtual void AddLoginAsync(const PasswordForm& form,
                              PasswordStoreChangeListReply callback) = 0;
   virtual void UpdateLoginAsync(const PasswordForm& form,
