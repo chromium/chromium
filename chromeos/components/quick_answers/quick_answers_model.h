@@ -87,6 +87,7 @@ struct QuickAnswerUiElement {
   QuickAnswerUiElement(const QuickAnswerUiElement&) = default;
   QuickAnswerUiElement& operator=(const QuickAnswerUiElement&) = default;
   QuickAnswerUiElement(QuickAnswerUiElement&&) = default;
+  virtual ~QuickAnswerUiElement() = default;
 
   QuickAnswerUiElementType type = QuickAnswerUiElementType::kUnknown;
 };
