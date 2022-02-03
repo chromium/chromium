@@ -131,10 +131,11 @@ std::unique_ptr<SearchController> CreateSearchController(
             kMaxAppShortcutResults, profile, list_controller));
   }
 
-  // This flag controls whether files are shown alongside Omnibox recent queries
-  // in the launcher. If enabled, Omnibox recent queries have their relevance
-  // scores changed to fit with these providers.
-  if (app_list_features::IsZeroStateMixedTypesRankerEnabled()) {
+  // Enable the Continue section providers only in the productivity launcher,
+  // and only if the enable_continue parameter is true (the default).
+  if (ash::features::IsProductivityLauncherEnabled() &&
+      base::GetFieldTrialParamByFeatureAsBool(
+          ash::features::kProductivityLauncher, "enable_continue", true)) {
     size_t zero_state_files_group_id =
         controller->AddGroup(kMaxZeroStateFileResults);
     controller->AddProvider(zero_state_files_group_id,
