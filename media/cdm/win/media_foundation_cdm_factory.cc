@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_propvariant.h"
@@ -263,8 +264,11 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
   // `cdm_created_cb` should always be run asynchronously.
   auto bound_cdm_created_cb = BindToCurrentLoop(std::move(cdm_created_cb));
 
-  if (FAILED(cdm->Initialize())) {
-    std::move(bound_cdm_created_cb).Run(nullptr, "Failed to create CDM");
+  HRESULT hr = cdm->Initialize();
+  if (FAILED(hr)) {
+    base::UmaHistogramSparse(uma_prefix + "Initialize", hr);
+    std::move(bound_cdm_created_cb)
+        .Run(nullptr, "Failed to initialize CDM: " + PrintHr(hr));
     return;
   }
 
@@ -353,7 +357,7 @@ HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
   base::File::Error file_error;
   if (!base::CreateDirectoryAndGetError(store_path, &file_error)) {
     DLOG(ERROR) << "Create CDM store path failed with " << file_error;
-    return E_FAIL;
+    return MF_INVALID_ACCESS_ERR;
   }
 
   ComPtr<IPropertyStore> cdm_properties;

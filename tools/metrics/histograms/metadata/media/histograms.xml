@@ -2091,6 +2091,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.Initialize"
+    enum="Hresult" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    HRESULT of MediaFoundationCdm initialization when using Widevine in hardware
+    secure mode. Only reported on failures.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.{EmeApi}"
     enum="Hresult" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
