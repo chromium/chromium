@@ -4,6 +4,7 @@
 
 #include "components/sync/nigori/nigori_model_type_processor.h"
 
+#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"

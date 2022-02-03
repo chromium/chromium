@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/token.h"

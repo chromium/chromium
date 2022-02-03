@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
+
+#include "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

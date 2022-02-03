@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 

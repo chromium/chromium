@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "base/win/pe_image.h"
 #include "build/build_config.h"
 #include "components/browser_watcher/activity_data_names.h"

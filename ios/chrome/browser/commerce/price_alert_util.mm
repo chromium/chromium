@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"

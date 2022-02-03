@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"

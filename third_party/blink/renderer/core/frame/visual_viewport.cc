@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "cc/input/main_thread_scrolling_reason.h"

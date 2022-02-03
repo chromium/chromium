@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

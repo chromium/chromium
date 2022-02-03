@@ -6,6 +6,7 @@
 #define COMPONENTS_CONTENT_CREATION_NOTES_CORE_NOTE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace content_creation {
 
