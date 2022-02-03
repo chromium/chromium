@@ -2296,6 +2296,16 @@ TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_TrimSpliceOverlap) {
                                           "0K 10N 20N 22N 32K 42N 45K");
 }
 
+TEST_P(FrameProcessorTest, FrameDuration_kNoTimestamp_FailsParse) {
+  InSequence s;
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  frame_duration_ = kNoTimestamp;
+  EXPECT_MEDIA_LOG(FrameDurationUnknown("audio", 1000));
+  EXPECT_FALSE(ProcessFrames("1K", ""));
+}
+
 INSTANTIATE_TEST_SUITE_P(SequenceMode, FrameProcessorTest, Values(true));
 INSTANTIATE_TEST_SUITE_P(SegmentsMode, FrameProcessorTest, Values(false));
 

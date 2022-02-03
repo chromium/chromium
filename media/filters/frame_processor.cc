@@ -819,7 +819,7 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
         << presentation_timestamp.InMicroseconds()
         << "us), frame type=" << frame->GetTypeName();
 
-    // All stream parsers must emit valid (non-negative) frame durations.
+    // All stream parsers should emit valid (non-negative) frame durations.
     // Note that duration of 0 can occur for at least WebM alt-ref frames.
     if (frame_duration == kNoTimestamp) {
       MEDIA_LOG(ERROR, media_log_)
@@ -827,13 +827,12 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
           << presentation_timestamp.InMicroseconds() << "us";
       return false;
     }
-    if (frame_duration <  base::TimeDelta()) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "Negative duration " << frame_duration.InMicroseconds()
-          << "us for " << frame->GetTypeName() << " frame at PTS "
-          << presentation_timestamp.InMicroseconds() << "us";
-      return false;
-    }
+
+    // See also partial protections in DecoderBuffer::set_duration().
+    // Using stronger CHECK here in case any of the parsers become fragile to
+    // fuzzer coverage gaps when calculating buffer durations.
+    CHECK(frame_duration >= base::TimeDelta() &&
+          frame_duration != kInfiniteDuration);
 
     // 3. If mode equals "sequence" and group start timestamp is set, then run
     //    the following steps:
