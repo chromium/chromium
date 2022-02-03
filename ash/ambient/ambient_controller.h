@@ -140,9 +140,10 @@ class ASH_EXPORT AmbientController
  private:
   friend class AmbientAshTestBase;
   friend class AmbientControllerTest;
-  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest,
+  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTestForAnyTheme,
                            BindsObserversWhenAmbientEnabled);
-  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest, BindsObserversWhenAmbientOn);
+  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTestForAnyTheme,
+                           BindsObserversWhenAmbientOn);
 
   // Hide or close Ambient mode UI.
   void DismissUI();

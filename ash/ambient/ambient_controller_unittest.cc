@@ -90,11 +90,6 @@ class AmbientControllerTest : public AmbientAshTestBase {
 
 // Tests for behavior that are agnostic to the AmbientAnimationTheme selected by
 // the user should use this test harness.
-//
-// Currently there are test cases that actually fall under this category but
-// do not use this test fixture. This is done purely for time constraint reasons
-// (it takes a lot of compute time to repeat every single one of these test
-// cases).
 class AmbientControllerTestForAnyTheme
     : public AmbientControllerTest,
       public ::testing::WithParamInterface<AmbientAnimationTheme> {
@@ -112,6 +107,11 @@ INSTANTIATE_TEST_SUITE_P(
     // to make sure that fundamental behavior holds for both the slideshow and
     // lottie-animated codepaths.
     testing::Values(AmbientAnimationTheme::kSlideshow
+// TODO(esum): Fully enable this AmbientAnimationTheme once:
+// * The |include_ash_ambient_animation_resources| GN arg is true by default
+//   (the resources' size is currently being reduced to fit in the image).
+// * The ash ambient resources are publishable (they are currently WIP).
+// The tests will crash/fail without these resources available.
 #if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
                     ,
                     AmbientAnimationTheme::kFeelTheBreeze
@@ -236,7 +236,7 @@ TEST_P(AmbientControllerTestForAnyTheme,
   EXPECT_TRUE(GetContainerViews().empty());
 }
 
-TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
+TEST_P(AmbientControllerTestForAnyTheme, NotShowAmbientWhenLockSecondaryUser) {
   // Simulate the login screen.
   ClearLogin();
   SimulateUserLogin(kUser1);
@@ -289,7 +289,8 @@ TEST_P(AmbientControllerTestForAnyTheme,
   EXPECT_FALSE(IsAccessTokenRequestPending());
 }
 
-TEST_F(AmbientControllerTest, ShouldNotRequestAccessTokenWhenPrefNotEnabled) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShouldNotRequestAccessTokenWhenPrefNotEnabled) {
   SetAmbientModeEnabled(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
@@ -327,7 +328,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldReturnCachedAccessToken) {
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
+TEST_P(AmbientControllerTestForAnyTheme, ShouldReturnEmptyAccessToken) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -369,7 +370,8 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShouldRetryRefreshAccessTokenAfterFailure) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -386,7 +388,8 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -411,7 +414,8 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -445,7 +449,7 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        CheckAcquireAndReleaseWakeLockWhenBatteryIsCharging) {
   // Simulate a device being connected to a charger initially.
   SetPowerStateCharging();
@@ -479,7 +483,7 @@ TEST_F(AmbientControllerTest,
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        CheckAcquireAndReleaseWakeLockWhenBatteryBatteryIsFullAndDischarging) {
   SetPowerStateDischarging();
   SetBatteryPercent(100.f);
@@ -514,7 +518,7 @@ TEST_F(AmbientControllerTest,
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        CheckAcquireAndReleaseWakeLockWhenBatteryStateChanged) {
   SetPowerStateDischarging();
   SetExternalPowerConnected();
@@ -656,7 +660,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnKeyEvent) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        ShouldDismissContainerViewOnKeyEventWhenLockScreenInBackground) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   SetPowerStateCharging();
@@ -679,7 +683,7 @@ TEST_F(AmbientControllerTest,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        ShouldShowAmbientScreenWithLockscreenWhenScreenIsDimmed) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   SetPowerStateCharging();
@@ -700,7 +704,7 @@ TEST_F(AmbientControllerTest,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        ShouldShowAmbientScreenWithLockscreenWithNoisyPowerEvents) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   SetPowerStateCharging();
@@ -728,7 +732,7 @@ TEST_F(AmbientControllerTest,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        ShouldShowAmbientScreenWithoutLockscreenWhenScreenIsDimmed) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   // When power is discharging, we do not lock the screen with ambient
@@ -754,7 +758,8 @@ TEST_F(AmbientControllerTest,
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest, ShouldShowAmbientScreenWhenScreenIsDimmed) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShouldShowAmbientScreenWhenScreenIsDimmed) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(false);
   SetPowerStateCharging();
   EXPECT_FALSE(ambient_controller()->IsShown());
@@ -774,7 +779,8 @@ TEST_F(AmbientControllerTest, ShouldShowAmbientScreenWhenScreenIsDimmed) {
   CloseAmbientScreen();
 }
 
-TEST_F(AmbientControllerTest, ShouldHideAmbientScreenWhenDisplayIsOff) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       ShouldHideAmbientScreenWhenDisplayIsOff) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(false);
   EXPECT_FALSE(ambient_controller()->IsShown());
 
@@ -797,7 +803,7 @@ TEST_F(AmbientControllerTest, ShouldHideAmbientScreenWhenDisplayIsOff) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        ShouldHideAmbientScreenWhenDisplayIsOffThenComesBackWithLockScreen) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   SetPowerStateCharging();
@@ -831,7 +837,7 @@ TEST_F(AmbientControllerTest,
   EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest,
+TEST_P(AmbientControllerTestForAnyTheme,
        ShouldHideAmbientScreenWhenDisplayIsOffAndNotStartWhenLockScreen) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   SetPowerStateDischarging();
@@ -899,6 +905,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShowsOnMultipleDisplays) {
   FastForwardTiny();
 
   ShowAmbientScreen();
+  FastForwardToNextImage();
 
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
@@ -921,6 +928,7 @@ TEST_P(AmbientControllerTestForAnyTheme, RespondsToDisplayAdded) {
 
   UpdateDisplay("800x600");
   ShowAmbientScreen();
+  FastForwardToNextImage();
 
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 1);
@@ -945,6 +953,7 @@ TEST_P(AmbientControllerTestForAnyTheme, HandlesDisplayRemoved) {
   FastForwardTiny();
 
   ShowAmbientScreen();
+  FastForwardToNextImage();
 
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
@@ -960,7 +969,7 @@ TEST_P(AmbientControllerTestForAnyTheme, HandlesDisplayRemoved) {
   EXPECT_TRUE(WidgetsVisible());
 }
 
-TEST_F(AmbientControllerTest, ClosesAmbientBeforeSuspend) {
+TEST_P(AmbientControllerTestForAnyTheme, ClosesAmbientBeforeSuspend) {
   LockScreen();
   FastForwardToLockScreenTimeout();
 
@@ -975,7 +984,7 @@ TEST_F(AmbientControllerTest, ClosesAmbientBeforeSuspend) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest, RestartsAmbientAfterSuspend) {
+TEST_P(AmbientControllerTestForAnyTheme, RestartsAmbientAfterSuspend) {
   LockScreen();
   FastForwardToLockScreenTimeout();
 
@@ -997,7 +1006,7 @@ TEST_F(AmbientControllerTest, RestartsAmbientAfterSuspend) {
   EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerTest, ObservesPrefsWhenAmbientEnabled) {
+TEST_P(AmbientControllerTestForAnyTheme, ObservesPrefsWhenAmbientEnabled) {
   SetAmbientModeEnabled(false);
 
   // This pref is always observed.
@@ -1019,7 +1028,7 @@ TEST_F(AmbientControllerTest, ObservesPrefsWhenAmbientEnabled) {
     EXPECT_TRUE(IsPrefObserved(pref_name));
 }
 
-TEST_F(AmbientControllerTest, BindsObserversWhenAmbientEnabled) {
+TEST_P(AmbientControllerTestForAnyTheme, BindsObserversWhenAmbientEnabled) {
   auto* ctrl = ambient_controller();
 
   SetAmbientModeEnabled(false);
@@ -1038,7 +1047,8 @@ TEST_F(AmbientControllerTest, BindsObserversWhenAmbientEnabled) {
   EXPECT_TRUE(AreSessionSpecificObserversBound());
 }
 
-TEST_F(AmbientControllerTest, SwitchActiveUsersDoesNotDoubleBindObservers) {
+TEST_P(AmbientControllerTestForAnyTheme,
+       SwitchActiveUsersDoesNotDoubleBindObservers) {
   ClearLogin();
   SimulateUserLogin(kUser1);
   SetAmbientModeEnabled(true);
@@ -1063,7 +1073,7 @@ TEST_F(AmbientControllerTest, SwitchActiveUsersDoesNotDoubleBindObservers) {
   session->SwitchActiveUser(AccountId::FromUserEmail(kUser2));
 }
 
-TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {
+TEST_P(AmbientControllerTestForAnyTheme, BindsObserversWhenAmbientOn) {
   auto* ctrl = ambient_controller();
 
   LockScreen();
@@ -1101,6 +1111,11 @@ TEST_P(AmbientControllerTestForAnyTheme,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
+// TODO(esum): Fully enable this test once:
+// * The |include_ash_ambient_animation_resources| GN arg is true by default
+//   (the resources' size is currently being reduced to fit in the image).
+// * The ash ambient resources are publishable (they are currently WIP).
+// This test will crash/fail without these resources available.
 #if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
 #define MAYBE_RendersCorrectView RendersCorrectView
 #else
