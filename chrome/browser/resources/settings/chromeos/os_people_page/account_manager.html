@@ -54,6 +54,21 @@
     text-overflow: ellipsis;
   }
 
+  .middle.two-line-or-more {
+    min-height: calc(var(--settings-row-two-line-min-height)
+                      - 2*var(--account-item-padding-size));
+    padding-bottom: var(--account-item-padding-size);
+    padding-top: var(--account-item-padding-size);
+  }
+
+  .middle.two-line-or-more>.flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(var(--settings-row-two-line-min-height)
+                      - 2*var(--account-item-padding-size));
+  }
+
   .secondary-accounts-policy-indicator {
     margin-inline-end: 12px;
   }
@@ -306,7 +321,7 @@
           <span class="error-badge"></span>
         </template>
       </div>
-      <div class="middle two-line no-min-width">
+      <div class="middle two-line-or-more no-min-width">
         <div class="flex text-elide">
           <!-- If account is signed in, display the full name -->
           <template is="dom-if" if="[[item.isSignedIn]]">
@@ -319,17 +334,18 @@
               [[getAccountManagerSignedOutName_(item.unmigrated)]]
             </span>
           </template>
+          <!-- Display email -->
           <div class="secondary" id="email-[[index]]"
               aria-hidden="true">[[item.email]]</div>
+          <!-- Display ARC status -->
+          <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
+            <span class="arc-availability secondary" id="arc-status-[[index]]"
+                aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
+              $i18n{accountNotUsedInArcLabel}
+            </span>
+          </template>
         </div>
       </div>
-      <!-- Display ARC status -->
-      <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
-        <span class="arc-availability secondary" id="arc-status-[[index]]"
-            aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
-          $i18n{accountNotUsedInArcLabel}
-        </span>
-      </template>
       <template is="dom-if"
           if="[[shouldShowReauthenticationButton_(item)]]">
         <cr-button title="[[getAccountManagerSignedOutTitle_(item)]]"
