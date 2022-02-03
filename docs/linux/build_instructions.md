@@ -268,8 +268,14 @@ $ out/Default/chrome
 
 ## Running test targets
 
-You can run the tests in the same way. You can also limit which tests are
-run using the `--gtest_filter` arg, e.g.:
+First build the unit_tests binary by running the command:
+
+```shell
+$ autoninja -C out/Default unit_tests
+```
+
+You can run the tests by running the unit_tests binary. You can also limit which
+tests are run using the `--gtest_filter` arg, e.g.:
 
 ```shell
 $ out/Default/unit_tests --gtest_filter="PushClientTest.*"
