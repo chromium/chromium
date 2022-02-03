@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.language.settings.LanguagesManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 import org.chromium.components.language.GeoLanguageProviderBridge;
 import org.chromium.net.NetworkChangeNotifier;
@@ -519,9 +518,6 @@ public class AppLanguagePromoDialog {
             if (TranslateBridge.getAppLanguagePromptShown()) return false;
         }
 
-        boolean isAccessibilityEnabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-        recordIsAccessibilityEnabled(isAccessibilityEnabled);
-
         boolean isOnline = NetworkChangeNotifier.isOnline();
         recordOnlineStatus(isOnline);
 
@@ -558,12 +554,6 @@ public class AppLanguagePromoDialog {
     private static void recordOnlineStatus(boolean isOnline) {
         RecordHistogram.recordBooleanHistogram(
                 "LanguageSettings.AppLanguagePrompt.IsOnline", isOnline);
-    }
-
-    private static void recordIsAccessibilityEnabled(boolean isAccessibilityEnabled) {
-        RecordHistogram.recordBooleanHistogram(
-                "LanguageSettings.AppLanguagePrompt.IsAccessibilityEnabled",
-                isAccessibilityEnabled);
     }
 
     private static void recordOpenDuration(String type, long displayTime) {
