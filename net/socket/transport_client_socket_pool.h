@@ -152,7 +152,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       base::TimeDelta unused_idle_socket_timeout,
       const ProxyServer& proxy_server,
       bool is_for_websockets,
-      const CommonConnectJobParams* common_connect_job_params);
+      const CommonConnectJobParams* common_connect_job_params,
+      bool cleanup_on_ip_address_change = true);
 
   TransportClientSocketPool(const TransportClientSocketPool&) = delete;
   TransportClientSocketPool& operator=(const TransportClientSocketPool&) =
@@ -596,6 +597,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       const ProxyServer& proxy_server,
       bool is_for_websockets,
       const CommonConnectJobParams* common_connect_job_params,
+      bool cleanup_on_ip_address_change,
       std::unique_ptr<ConnectJobFactory> connect_job_factory,
       SSLClientContext* ssl_client_context,
       bool connect_backup_jobs_enabled);
@@ -786,6 +788,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   const base::TimeDelta used_idle_socket_timeout_;
 
   const ProxyServer proxy_server_;
+
+  const bool cleanup_on_ip_address_change_;
 
   // TODO(vandebo) Remove when backup jobs move to TransportClientSocketPool
   bool connect_backup_jobs_enabled_;

@@ -32,7 +32,8 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
   ClientSocketPoolManagerImpl(
       const CommonConnectJobParams& common_connect_job_params,
       const CommonConnectJobParams& websocket_common_connect_job_params,
-      HttpNetworkSession::SocketPoolType pool_type);
+      HttpNetworkSession::SocketPoolType pool_type,
+      bool cleanup_on_ip_address_change = true);
 
   ClientSocketPoolManagerImpl(const ClientSocketPoolManagerImpl&) = delete;
   ClientSocketPoolManagerImpl& operator=(const ClientSocketPoolManagerImpl&) =
@@ -58,6 +59,8 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
   const CommonConnectJobParams websocket_common_connect_job_params_;
 
   const HttpNetworkSession::SocketPoolType pool_type_;
+
+  const bool cleanup_on_ip_address_change_;
 
   SocketPoolMap socket_pools_;
 

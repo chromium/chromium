@@ -118,7 +118,8 @@ TransportClientSocketPool::TransportClientSocketPool(
     base::TimeDelta unused_idle_socket_timeout,
     const ProxyServer& proxy_server,
     bool is_for_websockets,
-    const CommonConnectJobParams* common_connect_job_params)
+    const CommonConnectJobParams* common_connect_job_params,
+    bool cleanup_on_ip_address_change)
     : TransportClientSocketPool(max_sockets,
                                 max_sockets_per_group,
                                 unused_idle_socket_timeout,
@@ -126,6 +127,7 @@ TransportClientSocketPool::TransportClientSocketPool(
                                 proxy_server,
                                 is_for_websockets,
                                 common_connect_job_params,
+                                cleanup_on_ip_address_change,
                                 std::make_unique<ConnectJobFactory>(),
                                 common_connect_job_params->ssl_client_context,
                                 true /* connect_backup_jobs_enabled */) {}
@@ -144,7 +146,8 @@ TransportClientSocketPool::~TransportClientSocketPool() {
   if (ssl_client_context_)
     ssl_client_context_->RemoveObserver(this);
 
-  NetworkChangeNotifier::RemoveIPAddressObserver(this);
+  if (cleanup_on_ip_address_change_)
+    NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
 std::unique_ptr<TransportClientSocketPool>
@@ -163,8 +166,9 @@ TransportClientSocketPool::CreateForTesting(
       new TransportClientSocketPool(
           max_sockets, max_sockets_per_group, unused_idle_socket_timeout,
           used_idle_socket_timeout, proxy_server, is_for_websockets,
-          common_connect_job_params, std::move(connect_job_factory),
-          ssl_client_context, connect_backup_jobs_enabled));
+          common_connect_job_params, true /* cleanup_on_ip_address_change */,
+          std::move(connect_job_factory), ssl_client_context,
+          connect_backup_jobs_enabled));
 }
 
 TransportClientSocketPool::CallbackResultPair::CallbackResultPair()
@@ -747,6 +751,7 @@ TransportClientSocketPool::TransportClientSocketPool(
     const ProxyServer& proxy_server,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
+    bool cleanup_on_ip_address_change,
     std::unique_ptr<ConnectJobFactory> connect_job_factory,
     SSLClientContext* ssl_client_context,
     bool connect_backup_jobs_enabled)
@@ -761,13 +766,15 @@ TransportClientSocketPool::TransportClientSocketPool(
       unused_idle_socket_timeout_(unused_idle_socket_timeout),
       used_idle_socket_timeout_(used_idle_socket_timeout),
       proxy_server_(proxy_server),
+      cleanup_on_ip_address_change_(cleanup_on_ip_address_change),
       connect_backup_jobs_enabled_(connect_backup_jobs_enabled &&
                                    g_connect_backup_jobs_enabled),
       ssl_client_context_(ssl_client_context) {
   DCHECK_LE(0, max_sockets_per_group);
   DCHECK_LE(max_sockets_per_group, max_sockets);
 
-  NetworkChangeNotifier::AddIPAddressObserver(this);
+  if (cleanup_on_ip_address_change_)
+    NetworkChangeNotifier::AddIPAddressObserver(this);
 
   if (ssl_client_context_)
     ssl_client_context_->AddObserver(this);
@@ -1063,6 +1070,7 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
 }
 
 void TransportClientSocketPool::OnIPAddressChanged() {
+  DCHECK(cleanup_on_ip_address_change_);
   FlushWithError(ERR_NETWORK_CHANGED, kNetworkChanged);
 }
 

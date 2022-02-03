@@ -1035,6 +1035,63 @@ TEST_F(TransportClientSocketPoolTest, CloseIdleSocketsOnIPAddressChange) {
   EXPECT_EQ(0, pool_->IdleSocketCount());
 }
 
+TEST(TransportClientSocketPoolStandaloneTest, DontCleanupOnIPAddressChange) {
+  // This test manually sets things up in the same way
+  // TransportClientSocketPoolTest does, but it creates a
+  // TransportClientSocketPool with cleanup_on_ip_address_changed = false. Since
+  // this is the only test doing this, it's not worth extending
+  // TransportClientSocketPoolTest to support this scenario.
+  base::test::SingleThreadTaskEnvironment task_environment;
+  std::unique_ptr<MockCertVerifier> cert_verifier =
+      std::make_unique<MockCertVerifier>();
+  SpdySessionDependencies session_deps;
+  session_deps.cert_verifier = std::move(cert_verifier);
+  std::unique_ptr<HttpNetworkSession> http_network_session =
+      SpdySessionDependencies::SpdyCreateSession(&session_deps);
+  auto common_connect_job_params = std::make_unique<CommonConnectJobParams>(
+      http_network_session->CreateCommonConnectJobParams());
+  MockTransportClientSocketFactory client_socket_factory(NetLog::Get());
+  common_connect_job_params->client_socket_factory = &client_socket_factory;
+
+  scoped_refptr<ClientSocketPool::SocketParams> params(
+      ClientSocketPool::SocketParams::CreateForHttpForTesting());
+  auto pool = std::make_unique<TransportClientSocketPool>(
+      kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
+      ProxyServer::Direct(), false /* is_for_websockets */,
+      common_connect_job_params.get(),
+      false /* cleanup_on_ip_address_change */);
+  const ClientSocketPool::GroupId group_id(
+      url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+      SecureDnsPolicy::kAllow);
+  TestCompletionCallback callback;
+  ClientSocketHandle handle;
+  int rv =
+      handle.Init(group_id, params, absl::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  pool.get(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_FALSE(handle.is_initialized());
+  EXPECT_FALSE(handle.socket());
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(handle.is_initialized());
+  EXPECT_TRUE(handle.socket());
+
+  handle.Reset();
+  // Need to run all pending to release the socket back to the pool.
+  base::RunLoop().RunUntilIdle();
+  // Now we should have 1 idle socket.
+  EXPECT_EQ(1, pool->IdleSocketCount());
+
+  // Since we set cleanup_on_ip_address_change = false, we should still have 1
+  // idle socket after an IP address change.
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  base::RunLoop().RunUntilIdle();  // Notification happens async.
+  EXPECT_EQ(1, pool->IdleSocketCount());
+}
+
 TEST_F(TransportClientSocketPoolTest, SSLCertError) {
   StaticSocketDataProvider data;
   tagging_client_socket_factory_.AddSocketDataProvider(&data);
