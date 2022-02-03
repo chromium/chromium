@@ -44,4 +44,19 @@ bool LinuxUiDelegateWayland::ExportWindowHandle(
   return true;
 }
 
+bool LinuxUiDelegateWayland::ExportWindowHandle(
+    gfx::AcceleratedWidget window_id,
+    base::OnceCallback<void(std::string)> callback) {
+  return ui::LinuxUiDelegate::GetInstance()->ExportWindowHandle(
+      window_id,
+      base::BindOnce(&LinuxUiDelegateWayland::OnHandleForward,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void LinuxUiDelegateWayland::OnHandleForward(
+    base::OnceCallback<void(std::string)> callback,
+    const std::string& handle) {
+  std::move(callback).Run("wayland:" + handle);
+}
+
 }  // namespace ui

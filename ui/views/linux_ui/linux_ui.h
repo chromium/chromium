@@ -16,10 +16,13 @@
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
 #include "ui/gfx/skia_font_delegate.h"
-#include "ui/shell_dialogs/shell_dialog_linux.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/shell_dialogs/shell_dialog_linux.h"
+#endif
 
 // The main entrypoint into Linux toolkit specific code. GTK code should only
 // be executed behind this interface.
@@ -53,7 +56,9 @@ class WindowFrameProvider;
 // project that wants to do linux desktop native rendering.
 class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
                              public gfx::SkiaFontDelegate,
+#if BUILDFLAG(IS_LINUX)
                              public ui::ShellDialogLinux,
+#endif
                              public ui::TextEditKeyBindingsDelegateAuraLinux,
                              public ui::CursorThemeManager,
                              public gfx::AnimationSettingsProviderLinux {

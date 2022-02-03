@@ -19,6 +19,9 @@ class LinuxUiDelegateX11 : public LinuxUiDelegate {
   LinuxUiBackend GetBackend() const override;
   void SetTransientWindowForParent(gfx::AcceleratedWidget parent,
                                    gfx::AcceleratedWidget transient) override;
+  bool ExportWindowHandle(
+      gfx::AcceleratedWidget window_id,
+      base::OnceCallback<void(std::string)> callback) override;
 };
 
 }  // namespace ui

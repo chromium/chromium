@@ -1,6 +1,8 @@
 include_rules = [
   "+chromeos/crosapi",
   "+chromeos/lacros",
+  "+components/dbus/thread_linux",
+  "+dbus",
   "+components/remote_cocoa",
   "+mojo/core/embedder",
   "+mojo/public/cpp/bindings",
