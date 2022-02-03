@@ -26,11 +26,6 @@ void ChromeSearchResult::SetDisplayScore(double display_score) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetIsInstalling(bool is_installing) {
-  metadata_->is_installing = is_installing;
-  SetSearchResultMetadata();
-}
-
 void ChromeSearchResult::SetTitle(const std::u16string& title) {
   metadata_->title = title;
   MaybeUpdateTitleVector();
@@ -157,13 +152,6 @@ void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetQueryUrl(const GURL& url) {
-  metadata_->query_url = url;
-  auto* updater = model_updater();
-  if (updater)
-    updater->SetSearchResultMetadata(id(), CloneMetadata());
-}
-
 void ChromeSearchResult::SetEquivalentResultId(
     const std::string& equivalent_result_id) {
   metadata_->equivalent_result_id = equivalent_result_id;
@@ -193,11 +181,6 @@ void ChromeSearchResult::SetUseBadgeIconBackground(
     bool use_badge_icon_background) {
   metadata_->use_badge_icon_background = use_badge_icon_background;
   SetSearchResultMetadata();
-}
-
-void ChromeSearchResult::SetNotifyVisibilityChange(
-    bool notify_visibility_change) {
-  metadata_->notify_visibility_change = notify_visibility_change;
 }
 
 void ChromeSearchResult::SetSearchResultMetadata() {

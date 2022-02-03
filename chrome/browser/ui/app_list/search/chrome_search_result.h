@@ -88,7 +88,6 @@ class ChromeSearchResult {
   float position_priority() const { return metadata_->position_priority; }
   const Actions& actions() const { return metadata_->actions; }
   double display_score() const { return metadata_->display_score; }
-  bool is_installing() const { return metadata_->is_installing; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
   const absl::optional<GURL>& query_url() const { return metadata_->query_url; }
   const absl::optional<std::string>& equivalent_result_id() const {
@@ -97,10 +96,6 @@ class ChromeSearchResult {
   const IconInfo& icon() const { return metadata_->icon; }
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
-
-  bool notify_visibility_change() const {
-    return metadata_->notify_visibility_change;
-  }
 
   // The following methods set Chrome side data here, and call model updater
   // interface to update Ash.
@@ -127,14 +122,11 @@ class ChromeSearchResult {
   void SetActions(const Actions& actions);
   void SetIsOmniboxSearch(bool is_omnibox_search);
   void SetIsRecommendation(bool is_recommendation);
-  void SetIsInstalling(bool is_installing);
-  void SetQueryUrl(const GURL& url);
   void SetEquivalentResultId(const std::string& equivalent_result_id);
   void SetIcon(const IconInfo& icon);
   void SetChipIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
   void SetUseBadgeIconBackground(bool use_badge_icon_background);
-  void SetNotifyVisibilityChange(bool notify_visibility_change);
 
   void SetSearchResultMetadata();
 
