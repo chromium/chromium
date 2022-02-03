@@ -181,6 +181,7 @@ caretbrowsing_files = [
   "caretbrowsing/manifest.json",
   "caretbrowsing/options.html",
   "caretbrowsing/options.js",
+  "caretbrowsing/storage.js",
   "caretbrowsing/traverse_util.js",
   "//third_party/accessibility-audit/axs_testing.js",
 ]

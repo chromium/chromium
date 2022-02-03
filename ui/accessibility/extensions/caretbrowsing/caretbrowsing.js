@@ -57,6 +57,8 @@
  * valid bounding box.
  */
 
+Storage.initialize();
+
 /**
  * Return whether a node is focusable. This includes nodes whose tabindex
  * attribute is set to "-1" explicitly - these nodes are not in the tab
@@ -120,28 +122,10 @@ function isDescendantOfNode(node, ancestor) {
 class CaretBrowsing {
   constructor() {
     /**
-     * Is caret browsing enabled?
-     * @type {boolean}
-     */
-    this.isEnabled = false;
-
-    /**
      * Keep it enabled even when flipped off (for the options page)?
      * @type {boolean}
      */
     this.forceEnabled = false;
-
-    /**
-     * What to do when the caret appears?
-     * @type {string}
-     */
-    this.onEnable;
-
-    /**
-     * What to do when the caret jumps?
-     * @type {string}
-     */
-    this.onJump;
 
     /**
      * Is this window / iframe focused? We won't show the caret if not,
@@ -152,7 +136,7 @@ class CaretBrowsing {
     this.isWindowFocused = false;
 
     /**
-     * Is the caret actually visible? This is true only if isEnabled and
+     * Is the caret actually visible? This is true only if Storage.enabled and
      * isWindowFocused are both true.
      * @type {boolean}
      */
@@ -453,9 +437,9 @@ class CaretBrowsing {
     document.body.appendChild(element);
     this.caretElement = element;
 
-    if (this.onEnable == 'anim') {
+    if (Storage.onEnable === FlourishType.ANIMATE) {
       this.animateCaretElement();
-    } else if (this.onEnable == 'flash') {
+    } else if (Storage.onEnable === FlourishType.FLASH) {
       this.flashCaretElement();
     } else {
       this.setCaretElementNormalStyle();
@@ -644,9 +628,9 @@ class CaretBrowsing {
 
     if (Math.abs(previousX - this.caretX) > 500 ||
         Math.abs(previousY - this.caretY) > 100) {
-      if (this.onJump == 'anim') {
+      if (Storage.onJump === FlourishType.ANIMATE) {
         this.animateCaretElement();
-      } else if (this.onJump == 'flash') {
+      } else if (Storage.onJump === FlourishType.FLASH) {
         this.flashCaretElement();
       }
     }
@@ -1216,10 +1200,7 @@ class CaretBrowsing {
       return;
     }
 
-    this.isEnabled = !this.isEnabled;
-    const obj = {};
-    obj['enabled'] = this.isEnabled;
-    chrome.storage.sync.set(obj);
+    Storage.enabled = !Storage.enabled;
     this.updateIsCaretVisible();
   }
 
@@ -1237,7 +1218,7 @@ class CaretBrowsing {
       this.toggle();
     }
 
-    if (!this.isEnabled) {
+    if (!Storage.enabled) {
       return true;
     }
 
@@ -1309,7 +1290,7 @@ class CaretBrowsing {
    * @return {boolean} True if the default action should be performed.
    */
   onClick(evt) {
-    if (!this.isEnabled) {
+    if (!Storage.enabled) {
       return true;
     }
     window.setTimeout(() => {
@@ -1342,7 +1323,7 @@ class CaretBrowsing {
    */
   updateIsCaretVisible() {
     this.isCaretVisible =
-        (this.isEnabled && this.isWindowFocused);
+        (Storage.enabled && this.isWindowFocused);
     if (this.isCaretVisible && !this.caretElement) {
       this.setInitialCursor();
       this.updateCaretOrSelection(true);
@@ -1366,14 +1347,7 @@ class CaretBrowsing {
    * Called when the prefs get updated.
    */
   onPrefsUpdated() {
-    chrome.storage.sync.get(null /* get all */, (result) => {
-      if (!this.forceEnabled) {
-        this.isEnabled = result['enabled'];
-      }
-      this.onEnable = result['onenable'];
-      this.onJump = result['onjump'];
-      this.recreateCaretElement();
-    });
+    this.recreateCaretElement();
   }
 
   /**
@@ -1415,13 +1389,11 @@ window.setTimeout(() => {
 
     if (document.body.getAttribute('caretbrowsing') == 'on') {
       caretBrowsing.forceEnabled = true;
-      caretBrowsing.isEnabled = true;
+      Storage.enabled = true;
       caretBrowsing.updateIsCaretVisible();
     }
 
-    chrome.storage.onChanged.addListener(() => {
-      caretBrowsing.onPrefsUpdated();
-    });
+    chrome.storage.onChanged.addListener(() => caretBrowsing.onPrefsUpdated());
     caretBrowsing.onPrefsUpdated();
   }
 

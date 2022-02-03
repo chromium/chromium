@@ -2,31 +2,23 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+Storage.initialize();
+
 function setRadio(name, defaultValue) {
-  chrome.storage.sync.get(name, function(result) {
-    let value = result[name];
-    if (value === undefined) {
-      value = defaultValue;
-      const obj = {};
-      obj[name] = value;
-      chrome.storage.sync.set(obj);
+  let value = Storage[name];
+  const controls = document.querySelectorAll(
+      'input[type="radio"][name="' + name + '"]');
+  for (let i = 0; i < controls.length; i++) {
+    const c = controls[i];
+    if (c.value == value) {
+      c.checked = true;
     }
-    const controls = document.querySelectorAll(
-        'input[type="radio"][name="' + name + '"]');
-    for (let i = 0; i < controls.length; i++) {
-      const c = controls[i];
-      if (c.value == value) {
-        c.checked = true;
+    c.addEventListener('change', function(evt) {
+      if (evt.target.checked) {
+        Storage[evt.target.name] = evt.target.value;
       }
-      c.addEventListener('change', function(evt) {
-        if (evt.target.checked) {
-          const obj = {};
-          obj[evt.target.name] = evt.target.value;
-          chrome.storage.sync.set(obj);
-        }
-      }, false);
-    }
-  });
+    }, false);
+  }
 }
 
 function load() {
