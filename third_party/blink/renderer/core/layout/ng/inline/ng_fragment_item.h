@@ -180,6 +180,10 @@ class CORE_EXPORT NGFragmentItem {
     return GetLayoutObject();
   }
 
+  bool IsRelayoutBoundary() const {
+    return layout_object_->IsRelayoutBoundary();
+  }
+
   wtf_size_t DeltaToNextForSameLayoutObject() const {
     return delta_to_next_for_same_layout_object_;
   }

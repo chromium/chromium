@@ -297,6 +297,15 @@ NGFragmentItemsBuilder::AddPreviousItems(
            line.MoveToNext()) {
         const NGFragmentItem& line_child = *line.Current().Item();
         DCHECK(line_child.CanReuse());
+#if DCHECK_IS_ON()
+        // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
+        // Such block needs to copy PostLayout fragment while running simplified
+        // layout.
+        absl::optional<NGPhysicalBoxFragment::AllowPostLayoutScope>
+            allow_post_layout;
+        if (line_child.IsRelayoutBoundary())
+          allow_post_layout.emplace();
+#endif
         items_.emplace_back(
             line_converter.ToLogical(
                 line_child.OffsetInContainerFragment() - line_box_bounds.offset,
