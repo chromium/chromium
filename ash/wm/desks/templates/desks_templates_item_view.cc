@@ -99,8 +99,7 @@ std::u16string GetTimeStr(base::Time timestamp) {
 
 }  // namespace
 
-DesksTemplatesItemView::DesksTemplatesItemView(
-    const DeskTemplate* desk_template)
+DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
     : desk_template_(desk_template->Clone()) {
   auto launch_template_callback =
       base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
@@ -109,7 +108,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   const std::u16string template_name = desk_template_->template_name();
   auto* color_provider = AshColorProvider::Get();
   const bool is_admin_managed =
-      desk_template_->source() == DeskTemplateSource::kPolicy;
+      desk_template->source() == DeskTemplateSource::kPolicy;
 
   views::BoxLayoutView* card_container;
   views::View* spacer;
@@ -425,7 +424,7 @@ void DesksTemplatesItemView::UpdateTemplateName() {
                        DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
                            /*is_update=*/true, std::move(desk_template));
                      },
-                     desk_template_->Clone()));
+                     std::move(desk_template_)));
 }
 
 void DesksTemplatesItemView::ContentsChanged(
@@ -535,6 +534,16 @@ views::View* DesksTemplatesItemView::TargetForRect(views::View* root,
 }
 
 void DesksTemplatesItemView::OnDeleteTemplate() {
+  // Notify the highlight controller that we're going away.
+  OverviewHighlightController* highlight_controller =
+      Shell::Get()
+          ->overview_controller()
+          ->overview_session()
+          ->highlight_controller();
+  DCHECK(highlight_controller);
+  highlight_controller->OnViewDestroyingOrDisabling(this);
+  highlight_controller->OnViewDestroyingOrDisabling(name_view_);
+
   DesksTemplatesPresenter::Get()->DeleteEntry(
       desk_template_->uuid().AsLowercaseString());
 }
