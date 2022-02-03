@@ -20,6 +20,6 @@ dictionary AuthenticatorSelectionCriteria {
   AuthenticatorAttachment authenticatorAttachment;
   boolean requireResidentKey = false;
   // A DOMString expressing a ResidentKeyRequirement.
-  [RuntimeEnabled=WebAuthenticationResidentKeyRequirement] DOMString residentKey;
+  DOMString residentKey;
   UserVerificationRequirement userVerification;
 };

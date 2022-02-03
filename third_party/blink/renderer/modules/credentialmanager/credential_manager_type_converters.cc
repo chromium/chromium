@@ -519,8 +519,6 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       mojo_options->enforce_protection_policy = true;
     }
     if (extensions->credProps()) {
-      DCHECK(blink::RuntimeEnabledFeatures::
-                 WebAuthenticationResidentKeyRequirementEnabled());
       mojo_options->cred_props = true;
     }
     if (extensions->hasLargeBlob()) {

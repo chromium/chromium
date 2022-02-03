@@ -615,8 +615,6 @@ void OnMakePublicKeyCredentialComplete(
     extension_outputs->setHmacCreateSecret(credential->hmac_create_secret);
   }
   if (credential->echo_cred_props) {
-    DCHECK(RuntimeEnabledFeatures::
-               WebAuthenticationResidentKeyRequirementEnabled());
     CredentialPropertiesOutput* cred_props_output =
         CredentialPropertiesOutput::Create();
     if (credential->has_cred_props_rk) {
