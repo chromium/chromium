@@ -110,7 +110,9 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
     }
 
     return this.systemProperties_.systemState ===
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled;
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled ||
+        this.systemProperties_.systemState ===
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabling;
   }
 }
 

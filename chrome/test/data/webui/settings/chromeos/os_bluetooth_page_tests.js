@@ -64,13 +64,19 @@ suite('OsBluetoothPageTest', function() {
 
     // Simulate Bluetooth disabled
     bluetoothConfig.setSystemState(
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kDisabled);
+    await flushAsync();
+    assertFalse(!!getPairNewDevice());
+
+    // Simulate Bluetooth unavailable
+    bluetoothConfig.setSystemState(
         chromeos.bluetoothConfig.mojom.BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertFalse(!!getPairNewDevice());
 
     // Simulate Bluetooth enabled
     bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabling);
     await flushAsync();
     assertTrue(!!getPairNewDevice());
     getPairNewDevice().click();
