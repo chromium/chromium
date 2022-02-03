@@ -192,7 +192,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSwipeToMoveCursorEnabled();
 // Enables Raw Draw.
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kRawDraw;
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingRawDraw();
-COMPONENT_EXPORT(UI_BASE_FEATURES) double RawDrawTileSizeFactor();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers;
