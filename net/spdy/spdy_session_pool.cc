@@ -92,7 +92,8 @@ SpdySessionPool::SpdySessionPool(
     bool enable_priority_update,
     bool go_away_on_ip_change,
     SpdySessionPool::TimeFunc time_func,
-    NetworkQualityEstimator* network_quality_estimator)
+    NetworkQualityEstimator* network_quality_estimator,
+    bool cleanup_sessions_on_ip_address_changed)
     : http_server_properties_(http_server_properties),
       transport_security_state_(transport_security_state),
       ssl_client_context_(ssl_client_context),
@@ -113,8 +114,11 @@ SpdySessionPool::SpdySessionPool(
       go_away_on_ip_change_(go_away_on_ip_change),
       time_func_(time_func),
       push_delegate_(nullptr),
-      network_quality_estimator_(network_quality_estimator) {
-  NetworkChangeNotifier::AddIPAddressObserver(this);
+      network_quality_estimator_(network_quality_estimator),
+      cleanup_sessions_on_ip_address_changed_(
+          cleanup_sessions_on_ip_address_changed) {
+  if (cleanup_sessions_on_ip_address_changed_)
+    NetworkChangeNotifier::AddIPAddressObserver(this);
   if (ssl_client_context_)
     ssl_client_context_->AddObserver(this);
 }
@@ -141,7 +145,8 @@ SpdySessionPool::~SpdySessionPool() {
 
   if (ssl_client_context_)
     ssl_client_context_->RemoveObserver(this);
-  NetworkChangeNotifier::RemoveIPAddressObserver(this);
+  if (cleanup_sessions_on_ip_address_changed_)
+    NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
 int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
@@ -482,6 +487,7 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
 }
 
 void SpdySessionPool::OnIPAddressChanged() {
+  DCHECK(cleanup_sessions_on_ip_address_changed_);
   WeakSessionList current_sessions = GetCurrentSessions();
   for (WeakSessionList::const_iterator it = current_sessions.begin();
        it != current_sessions.end(); ++it) {

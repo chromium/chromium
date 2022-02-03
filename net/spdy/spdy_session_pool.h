@@ -145,7 +145,8 @@ class NET_EXPORT SpdySessionPool
                   bool enable_priority_update,
                   bool go_away_on_ip_change,
                   SpdySessionPool::TimeFunc time_func,
-                  NetworkQualityEstimator* network_quality_estimator);
+                  NetworkQualityEstimator* network_quality_estimator,
+                  bool cleanup_sessions_on_ip_address_changed = true);
 
   SpdySessionPool(const SpdySessionPool&) = delete;
   SpdySessionPool& operator=(const SpdySessionPool&) = delete;
@@ -492,6 +493,8 @@ class NET_EXPORT SpdySessionPool
   raw_ptr<ServerPushDelegate> push_delegate_;
 
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
+
+  const bool cleanup_sessions_on_ip_address_changed_;
 
   base::WeakPtrFactory<SpdySessionPool> weak_ptr_factory_{this};
 };
