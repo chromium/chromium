@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL scroll-margin on input widget assert_between_exclusive: Should honor date input scroll-margin expected a number greater than 4750 and less than 4850 but got 4719
+Harness: the test ran to completion.
+
