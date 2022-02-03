@@ -109,9 +109,7 @@ class BLINK_EXPORT WebNode {
                                  v8::Isolate*);
 
   template <typename T>
-  T To();
-  template <typename T>
-  const T ToConst() const;
+  T To() const;
 
   template <typename T>
   T DynamicTo() const;
@@ -136,37 +134,28 @@ class BLINK_EXPORT WebNode {
   WebPrivatePtr<Node> private_;
 };
 
-#define DECLARE_WEB_NODE_TYPE_CASTS(type)                 \
-  template <>                                             \
-  BLINK_EXPORT type WebNode::To<type>();                  \
-  template <>                                             \
-  BLINK_EXPORT const type WebNode::ToConst<type>() const; \
-  template <>                                             \
+#define DECLARE_WEB_NODE_TYPE_CASTS(type)      \
+  template <>                                  \
+  BLINK_EXPORT type WebNode::To<type>() const; \
+  template <>                                  \
   BLINK_EXPORT type WebNode::DynamicTo<type>() const
 
 #if INSIDE_BLINK
-#define DEFINE_WEB_NODE_TYPE_CASTS(type, predicate)        \
-  template <>                                              \
-  BLINK_EXPORT type WebNode::To<type>() {                  \
-    SECURITY_DCHECK(IsNull() || (predicate));              \
-    type result;                                           \
-    result.WebNode::Assign(*this);                         \
-    return result;                                         \
-  }                                                        \
-  template <>                                              \
-  BLINK_EXPORT const type WebNode::ToConst<type>() const { \
-    SECURITY_DCHECK(IsNull() || (predicate));              \
-    type result;                                           \
-    result.WebNode::Assign(*this);                         \
-    return result;                                         \
-  }                                                        \
-  template <>                                              \
-  BLINK_EXPORT type WebNode::DynamicTo<type>() const {     \
-    type result;                                           \
-    if (!IsNull() && (predicate)) {                        \
-      result.WebNode::Assign(*this);                       \
-    }                                                      \
-    return result;                                         \
+#define DEFINE_WEB_NODE_TYPE_CASTS(type, predicate)    \
+  template <>                                          \
+  BLINK_EXPORT type WebNode::To<type>() const {        \
+    SECURITY_DCHECK(IsNull() || (predicate));          \
+    type result;                                       \
+    result.WebNode::Assign(*this);                     \
+    return result;                                     \
+  }                                                    \
+  template <>                                          \
+  BLINK_EXPORT type WebNode::DynamicTo<type>() const { \
+    type result;                                       \
+    if (!IsNull() && (predicate)) {                    \
+      result.WebNode::Assign(*this);                   \
+    }                                                  \
+    return result;                                     \
   }
 #endif
 

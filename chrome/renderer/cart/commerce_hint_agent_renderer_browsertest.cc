@@ -45,7 +45,7 @@ TEST_F(CommerceHintAgentRendererTest, ExtractButtonTexts) {
   blink::WebFormElement form = GetMainFrame()
                                    ->GetDocument()
                                    .GetElementById(blink::WebString("form"))
-                                   .ToConst<blink::WebFormElement>();
+                                   .To<blink::WebFormElement>();
 
   for (auto& entry : extract_case) {
     PopulateForm(entry.first);

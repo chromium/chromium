@@ -1504,11 +1504,11 @@ void PasswordAutofillAgent::FocusedNodeHasChanged(const blink::WebNode& node) {
     return;
   }
 
-  auto element = node.ToConst<WebElement>();
+  auto element = node.To<WebElement>();
   if (element.IsFormControlElement() &&
-      form_util::IsTextAreaElement(element.ToConst<WebFormControlElement>())) {
+      form_util::IsTextAreaElement(element.To<WebFormControlElement>())) {
     FieldRendererId textarea_id(
-        element.ToConst<WebFormControlElement>().UniqueRendererFormControlId());
+        element.To<WebFormControlElement>().UniqueRendererFormControlId());
     focus_state_notifier_.FocusedInputChanged(
         textarea_id, FocusedFieldType::kFillableTextArea);
     return;

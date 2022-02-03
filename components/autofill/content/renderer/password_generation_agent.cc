@@ -451,7 +451,7 @@ bool PasswordGenerationAgent::FocusedNodeHasChanged(
     return false;
   }
 
-  const blink::WebElement web_element = node.ToConst<blink::WebElement>();
+  const blink::WebElement web_element = node.To<blink::WebElement>();
   if (!web_element.GetDocument().GetFrame()) {
     return false;
   }

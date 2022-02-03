@@ -47,7 +47,7 @@ void PageFormAnalyserLogger::Flush() {
       for (unsigned i = 0; i < entry.nodes.size(); ++i) {
         if (entry.nodes[i].IsElementNode()) {
           const blink::WebElement element =
-              entry.nodes[i].ToConst<blink::WebElement>();
+              entry.nodes[i].To<blink::WebElement>();
           const blink::WebInputElement input_element =
               element.DynamicTo<blink::WebInputElement>();
 

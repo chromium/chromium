@@ -792,7 +792,7 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
       return;
   } else {
     DCHECK(form_util::IsTextAreaElement(element));
-    if (!element.ToConst<WebFormControlElement>().SuggestedValue().IsEmpty())
+    if (!element.To<WebFormControlElement>().SuggestedValue().IsEmpty())
       return;
   }
 
@@ -1159,7 +1159,7 @@ void AutofillAgent::HandleFocusChangeComplete() {
       !focused_element.IsNull() && focused_element.IsFormControlElement() &&
       (form_util::IsTextInput(focused_element.DynamicTo<WebInputElement>()) ||
        focused_element.HasHTMLTagName("textarea"))) {
-    FormControlElementClicked(focused_element.ToConst<WebFormControlElement>());
+    FormControlElementClicked(focused_element.To<WebFormControlElement>());
   }
 
   focused_node_was_last_clicked_ = false;
@@ -1215,7 +1215,7 @@ void AutofillAgent::OnProvisionallySaveForm(
     }
 
     if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
-      OnTextFieldDidChange(element.ToConst<WebInputElement>());
+      OnTextFieldDidChange(element.To<WebInputElement>());
     } else {
       FormData form_data;
       FormFieldData field;

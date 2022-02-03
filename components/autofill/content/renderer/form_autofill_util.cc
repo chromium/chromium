@@ -144,7 +144,7 @@ bool IsNoScriptElement(const WebElement& element) {
 }
 
 bool HasTagName(const WebNode& node, const blink::WebString& tag) {
-  return node.IsElementNode() && node.ToConst<WebElement>().HasHTMLTagName(tag);
+  return node.IsElementNode() && node.To<WebElement>().HasHTMLTagName(tag);
 }
 
 bool IsElementInControlElementSet(
@@ -153,7 +153,7 @@ bool IsElementInControlElementSet(
   if (!element.IsFormControlElement())
     return false;
   const WebFormControlElement form_control_element =
-      element.ToConst<WebFormControlElement>();
+      element.To<WebFormControlElement>();
   return base::Contains(control_elements, form_control_element);
 }
 
@@ -179,7 +179,7 @@ bool IsTraversableContainerElement(const WebNode& node) {
   if (!node.IsElementNode())
     return false;
 
-  const WebElement element = node.ToConst<WebElement>();
+  const WebElement element = node.To<WebElement>();
   return element.HasHTMLTagName("dd") || element.HasHTMLTagName("div") ||
          element.HasHTMLTagName("fieldset") || element.HasHTMLTagName("li") ||
          element.HasHTMLTagName("td") || element.HasHTMLTagName("table");
@@ -254,11 +254,11 @@ std::u16string FindChildTextInner(const WebNode& node,
 
   // Ignore elements known not to contain inferable labels.
   if (node.IsElementNode()) {
-    const WebElement element = node.ToConst<WebElement>();
+    const WebElement element = node.To<WebElement>();
     if (IsOptionElement(element) || IsScriptElement(element) ||
         IsNoScriptElement(element) ||
         (element.IsFormControlElement() &&
-         IsAutofillableElement(element.ToConst<WebFormControlElement>()))) {
+         IsAutofillableElement(element.To<WebFormControlElement>()))) {
       return std::u16string();
     }
 
@@ -932,8 +932,7 @@ ButtonTitleList InferButtonTitlesForForm(const WebElement& root_element) {
        !item.IsNull() && total_length < kMaxLengthForAllButtonTitles;
        item = input_elements.NextItem()) {
     DCHECK(item.IsFormControlElement());
-    WebFormControlElement control_element =
-        item.ToConst<WebFormControlElement>();
+    WebFormControlElement control_element = item.To<WebFormControlElement>();
     if (only_formless_elements && !control_element.Form().IsNull())
       continue;
     bool is_submit_input =
@@ -1003,7 +1002,7 @@ void GetOptionStringsFromElement(const WebSelectElement& select_element,
   options->reserve(list_items.size());
   for (const auto& list_item : list_items) {
     if (IsOptionElement(list_item)) {
-      const WebOptionElement option = list_item.ToConst<WebOptionElement>();
+      const WebOptionElement option = list_item.To<WebOptionElement>();
       options->push_back({.value = option.Value().Utf16(),
                           .content = option.GetText().Utf16()});
     }
@@ -2028,7 +2027,7 @@ void WebFormControlElementToFormField(
   } else if (extract_mask & EXTRACT_OPTIONS) {
     // Set option strings on the field if available.
     DCHECK(IsSelectElement(element));
-    const WebSelectElement select_element = element.ToConst<WebSelectElement>();
+    const WebSelectElement select_element = element.To<WebSelectElement>();
     GetOptionStringsFromElement(select_element, &field->options);
   }
   if (extract_mask & EXTRACT_BOUNDS) {
@@ -2053,13 +2052,13 @@ void WebFormControlElementToFormField(
   std::u16string value = element.Value().Utf16();
 
   if (IsSelectElement(element) && (extract_mask & EXTRACT_OPTION_TEXT)) {
-    const WebSelectElement select_element = element.ToConst<WebSelectElement>();
+    const WebSelectElement select_element = element.To<WebSelectElement>();
     // Convert the |select_element| value to text if requested.
     WebVector<WebElement> list_items = select_element.GetListItems();
     for (const auto& list_item : list_items) {
       if (IsOptionElement(list_item)) {
         const WebOptionElement option_element =
-            list_item.ToConst<WebOptionElement>();
+            list_item.To<WebOptionElement>();
         if (option_element.Value().Utf16() == value) {
           value = option_element.GetText().Utf16();
           break;

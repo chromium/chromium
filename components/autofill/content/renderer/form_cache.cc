@@ -606,7 +606,7 @@ size_t FormCache::ScanFormControlElements(
         form_util::IsTextAreaElement(element)) {
       ++num_editable_elements;
     } else {
-      const WebInputElement input_element = element.ToConst<WebInputElement>();
+      const WebInputElement input_element = element.To<WebInputElement>();
       if (!form_util::IsCheckableElement(input_element))
         ++num_editable_elements;
     }
@@ -618,8 +618,7 @@ void FormCache::SaveInitialValues(
     const std::vector<WebFormControlElement>& control_elements) {
   for (const WebFormControlElement& element : control_elements) {
     if (form_util::IsSelectElement(element)) {
-      const WebSelectElement select_element =
-          element.ToConst<WebSelectElement>();
+      const WebSelectElement select_element = element.To<WebSelectElement>();
       initial_select_values_.insert(
           {FieldRendererId(select_element.UniqueRendererFormControlId()),
            select_element.Value().Utf16()});
