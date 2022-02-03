@@ -32,7 +32,7 @@ grit("platform_locale_settings") {
       source = "locale_settings_chromiumos.grd"
     }
   } else if (is_posix || is_fuchsia) {
-    # All other posix systems just use the Linux one.
+    # All other POSIX systems and Fuchsia use the Linux one.
     source = "locale_settings_linux.grd"
   }
 
