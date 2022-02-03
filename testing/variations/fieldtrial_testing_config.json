@@ -5774,6 +5774,25 @@
             ]
         }
     ],
+    "SidePanelDragAndDrop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SidePanelDragAndDrop"
+                    ]
+                }
+            ]
+        }
+    ],
     "SideSearchGoogle": [
         {
             "platforms": [
