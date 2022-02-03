@@ -583,8 +583,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   filter->SetBackdropFilters(filters);
   filter->ClearBackdropFilterBounds();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(_MIPS_ARCH_LOONGSON) || \
+    defined(ARCH_CPU_ARM64)
 #if BUILDFLAG(IS_WIN)
   // Windows has 153 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3825f;  // 153px / (200*200)
@@ -594,8 +594,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
     percentage_pixels_large_error = 0.415f;  // 166px / (200*200)
     large_error_allowed = 1;
   }
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-  // There's a 1 pixel error on MacOS and ChromeOS
+#elif BUILDFLAG(IS_MAC)
+  // There's a 1 pixel error on MacOS
   float percentage_pixels_large_error = 0.0025f;  // 1px / (200*200)
   int large_error_allowed = 1;
 #elif defined(_MIPS_ARCH_LOONGSON)

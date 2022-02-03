@@ -107,7 +107,8 @@ X11SurfaceFactory::GetAllowedGLImplementations() {
       gl::GLImplementationParts(gl::kGLImplementationDesktopGL),
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
-      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader),
+      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL)};
 }
 
 GLOzone* X11SurfaceFactory::GetGLOzone(
@@ -117,6 +118,7 @@ GLOzone* X11SurfaceFactory::GetGLOzone(
       return glx_implementation_.get();
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
+    case gl::kGLImplementationSwiftShaderGL:
       return egl_implementation_.get();
     default:
       return nullptr;

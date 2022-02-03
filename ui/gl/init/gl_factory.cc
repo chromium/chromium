@@ -172,7 +172,7 @@ bool InitializeGLOneOffPlatformHelper(bool init_extensions) {
 
 GLImplementationParts GetSoftwareGLImplementationForPlatform() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS_LACROS)
   return GetSoftwareGLImplementation();
 #else
   return GetLegacySoftwareGLImplementation();
