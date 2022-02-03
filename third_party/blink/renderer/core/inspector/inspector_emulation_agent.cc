@@ -61,7 +61,6 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       initial_virtual_time_(&agent_state_, /*default_value=*/0.0),
       virtual_time_policy_(&agent_state_, /*default_value=*/WTF::String()),
       virtual_time_task_starvation_count_(&agent_state_, /*default_value=*/0),
-      wait_for_navigation_(&agent_state_, /*default_value=*/false),
       emulate_focus_(&agent_state_, /*default_value=*/false),
       emulate_auto_dark_mode_(&agent_state_, /*default_value=*/false),
       auto_dark_mode_override_(&agent_state_, /*default_value=*/false),
@@ -130,19 +129,15 @@ void InspectorEmulationAgent::Restore() {
   if (virtual_time_policy_.Get().IsNull())
     return;
 
-  // Preserve wait for navigation in all modes.
-  bool wait_for_navigation = wait_for_navigation_.Get();
-
   // Reinstate the stored policy.
   double virtual_time_ticks_base_ms;
 
   // For Pause, do not pass budget or starvation count.
   if (virtual_time_policy_.Get() ==
       protocol::Emulation::VirtualTimePolicyEnum::Pause) {
-    setVirtualTimePolicy(protocol::Emulation::VirtualTimePolicyEnum::Pause,
-                         Maybe<double>(), Maybe<int>(), wait_for_navigation,
-                         initial_virtual_time_.Get(),
-                         &virtual_time_ticks_base_ms);
+    setVirtualTimePolicy(
+        protocol::Emulation::VirtualTimePolicyEnum::Pause, Maybe<double>(),
+        Maybe<int>(), initial_virtual_time_.Get(), &virtual_time_ticks_base_ms);
     return;
   }
 
@@ -152,7 +147,7 @@ void InspectorEmulationAgent::Restore() {
 
   setVirtualTimePolicy(virtual_time_policy_.Get(), budget_remaining,
                        virtual_time_task_starvation_count_.Get(),
-                       wait_for_navigation, initial_virtual_time_.Get(),
+                       initial_virtual_time_.Get(),
                        &virtual_time_ticks_base_ms);
 }
 
@@ -415,92 +410,55 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
     const String& policy,
     Maybe<double> virtual_time_budget_ms,
     protocol::Maybe<int> max_virtual_time_task_starvation_count,
-    protocol::Maybe<bool> wait_for_navigation,
     protocol::Maybe<double> initial_virtual_time,
     double* virtual_time_ticks_base_ms) {
   Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
-  virtual_time_policy_.Set(policy);
+  DCHECK(web_local_frame_);
 
-  PendingVirtualTimePolicy new_policy;
-  new_policy.policy = PageScheduler::VirtualTimePolicy::kPause;
+  PageScheduler::VirtualTimePolicy scheduler_policy =
+      PageScheduler::VirtualTimePolicy::kPause;
   if (protocol::Emulation::VirtualTimePolicyEnum::Advance == policy) {
-    new_policy.policy = PageScheduler::VirtualTimePolicy::kAdvance;
+    scheduler_policy = PageScheduler::VirtualTimePolicy::kAdvance;
   } else if (protocol::Emulation::VirtualTimePolicyEnum::
                  PauseIfNetworkFetchesPending == policy) {
-    new_policy.policy = PageScheduler::VirtualTimePolicy::kDeterministicLoading;
-  }
-
-  if (new_policy.policy == PageScheduler::VirtualTimePolicy::kPause &&
-      virtual_time_budget_ms.isJust()) {
-    LOG(ERROR) << "Can only specify virtual time budget for non-Pause policy";
-    return Response::InvalidParams(
-        "Can only specify budget for non-Pause policy");
-  }
-  if (new_policy.policy == PageScheduler::VirtualTimePolicy::kPause &&
-      max_virtual_time_task_starvation_count.isJust()) {
-    LOG(ERROR)
-        << "Can only specify virtual time starvation for non-Pause policy";
-    return Response::InvalidParams(
-        "Can only specify starvation count for non-Pause policy");
-  }
-
-  if (virtual_time_budget_ms.isJust()) {
-    new_policy.virtual_time_budget_ms = virtual_time_budget_ms.fromJust();
-    virtual_time_budget_.Set(*new_policy.virtual_time_budget_ms);
+    scheduler_policy = PageScheduler::VirtualTimePolicy::kDeterministicLoading;
   } else {
-    virtual_time_budget_.Clear();
+    DCHECK_EQ(scheduler_policy, PageScheduler::VirtualTimePolicy::kPause);
+    if (virtual_time_budget_ms.isJust()) {
+      return Response::InvalidParams(
+          "Can only specify budget for non-Pause policy");
+    }
+    if (max_virtual_time_task_starvation_count.isJust()) {
+      return Response::InvalidParams(
+          "Can only specify starvation count for non-Pause policy");
+    }
   }
 
-  if (max_virtual_time_task_starvation_count.isJust()) {
-    new_policy.max_virtual_time_task_starvation_count =
-        max_virtual_time_task_starvation_count.fromJust();
-    virtual_time_task_starvation_count_.Set(
-        *new_policy.max_virtual_time_task_starvation_count);
-  } else {
-    virtual_time_task_starvation_count_.Clear();
-  }
+  virtual_time_policy_.Set(policy);
+  virtual_time_budget_.Set(virtual_time_budget_ms.fromMaybe(0));
+  initial_virtual_time_.Set(initial_virtual_time.fromMaybe(0));
+  virtual_time_task_starvation_count_.Set(
+      max_virtual_time_task_starvation_count.fromMaybe(0));
 
   InnerEnable();
 
   // This needs to happen before we apply virtual time.
   if (initial_virtual_time.isJust()) {
-    initial_virtual_time_.Set(initial_virtual_time.fromJust());
     web_local_frame_->View()->Scheduler()->SetInitialVirtualTime(
         base::Time::FromDoubleT(initial_virtual_time.fromJust()));
   }
 
-  if (wait_for_navigation.fromMaybe(false)) {
-    wait_for_navigation_.Set(true);
-    pending_virtual_time_policy_ = std::move(new_policy);
-  } else {
-    ApplyVirtualTimePolicy(new_policy);
-  }
-
-  if (virtual_time_base_ticks_.is_null()) {
-    *virtual_time_ticks_base_ms = 0;
-  } else {
-    *virtual_time_ticks_base_ms =
-        (virtual_time_base_ticks_ - base::TimeTicks()).InMillisecondsF();
-  }
-
-  return response;
-}
-
-void InspectorEmulationAgent::ApplyVirtualTimePolicy(
-    const PendingVirtualTimePolicy& new_policy) {
-  DCHECK(web_local_frame_);
-  web_local_frame_->View()->Scheduler()->SetVirtualTimePolicy(
-      new_policy.policy);
+  web_local_frame_->View()->Scheduler()->SetVirtualTimePolicy(scheduler_policy);
   virtual_time_base_ticks_ =
       web_local_frame_->View()->Scheduler()->EnableVirtualTime();
-  if (new_policy.virtual_time_budget_ms) {
+  if (virtual_time_budget_ms.fromMaybe(0) > 0) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget",
                                       TRACE_ID_LOCAL(this), "budget",
-                                      *new_policy.virtual_time_budget_ms);
-    base::TimeDelta budget_amount =
-        base::Milliseconds(*new_policy.virtual_time_budget_ms);
+                                      virtual_time_budget_ms.fromJust());
+    const base::TimeDelta budget_amount =
+        base::Milliseconds(virtual_time_budget_ms.fromJust());
     web_local_frame_->View()->Scheduler()->GrantVirtualTimeBudget(
         budget_amount,
         WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
@@ -509,18 +467,18 @@ void InspectorEmulationAgent::ApplyVirtualTimePolicy(
       loader->SetDefersLoading(LoaderFreezeMode::kNone);
     pending_document_loaders_.clear();
   }
-  if (new_policy.max_virtual_time_task_starvation_count) {
-    web_local_frame_->View()->Scheduler()->SetMaxVirtualTimeTaskStarvationCount(
-        *new_policy.max_virtual_time_task_starvation_count);
-  }
-}
 
-void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
-  if (pending_virtual_time_policy_) {
-    wait_for_navigation_.Set(false);
-    ApplyVirtualTimePolicy(*pending_virtual_time_policy_);
-    pending_virtual_time_policy_ = absl::nullopt;
+  if (max_virtual_time_task_starvation_count.fromMaybe(0)) {
+    web_local_frame_->View()->Scheduler()->SetMaxVirtualTimeTaskStarvationCount(
+        max_virtual_time_task_starvation_count.fromJust());
   }
+
+  *virtual_time_ticks_base_ms =
+      virtual_time_base_ticks_.is_null()
+          ? 0
+          : (virtual_time_base_ticks_ - base::TimeTicks()).InMillisecondsF();
+
+  return Response::Success();
 }
 
 AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(

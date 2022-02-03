@@ -59,7 +59,6 @@ class CORE_EXPORT InspectorEmulationAgent final
       const String& policy,
       protocol::Maybe<double> virtual_time_budget_ms,
       protocol::Maybe<int> max_virtual_time_task_starvation_count,
-      protocol::Maybe<bool> wait_for_navigation,
       protocol::Maybe<double> initial_virtual_time,
       double* virtual_time_ticks_base_ms) override;
   protocol::Response setTimezoneOverride(const String& timezone_id) override;
@@ -97,7 +96,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   void ApplyUserAgentOverride(String* user_agent);
   void ApplyUserAgentMetadataOverride(
       absl::optional<blink::UserAgentMetadata>* ua_metadata);
-  void FrameStartedLoading(LocalFrame*);
   void PrepareRequest(DocumentLoader*,
                       ResourceRequest&,
                       ResourceLoaderOptions&,
@@ -120,13 +118,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   void InnerEnable();
   void SetSystemThemeState();
 
-  struct PendingVirtualTimePolicy {
-    PageScheduler::VirtualTimePolicy policy;
-    absl::optional<double> virtual_time_budget_ms;
-    absl::optional<int> max_virtual_time_task_starvation_count;
-  };
-  void ApplyVirtualTimePolicy(const PendingVirtualTimePolicy& new_policy);
-
   Member<WebLocalFrameImpl> web_local_frame_;
   base::TimeTicks virtual_time_base_ticks_;
   HeapVector<Member<DocumentLoader>> pending_document_loaders_;
@@ -139,9 +130,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   // the document.
   bool forced_colors_override_ = false;
 
-  // Supports a virtual time policy change scheduled to occur after any
-  // navigation has started.
-  absl::optional<PendingVirtualTimePolicy> pending_virtual_time_policy_;
   bool enabled_ = false;
 
   InspectorAgentState::Bytes default_background_color_override_rgba_;
@@ -163,7 +151,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Double initial_virtual_time_;
   InspectorAgentState::String virtual_time_policy_;
   InspectorAgentState::Integer virtual_time_task_starvation_count_;
-  InspectorAgentState::Boolean wait_for_navigation_;
   InspectorAgentState::Boolean emulate_focus_;
   InspectorAgentState::Boolean emulate_auto_dark_mode_;
   InspectorAgentState::Boolean auto_dark_mode_override_;

@@ -112,7 +112,6 @@
         "ApplyAcceptLanguageOverride",
         "ApplyUserAgentOverride",
         "ApplyUserAgentMetadataOverride",
-        "FrameStartedLoading",
         "PrepareRequest",
         "GetDisabledImageTypes",
         "WillCommitLoad",
