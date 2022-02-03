@@ -42,7 +42,6 @@ class ExtensionActionPlatformDelegateViews
   void UnregisterCommand() override;
   void ShowPopup(
       std::unique_ptr<extensions::ExtensionViewHost> host,
-      bool grant_tab_permissions,
       ExtensionActionViewController::PopupShowAction show_action) override;
 
   // extensions::CommandService::Observer:

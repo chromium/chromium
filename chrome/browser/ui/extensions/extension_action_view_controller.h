@@ -20,7 +20,6 @@
 
 class Browser;
 class ExtensionActionPlatformDelegate;
-class GURL;
 class IconWithBadgeImageSource;
 class ExtensionsContainer;
 
@@ -147,16 +146,15 @@ class ExtensionActionViewController
   // e.g. an API). Returns true if a popup is shown.
   bool ExecuteAction(PopupShowAction show_action, bool grant_tab_permissions);
 
-  // Begins the process of showing the popup for the extension action, given the
-  // associated |popup_url|. |grant_tab_permissions| is true if active tab
+  // Begins the process of showing the popup for the extension action over the
+  // given |web_contents|. |grant_tab_permissions| is true if active tab
   // permissions should be given to the extension; this is only true if the
   // popup is opened through a user action.
   // The popup may not be shown synchronously if the extension is hidden and
   // first needs to slide itself out.
-  // Returns true if a popup will be shown.
-  bool TriggerPopupWithUrl(PopupShowAction show_action,
-                           const GURL& popup_url,
-                           bool grant_tab_permissions);
+  void TriggerPopup(PopupShowAction show_action,
+                    content::WebContents* web_contents,
+                    bool grant_tab_permissions);
 
   // Shows the popup with the given |host|.
   void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,

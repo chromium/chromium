@@ -75,7 +75,6 @@ void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
 
 void ExtensionActionPlatformDelegateViews::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
-    bool grant_tab_permissions,
     ExtensionActionViewController::PopupShowAction show_action) {
   // TOP_RIGHT is correct for both RTL and LTR, because the views platform
   // performs the flipping in RTL cases.

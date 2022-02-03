@@ -25,12 +25,9 @@ class ExtensionActionPlatformDelegate {
   virtual void RegisterCommand() = 0;
   virtual void UnregisterCommand() = 0;
 
-  // Shows the given |host|. |grant_tab_permissions| is true if active tab
-  // permissions should be given to the extension; this is only true if the
-  // popup is opened through a user action.
+  // Shows the given |host| in an extension popup.
   virtual void ShowPopup(
       std::unique_ptr<extensions::ExtensionViewHost> host,
-      bool grant_tab_permissions,
       ExtensionActionViewController::PopupShowAction show_action) = 0;
 };
 

@@ -276,10 +276,9 @@ bool ExtensionActionViewController::ExecuteAction(PopupShowAction show_action,
 
   if (action_runner->RunAction(extension(), grant_tab_permissions) ==
       extensions::ExtensionAction::ACTION_SHOW_POPUP) {
-    GURL popup_url = extension_action_->GetPopupUrl(
-        sessions::SessionTabHelper::IdForTab(web_contents).id());
-    return GetPreferredPopupViewController()
-        ->TriggerPopupWithUrl(show_action, popup_url, grant_tab_permissions);
+    GetPreferredPopupViewController()->TriggerPopup(show_action, web_contents,
+                                                    grant_tab_permissions);
+    return true;
   }
   return false;
 }
@@ -376,22 +375,25 @@ ExtensionActionViewController::GetPreferredPopupViewController() {
       extensions_container_->GetActionForId(GetId()));
 }
 
-bool ExtensionActionViewController::TriggerPopupWithUrl(
+void ExtensionActionViewController::TriggerPopup(
     PopupShowAction show_action,
-    const GURL& popup_url,
+    content::WebContents* web_contents,
     bool grant_tab_permissions) {
-  if (!ExtensionIsValid())
-    return false;
+  // Callers should already have validated the extension.
+  DCHECK(ExtensionIsValid());
 
   // Always hide the current popup, even if it's not owned by this extension.
   // Only one popup should be visible at a time.
   extensions_container_->HideActivePopup();
 
+  GURL popup_url = extension_action_->GetPopupUrl(
+      sessions::SessionTabHelper::IdForTab(web_contents).id());
   std::unique_ptr<extensions::ExtensionViewHost> host =
       extensions::ExtensionViewHostFactory::CreatePopupHost(popup_url,
                                                             browser_);
-  if (!host)
-    return false;
+  // Creating a host should never fail in this case, since the extension is
+  // valid and has a valid popup URL.
+  CHECK(host);
 
   popup_host_ = host.get();
   popup_host_observation_.Observe(popup_host_.get());
@@ -403,8 +405,6 @@ bool ExtensionActionViewController::TriggerPopupWithUrl(
       base::BindOnce(&ExtensionActionViewController::ShowPopup,
                      weak_factory_.GetWeakPtr(), std::move(host),
                      grant_tab_permissions, show_action));
-
-  return true;
 }
 
 void ExtensionActionViewController::ShowPopup(
@@ -415,8 +415,7 @@ void ExtensionActionViewController::ShowPopup(
   // (since it can open asynchronously). Check before proceeding.
   if (!popup_host_)
     return;
-  platform_delegate_->ShowPopup(std::move(popup_host), grant_tab_permissions,
-                                show_action);
+  platform_delegate_->ShowPopup(std::move(popup_host), show_action);
   view_delegate_->OnPopupShown(grant_tab_permissions);
 }
 
