@@ -268,7 +268,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                  absl::optional<bool> handles_intents = absl::nullopt,
                  absl::optional<bool> allow_uninstall = absl::nullopt,
                  absl::optional<bool> has_badge = absl::nullopt,
-                 absl::optional<bool> paused = absl::nullopt) {
+                 absl::optional<bool> paused = absl::nullopt,
+                 WindowMode window_mode = WindowMode::kUnknown) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
 
@@ -304,6 +305,9 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     VerifyOptionalBool(allow_uninstall, cache.states_[app_id]->allow_uninstall);
     VerifyOptionalBool(has_badge, cache.states_[app_id]->has_badge);
     VerifyOptionalBool(paused, cache.states_[app_id]->paused);
+    if (window_mode != WindowMode::kUnknown) {
+      EXPECT_EQ(window_mode, cache.states_[app_id]->window_mode);
+    }
   }
 
   void VerifyAppIsRemoved(const std::string& app_id) {
@@ -507,6 +511,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     app->allow_uninstall = apps::mojom::OptionalBool::kTrue;
     app->has_badge = apps::mojom::OptionalBool::kTrue;
     app->paused = apps::mojom::OptionalBool::kTrue;
+    app->window_mode = apps::mojom::WindowMode::kBrowser;
     apps.push_back(std::move(app));
     web_apps_crosapi->OnApps(std::move(apps));
   }
@@ -550,7 +555,7 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
-            /*has_badge=*/true, /*paused=*/true);
+            /*has_badge=*/true, /*paused=*/true, WindowMode::kBrowser);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -624,7 +629,7 @@ TEST_F(PublisherTest, WebAppsOnApps) {
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
-            /*has_badge=*/false, /*paused=*/false);
+            /*has_badge=*/false, /*paused=*/false, WindowMode::kWindow);
   VerifyIntentFilters(app_id);
 }
 

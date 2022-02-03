@@ -97,6 +97,17 @@ enum class InstallSource {
   kMaxValue = kBrowser,
 };
 
+// The window mode that each app will open in.
+enum class WindowMode {
+  kUnknown = 0,
+  // Opens in a standalone window
+  kWindow,
+  // Opens in the default web browser
+  kBrowser,
+  // Opens in a tabbed app window
+  kTabbedWindow,
+};
+
 struct COMPONENT_EXPORT(APP_TYPES) App {
   App(AppType app_type, const std::string& app_id);
 
@@ -181,7 +192,8 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // operations will be restricted.
   absl::optional<bool> resize_locked;
 
-  // TODO(crbug.com/1253250): Add other App struct fields.
+  // Whether the app's display mode is in the browser or otherwise.
+  WindowMode window_mode = WindowMode::kUnknown;
 
   // When adding new fields to the App type, the `Clone` function and the
   // `AppUpdate` class should also be updated.
@@ -206,6 +218,10 @@ InstallReason ConvertMojomInstallReasonToInstallReason(
 COMPONENT_EXPORT(APP_TYPES)
 InstallSource ConvertMojomInstallSourceToInstallSource(
     apps::mojom::InstallSource mojom_install_source);
+
+COMPONENT_EXPORT(APP_TYPES)
+WindowMode ConvertMojomWindowModeToWindowMode(
+    apps::mojom::WindowMode mojom_window_mode);
 
 COMPONENT_EXPORT(APP_TYPES)
 absl::optional<bool> GetOptionalBool(

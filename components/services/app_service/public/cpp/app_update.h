@@ -198,6 +198,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool ResizeLockedChanged() const;
 
   apps::mojom::WindowMode WindowMode() const;
+  apps::WindowMode GetWindowMode() const;
   bool WindowModeChanged() const;
 
   const ::AccountId& AccountId() const;

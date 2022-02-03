@@ -119,6 +119,8 @@ class AppUpdateTest : public testing::Test {
 
   absl::optional<bool> expect_resize_locked_;
 
+  WindowMode expect_window_mode_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -180,6 +182,8 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_resize_locked_, u.GetResizeLocked());
 
+    EXPECT_EQ(expect_window_mode_, u.GetWindowMode());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -216,6 +220,7 @@ class AppUpdateTest : public testing::Test {
     expect_paused_ = absl::nullopt;
     expect_intent_filters_.clear();
     expect_resize_locked_ = absl::nullopt;
+    expect_window_mode_ = WindowMode::kUnknown;
     CheckExpects(u);
 
     if (delta) {
@@ -817,6 +822,26 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_resize_locked_, state->resize_locked);
+      CheckExpects(u);
+    }
+
+    // WindowMode tests.
+
+    if (state) {
+      state->window_mode = WindowMode::kBrowser;
+      expect_window_mode_ = WindowMode::kBrowser;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->window_mode = WindowMode::kWindow;
+      expect_window_mode_ = WindowMode::kWindow;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_window_mode_, state->window_mode);
       CheckExpects(u);
     }
   }

@@ -222,7 +222,8 @@ void AppUpdate::Merge(App* state, const App* delta) {
     state->intent_filters = CloneIntentFilters(delta->intent_filters);
   }
 
-  SET_OPTIONAL_VALUE(resize_locked);
+  SET_OPTIONAL_VALUE(resize_locked)
+  SET_ENUM_VALUE(window_mode, WindowMode::kUnknown)
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -906,6 +907,10 @@ apps::mojom::WindowMode AppUpdate::WindowMode() const {
     return mojom_state_->window_mode;
   }
   return apps::mojom::WindowMode::kUnknown;
+}
+
+apps::WindowMode AppUpdate::GetWindowMode() const {
+  GET_VALUE_WITH_DEFAULT_VALUE(window_mode, WindowMode::kUnknown)
 }
 
 bool AppUpdate::WindowModeChanged() const {

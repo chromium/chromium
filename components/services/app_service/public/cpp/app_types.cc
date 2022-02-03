@@ -46,6 +46,7 @@ std::unique_ptr<App> App::Clone() const {
   app->paused = paused;
   app->intent_filters = CloneIntentFilters(intent_filters);
   app->resize_locked = resize_locked;
+  app->window_mode = window_mode;
 
   return app;
 }
@@ -180,6 +181,20 @@ InstallSource ConvertMojomInstallSourceToInstallSource(
   }
 }
 
+WindowMode ConvertMojomWindowModeToWindowMode(
+    apps::mojom::WindowMode mojom_window_mode) {
+  switch (mojom_window_mode) {
+    case apps::mojom::WindowMode::kUnknown:
+      return WindowMode::kUnknown;
+    case apps::mojom::WindowMode::kWindow:
+      return WindowMode::kWindow;
+    case apps::mojom::WindowMode::kBrowser:
+      return WindowMode::kBrowser;
+    case apps::mojom::WindowMode::kTabbedWindow:
+      return WindowMode::kTabbedWindow;
+  }
+}
+
 absl::optional<bool> GetOptionalBool(
     const apps::mojom::OptionalBool& mojom_optional_bool) {
   absl::optional<bool> optional_bool;
@@ -247,6 +262,7 @@ std::unique_ptr<App> ConvertMojomAppToApp(
   }
 
   app->resize_locked = GetOptionalBool(mojom_app->resize_locked);
+  app->window_mode = ConvertMojomWindowModeToWindowMode(mojom_app->window_mode);
 
   return app;
 }

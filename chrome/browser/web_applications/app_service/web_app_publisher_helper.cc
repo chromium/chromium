@@ -196,6 +196,24 @@ apps::mojom::InstallSource GetInstallSource(PrefService* prefs,
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+apps::WindowMode GetDisplayMode(blink::mojom::DisplayMode display_mode) {
+  switch (display_mode) {
+    case blink::mojom::DisplayMode::kUndefined:
+      return apps::WindowMode::kUnknown;
+    case blink::mojom::DisplayMode::kBrowser:
+      return apps::WindowMode::kBrowser;
+    case blink::mojom::DisplayMode::kTabbed:
+      return apps::WindowMode::kTabbedWindow;
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kFullscreen:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      return apps::WindowMode::kWindow;
+  }
+}
+#endif
+
 bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
   return web_app.note_taking_new_note_url().is_valid();
 }
@@ -547,6 +565,9 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
             /*file_extensions=*/{})));
   }
 #endif
+
+  app->window_mode =
+      GetDisplayMode(registrar().GetAppUserDisplayMode(web_app->app_id()));
 
   return app;
 }
