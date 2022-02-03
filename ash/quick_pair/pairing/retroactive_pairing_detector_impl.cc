@@ -85,6 +85,8 @@ void RetroactivePairingDetectorImpl::OnLoginStatusChanged(
       << __func__
       << ": Logged in user, instantiate retroactive pairing scenario.";
 
+  retroactive_pairing_detector_instatiated_ = true;
+
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&RetroactivePairingDetectorImpl::OnGetAdapter,
                      weak_ptr_factory_.GetWeakPtr()));
