@@ -5772,11 +5772,6 @@ crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-a
 # Stale revalidation shouldn't be blocked:
 crbug.com/1079188 external/wpt/fetch/stale-while-revalidate/revalidate-not-blocked-by-csp.html [ Timeout ]
 
-# Web Audio active processing tests
-crbug.com/1073247 external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/active-processing.https.html [ Crash Failure Pass ]
-crbug.com/1073247 external/wpt/webaudio/the-audio-api/the-channelmergernode-interface/active-processing.https.html [ Crash Failure Pass ]
-crbug.com/1073247 external/wpt/webaudio/the-audio-api/the-convolvernode-interface/active-processing.https.html [ Crash Failure Pass ]
-
 # Sheriff 2020-04-22
 # Flaky test.
 crbug.com/1073505 [ Mac10.13 ] external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/* [ Failure Pass ]
