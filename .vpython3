@@ -394,3 +394,10 @@ wheel: <
     platform: "linux_aarch64"
   >
 >
+
+# Used by:
+#   testing/script/run_variations_smoke_tests.py
+wheel: <
+  name: "infra/python/wheels/selenium-py3"
+  version: "version:3.14.0"
+>

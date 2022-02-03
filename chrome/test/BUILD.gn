@@ -9941,7 +9941,6 @@ if (is_chromeos_ash) {
 
 if (is_linux || is_mac || is_win) {
   script_test("variations_smoke_tests") {
-    run_under_python2 = true
 
     if (is_linux) {
       script = "//testing/xvfb.py"
@@ -9960,8 +9959,8 @@ if (is_linux || is_mac || is_win) {
     ]
 
     data = [
+      "//.vpython3",
       "//testing/scripts/run_variations_smoke_tests.py",
-      "//testing/scripts/variations_http_test_server.py",
       "//testing/scripts/variations_seed_access_helper.py",
       "//testing/scripts/variations_smoke_test_data/",
       "//testing/scripts/variations_smoke_test_data/http_server/",

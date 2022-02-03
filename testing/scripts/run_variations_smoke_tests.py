@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,6 +7,7 @@ when parsing a newly given variations seed.
 """
 
 import argparse
+import http
 import json
 import logging
 import os
@@ -14,24 +15,17 @@ import shutil
 import sys
 import tempfile
 import time
-import six.moves.urllib.error
+from functools import partial
+from http.server import SimpleHTTPRequestHandler
 from threading import Thread
 
 import common
-import six
 import variations_seed_access_helper as seed_helper
-from variations_http_test_server import HTTPServer
-from variations_http_test_server import HTTPHandler
-
-if six.PY3:
-  import http
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir)
-_WEBDRIVER_PATH = os.path.join(_SRC_DIR, 'third_party', 'webdriver', 'pylib')
 _VARIATIONS_TEST_DATA = 'variations_smoke_test_data'
 
-sys.path.insert(0, _WEBDRIVER_PATH)
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from selenium.common.exceptions import NoSuchElementException
@@ -63,14 +57,10 @@ def _get_httpd():
   port = 8000
   directory = os.path.join(_THIS_DIR, _VARIATIONS_TEST_DATA, "http_server")
   httpd = None
-  if six.PY3:
-    handler = partial(http.server.SimpleHTTPRequestHandler, directory=directory)
-    httpd = http.server.HTTPServer((hostname, port), handler)
-    httpd.timeout = 0.5
-    httpd.allow_reuse_address = True
-    httpd.server_bind()
-  else:
-    httpd = HTTPServer(directory, (hostname, port))
+  handler = partial(SimpleHTTPRequestHandler, directory=directory)
+  httpd = http.server.HTTPServer((hostname, port), handler)
+  httpd.timeout = 0.5
+  httpd.allow_reuse_address = True
   return httpd
 
 
@@ -246,11 +236,7 @@ def _run_tests(*args):
 
     shutil.rmtree(log_file, ignore_errors=True)
     if driver:
-      try:
-        driver.quit()
-      except six.moves.urllib.error.URLError:
-        # Ignore the error as ChromeDriver may have already exited.
-        pass
+      driver.quit()
 
   return 0
 
@@ -263,14 +249,10 @@ def _start_local_http_server():
   """
   httpd = _get_httpd()
   thread = None
-  if six.PY3:
-    address = "http://{}:{}".format(httpd.server_name, httpd.server_port)
-    logging.info("%s is used as local http server.", address)
-    thread = Thread(target=httpd.serve_forever)
-    thread.setDaemon(True)
-  else:
-    thread = Thread(target=httpd.serve_forever)
-    thread.daemon = True
+  address = "http://{}:{}".format(httpd.server_name, httpd.server_port)
+  logging.info("%s is used as local http server.", address)
+  thread = Thread(target=httpd.serve_forever)
+  thread.setDaemon(True)
   thread.start()
   return httpd
 

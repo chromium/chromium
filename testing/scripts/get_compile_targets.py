@@ -33,10 +33,10 @@ def main(argv):
                     'PRESUBMIT.py',
                     'sizes_common.py',
                     'variations_seed_access_helper.py',
-                    'variations_http_test_server.py',
                     'wpt_android_lib.py',
                     'wpt_common.py',
                     'wpt_common_unittest.py',
+                    'run_variations_smoke_tests.py',
                     'run_performance_tests_unittest.py'):
       continue
 
