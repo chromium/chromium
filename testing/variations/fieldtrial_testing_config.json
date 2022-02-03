@@ -5058,25 +5058,6 @@
             ]
         }
     ],
-    "PreconnectOnDidFinishNavigation": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_3_seconds",
-                    "params": {
-                        "delay_after_commit_in_ms": "3000"
-                    },
-                    "enable_features": [
-                        "PreconnectOnDidFinishNavigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
