@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "chrome/browser/web_applications/adjustments/link_capturing_pref_migration.h"
-#include "chrome/browser/web_applications/adjustments/preinstalled_web_app_duplication_fixer.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -25,22 +24,12 @@ namespace web_app {
 // Everything in here should have a removal date.
 class WebAppAdjustments : public KeyedService {
  public:
-  static WebAppAdjustments* Get(Profile* profile);
-
   explicit WebAppAdjustments(Profile* profile);
   ~WebAppAdjustments() override;
-
-  PreinstalledWebAppDuplicationFixer* preinstalled_web_app_duplication_fixer() {
-    return preinstalled_web_app_duplication_fixer_.get();
-  }
 
  private:
   // TODO(crbug.com/1262906): This was added in M97, remove in M107.
   std::unique_ptr<LinkCapturingPrefMigration> link_capturing_pref_migration_;
-
-  // TODO(crbug.com/1290716): This was added in M100, remove in M120.
-  std::unique_ptr<PreinstalledWebAppDuplicationFixer>
-      preinstalled_web_app_duplication_fixer_;
 };
 
 class WebAppAdjustmentsFactory : public BrowserContextKeyedServiceFactory {
@@ -51,8 +40,6 @@ class WebAppAdjustmentsFactory : public BrowserContextKeyedServiceFactory {
   static WebAppAdjustmentsFactory* GetInstance();
 
  private:
-  friend class WebAppAdjustments;
-
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;

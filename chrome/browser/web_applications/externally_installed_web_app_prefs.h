@@ -56,7 +56,6 @@ class ExternallyInstalledWebAppPrefs {
   void Insert(const GURL& url,
               const AppId& app_id,
               ExternalInstallSource install_source);
-  bool Remove(const GURL& url);
   absl::optional<AppId> LookupAppId(const GURL& url) const;
   bool HasNoApps() const;
 

@@ -23,12 +23,13 @@ struct PreinstalledWebAppMigration {
   GURL install_url;
   AppId expected_web_app_id;
   AppId old_chrome_app_id;
+  absl::optional<std::string> gate_on_feature;
 };
 
 // Returns the list of preinstalled web apps that are migrations away from their
 // corresponding Chrome app.
-std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
-    Profile& profile);
+const std::vector<PreinstalledWebAppMigration>&
+GetPreinstalledWebAppMigrations();
 
 // A scoped helper to provide a testing set of preinstalled app data. This will
 // replace the default set.
