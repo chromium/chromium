@@ -577,6 +577,9 @@
 
   [self.textFragmentsCoordinator stop];
   self.textFragmentsCoordinator = nil;
+
+  [self.nonModalPromoCoordinator stop];
+  self.nonModalPromoCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
