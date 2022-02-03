@@ -10,13 +10,13 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout.LayoutParams;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -73,8 +73,8 @@ public class ListMenuRenderTest extends DummyUiActivityTestCase {
 
             BasicListMenu listMenu = new BasicListMenu(activity, data, null);
             mView = listMenu.getContentView();
-            mView.setBackground(ApiCompatibilityUtils.getDrawable(
-                    activity.getResources(), R.drawable.menu_bg_tinted));
+            mView.setBackground(
+                    AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
             int width = activity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
             activity.setContentView(mView, new LayoutParams(width, WRAP_CONTENT));
         });

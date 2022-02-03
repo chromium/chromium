@@ -167,6 +167,7 @@ android_resources("java_resources") {
     "java/res/drawable-mdpi/ic_more_vert_24dp_on_light_bg.png",
     "java/res/drawable-v24/app_menu_bg.xml",
     "java/res/drawable-v24/dialog_bg_no_shadow.xml",
+    "java/res/drawable-v24/menu_bg_tinted.xml",
     "java/res/drawable-v24/oval_surface_1.xml",
     "java/res/drawable-v24/rectangle_surface_1.xml",
     "java/res/drawable-v24/rounded_rectangle_surface_1.xml",

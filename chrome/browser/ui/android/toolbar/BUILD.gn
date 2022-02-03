@@ -197,6 +197,7 @@ android_resources("java_resources") {
     "java/res/drawable-mdpi/popup_bg_bottom.9.png",
     "java/res/drawable-sw600dp-xhdpi/toolbar_background.9.png",
     "java/res/drawable-v21/ntp_search_box.xml",
+    "java/res/drawable-v24/menu_bg_bottom_tinted.xml",
     "java/res/drawable-xhdpi/badge_update_dark.png",
     "java/res/drawable-xhdpi/badge_update_light.png",
     "java/res/drawable-xhdpi/btn_tabswitcher_modern.png",
