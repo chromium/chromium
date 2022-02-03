@@ -16,6 +16,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/range/range.h"
 
+class Browser;
 class Tab;
 class TabStrip;
 
