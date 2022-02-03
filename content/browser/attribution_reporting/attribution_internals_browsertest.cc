@@ -69,7 +69,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
     ON_CALL(manager_, GetActiveSourcesForWebUI)
         .WillByDefault(InvokeCallback<std::vector<StoredSource>>({}));
 
-    ON_CALL(manager_, GetPendingReportsForWebUI)
+    ON_CALL(manager_, GetPendingReportsForInternalUse)
         .WillByDefault(InvokeCallback<std::vector<AttributionReport>>({}));
   }
 
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                 .Build(),
                             SendResult(SendResult::Status::kFailure,
                                        /*http_response_code=*/0));
-  ON_CALL(manager_, GetPendingReportsForWebUI)
+  ON_CALL(manager_, GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback<std::vector<AttributionReport>>(
           {ReportBuilder(
                SourceBuilder(now)
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                  .SetReportTime(now)
                                  .SetPriority(7)
                                  .Build();
-  EXPECT_CALL(manager_, GetPendingReportsForWebUI)
+  EXPECT_CALL(manager_, GetPendingReportsForInternalUse)
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>({report}));
 
   report.set_report_time(report.report_time() + base::Hours(1));
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  EXPECT_CALL(manager_, GetPendingReportsForWebUI)
+  EXPECT_CALL(manager_, GetPendingReportsForInternalUse)
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>(
           {ReportBuilder(SourceBuilder().BuildStored())
                .SetPriority(7)

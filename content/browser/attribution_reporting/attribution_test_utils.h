@@ -201,7 +201,7 @@ class MockAttributionManager : public AttributionManager {
 
   MOCK_METHOD(
       void,
-      GetPendingReportsForWebUI,
+      GetPendingReportsForInternalUse,
       (base::OnceCallback<void(std::vector<AttributionReport>)> callback),
       (override));
 

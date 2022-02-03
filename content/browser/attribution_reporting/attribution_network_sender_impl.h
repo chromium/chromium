@@ -47,7 +47,7 @@ class CONTENT_EXPORT AttributionNetworkSenderImpl
   // |sent_callback| is run after the request finishes, whether or not it
   // succeeded,
   void SendReport(GURL report_url,
-                  std::string report_body,
+                  base::Value report_body,
                   ReportSentCallback sent_callback) override;
 
   // Tests inject a TestURLLoaderFactory so they can mock the network response.

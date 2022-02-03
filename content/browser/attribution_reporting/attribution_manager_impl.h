@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -29,10 +28,12 @@ class GURL;
 
 namespace base {
 class FilePath;
+class Value;
 }  // namespace base
 
 namespace content {
 
+class BrowserContext;
 class StoragePartitionImpl;
 
 struct SendResult;
@@ -83,13 +84,26 @@ class CONTENT_EXPORT AttributionManagerImpl
     // Generates and sends a conversion report matching |report|. This should
     // generate a secure POST request with no-credentials.
     virtual void SendReport(GURL report_url,
-                            std::string report_body,
+                            base::Value report_body,
                             ReportSentCallback sent_callback) = 0;
   };
+
+  using IsReportAllowedCallback =
+      base::RepeatingCallback<bool(const AttributionReport&)>;
+
+  static IsReportAllowedCallback DefaultIsReportAllowedCallback(
+      BrowserContext*);
 
   // Configures underlying storage to be setup in memory, rather than on
   // disk. This speeds up initialization to avoid timeouts in test environments.
   static void RunInMemoryForTesting();
+
+  static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
+      IsReportAllowedCallback is_report_allowed_callback,
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+      std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
+      std::unique_ptr<NetworkSender> network_sender);
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -109,7 +123,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void HandleTrigger(AttributionTrigger trigger) override;
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
-  void GetPendingReportsForWebUI(
+  void GetPendingReportsForInternalUse(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
   void SendReportsForWebUI(
@@ -120,11 +134,14 @@ class CONTENT_EXPORT AttributionManagerImpl
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
                  base::OnceClosure done) override;
 
+  void HandleSourceInternalForTesting(StorableSource);
+  void HandleTriggerInternalForTesting(AttributionTrigger);
+
  private:
   friend class AttributionManagerImplTest;
 
   AttributionManagerImpl(
-      StoragePartitionImpl* storage_partition,
+      IsReportAllowedCallback is_report_allowed_callback,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
@@ -174,7 +191,8 @@ class CONTENT_EXPORT AttributionManagerImpl
       AttributionManagerImpl* manager,
       base::Time max_report_time);
 
-  raw_ptr<StoragePartitionImpl> storage_partition_;
+  // Internally holds a non-owning pointer to `BrowserContext`.
+  IsReportAllowedCallback is_report_allowed_callback_;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 

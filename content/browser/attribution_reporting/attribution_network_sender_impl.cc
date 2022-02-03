@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
@@ -49,7 +50,7 @@ AttributionNetworkSenderImpl::~AttributionNetworkSenderImpl() = default;
 
 void AttributionNetworkSenderImpl::SendReport(
     GURL report_url,
-    std::string report_body,
+    base::Value report_body,
     ReportSentCallback sent_callback) {
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
@@ -103,7 +104,8 @@ void AttributionNetworkSenderImpl::SendReport(
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
-  simple_url_loader_ptr->AttachStringForUpload(report_body, "application/json");
+  simple_url_loader_ptr->AttachStringForUpload(
+      SerializeAttributionJson(report_body), "application/json");
 
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in

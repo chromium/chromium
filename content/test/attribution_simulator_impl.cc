@@ -1,0 +1,169 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/test/attribution_simulator_impl.h"
+
+#include <memory>
+#include <utility>
+
+#include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
+#include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/send_result.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/test/attribution_simulator.h"
+#include "content/public/test/browser_task_environment.h"
+#include "services/network/test/test_network_connection_tracker.h"
+#include "url/gurl.h"
+
+namespace content {
+
+namespace {
+
+base::Time GetEventTime(const AttributionSimulationEvent& event) {
+  struct Visitor {
+    base::Time operator()(const StorableSource& source) {
+      return source.common_info().impression_time();
+    }
+
+    base::Time operator()(const AttributionTriggerAndTime& trigger) {
+      return trigger.time;
+    }
+  };
+
+  return absl::visit(Visitor{}, event);
+}
+
+class SentReportAccumulator : public AttributionManagerImpl::NetworkSender {
+ public:
+  SentReportAccumulator(base::Value::ListStorage& reports,
+                        bool remove_report_ids)
+      : time_origin_(base::Time::Now()),
+        remove_report_ids_(remove_report_ids),
+        reports_(reports) {}
+
+  ~SentReportAccumulator() override = default;
+
+  SentReportAccumulator(const SentReportAccumulator&) = delete;
+  SentReportAccumulator(SentReportAccumulator&&) = delete;
+
+  SentReportAccumulator& operator=(const SentReportAccumulator&) = delete;
+  SentReportAccumulator& operator=(SentReportAccumulator&&) = delete;
+
+ private:
+  // AttributionManagerImpl::NetworkSender:
+  void SendReport(GURL report_url,
+                  base::Value report_body,
+                  ReportSentCallback sent_callback) override {
+    if (remove_report_ids_)
+      report_body.RemoveKey("report_id");
+
+    base::DictionaryValue value;
+    value.SetKey("report", std::move(report_body));
+    value.SetStringKey("report_url", report_url.spec());
+    value.SetIntKey("report_time",
+                    (base::Time::Now() - time_origin_).InSeconds());
+
+    reports_.push_back(std::move(value));
+
+    std::move(sent_callback)
+        .Run(SendResult(SendResult::Status::kSent,
+                        /*http_response_code=*/200));
+  }
+
+  const base::Time time_origin_;
+  const bool remove_report_ids_;
+  base::Value::ListStorage& reports_;
+};
+
+struct EventHandler {
+  base::raw_ptr<AttributionManagerImpl> manager;
+
+  void operator()(StorableSource source) {
+    manager->HandleSourceInternalForTesting(std::move(source));
+  }
+
+  void operator()(AttributionTriggerAndTime trigger) {
+    manager->HandleTriggerInternalForTesting(std::move(trigger.trigger));
+  }
+};
+
+}  // namespace
+
+base::Value RunAttributionSimulation(
+    std::vector<AttributionSimulationEvent> events,
+    const AttributionSimulationOptions& options) {
+  base::ranges::stable_sort(events, /*comp=*/{}, &GetEventTime);
+
+  // Prerequisites for using an environment with mock time.
+  TestTimeouts::Initialize();
+  content::BrowserTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  // Avoid creating an on-disk sqlite DB.
+  content::AttributionManagerImpl::RunInMemoryForTesting();
+
+  // Ensure that the manager always thinks the browser is online.
+  auto network_connection_tracker =
+      network::TestNetworkConnectionTracker::CreateInstance();
+  content::SetNetworkConnectionTrackerForTesting(
+      network_connection_tracker.get());
+
+  auto always_allow_reports_callback =
+      base::BindRepeating([](const AttributionReport&) { return true; });
+
+  // This isn't needed because the DB is completely in memory for testing.
+  const base::FilePath user_data_directory;
+
+  base::Value::ListStorage reports;
+  auto manager = AttributionManagerImpl::CreateForTesting(
+      std::move(always_allow_reports_callback), user_data_directory,
+      /*special_storage_policy=*/nullptr,
+      std::make_unique<AttributionStorageDelegateImpl>(),
+      /*network_sender=*/
+      std::make_unique<SentReportAccumulator>(reports,
+                                              options.remove_report_ids));
+
+  // TODO(apaseltiner): Add an `AttributionManager::Observer` to `manager` so we
+  // can record dropped reports in the output.
+
+  EventHandler handler{.manager = manager.get()};
+
+  for (auto& event : events) {
+    task_environment.FastForwardBy(GetEventTime(event) - base::Time::Now());
+    absl::visit(handler, std::move(event));
+  }
+
+  absl::optional<base::Time> last_report_time;
+
+  base::RunLoop loop;
+  manager->GetPendingReportsForInternalUse(
+      base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
+        if (!reports.empty()) {
+          last_report_time = base::ranges::max(reports, /*comp=*/{},
+                                               &AttributionReport::report_time)
+                                 .report_time();
+        }
+
+        loop.Quit();
+      }));
+
+  loop.Run();
+  if (last_report_time.has_value())
+    task_environment.FastForwardBy(*last_report_time - base::Time::Now());
+
+  base::DictionaryValue output;
+  output.SetKey("reports", base::Value(std::move(reports)));
+  return output;
+}
+
+}  // namespace content

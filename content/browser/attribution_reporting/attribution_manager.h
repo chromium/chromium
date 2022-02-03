@@ -85,8 +85,8 @@ class AttributionManager {
       base::OnceCallback<void(std::vector<StoredSource>)> callback) = 0;
 
   // Get all pending reports that are currently stored in this partition. Used
-  // for populating WebUI.
-  virtual void GetPendingReportsForWebUI(
+  // for populating WebUI and simulator.
+  virtual void GetPendingReportsForInternalUse(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 
   // Sends the given reports immediately, and runs |done| once they have all

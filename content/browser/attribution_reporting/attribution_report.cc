@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -108,7 +107,7 @@ GURL AttributionReport::ReportURL() const {
       replacements);
 }
 
-std::string AttributionReport::ReportBody(bool pretty_print) const {
+base::Value AttributionReport::ReportBody() const {
   const auto* event_data = absl::get_if<EventLevelData>(&data_);
   DCHECK(event_data);
 
@@ -152,13 +151,7 @@ std::string AttributionReport::ReportBody(bool pretty_print) const {
   dict.SetDoubleKey("randomized_trigger_rate",
                     RandomizedTriggerRate(source_.common_info().source_type()));
 
-  // Write the dict to json;
-  std::string output_json;
-  bool success = base::JSONWriter::WriteWithOptions(
-      dict, pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0,
-      &output_json);
-  DCHECK(success);
-  return output_json;
+  return dict;
 }
 
 absl::optional<AttributionReport::Id> AttributionReport::ReportId() const {

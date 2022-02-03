@@ -15,6 +15,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -95,7 +96,7 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
       report.ReportURL(),
       /*trigger_time=*/report.trigger_time().ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(), data->priority,
-      report.ReportBody(/*pretty_print=*/true),
+      SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true),
       /*attributed_truthfully=*/
       report.source().attribution_logic() ==
           StoredSource::AttributionLogic::kTruthfully,
@@ -158,7 +159,7 @@ void AttributionInternalsHandlerImpl::GetReports(
     mojom::AttributionInternalsHandler::GetReportsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
-    manager->GetPendingReportsForWebUI(
+    manager->GetPendingReportsForInternalUse(
         base::BindOnce(&ForwardReportsToWebUI, std::move(callback)));
   } else {
     std::move(callback).Run({});

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/json/json_writer.h"
 #include "base/time/time.h"
 
 namespace content {
@@ -127,6 +128,17 @@ double RandomizedTriggerRate(CommonSourceInfo::SourceType source_type) {
     case CommonSourceInfo::SourceType::kEvent:
       return .0000025;
   }
+}
+
+std::string SerializeAttributionJson(const base::Value& body,
+                                     bool pretty_print) {
+  int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;
+
+  std::string output_json;
+  bool success =
+      base::JSONWriter::WriteWithOptions(body, options, &output_json);
+  DCHECK(success);
+  return output_json;
 }
 
 }  // namespace content

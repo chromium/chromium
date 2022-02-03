@@ -1,0 +1,35 @@
+{
+  "sources": [
+    {
+      "source_type": "navigation",
+      "source_time": 1643235573,
+      "reporting_origin": "https://report.example",
+      "source_origin": "https://source.example",
+      "registration_config": {
+        "source_event_id": "1337",
+        "destination": "https://destination.example",
+        "expiry" : "864000000"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "trigger_time": 1643235574,
+      "reporting_origin": "https://report.example",
+      "destination": " https://destination.example",
+      "registration_config": {
+        "trigger_data": "3",
+        "event_source_trigger_data": "1"
+      }
+    },
+    {
+      "trigger_time": 1643235579,
+      "reporting_origin": "https://report.example",
+      "destination": "https://destination.example",
+      "registration_config": {
+        "trigger_data": "4",
+        "event_source_trigger_data": "0"
+      }
+    }
+  ]
+}

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/guid.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -19,6 +17,10 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace content {
 
@@ -98,8 +100,7 @@ class CONTENT_EXPORT AttributionReport {
   // Returns the URL to which the report will be sent.
   GURL ReportURL() const;
 
-  // Returns the JSON for the report body.
-  std::string ReportBody(bool pretty_print = false) const;
+  base::Value ReportBody() const;
 
   absl::optional<Id> ReportId() const;
 

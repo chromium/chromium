@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -33,7 +34,6 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
@@ -116,13 +116,13 @@ class MockNetworkSender : public AttributionManagerImpl::NetworkSender {
  public:
   // AttributionManagerImpl::NetworkSender:
   void SendReport(GURL report_url,
-                  std::string report_body,
+                  base::Value report_body,
                   ReportSentCallback callback) override {
     calls_.emplace_back(std::move(report_url), std::move(report_body));
     callbacks_.push_back(std::move(callback));
   }
 
-  using SendReportCalls = std::vector<std::pair<GURL, std::string>>;
+  using SendReportCalls = std::vector<std::pair<GURL, base::Value>>;
 
   const SendReportCalls& calls() const { return calls_; }
 
@@ -174,12 +174,12 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   void CreateManager() {
-    attribution_manager_ = absl::WrapUnique(new AttributionManagerImpl(
-        static_cast<StoragePartitionImpl*>(
-            browser_context_->GetDefaultStoragePartition()),
+    attribution_manager_ = AttributionManagerImpl::CreateForTesting(
+        AttributionManagerImpl::DefaultIsReportAllowedCallback(
+            browser_context_.get()),
         dir_.GetPath(), mock_storage_policy_,
         std::make_unique<NoRandomizedResponseStorageDelegate>(),
-        absl::WrapUnique(network_sender_.get())));
+        absl::WrapUnique(network_sender_.get()));
   }
 
   void ShutdownManager() {
@@ -206,7 +206,7 @@ class AttributionManagerImplTest : public testing::Test {
   std::vector<AttributionReport> StoredReports() {
     std::vector<AttributionReport> result;
     base::RunLoop loop;
-    attribution_manager_->GetPendingReportsForWebUI(
+    attribution_manager_->GetPendingReportsForInternalUse(
         base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
           result = std::move(reports);
           loop.Quit();

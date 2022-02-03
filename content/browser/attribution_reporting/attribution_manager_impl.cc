@@ -15,6 +15,7 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -137,12 +138,45 @@ void AttributionManagerImpl::RunInMemoryForTesting() {
   AttributionStorageSql::RunInMemoryForTesting();
 }
 
+// static
+AttributionManagerImpl::IsReportAllowedCallback
+AttributionManagerImpl::DefaultIsReportAllowedCallback(
+    BrowserContext* browser_context) {
+  return base::BindRepeating(
+      [](BrowserContext* browser_context, const AttributionReport& report) {
+        const CommonSourceInfo& common_info = report.source().common_info();
+        return GetContentClient()
+            ->browser()
+            ->IsConversionMeasurementOperationAllowed(
+                browser_context,
+                ContentBrowserClient::ConversionMeasurementOperation::kReport,
+                &common_info.impression_origin(),
+                &common_info.conversion_origin(),
+                &common_info.reporting_origin());
+      },
+      browser_context);
+}
+
+// static
+std::unique_ptr<AttributionManagerImpl>
+AttributionManagerImpl::CreateForTesting(
+    IsReportAllowedCallback is_report_allowed_callback,
+    const base::FilePath& user_data_directory,
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+    std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
+    std::unique_ptr<NetworkSender> network_sender) {
+  return absl::WrapUnique(new AttributionManagerImpl(
+      std::move(is_report_allowed_callback), user_data_directory,
+      std::move(special_storage_policy), std::move(storage_delegate),
+      std::move(network_sender)));
+}
+
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : AttributionManagerImpl(
-          storage_partition,
+          DefaultIsReportAllowedCallback(storage_partition->browser_context()),
           user_data_directory,
           std::move(special_storage_policy),
           std::make_unique<AttributionStorageDelegateImpl>(
@@ -151,12 +185,12 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::make_unique<AttributionNetworkSenderImpl>(storage_partition)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
-    StoragePartitionImpl* storage_partition,
+    IsReportAllowedCallback is_report_allowed_callback,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
     std::unique_ptr<NetworkSender> network_sender)
-    : storage_partition_(storage_partition),
+    : is_report_allowed_callback_(std::move(is_report_allowed_callback)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
           user_data_directory,
@@ -164,7 +198,7 @@ AttributionManagerImpl::AttributionManagerImpl(
       special_storage_policy_(std::move(special_storage_policy)),
       network_sender_(std::move(network_sender)),
       weak_factory_(this) {
-  DCHECK(storage_partition_);
+  DCHECK(is_report_allowed_callback_);
   DCHECK(network_sender_);
 
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
@@ -234,6 +268,11 @@ void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
           weak_factory_.GetWeakPtr()));
 }
 
+void AttributionManagerImpl::HandleSourceInternalForTesting(
+    StorableSource source) {
+  HandleSourceInternal(std::move(source));
+}
+
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
   GetContentClient()->browser()->FlushBackgroundAttributions(
       base::BindOnce(&AttributionManagerImpl::HandleTriggerInternal,
@@ -245,6 +284,11 @@ void AttributionManagerImpl::HandleTriggerInternal(AttributionTrigger trigger) {
       .WithArgs(std::move(trigger))
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr()));
+}
+
+void AttributionManagerImpl::HandleTriggerInternalForTesting(
+    AttributionTrigger trigger) {
+  HandleTriggerInternal(std::move(trigger));
 }
 
 void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
@@ -279,7 +323,7 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
       .Then(std::move(callback));
 }
 
-void AttributionManagerImpl::GetPendingReportsForWebUI(
+void AttributionManagerImpl::GetPendingReportsForInternalUse(
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   GetAndHandleReports(std::move(callback),
                       /*max_report_time=*/base::Time::Max(), /*limit=*/1000);
@@ -428,14 +472,7 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
       continue;
     }
 
-    bool allowed =
-        GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
-            storage_partition_->browser_context(),
-            ContentBrowserClient::ConversionMeasurementOperation::kReport,
-            &report.source().common_info().impression_origin(),
-            &report.source().common_info().conversion_origin(),
-            &report.source().common_info().reporting_origin());
-    if (!allowed) {
+    if (!is_report_allowed_callback_.Run(report)) {
       // If measurement is disallowed, just drop the report on the floor. We
       // need to make sure we forward that the report was "sent" to ensure it is
       // deleted from storage, etc. This simulates sending the report through a
@@ -450,7 +487,7 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
       LogMetricsOnReportSend(report, now);
 
     GURL report_url = report.ReportURL();
-    std::string report_body = report.ReportBody();
+    base::Value report_body = report.ReportBody();
     network_sender_->SendReport(
         std::move(report_url), std::move(report_body),
         base::BindOnce(&AttributionManagerImpl::OnReportSent,
