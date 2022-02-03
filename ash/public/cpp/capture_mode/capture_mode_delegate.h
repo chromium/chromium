@@ -50,6 +50,12 @@ class RecordingOverlayView;
 using OnCaptureModeDlpRestrictionChecked =
     base::OnceCallback<void(bool proceed)>;
 
+// Defines the type of the callback that will be invoked when the remaining free
+// space on Drive is retrieved. `free_remaining_bytes` will be set to -1 if
+// there is an error in computing the DriveFS quota.
+using OnGotDriveFsFreeSpace =
+    base::OnceCallback<void(int64_t free_remaining_bytes)>;
+
 // Defines the interface for the delegate of CaptureModeController, that can be
 // implemented by an ash client (e.g. Chrome). The CaptureModeController owns
 // the instance of this delegate.
@@ -155,6 +161,10 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider>
           receiver) = 0;
+
+  // Gets the remaining free space on DriveFS and invokes `callback` with that
+  // value, or -1 if there's an error in computing the DriveFS quota.
+  virtual void GetDriveFsFreeSpaceBytes(OnGotDriveFsFreeSpace callback) = 0;
 };
 
 }  // namespace ash

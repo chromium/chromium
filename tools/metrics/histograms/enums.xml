@@ -27015,6 +27015,7 @@ Called by update_document_policy_enum.py.-->
   <int value="15" label="Audio encoding error"/>
   <int value="16" label="Video encoding error"/>
   <int value="17" label="Projector transcription error"/>
+  <int value="18" label="Low DriveFS free space quota"/>
 </enum>
 
 <enum name="EnhancedBookmarkViewMode">

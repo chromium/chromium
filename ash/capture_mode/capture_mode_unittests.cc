@@ -2014,6 +2014,30 @@ TEST_F(CaptureModeTest, VideoNotificationThumbnail) {
       gfx::test::AreBitmapsEqual(notification_thumbnail, service_thumbnail));
 }
 
+TEST_F(CaptureModeTest, LowDriveFsSpace) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  const base::FilePath drive_fs_folder = CreateFolderOnDriveFS("test");
+  controller->SetCustomCaptureFolder(drive_fs_folder);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+
+  // Simulate low DriveFS free space by setting it to e.g. 200 MB.
+  test_delegate->set_fake_drive_fs_free_bytes(200 * 1024 * 1024);
+
+  base::HistogramTester histogram_tester;
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeTestApi().FlushRecordingServiceForTesting();
+  test_delegate->RequestAndWaitForVideoFrame();
+
+  // Recording should end immediately due to a low Drive FS free space.
+  WaitForCaptureFileToBeSaved();
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kLowDriveFsQuota, 1);
+}
+
 TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);

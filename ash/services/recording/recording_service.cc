@@ -167,6 +167,7 @@ void RecordingService::RecordFullscreen(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& webm_file_path,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size_dip,
@@ -175,7 +176,8 @@ void RecordingService::RecordFullscreen(
 
   StartNewRecording(
       std::move(client), std::move(video_capturer),
-      std::move(audio_stream_factory), webm_file_path,
+      std::move(audio_stream_factory), std::move(drive_fs_quota_delegate),
+      webm_file_path,
       VideoCaptureParams::CreateForFullscreenCapture(
           frame_sink_id, frame_sink_size_dip, device_scale_factor));
 }
@@ -184,6 +186,7 @@ void RecordingService::RecordWindow(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& webm_file_path,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size_dip,
@@ -193,7 +196,8 @@ void RecordingService::RecordWindow(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory), webm_file_path,
+                    std::move(audio_stream_factory),
+                    std::move(drive_fs_quota_delegate), webm_file_path,
                     VideoCaptureParams::CreateForWindowCapture(
                         frame_sink_id, subtree_capture_id, frame_sink_size_dip,
                         device_scale_factor, window_size_dip));
@@ -203,6 +207,7 @@ void RecordingService::RecordRegion(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& webm_file_path,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size_dip,
@@ -211,7 +216,8 @@ void RecordingService::RecordRegion(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory), webm_file_path,
+                    std::move(audio_stream_factory),
+                    std::move(drive_fs_quota_delegate), webm_file_path,
                     VideoCaptureParams::CreateForRegionCapture(
                         frame_sink_id, frame_sink_size_dip, device_scale_factor,
                         crop_region_dip));
@@ -410,6 +416,7 @@ void RecordingService::StartNewRecording(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& webm_file_path,
     std::unique_ptr<VideoCaptureParams> capture_params) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
@@ -430,7 +437,8 @@ void RecordingService::StartNewRecording(
   encoder_muxer_ = RecordingEncoderMuxer::Create(
       encoding_task_runner_,
       CreateVideoEncoderOptions(current_video_capture_params_->GetVideoSize()),
-      should_record_audio ? &audio_parameters_ : nullptr, webm_file_path,
+      should_record_audio ? &audio_parameters_ : nullptr,
+      std::move(drive_fs_quota_delegate), webm_file_path,
       BindOnceToMainThread(&RecordingService::OnEncodingFailure));
 
   ConnectAndStartVideoCapturer(std::move(video_capturer));

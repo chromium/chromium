@@ -37,6 +37,21 @@ enum RecordingStatus {
   kIoError,
   // Ended due to reaching a critically low disk space.
   kLowDiskSpace,
+  // Ended due to reaching a critically low DriveFS quota.
+  kLowDriveFsQuota,
+};
+
+// Defines the interface for retrieving the remaining amount of DriveFS free
+// space. The implementation of this interface lives in ash, and a remote end
+// point to it will be provided to the recording service only when the video
+// file is being written to a path on DriveFS. The implementation of this
+// delegate lives in ash-chrome (DriveFS integration lives in Chrome and cannot
+// be used directly by the recording service).
+interface DriveFsQuotaDelegate {
+  // Gets the free space available in Drive (see
+  // `drivefs.mojom.QuotaUsage.free_cloud_bytes`). `free_remaining_bytes` will
+  // be set to -1 if there's an error in computing the DriveFS quota.
+  GetDriveFsFreeSpaceBytes() => (int64 free_remaining_bytes);
 };
 
 // Defines the interface for the recording service client (e.g. ash), which
@@ -69,6 +84,11 @@ interface RecordingService {
   // to the audio stream factory on the Audio Service, which if not provided,
   // the service will not record audio, and a path to the webm file where the
   // video content should be saved.
+  //
+  // The *optional* pending_remote `drive_fs_quota_delegate`, if provided, that
+  // means that the given `webm_file_path` lives on DriveFS, and the remaining
+  // free space calculations has to be done through this delegate.
+  //
   // Note that we pass a FilePath rather than a File, since:
   // - Passing a File means the caller has to create and open the file itself,
   //   which has to be done asynchronously on the ash UI side, resulting in a
@@ -96,6 +116,7 @@ interface RecordingService {
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
       mojo_base.mojom.FilePath webm_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size_dip,
@@ -125,6 +146,7 @@ interface RecordingService {
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
       mojo_base.mojom.FilePath webm_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size_dip,
@@ -149,6 +171,7 @@ interface RecordingService {
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
       mojo_base.mojom.FilePath webm_file_path,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size_dip,

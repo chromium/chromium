@@ -31,8 +31,7 @@ class TestRecordingOverlayView : public RecordingOverlayView {
 TestCaptureModeDelegate::TestCaptureModeDelegate()
     : video_source_provider_(std::make_unique<FakeVideoSourceProvider>()) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  bool created_dir =
-      base::CreateNewTempDirectory(/*prefix=*/"", &fake_downloads_dir_);
+  bool created_dir = fake_downloads_dir_.CreateUniqueTempDir();
   DCHECK(created_dir);
   created_dir = fake_drive_fs_mount_path_.CreateUniqueTempDir();
   DCHECK(created_dir);
@@ -77,7 +76,7 @@ void TestCaptureModeDelegate::RequestAndWaitForVideoFrame() {
 base::FilePath TestCaptureModeDelegate::GetUserDefaultDownloadsFolder() const {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
 
-  return fake_downloads_dir_;
+  return fake_downloads_dir_.GetPath();
 }
 
 void TestCaptureModeDelegate::ShowScreenCaptureItemInFolder(
@@ -166,6 +165,11 @@ TestCaptureModeDelegate::CreateRecordingOverlayView() const {
 void TestCaptureModeDelegate::ConnectToVideoSourceProvider(
     mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver) {
   video_source_provider_->Bind(std::move(receiver));
+}
+
+void TestCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
+    OnGotDriveFsFreeSpace callback) {
+  std::move(callback).Run(fake_drive_fs_free_bytes_);
 }
 
 }  // namespace ash

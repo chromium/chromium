@@ -21,6 +21,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/video/vpx_video_encoder.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -35,6 +36,7 @@ class VideoFrame;
 namespace recording {
 
 namespace mojom {
+class DriveFsQuotaDelegate;
 enum class RecordingStatus;
 }  // namespace mojom
 
@@ -76,6 +78,7 @@ class RecordingEncoderMuxer {
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       const media::VideoEncoder::Options& video_encoder_options,
       const media::AudioParameters* audio_input_params,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
 
@@ -126,6 +129,7 @@ class RecordingEncoderMuxer {
   RecordingEncoderMuxer(
       const media::VideoEncoder::Options& video_encoder_options,
       const media::AudioParameters* audio_input_params,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
   ~RecordingEncoderMuxer();

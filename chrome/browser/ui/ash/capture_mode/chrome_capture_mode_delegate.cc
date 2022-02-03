@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/download_manager.h"
@@ -207,7 +209,7 @@ bool ChromeCaptureModeDelegate::GetDriveFsMountPointPath(
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          ProfileManager::GetPrimaryUserProfile());
+          ProfileManager::GetActiveUserProfile());
   if (!integration_service || !integration_service->IsMounted())
     return false;
 
@@ -222,11 +224,40 @@ base::FilePath ChromeCaptureModeDelegate::GetAndroidFilesPath() const {
 std::unique_ptr<ash::RecordingOverlayView>
 ChromeCaptureModeDelegate::CreateRecordingOverlayView() const {
   return std::make_unique<RecordingOverlayViewImpl>(
-      ProfileManager::GetPrimaryUserProfile());
+      ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeCaptureModeDelegate::ConnectToVideoSourceProvider(
     mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver) {
   content::GetVideoCaptureService().ConnectToVideoSourceProvider(
       std::move(receiver));
+}
+
+void ChromeCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
+    ash::OnGotDriveFsFreeSpace callback) {
+  DCHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
+
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          ProfileManager::GetActiveUserProfile());
+  if (!integration_service) {
+    std::move(callback).Run(std::numeric_limits<int64_t>::max());
+    return;
+  }
+
+  integration_service->GetQuotaUsage(
+      base::BindOnce(&ChromeCaptureModeDelegate::OnGetDriveQuotaUsage,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
+    ash::OnGotDriveFsFreeSpace callback,
+    drive::FileError error,
+    drivefs::mojom::QuotaUsagePtr usage) {
+  if (error != drive::FileError::FILE_ERROR_OK) {
+    std::move(callback).Run(-1);
+    return;
+  }
+
+  std::move(callback).Run(usage->free_cloud_bytes);
 }

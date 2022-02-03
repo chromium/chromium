@@ -55,6 +55,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size_dip,
@@ -64,6 +65,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size_dip,
@@ -75,6 +77,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size_dip,
@@ -117,6 +120,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& webm_file_path,
       std::unique_ptr<VideoCaptureParams> capture_params);
 
