@@ -616,6 +616,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "bruschetta",
+    "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph" ],
     "expiry_milestone": 95

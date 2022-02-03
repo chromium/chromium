@@ -4330,6 +4330,10 @@ const char kCrostiniVirtualKeyboardSupportName[] =
 const char kCrostiniVirtualKeyboardSupportDescription[] =
     "Experimental support for the Virtual Keyboard on Crostini.";
 
+const char kBruschettaName[] = "Enable the third party VMs feature";
+const char kBruschettaDescription[] =
+    "Enables UI support for third party/generic VMs";
+
 const char kCryptAuthV2DedupDeviceLastActivityTimeName[] =
     "Dedup devices by last activity time";
 const char kCryptAuthV2DedupDeviceLastActivityTimeDescription[] =

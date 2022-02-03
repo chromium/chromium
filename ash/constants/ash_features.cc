@@ -339,6 +339,10 @@ const base::Feature kCrostiniImeSupport{"CrostiniImeSupport",
 const base::Feature kCrostiniVirtualKeyboardSupport{
     "CrostiniVirtualKeyboardSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables support for third party VMs.
+const base::Feature kBruschetta{"Bruschetta",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
 const base::Feature kCryptAuthV2AlwaysUseActiveEligibleHosts{
