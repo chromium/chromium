@@ -143,11 +143,11 @@ bool DesktopWindowTreeHostLinux::ContainsPointInXRegion(
   return GetX11Extension()->ContainsPointInXRegion(point);
 }
 
-void DesktopWindowTreeHostLinux::LowerXWindow() {
-  // TODO(msisov): must be removed as soon as all X11 low-level bits are moved
-  // to Ozone.
-  DCHECK(GetX11Extension());
-  GetX11Extension()->LowerXWindow();
+void DesktopWindowTreeHostLinux::LowerWindow() {
+  if (GetX11Extension())
+    GetX11Extension()->LowerXWindow();
+  else
+    NOTIMPLEMENTED_LOG_ONCE();
 }
 
 base::OnceClosure DesktopWindowTreeHostLinux::DisableEventListening() {

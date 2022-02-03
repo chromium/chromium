@@ -69,10 +69,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // Wayland.
   bool ContainsPointInXRegion(const gfx::Point& point) const;
 
-  // Tells the X server to lower the |platform_window()| owned by this host down
-  // the stack so that it does not obscure any sibling windows. Not in use for
-  // Wayland.
-  void LowerXWindow();
+  // Tells the window manager to lower the |platform_window()| owned by this
+  // host down the stack so that it does not obscure any sibling windows.
+  void LowerWindow();
 
   // Disables event listening to make |dialog| modal.
   base::OnceClosure DisableEventListening();
