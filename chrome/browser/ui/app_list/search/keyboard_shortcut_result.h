@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_RESULT_H_
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/keyboard_shortcut_data.h"
 
 namespace app_list {
 
 // TODO(crbug.com/1290682): Implement.
 class KeyboardShortcutResult : public ChromeSearchResult {
  public:
-  KeyboardShortcutResult();
+  explicit KeyboardShortcutResult(const KeyboardShortcutData& data);
   KeyboardShortcutResult(const KeyboardShortcutResult&) = delete;
   KeyboardShortcutResult& operator=(const KeyboardShortcutResult&) = delete;
 

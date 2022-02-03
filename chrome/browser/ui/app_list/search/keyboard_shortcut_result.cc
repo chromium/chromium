@@ -7,7 +7,8 @@
 namespace app_list {
 
 // TODO(crbug.com/1290682): Implement.
-KeyboardShortcutResult::KeyboardShortcutResult() = default;
+KeyboardShortcutResult::KeyboardShortcutResult(
+    const KeyboardShortcutData& data) {}
 
 // TODO(crbug.com/1290682): Implement.
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;
