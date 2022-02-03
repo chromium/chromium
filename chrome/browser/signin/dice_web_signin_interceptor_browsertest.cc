@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -1132,15 +1131,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
 }
 
-// Failed run on MAC CI builder. https://crbug.com/1245200
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_EnterpriseSwitchAlreadyOpen DISABLED_EnterpriseSwitchAlreadyOpen
-#else
-#define MAYBE_EnterpriseSwitchAlreadyOpen EnterpriseSwitchAlreadyOpen
-#endif
 // Tests the complete profile switch flow when the profile is already loaded.
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
-                       MAYBE_EnterpriseSwitchAlreadyOpen) {
+                       EnterpriseSwitchAlreadyOpen) {
   base::HistogramTester histogram_tester;
   // Enforce enterprise profile separation.
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
