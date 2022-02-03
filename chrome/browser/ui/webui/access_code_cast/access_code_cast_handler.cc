@@ -132,7 +132,8 @@ void AccessCodeCastHandler::AddSink(
     AddSinkCallback callback) {
   // Lazily init an AccessCodeCastService to ensure its creation if
   // feature/policy was turned after profile was initialized.
-  AccessCodeCastSinkServiceFactory::GetForProfile(profile_);
+  auto* ptr = AccessCodeCastSinkServiceFactory::GetForProfile(profile_);
+  DCHECK(ptr) << "AccessCodeSinkService was not properly created!";
 
   add_sink_callback_ = std::move(callback);
 

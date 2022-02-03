@@ -58,6 +58,7 @@ if (!is_android) {
     deps = [
       ":access_code_cast_feature",
       ":access_code_sink_service",
+      "//chrome/browser/media/router:router",
     ]
   }
 }

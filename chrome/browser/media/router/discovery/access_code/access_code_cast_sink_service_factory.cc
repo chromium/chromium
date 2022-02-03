@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -21,7 +22,7 @@ AccessCodeCastSinkService* AccessCodeCastSinkServiceFactory::GetForProfile(
   // GetServiceForBrowserContext returns a KeyedService hence the static_cast<>
   // to return a pointer to AccessCodeCastSinkService.
   return static_cast<AccessCodeCastSinkService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, false));
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
@@ -33,7 +34,9 @@ AccessCodeCastSinkServiceFactory::GetInstance() {
 AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "AccessCodeSinkService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(media_router::ChromeMediaRouterFactory::GetInstance());
+}
 
 AccessCodeCastSinkServiceFactory::~AccessCodeCastSinkServiceFactory() = default;
 
