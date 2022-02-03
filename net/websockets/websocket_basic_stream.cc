@@ -111,6 +111,19 @@ base::Value NetLogBufferSizeParam(int buffer_size) {
   return dict;
 }
 
+base::Value NetLogFrameHeaderParam(const WebSocketFrameHeader* header) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey("final", header->final);
+  dict.SetBoolKey("reserved1", header->reserved1);
+  dict.SetBoolKey("reserved2", header->reserved2);
+  dict.SetBoolKey("reserved3", header->reserved3);
+  dict.SetIntKey("opcode", header->opcode);
+  dict.SetBoolKey("masked", header->masked);
+  dict.SetDoubleKey("payload_length",
+                    static_cast<double>(header->payload_length));
+  return dict;
+}
+
 }  // namespace
 
 WebSocketBasicStream::BufferSizeManager::BufferSizeManager() = default;
@@ -374,6 +387,10 @@ int WebSocketBasicStream::ConvertChunksToFrames(
     auto& chunk = (*frame_chunks)[i];
     DCHECK(chunk == frame_chunks->back() || chunk->final_chunk)
         << "Only last chunk can have |final_chunk| set to be false.";
+    if (const auto& header = chunk->header) {
+      net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_RECV_FRAME_HEADER,
+                        [&] { return NetLogFrameHeaderParam(header.get()); });
+    }
     std::unique_ptr<WebSocketFrame> frame;
     int result = ConvertChunkToFrame(std::move(chunk), &frame);
     if (result != OK)
