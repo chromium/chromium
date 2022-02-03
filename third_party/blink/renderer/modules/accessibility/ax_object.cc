@@ -1149,7 +1149,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   if (is_visible || is_focusable) {
     // If the author applied the ARIA "textbox" role on something that is not
-    // (currently) editable, this may be read-only rich-text object. Or it
+    // (currently) editable, this may be a read-only rich-text object. Or it
     // might just be bad authoring. Either way, we want to expose its
     // descendants, especially the interactive ones which might gain focus.
     bool is_non_atomic_textfield_root = IsARIATextField();
@@ -1915,16 +1915,12 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   SerializeSparseAttributes(node_data);
 
   if (Element* element = GetElement()) {
-    String value_text = SlowGetValueForControlIncludingContentEditable();
-    if (value_text.IsEmpty() && !IsRangeValueSupported()) {
-      // TODO(nektar) Once contenteditable values are computed on the browser
-      // side, only expose this when value text is non-empty.
-      node_data->AddStringAttribute(ax::mojom::blink::StringAttribute::kValue,
-                                    std::string());
-    } else {
-      TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kValue, value_text);
-    }
+    // Do not send the value attribute for non-atomic text fields in order to
+    // improve the performance of the cross-process communication with the
+    // browser process, and since it can be easily computed in that process.
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kValue,
+                                  GetValueForControl());
 
     if (IsAtomicTextField()) {
       // Selection offsets are only used for plain text controls, (input of a

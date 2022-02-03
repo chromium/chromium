@@ -490,11 +490,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_NE(nullptr, target);
   EXPECT_EQ(u"Before", target->GetValueForControl());
 
-  AccessibilityNotificationWaiter waiter2(
+  AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED);
   GetManager()->SetValue(*target, "Line1\nLine2");
-  waiter2.WaitForNotification();
+  waiter.WaitForNotification();
 
   EXPECT_EQ(u"Line1\nLine2", target->GetValueForControl());
 

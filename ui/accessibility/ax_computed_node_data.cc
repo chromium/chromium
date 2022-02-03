@@ -100,6 +100,10 @@ const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
                "'GetOrComputeAttributeUTF8`";
         return GetOrComputeTextContentWithParagraphBreaksUTF8();
       }
+      // If an atomic text field has no value attribute sent from the renderer,
+      // then it means that it is empty, since we do not compute the values of
+      // such controls on the browser. The same for all other controls, other
+      // than non-atomic text fields.
       return base::EmptyString();
     default:
       // This is a special case: for performance reasons do not use
@@ -110,7 +114,25 @@ const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
 
 std::u16string AXComputedNodeData::GetOrComputeAttributeUTF16(
     const ax::mojom::StringAttribute attribute) const {
-  return base::UTF8ToUTF16(GetOrComputeAttributeUTF8(attribute));
+  if (owner_->data().HasStringAttribute(attribute))
+    return owner_->data().GetString16Attribute(attribute);
+
+  switch (attribute) {
+    case ax::mojom::StringAttribute::kValue:
+      if (owner_->data().IsNonAtomicTextField()) {
+        DCHECK(HasOrCanComputeAttribute(attribute))
+            << "Code in `HasOrCanComputeAttribute` should be in sync with "
+               "'GetOrComputeAttributeUTF16`";
+        return GetOrComputeTextContentWithParagraphBreaksUTF16();
+      }
+      // If an atomic text field has no value attribute sent from the renderer,
+      // then it means that it is empty, since we do not compute the values of
+      // such controls on the browser. The same for all other controls, other
+      // than non-atomic text fields.
+      return std::u16string();
+    default:
+      return std::u16string();
+  }
 }
 
 const std::vector<int32_t>& AXComputedNodeData::GetOrComputeAttribute(
@@ -165,7 +187,8 @@ AXComputedNodeData::GetOrComputeTextContentWithParagraphBreaksUTF8() const {
     auto range =
         AXRange<AXPosition<AXNodePosition, AXNode>>::RangeOfContents(*owner_);
     text_content_with_paragraph_breaks_utf8_ = base::UTF16ToUTF8(
-        range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks));
+        range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
+                      AXEmbeddedObjectBehavior::kSuppressCharacter));
   }
   return *text_content_with_paragraph_breaks_utf8_;
 }
@@ -179,7 +202,8 @@ AXComputedNodeData::GetOrComputeTextContentWithParagraphBreaksUTF16() const {
     auto range =
         AXRange<AXPosition<AXNodePosition, AXNode>>::RangeOfContents(*owner_);
     text_content_with_paragraph_breaks_utf16_ =
-        range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks);
+        range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
+                      AXEmbeddedObjectBehavior::kSuppressCharacter);
   }
   return *text_content_with_paragraph_breaks_utf16_;
 }
