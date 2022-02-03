@@ -154,6 +154,7 @@ generate_grd("build_grd") {
   input_files = [
     "os_settings_v3.html",
     "images/computer_and_bluetooth_switch.svg",
+    "images/computer_and_bluetooth_switch_dark.svg",
     "images/error_badge.svg",
     "images/error_badge_dark.svg",
     "images/icon_add_circle.svg",
