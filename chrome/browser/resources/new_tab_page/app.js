@@ -29,6 +29,20 @@ import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
 
+
+/**
+ * TODO(crbug.com/1273590): Temporary interface to satisfy Closure Compiler,
+ * remove when app.js is migrated to TypeScript.
+ * @interface
+ */
+class ModuleRegistryTemp {
+  /**
+   * @param {number} timeout
+   * @return {Promise<*>}
+   */
+  initializeModules(timeout) {}
+}
+
 /**
  * @typedef {{
  *   commandId: Command<number>,
@@ -441,8 +455,9 @@ class AppElement extends mixinBehaviors
         loadTimeData.getBoolean('modulesEnabled')) {
       return;
     }
-    const modules = await ModuleRegistry.getInstance().initializeModules(
-        loadTimeData.getInteger('modulesLoadTimeout'));
+    const modules =
+        await /** @type {ModuleRegistryTemp} */ (ModuleRegistry.getInstance())
+            .initializeModules(loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
       this.pageHandler_.onModulesLoadedWithData();
     }

@@ -12,18 +12,20 @@ import {Module, ModuleHeight} from './module_descriptor.js';
 
 /** @fileoverview Element that implements the common module UI. */
 
+export interface ModuleWrapperElement {
+  $: {
+    moduleElement: HTMLElement,
+    impressionProbe: HTMLElement,
+  };
+}
+
 export class ModuleWrapperElement extends PolymerElement {
   static get is() {
     return 'ntp-module-wrapper';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {!Module} */
       module: {
         observer: 'onModuleChange_',
         type: Object,
@@ -31,12 +33,9 @@ export class ModuleWrapperElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {*} newValue
-   * @param {*} oldValue
-   * @private
-   */
-  onModuleChange_(newValue, oldValue) {
+  module: Module;
+
+  private onModuleChange_(_newValue: Module, oldValue?: Module) {
     assert(!oldValue);
     this.$.moduleElement.appendChild(this.module.element);
     if (this.module.descriptor.height !== ModuleHeight.DYNAMIC) {
@@ -92,9 +91,19 @@ export class ModuleWrapperElement extends PolymerElement {
       chrome.metricsPrivate.recordSparseHashable(
           'NewTabPage.Modules.Hover', this.module.descriptor.id);
     }, {
-      useCapture: true,  // So that modules cannot swallow event.
-      once: true,        // Only one log per NTP load.
+      capture: true,  // So that modules cannot swallow event.
+      once: true,     // Only one log per NTP load.
     });
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-module-wrapper': ModuleWrapperElement;
   }
 }
 

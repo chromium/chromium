@@ -13,12 +13,10 @@ import {descriptors, descriptorsV2} from './module_descriptors.js';
  * provides management function such as instantiating the local module UIs.
  */
 
-/** @type {ModuleRegistry} */
-let instance = null;
+let instance: ModuleRegistry|null = null;
 
 export class ModuleRegistry {
-  /** @return {!ModuleRegistry} */
-  static getInstance() {
+  static getInstance(): ModuleRegistry {
     return instance ||
         (instance = new ModuleRegistry(
              loadTimeData.getBoolean('modulesRedesignedEnabled') ?
@@ -26,39 +24,34 @@ export class ModuleRegistry {
                  descriptors));
   }
 
-  /** @param {ModuleRegistry} newInstance */
-  static setInstance(newInstance) {
+  static setInstance(newInstance: ModuleRegistry) {
     instance = newInstance;
   }
 
-  /**
-   * Creates a registry populated with a list of descriptors
-   * @param {!Array<!ModuleDescriptor>} descriptors
-   */
-  constructor(descriptors) {
-    /** @private {!Array<!ModuleDescriptor>} */
+  private descriptors_: ModuleDescriptor[];
+
+  /** Creates a registry populated with a list of descriptors. */
+  constructor(descriptors: ModuleDescriptor[]) {
     this.descriptors_ = descriptors;
   }
 
-  /** @return {!Array<!ModuleDescriptor>} */
-  getDescriptors() {
+  getDescriptors(): ModuleDescriptor[] {
     return this.descriptors_;
   }
 
   /**
    * Initializes enabled modules previously set via |registerModules| and
    * returns the initialized modules.
-   * @param {number} timeout Timeout in milliseconds after which initialization
-   *     of a particular module aborts.
-   * @return {!Promise<!Array<!Module>>}
+   * @param timeout Timeout in milliseconds after which initialization of a
+   *     particular module aborts.
    */
-  async initializeModules(timeout) {
+  async initializeModules(timeout: number): Promise<Module[]> {
     // Capture updateDisabledModules -> setDisabledModules round trip in a
     // promise for convenience.
-    const disabledIds = await new Promise((resolve, _) => {
+    const disabledIds = await new Promise<string[]>((resolve, _) => {
       const callbackRouter = NewTabPageProxy.getInstance().callbackRouter;
-      const listenerId =
-          callbackRouter.setDisabledModules.addListener((all, ids) => {
+      const listenerId = callbackRouter.setDisabledModules.addListener(
+          (all: boolean, ids: string[]) => {
             callbackRouter.removeListener(listenerId);
             resolve(all ? this.descriptors_.map(({id}) => id) : ids);
           });
@@ -95,6 +88,6 @@ export class ModuleRegistry {
     const elements =
         await Promise.all(descriptors.map(d => d.initialize(timeout)));
     return elements.map((e, i) => ({element: e, descriptor: descriptors[i]}))
-        .filter(m => !!m.element);
+               .filter(m => !!m.element) as Module[];
   }
 }

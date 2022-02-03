@@ -10,20 +10,16 @@ import {FooHandler, FooHandlerRemote} from '../../foo.mojom-webui.js';
  * and receiving the browser response.
  */
 
-/** @type {?FooHandlerRemote} */
-let handler = null;
+let handler: FooHandlerRemote|null = null;
 
 export class FooProxy {
-  /** @return {!FooHandlerRemote} */
-  static getHandler() {
+  static getHandler(): FooHandlerRemote {
     return handler || (handler = FooHandler.getRemote());
   }
 
-  /** @param {!FooHandlerRemote} newHandler */
-  static setHandler(newHandler) {
+  static setHandler(newHandler: FooHandlerRemote) {
     handler = newHandler;
   }
 
-  /** @private */
-  constructor() {}
+  private constructor() {}
 }

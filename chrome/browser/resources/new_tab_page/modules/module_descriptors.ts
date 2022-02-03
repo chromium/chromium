@@ -20,11 +20,9 @@ import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
 import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
 
-/** @type {!Array<!ModuleDescriptor>} */
-export const descriptors = [];
+export const descriptors: ModuleDescriptor[] = [];
 
-/** @type {!Array<!ModuleDescriptorV2>} */
-export const descriptorsV2 = [];
+export const descriptorsV2: ModuleDescriptorV2[] = [];
 
 if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
   descriptors.push(shoppingTasksDescriptor);

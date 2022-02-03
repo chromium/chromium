@@ -4,49 +4,36 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from '../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../i18n_setup.js';
 
-/**
- * Element that displays a header inside a module.
- * @polymer
- * @extends {PolymerElement}
- */
-export class ModuleHeaderElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+export interface ModuleHeaderElement {
+  $: {
+    actionMenu: CrActionMenuElement,
+  };
+}
+
+/** Element that displays a header inside a module.  */
+export class ModuleHeaderElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-module-header';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /**
-       * The src for the icon showing on the header.
-       * @type {string}
-       */
+      /** The src for the icon showing on the header. */
       iconSrc: String,
 
-      /**
-       * The chip text showing on the header.
-       * @type {string}
-       */
+      /** The chip text showing on the header. */
       chipText: String,
 
-      /**
-       * The description text showing in the header.
-       * @type {string}
-       */
+      /** The description text showing in the header. */
       descriptionText: String,
 
-      /**
-       * True if the header should display an info button.
-       * @type {boolean}
-       */
+      /** True if the header should display an info button. */
       showInfoButton: {
         type: Boolean,
         value: false,
@@ -56,17 +43,13 @@ export class ModuleHeaderElement extends mixinBehaviors
        * True if the redesigned modules are enabled. Will put the info
        * button in the action menu dropdown instead of separate button next to
        * the action menu.
-       * @type {boolean}
        */
       showInfoButtonDropdown: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * True if the header should display a dismiss button.
-       * @type {boolean}
-       */
+      /** True if the header should display a dismiss button. */
       showDismissButton: {
         type: Boolean,
         value: false,
@@ -75,20 +58,15 @@ export class ModuleHeaderElement extends mixinBehaviors
       /**
        * False if the header should display a menu button that lets the user
        * open the module action menu.
-       * @type {boolean}
        */
       hideMenuButton: {
         type: Boolean,
         value: false,
       },
 
-      /** @type {string} */
       dismissText: String,
-
-      /** @type {string} */
       disableText: String,
 
-      /** @private */
       modulesRedesignedEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
@@ -97,37 +75,44 @@ export class ModuleHeaderElement extends mixinBehaviors
     };
   }
 
-  /** @private */
-  onInfoButtonClick_() {
+  iconSrc: string;
+  chipText: string;
+  descriptionText: string;
+  showInfoButton: boolean;
+  showInfoButtonDropdown: boolean;
+  showDismissButton: boolean;
+  hideMenuButton: boolean;
+  dismissText: string;
+  disableText: string;
+  private modulesRedesignedEnabled_: boolean;
+
+  private onInfoButtonClick_() {
     this.$.actionMenu.close();
     this.dispatchEvent(new Event('info-button-click', {bubbles: true}));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onMenuButtonClick_(e) {
-    this.$.actionMenu.showAt(e.target);
+  private onMenuButtonClick_(e: Event) {
+    this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
-  /** @private */
-  onDismissButtonClick_() {
+  private onDismissButtonClick_() {
     this.$.actionMenu.close();
     this.dispatchEvent(new Event('dismiss-button-click', {bubbles: true}));
   }
 
-  /** @private */
-  onDisableButtonClick_() {
+  private onDisableButtonClick_() {
     this.$.actionMenu.close();
     this.dispatchEvent(new Event('disable-button-click', {bubbles: true}));
   }
 
-  /** @private */
-  onCustomizeButtonClick_() {
+  private onCustomizeButtonClick_() {
     this.$.actionMenu.close();
     this.dispatchEvent(
         new Event('customize-module', {bubbles: true, composed: true}));
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

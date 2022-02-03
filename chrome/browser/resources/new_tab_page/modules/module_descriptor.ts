@@ -10,65 +10,53 @@ import {WindowProxy} from '../window_proxy.js';
  * module descriptor and register it at the NTP.
  */
 
-/** @typedef {function(): !Promise<?HTMLElement>} */
-export let InitializeModuleCallback;
+export type InitializeModuleCallback = () => Promise<HTMLElement|null>;
 
-/** @typedef {function(): !Promise<!HTMLElement>} */
-export let InitializeModuleCallbackV2;
+export type InitializeModuleCallbackV2 = () => Promise<HTMLElement>;
 
-/** @typedef {{element: !HTMLElement, descriptor: !ModuleDescriptor}} */
-export let Module;
-
-/**
- * @enum {number}
- * @const
- */
-export const ModuleHeight = {
-  DYNAMIC: -1,
-  SHORT: 166,
-  TALL: 358,
+export type Module = {
+  element: HTMLElement,
+  descriptor: ModuleDescriptor,
 };
 
+export enum ModuleHeight {
+  DYNAMIC = -1,
+  SHORT = 166,
+  TALL = 358,
+}
+
 export class ModuleDescriptor {
-  /**
-   * @param {string} id
-   * @param {string} name
-   * @param {!InitializeModuleCallback} initializeCallback
-   */
-  constructor(id, name, initializeCallback) {
-    /** @private {string} */
+  private id_: string;
+  private name_: string;
+  private initializeCallback_: InitializeModuleCallback;
+
+  constructor(
+      id: string, name: string, initializeCallback: InitializeModuleCallback) {
     this.id_ = id;
-    /** @private {string} */
     this.name_ = name;
-    /** @private {!InitializeModuleCallback} */
     this.initializeCallback_ = initializeCallback;
   }
 
-  /** @return {string} */
-  get id() {
+  get id(): string {
     return this.id_;
   }
 
-  /** @return {string} */
-  get name() {
+  get name(): string {
     return this.name_;
   }
 
-  /** @return {number} */
-  get height() {
+  get height(): ModuleHeight {
     return ModuleHeight.DYNAMIC;
   }
 
   /**
    * Initializes the module and returns the module element on success.
-   * @param {number} timeout Timeout in milliseconds after which initialization
-   *     aborts.
-   * @return {!Promise<?HTMLElement>}
+   * @param timeout Timeout in milliseconds after which initialization aborts.
    */
-  async initialize(timeout) {
+  async initialize(timeout: number): Promise<HTMLElement|null> {
     const loadStartTime = WindowProxy.getInstance().now();
     const element = await Promise.race([
-      this.initializeCallback_(), new Promise(resolve => {
+      this.initializeCallback_(), new Promise<null>(resolve => {
         WindowProxy.getInstance().setTimeout(() => {
           resolve(null);
         }, timeout);
@@ -88,19 +76,15 @@ export class ModuleDescriptor {
 }
 
 export class ModuleDescriptorV2 extends ModuleDescriptor {
-  /**
-   * @param {string} id
-   * @param {string} name
-   * @param {!ModuleHeight} height
-   * @param {!InitializeModuleCallbackV2} initializeCallback
-   */
-  constructor(id, name, height, initializeCallback) {
+  private height_: ModuleHeight;
+
+  constructor(
+      id: string, name: string, height: ModuleHeight,
+      initializeCallback: InitializeModuleCallbackV2) {
     super(id, name, initializeCallback);
-    /** @private {!ModuleHeight} */
     this.height_ = height;
   }
 
-  /** @override */
   get height() {
     return this.height_;
   }
@@ -108,11 +92,8 @@ export class ModuleDescriptorV2 extends ModuleDescriptor {
   /**
    * Like |ModuleDescriptor.initialize()| but returns an empty element on
    * timeout.
-   * @param {number} timeout
-   * @return {!Promise<!HTMLElement>}
    */
-  async initialize(timeout) {
-    return (await super.initialize(timeout)) ||
-        /** @type {!HTMLElement} */ (document.createElement('div'));
+  async initialize(timeout: number): Promise<HTMLElement> {
+    return (await super.initialize(timeout)) || document.createElement('div');
   }
 }

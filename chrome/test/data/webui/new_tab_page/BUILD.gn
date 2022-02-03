@@ -39,19 +39,7 @@ js_type_check("closure_compile") {
                             "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/most_visited",
                             root_build_dir),
                   ]
-  deps = [
-    ":metrics_utils_test",
-    ":test_support",
-    "modules:info_dialog_test",
-    "modules:module_descriptor_test",
-    "modules:module_header_test",
-    "modules:module_registry_test",
-    "modules:module_wrapper_test",
-    "modules:modules_test",
-  ]
-  if (!is_official_build) {
-    deps += [ "modules/dummy_v2:module_test" ]
-  }
+  deps = [ ":metrics_utils_test" ]
 }
 
 js_library("metrics_test_support") {
@@ -63,11 +51,5 @@ js_library("metrics_utils_test") {
     "//chrome/browser/resources/new_tab_page",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-}
-
-js_library("test_support") {
-  deps = [
-    "//chrome/browser/resources/new_tab_page",
-    "//chrome/test/data/webui:test_browser_proxy",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

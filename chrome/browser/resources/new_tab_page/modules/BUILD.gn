@@ -3,88 +3,16 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/webui_features.gni")
 
-js_library("modules") {
-  deps = [
-    ":module_descriptor",
-    ":module_registry",
-    ":module_wrapper",
-    "..:new_tab_page_proxy",
-    "..:utils",
-    "..:utils",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("module_descriptor") {
-  deps = [
-    "..:metrics_utils",
-    "..:window_proxy",
-  ]
-}
-
-js_library("module_descriptors") {
-  deps = [
-    ":module_descriptor",
-    "..:i18n_setup",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  if (!is_official_build) {
-    deps += [ "dummy_v2:module" ]
-  }
-}
-
-js_library("module_wrapper") {
-  deps = [
-    ":module_descriptor",
-    "..:metrics_utils",
-    "..:window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
-}
-
-js_library("module_header") {
-  deps = [
-    "..:i18n_setup",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-  ]
-}
-
-js_library("module_registry") {
-  deps = [
-    ":module_descriptor",
-    ":module_descriptors",
-    "..:new_tab_page_proxy",
-  ]
-}
-
-js_library("info_dialog") {
-  deps = [
-    "..:i18n_setup",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-  ]
-}
-
 html_to_js("web_components_local") {
   js_files = [
-    "module_header.js",
-    "module_wrapper.js",
-    "modules.js",
-    "info_dialog.js",
+    "module_header.ts",
+    "module_wrapper.ts",
+    "modules.ts",
+    "info_dialog.ts",
   ]
 }
 
@@ -112,16 +40,16 @@ preprocess_if_expr("preprocess") {
 
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "module_descriptor.js",
-    "module_descriptors.js",
-    "module_registry.js",
+    "module_descriptor.ts",
+    "module_descriptors.ts",
+    "module_registry.ts",
     "task_module/task_module_handler_proxy.ts",
     "cart/chrome_cart_proxy.ts",
     "drive/drive_module_proxy.ts",
     "photos/photos_module_proxy.ts",
   ]
   if (!is_official_build) {
-    in_files += [ "dummy_v2/foo_proxy.js" ]
+    in_files += [ "dummy_v2/foo_proxy.ts" ]
   }
 }
 
@@ -131,10 +59,10 @@ preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "module_header.js",
-    "module_wrapper.js",
-    "modules.js",
-    "info_dialog.js",
+    "module_header.ts",
+    "module_wrapper.ts",
+    "modules.ts",
+    "info_dialog.ts",
     "task_module/module.ts",
     "recipes_v2/module.ts",
     "cart/module.ts",
@@ -144,6 +72,6 @@ preprocess_if_expr("preprocess_gen") {
     "photos/module.ts",
   ]
   if (!is_official_build) {
-    in_files += [ "dummy_v2/module.js" ]
+    in_files += [ "dummy_v2/module.ts" ]
   }
 }

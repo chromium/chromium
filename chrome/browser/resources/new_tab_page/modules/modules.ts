@@ -6,11 +6,12 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from '../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {$$} from '../utils.js';
 
@@ -18,52 +19,52 @@ import {Module, ModuleHeight} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {ModuleWrapperElement} from './module_wrapper.js';
 
-/**
- * Container for the NTP modules.
- * @polymer
- * @extends {PolymerElement}
- */
-export class ModulesElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+
+type DismissModuleEvent =
+    CustomEvent<{message: string, restoreCallback: () => void}>;
+type DisableModuleEvent = DismissModuleEvent;
+
+declare global {
+  interface HTMLElementEventMap {
+    'dismiss-module': DismissModuleEvent, 'disable-module': DisableModuleEvent,
+  }
+}
+
+export interface ModulesElement {
+  $: {
+    modules: HTMLElement,
+    removeModuleToast: CrToastElement,
+  };
+}
+
+/** Container for the NTP modules. */
+export class ModulesElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-modules';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @private {!Array<string>} */
       dismissedModules_: {
         type: Array,
         value: () => [],
       },
 
-      /** @private {!{all: boolean, ids: !Array<string>}} */
       disabledModules_: {
         type: Object,
         value: () => ({all: true, ids: []}),
       },
 
-      /**
-       * Data about the most recently removed module.
-       * @type {?{message: string, undo: function()}}
-       * @private
-       */
+      /** Data about the most recently removed module. */
       removedModuleData_: {
         type: Object,
         value: null,
       },
 
-      /** @private */
       modulesLoaded_: Boolean,
-
-      /** @private */
       modulesVisibilityDetermined_: Boolean,
 
-      /** @private */
       modulesLoadedAndVisibilityDetermined_: {
         type: Boolean,
         computed: `computeModulesLoadedAndVisibilityDetermined_(
@@ -72,7 +73,6 @@ export class ModulesElement extends mixinBehaviors
         observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
       },
 
-      /** @private */
       dragEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
@@ -92,77 +92,61 @@ export class ModulesElement extends mixinBehaviors
     return ['onRemovedModulesChange_(dismissedModules_.*, disabledModules_)'];
   }
 
-  constructor() {
-    super();
-    /** @private {?number} */
-    this.setDisabledModulesListenerId_ = null;
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
-  }
+  private dismissedModules_: string[];
+  private disabledModules_: {all: boolean, ids: string[]};
+  private removedModuleData_: {message: string, undo: () => void}|null;
+  private modulesLoaded_: boolean;
+  private modulesVisibilityDetermined_: boolean;
+  private modulesLoadedAndVisibilityDetermined_: boolean;
+  private dragEnabled_: boolean;
 
-  /** @override */
+  private setDisabledModulesListenerId_: number|null = null;
+  private eventTracker_: EventTracker = new EventTracker();
+
   connectedCallback() {
     super.connectedCallback();
     this.setDisabledModulesListenerId_ =
         NewTabPageProxy.getInstance()
-            .callbackRouter.setDisabledModules.addListener((all, ids) => {
-              this.disabledModules_ = {all, ids};
-              this.modulesVisibilityDetermined_ = true;
-            });
+            .callbackRouter.setDisabledModules.addListener(
+                (all: boolean, ids: string[]) => {
+                  this.disabledModules_ = {all, ids};
+                  this.modulesVisibilityDetermined_ = true;
+                });
     NewTabPageProxy.getInstance().handler.updateDisabledModules();
-    this.eventTracker_.add(window, 'keydown', e => this.onWindowKeydown_(e));
+    this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     NewTabPageProxy.getInstance().callbackRouter.removeListener(
-        assert(this.setDisabledModulesListenerId_));
+        assert(this.setDisabledModulesListenerId_!));
     this.eventTracker_.removeAll();
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.renderModules_();
   }
 
-  /**
-   * @return {!Promise<void>}
-   * @private
-   */
-  async renderModules_() {
+  private async renderModules_(): Promise<void> {
     const modules = await ModuleRegistry.getInstance().initializeModules(
         loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
       NewTabPageProxy.getInstance().handler.onModulesLoadedWithData();
-      let shortModuleSiblingsContainer = null;
+      let shortModuleSiblingsContainer: HTMLElement|null = null;
       modules.forEach((module, index) => {
         const moduleWrapper = new ModuleWrapperElement();
         moduleWrapper.module = module;
         if (this.dragEnabled_) {
-          moduleWrapper.addEventListener('mousedown', event => {
-            this.onDragStart_(/** @type {!DragEvent} */ (event));
-          });
+          moduleWrapper.addEventListener(
+              'mousedown', e => this.onDragStart_(e));
         }
         if (!loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-          moduleWrapper.addEventListener('dismiss-module', event => {
-            this.onDismissModule_(
-                /**
-                   @type {!CustomEvent<{message: string, restoreCallback:
-                      function()}>}
-                */
-                (event));
-          });
+          moduleWrapper.addEventListener(
+              'dismiss-module', e => this.onDismissModule_(e));
         }
-        moduleWrapper.addEventListener('disable-module', event => {
-          this.onDisableModule_(
-              /**
-                 @type {!CustomEvent<{message: string, restoreCallback:
-                     ?function()}>}
-               */
-              (event));
-        });
+        moduleWrapper.addEventListener(
+            'disable-module', e => this.onDisableModule_(e));
         let moduleContainerParent = this.$.modules;
         if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
           // Wrap pairs of sibling short modules in a container. All other
@@ -199,11 +183,7 @@ export class ModulesElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {KeyboardEvent} e
-   * @private
-   */
-  onWindowKeydown_(e) {
+  private onWindowKeydown_(e: KeyboardEvent) {
     let ctrlKeyPressed = e.ctrlKey;
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
@@ -213,16 +193,11 @@ export class ModulesElement extends mixinBehaviors
     }
   }
 
-  /** @private */
-  onModulesLoaded_() {
+  private onModulesLoaded_() {
     this.modulesLoaded_ = true;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeModulesLoadedAndVisibilityDetermined_() {
+  private computeModulesLoadedAndVisibilityDetermined_(): boolean {
     return this.modulesLoaded_ && this.modulesVisibilityDetermined_;
   }
 
@@ -242,14 +217,11 @@ export class ModulesElement extends mixinBehaviors
   }
 
   /**
-   * @param {!CustomEvent<{message: string, restoreCallback: function()}>} e
-   *     Event notifying a module was dismissed. Contains the message to show in
-   *     the toast.
-   * @private
+   * @param e Event notifying a module was dismissed. Contains the message to
+   *     show in the toast.
    */
-  onDismissModule_(e) {
-    const id =
-        /** @type {ModuleWrapperElement} */ (e.target).module.descriptor.id;
+  private onDismissModule_(e: DismissModuleEvent) {
+    const id = (e.target as ModuleWrapperElement).module.descriptor.id;
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
       message: e.detail.message,
@@ -264,20 +236,17 @@ export class ModulesElement extends mixinBehaviors
     }
 
     // Notify the user.
-    $$(this, '#removeModuleToast').show();
+    this.$.removeModuleToast.show();
     // Notify the backend.
     NewTabPageProxy.getInstance().handler.onDismissModule(id);
   }
 
   /**
-   * @param {!CustomEvent<{message: string, restoreCallback: ?function()}>} e
-   *     Event notifying a module was disabled. Contains the message to show in
-   *     the toast.
-   * @private
+   * @param e Event notifying a module was disabled. Contains the message to
+   *     show in the toast.
    */
-  onDisableModule_(e) {
-    const id =
-        /** @type {ModuleWrapperElement} */ (e.target).module.descriptor.id;
+  private onDisableModule_(e: DisableModuleEvent) {
+    const id = (e.target as ModuleWrapperElement).module.descriptor.id;
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
       message: e.detail.message,
@@ -294,19 +263,14 @@ export class ModulesElement extends mixinBehaviors
     };
 
     NewTabPageProxy.getInstance().handler.setModuleDisabled(id, true);
-    $$(this, '#removeModuleToast').show();
+    this.$.removeModuleToast.show();
     chrome.metricsPrivate.recordSparseHashable(
         'NewTabPage.Modules.Disabled', id);
     chrome.metricsPrivate.recordSparseHashable(
         'NewTabPage.Modules.Disabled.ModuleRequest', id);
   }
 
-  /**
-   * @param {string} id
-   * @return {boolean}
-   * @private
-   */
-  moduleDisabled_(id) {
+  private moduleDisabled_(id: string): boolean {
     return this.disabledModules_.all || this.dismissedModules_.includes(id) ||
         this.disabledModules_.ids.includes(id);
   }
@@ -321,7 +285,7 @@ export class ModulesElement extends mixinBehaviors
     this.removedModuleData_.undo();
 
     // Notify the user.
-    $$(this, '#removeModuleToast').hide();
+    this.$.removeModuleToast.hide();
 
     this.removedModuleData_ = null;
   }
@@ -331,9 +295,9 @@ export class ModulesElement extends mixinBehaviors
    * @private
    */
   onRemovedModulesChange_() {
-    this.shadowRoot.querySelectorAll('ntp-module-wrapper')
+    this.shadowRoot!.querySelectorAll('ntp-module-wrapper')
         .forEach(moduleWrapper => {
-          moduleWrapper.parentElement.hidden =
+          moduleWrapper.parentElement!.hidden =
               this.moduleDisabled_(moduleWrapper.module.descriptor.id);
         });
   }
@@ -341,13 +305,11 @@ export class ModulesElement extends mixinBehaviors
   /**
    * Module is dragged by updating the module position based on the
    * position of the pointer.
-   * @param {!DragEvent} e
-   * @private
    */
-  onDragStart_(e) {
+  private onDragStart_(e: MouseEvent) {
     assert(loadTimeData.getBoolean('modulesDragAndDropEnabled'));
 
-    const dragElement = e.target;
+    const dragElement = e.target as HTMLElement;
     const dragElementRect = dragElement.getBoundingClientRect();
     // This is the offset between the pointer and module so that the
     // module isn't dragged by the top-left corner.
@@ -356,14 +318,14 @@ export class ModulesElement extends mixinBehaviors
       y: e.y - dragElementRect.y,
     };
 
-    dragElement.parentElement.style.width = `${dragElementRect.width}px`;
-    dragElement.parentElement.style.height = `${dragElementRect.height}px`;
+    dragElement.parentElement!.style.width = `${dragElementRect.width}px`;
+    dragElement.parentElement!.style.height = `${dragElementRect.height}px`;
 
     const undraggedModuleWrappers =
-        [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].filter(
+        [...this.shadowRoot!.querySelectorAll('ntp-module-wrapper')].filter(
             moduleWrapper => moduleWrapper !== dragElement);
 
-    const dragOver = e => {
+    const dragOver = (e: MouseEvent) => {
       e.preventDefault();
 
       dragElement.setAttribute('dragging', '');
@@ -371,10 +333,11 @@ export class ModulesElement extends mixinBehaviors
       dragElement.style.top = `${e.y - dragOffset.y}px`;
     };
 
-    const dragEnter = e => {
+    const dragEnter = (e: MouseEvent) => {
       const moduleContainers = [...this.$.modules.childNodes];
-      const dragIndex = moduleContainers.indexOf(dragElement.parentElement);
-      const dropIndex = moduleContainers.indexOf(e.target.parentElement);
+      const dragIndex = moduleContainers.indexOf(dragElement.parentElement!);
+      const dropIndex =
+          moduleContainers.indexOf((e.target as HTMLElement).parentElement!);
 
       const positionType = dragIndex > dropIndex ? 'beforebegin' : 'afterend';
       const dragContainer = moduleContainers[dragIndex];
@@ -391,7 +354,8 @@ export class ModulesElement extends mixinBehaviors
       });
 
       dragContainer.remove();
-      previousContainer.insertAdjacentElement(positionType, dragContainer);
+      (previousContainer as Element)
+          .insertAdjacentElement(positionType, dragContainer as Element);
 
       undraggedModuleWrappers.forEach((moduleWrapper, i) => {
         const lastRect = moduleWrapper.getBoundingClientRect();
@@ -445,10 +409,14 @@ export class ModulesElement extends mixinBehaviors
           {duration: 800, easing: 'ease'});
 
       const moduleIds =
-          [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].map(
+          [...this.shadowRoot!.querySelectorAll('ntp-module-wrapper')].map(
               moduleWrapper => moduleWrapper.module.descriptor.id);
       NewTabPageProxy.getInstance().handler.setModulesOrder(moduleIds);
     }, {once: true});
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
