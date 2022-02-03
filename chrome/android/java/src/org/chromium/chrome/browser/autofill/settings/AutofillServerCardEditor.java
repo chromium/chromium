@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,13 +25,18 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /**
  * Server credit card settings.
  */
-public class AutofillServerCardEditor extends AutofillCreditCardEditor {
+public class AutofillServerCardEditor
+        extends AutofillCreditCardEditor implements CompoundButton.OnCheckedChangeListener {
     private View mLocalCopyLabel;
     private View mClearLocalCopy;
+    private SwitchCompat mVirtualCardEnrollmentSwitch;
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillServerCardEditor() {}
@@ -57,11 +63,13 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
         final LinearLayout mVirtualCardContainerLayout =
                 (LinearLayout) v.findViewById(R.id.virtual_card_ui);
+        mVirtualCardEnrollmentSwitch =
+                (SwitchCompat) v.findViewById(R.id.virtual_card_enrollment_switch);
         if (showVirtualCardEnrollmentSwitch()) {
             mVirtualCardContainerLayout.setVisibility(View.VISIBLE);
-            ((SwitchCompat) v.findViewById(R.id.virtual_card_enrollment_switch))
-                    .setChecked(mCard.getVirtualCardEnrollmentState()
-                            == VirtualCardEnrollmentState.ENROLLED);
+            mVirtualCardEnrollmentSwitch.setChecked(
+                    mCard.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED);
+            mVirtualCardEnrollmentSwitch.setOnCheckedChangeListener(this);
         } else {
             mVirtualCardContainerLayout.setVisibility(View.GONE);
         }
@@ -101,6 +109,16 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                                 == VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE));
     }
 
+    /**
+     * Sets the mVirtualCardEnrollmentSwitch checked state without triggering the
+     * enrollment/unenrollment action.
+     */
+    private void setVirtualCardEnrollmentSwitchCheckedState(boolean isChecked) {
+        mVirtualCardEnrollmentSwitch.setOnCheckedChangeListener(null);
+        mVirtualCardEnrollmentSwitch.setChecked(isChecked);
+        mVirtualCardEnrollmentSwitch.setOnCheckedChangeListener(this);
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.autofill_server_card_editor;
@@ -109,6 +127,26 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     @Override
     protected int getTitleResourceId(boolean isNewEntry) {
         return R.string.autofill_edit_credit_card;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+            // TODO (crbug/1281695): Implement enroll dialog.
+        } else {
+            final ModalDialogManager modalDialogManager = new ModalDialogManager(
+                    new AppModalPresenter(getActivity()), ModalDialogType.APP);
+            AutofillVirtualCardUnenrollmentDialog dialog =
+                    new AutofillVirtualCardUnenrollmentDialog(
+                            getActivity(), modalDialogManager, unenrollRequested -> {
+                                if (unenrollRequested) {
+                                    // TODO(crbug/1281695): Implement unenroll action.
+                                } else {
+                                    setVirtualCardEnrollmentSwitchCheckedState(true);
+                                }
+                            });
+            dialog.show();
+        }
     }
 
     @Override

@@ -22,8 +22,10 @@ namespace {
 
 // Service URLs used for calls to Google Payments endpoints.
 const char kProdPaymentsServiceUrl[] = "https://payments.google.com/";
+// LINT.IfChange
 const char kSandboxPaymentsSecureServiceUrl[] =
     "https://payments.sandbox.google.com/";
+// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardUnenrollmentDialog.java)
 
 // URLs used when opening the Payment methods management page from
 // chrome://settings/payments.

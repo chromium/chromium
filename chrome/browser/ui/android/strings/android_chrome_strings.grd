@@ -536,6 +536,15 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Negative button label for the dialog where the user selects an authenticator from a list of options.">
         Cancel
       </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_VIRTUAL_CARD_UNENROLL_DIALOG_TITLE" desc="Title for the dialog where the user confirms that they wish to unenroll a card from Virtual Cards.">
+        Remove your virtual card?
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_VIRTUAL_CARD_UNENROLL_DIALOG_MESSAGE" desc="Message for the dialog where the user confirms that they wish to unenroll a card from Virtual Cards.">
+        You’ll no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Learn more about virtual cards<ph name="END_LINK1">&lt;/link1&gt;</ph>
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_VIRTUAL_CARD_UNENROLL_DIALOG_POSITIVE_BUTTON_LABEL" desc="Positive button label for the dialog where the user confirms that they wish to unenroll a card from Virtual Cards.">
+        Remove
+      </message>
 
        <!-- Payment Request section preview strings -->
        <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW" desc="This is a snippet of a payment method a user has saved to Chrome, plus an indication of the number of additional payment methods the user has saved.

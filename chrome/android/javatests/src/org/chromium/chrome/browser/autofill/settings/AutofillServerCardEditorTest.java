@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.os.Bundle;
 
@@ -141,6 +143,43 @@ public class AutofillServerCardEditorTest {
 
         onView(withId(R.id.virtual_card_ui))
                 .check(matches(withEffectiveVisibility(Visibility.GONE)));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT})
+    public void virtualCardEnrolled_virtualCardSwitchedOff_dialogShown() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
+
+        mSettingsActivityTestRule.startSettingsActivity(
+                fragmentArgs(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getGUID()));
+
+        onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
+        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isChecked()));
+
+        onView(withId(R.id.virtual_card_enrollment_switch)).perform(click());
+        onView(withText(R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT})
+    public void virtualCardEnrolled_virtualCardSwitchedOff_UnenrollCancelled() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
+
+        mSettingsActivityTestRule.startSettingsActivity(
+                fragmentArgs(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getGUID()));
+
+        onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
+        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isChecked()));
+
+        onView(withId(R.id.virtual_card_enrollment_switch)).perform(click());
+        onView(withText(R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title))
+                .check(matches(isDisplayed()));
+
+        onView(withText(android.R.string.cancel)).perform(click());
+        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isChecked()));
     }
 
     private Bundle fragmentArgs(String guid) {
