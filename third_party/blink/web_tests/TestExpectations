@@ -241,6 +241,13 @@ crbug.com/1126305 virtual/prerender/wpt_internal/prerender/* [ Pass ]
 crbug.com/1126305 http/tests/inspector-protocol/prerender/* [ Skip ]
 crbug.com/1126305 virtual/prerender/http/tests/inspector-protocol/prerender/* [ Pass ]
 
+# These tests require BFCache, which is currently disabled by default on Desktop.
+# Keep this in sync with VirtualTestSuites.
+crbug.com/1171298 http/tests/inspector-protocol/bfcache/* [ Skip ]
+crbug.com/1171298 http/tests/devtools/bfcache/* [ Skip ]
+crbug.com/1171298 virtual/bfcache/http/tests/inspector-protocol/bfcache/* [ Pass ]
+crbug.com/1171298 virtual/bfcache/http/tests/devtools/bfcache/* [ Pass ]
+
 # These tests require LazyEmbed, which is currently disabled by default.
 crbug.com/1247131 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/* [ Pass ]
 crbug.com/1247131 wpt_internal/lazyembed/* [ Skip ]
@@ -6670,7 +6677,7 @@ crbug.com/1219767 [ Linux ] virtual/threaded/external/wpt/animation-worklet/work
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Failure Pass ]
 crbug.com/1176162 http/tests/devtools/screen-orientation-override.js [ Failure Pass ]
 crbug.com/1215949 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Pass Timeout ]
-crbug.com/1216139 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failure Pass ]
+crbug.com/1216139 virtual/bfcache/http/tests/devtools/bfcache/bfcache-elements-update.js [ Failure Pass ]
 
 # Sheriff 2021-06-10
 crbug.com/1177996 [ Mac10.15 ] storage/websql/database-lock-after-reload.html [ Failure Pass ]
