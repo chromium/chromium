@@ -617,6 +617,7 @@ message RendererMainThreadTaskExecution {
 
 message EventLatency {
   enum EventType {
+    EVENT_TYPE_UNSPECIFIED = 0;
     MOUSE_PRESSED = 1;
     MOUSE_RELEASED = 2;
     MOUSE_WHEEL = 3;
@@ -648,9 +649,42 @@ message EventLatency {
   optional EventType event_type = 1;
 }
 
+message ProcessSingleton {
+  enum RemoteProcessInteractionResult {
+    INTERACTION_RESULT_UNSPECIFIED = 0;
+    TERMINATE_FAILED = 1;
+    REMOTE_PROCESS_NOT_FOUND = 2;
+    TERMINATE_WAIT_TIMEOUT = 3;
+    RUNNING_PROCESS_NOTIFY_ERROR = 4;
+    TERMINATE_NOT_ENOUGH_PERMISSIONS = 5;
+    REMOTE_PROCESS_SHUTTING_DOWN = 6;
+    PROFILE_UNLOCKED = 7;
+    PROFILE_UNLOCKED_BEFORE_KILL = 8;
+    SAME_BROWSER_INSTANCE = 9;
+    SAME_BROWSER_INSTANCE_BEFORE_KILL = 10;
+    FAILED_TO_EXTRACT_PID = 11;
+    INVALID_LOCK_FILE = 12;
+    ORPHANED_LOCK_FILE = 13;
+    USER_REFUSED_TERMINATION = 14;
+    TERMINATE_SUCCEEDED = 100;
+  }
+
+  enum RemoteHungProcessTerminateReason {
+    TERMINATE_REASON_UNSPECIFIED = 0;
+    USER_ACCEPTED_TERMINATION = 1;
+    NO_VISIBLE_WINDOW_FOUND = 2;
+    NOTIFY_ATTEMPTS_EXCEEDED = 3;
+    SOCKET_WRITE_FAILED = 4;
+    SOCKET_READ_FAILED = 5;
+  }
+
+  optional RemoteProcessInteractionResult remote_process_interaction_result = 1;
+  optional RemoteHungProcessTerminateReason remote_process_terminate_reason = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1032
+  // Next ID: 1034
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -722,5 +756,7 @@ message ChromeTrackEvent {
         renderer_main_thread_task_execution = 1031;
 
     optional EventLatency event_latency = 1032;
+
+    optional ProcessSingleton process_singleton = 1033;
   }
 }

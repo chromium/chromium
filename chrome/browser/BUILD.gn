@@ -1371,6 +1371,8 @@ static_library("browser") {
     "process_resource_usage.cc",
     "process_resource_usage.h",
     "process_singleton.h",
+    "process_singleton_internal.cc",
+    "process_singleton_internal.h",
     "profiles/avatar_menu_actions.h",
     "profiles/bookmark_model_loaded_observer.cc",
     "profiles/bookmark_model_loaded_observer.h",

@@ -88,6 +88,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/process_singleton_internal.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/process_singleton_lock_posix.h"
 #include "chrome/grit/chromium_strings.h"
@@ -501,20 +502,6 @@ bool ReplaceOldSingletonLock(const base::FilePath& symlink_content,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-void SendRemoteProcessInteractionResultHistogram(
-    ProcessSingleton::RemoteProcessInteractionResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Chrome.ProcessSingleton.RemoteProcessInteractionResult", result,
-      ProcessSingleton::REMOTE_PROCESS_INTERACTION_RESULT_COUNT);
-}
-
-void SendRemoteHungProcessTerminateReasonHistogram(
-    ProcessSingleton::RemoteHungProcessTerminateReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Chrome.ProcessSingleton.RemoteHungProcessTerminateReason", reason,
-      ProcessSingleton::REMOTE_HUNG_PROCESS_TERMINATE_REASON_COUNT);
-}
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -834,7 +821,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     if (hostname.empty()) {
       // Invalid lockfile.
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(INVALID_LOCK_FILE);
+      internal::SendRemoteProcessInteractionResultHistogram(INVALID_LOCK_FILE);
       return PROCESS_NONE;
     }
 
@@ -843,7 +830,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
       // the profile, try to continue; otherwise quit.
       if (DisplayProfileInUseError(lock_path_, hostname, pid)) {
         UnlinkPath(lock_path_);
-        SendRemoteProcessInteractionResultHistogram(PROFILE_UNLOCKED);
+        internal::SendRemoteProcessInteractionResultHistogram(PROFILE_UNLOCKED);
         return PROCESS_NONE;
       }
       return PROFILE_IN_USE;
@@ -852,7 +839,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     if (!IsChromeProcess(pid)) {
       // Orphaned lockfile (no process with pid, or non-chrome process.)
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(ORPHANED_LOCK_FILE);
+      internal::SendRemoteProcessInteractionResultHistogram(ORPHANED_LOCK_FILE);
       return PROCESS_NONE;
     }
 
@@ -860,7 +847,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
       // Orphaned lockfile (pid is part of same chrome instance we are, even
       // though we haven't tried to create a lockfile yet).
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(SAME_BROWSER_INSTANCE);
+      internal::SendRemoteProcessInteractionResultHistogram(
+          SAME_BROWSER_INSTANCE);
       return PROCESS_NONE;
     }
 
@@ -868,7 +856,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
       // Retries failed.  Kill the unresponsive chrome process and continue.
       if (!kill_unresponsive || !KillProcessByLockPath(false))
         return PROFILE_IN_USE;
-      SendRemoteHungProcessTerminateReasonHistogram(NOTIFY_ATTEMPTS_EXCEEDED);
+      internal::SendRemoteHungProcessTerminateReasonHistogram(
+          NOTIFY_ATTEMPTS_EXCEEDED);
       return PROCESS_NONE;
     }
 
@@ -908,7 +897,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     // Try to kill the other process, because it might have been dead.
     if (!kill_unresponsive || !KillProcessByLockPath(true))
       return PROFILE_IN_USE;
-    SendRemoteHungProcessTerminateReasonHistogram(SOCKET_WRITE_FAILED);
+    internal::SendRemoteHungProcessTerminateReasonHistogram(
+        SOCKET_WRITE_FAILED);
     return PROCESS_NONE;
   }
 
@@ -924,14 +914,15 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
   if (len <= 0) {
     if (!kill_unresponsive || !KillProcessByLockPath(true))
       return PROFILE_IN_USE;
-    SendRemoteHungProcessTerminateReasonHistogram(SOCKET_READ_FAILED);
+    internal::SendRemoteHungProcessTerminateReasonHistogram(SOCKET_READ_FAILED);
     return PROCESS_NONE;
   }
 
   buf[len] = '\0';
   if (strncmp(buf, kShutdownToken, base::size(kShutdownToken) - 1) == 0) {
     // The other process is shutting down, it's safe to start a new process.
-    SendRemoteProcessInteractionResultHistogram(REMOTE_PROCESS_SHUTTING_DOWN);
+    internal::SendRemoteProcessInteractionResultHistogram(
+        REMOTE_PROCESS_SHUTTING_DOWN);
     return PROCESS_NONE;
   } else if (strncmp(buf, kACKToken, base::size(kACKToken) - 1) == 0) {
 #if defined(TOOLKIT_VIEWS) && \
@@ -1141,14 +1132,15 @@ bool ProcessSingleton::KillProcessByLockPath(bool is_connected_to_socket) {
     bool res = DisplayProfileInUseError(lock_path_, hostname, pid);
     if (res) {
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(PROFILE_UNLOCKED_BEFORE_KILL);
+      internal::SendRemoteProcessInteractionResultHistogram(
+          PROFILE_UNLOCKED_BEFORE_KILL);
     }
     return res;
   }
   UnlinkPath(lock_path_);
 
   if (IsSameChromeInstance(pid)) {
-    SendRemoteProcessInteractionResultHistogram(
+    internal::SendRemoteProcessInteractionResultHistogram(
         SAME_BROWSER_INSTANCE_BEFORE_KILL);
     return true;
   }
@@ -1158,7 +1150,7 @@ bool ProcessSingleton::KillProcessByLockPath(bool is_connected_to_socket) {
     return true;
   }
 
-  SendRemoteProcessInteractionResultHistogram(FAILED_TO_EXTRACT_PID);
+  internal::SendRemoteProcessInteractionResultHistogram(FAILED_TO_EXTRACT_PID);
 
   LOG(ERROR) << "Failed to extract pid from path: " << lock_path_.value();
   return true;
@@ -1190,5 +1182,5 @@ void ProcessSingleton::KillProcess(int pid) {
         break;
     }
   }
-  SendRemoteProcessInteractionResultHistogram(action);
+  internal::SendRemoteProcessInteractionResultHistogram(action);
 }
