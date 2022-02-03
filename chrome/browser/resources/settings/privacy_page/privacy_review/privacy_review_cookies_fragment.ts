@@ -84,6 +84,16 @@ export class PrivacyReviewCookiesFragmentElement extends
     }
     this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
   }
+
+  private onCookies3PIncognitoClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
+  }
+
+  private onCookies3PClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.ChangeCookiesBlock3P');
+  }
 }
 
 customElements.define(

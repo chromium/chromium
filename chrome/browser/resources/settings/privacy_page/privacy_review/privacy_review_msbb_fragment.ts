@@ -70,6 +70,16 @@ export class PrivacyReviewMsbbFragmentElement extends
     }
     this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
   }
+
+  private onMsbbToggleClick_() {
+    if (this.getPref('url_keyed_anonymized_data_collection.enabled').value) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacyGuide.ChangeMSBBOn');
+    } else {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacyGuide.ChangeMSBBOff');
+    }
+  }
 }
 
 customElements.define(

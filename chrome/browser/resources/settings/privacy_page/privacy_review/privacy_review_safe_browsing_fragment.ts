@@ -82,6 +82,16 @@ export class PrivacyReviewSafeBrowsingFragmentElement extends
     }
     this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
   }
+
+  private onSafeBrowsingEnhancedClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced');
+  }
+
+  private onSafeBrowsingStandardClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.ChangeSafeBrowsingStandard');
+  }
 }
 
 customElements.define(

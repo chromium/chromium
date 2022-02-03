@@ -16,7 +16,8 @@
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
       label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoSubheader}"
       expand-aria-label=
-          "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}">
+          "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}"
+      on-click="onCookies3PIncognitoClick_">
     <div slot="collapse" class="description-wrapper-radio two-column">
       <div class="description-column description-column-first">
         <div class=description-header>
@@ -50,7 +51,8 @@
       pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
       label="$i18n{privacyReviewCookiesCardBlockTpcSubheader}"
-      expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">
+      expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}"
+      on-click="onCookies3PClick_">
     <div slot="collapse" class="description-wrapper-radio two-column">
       <div class="description-column description-column-first">
         <div class=description-header>

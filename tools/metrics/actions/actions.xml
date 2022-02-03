@@ -25686,6 +25686,70 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.ChangeCookiesBlock3P">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User changes cookies to block 3rd party in Privacy guide.
+  </description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeCookiesBlock3PIngonito">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User changes cookies to block 3rd party in Incognito in Privacy guide.
+  </description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeHistorySyncOff">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>User changes history sync to off in Privacy guide.</description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeHistorySyncOn">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>User changes history sync to on in Privacy guide.</description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeMSBBOff">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>User changes MSBB to off in Privacy guide.</description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeMSBBOn">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>User changes MSBB to on in Privacy guide.</description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User changes Safe Browsing to enhanced in Privacy guide.
+  </description>
+</action>
+
+<action name="Settings.PrivacyGuide.ChangeSafeBrowsingStandard">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <description>
+    User changes Safe Browsing to standard in Privacy guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.CompletionPSClick">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>

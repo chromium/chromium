@@ -146,6 +146,13 @@ export class PrivacyReviewHistorySyncFragmentElement extends
     this.syncPrefs_.typedUrlsSynced = this.historySyncVirtualPref_.value;
     this.syncPrefs_.syncAllDataTypes = this.shouldSyncAllBeOn_();
     this.syncBrowserProxy_.setSyncDatatypes(this.syncPrefs_);
+    if (this.syncPrefs_.typedUrlsSynced) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacyGuide.ChangeHistorySyncOn');
+    } else {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacyGuide.ChangeHistorySyncOff');
+    }
   }
 
   /**

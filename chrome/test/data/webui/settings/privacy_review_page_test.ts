@@ -347,6 +347,12 @@ suite('PrivacyReviewPage', function() {
       page.shadowRoot!.querySelector('#' + PrivacyReviewStep.MSBB)!.shadowRoot!
           .querySelector<HTMLElement>('#urlCollectionToggle')!.click();
       flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          msbbStartOn ? 'Settings.PrivacyGuide.ChangeMSBBOff' :
+                        'Settings.PrivacyGuide.ChangeMSBBOn');
     }
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
@@ -378,6 +384,12 @@ suite('PrivacyReviewPage', function() {
       page.shadowRoot!.querySelector('#' + PrivacyReviewStep.HISTORY_SYNC)!
           .shadowRoot!.querySelector<HTMLElement>('#historyToggle')!.click();
       flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          historySyncStartOn ? 'Settings.PrivacyGuide.ChangeHistorySyncOff' :
+                               'Settings.PrivacyGuide.ChangeHistorySyncOn');
     }
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
@@ -413,6 +425,13 @@ suite('PrivacyReviewPage', function() {
                   '#safeBrowsingRadioStandard' :
                   '#safeBrowsingRadioEnhanced')!.click();
       flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          safeBrowsingStartsEnhanced ?
+              'Settings.PrivacyGuide.ChangeSafeBrowsingStandard' :
+              'Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced');
     }
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
@@ -447,6 +466,13 @@ suite('PrivacyReviewPage', function() {
               cookieStartsBlock3PIncognito ? '#block3P' :
                                              '#block3PIncognito')!.click();
       flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          cookieStartsBlock3PIncognito ?
+              'Settings.PrivacyGuide.ChangeCookiesBlock3P' :
+              'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
     }
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
