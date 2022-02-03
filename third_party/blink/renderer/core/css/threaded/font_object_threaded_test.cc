@@ -49,9 +49,10 @@ TSAN_TEST(FontObjectThreadedTest, GetDefaultFontData) {
   num_threads_ = 5;
   RunOnThreads([]() {
     for (FontDescription::GenericFamilyType family_type :
-         {FontDescription::kStandardFamily, FontDescription::kSerifFamily,
-          FontDescription::kSansSerifFamily, FontDescription::kMonospaceFamily,
-          FontDescription::kCursiveFamily, FontDescription::kFantasyFamily}) {
+         {FontDescription::kStandardFamily, FontDescription::kWebkitBodyFamily,
+          FontDescription::kSerifFamily, FontDescription::kSansSerifFamily,
+          FontDescription::kMonospaceFamily, FontDescription::kCursiveFamily,
+          FontDescription::kFantasyFamily}) {
       FontDescription font_description;
       font_description.SetComputedSize(12.0);
       font_description.SetLocale(LayoutLocale::Get("en"));

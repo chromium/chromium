@@ -179,7 +179,7 @@ static FontDescription::GenericFamilyType ConvertGenericFamily(
     CSSValueID value_id) {
   switch (value_id) {
     case CSSValueID::kWebkitBody:
-      return FontDescription::kStandardFamily;
+      return FontDescription::kWebkitBodyFamily;
     case CSSValueID::kSerif:
       return FontDescription::kSerifFamily;
     case CSSValueID::kSansSerif:

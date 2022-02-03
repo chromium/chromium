@@ -27,14 +27,12 @@ AtomicString FontSelector::FamilyNameFromSettings(
   // should not be converted to a family name via user settings.
   auto& generic_family_name = generic_family.FamilyName();
   if (font_description.GenericFamily() != FontDescription::kStandardFamily &&
+      font_description.GenericFamily() != FontDescription::kWebkitBodyFamily &&
       !generic_family.FamilyIsGeneric() &&
       generic_family_name != font_family_names::kWebkitStandard)
     return g_empty_atom;
 
-  if (font_description.GenericFamily() == FontDescription::kStandardFamily) {
-    // FontDescription::kStandardFamily is only set internally via
-    // ConvertFontFamilyName/ConvertGenericFamily and so correspond to a
-    // -webkit-body CSS identifier.
+  if (font_description.GenericFamily() == FontDescription::kWebkitBodyFamily) {
     // TODO(crbug.com/1065468): Remove this counter when it's no longer
     // necessary.
     UseCounter::Count(use_counter,
@@ -50,6 +48,7 @@ AtomicString FontSelector::FamilyNameFromSettings(
   // TODO(crbug.com/1228189): Android does not have pre-installed math font.
   // https://github.com/googlefonts/noto-fonts/issues/330
   if (font_description.GenericFamily() == FontDescription::kStandardFamily ||
+      font_description.GenericFamily() == FontDescription::kWebkitBodyFamily ||
       generic_family_name == font_family_names::kWebkitStandard) {
     return FontCache::GetGenericFamilyNameForScript(
         font_family_names::kWebkitStandard,
@@ -66,7 +65,8 @@ AtomicString FontSelector::FamilyNameFromSettings(
   }
 #else   // BUILDFLAG(IS_ANDROID)
   UScriptCode script = font_description.GetScript();
-  if (font_description.GenericFamily() == FontDescription::kStandardFamily)
+  if (font_description.GenericFamily() == FontDescription::kStandardFamily ||
+      font_description.GenericFamily() == FontDescription::kWebkitBodyFamily)
     return settings.Standard(script);
   if (generic_family_name == font_family_names::kSerif)
     return settings.Serif(script);

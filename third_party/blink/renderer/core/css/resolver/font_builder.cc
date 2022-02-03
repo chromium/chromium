@@ -87,7 +87,9 @@ AtomicString FontBuilder::GenericFontFamilyName(
       [[fallthrough]];
     case FontDescription::kNoFamily:
       return AtomicString();
-    case FontDescription::kStandardFamily:
+    // While the intention is to phase out kWebkitBodyFamily, it should still
+    // map to the standard font from user preference.
+    case FontDescription::kWebkitBodyFamily:
       return StandardFontFamilyName();
     case FontDescription::kSerifFamily:
       return font_family_names::kSerif;

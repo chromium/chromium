@@ -72,6 +72,10 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
 
   // If empty standard font is specified, counter is never triggered.
+  GetGenericGenericFontFamilySettings().UpdateStandard(g_empty_atom);
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
@@ -85,6 +89,9 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   // This counter is triggered in FontBuilder when -webkit-body is replaced with
   // a non-empty GenericFontFamilySettings's standard font.
   GetGenericGenericFontFamilySettings().UpdateStandard("MyStandardFont");
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body, serif");
   ASSERT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
@@ -96,6 +103,10 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
 
   // If empty standard font is specified, counter is never triggered.
+  GetGenericGenericFontFamilySettings().UpdateStandard(g_empty_atom);
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
@@ -110,6 +121,9 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   // last specified generic family is set by FontBuilder. So FontSelector will
   // only trigger the counter if -webkit-body is at the last position.
   GetGenericGenericFontFamilySettings().UpdateStandard("MyStandardFont");
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body, serif");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));

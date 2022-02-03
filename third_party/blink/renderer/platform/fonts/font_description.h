@@ -63,9 +63,10 @@ class PLATFORM_EXPORT FontDescription {
     kHashRegularValue
   };
 
-  enum GenericFamilyType {
+  enum GenericFamilyType : uint8_t {
     kNoFamily,
     kStandardFamily,
+    kWebkitBodyFamily,
     kSerifFamily,
     kSansSerifFamily,
     kMonospaceFamily,

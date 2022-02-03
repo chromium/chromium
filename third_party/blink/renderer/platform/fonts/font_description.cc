@@ -517,6 +517,8 @@ String FontDescription::ToString(GenericFamilyType familyType) {
       return "None";
     case GenericFamilyType::kStandardFamily:
       return "Standard";
+    case GenericFamilyType::kWebkitBodyFamily:
+      return "WebkitBody";
     case GenericFamilyType::kSerifFamily:
       return "Serif";
     case GenericFamilyType::kSansSerifFamily:

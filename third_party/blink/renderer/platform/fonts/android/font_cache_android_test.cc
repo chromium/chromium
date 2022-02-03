@@ -26,20 +26,28 @@ class FontCacheAndroidTest : public testing::Test {
 };
 
 TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {
-  // A Latin character in the common locale system font, but not in the
-  // Chinese locale-preferred font.
-  const UChar32 kTestChar = 228;
+  // Perform the test for the default font family (kStandardFamily) and the
+  // -webkit-body font family (kWebkitBodyFamily) since they behave the same in
+  // term of font/glyph selection.
+  // TODO(crbug.com/1065468): Remove the test for kWebkitBodyFamily when
+  // -webkit-body in unshipped.
+  for (FontDescription::GenericFamilyType family_type :
+       {FontDescription::kStandardFamily, FontDescription::kWebkitBodyFamily}) {
+    // A Latin character in the common locale system font, but not in the
+    // Chinese locale-preferred font.
+    const UChar32 kTestChar = 228;
 
-  FontDescription font_description;
-  font_description.SetLocale(LayoutLocale::Get("zh"));
-  ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
-  font_description.SetGenericFamily(FontDescription::kStandardFamily);
+    FontDescription font_description;
+    font_description.SetLocale(LayoutLocale::Get("zh"));
+    ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
+    font_description.SetGenericFamily(family_type);
 
-  FontCache* font_cache = FontCache::GetFontCache();
-  ASSERT_TRUE(font_cache);
-  scoped_refptr<SimpleFontData> font_data =
-      font_cache->FallbackFontForCharacter(font_description, kTestChar, 0);
-  EXPECT_TRUE(font_data);
+    FontCache* font_cache = FontCache::GetFontCache();
+    ASSERT_TRUE(font_cache);
+    scoped_refptr<SimpleFontData> font_data =
+        font_cache->FallbackFontForCharacter(font_description, kTestChar, 0);
+    EXPECT_TRUE(font_data);
+  }
 }
 
 TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
@@ -65,21 +73,29 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
 }
 
 TEST_F(FontCacheAndroidTest, LocaleSpecificTypeface) {
-  // Test is valid only if the system has a locale-specific `serif`.
-  const LayoutLocale* ja = LayoutLocale::Get("ja");
-  sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
-  if (!serif_ja_typeface)
-    return;
+  // Perform the test for the default font family (kStandardFamily) and the
+  // -webkit-body font family (kWebkitBodyFamily) since they behave the same in
+  // term of font/glyph selection.
+  // TODO(crbug.com/1065468): Remove the test for kWebkitBodyFamily when
+  // -webkit-body in unshipped.
+  for (FontDescription::GenericFamilyType family_type :
+       {FontDescription::kStandardFamily, FontDescription::kWebkitBodyFamily}) {
+    // Test is valid only if the system has a locale-specific `serif`.
+    const LayoutLocale* ja = LayoutLocale::Get("ja");
+    sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
+    if (!serif_ja_typeface)
+      return;
 
-  // If the system has one, it must be different from the default font.
-  FontDescription standard_ja_description;
-  standard_ja_description.SetLocale(ja);
-  standard_ja_description.SetGenericFamily(FontDescription::kStandardFamily);
-  std::string name;
-  FontCache* font_cache = FontCache::GetFontCache();
-  sk_sp<SkTypeface> standard_ja_typeface = font_cache->CreateTypeface(
-      standard_ja_description, FontFaceCreationParams(), name);
-  EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());
+    // If the system has one, it must be different from the default font.
+    FontDescription standard_ja_description;
+    standard_ja_description.SetLocale(ja);
+    standard_ja_description.SetGenericFamily(family_type);
+    std::string name;
+    FontCache* font_cache = FontCache::GetFontCache();
+    sk_sp<SkTypeface> standard_ja_typeface = font_cache->CreateTypeface(
+        standard_ja_description, FontFaceCreationParams(), name);
+    EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());
+  }
 }
 
 // Check non-CJK locales do not create locale-specific typeface.
