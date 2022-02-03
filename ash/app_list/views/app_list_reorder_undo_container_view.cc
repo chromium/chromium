@@ -72,6 +72,7 @@ void AppListReorderUndoContainerView::OnTemporarySortOrderChanged(
   // Remove `toast_view_` when the temporary sorting order is cleared.
   if (!new_order) {
     RemoveChildView(toast_view_);
+    delete toast_view_;
     toast_view_ = nullptr;
     return;
   }
