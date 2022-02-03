@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/update_client/updater_state.h"
+#include "chrome/browser/component_updater/updater_state.h"
 
 #include <windows.h>
 
@@ -18,7 +18,7 @@
 // TODO(sorin): implement this in terms of
 // chrome/installer/util/google_update_settings (crbug.com/615187).
 
-namespace update_client {
+namespace component_updater {
 
 namespace {
 
@@ -143,4 +143,4 @@ int UpdaterState::GetUpdatePolicy() {
   return -1;
 }
 
-}  // namespace update_client
+}  // namespace component_updater

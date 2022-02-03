@@ -17,13 +17,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
+#include "chrome/browser/component_updater/updater_state.h"
 #include "chrome/browser/google/google_update_policy_fetcher_win_util.h"
 #include "chrome/install_static/install_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/update_client/updater_state.h"
 #include "google_update/google_update_idl.h"
 
 namespace {
@@ -268,13 +268,13 @@ std::unique_ptr<policy::PolicyMap> GetLegacyGoogleUpdatePolicies(
 
 // Returns the state for versions prior to release 1.3.36.21.
 std::unique_ptr<GoogleUpdateState> GetLegacyGoogleUpdateState() {
-  auto state =
-      update_client::UpdaterState::GetState(install_static::IsSystemInstall());
+  component_updater::UpdaterState::Attributes state =
+      component_updater::UpdaterState::GetState(
+          install_static::IsSystemInstall());
   auto result = std::make_unique<GoogleUpdateState>();
-  const auto version = state->find("version");
-  if (version != state->end())
+  const auto version = state.find("version");
+  if (version != state.end())
     result->version = base::ASCIIToWide(version->second);
-
   return result;
 }
 

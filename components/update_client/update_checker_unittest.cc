@@ -213,6 +213,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
       test_file("updatecheck_reply_1.json")));
 
   config_->SetIsMachineExternallyManaged(true);
+  config_->SetUpdaterStateProvider(base::BindRepeating([](bool /*is_machine*/) {
+    return UpdaterStateAttributes{{"name", "Omaha"},
+                                  {"ismachine", "1"},
+                                  {"autoupdatecheckenabled", "1"},
+                                  {"updatepolicy", "1"}};
+  }));
+
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;

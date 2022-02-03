@@ -3,7 +3,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/update_client/updater_state.h"
+#include "chrome/browser/component_updater/updater_state.h"
 
 #include <map>
 #include <memory>
@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace update_client {
+namespace component_updater {
 
 UpdaterState::State::State() = default;
 UpdaterState::State::State(const UpdaterState::State&) = default;
@@ -59,12 +59,11 @@ UpdaterState::UpdaterState(bool is_machine)
 
 UpdaterState::~UpdaterState() = default;
 
-std::unique_ptr<UpdaterState::Attributes> UpdaterState::GetState(
-    bool is_machine) {
+UpdaterState::Attributes UpdaterState::GetState(bool is_machine) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return std::make_unique<Attributes>(UpdaterState(is_machine).Serialize());
+  return UpdaterState(is_machine).Serialize();
 #else
-  return nullptr;
+  return {};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
@@ -121,4 +120,4 @@ std::string UpdaterState::NormalizeTimeDelta(const base::TimeDelta& delta) {
   return val;
 }
 
-}  // namespace update_client
+}  // namespace component_updater

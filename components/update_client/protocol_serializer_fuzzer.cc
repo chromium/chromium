@@ -31,7 +31,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Independently, try serializing a Request.
   base::flat_map<std::string, std::string> additional_attributes;
-  std::map<std::string, std::string> updater_state_attributes;
   std::vector<protocol_request::App> apps;
 
   // Share |data| between |MakeProtocolRequest| args
@@ -49,7 +48,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       GetUtf8String() /* os_long_name */,
       GetUtf8String() /* download_preference */,
       absl::nullopt /* domain_joined */, additional_attributes,
-      &updater_state_attributes, std::move(apps));
+      {} /*updater_state_attributes*/, std::move(apps));
 
   update_client::ProtocolHandlerFactoryJSON factory;
   std::unique_ptr<ProtocolSerializer> serializer = factory.CreateSerializer();

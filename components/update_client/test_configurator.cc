@@ -52,7 +52,9 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
       network_fetcher_factory_(
           base::MakeRefCounted<NetworkFetcherChromiumFactory>(
               test_shared_loader_factory_,
-              base::BindRepeating([](const GURL& url) { return false; }))) {}
+              base::BindRepeating([](const GURL& url) { return false; }))),
+      updater_state_provider_(base::BindRepeating(
+          [](bool /*is_machine*/) { return UpdaterStateAttributes(); })) {}
 
 TestConfigurator::~TestConfigurator() = default;
 
@@ -168,9 +170,7 @@ absl::optional<bool> TestConfigurator::IsMachineExternallyManaged() const {
 }
 
 UpdaterStateProvider TestConfigurator::GetUpdaterStateProvider() const {
-  return base::BindRepeating([](bool /*is_machine*/) {
-    return base::flat_map<std::string, std::string>();
-  });
+  return updater_state_provider_;
 }
 
 void TestConfigurator::SetOnDemandTime(int seconds) {
@@ -206,6 +206,11 @@ void TestConfigurator::SetCrxDownloaderFactory(
 void TestConfigurator::SetIsMachineExternallyManaged(
     absl::optional<bool> is_machine_externally_managed) {
   is_machine_externally_managed_ = is_machine_externally_managed;
+}
+
+void TestConfigurator::SetUpdaterStateProvider(
+    UpdaterStateProvider update_state_provider) {
+  updater_state_provider_ = update_state_provider;
 }
 
 }  // namespace update_client

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
+#include "chrome/browser/component_updater/updater_state.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/channel_info.h"
@@ -247,10 +248,7 @@ absl::optional<bool> ChromeConfigurator::IsMachineExternallyManaged() const {
 
 update_client::UpdaterStateProvider
 ChromeConfigurator::GetUpdaterStateProvider() const {
-  // TODO(crbug.com/1286378) - add a dependency on //chrome/updater and
-  // implement this function so that it picks up that updater state, in
-  // addition to Omaha or Keystone updater states.
-  return configurator_impl_.GetUpdaterStateProvider();
+  return base::BindRepeating(&UpdaterState::GetState);
 }
 
 }  // namespace

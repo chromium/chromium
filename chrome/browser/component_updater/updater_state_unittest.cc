@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/update_client/updater_state.h"
+#include "chrome/browser/component_updater/updater_state.h"
 
 #include "base/time/time.h"
 #include "base/version.h"
@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace update_client {
+namespace component_updater {
 
 class UpdaterStateTest : public testing::Test {
  public:
@@ -24,11 +24,11 @@ class UpdaterStateTest : public testing::Test {
 
 TEST_F(UpdaterStateTest, Serialize) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  EXPECT_STREQ("0", UpdaterState::GetState(false)->at("ismachine").c_str());
-  EXPECT_STREQ("1", UpdaterState::GetState(true)->at("ismachine").c_str());
+  EXPECT_STREQ("0", UpdaterState::GetState(false).at("ismachine").c_str());
+  EXPECT_STREQ("1", UpdaterState::GetState(true).at("ismachine").c_str());
 #else
-  EXPECT_FALSE(UpdaterState::GetState(false));
-  EXPECT_FALSE(UpdaterState::GetState(true));
+  EXPECT_TRUE(UpdaterState::GetState(false).empty());
+  EXPECT_TRUE(UpdaterState::GetState(true).empty());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
@@ -56,9 +56,9 @@ TEST_F(UpdaterStateTest, SerializeChrome) {
   EXPECT_STREQ("1", attributes.at("updatepolicy").c_str());
 
 #if BUILDFLAG(IS_WIN)
-  EXPECT_STREQ("Omaha", UpdaterState::GetState(false)->at("name").c_str());
+  EXPECT_STREQ("Omaha", UpdaterState::GetState(false).at("name").c_str());
 #elif BUILDFLAG(IS_MAC)
-  EXPECT_STREQ("Keystone", UpdaterState::GetState(false)->at("name").c_str());
+  EXPECT_STREQ("Keystone", UpdaterState::GetState(false).at("name").c_str());
 #endif  // BUILDFLAG(IS_WIN)
 
   // Tests some of the remaining values.
@@ -124,4 +124,4 @@ TEST_F(UpdaterStateTest, SerializeChrome) {
 #endif  // (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) &&
         // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-}  // namespace update_client
+}  // namespace component_updater

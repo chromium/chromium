@@ -142,8 +142,6 @@ static_library("update_client") {
     "update_query_params.h",
     "update_query_params_delegate.cc",
     "update_query_params_delegate.h",
-    "updater_state.cc",
-    "updater_state.h",
     "url_fetcher_downloader.cc",
     "url_fetcher_downloader.h",
     "utils.cc",
@@ -167,12 +165,7 @@ static_library("update_client") {
     sources += [
       "background_downloader_win.cc",
       "background_downloader_win.h",
-      "updater_state_win.cc",
     ]
-  }
-
-  if (is_mac) {
-    sources += [ "updater_state_mac.mm" ]
   }
 }
 
@@ -255,7 +248,6 @@ source_set("unit_tests") {
     "update_checker_unittest.cc",
     "update_client_unittest.cc",
     "update_query_params_unittest.cc",
-    "updater_state_unittest.cc",
     "utils_unittest.cc",
   ]
 

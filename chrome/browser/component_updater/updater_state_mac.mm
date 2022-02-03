@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/component_updater/updater_state.h"
+
 #import <Foundation/Foundation.h>
 
 #include "base/enterprise_util.h"
@@ -11,20 +13,19 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
-#include "components/update_client/updater_state.h"
 
-namespace update_client {
+namespace component_updater {
 
 namespace {
 
-const base::FilePath::CharType kKeystonePlist[] = FILE_PATH_LITERAL(
-    "Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/"
-    "Contents/Info.plist");
+const base::FilePath::CharType kKeystonePlist[] =
+    FILE_PATH_LITERAL("Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/"
+                      "Contents/Info.plist");
 
 // Gets a value from the updater settings. Returns a retained object.
 // T should be a toll-free Foundation framework type. See Apple's
 // documentation for toll-free bridging.
-template<class T>
+template <class T>
 base::scoped_nsobject<T> GetUpdaterSettingsValue(NSString* value_name) {
   CFStringRef app_id = CFSTR("com.google.Keystone.Agent");
   base::ScopedCFTypeRef<CFPropertyListRef> plist(
@@ -78,8 +79,8 @@ base::Version UpdaterState::StateReaderKeystone::GetUpdaterVersion(
     bool /*is_machine*/) const {
   // System Keystone trumps user one, so check this one first
   base::FilePath local_library;
-  bool success = base::mac::GetLocalDirectory(NSLibraryDirectory,
-                                              &local_library);
+  bool success =
+      base::mac::GetLocalDirectory(NSLibraryDirectory, &local_library);
   DCHECK(success);
   base::FilePath system_bundle_plist = local_library.Append(kKeystonePlist);
   base::Version system_keystone = GetVersionFromPlist(system_bundle_plist);
@@ -119,4 +120,4 @@ int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
   return -1;  // Keystone does not support update policies.
 }
 
-}  // namespace update_client
+}  // namespace component_updater

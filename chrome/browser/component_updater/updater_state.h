@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_UPDATE_CLIENT_UPDATER_STATE_H_
-#define COMPONENTS_UPDATE_CLIENT_UPDATER_STATE_H_
+#ifndef CHROME_BROWSER_COMPONENT_UPDATER_UPDATER_STATE_H_
+#define CHROME_BROWSER_COMPONENT_UPDATER_UPDATER_STATE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace update_client {
+namespace component_updater {
 
 class UpdaterState {
  public:
-  using Attributes = std::map<std::string, std::string>;
+  using Attributes = base::flat_map<std::string, std::string>;
 
   // Returns a map of items representing the state of an updater.
   // If |is_machine| is true, this indicates that the updater state corresponds
   // to the machine instance of the updater. Returns nullptr on
   // the platforms and builds where this feature is not supported.
-  static std::unique_ptr<Attributes> GetState(bool is_machine);
+  static Attributes GetState(bool is_machine);
 
   ~UpdaterState();
 
@@ -109,6 +109,6 @@ class UpdaterState {
   absl::optional<State> state_;
 };
 
-}  // namespace update_client
+}  // namespace component_updater
 
-#endif  // COMPONENTS_UPDATE_CLIENT_UPDATER_STATE_H_
+#endif  // CHROME_BROWSER_COMPONENT_UPDATER_UPDATER_STATE_H_

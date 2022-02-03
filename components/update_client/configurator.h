@@ -31,9 +31,9 @@ class PatcherFactory;
 class ProtocolHandlerFactory;
 class UnzipperFactory;
 
+using UpdaterStateAttributes = base::flat_map<std::string, std::string>;
 using UpdaterStateProvider =
-    base::RepeatingCallback<base::flat_map<std::string, std::string>(
-        bool is_machine)>;
+    base::RepeatingCallback<UpdaterStateAttributes(bool is_machine)>;
 
 // Controls the component updater behavior.
 // TODO(sorin): this class will be split soon in two. One class controls

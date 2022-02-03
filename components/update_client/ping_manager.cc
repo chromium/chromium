@@ -119,7 +119,7 @@ void PingSender::SendPing(const Component& component,
               config_->GetLang(), config_->GetChannel(),
               config_->GetOSLongName(), config_->GetDownloadPreference(),
               config_->IsMachineExternallyManaged(),
-              config_->ExtraRequestParams(), nullptr, std::move(apps))),
+              config_->ExtraRequestParams(), {}, std::move(apps))),
       false, base::BindOnce(&PingSender::SendPingComplete, this));
 }
 

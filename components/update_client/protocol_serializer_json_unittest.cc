@@ -18,7 +18,6 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
 #include "components/update_client/test_activity_data_service.h"
-#include "components/update_client/updater_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -59,7 +58,7 @@ TEST(SerializeRequestJSON, Serialize) {
         MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}",
                             "prod_id", "1.0", "lang", "channel", "OS",
                             "cacheable", absl::nullopt, {{"extra", "params"}},
-                            nullptr, std::move(apps)));
+                            {}, std::move(apps)));
     constexpr char regex[] =
         R"({"request":{"@os":"\w+","@updater":"prod_id",)"
         R"("acceptformat":"crx3",)"
@@ -97,7 +96,7 @@ TEST(SerializeRequestJSON, Serialize) {
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
         MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                            "", "", "", "", "", absl::nullopt, {}, nullptr,
+                            "", "", "", "", "", absl::nullopt, {}, {},
                             std::move(apps)));
 
     constexpr char regex[] =
@@ -114,13 +113,13 @@ TEST(SerializeRequestJSON, DownloadPreference) {
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
   auto request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", "", absl::nullopt, {}, nullptr, {}));
+                          "", "", "", "", "", absl::nullopt, {}, {}, {}));
   EXPECT_FALSE(RE2::PartialMatch(request, R"("dlpref":)")) << request;
 
   // Verifies that |download_preference| is serialized.
   request = serializer->Serialize(MakeProtocolRequest(
       false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "", "", "", "", "",
-      "cacheable", absl::nullopt, {}, nullptr, {}));
+      "cacheable", absl::nullopt, {}, {}, {}));
   EXPECT_TRUE(RE2::PartialMatch(request, R"("dlpref":"cacheable")")) << request;
 }
 
@@ -129,17 +128,17 @@ TEST(SerializeRequestJSON, DownloadPreference) {
 TEST(SerializeRequestJSON, UpdaterStateAttributes) {
   base::test::TaskEnvironment env;
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
-  UpdaterState::Attributes attributes;
-  attributes["ismachine"] = "1";
-  attributes["name"] = "Omaha";
-  attributes["version"] = "1.2.3.4";
-  attributes["laststarted"] = "1";
-  attributes["lastchecked"] = "2";
-  attributes["autoupdatecheckenabled"] = "0";
-  attributes["updatepolicy"] = "-1";
+
   const auto request = serializer->Serialize(MakeProtocolRequest(
       true, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "prod_id", "1.0", "lang",
-      "channel", "OS", "cacheable", true, {{"extra", "params"}}, &attributes,
+      "channel", "OS", "cacheable", true, {{"extra", "params"}},
+      {{"ismachine", "1"},
+       {"name", "Omaha"},
+       {"version", "1.2.3.4"},
+       {"laststarted", "1"},
+       {"lastchecked", "2"},
+       {"autoupdatecheckenabled", "0"},
+       {"updatepolicy", "-1"}},
       {}));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
@@ -169,17 +168,17 @@ TEST(SerializeRequestJSON, DomainJoined) {
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
   std::string request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", "", absl::nullopt, {}, nullptr, {}));
+                          "", "", "", "", "", absl::nullopt, {}, {}, {}));
   EXPECT_FALSE(RE2::PartialMatch(request, R"("domainjoined")")) << request;
 
   request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", "", true, {}, nullptr, {}));
+                          "", "", "", "", "", true, {}, {}, {}));
   EXPECT_TRUE(RE2::PartialMatch(request, R"("domainjoined":true)")) << request;
 
   request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", "", false, {}, nullptr, {}));
+                          "", "", "", "", "", false, {}, {}, {}));
   EXPECT_TRUE(RE2::PartialMatch(request, R"("domainjoined":false)")) << request;
 }
 
