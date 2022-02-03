@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"

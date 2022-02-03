@@ -5,7 +5,6 @@
 #include "components/sync/nigori/pending_local_nigori_commit.h"
 
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"

@@ -7,7 +7,6 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 
 namespace {

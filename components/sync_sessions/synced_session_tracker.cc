@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"

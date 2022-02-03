@@ -11,10 +11,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace base {
-class TimeDelta;
-}
-
 namespace media_router {
 
 #if !BUILDFLAG(IS_ANDROID)

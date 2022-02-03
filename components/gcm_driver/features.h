@@ -7,10 +7,6 @@
 
 #include "base/feature_list.h"
 
-namespace base {
-class TimeDelta;
-}
-
 namespace gcm {
 
 namespace features {

@@ -4,8 +4,6 @@
 
 #include "components/translate/content/renderer/isolated_world_util.h"
 
-#include <ostream>
-
 #include "base/check_op.h"
 #include "components/translate/core/common/translate_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

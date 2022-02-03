@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
