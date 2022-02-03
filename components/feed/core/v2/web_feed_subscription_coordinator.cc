@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -273,11 +274,13 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart(
 
   SubscribeToWebFeedTask::Request request;
   request.page_info = page_info;
-  feed_stream_->GetTaskQueue().AddTask(std::make_unique<SubscribeToWebFeedTask>(
-      feed_stream_, std::move(request),
-      base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedComplete,
-                     base::Unretained(this), std::move(callback),
-                     /*followed_with_id=*/false)));
+  feed_stream_->GetTaskQueue().AddTask(
+      FROM_HERE,
+      std::make_unique<SubscribeToWebFeedTask>(
+          feed_stream_, std::move(request),
+          base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedComplete,
+                         base::Unretained(this), std::move(callback),
+                         /*followed_with_id=*/false)));
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeed(
@@ -300,11 +303,13 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart(
   SubscribeToWebFeedTask::Request request;
   request.web_feed_id = web_feed_id;
 
-  feed_stream_->GetTaskQueue().AddTask(std::make_unique<SubscribeToWebFeedTask>(
-      feed_stream_, std::move(request),
-      base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedComplete,
-                     base::Unretained(this), std::move(callback),
-                     /*followed_with_id=*/true)));
+  feed_stream_->GetTaskQueue().AddTask(
+      FROM_HERE,
+      std::make_unique<SubscribeToWebFeedTask>(
+          feed_stream_, std::move(request),
+          base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedComplete,
+                         base::Unretained(this), std::move(callback),
+                         /*followed_with_id=*/true)));
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
@@ -351,6 +356,7 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedStart(
                             : absl::nullopt);
 
   feed_stream_->GetTaskQueue().AddTask(
+      FROM_HERE,
       std::make_unique<UnsubscribeFromWebFeedTask>(
           feed_stream_, web_feed_id,
           base::BindOnce(
@@ -652,6 +658,7 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart() {
     return;
   fetching_recommended_web_feeds_ = true;
   feed_stream_->GetTaskQueue().AddTask(
+      FROM_HERE,
       std::make_unique<FetchRecommendedWebFeedsTask>(
           feed_stream_,
           base::BindOnce(
@@ -726,6 +733,7 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsStart() {
   }
   fetching_subscribed_web_feeds_ = true;
   feed_stream_->GetTaskQueue().AddTask(
+      FROM_HERE,
       std::make_unique<FetchSubscribedWebFeedsTask>(
           feed_stream_,
           base::BindOnce(

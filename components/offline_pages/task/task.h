@@ -49,6 +49,7 @@ class Task {
     kWaiting,
     kRunning,
     kSuspended,
+    kPendingResume,
     kCompleted,
   };
   // TaskQueue outlives and owns this task. Non-null only when this task is

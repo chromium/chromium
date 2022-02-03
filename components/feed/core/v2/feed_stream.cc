@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -157,9 +158,11 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
-  task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(
-      store_, this,
-      base::BindOnce(&FeedStream::InitializeComplete, base::Unretained(this))));
+  task_queue_.AddTask(FROM_HERE,
+                      std::make_unique<WaitForStoreInitializeTask>(
+                          store_, this,
+                          base::BindOnce(&FeedStream::InitializeComplete,
+                                         base::Unretained(this))));
   EnabledPreferencesChanged();
 }
 
@@ -218,9 +221,11 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
   stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/false);
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
-  task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      options, this,
-      base::BindOnce(&FeedStream::StreamLoadComplete, base::Unretained(this))));
+  task_queue_.AddTask(FROM_HERE,
+                      std::make_unique<LoadStreamTask>(
+                          options, this,
+                          base::BindOnce(&FeedStream::StreamLoadComplete,
+                                         base::Unretained(this))));
   return feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED;
 }
 
@@ -311,10 +316,12 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
         options.load_type = LoadType::kBackgroundRefresh;
         options.stream_type = kWebFeedStream;
         options.abort_if_unread_content = true;
-        task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-            options, this,
-            base::BindOnce(&FeedStream::BackgroundRefreshComplete,
-                           base::Unretained(this))));
+        task_queue_.AddTask(
+            FROM_HERE,
+            std::make_unique<LoadStreamTask>(
+                options, this,
+                base::BindOnce(&FeedStream::BackgroundRefreshComplete,
+                               base::Unretained(this))));
       }
     }
   }
@@ -331,11 +338,12 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
 void FeedStream::OnEnterBackground() {
   metrics_reporter_->OnEnterBackground();
   if (GetFeedConfig().upload_actions_on_enter_background) {
-    task_queue_.AddTask(std::make_unique<UploadActionsTask>(
-        this,
-        /*launch_reliability_logger=*/nullptr,
-        base::BindOnce(&FeedStream::UploadActionsComplete,
-                       base::Unretained(this))));
+    task_queue_.AddTask(FROM_HERE,
+                        std::make_unique<UploadActionsTask>(
+                            this,
+                            /*launch_reliability_logger=*/nullptr,
+                            base::BindOnce(&FeedStream::UploadActionsComplete,
+                                           base::Unretained(this))));
   }
 }
 
@@ -450,8 +458,9 @@ void FeedStream::AddUnloadModelIfNoSurfacesAttachedTask(
   // Don't continue if unload_on_detach_sequence_number_ has changed.
   if (stream.unload_on_detach_sequence_number != sequence_number)
     return;
-  task_queue_.AddTask(std::make_unique<offline_pages::ClosureTask>(
-      base::BindOnce(&FeedStream::UnloadModelIfNoSurfacesAttachedTask,
+  task_queue_.AddTask(
+      FROM_HERE, std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
+                     &FeedStream::UnloadModelIfNoSurfacesAttachedTask,
                      base::Unretained(this), stream_type)));
 }
 
@@ -504,9 +513,11 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
   // to all requestors.
   stream.load_more_complete_callbacks.push_back(std::move(callback));
   if (stream.load_more_complete_callbacks.size() == 1) {
-    task_queue_.AddTask(std::make_unique<LoadMoreTask>(
-        surface.GetStreamType(), this,
-        base::BindOnce(&FeedStream::LoadMoreComplete, base::Unretained(this))));
+    task_queue_.AddTask(FROM_HERE,
+                        std::make_unique<LoadMoreTask>(
+                            surface.GetStreamType(), this,
+                            base::BindOnce(&FeedStream::LoadMoreComplete,
+                                           base::Unretained(this))));
   }
 }
 
@@ -548,10 +559,11 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
     LoadStreamTask::Options options;
     options.stream_type = stream_type;
     options.load_type = LoadType::kManualRefresh;
-    task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-        options, this,
-        base::BindOnce(&FeedStream::StreamLoadComplete,
-                       base::Unretained(this))));
+    task_queue_.AddTask(FROM_HERE,
+                        std::make_unique<LoadStreamTask>(
+                            options, this,
+                            base::BindOnce(&FeedStream::StreamLoadComplete,
+                                           base::Unretained(this))));
   }
 }
 
@@ -655,9 +667,10 @@ DebugStreamData FeedStream::GetDebugStreamData() {
 void FeedStream::ForceRefreshForDebugging(const StreamType& stream_type) {
   // Avoid request throttling for debug refreshes.
   feed::prefs::SetThrottlerRequestCounts({}, *profile_prefs_);
-  task_queue_.AddTask(std::make_unique<offline_pages::ClosureTask>(
-      base::BindOnce(&FeedStream::ForceRefreshForDebuggingTask,
-                     base::Unretained(this), stream_type)));
+  task_queue_.AddTask(
+      FROM_HERE, std::make_unique<offline_pages::ClosureTask>(
+                     base::BindOnce(&FeedStream::ForceRefreshForDebuggingTask,
+                                    base::Unretained(this), stream_type)));
 }
 
 void FeedStream::ForceRefreshTask(const StreamType& stream_type) {
@@ -1004,10 +1017,11 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
   options.stream_type = stream_type;
   options.load_type = LoadType::kBackgroundRefresh;
   options.refresh_even_when_not_stale = true;
-  task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      options, this,
-      base::BindOnce(&FeedStream::BackgroundRefreshComplete,
-                     base::Unretained(this))));
+  task_queue_.AddTask(FROM_HERE,
+                      std::make_unique<LoadStreamTask>(
+                          options, this,
+                          base::BindOnce(&FeedStream::BackgroundRefreshComplete,
+                                         base::Unretained(this))));
 }
 
 void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
@@ -1019,7 +1033,7 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   // Add prefetch images to task queue without waiting to finish
   // since we treat them as best-effort.
   if (result.stream_type.IsForYou())
-    task_queue_.AddTask(std::make_unique<PrefetchImagesTask>(this));
+    task_queue_.AddTask(FROM_HERE, std::make_unique<PrefetchImagesTask>(this));
 
   RefreshTaskId task_id;
   if (result.stream_type.GetRefreshTaskId(task_id)) {
@@ -1071,7 +1085,7 @@ void FeedStream::ClearAll() {
   metrics_reporter_->OnClearAll(base::Time::Now() -
                                 GetLastFetchTime(kForYouStream));
   clear_all_in_progress_ = true;
-  task_queue_.AddTask(std::make_unique<ClearAllTask>(this));
+  task_queue_.AddTask(FROM_HERE, std::make_unique<ClearAllTask>(this));
 }
 
 void FeedStream::FinishClearAll() {
@@ -1114,9 +1128,10 @@ void FeedStream::UploadAction(
     const LoggingParameters& logging_parameters,
     bool upload_now,
     base::OnceCallback<void(UploadActionsTask::Result)> callback) {
-  task_queue_.AddTask(std::make_unique<UploadActionsTask>(
-      std::move(action), upload_now, logging_parameters, this,
-      std::move(callback)));
+  task_queue_.AddTask(
+      FROM_HERE, std::make_unique<UploadActionsTask>(
+                     std::move(action), upload_now, logging_parameters, this,
+                     std::move(callback)));
 }
 
 void FeedStream::LoadModel(const StreamType& stream_type,
@@ -1352,6 +1367,7 @@ void FeedStream::SetContentOrder(const StreamType& stream_type,
   //   want a full refresh.
   // * it will add quite a bit of complexity to do it right
   task_queue_.AddTask(
+      FROM_HERE,
       std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
           &FeedStream::ForceRefreshTask, base::Unretained(this), stream_type)));
 }
