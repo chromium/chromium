@@ -16,6 +16,7 @@ namespace blink {
 
 class DOMArrayBuffer;
 class GPUBufferDescriptor;
+class GPUMappedDOMArrayBuffer;
 class ExecutionContext;
 class ScriptPromiseResolver;
 
@@ -80,7 +81,7 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
 
   // Holds onto any ArrayBuffers returned by getMappedRange, mapReadAsync, or
   // mapWriteAsync.
-  HeapVector<Member<DOMArrayBuffer>> mapped_array_buffers_;
+  HeapVector<Member<GPUMappedDOMArrayBuffer>> mapped_array_buffers_;
 
   // List of ranges currently returned by getMappedRange, to avoid overlaps.
   Vector<std::pair<size_t, size_t>> mapped_ranges_;
