@@ -957,6 +957,32 @@ Privacy Sandbox trials are still in active development and are available in sele
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
       </message>
 
+      <!-- Privacy Sandbox dialog. The strings are preliminary. -->
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_NO_BUTTON" desc="Button to decline enabling Privacy Sandbox features." translateable="false">
+        No thanks
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_YES_BUTTON" desc="Button to accept enabling Privacy Sandbox features." translateable="false">
+        I’m in
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_TITLE" desc="Title for the Privacy Sandbox consent dialog." translateable="false">
+        Help us build a more private web
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_SUBTITLE" desc="Subtitle for the Privacy Sandbox consent dialog." translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_HEADING_ONE" desc="First heading for the Privacy Sandbox consent dialog text." translateable="false">
+        Lorem ipsum dolor sit
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_ONE" desc="First paragraph for the Privacy Sandbox consent dialog text." translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_HEADING_TWO" desc="Second heading for the Privacy Sandbox consent dialog text." translateable="false">
+        Lorem ipsum dolor sit
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_TWO" desc="Second paragraph for the Privacy Sandbox consent dialog text." translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+      </message>
+
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
       <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
         Custom

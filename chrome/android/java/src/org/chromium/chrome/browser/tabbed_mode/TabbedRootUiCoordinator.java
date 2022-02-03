@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -609,11 +610,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mReadLaterIPHController = new ReadLaterIPHController(mActivity,
                 getToolbarManager().getMenuButtonView(), mAppMenuCoordinator.getAppMenuHandler());
 
-        boolean didTriggerPromo = FeatureNotificationUtils.willShowIPH(FeatureType.DEFAULT_BROWSER);
-        FeatureNotificationUtils.registerIPHCallback(FeatureType.DEFAULT_BROWSER, () -> {
-            DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
-                    mActivity, mWindowAndroid, true /* ignoreMaxCount */);
-        });
+        boolean didTriggerPromo = false;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
+            didTriggerPromo =
+                    PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(mActivity);
+        }
+
+        if (!didTriggerPromo) {
+            didTriggerPromo = FeatureNotificationUtils.willShowIPH(FeatureType.DEFAULT_BROWSER);
+            FeatureNotificationUtils.registerIPHCallback(FeatureType.DEFAULT_BROWSER, () -> {
+                DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
+                        mActivity, mWindowAndroid, true /* ignoreMaxCount */);
+            });
+        }
 
         if (!didTriggerPromo) {
             didTriggerPromo = triggerPromo(intentWithEffect);

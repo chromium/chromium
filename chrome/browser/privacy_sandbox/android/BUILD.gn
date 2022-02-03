@@ -16,6 +16,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/FlocSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/LearnMoreFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialog.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogController.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxHelpers.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragment.java",
@@ -29,6 +31,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
@@ -49,6 +52,7 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakePrivacySandboxBridge.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FlocSettingsFragmentTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentV3Test.java",
   ]
@@ -74,8 +78,11 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/privacy_sandbox_dialog_illustration.xml",
     "java/res/drawable-night/privacy_sandbox_illustration.xml",
+    "java/res/drawable/privacy_sandbox_dialog_illustration.xml",
     "java/res/drawable/privacy_sandbox_illustration.xml",
+    "java/res/layout/privacy_sandbox_dialog.xml",
     "java/res/layout/privacy_sandbox_header.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/ad_measurement_preference.xml",
