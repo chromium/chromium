@@ -872,9 +872,11 @@ suite('TabSearchAppTest', () => {
         {alsoShowMediaTabsinOpenTabsSection: false});
 
     const searchField = tabSearchApp.$.searchField;
-    searchField.setValue('meet');
+    searchField.setValue('google');
     await flushTasks();
+    // No media tabs section when there is a search query.
     assertEquals(1, queryListTitle().length);
+    assertEquals(2, queryRows().length);
   });
 
   test(
@@ -887,11 +889,11 @@ suite('TabSearchAppTest', () => {
             {alsoShowMediaTabsinOpenTabsSection: true});
 
         const searchField = tabSearchApp.$.searchField;
-        searchField.setValue('meet');
+        searchField.setValue('google');
         await flushTasks();
-        // Media tab is only shown in the Open Tabs section when a search
-        // criteria is applied.
+        // No media tabs section when there is a search query.
         assertEquals(1, queryListTitle().length);
+        assertEquals(2, queryRows().length);
       });
 
 });

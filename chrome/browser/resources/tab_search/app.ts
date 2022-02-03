@@ -572,10 +572,9 @@ export class TabSearchAppElement extends PolymerElement {
     });
 
     let mediaTabs: Array<TabData> = [];
-    // Audio & Video section will not be added when search criteria is applied
-    // if media tabs are also shown in Open Tabs section.
-    if (this.searchText_.length == 0 ||
-        !loadTimeData.getBoolean('alsoShowMediaTabsinOpenTabsSection')) {
+    // Audio & Video section will not be added when search criteria is applied.
+    // Show media tabs in Open Tabs.
+    if (this.searchText_.length === 0) {
       mediaTabs = this.openTabs_.filter(
           tabData => tabHasMediaAlerts(tabData.tab as Tab));
     }
@@ -586,7 +585,8 @@ export class TabSearchAppElement extends PolymerElement {
     let filteredOpenTabs =
         fuzzySearch(this.searchText_, this.openTabs_, this.fuzzySearchOptions_);
 
-    if (!loadTimeData.getBoolean('alsoShowMediaTabsinOpenTabsSection')) {
+    if (!loadTimeData.getBoolean('alsoShowMediaTabsinOpenTabsSection') &&
+        this.searchText_.length === 0) {
       filteredOpenTabs = filteredOpenTabs.filter(
           tabData => !tabHasMediaAlerts(tabData.tab as Tab));
     }
