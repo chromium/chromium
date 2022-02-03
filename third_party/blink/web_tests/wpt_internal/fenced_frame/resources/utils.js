@@ -1,4 +1,5 @@
 const STORE_URL = '/wpt_internal/fenced_frame/resources/key-value-store.py';
+const REMOTE_EXECUTOR_URL = '/wpt_internal/fenced_frame/resources/remote-context-executor.https.html';
 
 // This is a dictionary of stash keys to access a specific piece of the
 // server-side stash. In order to communicate between browsing contexts that
@@ -50,6 +51,83 @@ function getRemoteOriginURL(url, https=true) {
   const cross_origin = https ? get_host_info().HTTPS_REMOTE_ORIGIN
       : get_host_info().HTTP_REMOTE_ORIGIN;
   return new URL(url.toString().replace(same_origin, cross_origin));
+}
+
+// Attaches a frame that waits for scripts to execute from RemoteContext.
+// Returns a proxy for the frame that first resolves to the frame HTML element,
+// then resolves to the RemoteContext if the property isn't found.
+// The proxy also has an extra attribute `execute`, which is an alias for the
+// remote context's `execute_script(fn, args=[])`.
+function attachFrameContext(element_name, html, headers) {
+
+  // Create the frame, passing the unique id for the parent/child channel.
+  const frame = document.createElement(element_name);
+  const uuid = token();
+
+  // Use the absolute path of the remote context executor source file, so that
+  // nested frames will work.
+  const url = new URL(REMOTE_EXECUTOR_URL, location.origin);
+  url.searchParams.append('uuid', uuid);
+
+  // Add the header to allow loading in a fenced frame.
+  headers.push(["Supports-Loading-Mode", "fenced-frame"]);
+
+  // Transform the headers into the expected format.
+  // https://web-platform-tests.org/writing-tests/server-pipes.html#headers
+  const formatted_headers = headers.map((header) => {
+    return `header(${header[0]}, ${header[1]})`;
+  });
+  url.searchParams.append('pipe', formatted_headers.join("|"));
+
+  frame.src = url;
+  document.body.append(frame);
+
+  // https://github.com/web-platform-tests/wpt/blob/master/common/dispatcher/README.md
+  const context = new RemoteContext(uuid);
+  if (html) {
+    context.execute_script(
+      (html_source) => {
+        document.body.insertAdjacentHTML('beforebegin', html_source);
+      },
+    [html]);
+  }
+
+  // We need a little bit of boilerplate in the handlers because Proxy doesn't
+  // work so nicely with HTML elements.
+  const handler = {
+    get: (target, key) => {
+      if (key == "execute") {
+        return context.execute_script;
+      }
+      if (key in target) {
+        return target[key];
+      }
+      return context[key];
+    },
+    set: (target, key, value) => {
+      target[key] = value;
+      return value;
+    }
+  };
+
+  const proxy = new Proxy(frame, handler);
+  return proxy;
+}
+
+// Attach a fenced frame that waits for scripts to execute.
+// Takes as input a(n optional) dictionary of configs:
+// - html: extra HTML source code to inject into the loaded frame
+// - headers: an array of header pairs [[key, value], ...]
+// Returns a proxy that acts like the frame HTML element, but with an extra
+// function `execute`. See `attachFrameContext` or the README for more details.
+function attachFencedFrameContext({html = "", headers=[]} = {}) {
+  return attachFrameContext('fencedframe', html, headers);
+}
+
+// Attach an iframe that waits for scripts to execute.
+// See `attachFencedFrameContext` for more details.
+function attachIFrameContext({html = "", headers=[]} = {}) {
+  return attachFrameContext('iframe', html, headers);
 }
 
 // Converts a key string into a key uuid using a cryptographic hash function.
