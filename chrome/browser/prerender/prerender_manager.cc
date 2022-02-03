@@ -58,7 +58,7 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
       *(match.search_terms_args);
   std::u16string search_terms = search_terms_args.search_terms;
 
-  // Do not re-prerender the same saerch result.
+  // Do not re-prerender the same search result.
   if (search_prerender_handle_ && prerendered_search_terms_ == search_terms) {
     return;
   }

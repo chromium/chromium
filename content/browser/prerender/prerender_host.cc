@@ -808,7 +808,7 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
 bool PrerenderHost::IsUrlMatch(const GURL& url) const {
   // If the trigger defines its predicate, respect it.
   if (attributes_.url_match_predicate) {
-    // Triggers are not allowed to treat a cross-origin url a matched url. It
+    // Triggers are not allowed to treat a cross-origin url as a matched url. It
     // would cause security risks.
     if (!url::IsSameOriginWith(attributes_.prerendering_url, url))
       return false;

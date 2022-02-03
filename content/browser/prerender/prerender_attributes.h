@@ -70,8 +70,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   ui::PageTransition transition_type;
 
-  // Triggers can specify their own pedicates judging whether two URLs are
-  // considered as pointing to the same destination.
+  // Triggers can specify their own predicate judging whether two URLs are
+  // considered as pointing to the same destination. The URLs must be in
+  // same-origin.
   absl::optional<base::RepeatingCallback<bool(const GURL&)>>
       url_match_predicate;
 
