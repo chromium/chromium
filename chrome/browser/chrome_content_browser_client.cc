@@ -182,6 +182,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/protocol_handler_throttle.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -4579,53 +4580,6 @@ base::FilePath ChromeContentBrowserClient::GetLoggingFileName(
   return logging::GetLogFileName(command_line);
 }
 
-namespace {
-// TODO(jam): move this to a separate file.
-class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
- public:
-  explicit ProtocolHandlerThrottle(
-      custom_handlers::ProtocolHandlerRegistry* protocol_handler_registry)
-      : protocol_handler_registry_(protocol_handler_registry) {
-    DCHECK(protocol_handler_registry);
-  }
-  ~ProtocolHandlerThrottle() override = default;
-
-  void WillStartRequest(network::ResourceRequest* request,
-                        bool* defer) override {
-    // Don't translate the urn: scheme URL while loading the resource from the
-    // specified web bundle.
-    // TODO(https://crbug.com/1257045): Remove this when we drop urn: scheme
-    // support in WebBundles.
-    if (request->web_bundle_token_params &&
-        request->url.SchemeIs(url::kUrnScheme)) {
-      return;
-    }
-    TranslateUrl(&request->url);
-  }
-
-  void WillRedirectRequest(
-      net::RedirectInfo* redirect_info,
-      const network::mojom::URLResponseHead& response_head,
-      bool* defer,
-      std::vector<std::string>* to_be_removed_headers,
-      net::HttpRequestHeaders* modified_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_headers) override {
-    TranslateUrl(&redirect_info->new_url);
-  }
-
- private:
-  void TranslateUrl(GURL* url) {
-    if (!protocol_handler_registry_->IsHandledProtocol(url->scheme()))
-      return;
-    GURL translated_url = protocol_handler_registry_->Translate(*url);
-    if (!translated_url.is_empty())
-      *url = translated_url;
-  }
-
-  raw_ptr<custom_handlers::ProtocolHandlerRegistry> protocol_handler_registry_;
-};
-}  // namespace
-
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 ChromeContentBrowserClient::CreateURLLoaderThrottles(
     const network::ResourceRequest& request,
@@ -4738,8 +4692,10 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     auto* factory =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(browser_context);
     // null in unit tests.
-    if (factory)
-      result.push_back(std::make_unique<ProtocolHandlerThrottle>(factory));
+    if (factory) {
+      result.push_back(
+          std::make_unique<custom_handlers::ProtocolHandlerThrottle>(*factory));
+    }
   }
 
 #if BUILDFLAG(ENABLE_PLUGINS)

@@ -8,6 +8,8 @@ static_library("custom_handlers") {
     "pref_names.h",
     "protocol_handler_registry.cc",
     "protocol_handler_registry.h",
+    "protocol_handler_throttle.cc",
+    "protocol_handler_throttle.h",
   ]
   deps = [
     "//build:chromeos_buildflags",
@@ -17,6 +19,8 @@ static_library("custom_handlers") {
     "//components/user_prefs",
     "//content/public/browser",
     "//content/public/common",
+    "//services/network/public/cpp:cpp_base",
+    "//third_party/blink/public/common:headers",
   ]
 }
 
