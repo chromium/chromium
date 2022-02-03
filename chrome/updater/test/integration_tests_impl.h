@@ -195,6 +195,10 @@ void CallServiceUpdate(UpdaterScope updater_scope,
 void SetupFakeLegacyUpdaterData(UpdaterScope scope);
 void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope);
 
+void RunRecoveryComponent(UpdaterScope scope,
+                          const std::string& app_id,
+                          const base::Version& version);
+
 void ExpectLastChecked(UpdaterScope scope);
 
 void ExpectLastStarted(UpdaterScope scope);

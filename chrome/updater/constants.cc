@@ -47,6 +47,12 @@ const char kServerServiceSwitch[] = "service";
 const char kServerUpdateServiceInternalSwitchValue[] = "update-internal";
 const char kServerUpdateServiceSwitchValue[] = "update";
 
+// Recovery command line arguments.
+const char kRecoverSwitch[] = "recover";
+const char kBrowserVersionSwitch[] = "browser-version";
+const char kSessionIdSwitch[] = "sessionid";
+const char kAppGuidSwitch[] = "appguid";
+
 #if BUILDFLAG(IS_WIN)
 const char kInstallFromOutDir[] = "install-from-out-dir";
 #endif  // BUILDFLAG(IS_WIN)

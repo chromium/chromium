@@ -230,6 +230,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_legacy_updater_data_migrated");
   }
 
+  void RunRecoveryComponent(const std::string& app_id,
+                            const base::Version& version) const override {
+    RunCommand(
+        "run_recovery_component",
+        {Param("app_id", app_id), Param("version", version.GetString())});
+  }
+
   void ExpectLastChecked() const override { RunCommand("expect_last_checked"); }
 
   void ExpectLastStarted() const override { RunCommand("expect_last_started"); }

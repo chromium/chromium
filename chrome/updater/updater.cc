@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_install.h"
+#include "chrome/updater/app/app_recover.h"
 #include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/app/app_update.h"
 #include "chrome/updater/app/app_wake.h"
@@ -170,6 +171,11 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return MakeAppUninstall()->Run();
   }
 
+  if (command_line->HasSwitch(kRecoverSwitch) ||
+      command_line->HasSwitch(kBrowserVersionSwitch)) {
+    return MakeAppRecover()->Run();
+  }
+
   if (command_line->HasSwitch(kWakeSwitch)) {
     return MakeAppWake()->Run();
   }
@@ -184,24 +190,21 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   // Contains the literals which are associated with specific updater commands.
   const char* commands[] = {
-      kComServiceSwitch,
-      kCrashHandlerSwitch,
-      kInstallSwitch,
-      kServerSwitch,
-      kTagSwitch,
-      kTestSwitch,
-      kUninstallIfUnusedSwitch,
-      kUninstallSelfSwitch,
-      kUninstallSwitch,
-      kUpdateSwitch,
-      kWakeSwitch,
-      kHealthCheckSwitch,
-      kHandoffSwitch,
+      kComServiceSwitch,    kCrashHandlerSwitch, kHealthCheckSwitch,
+      kInstallSwitch,       kRecoverSwitch,      kServerSwitch,
+      kTagSwitch,           kTestSwitch,         kUninstallIfUnusedSwitch,
+      kUninstallSelfSwitch, kUninstallSwitch,    kUpdateSwitch,
+      kWakeSwitch,          kHealthCheckSwitch,  kHandoffSwitch,
   };
   const char** it = std::find_if(
       std::begin(commands), std::end(commands),
       [command_line](auto cmd) { return command_line->HasSwitch(cmd); });
-  return it != std::end(commands) ? *it : "";
+  // Return the command. As a workaround for recovery component invocations
+  // that do not pass --recover, report the browser version switch as --recover.
+  return it != std::end(commands)
+             ? *it
+             : command_line->HasSwitch(kBrowserVersionSwitch) ? kRecoverSwitch
+                                                              : "";
 }
 
 }  // namespace

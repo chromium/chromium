@@ -273,6 +273,11 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyUpdaterDataMigrated();
   }
 
+  void RunRecoveryComponent(const std::string& app_id,
+                            const base::Version& version) {
+    test_commands_->RunRecoveryComponent(app_id, version);
+  }
+
   void ExpectLastChecked() { test_commands_->ExpectLastChecked(); }
 
   void ExpectLastStarted() { test_commands_->ExpectLastStarted(); }
@@ -691,6 +696,17 @@ TEST_F(IntegrationTest, MigrateLegacyUpdater) {
   Install();
   ExpectInstalled();
   ExpectLegacyUpdaterDataMigrated();
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, RecoveryNoUpdater) {
+  const std::string appid = "test1";
+  const base::Version version("0.1");
+  RunRecoveryComponent(appid, version);
+  WaitForUpdaterExit();
+  ExpectInstalled();
+  ExpectActiveUpdater();
+  ExpectAppVersion(appid, version);
   Uninstall();
 }
 

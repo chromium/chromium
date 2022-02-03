@@ -207,6 +207,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectLegacyUpdaterDataMigrated(updater_scope_);
   }
 
+  void RunRecoveryComponent(const std::string& app_id,
+                            const base::Version& version) const override {
+    updater::test::RunRecoveryComponent(updater_scope_, app_id, version);
+  }
+
   void ExpectLastChecked() const override {
     updater::test::ExpectLastChecked(updater_scope_);
   }

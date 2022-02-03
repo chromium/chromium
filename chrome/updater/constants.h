@@ -105,6 +105,18 @@ extern const char kSystemSwitch[];
 // Runs in test mode. Currently, it exits right away.
 extern const char kTestSwitch[];
 
+// Run in recovery mode.
+extern const char kRecoverSwitch[];
+
+// The version of the program triggering recovery.
+extern const char kBrowserVersionSwitch[];
+
+// The session ID of the Omaha session triggering recovery.
+extern const char kSessionIdSwitch[];
+
+// The app ID of the program triggering recovery.
+extern const char kAppGuidSwitch[];
+
 // Disables throttling for the crash reported until the following bug is fixed:
 // https://bugs.chromium.org/p/crashpad/issues/detail?id=23
 extern const char kNoRateLimitSwitch[];
@@ -215,6 +227,12 @@ constexpr int kErrorFailedToSwap = 2;
 
 // Client Errors.
 constexpr int kErrorRegistrationFailed = 1;
+
+// Recovery component exit codes.
+constexpr int kRecoveryExitCodeSuccess = 0;
+constexpr int kRecoveryExitCodeWaitFailedUninstall = -1;
+constexpr int kRecoveryExitCodeWaitFailedInstall = -2;
+constexpr int kRecoveryExitCodePathServiceFailed = -3;
 
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.

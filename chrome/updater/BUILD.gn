@@ -59,6 +59,8 @@ if (is_win || is_mac || is_linux) {
       "app/app.h",
       "app/app_install.cc",
       "app/app_install.h",
+      "app/app_recover.cc",
+      "app/app_recover.h",
       "app/app_server.cc",
       "app/app_server.h",
       "app/app_uninstall.cc",

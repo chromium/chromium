@@ -580,6 +580,17 @@ void CallServiceUpdate(UpdaterScope updater_scope,
   loop.Run();
 }
 
+void RunRecoveryComponent(UpdaterScope scope,
+                          const std::string& app_id,
+                          const base::Version& version) {
+  base::CommandLine command(GetSetupExecutablePath());
+  command.AppendSwitchASCII(kBrowserVersionSwitch, version.GetString());
+  command.AppendSwitchASCII(kAppGuidSwitch, app_id);
+  int exit_code = -1;
+  EXPECT_TRUE(Run(scope, command, &exit_code));
+  EXPECT_EQ(exit_code, kRecoveryExitCodeSuccess);
+}
+
 void ExpectLastChecked(UpdaterScope updater_scope) {
   EXPECT_FALSE(base::MakeRefCounted<PersistedData>(
                    CreateGlobalPrefs(updater_scope)->GetPrefService())

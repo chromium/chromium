@@ -82,6 +82,8 @@ class IntegrationTestCommands
 
   virtual void SetupFakeLegacyUpdaterData() const = 0;
   virtual void ExpectLegacyUpdaterDataMigrated() const = 0;
+  virtual void RunRecoveryComponent(const std::string& app_id,
+                                    const base::Version& version) const = 0;
   virtual void ExpectLastChecked() const = 0;
   virtual void ExpectLastStarted() const = 0;
 
