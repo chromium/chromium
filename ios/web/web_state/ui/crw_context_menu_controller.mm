@@ -142,10 +142,13 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
                           (UIContextMenuInteraction*)interaction
     previewForDismissingMenuWithConfiguration:
         (UIContextMenuConfiguration*)configuration {
+  UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
+  previewParameters.backgroundColor = UIColor.clearColor;
   // If the dismiss view is not attached to the view hierarchy, fallback to nil
   // to prevent app crashing. See crbug.com/1231888.
   return self.dismissView.window
-             ? [[UITargetedPreview alloc] initWithView:self.dismissView]
+             ? [[UITargetedPreview alloc] initWithView:self.dismissView
+                                            parameters:previewParameters]
              : nil;
 }
 
