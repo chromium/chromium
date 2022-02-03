@@ -6772,6 +6772,8 @@
         {
             "platforms": [
                 "android",
+                "chromeos",
+                "chromeos_lacros",
                 "ios",
                 "linux",
                 "mac",
@@ -6795,20 +6797,6 @@
                     "enable_features": [
                         "WebAssemblyCodeProtection",
                         "WebAssemblyCodeProtectionPku"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledMprotect",
-                    "enable_features": [
-                        "WebAssemblyCodeProtection"
                     ]
                 }
             ]
