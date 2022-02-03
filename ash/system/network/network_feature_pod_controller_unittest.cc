@@ -580,7 +580,13 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Ethernet) {
       feature_pod_label_button()->GetSubLabelText());
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Tether) {
+// Flaky on Chrome OS debug. http://crbug.com/1293903
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_HasCorrectSubLabel_Tether DISABLED_HasCorrectSubLabel_Tether
+#else
+#define MAYBE_HasCorrectSubLabel_Tether HasCorrectSubLabel_Tether
+#endif
+TEST_F(NetworkFeaturePodControllerTest, MAYBE_HasCorrectSubLabel_Tether) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             feature_pod_label_button()->GetSubLabelText());
