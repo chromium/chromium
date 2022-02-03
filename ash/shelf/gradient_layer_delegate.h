@@ -5,13 +5,17 @@
 #ifndef ASH_SHELF_GRADIENT_LAYER_DELEGATE_H_
 #define ASH_SHELF_GRADIENT_LAYER_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
 class Canvas;
+class LinearAnimation;
 }  // namespace gfx
 
 namespace ash {
@@ -20,7 +24,8 @@ namespace ash {
 // of its layer.
 // TODO(jamescook): Move into //ash/controls. This class is used outside of the
 // shelf (e.g. app list, desks).
-class ASH_EXPORT GradientLayerDelegate : public ui::LayerDelegate {
+class ASH_EXPORT GradientLayerDelegate : public ui::LayerDelegate,
+                                         public gfx::AnimationDelegate {
  public:
   struct FadeZone {
     // Bounds of the fade in/out zone.
@@ -33,7 +38,9 @@ class ASH_EXPORT GradientLayerDelegate : public ui::LayerDelegate {
     bool is_horizontal = false;
   };
 
-  GradientLayerDelegate();
+  // If `animate_in` is true, the gradient will quickly animate in when it is
+  // first created. See https://crbug.com/1293100
+  explicit GradientLayerDelegate(bool animate_in);
   GradientLayerDelegate(const GradientLayerDelegate&) = delete;
   GradientLayerDelegate& operator=(const GradientLayerDelegate&) = delete;
   ~GradientLayerDelegate() override;
@@ -58,11 +65,17 @@ class ASH_EXPORT GradientLayerDelegate : public ui::LayerDelegate {
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
 
+  // gfx::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
   void DrawFadeZone(const FadeZone& fade_zone, gfx::Canvas* canvas);
 
   ui::Layer layer_;
   FadeZone start_fade_zone_;
   FadeZone end_fade_zone_;
+
+  // Optional animation to quickly animate in the gradient on creation.
+  std::unique_ptr<gfx::LinearAnimation> animation_;
 };
 
 }  // namespace ash

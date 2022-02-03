@@ -347,7 +347,8 @@ void ScrollableShelfView::Init() {
       ScrollArrowView::kRight, GetShelf()->IsHorizontalAlignment(), GetShelf(),
       this));
 
-  gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
+  gradient_layer_delegate_ =
+      std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
   layer()->SetMaskLayer(gradient_layer_delegate_->layer());
 
   focus_search_ = std::make_unique<ScrollableShelfFocusSearch>(this);

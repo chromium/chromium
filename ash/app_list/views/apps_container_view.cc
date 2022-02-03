@@ -600,7 +600,8 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
 void AppsContainerView::MaybeCreateGradientMask() {
   if (features::IsBackgroundBlurEnabled()) {
     if (!layer()->layer_mask_layer() && !gradient_layer_delegate_) {
-      gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
+      gradient_layer_delegate_ =
+          std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
       UpdateGradientMaskBounds();
     }
     if (gradient_layer_delegate_) {

@@ -393,7 +393,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
 
-  gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
+  gradient_layer_delegate_ =
+      std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
   scroll_view_->layer()->SetMaskLayer(gradient_layer_delegate_->layer());
 
   on_contents_scrolled_subscription_ =

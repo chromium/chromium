@@ -4,16 +4,30 @@
 
 #include "ash/shelf/gradient_layer_delegate.h"
 
+#include "base/time/time.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/paint_info.h"
 
 namespace ash {
 
-GradientLayerDelegate::GradientLayerDelegate() : layer_(ui::LAYER_TEXTURED) {
+GradientLayerDelegate::GradientLayerDelegate(bool animate_in)
+    : layer_(ui::LAYER_TEXTURED) {
   layer_.set_delegate(this);
   layer_.SetFillsBoundsOpaquely(false);
+
+  if (animate_in) {
+    animation_ = std::make_unique<gfx::LinearAnimation>(
+        base::Milliseconds(50), gfx::LinearAnimation::kDefaultFrameRate,
+        /*delegate=*/this);
+    animation_->Start();
+    // The animation is usually 2 or 3 frames. Instead of starting the animation
+    // at 0.0, which results in a fully transparent frame in the beginning, use
+    // an initial value so the first frame is partially opaque.
+    animation_->SetCurrentValue(0.333);
+  }
 }
 
 GradientLayerDelegate::~GradientLayerDelegate() {
@@ -43,6 +57,17 @@ void GradientLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
     DrawFadeZone(end_fade_zone_, recorder.canvas());
 }
 
+void GradientLayerDelegate::AnimationProgressed(
+    const gfx::Animation* animation) {
+  DCHECK_EQ(animation, animation_.get());
+
+  // Schedule repaint of the affected areas.
+  if (!start_fade_zone_.zone_rect.IsEmpty())
+    layer_.SchedulePaint(start_fade_zone_.zone_rect);
+  if (!end_fade_zone_.zone_rect.IsEmpty())
+    layer_.SchedulePaint(end_fade_zone_.zone_rect);
+}
+
 void GradientLayerDelegate::DrawFadeZone(const FadeZone& fade_zone,
                                          gfx::Canvas* canvas) {
   gfx::Point start_point;
@@ -59,10 +84,18 @@ void GradientLayerDelegate::DrawFadeZone(const FadeZone& fade_zone,
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setAntiAlias(false);
 
+  SkColor target_color;
+  if (animation_) {
+    // Animation runs 0.0 to 1.0, so alpha runs 255 (opaque) to 0 (transparent).
+    uint8_t alpha = (1.0 - animation_->GetCurrentValue()) * 255;
+    target_color = SkColorSetA(SK_ColorTRANSPARENT, alpha);
+  } else {
+    target_color = SK_ColorTRANSPARENT;
+  }
+
   flags.setShader(gfx::CreateGradientShader(
-      start_point, end_point,
-      fade_zone.fade_in ? SK_ColorTRANSPARENT : SK_ColorBLACK,
-      fade_zone.fade_in ? SK_ColorBLACK : SK_ColorTRANSPARENT));
+      start_point, end_point, fade_zone.fade_in ? target_color : SK_ColorBLACK,
+      fade_zone.fade_in ? SK_ColorBLACK : target_color));
 
   canvas->DrawRect(fade_zone.zone_rect, flags);
 }
