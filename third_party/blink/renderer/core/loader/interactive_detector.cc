@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/time/default_tick_clock.h"
@@ -46,6 +47,10 @@ constexpr int kNetworkQuietMaximumConnections = 2;
 const char kHistogramInputDelay[] = "PageLoad.InteractiveTiming.InputDelay3";
 const char kHistogramInputTimestamp[] =
     "PageLoad.InteractiveTiming.InputTimestamp3";
+const char kHistogramProcessingTime[] =
+    "PageLoad.InteractiveTiming.ProcessingTime";
+const char kHistogramTimeToNextPaint[] =
+    "PageLoad.InteractiveTiming.TimeToNextPaint";
 
 // static
 const char InteractiveDetector::kSupplementName[] = "InteractiveDetector";
@@ -679,6 +684,10 @@ void InteractiveDetector::RecordInputEventTimingUKM(
           time_to_next_paint.InMilliseconds())
       .Record(GetUkmRecorder());
 
+  UmaHistogramCustomTimes(kHistogramProcessingTime, processing_time,
+                          base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(kHistogramTimeToNextPaint, time_to_next_paint,
+                          base::Milliseconds(1), base::Seconds(60), 50);
   if (!page_event_times_.first_input_processing_time) {
     page_event_times_.first_input_processing_time = processing_time;
     if (GetSupplementable()->Loader()) {

@@ -1755,6 +1755,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.InteractiveTiming.ProcessingTime" units="ms"
+    expires_after="2022-11-01">
+  <owner>hbsong@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The duration between the start of event processing and the end of event
+    processing on the main thread for a meaningful input. Excludes scrolls.
+
+    This metric is recorded when users interact with the page, which may trigger
+    input events such as pointerdown, keydown, click and mousedown.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.InteractiveTiming.TimeToNextPaint" units="ms"
+    expires_after="2022-11-01">
+  <owner>hbsong@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The duration between the end of event processing and the time when the first
+    paint was performed on the main thread for a meaningful input. Excludes
+    scrolls.
+
+    This metric is recorded when users interact with the page, which may trigger
+    input events such as pointerdown, keydown, click and mousedown.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}{Bfcache}.{UserInteractionLatency}"
     units="ms" expires_after="2022-05-01">
