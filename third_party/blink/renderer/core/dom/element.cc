@@ -671,32 +671,24 @@ bool Element::IsFocusableStyle() const {
       !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
       !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this));
 
-  // FIXME: Even if we are not visible, we might have a child that is visible.
-  // Hyatt wants to fix that some day with a "has visible content" flag or the
-  // like.
-  auto IsFocusable = [](const ComputedStyle* style) {
-    return style && !style->IsEnsuredInDisplayNone() &&
-           style->Display() != EDisplay::kContents && !style->IsInert() &&
-           style->Visibility() == EVisibility::kVisible;
-  };
-
-  if (LayoutObject* layout_object = GetLayoutObject()) {
-    if (IsFocusable(layout_object->Style()))
-      return true;
-  }
+  if (LayoutObject* layout_object = GetLayoutObject())
+    return layout_object->StyleRef().IsFocusable();
 
   // If a canvas represents embedded content, its descendants are not rendered.
   // But they are still allowed to be focusable as long as their style allows
   // focus, their canvas is rendered, and its style allows focus.
   if (IsInCanvasSubtree()) {
-    if (!IsFocusable(GetComputedStyle()))
+    const ComputedStyle* style = GetComputedStyle();
+    if (!style || !style->IsFocusable())
       return false;
 
     const HTMLCanvasElement* canvas =
         Traversal<HTMLCanvasElement>::FirstAncestorOrSelf(*this);
     DCHECK(canvas);
-    if (LayoutObject* layout_object = canvas->GetLayoutObject())
-      return layout_object->IsCanvas() && IsFocusable(layout_object->Style());
+    if (LayoutObject* layout_object = canvas->GetLayoutObject()) {
+      return layout_object->IsCanvas() &&
+             layout_object->StyleRef().IsFocusable();
+    }
   }
 
   return false;
