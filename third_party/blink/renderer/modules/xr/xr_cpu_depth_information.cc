@@ -20,6 +20,9 @@ namespace {
 constexpr char kOutOfBoundsAccess[] =
     "Attempted to access data that is out-of-bounds.";
 
+constexpr char kArrayBufferDetached[] =
+    "Attempted to access data from a detached data buffer.";
+
 size_t GetBytesPerElement(device::mojom::XRDepthDataFormat data_format) {
   switch (data_format) {
     case device::mojom::XRDepthDataFormat::kLuminanceAlpha:
@@ -68,6 +71,13 @@ float XRCPUDepthInformation::getDepthInMeters(
     ExceptionState& exception_state) const {
   DVLOG(3) << __func__ << ": x=" << x << ", y=" << y;
 
+  // Check if `data_` is detached:
+  if(data_->IsDetached()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kArrayBufferDetached);
+    return 0.0;
+  }
+
   if (!ValidateFrame(exception_state)) {
     return 0.0;
   }
@@ -113,6 +123,8 @@ float XRCPUDepthInformation::getDepthInMeters(
 
 float XRCPUDepthInformation::GetItem(size_t index) const {
   DVLOG(3) << __func__ << ": index=" << index;
+
+  CHECK(!data_->IsDetached());
 
   switch (data_format_) {
     case device::mojom::XRDepthDataFormat::kLuminanceAlpha: {
