@@ -7,7 +7,6 @@
 
 #include <cstring>
 
-#include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "build/build_config.h"
@@ -19,9 +18,8 @@
 #define PA_PREFETCH(x)
 #endif
 
-namespace base {
+namespace partition_alloc::internal {
 
-namespace internal {
 // This is a `memset` that resists being optimized away. Adapted from
 // boringssl/src/crypto/mem.c. (Copying and pasting is bad, but //base can't
 // depend on //third_party, and this is small enough.)
@@ -48,10 +46,19 @@ ALWAYS_INLINE bool RandomPeriod() {
   counter--;
   return counter == 0;
 }
-#endif
+#endif  // !DCHECK_IS_ON()
 
-}  // namespace internal
+}  // namespace partition_alloc::internal
 
-}  // namespace base
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::SecureMemset;
+#if !DCHECK_IS_ON()
+using ::partition_alloc::internal::RandomPeriod;
+#endif  // !DCHECK_IS_ON()
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_INL_H_
