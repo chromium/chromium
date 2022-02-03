@@ -295,6 +295,7 @@ void CompositorFrameSinkSupport::OnSurfaceAggregatedDamage(
                                     damage_rect, expected_display_time);
   }
 
+  current_capture_bounds_ = frame.metadata.capture_bounds;
   for (CapturableFrameSink::Client* client : capture_clients_) {
     client->OnFrameDamaged(frame_size_in_pixels, damage_rect,
                            expected_display_time, frame.metadata);
@@ -960,20 +961,24 @@ void CompositorFrameSinkSupport::OnClientCaptureStopped() {
 
 gfx::Rect CompositorFrameSinkSupport::GetCopyOutputRequestRegion(
     const VideoCaptureSubTarget& sub_target) const {
-  if (!last_activated_surface_id_.is_valid()) {
+  // We will either have a subtree ID or a region capture crop_id, but not both.
+  if (absl::holds_alternative<RegionCaptureCropId>(sub_target)) {
+    const auto it = current_capture_bounds_.bounds().find(
+        absl::get<RegionCaptureCropId>(sub_target));
+    if (it != current_capture_bounds_.bounds().end()) {
+      return it->second;
+    }
     return {};
   }
+
+  if (!last_activated_surface_id_.is_valid())
+    return {};
 
   Surface* current_surface =
       surface_manager_->GetSurfaceForId(last_activated_surface_id_);
   DCHECK(current_surface);
   if (!current_surface->HasActiveFrame()) {
     return {};
-  }
-
-  // We will either have a subtree ID or a region capture crop_id, but not both.
-  if (absl::holds_alternative<RegionCaptureCropId>(sub_target)) {
-    return GetCaptureBounds(absl::get<RegionCaptureCropId>(sub_target));
   }
 
   // We can exit early if there is no subtree, otherwise we need to
@@ -1054,27 +1059,6 @@ int64_t CompositorFrameSinkSupport::ComputeTraceId() {
   uint64_t client = (frame_sink_id_.client_id() & 0xffff);
   uint64_t sink = (frame_sink_id_.sink_id() & 0xffff);
   return (client << 48) | (sink << 32) | trace_sequence_;
-}
-
-gfx::Rect CompositorFrameSinkSupport::GetCaptureBounds(
-    const RegionCaptureCropId& crop_id) const {
-  DCHECK(!crop_id.is_zero());
-  // We don't know what frame contains the bounds associated with |crop_id|,
-  // so we do have to iterate through each surface.
-  for (const SurfaceId& id : surface_manager_->GetCreatedSurfaceIds()) {
-    Surface* surface = surface_manager_->GetSurfaceForId(id);
-    if (!surface->HasActiveFrame()) {
-      continue;
-    }
-
-    const RegionCaptureBounds& bounds =
-        surface->GetActiveFrameMetadata().capture_bounds;
-    const auto it = bounds.bounds().find(crop_id);
-    if (it != bounds.bounds().end()) {
-      return it->second;
-    }
-  }
-  return {};
 }
 
 bool CompositorFrameSinkSupport::ShouldSendBeginFrame(

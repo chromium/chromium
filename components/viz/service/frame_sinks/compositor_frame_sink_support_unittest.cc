@@ -1703,8 +1703,11 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
       gfx::Rect{0, 0, 20, 20};
   frame_with_crop_id_and_bounds.metadata.capture_bounds =
       RegionCaptureBounds{{{crop_id, gfx::Rect{0, 0, 13, 13}}}};
-  support_->SubmitCompositorFrame(local_surface_id_,
-                                  std::move(frame_with_crop_id_and_bounds));
+
+  // mark the surface as damaged to update the capture bounds.
+  support_->OnSurfaceAggregatedDamage(
+      /*surface*/ nullptr, local_surface_id_, frame_with_crop_id_and_bounds,
+      gfx::Rect{0, 0, 20, 20}, base::TimeTicks::Now());
 
   EXPECT_EQ((gfx::Rect{0, 0, 13, 13}),
             support_->GetCopyOutputRequestRegion(crop_id));

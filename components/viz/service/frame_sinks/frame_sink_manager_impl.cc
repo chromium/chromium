@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -25,6 +26,7 @@
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 #include "components/viz/service/performance_hint/utils.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
+#include "components/viz/service/surfaces/surface.h"
 
 namespace viz {
 
@@ -506,10 +508,31 @@ void FrameSinkManagerImpl::RecursivelyDetachBeginFrameSource(
 }
 
 CapturableFrameSink* FrameSinkManagerImpl::FindCapturableFrameSink(
-    const FrameSinkId& frame_sink_id) {
+    const VideoCaptureTarget& target) {
+  // Search the known CompositorFrameSinkSupport objects for region capture
+  // bounds matching the crop ID specified by |target| (if one was set), and
+  // return the corresponding frame sink.
+  if (absl::holds_alternative<RegionCaptureCropId>(target.sub_target)) {
+    const auto crop_id = absl::get<RegionCaptureCropId>(target.sub_target);
+    for (const auto& id_and_sink : support_map_) {
+      const RegionCaptureBounds& bounds =
+          id_and_sink.second->current_capture_bounds();
+      auto match = bounds.bounds().find(crop_id);
+      if (match != bounds.bounds().end()) {
+        return id_and_sink.second;
+      }
+    }
+    return nullptr;
+  }
+
+  FrameSinkId frame_sink_id = target.frame_sink_id;
+  if (!frame_sink_id.is_valid())
+    return nullptr;
+
   const auto it = support_map_.find(frame_sink_id);
   if (it == support_map_.end())
     return nullptr;
+
   return it->second;
 }
 

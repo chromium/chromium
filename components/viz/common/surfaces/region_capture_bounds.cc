@@ -34,6 +34,10 @@ void RegionCaptureBounds::Set(const RegionCaptureCropId& crop_id,
   bounds_.insert_or_assign(crop_id, region);
 }
 
+void RegionCaptureBounds::Reset() {
+  bounds_.clear();
+}
+
 bool RegionCaptureBounds::operator==(const RegionCaptureBounds& rhs) const {
   return bounds_ == rhs.bounds_;
 }

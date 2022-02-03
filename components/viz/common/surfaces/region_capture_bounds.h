@@ -44,6 +44,9 @@ class VIZ_COMMON_EXPORT RegionCaptureBounds {
 
   bool IsEmpty() const { return bounds_.empty(); }
 
+  // Sets the bounds to empty.
+  void Reset();
+
   const base::flat_map<RegionCaptureCropId, gfx::Rect>& bounds() const {
     return bounds_;
   }

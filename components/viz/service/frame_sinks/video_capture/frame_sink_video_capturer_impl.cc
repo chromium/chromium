@@ -306,7 +306,20 @@ void FrameSinkVideoCapturerImpl::ChangeTarget(
   CapturableFrameSink* resolved_target = nullptr;
   if (target_) {
     resolved_target =
-        frame_sink_manager_->FindCapturableFrameSink(target_->frame_sink_id);
+        frame_sink_manager_->FindCapturableFrameSink(target_.value());
+
+    // The frame sink identifier may have changed due to crop target
+    // dereferencing.
+    const FrameSinkId resolved_id =
+        resolved_target ? resolved_target->GetFrameSinkId() : FrameSinkId{};
+    if (resolved_id.is_valid() && resolved_id != target_->frame_sink_id) {
+      TRACE_EVENT_INSTANT2(
+          "gpu.capture", "ChangeTargetCropIdDereference",
+          TRACE_EVENT_SCOPE_THREAD, "from",
+          target_ ? target_->frame_sink_id.ToString().c_str() : "None", "to",
+          resolved_id.ToString());
+      target_->frame_sink_id = resolved_id;
+    }
   }
   SetResolvedTarget(resolved_target);
 }

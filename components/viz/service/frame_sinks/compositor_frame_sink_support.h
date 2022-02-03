@@ -205,7 +205,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
   gfx::Rect GetCopyOutputRequestRegion(
-      const VideoCaptureSubTarget& specifier) const override;
+      const VideoCaptureSubTarget& sub_target) const override;
   void OnClientCaptureStarted() override;
   void OnClientCaptureStopped() override;
   void RequestCopyOfOutput(
@@ -236,6 +236,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool IsEvicted(const LocalSurfaceId& local_surface_id) const;
 
   SurfaceAnimationManager* GetSurfaceAnimationManagerForTesting();
+
+  const RegionCaptureBounds& current_capture_bounds() const {
+    return current_capture_bounds_;
+  }
 
  private:
   friend class CompositorFrameSinkSupportTest;
@@ -273,12 +277,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void HandleCallback();
 
   int64_t ComputeTraceId();
-
-  // Internal logic for determining what region capture bounds are
-  // associated with a given |crop_id|. This assumes that we are capturing
-  // with |crop_id|, and so a return value of gfx::Rect{} indicates that
-  // we shouldn't capture any of the surface.
-  gfx::Rect GetCaptureBounds(const RegionCaptureCropId& crop_id) const;
 
   void MaybeEvictSurfaces();
   void EvictLastActiveSurface();
@@ -425,6 +423,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // Number of clients that have started video capturing.
   uint32_t number_clients_capturing_ = 0;
+
+  // Region capture bounds associated with the last surface that was aggregated.
+  RegionCaptureBounds current_capture_bounds_;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 };
