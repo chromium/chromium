@@ -27,8 +27,8 @@ function handleRequestWithPromiseDoNotUse(
   binding.setHandleRequest(methodName, function() {
     logActivity.LogAPICall(extensionId, fullName, $Array.slice(arguments));
     var stack = exceptionHandler.getExtensionStackTrace();
-    var callback = arguments[arguments.length - 1];
-    var args = $Array.slice(arguments, 0, arguments.length - 1);
+    var callback = arguments[arguments.length - 2];
+    var args = $Array.slice(arguments, 0, arguments.length - 2);
     var keepAlive = require('keep_alive').createKeepAlive();
     $Function.apply(customizedFunction, this, args).then(function(result) {
       if (callback) {

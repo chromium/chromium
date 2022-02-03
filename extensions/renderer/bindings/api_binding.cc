@@ -64,7 +64,8 @@ std::string GetJSEnumEntryName(const std::string& original) {
 
 std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
     const base::Value* dict,
-    BindingAccessChecker* access_checker) {
+    BindingAccessChecker* access_checker,
+    const std::string& api_name) {
   const base::Value* params =
       dict->FindKeyOfType("parameters", base::Value::Type::LIST);
   CHECK(params);
@@ -72,7 +73,8 @@ std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
   const base::Value* returns_async =
       dict->FindKeyOfType("returns_async", base::Value::Type::DICTIONARY);
 
-  return APISignature::CreateFromValues(*params, returns_async, access_checker);
+  return APISignature::CreateFromValues(*params, returns_async, access_checker,
+                                        api_name);
 }
 
 void RunAPIBindingHandlerCallback(
@@ -213,11 +215,12 @@ APIBinding::APIBinding(const std::string& api_name,
       CHECK(func.GetAsDictionary(&func_dict));
       std::string name;
       CHECK(func_dict->GetString("name", &name));
-
-      auto signature = GetAPISignatureFromDictionary(func_dict, access_checker);
-
       std::string full_name =
           base::StringPrintf("%s.%s", api_name_.c_str(), name.c_str());
+
+      auto signature =
+          GetAPISignatureFromDictionary(func_dict, access_checker, full_name);
+
       methods_[name] = std::make_unique<MethodData>(full_name, signature.get());
       type_refs->AddAPIMethodSignature(full_name, std::move(signature));
     }
@@ -254,12 +257,12 @@ APIBinding::APIBinding(const std::string& api_name,
           CHECK(func.GetAsDictionary(&func_dict));
           std::string function_name;
           CHECK(func_dict->GetString("name", &function_name));
-
-          auto signature =
-              GetAPISignatureFromDictionary(func_dict, access_checker);
-
           std::string full_name =
               base::StringPrintf("%s.%s", id.c_str(), function_name.c_str());
+
+          auto signature = GetAPISignatureFromDictionary(
+              func_dict, access_checker, full_name);
+
           type_refs->AddTypeMethodSignature(full_name, std::move(signature));
         }
       }
