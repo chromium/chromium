@@ -119,6 +119,14 @@ class HistoryClustersMetricsBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(result);
   }
 
+  // Navigates to the history clusters UI with `PAGE_TRANSITION_RELOAD`. Assumes
+  // the current URL is also the history clusters UI.
+  void RefreshHistoryClusters() {
+    NavigateParams params(browser(), GURL(chrome::kChromeUIHistoryClustersURL),
+                          ui::PAGE_TRANSITION_RELOAD);
+    ui_test_utils::NavigateToURL(&params);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -351,6 +359,68 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest, MAYBE_LinkClick) {
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
                                       false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
+}
+
+// Assumed to be flaky since the above tests are flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_Refresh DISABLED_Refresh
+#else
+#define MAYBE_Refresh Refresh
+#endif
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest, MAYBE_Refresh) {
+  {
+    SCOPED_TRACE("Refresh");
+    base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+    RefreshHistoryClusters();
+
+    auto entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::HistoryClusters::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+    auto* ukm_entry = entries[0];
+    ValidateHistoryClustersUKMEntry(
+        ukm_entry, HistoryClustersInitialState::kDirectNavigation,
+        HistoryClustersFinalState::kRefreshTab, 0, 0);
+
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.Actions.InitialState",
+        HistoryClustersInitialState::kDirectNavigation, 1);
+    histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
+                                        HistoryClustersFinalState::kRefreshTab,
+                                        1);
+    histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
+                                        false, 1);
+    histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
+  }
+
+  {
+    SCOPED_TRACE("Navigate away after refresh");
+    base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+
+    auto entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::HistoryClusters::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+    auto* ukm_entry = entries[0];
+    ValidateHistoryClustersUKMEntry(
+        ukm_entry, HistoryClustersInitialState::kDirectNavigation,
+        HistoryClustersFinalState::kCloseTab, 0, 0);
+
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.Actions.InitialState",
+        HistoryClustersInitialState::kDirectNavigation, 1);
+    histogram_tester.ExpectBucketCount("History.Clusters.Actions.FinalState",
+                                       HistoryClustersFinalState::kCloseTab, 1);
+    histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
+                                        false, 1);
+    histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
+  }
 }
 
 }  // namespace history_clusters

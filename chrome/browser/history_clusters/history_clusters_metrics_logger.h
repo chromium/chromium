@@ -30,15 +30,13 @@ enum class HistoryClustersInitialState {
 
 // The final state, or outcome, of an interaction on the HistoryClusters UI.
 //
-// Keep in sync with HistoryClustersFinalState in enums.xml.
+// Keep in sync with HistoryClustersFinalState in
+// tools/metrics/histograms/enums.xml.
 enum class HistoryClustersFinalState {
   kUnknown = 0,
   // The interaction with the HistoryClusters UI ended with a click on a link.
   kLinkClick = 1,
   // The UI interaction ended without opening anything on the page.
-  // TODO(manukh crbug/1243049): If the HistoryClusters page is refreshed, a
-  // `kCloseTab` is
-  //  recorded. We should probably distinguish refresh from page close.
   kCloseTab = 2,
   // The interaction ended with a same doc navigation; i.e., the
   // 'Chrome history' & 'Tabs from other devices' links. Because a user may
@@ -48,8 +46,10 @@ enum class HistoryClustersFinalState {
   // HistoryClustersUI, and 4) closing the tab will record `kCloseTab`, not
   // `kSameDocNavigation`.
   kSameDocNavigation = 3,
+  // The interaction ended with a page refresh.
+  kRefreshTab = 4,
   // Add new values above this line.
-  kMaxValue = kSameDocNavigation,
+  kMaxValue = kRefreshTab,
 };
 
 // HistoryClustersMetricsLogger contains all the metrics/events associated with

@@ -391,6 +391,13 @@ chromium-metrics-reviews@google.com.
     tab, navigated in the same tab, or closed browser). Logs the final state
     that ended the use of the journeys page (e.g., a link click away from the
     page).
+
+    Navigating back/forward aren't distinguished. E.g., if doing so leads to the
+    traditional history UI, a same doc navigation will be recorded; if doing so
+    leads to a different site, a link click will be recorded.
+
+    Before m100, tab refresh and same doc navigations were also not
+    distinguished and would record tab close.
   </summary>
 </histogram>
 

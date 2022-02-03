@@ -43750,6 +43750,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     Followed a same-doc link (i.e., the 'Chrome history' and 'Tabs from other
     devices' links) in the same tab without returning to the HistoryClusters UI.
   </int>
+  <int value="4" label="kRefreshTab">Refreshed the tab.</int>
 </enum>
 
 <enum name="HistoryClustersInitialState">
