@@ -28,6 +28,8 @@ twellington@chromium.org
 # structural changes, please get a review from a reviewer in this file.
 per-file *.gni=*
 per-file BUILD.gn=file://build/OWNERS
+# For lacros-qa-qualified-tracking-roller related changes:
+per-file LACROS_QA_QUALIFIED_VERSION=lacros-tracking-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file LACROS_QA_QUALIFIED_VERSION=liaoyuke@chromium.org
 per-file MAJOR_BRANCH_DATE=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 per-file VERSION=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
