@@ -233,7 +233,8 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
     if (last_watch_to_block_arming_) {
       // Find the next watch to notify in simple round-robin order on the
       // |ready_watches_| map, wrapping around to the beginning if necessary.
-      next_ready_iter = ready_watches_.find(last_watch_to_block_arming_);
+      next_ready_iter = ready_watches_.find(
+          static_cast<const Watch*>(last_watch_to_block_arming_));
       if (next_ready_iter != ready_watches_.end())
         ++next_ready_iter;
       if (next_ready_iter == ready_watches_.end())
@@ -250,7 +251,7 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
       blocking_events[i].signals_state = watch->last_known_signals_state();
 
       // Iterate and wrap around.
-      last_watch_to_block_arming_ = watch;
+      last_watch_to_block_arming_ = static_cast<const void*>(watch);
       ++next_ready_iter;
       if (next_ready_iter == ready_watches_.end())
         next_ready_iter = ready_watches_.begin();
