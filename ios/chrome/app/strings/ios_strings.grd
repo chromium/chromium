@@ -2140,6 +2140,21 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SEARCH_COPIED_TEXT" desc="If a user has some text on their clipboard, this string will appear as an option when the user long-presses on Chrome's address bar. The user can select this option to search the default search engine for the text. This string is a complete sentence. If necessary for your language, you can translate as 'Search for Text That You Copied.' [iOS only]" meaning="Maximum characters: 32">
           Search for Copied Text
       </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP" desc="The label used to let the user choose that their pages will be loaded using the Desktop mode (vs Mobile)" meaning="The pages will be loaded in Desktop mode">
+        Desktop
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_LABEL" desc="The label of the cell used to display the current mode (Desktop or Mobile) in which the pages will be loaded by default">
+        Default Site Mode
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE" desc="The label used to let the user choose that their pages will be loaded using the Mobile mode (vs Desktop)" meaning="The pages will be loaded in Mobile mode">
+        Mobile
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_SUBTITLE" desc="The subtitle explaining what choosing a different mode (Desktop or Mobile) will do">
+        Select how you would like Chrome to request the site everytime
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_TITLE" desc="The title of the screen in which the user can choose the default mode (Desktop or Mobile) in which the pages will be loaded">
+        Default Site Mode
+      </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_CUSTOM_SECTION_HEADER" desc="The header for custom search engines section in Search Engine selection setting [iOS only]">
         Recently Visited
       </message>
