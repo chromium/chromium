@@ -37,11 +37,7 @@ namespace {
 
 using ThrottleInterval = ZeroStateDriveProvider::ThrottleInterval;
 
-// Schemas of result IDs for the results list and suggestion chips.
-// TODO(crbug.com/1258415): kChipSchema can be removed once the new launcher is
-// launched.
-constexpr char kListSchema[] = "zero_state_drive://";
-constexpr char kChipSchema[] = "drive_chip://";
+constexpr char kSchema[] = "zero_state_drive://";
 
 // How long to wait before making the first request for results from the
 // ItemSuggestCache.
@@ -87,11 +83,6 @@ void LogShouldWarm(bool should_warm) {
 void LogLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("Apps.AppList.DriveZeroStateProvider.Latency",
                           latency);
-}
-
-bool IsSuggestedContentEnabled(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(
-      chromeos::prefs::kSuggestedContentEnabled);
 }
 
 // Given an absolute path representing a file in the user's Drive, returns a
@@ -176,6 +167,8 @@ void ZeroStateDriveProvider::OnFileSystemMounted() {
       !gate_on_use || launcher_used || productivity_launcher;
   LogShouldWarm(should_warm);
 
+  // TODO(crbug.com/1258415): Remove the IsSuggestedFilesEnabled dependency for
+  // cache warming.
   if (have_warmed_up_cache_ || !suggested_files_enabled_ || !should_warm)
     return;
   have_warmed_up_cache_ = true;
@@ -283,10 +276,6 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
 
     provider_results.emplace_back(MakeListResult(
         path_or_error->get_path(), cache_results[i].prediction_reason, score));
-    if (suggested_files_enabled_ && IsSuggestedContentEnabled(profile_)) {
-      provider_results.emplace_back(
-          MakeChipResult(path_or_error->get_path(), score));
-    }
   }
 
   // We expect some files to error sometimes, but we're mainly interested in
@@ -310,7 +299,7 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const absl::optional<std::string>& prediction_reason,
     const float relevance) {
   auto result = std::make_unique<FileResult>(
-      kListSchema, ReparentToDriveMount(filepath, drive_service_),
+      kSchema, ReparentToDriveMount(filepath, drive_service_),
       ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
       relevance, std::u16string(), FileResult::Type::kFile, profile_);
   // If it exists, override the details text with the prediction reason in the
@@ -318,16 +307,6 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
   if (prediction_reason && ash::features::IsProductivityLauncherEnabled())
     result->SetDetails(base::UTF8ToUTF16(prediction_reason.value()));
   return result;
-}
-
-std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
-    const base::FilePath& filepath,
-    const float relevance) {
-  return std::make_unique<FileResult>(
-      kChipSchema, ReparentToDriveMount(filepath, drive_service_),
-      ash::AppListSearchResultType::kDriveChip,
-      ash::SearchResultDisplayType::kChip, relevance, std::u16string(),
-      FileResult::Type::kFile, profile_);
 }
 
 void ZeroStateDriveProvider::OnCacheUpdated() {

@@ -83,10 +83,6 @@ class ZeroStateDriveProvider : public SearchProvider,
       const base::FilePath& filepath,
       const absl::optional<std::string>& prediction_reason,
       const float relevance);
-  // TODO(crbug.com/1258415): Chip results don't exist in the new launcher.
-  // MakeChipResult can be removed after launch.
-  std::unique_ptr<FileResult> MakeChipResult(const base::FilePath& filepath,
-                                             const float relevance);
 
   // Callback for when the ItemSuggestCache updates its results.
   void OnCacheUpdated();

@@ -32,10 +32,7 @@ using file_manager::file_tasks::FileTasksObserver;
 namespace app_list {
 namespace {
 
-// TODO(crbug.com/1258415): kFileChipSchema can be removed once the new
-// launcher is launched.
-constexpr char kFileChipSchema[] = "file_chip://";
-constexpr char kZeroStateFileSchema[] = "zero_state_file://";
+constexpr char kSchema[] = "zero_state_file://";
 
 constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 
@@ -59,11 +56,6 @@ internal::ValidAndInvalidResults ValidateFiles(
       invalid.emplace_back(path);
   }
   return {valid, invalid};
-}
-
-bool IsSuggestedContentEnabled(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(
-      chromeos::prefs::kSuggestedContentEnabled);
 }
 
 // TODO(crbug.com/1258415): This exists to reroute results depending on which
@@ -124,6 +116,7 @@ bool ZeroStateFileProvider::ShouldBlockZeroState() const {
 void ZeroStateFileProvider::StartZeroState() {
   query_start_time_ = base::TimeTicks::Now();
   ClearResultsSilently();
+
   if (!files_ranker_) {
     return;
   }
@@ -150,7 +143,7 @@ void ZeroStateFileProvider::SetSearchResults(
     const auto& filepath_score = valid_results[i];
     double score = filepath_score.second;
     auto result = std::make_unique<FileResult>(
-        kZeroStateFileSchema, filepath_score.first,
+        kSchema, filepath_score.first,
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
         std::u16string(), FileResult::Type::kFile, profile_);
     // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
@@ -160,18 +153,6 @@ void ZeroStateFileProvider::SetSearchResults(
       result->RequestThumbnail(&thumbnail_loader_);
     }
     new_results.push_back(std::move(result));
-
-    // Add suggestion chip file results.
-    // TODO(crbug.com/1258415): This can be removed once the new launcher is
-    // launched.
-    if (app_list_features::IsSuggestedLocalFilesEnabled() &&
-        IsSuggestedContentEnabled(profile_)) {
-      new_results.emplace_back(std::make_unique<FileResult>(
-          kFileChipSchema, filepath_score.first,
-          ash::AppListSearchResultType::kFileChip,
-          ash::SearchResultDisplayType::kChip, filepath_score.second,
-          std::u16string(), FileResult::Type::kFile, profile_));
-    }
   }
 
   if (app_list_features::IsForceShowContinueSectionEnabled())
@@ -211,10 +192,10 @@ void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
   constexpr int kTotalFakeFiles = 3;
   for (int i = 0; i < kTotalFakeFiles; ++i) {
     results->emplace_back(std::make_unique<FileResult>(
-        kFileChipSchema,
+        kSchema,
         base::FilePath(FILE_PATH_LITERAL(
             base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
-        ash::AppListSearchResultType::kFileChip,
+        ash::AppListSearchResultType::kZeroStateFile,
         ash::SearchResultDisplayType::kContinue, 0.1f, std::u16string(),
         FileResult::Type::kFile, profile_));
   }
