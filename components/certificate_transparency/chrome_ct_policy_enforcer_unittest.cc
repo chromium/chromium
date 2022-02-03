@@ -656,6 +656,12 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   }
   std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
 
+  for (size_t i = 0; i < scts.size(); i++) {
+    OperatorHistoryEntry entry;
+    entry.current_operator_ = "Operator " + base::NumberToString(i);
+    log_operator_history[scts[i]->log_id] = entry;
+  }
+
   chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                           operated_by_google_logs,
                                           log_operator_history);
