@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -130,11 +131,12 @@ void UDPReadableStreamWrapper::UnderlyingSource::AcceptDatagram(
     base::span<const uint8_t> data,
     const net::IPEndPoint& src_addr) {
   // Copies |data|.
-  auto* buffer = DOMArrayBuffer::Create(data.data(), data.size_bytes());
+  auto* buffer = DOMUint8Array::Create(data.data(), data.size_bytes());
 
   auto* message = UDPMessage::Create();
 
-  message->setData(buffer);
+  message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(buffer)));
   message->setRemoteAddress(String{src_addr.ToStringWithoutPort()});
   message->setRemotePort(src_addr.port());
 

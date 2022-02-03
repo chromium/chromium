@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
     EXPECT_TRUE(result.data.has_value());
     EXPECT_EQ(result.data->size(), expected_data_size);
     for (uint8_t current : *result.data) {
-      EXPECT_EQ(current, static_cast<uint8_t>('a'));
+      EXPECT_EQ(current, bytes_received % 256);
       ++bytes_received;
     }
   }
@@ -247,10 +247,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
   // With a client socket listening in the javascript code, we can finally start
   // sending out data.
   net::IPEndPoint client_addr(net::IPAddress::IPv4Localhost(), local_port);
+  uint32_t bytesSent = 0;
   for (uint32_t i = 0; i < kRequiredDatagrams; i++) {
-    EXPECT_EQ(net::OK, server_helper.SendToSync(
-                           client_addr, std::vector<uint8_t>(
-                                            i + 1, static_cast<uint8_t>('a'))));
+    std::vector<uint8_t> message(i + 1);
+    for (uint8_t& byte : message) {
+      byte = bytesSent % 256;
+      bytesSent++;
+    }
+    EXPECT_EQ(net::OK, server_helper.SendToSync(client_addr, message));
   }
 
   // Blocks until script execution is complete and returns the resulting

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -100,7 +101,8 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
 
   auto* chunk = DOMArrayBuffer::Create("A", 1);
   auto* message = UDPMessage::Create();
-  message->setData(chunk);
+  message->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
   ScriptPromise result =
       writer->write(script_state, ScriptValue::From(script_state, message),
@@ -112,6 +114,37 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
   ASSERT_TRUE(tester.IsFulfilled());
 
   EXPECT_THAT(fake_udp_socket.GetReceivedData(), ::testing::ElementsAre('A'));
+}
+
+TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
+  V8TestingScope scope;
+  FakeDirectUDPSocket fake_udp_socket;
+  StreamCreator stream_creator{scope, &fake_udp_socket};
+
+  auto* udp_writable_stream_wrapper = stream_creator.Create();
+  auto* script_state = scope.GetScriptState();
+
+  auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
+      script_state, ASSERT_NO_EXCEPTION);
+
+  auto* buffer = DOMArrayBuffer::Create("ABC", 3);
+  auto* chunk = DOMUint8Array::Create(buffer, 0, 3);
+
+  auto* message = UDPMessage::Create();
+  message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(chunk)));
+
+  ScriptPromise result =
+      writer->write(script_state, ScriptValue::From(script_state, message),
+                    ASSERT_NO_EXCEPTION);
+
+  ScriptPromiseTester tester(script_state, result);
+  tester.WaitUntilSettled();
+
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  EXPECT_THAT(fake_udp_socket.GetReceivedData(),
+              ::testing::ElementsAre('A', 'B', 'C'));
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
@@ -129,7 +162,8 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
   auto* chunk = DOMArrayBuffer::Create(/*num_elements=*/static_cast<size_t>(0),
                                        /*element_byte_size=*/1);
   auto* message = UDPMessage::Create();
-  message->setData(chunk);
+  message->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
   ScriptPromise result =
       writer->write(script_state, ScriptValue::From(script_state, message),
@@ -190,7 +224,8 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
   for (const auto* value : {"A", "B"}) {
     auto* chunk = DOMArrayBuffer::Create(value, 1);
     auto* message = UDPMessage::Create();
-    message->setData(chunk);
+    message->setData(
+        MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
     ScriptPromise result =
         writer->write(script_state, ScriptValue::From(script_state, message),
@@ -218,7 +253,8 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
 
   auto* chunk = DOMArrayBuffer::Create("A", 1);
   auto* message = UDPMessage::Create();
-  message->setData(chunk);
+  message->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(chunk));
 
   ScriptPromise write_result =
       writer->write(script_state, ScriptValue::From(script_state, message),

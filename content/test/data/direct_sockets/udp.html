@@ -8,14 +8,17 @@
     async function sendLoop(writer, requiredBytes) {
       let bytesWritten = 0;
       let chunkLength = 0;
-      const encoder = new TextEncoder();
 
       while (bytesWritten < requiredBytes) {
         chunkLength = Math.min(chunkLength + 1,
                                requiredBytes - bytesWritten);
-        bytesWritten += chunkLength;
-        const view = encoder.encode('a'.repeat(chunkLength));
-        await writer.write({ data: view.buffer });
+        let chunk = new Uint8Array(chunkLength);
+        for (let index = 0; index < chunkLength; index++) {
+          chunk[index] = bytesWritten % 256;
+          bytesWritten++;
+        }
+        await writer.ready;
+        await writer.write({ data: chunk });
       }
       return 'send succeeded';
     }
@@ -23,15 +26,23 @@
     async function readLoop(reader, requiredBytes) {
       let bytesRead = 0;
       while (bytesRead < requiredBytes) {
-        const { value : { data }, done } = await reader.read();
+        const { value, done } = await reader.read();
         if (done) {
           return 'readLoop failed: stream closed prematurely.';
         }
-        if (!data || data.byteLength === 0) {
+
+        const { data } = value;
+        if (!data || data.length === 0) {
           return 'readLoop failed: no data returned.';
         }
 
-        bytesRead += data.byteLength;
+        for (let index = 0; index < data.length; index++) {
+          if (data[index] != bytesRead % 256) {
+            console.log(`Expected ${bytesRead % 256}, received ${data[index]}`);
+            return 'readLoop failed: bad data.';
+          }
+          bytesRead++;
+        }
       }
       return 'readLoop succeeded.';
     }

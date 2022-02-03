@@ -14,8 +14,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -106,9 +108,9 @@ std::pair<UDPMessage*, bool> UnpackPromiseResult(const V8TestingScope& scope,
 }
 
 String UDPMessageDataToString(const UDPMessage* message) {
-  auto* buffer = message->data();
-  return String{static_cast<const uint8_t*>(buffer->Data()),
-                static_cast<wtf_size_t>(buffer->ByteLength())};
+  DOMArrayPiece array_piece{message->data()};
+  return String{static_cast<const uint8_t*>(array_piece.Bytes()),
+                static_cast<wtf_size_t>(array_piece.ByteLength())};
 }
 
 TEST(UDPReadableStreamWrapperTest, Create) {
@@ -208,7 +210,7 @@ TEST(UDPReadableStreamWrapperTest, ReadEmptyUdpMessage) {
   ASSERT_FALSE(done);
   ASSERT_TRUE(message->hasData());
 
-  ASSERT_EQ(message->data()->ByteLength(), 0U);
+  ASSERT_EQ(UDPMessageDataToString(message).length(), 0U);
 }
 
 TEST(UDPReadableStreamWrapperTest, CancelStreamFromReader) {
