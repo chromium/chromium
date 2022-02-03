@@ -89414,7 +89414,11 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Passwords"/>
   <int value="9" label="Autofill"/>
   <int value="10" label="Payments"/>
-  <int value="11" label="Sync (Mobile only)"/>
+  <int value="11" label="(deprecated) Sync (Mobile only)">
+    <obsolete>
+      Removed 01/2022.
+    </obsolete>
+  </int>
 </enum>
 
 <enum name="UniformityTrialGroupNotActive">
