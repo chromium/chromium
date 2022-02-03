@@ -7,12 +7,16 @@
 #include <algorithm>
 #include <cstring>
 
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -82,6 +86,18 @@ const CameraInfo* GetCameraInfoById(const CameraId& id,
       list.begin(), list.end(),
       [&id](const CameraInfo& info) { return info.camera_id == id; });
   return iter == list.end() ? nullptr : &(*iter);
+}
+
+std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
+    const gfx::Rect& bounds) {
+  auto camera_preview_widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
+      kShellWindowId_OverlayContainer);
+  params.bounds = bounds;
+  params.name = "CameraPreviewWidget";
+  camera_preview_widget->Init(std::move(params));
+  return camera_preview_widget;
 }
 
 }  // namespace
@@ -219,13 +235,18 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
 void CaptureModeCameraController::RefreshCameraPreview() {
   const CameraInfo* camera_info = GetCameraInfoForPreview();
   if (!camera_info) {
-    // TODO(https://crbug.com/1290883): Destroy the preview if any.
-    camera_preview_widget_ = false;
+    camera_preview_widget_.reset();
+    camera_preview_view_ = nullptr;
     return;
   }
 
-  // TODO(https://crbug.com/1290883): Create the preview.
-  camera_preview_widget_ = true;
+  if (!camera_preview_widget_) {
+    camera_preview_widget_ = CreateCameraPreviewWidget(
+        CameraPreviewView::CalculateCameraPreviewWidgetBounds());
+    camera_preview_view_ = camera_preview_widget_->SetContentsView(
+        std::make_unique<CameraPreviewView>());
+  }
+  camera_preview_widget_->Show();
 }
 
 const CameraInfo* CaptureModeCameraController::GetCameraInfoForPreview() const {

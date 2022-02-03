@@ -17,9 +17,11 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
+class CameraPreviewView;
 class CaptureModeDelegate;
 
 // The ID used internally in capture mode to identify the camera.
@@ -115,7 +117,9 @@ class ASH_EXPORT CaptureModeCameraController
 
   const CameraInfoList& available_cameras() const { return available_cameras_; }
   const CameraId& selected_camera() const { return selected_camera_; }
-  bool camera_preview_widget() const { return camera_preview_widget_; }
+  views::Widget* camera_preview_widget() const {
+    return camera_preview_widget_.get();
+  }
   bool should_show_preview() const { return should_show_preview_; }
 
   void AddObserver(Observer* observer);
@@ -185,9 +189,9 @@ class ASH_EXPORT CaptureModeCameraController
   // a change.
   base::OnceClosure on_camera_list_received_for_test_;
 
-  // TODO(https://crbug.com/1290883): Remove this and replace it by the actual
-  // preview widget. This was added temporarily for testing purposes.
-  bool camera_preview_widget_ = false;
+  // The camera preview widget and its contents view.
+  views::UniqueWidgetPtr camera_preview_widget_;
+  CameraPreviewView* camera_preview_view_ = nullptr;
 
   // Set to true when a preview of the currently selected camera (if any) should
   // be shown. This happens when CaptureModeSession is started or switched to
