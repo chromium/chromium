@@ -139,7 +139,7 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
 
     // Check that the serialized backoff duration matches our expectation.
     const std::string& serialized_backoff_duration_string =
-        serialized.GetList()[2].GetString();
+        serialized.GetListDeprecated()[2].GetString();
     int64_t serialized_backoff_duration_us;
     EXPECT_TRUE(base::StringToInt64(serialized_backoff_duration_string,
                                     &serialized_backoff_duration_us));
@@ -172,7 +172,7 @@ TEST(BackoffEntrySerializerTest, SerializeFiniteReleaseTime) {
 
   // Reach into the serialization and check the string-formatted release time.
   const std::string& serialized_release_time =
-      serialized.GetList()[3].GetString();
+      serialized.GetListDeprecated()[3].GetString();
   EXPECT_EQ(serialized_release_time, "0");
 
   // Test that |DeserializeFromValue| notices this zero-valued release time and

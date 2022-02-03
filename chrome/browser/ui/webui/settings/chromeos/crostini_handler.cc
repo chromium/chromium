@@ -200,9 +200,10 @@ void CrostiniHandler::OnJavascriptAllowed() {
   // Observe changes to containers in general
   pref_change_registrar_.Add(
       crostini::prefs::kCrostiniContainers,
-      base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
-                          handler_weak_ptr_factory_.GetWeakPtr(),
-                          base::Value(base::Value::Type::LIST).GetList()));
+      base::BindRepeating(
+          &CrostiniHandler::HandleRequestContainerInfo,
+          handler_weak_ptr_factory_.GetWeakPtr(),
+          base::Value(base::Value::Type::LIST).GetListDeprecated()));
 }
 
 void CrostiniHandler::OnJavascriptDisallowed() {
@@ -664,13 +665,15 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
 void CrostiniHandler::OnContainerStarted(
     const crostini::ContainerId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(true));
-  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
+  HandleRequestContainerInfo(
+      base::Value(base::Value::Type::LIST).GetListDeprecated());
 }
 
 void CrostiniHandler::OnContainerShutdown(
     const crostini::ContainerId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(false));
-  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
+  HandleRequestContainerInfo(
+      base::Value(base::Value::Type::LIST).GetListDeprecated());
 }
 
 void CrostiniHandler::HandleShutdownCrostini(base::Value::ConstListView args) {

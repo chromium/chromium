@@ -988,7 +988,7 @@ interestGroupBuyers: [$1]
       return absl::nullopt;
 
     std::vector<GURL> out;
-    for (const auto& value : result.value.GetList()) {
+    for (const auto& value : result.value.GetListDeprecated()) {
       if (!value.is_string()) {
         ADD_FAILURE() << "Expected string: " << value;
         return std::vector<GURL>();

@@ -1621,7 +1621,7 @@ TEST(HostCacheTest, SerializeForDebugging) {
   HostCache restored_cache(kMaxCacheEntries);
   EXPECT_FALSE(restored_cache.RestoreFromListValue(serialized_cache));
 
-  base::Value::ListView list = serialized_cache.GetList();
+  base::Value::ListView list = serialized_cache.GetListDeprecated();
   ASSERT_EQ(1u, list.size());
   ASSERT_TRUE(list[0].is_dict());
   base::Value* nik_value = list[0].FindPath("network_isolation_key");
@@ -1651,7 +1651,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   HostCache restored_cache(kMaxCacheEntries);
   restored_cache.RestoreFromListValue(serialized_cache);
 
-  ASSERT_EQ(1u, serialized_cache.GetList().size());
+  ASSERT_EQ(1u, serialized_cache.GetListDeprecated().size());
   ASSERT_EQ(1u, restored_cache.size());
   HostCache::EntryStaleness stale;
   const std::pair<const HostCache::Key, HostCache::Entry>* result =

@@ -1025,7 +1025,7 @@ base::Value SiteSettingsHandler::PopulateCookiesAndUsageData(Profile* profile) {
                                  &list_value, profile);
 
   // Merge the origin usage and cookies number into |list_value|.
-  for (base::Value& site_group : list_value.GetList()) {
+  for (base::Value& site_group : list_value.GetListDeprecated()) {
     base::Value* origin_list = site_group.FindKey(kOriginList);
     int cookie_num = 0;
     const std::string& etld_plus1 =
@@ -1138,7 +1138,7 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
   CHECK_EQ(3U, args_list.size());
   const base::Value& callback_id = args_list[0];
   std::string origin = args_list[1].GetString();
-  base::Value::ConstListView types = args_list[2].GetList();
+  base::Value::ConstListView types = args_list[2].GetListDeprecated();
 
   // Note: Invalid URLs will just result in default settings being shown.
   const GURL origin_url(origin);

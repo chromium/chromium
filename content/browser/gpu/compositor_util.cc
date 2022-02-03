@@ -340,7 +340,8 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
     disabled_features.Append("all");
     problem.SetKey("affectedGpuSettings", std::move(disabled_features));
     problem.SetStringKey("tag", "disabledFeatures");
-    problem_list.Insert(problem_list.GetList().begin(), std::move(problem));
+    problem_list.Insert(problem_list.GetListDeprecated().begin(),
+                        std::move(problem));
   }
 
   bool eof = false;
@@ -357,7 +358,8 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
       disabled_features.Append(gpu_feature_data.name);
       problem.SetKey("affectedGpuSettings", std::move(disabled_features));
       problem.SetStringKey("tag", "disabledFeatures");
-      problem_list.Insert(problem_list.GetList().begin(), std::move(problem));
+      problem_list.Insert(problem_list.GetListDeprecated().begin(),
+                          std::move(problem));
     }
   }
   return problem_list;

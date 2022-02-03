@@ -981,7 +981,7 @@ void ManagementUIHandler::HandleGetExtensions(const base::ListValue* args) {
   // The number of extensions to be reported in chrome://management with
   // powerful permissions.
   base::UmaHistogramCounts1000(kPowerfulExtensionsCountHistogram,
-                               powerful_extensions.GetList().size());
+                               powerful_extensions.GetListDeprecated().size());
 
   ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
                             powerful_extensions);

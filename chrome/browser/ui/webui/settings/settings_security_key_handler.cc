@@ -421,7 +421,8 @@ void SecurityKeysCredentialHandler::HandleDelete(const base::ListValue* args) {
   state_ = State::kDeletingCredentials;
   callback_id_ = args->GetListDeprecated()[0].GetString();
   std::vector<device::PublicKeyCredentialDescriptor> credential_ids;
-  for (const base::Value& el : args->GetListDeprecated()[1].GetList()) {
+  for (const base::Value& el :
+       args->GetListDeprecated()[1].GetListDeprecated()) {
     std::vector<uint8_t> credential_id_bytes;
     if (!base::HexStringToBytes(el.GetString(), &credential_id_bytes)) {
       NOTREACHED();

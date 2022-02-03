@@ -346,7 +346,7 @@ void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
 
   const base::Value& val = args->GetListDeprecated()[0];
   std::vector<std::string> print_server_ids;
-  for (const auto& id : val.GetList()) {
+  for (const auto& id : val.GetListDeprecated()) {
     print_server_ids.push_back(id.GetString());
   }
   MaybeAllowJavascript();

@@ -161,13 +161,13 @@ TEST(CommanderHandlerTest, DisplayResultsViewModelPassed) {
                    ->GetListDeprecated()[0]
                    .FindPath("matchedRanges")
                    ->GetListDeprecated()[0]
-                   .GetList()[0]
+                   .GetListDeprecated()[0]
                    .GetInt());
   EXPECT_EQ(4, arg->FindPath("options")
                    ->GetListDeprecated()[0]
                    .FindPath("matchedRanges")
                    ->GetListDeprecated()[0]
-                   .GetList()[1]
+                   .GetListDeprecated()[1]
                    .GetInt());
   EXPECT_EQ(42, arg->FindPath("resultSetId")->GetInt());
 }

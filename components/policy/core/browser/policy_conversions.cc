@@ -134,7 +134,7 @@ Value DictionaryPolicyConversions::ToValue() {
 Value DictionaryPolicyConversions::GetDeviceLocalAccountPolicies() {
   Value policies = client()->GetDeviceLocalAccountPolicies();
   Value device_values(Value::Type::DICTIONARY);
-  for (auto&& policy : policies.GetList()) {
+  for (auto&& policy : policies.GetListDeprecated()) {
     device_values.SetKey(policy.FindKey("id")->GetString(),
                          std::move(*policy.FindKey("policies")));
   }
@@ -146,7 +146,7 @@ Value DictionaryPolicyConversions::GetExtensionPolicies(
     PolicyDomain policy_domain) {
   Value policies = client()->GetExtensionPolicies(policy_domain);
   Value extension_values(Value::Type::DICTIONARY);
-  for (auto&& policy : policies.GetList()) {
+  for (auto&& policy : policies.GetListDeprecated()) {
     extension_values.SetKey(policy.FindKey("id")->GetString(),
                             std::move(*policy.FindKey("policies")));
   }

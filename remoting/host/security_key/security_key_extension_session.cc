@@ -45,11 +45,11 @@ unsigned int GetCommandCode(const std::string& data) {
 bool ConvertListToString(const base::Value& bytes, std::string* out) {
   out->clear();
 
-  unsigned int byte_count = bytes.GetList().size();
+  unsigned int byte_count = bytes.GetListDeprecated().size();
   if (byte_count != 0) {
     out->reserve(byte_count);
     for (unsigned int i = 0; i < byte_count; i++) {
-      auto value = bytes.GetList()[i].GetIfInt();
+      auto value = bytes.GetListDeprecated()[i].GetIfInt();
       if (!value.has_value()) {
         return false;
       }

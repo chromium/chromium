@@ -54,13 +54,14 @@ std::unique_ptr<Value> CopyWithoutEmptyChildren(const Value& node);
 // expects |node| to always be non-NULL.
 std::unique_ptr<Value> CopyListWithoutEmptyChildren(const Value& list) {
   Value copy(Value::Type::LIST);
-  for (const auto& entry : list.GetList()) {
+  for (const auto& entry : list.GetListDeprecated()) {
     std::unique_ptr<Value> child_copy = CopyWithoutEmptyChildren(entry);
     if (child_copy)
       copy.Append(std::move(*child_copy));
   }
-  return copy.GetList().empty() ? nullptr
-                                : std::make_unique<Value>(std::move(copy));
+  return copy.GetListDeprecated().empty()
+             ? nullptr
+             : std::make_unique<Value>(std::move(copy));
 }
 
 std::unique_ptr<DictionaryValue> CopyDictionaryWithoutEmptyChildren(

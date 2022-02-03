@@ -47,15 +47,19 @@ void PasswordChangeHandler::HandleChangePassword(
     const base::ListValue* params) {
   const base::Value& old_passwords = params->GetListDeprecated()[0];
   const base::Value& new_passwords = params->GetListDeprecated()[1];
-  VLOG(4) << "Scraped " << old_passwords.GetList().size() << " old passwords";
-  VLOG(4) << "Scraped " << new_passwords.GetList().size() << " new passwords";
+  VLOG(4) << "Scraped " << old_passwords.GetListDeprecated().size()
+          << " old passwords";
+  VLOG(4) << "Scraped " << new_passwords.GetListDeprecated().size()
+          << " new passwords";
 
-  const std::string old_password = (old_passwords.GetList().size() > 0)
-                                       ? old_passwords.GetList()[0].GetString()
-                                       : "";
-  const std::string new_password = (new_passwords.GetList().size() == 1)
-                                       ? new_passwords.GetList()[0].GetString()
-                                       : "";
+  const std::string old_password =
+      (old_passwords.GetListDeprecated().size() > 0)
+          ? old_passwords.GetListDeprecated()[0].GetString()
+          : "";
+  const std::string new_password =
+      (new_passwords.GetListDeprecated().size() == 1)
+          ? new_passwords.GetListDeprecated()[0].GetString()
+          : "";
 
   InSessionPasswordChangeManager::Get()->OnSamlPasswordChanged(old_password,
                                                                new_password);

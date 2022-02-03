@@ -146,7 +146,7 @@ bool VerifyListEntry(const base::Value& list,
                      const char* listName = nullptr) {
   // Assume the index is valid (since we'll be able to generate a better
   // error message for this elsewhere.)
-  if (list.GetList()[index].type() != type) {
+  if (list.GetListDeprecated()[index].type() != type) {
     LOG(ERROR) << (listName ? listName : "List") << "element " << index
                << " did not have the expected type (expected "
                << base::Value::GetTypeName(type) << ")\n";

@@ -99,7 +99,7 @@ Status DomTracker::OnEvent(DevToolsClient* client,
 bool DomTracker::ProcessNodeList(const base::Value& nodes) {
   if (!nodes.is_list())
     return false;
-  for (const base::Value& node : nodes.GetList()) {
+  for (const base::Value& node : nodes.GetListDeprecated()) {
     if (!ProcessNode(node))
       return false;
   }

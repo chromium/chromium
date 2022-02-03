@@ -37,7 +37,7 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLMultipleFavicons) {
   favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.GetList(),
+  bool result = web::ExtractFaviconURL(favicons.GetListDeprecated(),
                                        GURL("http://chromium.org"), &urls);
 
   EXPECT_TRUE(result);
@@ -75,7 +75,8 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoRel) {
   favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.GetList(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -100,7 +101,8 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLIntRel) {
   favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.GetList(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -124,7 +126,8 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoHref) {
   favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.GetList(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -138,7 +141,7 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoFavicons) {
   base::Value favicons(base::Value::Type::LIST);
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.GetList(),
+  bool result = web::ExtractFaviconURL(favicons.GetListDeprecated(),
                                        GURL("http://chromium.org"), &urls);
 
   EXPECT_TRUE(result);
@@ -164,7 +167,8 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLSizesCorrectAndGarbage) {
   favicons.Append(std::move(favicon2));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.GetList(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());
@@ -199,7 +203,8 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLSizesPartiallyCorrect) {
   favicons.Append(std::move(favicon2));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.GetList(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());

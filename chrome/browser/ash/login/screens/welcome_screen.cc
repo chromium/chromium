@@ -248,7 +248,7 @@ std::string WelcomeScreen::GetInputMethod() const {
 void WelcomeScreen::SetApplicationLocale(const std::string& locale) {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   if (app_locale == locale || locale.empty()) {
-    if (language_list_.GetList().empty())
+    if (language_list_.GetListDeprecated().empty())
       UpdateLanguageList();
     return;
   }

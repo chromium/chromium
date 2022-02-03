@@ -60,7 +60,7 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
 
   // Verify the recorded commands.
   const base::ListValue& ops = benchmarking_canvas.Commands();
-  ASSERT_EQ(ops.GetList().size(), static_cast<size_t>(5));
+  ASSERT_EQ(ops.GetListDeprecated().size(), static_cast<size_t>(5));
 
   size_t index = 0;
   const base::Value* value;
@@ -68,7 +68,7 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   const base::ListValue* op_args;
   std::string op_name;
 
-  value = &ops.GetList()[index++];
+  value = &ops.GetListDeprecated()[index++];
   ASSERT_TRUE(value->is_dict());
   op = static_cast<const base::DictionaryValue*>(value);
   EXPECT_TRUE(op->GetString("cmd_string", &op_name));
@@ -76,7 +76,7 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   ASSERT_TRUE(op->GetList("info", &op_args));
   EXPECT_EQ(op_args->GetListDeprecated().size(), static_cast<size_t>(0));
 
-  value = &ops.GetList()[index++];
+  value = &ops.GetListDeprecated()[index++];
   ASSERT_TRUE(value->is_dict());
   op = static_cast<const base::DictionaryValue*>(value);
   EXPECT_TRUE(op->GetString("cmd_string", &op_name));
@@ -87,7 +87,7 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   EXPECT_TRUE(HasArg(op_args, "op"));
   EXPECT_TRUE(HasArg(op_args, "anti-alias"));
 
-  value = &ops.GetList()[index++];
+  value = &ops.GetListDeprecated()[index++];
   ASSERT_TRUE(value->is_dict());
   op = static_cast<const base::DictionaryValue*>(value);
   EXPECT_TRUE(op->GetString("cmd_string", &op_name));
@@ -96,7 +96,7 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   EXPECT_EQ(op_args->GetListDeprecated().size(), static_cast<size_t>(1));
   EXPECT_TRUE(HasArg(op_args, "matrix"));
 
-  value = &ops.GetList()[index++];
+  value = &ops.GetListDeprecated()[index++];
   ASSERT_TRUE(value->is_dict());
   op = static_cast<const base::DictionaryValue*>(value);
   EXPECT_TRUE(op->GetString("cmd_string", &op_name));
@@ -106,7 +106,7 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   EXPECT_TRUE(HasArg(op_args, "rect"));
   EXPECT_TRUE(HasArg(op_args, "paint"));
 
-  value = &ops.GetList()[index++];
+  value = &ops.GetListDeprecated()[index++];
   ASSERT_TRUE(value->is_dict());
   op = static_cast<const base::DictionaryValue*>(value);
   EXPECT_TRUE(op->GetString("cmd_string", &op_name));

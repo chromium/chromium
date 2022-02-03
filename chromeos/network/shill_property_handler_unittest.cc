@@ -53,7 +53,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   void UpdateManagedList(ManagedState::ManagedType type,
                          const base::Value& entries) override {
     VLOG(1) << "UpdateManagedList[" << ManagedState::TypeToString(type)
-            << "]: " << entries.GetList().size();
+            << "]: " << entries.GetListDeprecated().size();
     UpdateEntries(GetTypeString(type), entries);
   }
 
@@ -68,7 +68,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     if (!profile_list.is_list()) {
       return;
     }
-    profile_list_size_ = profile_list.GetList().size();
+    profile_list_size_ = profile_list.GetListDeprecated().size();
   }
 
   void UpdateNetworkServiceProperty(const std::string& service_path,
@@ -145,7 +145,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     if (type.empty())
       return;
     entries_[type].clear();
-    for (const auto& entry : entries.GetList()) {
+    for (const auto& entry : entries.GetListDeprecated()) {
       if (entry.is_string())
         entries_[type].push_back(entry.GetString());
     }

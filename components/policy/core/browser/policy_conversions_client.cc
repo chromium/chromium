@@ -214,7 +214,7 @@ Value PolicyConversionsClient::CopyAndMaybeConvert(
   }
 
   Value result(Value::Type::LIST);
-  for (const auto& element : value_copy.GetList()) {
+  for (const auto& element : value_copy.GetListDeprecated()) {
     if (element.is_dict()) {
       result.Append(Value(ConvertValueToJSON(element)));
     } else {

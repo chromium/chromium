@@ -125,7 +125,7 @@ base::Value SessionWindowToValue(const ::sessions::SessionWindow& window) {
       tab_values.Append(std::move(tab_value));
     }
   }
-  if (tab_values.GetList().empty())
+  if (tab_values.GetListDeprecated().empty())
     return base::Value();
 
   base::Value dictionary = BuildWindowData(window.timestamp, window.window_id);

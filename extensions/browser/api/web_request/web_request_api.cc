@@ -960,7 +960,7 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
     if (it.key() == "urls") {
       if (!it.value().is_list())
         return false;
-      for (const auto& item : it.value().GetList()) {
+      for (const auto& item : it.value().GetListDeprecated()) {
         std::string url;
         // TODO(https://crbug.com/1257045): Remove urn: scheme support.
         URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
@@ -984,7 +984,7 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
     } else if (it.key() == "types") {
       if (!it.value().is_list())
         return false;
-      for (const auto& type : it.value().GetList()) {
+      for (const auto& type : it.value().GetListDeprecated()) {
         std::string type_str;
         if (type.is_string())
           type_str = type.GetString();

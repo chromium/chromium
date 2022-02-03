@@ -405,11 +405,11 @@ TEST_F(PrintingAPIHandlerUnittest, EventIsDispatched) {
   EXPECT_EQ(kExtensionId, event_observer.extension_id());
   const base::Value& event_args = event_observer.event_args();
   ASSERT_TRUE(event_args.is_list());
-  ASSERT_EQ(2u, event_args.GetList().size());
-  base::Value job_id = event_args.GetList()[0].Clone();
+  ASSERT_EQ(2u, event_args.GetListDeprecated().size());
+  base::Value job_id = event_args.GetListDeprecated()[0].Clone();
   ASSERT_TRUE(job_id.is_string());
   EXPECT_FALSE(job_id.GetString().empty());
-  base::Value job_status = event_args.GetList()[1].Clone();
+  base::Value job_status = event_args.GetListDeprecated()[1].Clone();
   ASSERT_TRUE(job_status.is_string());
   EXPECT_EQ(api::printing::JOB_STATUS_PENDING,
             api::printing::ParseJobStatus(job_status.GetString()));

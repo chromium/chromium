@@ -60,11 +60,11 @@ TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   info.state = test::api::objects::FIRST_STATE_FOO;
   base::Value results(test::api::objects::ReturnsObject::Results::Create(info));
   ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetList().size());
+  ASSERT_EQ(1u, results.GetListDeprecated().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "foo");
-  EXPECT_EQ(expected, results.GetList()[0]);
+  EXPECT_EQ(expected, results.GetListDeprecated()[0]);
 }
 
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
@@ -72,11 +72,11 @@ TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   object.state = test::api::objects::FIRST_STATE_BAR;
   base::Value results(test::api::objects::OnObjectFired::Create(object));
   ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetList().size());
+  ASSERT_EQ(1u, results.GetListDeprecated().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "bar");
-  EXPECT_EQ(expected, results.GetList()[0]);
+  EXPECT_EQ(expected, results.GetListDeprecated()[0]);
 }
 
 TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {

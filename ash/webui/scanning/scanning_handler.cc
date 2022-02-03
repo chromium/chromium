@@ -135,7 +135,7 @@ void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetListDeprecated().size());
   DCHECK(args->GetListDeprecated()[0].is_list());
   const base::Value::ConstListView& value_list =
-      args->GetListDeprecated()[0].GetList();
+      args->GetListDeprecated()[0].GetListDeprecated();
   DCHECK(!value_list.empty());
 
   std::vector<base::FilePath> file_paths;

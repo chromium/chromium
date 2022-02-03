@@ -178,7 +178,7 @@ bool CopyHashToHashesMapFromHeader(
     }
 
     std::vector<std::string> allowed_spkis;
-    for (const auto& j : i.second.GetList()) {
+    for (const auto& j : i.second.GetListDeprecated()) {
       allowed_spkis.push_back(std::string());
       if (!j.is_string() ||
           !base::Base64Decode(j.GetString(), &allowed_spkis.back())) {

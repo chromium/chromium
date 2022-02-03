@@ -107,7 +107,7 @@ class OncMaskValues : public Mapper {
 // the Certificates section of ONC, which is passed in as |certificates|.
 CertPEMsByGUIDMap GetServerAndCACertsByGUID(const base::Value& certificates) {
   CertPEMsByGUIDMap certs_by_guid;
-  for (const auto& cert : certificates.GetList()) {
+  for (const auto& cert : certificates.GetListDeprecated()) {
     DCHECK(cert.is_dict());
 
     const std::string* guid = cert.FindStringKey(::onc::certificate::kGUID);

@@ -246,7 +246,7 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
   // All FileEntries converted into array of URL Strings in JS custom bindings.
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_list());
-  base::Value::ConstListView file_entry_urls = args()[0].GetList();
+  base::Value::ConstListView file_entry_urls = args()[0].GetListDeprecated();
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
       browser_context()

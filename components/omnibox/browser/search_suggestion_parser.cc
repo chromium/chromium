@@ -86,7 +86,7 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
     if (!subtypes_item.is_list())
       continue;
 
-    auto subtype_list = subtypes_item.GetList();
+    auto subtype_list = subtypes_item.GetListDeprecated();
     auto& result_subtypes = result[index];
     result_subtypes.reserve(subtype_list.size());
 
@@ -456,7 +456,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     Results* results) {
   if (!root_val.is_list())
     return false;
-  auto root_list = root_val.GetList();
+  auto root_list = root_val.GetListDeprecated();
 
   // 1st element: query.
   if (root_list.empty() || !root_list[0].is_string())
@@ -468,7 +468,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // 2nd element: suggestions list.
   if (root_list.size() < 2u || !root_list[1].is_list())
     return false;
-  auto results_list = root_list[1].GetList();
+  auto results_list = root_list[1].GetListDeprecated();
 
   // 3rd element: Ignore the optional description list for now.
   // 4th element: Disregard the query URL list.
@@ -637,7 +637,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         std::u16string title;
         // 3rd element: optional descriptions list
         if (root_list.size() > 2u && root_list[2].is_list()) {
-          auto descriptions = root_list[2].GetList();
+          auto descriptions = root_list[2].GetListDeprecated();
           if (index < descriptions.size() && descriptions[index].is_string()) {
             title = base::UTF8ToUTF16(descriptions[index].GetString());
           }

@@ -805,7 +805,7 @@ void HttpServerPropertiesManager::SaveAlternativeServiceToServerPrefs(
                                     std::move(advertised_versions_list));
     alternative_service_list.Append(std::move(alternative_service_dict));
   }
-  if (alternative_service_list.GetList().size() == 0)
+  if (alternative_service_list.GetListDeprecated().size() == 0)
     return;
   server_pref_dict->SetKey(kAlternativeServiceKey,
                            std::move(alternative_service_list));
@@ -897,7 +897,8 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
         continue;
       }
       entry_dict.SetKey(kBrokenCountKey, base::Value(broken_count));
-      json_list_index_map[broken_alt_service] = json_list.GetList().size();
+      json_list_index_map[broken_alt_service] =
+          json_list.GetListDeprecated().size();
       json_list.Append(std::move(entry_dict));
     }
   }
@@ -921,7 +922,8 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
       auto index_map_it = json_list_index_map.find(broken_alt_service);
       if (index_map_it != json_list_index_map.end()) {
         size_t json_list_index = index_map_it->second;
-        base::Value& entry_dict = json_list.GetList()[json_list_index];
+        base::Value& entry_dict =
+            json_list.GetListDeprecated()[json_list_index];
         DCHECK(entry_dict.is_dict());
         DCHECK(!entry_dict.FindKey(kBrokenUntilKey));
         entry_dict.SetKey(kBrokenUntilKey,
@@ -941,7 +943,7 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
 
   // This can happen if all the entries are for NetworkIsolationKeys for opaque
   // origins, which isn't exactly common, but can theoretically happen.
-  if (json_list.GetList().empty())
+  if (json_list.GetListDeprecated().empty())
     return;
 
   http_server_properties_dict->SetKey(kBrokenAlternativeServicesKey,

@@ -1575,7 +1575,7 @@ void PdfViewPluginBase::SendAttachments() {
 
 void PdfViewPluginBase::SendBookmarks() {
   base::Value bookmarks = engine()->GetBookmarks();
-  if (bookmarks.GetList().empty())
+  if (bookmarks.GetListDeprecated().empty())
     return;
 
   base::Value message(base::Value::Type::DICTIONARY);

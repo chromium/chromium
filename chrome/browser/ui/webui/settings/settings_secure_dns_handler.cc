@@ -120,14 +120,15 @@ base::Value SecureDnsHandler::GetSecureDnsResolverList() {
   }
 
   // Randomize the order of the resolvers.
-  base::RandomShuffle(resolvers.GetList().begin(), resolvers.GetList().end());
+  base::RandomShuffle(resolvers.GetListDeprecated().begin(),
+                      resolvers.GetListDeprecated().end());
 
   // Add a custom option to the front of the list
   base::Value custom(base::Value::Type::DICTIONARY);
   custom.SetStringKey("name", l10n_util::GetStringUTF8(IDS_SETTINGS_CUSTOM));
   custom.SetStringKey("value", std::string());  // Empty value means custom.
   custom.SetStringKey("policy", std::string());
-  resolvers.Insert(resolvers.GetList().begin(), std::move(custom));
+  resolvers.Insert(resolvers.GetListDeprecated().begin(), std::move(custom));
 
   return resolvers;
 }

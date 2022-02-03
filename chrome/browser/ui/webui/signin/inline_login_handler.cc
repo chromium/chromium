@@ -183,7 +183,7 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
     const base::ListValue& args,
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  const base::Value& dict = args.GetList()[0];
+  const base::Value& dict = args.GetListDeprecated()[0];
 
   CompleteLoginParams params;
   params.email = dict.FindKey("email")->GetString();

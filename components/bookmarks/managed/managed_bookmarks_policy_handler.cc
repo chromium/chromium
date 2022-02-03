@@ -48,7 +48,7 @@ std::string ManagedBookmarksPolicyHandler::GetFolderName(
     const base::Value& list) {
   DCHECK(list.is_list());
   // Iterate over the list, and try to find the FolderName.
-  for (const auto& el : list.GetList()) {
+  for (const auto& el : list.GetListDeprecated()) {
     if (!el.is_dict())
       continue;
 

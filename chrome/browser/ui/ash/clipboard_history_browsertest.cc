@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   };
 
   // Confirm initial state.
-  ASSERT_TRUE(GetLastPaste().GetList().empty());
+  ASSERT_TRUE(GetLastPaste().GetListDeprecated().empty());
 
   // Write some things to the clipboard.
   SetClipboardTextAndHtml("A", "<span>A</span>");
@@ -810,9 +810,10 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Confirm the expected paste data.
   base::Value last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.GetList().size(), 2u);
-  EXPECT_EQ(last_paste.GetList()[0].GetString(), "text/plain: A");
-  EXPECT_EQ(last_paste.GetList()[1].GetString(), "text/html: <span>A</span>");
+  ASSERT_EQ(last_paste.GetListDeprecated().size(), 2u);
+  EXPECT_EQ(last_paste.GetListDeprecated()[0].GetString(), "text/plain: A");
+  EXPECT_EQ(last_paste.GetListDeprecated()[1].GetString(),
+            "text/html: <span>A</span>");
 
   // Open clipboard history and paste the middle history item as plain text.
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
@@ -830,8 +831,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Confirm the expected paste data.
   last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.GetList().size(), 1u);
-  EXPECT_EQ(last_paste.GetList()[0].GetString(), "text/plain: A");
+  ASSERT_EQ(last_paste.GetListDeprecated().size(), 1u);
+  EXPECT_EQ(last_paste.GetListDeprecated()[0].GetString(), "text/plain: A");
 }
 
 class ClipboardHistoryBrowserTest : public InProcessBrowserTest {

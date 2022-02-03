@@ -326,7 +326,8 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
     }
 
     // Device account must show up at the top.
-    accounts.Insert(accounts.GetList().begin(), device_account.Build());
+    accounts.Insert(accounts.GetListDeprecated().begin(),
+                    device_account.Build());
   }
 
   ResolveJavascriptCallback(callback_id, accounts);

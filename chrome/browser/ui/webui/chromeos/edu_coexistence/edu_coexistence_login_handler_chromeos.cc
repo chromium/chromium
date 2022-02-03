@@ -341,7 +341,7 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
   account_added_callback_ = args->GetListDeprecated()[0].GetString();
 
   const base::Value::ConstListView& arguments =
-      args->GetListDeprecated()[1].GetList();
+      args->GetListDeprecated()[1].GetListDeprecated();
 
   edu_account_email_ = arguments[0].GetString();
   terms_of_service_version_number_ = arguments[1].GetString();

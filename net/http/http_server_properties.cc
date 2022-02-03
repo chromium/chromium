@@ -415,7 +415,7 @@ base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
       }
       alternative_service_list.Append(std::move(alternative_service_string));
     }
-    if (alternative_service_list.GetList().empty())
+    if (alternative_service_list.GetListDeprecated().empty())
       continue;
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetStringKey("server", key.server.Serialize());

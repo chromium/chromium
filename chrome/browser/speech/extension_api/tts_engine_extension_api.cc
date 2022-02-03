@@ -393,7 +393,7 @@ ExtensionTtsEngineUpdateVoicesFunction::Run() {
   // Validate the voices and return an error if there's a problem.
   const char* error = nullptr;
   auto tts_voices = ValidateAndConvertToTtsVoiceVector(
-      extension(), voices_data.GetList(),
+      extension(), voices_data.GetListDeprecated(),
       /* return_after_first_error = */ true, &error);
   if (error)
     return RespondNow(Error(error));

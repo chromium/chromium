@@ -98,7 +98,7 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // using the first one.
   base::Value private_keys;
   ASSERT_TRUE(ReadJsonTestFileAsList("ec_private_keys.json", &private_keys));
-  const base::Value& key_value = private_keys.GetList()[0];
+  const base::Value& key_value = private_keys.GetListDeprecated()[0];
   ASSERT_TRUE(key_value.is_dict());
   const base::DictionaryValue* key_dict =
       &base::Value::AsDictionaryValue(key_value);
@@ -156,11 +156,11 @@ TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("ecdsa.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);
@@ -240,11 +240,11 @@ TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("bad_ec_keys.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);
@@ -273,11 +273,11 @@ TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("ec_private_keys.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);

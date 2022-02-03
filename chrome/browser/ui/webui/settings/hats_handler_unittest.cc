@@ -116,7 +116,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
       &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();
 
-  args.GetList()[0] = base::Value(
+  args.GetListDeprecated()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));
@@ -207,7 +207,7 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
       &base::Value::AsListValue(args));
 
   EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
-  args.GetList()[0] = base::Value(
+  args.GetListDeprecated()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));
@@ -228,7 +228,7 @@ TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
       &base::Value::AsListValue(args));
 
   EXPECT_CALL(*mock_sentiment_service_, OpenedPasswordManager(web_contents()));
-  args.GetList()[0] = base::Value(static_cast<int>(
+  args.GetListDeprecated()[0] = base::Value(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PASSWORD_MANAGER));
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));

@@ -46,7 +46,8 @@ static void ExpectEqualLanguageLists(
     const base::Value& language_values,
     const std::vector<std::string>& languages) {
   const int input_size = languages.size();
-  base::Value::ConstListView language_values_view = language_values.GetList();
+  base::Value::ConstListView language_values_view =
+      language_values.GetListDeprecated();
   ASSERT_EQ(input_size, static_cast<int>(language_values_view.size()));
   for (int i = 0; i < input_size; ++i) {
     ASSERT_TRUE(language_values_view[i].is_string());

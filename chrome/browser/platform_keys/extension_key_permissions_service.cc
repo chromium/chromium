@@ -334,7 +334,7 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
     LOG(ERROR) << "Found a state store of wrong type.";
     return;
   }
-  for (const auto& entry : state.GetList()) {
+  for (const auto& entry : state.GetListDeprecated()) {
     std::string spki_b64;
     const base::DictionaryValue* dict_entry = nullptr;
     if (entry.GetAsString(&spki_b64)) {

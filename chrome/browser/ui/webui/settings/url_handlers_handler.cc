@@ -294,7 +294,7 @@ base::Value UrlHandlersHandler::GetEnabledHandlersList() {
     const auto& origin_key = kv.first;
     auto origin = url::Origin::Create(GURL(kv.first));
 
-    for (const auto& handler : kv.second.GetList()) {
+    for (const auto& handler : kv.second.GetListDeprecated()) {
       // Only process handlers from current profile.
       if (!web_app::url_handler_prefs::IsHandlerForProfile(
               handler, profile_->GetPath())) {
@@ -318,7 +318,7 @@ base::Value UrlHandlersHandler::GetEnabledHandlersList() {
       // app_entries. Each "row" has the same app_id, etc, but different path
       // information. This create a list that is easy to process in WebUI.
       for (const auto& include_path_dict :
-           handler_view->include_paths.GetList()) {
+           handler_view->include_paths.GetListDeprecated()) {
         const std::string* path = include_path_dict.FindStringKey("path");
         absl::optional<int> choice = include_path_dict.FindIntKey("choice");
         if (!path || !choice)
@@ -374,7 +374,7 @@ base::Value UrlHandlersHandler::GetDisabledHandlersList() {
     const auto& origin_key = kv.first;
     url::Origin origin = url::Origin::Create(GURL(kv.first));
 
-    for (const auto& handler : kv.second.GetList()) {
+    for (const auto& handler : kv.second.GetListDeprecated()) {
       // Only process handlers from current profile.
       if (!web_app::url_handler_prefs::IsHandlerForProfile(
               handler, profile_->GetPath())) {
@@ -388,7 +388,7 @@ base::Value UrlHandlersHandler::GetDisabledHandlersList() {
         continue;
 
       for (const base::Value& include_path_dict :
-           handler_view->include_paths.GetList()) {
+           handler_view->include_paths.GetListDeprecated()) {
         if (!include_path_dict.is_dict())
           continue;
 

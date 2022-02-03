@@ -1051,7 +1051,7 @@ void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {
   CHECK_EQ(args_list.size(), 2u);
 
   const std::string& dragged_app_id = args_list[0].GetString();
-  base::Value::ConstListView app_order = args_list[1].GetList();
+  base::Value::ConstListView app_order = args_list[1].GetListDeprecated();
 
   std::string predecessor_to_moved_ext;
   std::string successor_to_moved_ext;

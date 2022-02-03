@@ -320,7 +320,8 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
         if (arg_url.is_valid())
           args_list[url_index] = base::Value(kArgUrlPlaceholder);
       } else if (args_list[url_index].is_list()) {
-        base::Value::ListView tab_list = args_list[url_index].GetList();
+        base::Value::ListView tab_list =
+            args_list[url_index].GetListDeprecated();
         // A list of possible IDs to translate.  Work through in reverse order
         // so the last one translated is left in arg_url.
         int extracted_index = -1;  // Which list item is copied to arg_url?

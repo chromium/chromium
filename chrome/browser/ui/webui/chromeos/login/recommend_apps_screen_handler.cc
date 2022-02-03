@@ -121,7 +121,8 @@ void RecommendAppsScreenHandler::Show() {
 void RecommendAppsScreenHandler::Hide() {}
 
 void RecommendAppsScreenHandler::OnLoadSuccess(const base::Value& app_list) {
-  recommended_app_count_ = static_cast<int>(app_list.GetList().size());
+  recommended_app_count_ =
+      static_cast<int>(app_list.GetListDeprecated().size());
   LoadAppListInUI(app_list);
 }
 

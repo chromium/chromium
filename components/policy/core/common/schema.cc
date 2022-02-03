@@ -1252,8 +1252,8 @@ bool Schema::Validate(const base::Value& value,
       return false;
     }
   } else if (value.is_list()) {
-    for (size_t index = 0; index < value.GetList().size(); ++index) {
-      const base::Value& list_item = value.GetList()[index];
+    for (size_t index = 0; index < value.GetListDeprecated().size(); ++index) {
+      const base::Value& list_item = value.GetListDeprecated()[index];
       std::string new_error;
       const bool validation_result =
           GetItems().Validate(list_item, strategy, out_error_path, &new_error);

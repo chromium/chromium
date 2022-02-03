@@ -181,9 +181,9 @@ absl::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
 
     case base::Value::Type::LIST: {
       base::Value::ListStorage storage;
-      storage.reserve(value.GetList().size());
+      storage.reserve(value.GetListDeprecated().size());
 
-      for (const base::Value& item : value.GetList()) {
+      for (const base::Value& item : value.GetListDeprecated()) {
         absl::optional<base::Value> item_copy = CopyWithoutEmptyChildren(item);
         if (item_copy)
           storage.push_back(std::move(*item_copy));

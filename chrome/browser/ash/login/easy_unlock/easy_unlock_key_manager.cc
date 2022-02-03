@@ -45,7 +45,7 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
       base::Passed(&callback));
 
   // Private TPM key is needed only when adding new keys.
-  if (remote_devices.GetList().empty() ||
+  if (remote_devices.GetListDeprecated().empty() ||
       tpm_key_manager->PrepareTpmKey(/*check_private_key=*/false,
                                      do_refresh_keys)) {
     do_refresh_keys.Run();
@@ -169,7 +169,7 @@ bool EasyUnlockKeyManager::RemoteDeviceRefListToDeviceDataList(
     const base::ListValue& device_list,
     EasyUnlockDeviceKeyDataList* data_list) {
   EasyUnlockDeviceKeyDataList parsed_devices;
-  for (const auto& entry : device_list.GetList()) {
+  for (const auto& entry : device_list.GetListDeprecated()) {
     const base::DictionaryValue* dict;
     if (!entry.GetAsDictionary(&dict) || !dict)
       return false;

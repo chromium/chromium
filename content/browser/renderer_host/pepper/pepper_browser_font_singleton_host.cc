@@ -74,7 +74,7 @@ int32_t FontMessageFilter::OnHostMsgGetFontFamilies(
     if (!i.is_list())
       continue;
 
-    base::Value::ConstListView cur_font = i.GetList();
+    base::Value::ConstListView cur_font = i.GetListDeprecated();
 
     // Each entry is actually a list of (font name, localized name).
     // We only care about the regular name.

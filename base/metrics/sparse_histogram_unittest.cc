@@ -411,7 +411,7 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   EXPECT_EQ(4000, count_and_data_bucket.sum);
 
   const base::Value::ConstListView buckets_list =
-      count_and_data_bucket.buckets.GetList();
+      count_and_data_bucket.buckets.GetListDeprecated();
   ASSERT_EQ(2u, buckets_list.size());
 
   // Check the first bucket.

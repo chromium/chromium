@@ -44,7 +44,7 @@ pp::Var VarFromValue(const base::Value& value) {
     case base::Value::Type::LIST: {
       pp::VarArray var_array;
       uint32_t i = 0;
-      for (const auto& val : value.GetList()) {
+      for (const auto& val : value.GetListDeprecated()) {
         var_array.Set(i, VarFromValue(val));
         i++;
       }

@@ -321,8 +321,8 @@ std::unique_ptr<base::Value> PrefModelAssociator::MergeListValues(
   DCHECK(to_value.type() == base::Value::Type::LIST);
 
   base::Value result = to_value.Clone();
-  for (const auto& value : from_value.GetList()) {
-    if (!base::Contains(result.GetList(), value))
+  for (const auto& value : from_value.GetListDeprecated()) {
+    if (!base::Contains(result.GetListDeprecated(), value))
       result.Append(value.Clone());
   }
 

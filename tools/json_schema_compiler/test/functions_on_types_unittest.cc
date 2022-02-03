@@ -58,8 +58,8 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetResultCreate) {
   base::Value results(
       functions_on_types::StorageArea::Get::Results::Create(items));
   ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetList().size());
-  EXPECT_EQ(items.additional_properties, results.GetList()[0]);
+  ASSERT_EQ(1u, results.GetListDeprecated().size());
+  EXPECT_EQ(items.additional_properties, results.GetListDeprecated()[0]);
 }
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, ChromeSettingGetParamsCreate) {

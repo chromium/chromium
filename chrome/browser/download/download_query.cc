@@ -72,7 +72,7 @@ bool GetAs(const base::Value& in, std::vector<std::u16string>* out) {
   out->clear();
   if (!in.is_list())
     return false;
-  for (const auto& value : in.GetList()) {
+  for (const auto& value : in.GetListDeprecated()) {
     if (!value.is_string()) {
       out->clear();
       return false;

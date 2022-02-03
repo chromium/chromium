@@ -31,7 +31,7 @@ constexpr char kAlt[] = "alt";
 std::vector<std::unique_ptr<Position>> ParseLocation(
     const base::Value& position) {
   std::vector<std::unique_ptr<Position>> positions;
-  for (const base::Value& val : position.GetList()) {
+  for (const base::Value& val : position.GetListDeprecated()) {
     auto pos = ParsePosition(val);
     if (!pos) {
       LOG(ERROR) << "Failed to parse location.";

@@ -891,7 +891,7 @@ bool HostCache::RestoreFromListValue(const base::Value& old_cache) {
   // Reset the restore size to 0.
   restore_size_ = 0;
 
-  for (const auto& entry_dict : old_cache.GetList()) {
+  for (const auto& entry_dict : old_cache.GetListDeprecated()) {
     // If the cache is already full, don't bother prioritizing what to evict,
     // just stop restoring.
     if (size() == max_entries_)

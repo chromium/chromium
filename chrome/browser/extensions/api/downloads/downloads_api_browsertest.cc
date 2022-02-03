@@ -163,10 +163,11 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
            (event_name_ == downloads::OnChanged::kEventName))) {
         // We expect a non-empty list for these events.
         if (!args_.is_list() || !other.args_.is_list() ||
-            args_.GetList().empty() || other.args_.GetList().empty())
+            args_.GetListDeprecated().empty() ||
+            other.args_.GetListDeprecated().empty())
           return false;
-        const base::Value& left_dict = args_.GetList()[0];
-        const base::Value& right_dict = other.args_.GetList()[0];
+        const base::Value& left_dict = args_.GetListDeprecated()[0];
+        const base::Value& right_dict = other.args_.GetListDeprecated()[0];
         if (!left_dict.is_dict() || !right_dict.is_dict())
           return false;
         // Expect that all keys present in both dictionaries are equal. If a key

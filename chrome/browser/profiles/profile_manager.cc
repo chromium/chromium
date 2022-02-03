@@ -655,7 +655,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
     // Make a copy because the list might change in the calls to GetProfile.
     const base::Value profile_list =
         local_state->GetList(prefs::kProfilesLastActive)->Clone();
-    for (const auto& entry : profile_list.GetList()) {
+    for (const auto& entry : profile_list.GetListDeprecated()) {
       const std::string* profile_base_name = entry.GetIfString();
       if (!profile_base_name || profile_base_name->empty() ||
           *profile_base_name ==

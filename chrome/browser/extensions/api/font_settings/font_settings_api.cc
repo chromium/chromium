@@ -302,7 +302,8 @@ FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
       NOTREACHED();
       return Error("");
     }
-    const base::Value::ConstListView font_list_value = entry.GetList();
+    const base::Value::ConstListView font_list_value =
+        entry.GetListDeprecated();
 
     if (font_list_value.size() < 2 || !font_list_value[0].is_string()) {
       NOTREACHED();

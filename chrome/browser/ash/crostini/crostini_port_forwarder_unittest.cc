@@ -518,14 +518,15 @@ TEST_F(CrostiniPortForwarderTest, GetActivePorts) {
 
   // Get active ports.
   base::ListValue forwarded_ports = crostini_port_forwarder_->GetActivePorts();
-  EXPECT_EQ(forwarded_ports.GetList().size(), ports_to_add.size());
+  EXPECT_EQ(forwarded_ports.GetListDeprecated().size(), ports_to_add.size());
   for (unsigned int i = 0; i < ports_to_add.size(); i++) {
     unsigned int reverse_index = ports_to_add.size() - i - 1;
-    EXPECT_EQ(*(forwarded_ports.GetList()[i].FindPath("port_number")),
+    EXPECT_EQ(*(forwarded_ports.GetListDeprecated()[i].FindPath("port_number")),
               base::Value(ports_to_add.at(reverse_index).port_number));
-    EXPECT_EQ(*(forwarded_ports.GetList()[i].FindPath("protocol_type")),
-              base::Value(static_cast<int>(
-                  ports_to_add.at(reverse_index).protocol_type)));
+    EXPECT_EQ(
+        *(forwarded_ports.GetListDeprecated()[i].FindPath("protocol_type")),
+        base::Value(
+            static_cast<int>(ports_to_add.at(reverse_index).protocol_type)));
   }
 }
 

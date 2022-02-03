@@ -112,7 +112,7 @@ base::Value Mapper::MapArray(const OncValueSignature& array_signature,
 
   base::Value result_array(base::Value::Type::LIST);
   int original_index = 0;
-  for (const auto& entry : onc_array.GetList()) {
+  for (const auto& entry : onc_array.GetListDeprecated()) {
     base::Value result_entry =
         MapEntry(original_index, *array_signature.onc_array_entry_signature,
                  entry, nested_error);

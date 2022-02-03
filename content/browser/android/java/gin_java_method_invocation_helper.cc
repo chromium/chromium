@@ -53,7 +53,7 @@ void GinJavaMethodInvocationHelper::BuildObjectRefsFromListValue(
     DispatcherDelegate* dispatcher,
     const base::Value& list_value) {
   DCHECK(list_value.is_list());
-  for (const auto& entry : list_value.GetList()) {
+  for (const auto& entry : list_value.GetListDeprecated()) {
     if (AppendObjectRef(dispatcher, entry))
       continue;
     if (entry.is_list()) {
@@ -109,7 +109,7 @@ bool GinJavaMethodInvocationHelper::AppendObjectRef(
 void GinJavaMethodInvocationHelper::Invoke() {
   JNIEnv* env = AttachCurrentThread();
   const JavaMethod* method =
-      object_->FindMethod(method_name_, arguments_.GetList().size());
+      object_->FindMethod(method_name_, arguments_.GetListDeprecated().size());
   if (!method) {
     SetInvocationError(kGinJavaBridgeMethodNotFound);
     return;
@@ -137,7 +137,7 @@ void GinJavaMethodInvocationHelper::Invoke() {
   GinJavaBridgeError coercion_error = kGinJavaBridgeNoError;
   std::vector<jvalue> parameters(method->num_parameters());
   for (size_t i = 0; i < method->num_parameters(); ++i) {
-    const base::Value& argument = arguments_.GetList()[i];
+    const base::Value& argument = arguments_.GetListDeprecated()[i];
     parameters[i] = CoerceJavaScriptValueToJavaValue(
         env, &argument, method->parameter_type(i), true, object_refs_,
         &coercion_error);

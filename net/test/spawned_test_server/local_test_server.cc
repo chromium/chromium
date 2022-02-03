@@ -203,9 +203,9 @@ bool LocalTestServer::AddCommandLineArguments(
 
     // Add arguments from a list.
     if (value.is_list()) {
-      if (value.GetList().empty())
+      if (value.GetListDeprecated().empty())
         return false;
-      for (const auto& entry : value.GetList()) {
+      for (const auto& entry : value.GetListDeprecated()) {
         if (!AppendArgumentFromJSONValue(key, entry, command_line))
           return false;
       }

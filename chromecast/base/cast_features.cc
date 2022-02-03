@@ -44,7 +44,7 @@ void SetExperimentIds(const base::Value& list) {
   DCHECK(!g_experiment_ids_initialized);
   DCHECK(list.is_list());
   std::unordered_set<int32_t> ids;
-  for (const auto& it : list.GetList()) {
+  for (const auto& it : list.GetListDeprecated()) {
     if (it.is_int()) {
       ids.insert(it.GetInt());
     } else {

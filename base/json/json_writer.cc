@@ -122,7 +122,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
 
       bool first_value_has_been_output = false;
       bool result = true;
-      for (const auto& value : node.GetList()) {
+      for (const auto& value : node.GetListDeprecated()) {
         if (omit_binary_values_ && value.type() == Value::Type::BINARY)
           continue;
 

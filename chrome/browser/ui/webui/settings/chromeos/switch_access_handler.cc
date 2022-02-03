@@ -193,7 +193,7 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
         NOTREACHED();
         return;
       }
-      for (const base::Value& device_type : item.second.GetList()) {
+      for (const base::Value& device_type : item.second.GetListDeprecated()) {
         base::DictionaryValue key;
         key.SetStringPath("key", GetStringForKeyboardCode(
                                      static_cast<ui::KeyboardCode>(key_code)));

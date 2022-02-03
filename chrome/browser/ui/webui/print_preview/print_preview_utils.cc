@@ -102,7 +102,7 @@ bool VendorCapabilityInvalid(const base::Value& val) {
   const base::Value* options_list =
       select_cap->FindKeyOfType(kOptionKey, base::Value::Type::LIST);
   if (!options_list || options_list->GetListDeprecated().empty() ||
-      GetFilteredList(options_list, ValueIsNull).GetList().empty()) {
+      GetFilteredList(options_list, ValueIsNull).GetListDeprecated().empty()) {
     return true;
   }
   return false;
@@ -176,9 +176,9 @@ void ConvertPrinterListForCallback(
   base::ListValue printers;
   PrintersToValues(printer_list, &printers);
 
-  VLOG(1) << "Enumerate printers finished, found " << printers.GetList().size()
-          << " printers";
-  if (!printers.GetList().empty())
+  VLOG(1) << "Enumerate printers finished, found "
+          << printers.GetListDeprecated().size() << " printers";
+  if (!printers.GetListDeprecated().empty())
     callback.Run(printers);
   std::move(done_callback).Run();
 }

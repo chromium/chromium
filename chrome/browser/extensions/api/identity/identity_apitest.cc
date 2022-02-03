@@ -644,7 +644,8 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     if (!callback_arguments_list[0].is_list())
       GenerateFailureResult(gaia_ids, absl::nullopt)
           << "Result was not an array";
-    base::Value::ConstListView results = callback_arguments_list[0].GetList();
+    base::Value::ConstListView results =
+        callback_arguments_list[0].GetListDeprecated();
 
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
@@ -1007,7 +1008,7 @@ class GetAuthTokenFunctionTest
     EXPECT_TRUE(granted_scopes_value.is_list());
 
     std::set<std::string> scopes;
-    for (const auto& scope : granted_scopes_value.GetList()) {
+    for (const auto& scope : granted_scopes_value.GetListDeprecated()) {
       EXPECT_TRUE(scope.is_string());
       scopes.insert(scope.GetString());
     }
@@ -1033,7 +1034,7 @@ class GetAuthTokenFunctionTest
     EXPECT_TRUE(granted_scopes_value.is_list());
 
     std::set<std::string> scopes;
-    for (const auto& scope : granted_scopes_value.GetList()) {
+    for (const auto& scope : granted_scopes_value.GetListDeprecated()) {
       EXPECT_TRUE(scope.is_string());
       scopes.insert(scope.GetString());
     }

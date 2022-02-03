@@ -284,7 +284,7 @@ void ExtensionPrinterHandler::WrapGetPrintersCallback(
     const base::ListValue& printers,
     bool done) {
   DCHECK_GT(pending_enumeration_count_, 0);
-  if (!printers.GetList().empty())
+  if (!printers.GetListDeprecated().empty())
     callback.Run(printers);
 
   if (done)

@@ -1057,14 +1057,16 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
           cert_info->source() ==
           CertificateManagerModel::CertInfo::Source::kPolicy;
     }
-    std::sort(subnodes.GetList().begin(), subnodes.GetList().end(), comparator);
+    std::sort(subnodes.GetListDeprecated().begin(),
+              subnodes.GetListDeprecated().end(), comparator);
 
     org_dict.SetKey(kCertificatesHandlerContainsPolicyCertsField,
                     base::Value(contains_policy_certs));
     org_dict.SetKey(kCertificatesHandlerSubnodesField, std::move(subnodes));
     nodes.Append(std::move(org_dict));
   }
-  std::sort(nodes.GetList().begin(), nodes.GetList().end(), comparator);
+  std::sort(nodes.GetListDeprecated().begin(), nodes.GetListDeprecated().end(),
+            comparator);
 
   if (IsJavascriptAllowed()) {
     FireWebUIListener("certificates-changed", base::Value(tab_name),
@@ -1136,9 +1138,9 @@ CertificatesHandler::GetCertInfoFromCallbackArgs(const base::Value& args,
                                                  size_t arg_index) {
   if (!args.is_list())
     return nullptr;
-  if (arg_index >= args.GetList().size())
+  if (arg_index >= args.GetListDeprecated().size())
     return nullptr;
-  const auto& arg = args.GetList()[arg_index];
+  const auto& arg = args.GetListDeprecated()[arg_index];
   if (!arg.is_string())
     return nullptr;
 

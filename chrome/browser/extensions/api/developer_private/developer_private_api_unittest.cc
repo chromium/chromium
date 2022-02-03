@@ -518,9 +518,9 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   // Try to pack a final time when omitting (an existing) pem file. We should
   // get an error.
   base::DeleteFile(crx_path);
-  EXPECT_TRUE(pack_args.EraseListIter(pack_args.GetList().begin() +
+  EXPECT_TRUE(pack_args.EraseListIter(pack_args.GetListDeprecated().begin() +
                                       1u));  // Remove the pem key argument.
-  EXPECT_TRUE(pack_args.EraseListIter(pack_args.GetList().begin() +
+  EXPECT_TRUE(pack_args.EraseListIter(pack_args.GetListDeprecated().begin() +
                                       1u));  // Remove the flags argument.
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PACK_STATUS_ERROR, 0));
@@ -1098,7 +1098,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   base::Value::ConstListView results_list = results->GetListDeprecated();
   ASSERT_EQ(1u, results_list.size());
   ASSERT_TRUE(results_list[0].is_list());
-  base::Value::ConstListView list = results_list[0].GetList();
+  base::Value::ConstListView list = results_list[0].GetListDeprecated();
   ASSERT_EQ(1u, list.size());
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       api::developer_private::ExtensionInfo::FromValue(list[0]);
@@ -1115,7 +1115,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   results_list = results->GetListDeprecated();
   ASSERT_EQ(1u, results_list.size());
   ASSERT_TRUE(results_list[0].is_list());
-  list = results_list[0].GetList();
+  list = results_list[0].GetListDeprecated();
   ASSERT_EQ(1u, list.size());
   std::unique_ptr<api::developer_private::ItemInfo> item_info =
       api::developer_private::ItemInfo::FromValue(list[0]);

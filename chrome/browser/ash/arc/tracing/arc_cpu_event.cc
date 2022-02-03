@@ -145,12 +145,12 @@ bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events) {
 
   uint64_t previous_timestamp = 0;
   for (const auto& entry : value->GetListDeprecated()) {
-    if (!entry.is_list() || entry.GetList().size() != 3)
+    if (!entry.is_list() || entry.GetListDeprecated().size() != 3)
       return false;
-    if (!entry.GetList()[0].is_int())
+    if (!entry.GetListDeprecated()[0].is_int())
       return false;
     const ArcCpuEvent::Type type =
-        static_cast<ArcCpuEvent::Type>(entry.GetList()[0].GetInt());
+        static_cast<ArcCpuEvent::Type>(entry.GetListDeprecated()[0].GetInt());
     switch (type) {
       case ArcCpuEvent::Type::kIdleIn:
       case ArcCpuEvent::Type::kIdleOut:
@@ -160,14 +160,15 @@ bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events) {
       default:
         return false;
     }
-    if (!entry.GetList()[1].is_double() && !entry.GetList()[1].is_int())
+    if (!entry.GetListDeprecated()[1].is_double() &&
+        !entry.GetListDeprecated()[1].is_int())
       return false;
-    const uint64_t timestamp = entry.GetList()[1].GetDouble();
+    const uint64_t timestamp = entry.GetListDeprecated()[1].GetDouble();
     if (timestamp < previous_timestamp)
       return false;
-    if (!entry.GetList()[2].is_int())
+    if (!entry.GetListDeprecated()[2].is_int())
       return false;
-    const int tid = entry.GetList()[2].GetInt();
+    const int tid = entry.GetListDeprecated()[2].GetInt();
     cpu_events->emplace_back(timestamp, type, tid);
     previous_timestamp = timestamp;
   }

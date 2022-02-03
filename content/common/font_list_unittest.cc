@@ -22,8 +22,8 @@ namespace {
 bool HasFontWithName(const base::ListValue& list,
                      base::StringPiece expected_font_id,
                      base::StringPiece expected_display_name) {
-  for (const auto& font : list.GetList()) {
-    const auto& font_names = font.GetList();
+  for (const auto& font : list.GetListDeprecated()) {
+    const auto& font_names = font.GetListDeprecated();
     std::string font_id = font_names[0].GetString();
     std::string display_name = font_names[1].GetString();
     if (font_id == expected_font_id && display_name == expected_display_name)
@@ -85,7 +85,7 @@ TEST(FontList, GetFontListDoesNotIncludeHiddenFonts) {
   std::unique_ptr<base::ListValue> fonts = content::GetFontList_SlowBlocking();
 
   for (const auto& font : fonts->GetListDeprecated()) {
-    const auto& font_names = font.GetList();
+    const auto& font_names = font.GetListDeprecated();
     const std::string& font_id = font_names[0].GetString();
 
     // The checks are inspired by Gecko's gfxMacPlatformFontList::AddFamily.

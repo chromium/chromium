@@ -79,7 +79,7 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
   std::string callback_id = args->GetListDeprecated()[0].GetString();
 
   base::Value texts(base::Value::Type::LIST);
-  for (const auto& path : args->GetListDeprecated()[1].GetList()) {
+  for (const auto& path : args->GetListDeprecated()[1].GetListDeprecated()) {
     texts.Append(file_manager::util::GetPathDisplayTextForSettings(
         profile_, path.GetString()));
   }

@@ -354,7 +354,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   }
 
   bool first_user_language_spellchecked = false;
-  for (const auto& dictionary_value : user_dictionaries.GetList()) {
+  for (const auto& dictionary_value : user_dictionaries.GetListDeprecated()) {
     first_user_language_spellchecked =
         base::Contains(dictionary_value.GetString(), first_user_language);
     if (first_user_language_spellchecked)
@@ -362,7 +362,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   }
 
   if (!first_user_language_spellchecked) {
-    user_dictionaries.Insert(user_dictionaries.GetList().begin(),
+    user_dictionaries.Insert(user_dictionaries.GetListDeprecated().begin(),
                              base::Value(first_user_language));
     prefs->Set(spellcheck::prefs::kSpellCheckDictionaries, user_dictionaries);
   }

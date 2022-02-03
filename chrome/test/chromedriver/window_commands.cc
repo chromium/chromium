@@ -274,7 +274,7 @@ Status GetVisibleCookies(Session* for_session,
   if (status.IsError())
     return status;
   std::list<Cookie> cookies_tmp;
-  for (const base::Value& cookie_value : internal_cookies.GetList()) {
+  for (const base::Value& cookie_value : internal_cookies.GetListDeprecated()) {
     if (!cookie_value.is_dict())
       return Status(kUnknownError, "DevTools returns a non-dictionary cookie");
 
@@ -1289,7 +1289,7 @@ Status ProcessInputActionSequence(
 
   bool found = false;
   for (const base::Value& source_value :
-       session->active_input_sources.GetList()) {
+       session->active_input_sources.GetListDeprecated()) {
     DCHECK(source_value.is_dict());
     const base::DictionaryValue& source =
         base::Value::AsDictionaryValue(source_value);

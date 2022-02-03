@@ -208,7 +208,7 @@ TEST_F(ManagedBookmarksTrackerTest, SwapNodes) {
 
   // Swap the Google bookmark with the Folder.
   base::Value updated(CreateTestTree());
-  base::Value::ListView updated_listview = updated.GetList();
+  base::Value::ListView updated_listview = updated.GetListDeprecated();
   ASSERT_FALSE(updated_listview.empty());
   base::Value removed = std::move(updated_listview[0]);
   ASSERT_TRUE(updated.EraseListIter(updated_listview.begin()));
@@ -232,7 +232,7 @@ TEST_F(ManagedBookmarksTrackerTest, RemoveNode) {
 
   // Remove the Folder.
   base::Value updated(CreateTestTree());
-  ASSERT_TRUE(updated.EraseListIter(updated.GetList().begin() + 1));
+  ASSERT_TRUE(updated.EraseListIter(updated.GetListDeprecated().begin() + 1));
 
   const BookmarkNode* parent = managed_node();
   EXPECT_CALL(observer_, BookmarkNodeRemoved(model_.get(), parent, 1, _, _));

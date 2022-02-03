@@ -190,7 +190,7 @@ mojom::TtsResponsePtr GetResultOnError(
 mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
                                          const int start_index,
                                          const bool is_last_request) {
-  base::Value::ConstListView list_data = json_data.GetList();
+  base::Value::ConstListView list_data = json_data.GetListDeprecated();
 
   // Depending on the size of input text (n), the list size should be 1 + 2n.
   // The first item in the list is "metadata", then each input text has one

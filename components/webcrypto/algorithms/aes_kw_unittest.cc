@@ -164,7 +164,7 @@ TEST_F(WebCryptoAesKwTest, UnwrapFailures) {
   // This test exercises the code path common to all unwrap operations.
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("aes_kw.json", &tests));
-  const base::Value& test_value = tests.GetList()[0];
+  const base::Value& test_value = tests.GetListDeprecated()[0];
   ASSERT_TRUE(test_value.is_dict());
   const base::DictionaryValue* test =
       &base::Value::AsDictionaryValue(test_value);
@@ -191,10 +191,10 @@ TEST_F(WebCryptoAesKwTest, AesKwRawSymkeyWrapUnwrapKnownAnswer) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("aes_kw.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);
@@ -253,7 +253,7 @@ TEST_F(WebCryptoAesKwTest, AesKwRawSymkeyUnwrapSignVerifyHmac) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("aes_kw.json", &tests));
 
-  const base::Value& test_value = tests.GetList()[0];
+  const base::Value& test_value = tests.GetListDeprecated()[0];
   ASSERT_TRUE(test_value.is_dict());
   const base::DictionaryValue* test =
       &base::Value::AsDictionaryValue(test_value);
@@ -306,7 +306,7 @@ TEST_F(WebCryptoAesKwTest, AesKwRawSymkeyWrapUnwrapErrors) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("aes_kw.json", &tests));
   // Use 256 bits of data with a 256-bit KEK
-  const base::Value& test_value = tests.GetList()[3];
+  const base::Value& test_value = tests.GetListDeprecated()[3];
   ASSERT_TRUE(test_value.is_dict());
   const base::DictionaryValue* test =
       &base::Value::AsDictionaryValue(test_value);
@@ -349,7 +349,7 @@ TEST_F(WebCryptoAesKwTest, AesKwRawSymkeyUnwrapCorruptData) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("aes_kw.json", &tests));
   // Use 256 bits of data with a 256-bit KEK
-  const base::Value& test_value = tests.GetList()[3];
+  const base::Value& test_value = tests.GetListDeprecated()[3];
   ASSERT_TRUE(test_value.is_dict());
   const base::DictionaryValue* test =
       &base::Value::AsDictionaryValue(test_value);

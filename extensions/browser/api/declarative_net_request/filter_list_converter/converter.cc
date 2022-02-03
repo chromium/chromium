@@ -251,7 +251,7 @@ class ProtoToJSONRuleConverter {
     }
 
     // Omit empty domain list.
-    if (!domains.GetList().empty()) {
+    if (!domains.GetListDeprecated().empty()) {
       CHECK(
           json_rule_.SetPath({kRuleConditionKey, sub_key}, std::move(domains)));
     }

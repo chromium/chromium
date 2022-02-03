@@ -62,7 +62,7 @@ bool FederatedIdentitySharingPermissionContext::HasSharingPermissionForAccount(
     return false;
 
   auto& account_list = *granted_object->value.FindListKey(kAccountIdsKey);
-  for (auto& account_id_value : account_list.GetList()) {
+  for (auto& account_id_value : account_list.GetListDeprecated()) {
     if (account_id_value.GetString() == account_id)
       return true;
   }
@@ -121,7 +121,7 @@ void FederatedIdentitySharingPermissionContext::
   account_list.EraseListValue(base::Value(account_id));
 
   // Remove the permission object if there is no account left.
-  if (account_list.GetList().size() == 0) {
+  if (account_list.GetListDeprecated().size() == 0) {
     RevokeObjectPermission(identity_provider, key);
   } else {
     UpdateObjectPermission(identity_provider, granted_object->value,

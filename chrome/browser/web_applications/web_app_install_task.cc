@@ -1081,13 +1081,13 @@ void WebAppInstallTask::LogDownloadedIconsErrors(
     }
 
     if (icons_downloaded_result != IconsDownloadedResult::kCompleted ||
-        !icons_http_errors.GetList().empty()) {
+        !icons_http_errors.GetListDeprecated().empty()) {
       icon_errors.SetStringKey(
           "icons_downloaded_result",
           IconsDownloadedResultToString(icons_downloaded_result));
     }
 
-    if (!icons_http_errors.GetList().empty())
+    if (!icons_http_errors.GetListDeprecated().empty())
       icon_errors.SetKey("icons_http_results", std::move(icons_http_errors));
   }
 

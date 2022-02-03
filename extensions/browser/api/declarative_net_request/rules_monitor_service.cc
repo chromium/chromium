@@ -357,7 +357,7 @@ RulesMonitorService::GetSessionRules(const ExtensionId& extension_id) const {
   std::vector<api::declarative_net_request::Rule> result;
   std::u16string error;
   bool populate_result = json_schema_compiler::util::PopulateArrayFromList(
-      GetSessionRulesValue(extension_id).GetList(), &result, &error);
+      GetSessionRulesValue(extension_id).GetListDeprecated(), &result, &error);
   DCHECK(populate_result);
   DCHECK(error.empty());
   return result;

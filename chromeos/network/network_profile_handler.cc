@@ -106,8 +106,8 @@ void NetworkProfileHandler::OnPropertyChanged(const std::string& name,
   DCHECK(value.is_list());
 
   std::vector<std::string> new_profile_paths;
-  bool result =
-      ConvertListValueToStringVector(value.GetList(), &new_profile_paths);
+  bool result = ConvertListValueToStringVector(value.GetListDeprecated(),
+                                               &new_profile_paths);
   DCHECK(result);
 
   VLOG(2) << "Profiles: " << profiles_.size();

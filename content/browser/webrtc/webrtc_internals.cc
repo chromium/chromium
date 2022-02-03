@@ -192,7 +192,7 @@ void WebRTCInternals::OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto it = FindRecord(frame_id, lid);
-  if (it != peer_connection_data_.GetList().end()) {
+  if (it != peer_connection_data_.GetListDeprecated().end()) {
     MaybeClosePeerConnection(*it);
     peer_connection_data_.EraseListIter(it);
   }
@@ -212,7 +212,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto it = FindRecord(frame_id, lid);
-  if (it == peer_connection_data_.GetList().end())
+  if (it == peer_connection_data_.GetListDeprecated().end())
     return;
 
   if (type == "iceconnectionstatechange") {
@@ -291,7 +291,8 @@ void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                                      const std::string& video_constraints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (get_user_media_requests_.GetList().size() >= kMaxGetUserMediaEntries) {
+  if (get_user_media_requests_.GetListDeprecated().size() >=
+      kMaxGetUserMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia() requests reached "
                     "in webrtc-internals.";
     return;
@@ -333,7 +334,8 @@ void WebRTCInternals::OnGetUserMediaSuccess(
     const std::string& video_track_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (get_user_media_requests_.GetList().size() >= kMaxGetUserMediaEntries) {
+  if (get_user_media_requests_.GetListDeprecated().size() >=
+      kMaxGetUserMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia() requests reached "
                     "in webrtc-internals.";
     return;
@@ -369,7 +371,8 @@ void WebRTCInternals::OnGetUserMediaFailure(GlobalRenderFrameHostId frame_id,
                                             const std::string& error_message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (get_user_media_requests_.GetList().size() >= kMaxGetUserMediaEntries) {
+  if (get_user_media_requests_.GetListDeprecated().size() >=
+      kMaxGetUserMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia() requests reached "
                     "in webrtc-internals.";
     return;
@@ -412,7 +415,7 @@ void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
   DisableLocalEventLogRecordings();
 
   // TODO(tommi): Consider removing all the peer_connection_data_.
-  for (auto& dictionary : peer_connection_data_.GetList())
+  for (auto& dictionary : peer_connection_data_.GetListDeprecated())
     FreeLogList(&dictionary);
 }
 
@@ -430,10 +433,10 @@ void WebRTCInternals::RemoveConnectionsObserver(
 
 void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (peer_connection_data_.GetList().size() > 0)
+  if (peer_connection_data_.GetListDeprecated().size() > 0)
     observer->OnUpdate("update-all-peer-connections", &peer_connection_data_);
 
-  for (const auto& request : get_user_media_requests_.GetList()) {
+  for (const auto& request : get_user_media_requests_.GetListDeprecated()) {
     // If there is a stream_id key or an error key this is an update.
     if (request.FindStringKey("stream_id") || request.FindStringKey("error")) {
       observer->OnUpdate("update-get-user-media", &request);
@@ -603,7 +606,8 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
 
   // Iterates from the end of the list to remove the PeerConnections created
   // by the exiting renderer.
-  base::Value::ListView peer_conn_view = peer_connection_data_.GetList();
+  base::Value::ListView peer_conn_view =
+      peer_connection_data_.GetListDeprecated();
   for (int i = peer_conn_view.size() - 1; i >= 0; --i) {
     DCHECK(peer_conn_view[i].is_dict());
 
@@ -628,7 +632,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   // Iterates from the end of the list to remove the getUserMedia requests
   // created by the exiting renderer.
   base::Value::ListView get_user_media_requests_view =
-      get_user_media_requests_.GetList();
+      get_user_media_requests_.GetListDeprecated();
   for (int i = get_user_media_requests_view.size() - 1; i >= 0; --i) {
     DCHECK(get_user_media_requests_view[i].is_dict());
 
@@ -748,7 +752,8 @@ base::CheckedContiguousIterator<base::Value> WebRTCInternals::FindRecord(
     int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::Value::ListView peer_conn_view = peer_connection_data_.GetList();
+  base::Value::ListView peer_conn_view =
+      peer_connection_data_.GetListDeprecated();
   for (auto it = peer_conn_view.begin(); it != peer_conn_view.end(); ++it) {
     DCHECK(it->is_dict());
 

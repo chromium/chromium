@@ -172,7 +172,7 @@ void SyncFileSystemInternalsHandler::HandleGetLog(const base::ListValue* args) {
     list.Append(std::move(dict));
     last_log_id_sent = log_entry->id;
   }
-  if (list.GetList().empty())
+  if (list.GetListDeprecated().empty())
     return;
 
   ResolveJavascriptCallback(callback_id, list);

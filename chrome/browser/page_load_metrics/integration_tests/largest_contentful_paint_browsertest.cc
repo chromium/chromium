@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
   // Verify that the JS API yielded three LCP reports. Note that, as we resolve
   // https://github.com/WICG/largest-contentful-paint/issues/41, this test may
   // need to be updated to reflect new semantics.
-  const auto& list = result.value.GetList();
+  const auto& list = result.value.GetListDeprecated();
   const std::string expected_url[3] = {
       image_1_url_expected, image_2_url_expected, image_3_url_expected};
   absl::optional<double> lcp_timestamps[3];

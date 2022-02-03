@@ -267,7 +267,7 @@ void AppendValueData(MessageWriter* writer, const base::Value& value) {
     case base::Value::Type::LIST: {
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("v", &array_writer);
-      for (const auto& value_in_list : value.GetList()) {
+      for (const auto& value_in_list : value.GetListDeprecated()) {
         AppendValueDataAsVariant(&array_writer, value_in_list);
       }
       writer->CloseContainer(&array_writer);

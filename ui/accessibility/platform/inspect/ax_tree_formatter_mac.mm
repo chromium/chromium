@@ -153,7 +153,7 @@ std::string AXTreeFormatterMac::EvaluateScript(
   }
 
   std::string contents;
-  for (const base::Value& script : scripts.GetList()) {
+  for (const base::Value& script : scripts.GetListDeprecated()) {
     std::string line;
     WriteAttribute(true, script.GetString(), &line);
     contents += line + "\n";

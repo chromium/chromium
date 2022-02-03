@@ -282,9 +282,9 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   if (iter == dict.end() || !iter->second.is_list())
     return -2;
   const base::ListValue& tabs = base::Value::AsListValue(iter->second);
-  if (tabs.GetList().empty())
+  if (tabs.GetListDeprecated().empty())
     return -2;
-  const base::Value& tab = tabs.GetList()[0];
+  const base::Value& tab = tabs.GetListDeprecated()[0];
   const base::DictionaryValue* tab_dict = nullptr;
   if (!tab.GetAsDictionary(&tab_dict))
     return -2;

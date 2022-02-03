@@ -61,12 +61,12 @@ void ValueAppendString(base::Value& v, rust::Str value) {
 
 base::Value& ValueAppendDict(base::Value& v) {
   v.Append(base::Value(base::Value::Type::DICTIONARY));
-  return v.GetList().back();
+  return v.GetListDeprecated().back();
 }
 
 base::Value& ValueAppendList(base::Value& v) {
   v.Append(base::Value(base::Value::Type::LIST));
-  return v.GetList().back();
+  return v.GetListDeprecated().back();
 }
 
 void ValueReserveSize(base::Value& v, size_t len) {

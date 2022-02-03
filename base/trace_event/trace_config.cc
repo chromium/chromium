@@ -567,7 +567,7 @@ void TraceConfig::SetProcessFilterConfig(const ProcessFilterConfig& config) {
 void TraceConfig::SetHistogramNamesFromConfigList(
     const Value& histogram_names) {
   histogram_names_.clear();
-  for (const Value& value : histogram_names.GetList())
+  for (const Value& value : histogram_names.GetListDeprecated())
     histogram_names_.insert(value.GetString());
 }
 
@@ -575,7 +575,7 @@ void TraceConfig::SetEventFiltersFromConfigList(
     const Value& category_event_filters) {
   event_filters_.clear();
 
-  for (const Value& event_filter : category_event_filters.GetList()) {
+  for (const Value& event_filter : category_event_filters.GetListDeprecated()) {
     if (!event_filter.is_dict())
       continue;
 

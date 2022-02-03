@@ -410,7 +410,7 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupValue(
   OmniboxPedal::SynonymGroup synonym_group(required, single, synonyms.size());
   for (const auto& synonyms_value : synonyms) {
     DCHECK(synonyms_value.is_list());
-    const auto& synonyms_value_list = synonyms_value.GetList();
+    const auto& synonyms_value_list = synonyms_value.GetListDeprecated();
     OmniboxPedal::TokenSequence synonym_all_tokens(synonyms_value_list.size());
     for (const auto& token_index_value : synonyms_value_list) {
       synonym_all_tokens.Add(token_index_value.GetInt());

@@ -291,7 +291,7 @@ void NetworkSmsHandler::ManagerPropertiesCallback(
 }
 
 void NetworkSmsHandler::UpdateDevices(const base::Value& devices) {
-  for (const auto& item : devices.GetList()) {
+  for (const auto& item : devices.GetListDeprecated()) {
     if (!item.is_string())
       continue;
 

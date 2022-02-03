@@ -96,7 +96,7 @@ base::Value ValidList(const base::Value* list) {
 
 bool HasValidEntry(const base::Value* list) {
   return list && !list->GetListDeprecated().empty() &&
-         !ValidList(list).GetList().empty();
+         !ValidList(list).GetListDeprecated().empty();
 }
 
 void CompareStringKeys(const base::Value& expected,
@@ -109,11 +109,11 @@ void CompareStringKeys(const base::Value& expected,
 void ValidateList(const base::Value* list_out, const base::Value* input_list) {
   auto input_list_valid = ValidList(input_list);
   ASSERT_EQ(list_out->GetListDeprecated().size(),
-            input_list_valid.GetList().size());
+            input_list_valid.GetListDeprecated().size());
   for (size_t index = 0; index < list_out->GetListDeprecated().size();
        index++) {
     EXPECT_EQ(list_out->GetListDeprecated()[index],
-              input_list_valid.GetList()[index]);
+              input_list_valid.GetListDeprecated()[index]);
   }
 }
 

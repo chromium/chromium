@@ -461,7 +461,7 @@ TEST_P(EventRouterFilterTest, Basic) {
   DictionaryValue::Iterator iter(*filtered_events);
   ASSERT_EQ(kEventName, iter.key());
   ASSERT_TRUE(iter.value().is_list());
-  ASSERT_EQ(3u, iter.value().GetList().size());
+  ASSERT_EQ(3u, iter.value().GetListDeprecated().size());
 
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[1]));

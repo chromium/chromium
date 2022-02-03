@@ -89,12 +89,12 @@ std::string GetOperatingSystemVersion() {
 // Adds the list of |fonts| to the |machine|.
 void AddFontsToFingerprint(const base::ListValue& fonts,
                            Fingerprint::MachineCharacteristics* machine) {
-  for (const auto& it : fonts.GetList()) {
+  for (const auto& it : fonts.GetListDeprecated()) {
     // Each item in the list is a two-element list such that the first element
     // is the font family and the second is the font name.
     DCHECK(it.is_list());
 
-    std::string font_name = it.GetList()[1].GetString();
+    std::string font_name = it.GetListDeprecated()[1].GetString();
 
     machine->add_font(font_name);
   }

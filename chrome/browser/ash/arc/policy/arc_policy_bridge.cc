@@ -162,7 +162,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   }
 
   base::Value ca_certs(base::Value::Type::LIST);
-  for (const auto& certificate : certificates.GetList()) {
+  for (const auto& certificate : certificates.GetListDeprecated()) {
     if (!certificate.is_dict()) {
       DLOG(FATAL) << "Value of a certificate entry is not a dictionary "
                   << "value.";
@@ -203,7 +203,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     data.SetStringKey("X509", *x509_data);
     ca_certs.Append(std::move(data));
   }
-  if (!ca_certs.GetList().empty())
+  if (!ca_certs.GetListDeprecated().empty())
     filtered_policies->SetKey("credentialsConfigDisabled", base::Value(true));
   filtered_policies->SetKey(kArcCaCerts, std::move(ca_certs));
 }
@@ -239,7 +239,7 @@ void AddChoosePrivateKeyRuleToPolicy(
     if (LooksLikeAndroidPackageName(app_id))
       arc_app_ids.Append(app_id);
   }
-  if (arc_app_ids.GetList().empty() ||
+  if (arc_app_ids.GetListDeprecated().empty() ||
       cert_store_service->get_required_cert_names().empty()) {
     return;
   }

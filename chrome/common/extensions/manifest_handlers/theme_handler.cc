@@ -70,7 +70,7 @@ bool LoadColors(const base::Value* theme_value,
         *error = errors::kInvalidThemeColors;
         return false;
       }
-      base::Value::ConstListView color_list = it.second.GetList();
+      base::Value::ConstListView color_list = it.second.GetListDeprecated();
 
       // There must be either 3 items (RGB), or 4 (RGBA).
       if (!(color_list.size() == 3 || color_list.size() == 4)) {
@@ -114,7 +114,7 @@ bool LoadTints(const base::DictionaryValue* theme_value,
       return false;
     }
 
-    base::Value::ConstListView tint_list = iter.value().GetList();
+    base::Value::ConstListView tint_list = iter.value().GetListDeprecated();
     if (tint_list.size() != 3) {
       *error = errors::kInvalidThemeTints;
       return false;

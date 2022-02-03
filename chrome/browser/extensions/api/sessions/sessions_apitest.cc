@@ -104,9 +104,9 @@ void BuildTabSpecifics(const std::string& tag,
 
 testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
                                             size_t num_sessions) {
-  EXPECT_EQ(5u, devices.GetList().size());
-  for (size_t i = 0; i < devices.GetList().size(); ++i) {
-    const base::Value& device_value = devices.GetList()[i];
+  EXPECT_EQ(5u, devices.GetListDeprecated().size());
+  for (size_t i = 0; i < devices.GetListDeprecated().size(); ++i) {
+    const base::Value& device_value = devices.GetListDeprecated()[i];
     EXPECT_TRUE(device_value.is_dict());
     const base::Value::DictStorage device = utils::ToDictionary(device_value);
     EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "info"));

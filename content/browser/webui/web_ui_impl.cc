@@ -279,7 +279,7 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
   auto callback_pair = message_callbacks_.find(message);
   if (callback_pair != message_callbacks_.end()) {
     // Forward this message and content on.
-    callback_pair->second.Run(args.GetList());
+    callback_pair->second.Run(args.GetListDeprecated());
     return;
   }
 

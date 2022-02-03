@@ -44,7 +44,7 @@ bool FederatedIdentityActiveSessionPermissionContext::HasActiveSession(
     return false;
 
   auto& account_ids = *object->value.FindListKey(kAccountIdsKey);
-  for (const auto& account_id : account_ids.GetList()) {
+  for (const auto& account_id : account_ids.GetListDeprecated()) {
     if (account_id.GetString() == account_identifier)
       return true;
   }
@@ -93,7 +93,7 @@ void FederatedIdentityActiveSessionPermissionContext::RevokeActiveSession(
   account_ids.EraseListValue(base::Value((account_identifier)));
 
   // Remove the permission object if there is no account left.
-  if (account_ids.GetList().size() == 0) {
+  if (account_ids.GetListDeprecated().size() == 0) {
     RevokeObjectPermission(relying_party, idp_string);
   } else {
     UpdateObjectPermission(relying_party, object->value, std::move(new_object));

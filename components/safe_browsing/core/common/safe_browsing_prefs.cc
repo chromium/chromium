@@ -330,8 +330,8 @@ void CanonicalizeDomainList(
     const base::Value& raw_domain_list,
     std::vector<std::string>* out_canonicalized_domain_list) {
   out_canonicalized_domain_list->clear();
-  for (auto it = raw_domain_list.GetList().begin();
-       it != raw_domain_list.GetList().end(); it++) {
+  for (auto it = raw_domain_list.GetListDeprecated().begin();
+       it != raw_domain_list.GetListDeprecated().end(); it++) {
     // Verify if it is valid domain string.
     url::CanonHostInfo host_info;
     std::string canonical_host =

@@ -421,7 +421,7 @@ bool ZeroSuggestProvider::UpdateResults(const std::string& json_data) {
     const bool non_empty_parsed_list =
         data->is_list() && data->GetListDeprecated().size() >= 2u &&
         data->GetListDeprecated()[1].is_list() &&
-        !data->GetListDeprecated()[1].GetList().empty();
+        !data->GetListDeprecated()[1].GetListDeprecated().empty();
     const bool non_empty_cache = !results_.suggest_results.empty() ||
                                  !results_.navigation_results.empty();
     if (non_empty_parsed_list && non_empty_cache)

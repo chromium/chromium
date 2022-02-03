@@ -62,7 +62,7 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
       }
     }
 
-    if (!domains_for_extension.GetList().empty()) {
+    if (!domains_for_extension.GetListDeprecated().empty()) {
       url_matcher::URLMatcher matcher;
       url_matcher::URLMatcherConditionSet::ID id(0);
       url_matcher::util::AddFilters(&matcher, true, &id,

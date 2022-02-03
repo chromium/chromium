@@ -1011,7 +1011,7 @@ TEST_F(ManagementUIHandlerTests, NoDeviceReportingInfo) {
   base::Value info =
       handler_.GetDeviceReportingInfo(nullptr, nullptr, nullptr, GetProfile());
 
-  EXPECT_EQ(info.GetList().size(), 0u);
+  EXPECT_EQ(info.GetListDeprecated().size(), 0u);
 }
 
 TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
@@ -1032,7 +1032,7 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
       {kManagementReportAndroidApplications, "android application"},
       {kManagementReportDlpEvents, "dlp events"}};
 
-  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetListDeprecated(),
                       expected_elements);
 }
 
@@ -1055,7 +1055,7 @@ TEST_F(ManagementUIHandlerTests,
       {kManagementReportExtensions, "extension"},
       {kManagementReportAndroidApplications, "android application"}};
 
-  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetListDeprecated(),
                       expected_elements);
 }
 
@@ -1066,7 +1066,7 @@ TEST_F(ManagementUIHandlerTests, OnlyReportDlpEvents) {
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportDlpEvents, "dlp events"}};
 
-  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetListDeprecated(),
                       expected_elements);
 }
 
@@ -1077,7 +1077,7 @@ TEST_F(ManagementUIHandlerTests, OnlyReportUsersDeviceReportingInfo) {
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportUsers, "supervised user"}};
 
-  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetListDeprecated(),
                       expected_elements);
 }
 
@@ -1086,7 +1086,7 @@ TEST_F(ManagementUIHandlerTests, AllDisabledDeviceReportingInfo) {
   const base::Value info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {};
 
-  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetListDeprecated(),
                       expected_elements);
 }
 
@@ -1164,7 +1164,7 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
 
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
   auto reporting_info = handler_.GetExtensionReportingInfo();
-  EXPECT_EQ(reporting_info.GetList().size(), 0u);
+  EXPECT_EQ(reporting_info.GetListDeprecated().size(), 0u);
 }
 
 TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
@@ -1181,7 +1181,7 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
       kManagementExtensionReportExtensionsPlugin};
 
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
-                      handler_.GetExtensionReportingInfo().GetList(),
+                      handler_.GetExtensionReportingInfo().GetListDeprecated(),
                       expected_messages);
 }
 
@@ -1237,7 +1237,7 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
       kManagementExtensionReportPerfCrash};
 
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
-                      handler_.GetExtensionReportingInfo().GetList(),
+                      handler_.GetExtensionReportingInfo().GetListDeprecated(),
                       expected_messages);
 }
 
@@ -1245,7 +1245,7 @@ TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoNoPolicySet) {
   TestingProfile::Builder builder_no_domain;
   auto profile = builder_no_domain.Build();
   auto info = handler_.GetManagedWebsitesInfo(profile.get());
-  EXPECT_EQ(info.GetList().size(), 0u);
+  EXPECT_EQ(info.GetListDeprecated().size(), 0u);
 }
 
 TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoWebsites) {
@@ -1258,8 +1258,9 @@ TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoWebsites) {
   profile->GetPrefs()->Set(prefs::kManagedConfigurationPerOrigin,
                            managed_websites);
   auto info = handler_.GetManagedWebsitesInfo(profile.get());
-  EXPECT_EQ(info.GetList().size(), 1u);
-  EXPECT_EQ(info.GetList().begin()->GetString(), "https://example.com");
+  EXPECT_EQ(info.GetListDeprecated().size(), 1u);
+  EXPECT_EQ(info.GetListDeprecated().begin()->GetString(),
+            "https://example.com");
 }
 
 TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {

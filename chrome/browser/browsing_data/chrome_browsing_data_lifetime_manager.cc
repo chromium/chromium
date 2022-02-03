@@ -155,7 +155,7 @@ class BrowsingDataRemoverObserver
 
 uint64_t GetOriginTypeMask(const base::Value& data_types) {
   uint64_t result = 0;
-  for (const auto& data_type : data_types.GetList()) {
+  for (const auto& data_type : data_types.GetListDeprecated()) {
     std::string data_type_str = data_type.GetString();
     if (data_type_str ==
         browsing_data::policy_data_types::kCookiesAndOtherSiteData) {
@@ -170,7 +170,7 @@ uint64_t GetOriginTypeMask(const base::Value& data_types) {
 
 uint64_t GetRemoveMask(const base::Value& data_types) {
   uint64_t result = 0;
-  for (const auto& data_type : data_types.GetList()) {
+  for (const auto& data_type : data_types.GetListDeprecated()) {
     std::string data_type_str = data_type.GetString();
     if (data_type_str == browsing_data::policy_data_types::kBrowsingHistory) {
       result |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;

@@ -39,25 +39,26 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLog) {
       ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
   ASSERT_FALSE(list.is_none());
-  ASSERT_EQ(2u, list.GetList().size());
+  ASSERT_EQ(2u, list.GetListDeprecated().size());
 
-  ASSERT_TRUE(list.GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", list.GetList()[0].GetString());
+  ASSERT_TRUE(list.GetListDeprecated()[0].is_string());
+  EXPECT_EQ("foo: bar", list.GetListDeprecated()[0].GetString());
 
-  ASSERT_TRUE(list.GetList()[1].is_string());
-  EXPECT_EQ("cookie: [10 bytes were stripped]", list.GetList()[1].GetString());
+  ASSERT_TRUE(list.GetListDeprecated()[1].is_string());
+  EXPECT_EQ("cookie: [10 bytes were stripped]",
+            list.GetListDeprecated()[1].GetString());
 
   list = ElideHttp2HeaderBlockForNetLog(headers,
                                         NetLogCaptureMode::kIncludeSensitive);
 
   ASSERT_FALSE(list.is_none());
-  ASSERT_EQ(2u, list.GetList().size());
+  ASSERT_EQ(2u, list.GetListDeprecated().size());
 
-  ASSERT_TRUE(list.GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", list.GetList()[0].GetString());
+  ASSERT_TRUE(list.GetListDeprecated()[0].is_string());
+  EXPECT_EQ("foo: bar", list.GetListDeprecated()[0].GetString());
 
-  ASSERT_TRUE(list.GetList()[1].is_string());
-  EXPECT_EQ("cookie: name=value", list.GetList()[1].GetString());
+  ASSERT_TRUE(list.GetListDeprecated()[1].is_string());
+  EXPECT_EQ("cookie: name=value", list.GetListDeprecated()[1].GetString());
 }
 
 TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
@@ -114,7 +115,7 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLogWithNonUTF8Characters) {
   base::ListValue list =
       ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
-  base::Value::ConstListView list_view = list.GetList();
+  base::Value::ConstListView list_view = list.GetListDeprecated();
   ASSERT_EQ(3u, list_view.size());
   ASSERT_TRUE(list_view[0].is_string());
   EXPECT_EQ("%ESCAPED:\xE2\x80\x8B foo: bar%81", list_view[0].GetString());

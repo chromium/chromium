@@ -190,7 +190,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
 
     inner_list = absl::nullopt;
     if (!current_list.value().empty() && current_list.value()[0].is_list())
-      inner_list = current_list.value()[0].GetList();
+      inner_list = current_list.value()[0].GetListDeprecated();
     current_list = inner_list;
   }
   EXPECT_FALSE(current_list.has_value());

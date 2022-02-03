@@ -48,7 +48,7 @@ class PrivacyReviewHandlerTest : public testing::Test {
   void ValidateIsPrivacyReviewAvailable(bool privacyReviewAvailableExpected) {
     base::ListValue args;
     args.Append(kCallbackId);
-    handler()->HandleIsPrivacyReviewAvailable(args.GetList());
+    handler()->HandleIsPrivacyReviewAvailable(args.GetListDeprecated());
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());

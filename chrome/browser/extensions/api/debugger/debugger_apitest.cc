@@ -125,7 +125,7 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   const base::ListValue& targets = base::Value::AsListValue(*value);
 
   std::string debugger_target_id;
-  for (const base::Value& target_value : targets.GetList()) {
+  for (const base::Value& target_value : targets.GetListDeprecated()) {
     EXPECT_TRUE(target_value.is_dict());
     absl::optional<int> id = target_value.FindIntKey("tabId");
     if (id == tab_id) {

@@ -139,7 +139,7 @@ base::Value BuildAddressDictionary(const AutofillProfile& profile,
                          address_lines);
   AppendStringIfNotEmpty(profile, ADDRESS_HOME_LINE3, app_locale,
                          address_lines);
-  if (!address_lines.GetList().empty())
+  if (!address_lines.GetListDeprecated().empty())
     postal_address.SetKey("address_line", std::move(address_lines));
 
   SetStringIfNotEmpty(profile, ADDRESS_HOME_CITY, app_locale, "locality_name",

@@ -297,7 +297,7 @@ MATCHER_P(IsEqualTo,
 }
 
 MATCHER(IsListEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
-  return arg.GetList().empty();
+  return arg.GetListDeprecated().empty();
 }
 
 MATCHER(IsDictEmpty, std::string(negation ? "isn't" : "is") + " empty.") {

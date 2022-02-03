@@ -81,7 +81,7 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
   base::Value* old_list = nullptr;
   prefs->GetValue(policy_prefs::kSystemFeaturesDisableList, &old_list);
 
-  for (const auto& element : filtered_list.GetList()) {
+  for (const auto& element : filtered_list.GetListDeprecated()) {
     SystemFeature feature = ConvertToEnum(element.GetString());
     enums_list.Append(feature);
 
@@ -94,7 +94,7 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool os_settings_disabled = base::Contains(
-      enums_list.GetList(), base::Value(SystemFeature::kOsSettings));
+      enums_list.GetListDeprecated(), base::Value(SystemFeature::kOsSettings));
   prefs->SetBoolean(ash::prefs::kOsSettingsEnabled, !os_settings_disabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->SetValue(policy_prefs::kSystemFeaturesDisableList,

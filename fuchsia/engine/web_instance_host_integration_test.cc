@@ -139,8 +139,9 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
   base::Value devtools_list =
       cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetList().size(), 1u);
-  base::Value* devtools_url = devtools_list.GetList()[0].FindPath("url");
+  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  base::Value* devtools_url =
+      devtools_list.GetListDeprecated()[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url);
 
@@ -158,8 +159,8 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
 
   devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetList().size(), 1u);
-  devtools_url = devtools_list.GetList()[0].FindPath("url");
+  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  devtools_url = devtools_list.GetListDeprecated()[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url2);
 }

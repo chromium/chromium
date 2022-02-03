@@ -268,7 +268,7 @@ Status ParseSwitches(const base::Value& option,
                      Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (const base::Value& arg : option.GetList()) {
+  for (const base::Value& arg : option.GetListDeprecated()) {
     if (!arg.is_string())
       return Status(kInvalidArgument, "each argument must be a string");
     std::string arg_string = arg.GetString();
@@ -283,7 +283,7 @@ Status ParseSwitches(const base::Value& option,
 Status ParseExtensions(const base::Value& option, Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (const base::Value& extension : option.GetList()) {
+  for (const base::Value& extension : option.GetListDeprecated()) {
     if (!extension.is_string()) {
       return Status(kInvalidArgument,
                     "each extension must be a base64 encoded string");
@@ -391,7 +391,7 @@ Status ParseExcludeSwitches(const base::Value& option,
                             Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (const base::Value& switch_value : option.GetList()) {
+  for (const base::Value& switch_value : option.GetListDeprecated()) {
     if (!switch_value.is_string()) {
       return Status(kInvalidArgument,
                     "each switch to be removed must be a string");
@@ -521,7 +521,7 @@ Status ParseDevToolsEventsLoggingPrefs(const base::Value& option,
                                        Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  if (option.GetList().empty())
+  if (option.GetListDeprecated().empty())
     return Status(kInvalidArgument, "list must contain values");
   capabilities->devtools_events_logging_prefs = option.Clone();
   return Status(kOk);
@@ -531,7 +531,7 @@ Status ParseWindowTypes(const base::Value& option, Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
   std::set<WebViewInfo::Type> window_types_tmp;
-  for (const base::Value& window_type : option.GetList()) {
+  for (const base::Value& window_type : option.GetListDeprecated()) {
     if (!window_type.is_string()) {
       return Status(kInvalidArgument, "each window type must be a string");
     }

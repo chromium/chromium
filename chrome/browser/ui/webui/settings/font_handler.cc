@@ -63,7 +63,7 @@ void FontHandler::FontListHasLoaded(std::string callback_id,
   // Font list. Selects the directionality for the fonts in the given list.
   for (auto& i : list_view) {
     DCHECK(i.is_list());
-    base::Value::ConstListView font = i.GetList();
+    base::Value::ConstListView font = i.GetListDeprecated();
 
     DCHECK(font.size() >= 2u && font[1].is_string());
     std::u16string value = base::UTF8ToUTF16(font[1].GetString());

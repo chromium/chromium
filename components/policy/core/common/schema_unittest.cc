@@ -832,7 +832,7 @@ TEST(SchemaTest, Validate) {
     Schema subschema = schema.GetProperty("ArrayOfObjects");
     ASSERT_TRUE(subschema.valid());
     base::ListValue root;
-    base::Value::ListView root_view = root.GetList();
+    base::Value::ListView root_view = root.GetListDeprecated();
 
     // Unknown property.
     base::Value dict_value(base::Value::Type::DICTIONARY);

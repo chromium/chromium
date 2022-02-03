@@ -111,7 +111,7 @@ void RulesCacheDelegate::UpdateRules(const std::string& extension_id,
   }
 
   DCHECK(value.is_list());
-  has_nonempty_ruleset_ = !value.GetList().empty();
+  has_nonempty_ruleset_ = !value.GetListDeprecated().empty();
   for (auto& observer : observers_)
     observer.OnUpdateRules();
 

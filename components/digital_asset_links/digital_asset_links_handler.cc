@@ -194,7 +194,7 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
   // We only output individual statement failures if none match.
   std::vector<std::string> failures;
 
-  for (const auto& statement : statement_list.GetList()) {
+  for (const auto& statement : statement_list.GetListDeprecated()) {
     if (!statement.is_dict()) {
       failures.push_back("Statement is not a dictionary.");
       continue;

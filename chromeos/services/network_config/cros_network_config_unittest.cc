@@ -2106,7 +2106,7 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {
   traffic_counters.Append(std::move(user_dict));
 
   ASSERT_TRUE(traffic_counters.is_list());
-  ASSERT_EQ(traffic_counters.GetList().size(), (size_t)2);
+  ASSERT_EQ(traffic_counters.GetListDeprecated().size(), (size_t)2);
   helper()->service_test()->SetFakeTrafficCounters(traffic_counters.Clone());
 
   RequestTrafficCountersAndCompareTrafficCounters(
@@ -2129,7 +2129,7 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithDoubleType) {
   traffic_counters.Append(std::move(user_dict));
 
   ASSERT_TRUE(traffic_counters.is_list());
-  ASSERT_EQ(traffic_counters.GetList().size(), (size_t)2);
+  ASSERT_EQ(traffic_counters.GetListDeprecated().size(), (size_t)2);
   helper()->service_test()->SetFakeTrafficCounters(traffic_counters.Clone());
 
   RequestTrafficCountersAndCompareTrafficCounters(

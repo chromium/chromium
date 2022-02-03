@@ -350,9 +350,9 @@ TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
   // newly-encoded PNG is included.
   base::Value result = future.Take();
   EXPECT_TRUE(result.is_list());
-  EXPECT_EQ(1u, result.GetList().size());
+  EXPECT_EQ(1u, result.GetListDeprecated().size());
 
-  ExpectHistoryValueMatchesBitmap(result.GetList()[0], test_bitmap);
+  ExpectHistoryValueMatchesBitmap(result.GetListDeprecated()[0], test_bitmap);
 }
 
 TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
@@ -377,12 +377,12 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
   // newly-encoded PNGs are included.
   base::Value result = future.Take();
   EXPECT_TRUE(result.is_list());
-  auto num_results = result.GetList().size();
+  auto num_results = result.GetListDeprecated().size();
   EXPECT_EQ(num_results, test_bitmaps.size());
 
   // History values should be sorted by recency.
   for (uint i = 0; i < num_results; ++i) {
-    ExpectHistoryValueMatchesBitmap(result.GetList()[i],
+    ExpectHistoryValueMatchesBitmap(result.GetListDeprecated()[i],
                                     test_bitmaps[num_results - 1 - i]);
   }
 }
@@ -413,12 +413,12 @@ TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
   // newly-encoded PNGs are included.
   base::Value result = future.Take();
   EXPECT_TRUE(result.is_list());
-  auto num_results = result.GetList().size();
+  auto num_results = result.GetListDeprecated().size();
   EXPECT_EQ(num_results, test_bitmaps.size());
 
   // History values should be sorted by recency.
   for (uint i = 0; i < num_results; ++i) {
-    ExpectHistoryValueMatchesBitmap(result.GetList()[i],
+    ExpectHistoryValueMatchesBitmap(result.GetListDeprecated()[i],
                                     test_bitmaps[num_results - 1 - i]);
   }
 }

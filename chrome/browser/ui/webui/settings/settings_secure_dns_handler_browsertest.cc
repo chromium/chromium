@@ -85,8 +85,9 @@ bool FindDropdownItem(const base::Value& resolvers,
   dict.SetKey("value", base::Value(value));
   dict.SetKey("policy", base::Value(policy));
 
-  return std::find(resolvers.GetList().begin(), resolvers.GetList().end(),
-                   dict) != resolvers.GetList().end();
+  return std::find(resolvers.GetListDeprecated().begin(),
+                   resolvers.GetListDeprecated().end(),
+                   dict) != resolvers.GetListDeprecated().end();
 }
 
 }  // namespace
@@ -314,8 +315,11 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
   handler_->SetProvidersForTesting(entries);
   const base::Value resolver_list = handler_->GetSecureDnsResolverList();
 
-  EXPECT_EQ(entries.size() + 1, resolver_list.GetList().size());
-  EXPECT_TRUE(resolver_list.GetList()[0].FindKey("value")->GetString().empty());
+  EXPECT_EQ(entries.size() + 1, resolver_list.GetListDeprecated().size());
+  EXPECT_TRUE(resolver_list.GetListDeprecated()[0]
+                  .FindKey("value")
+                  ->GetString()
+                  .empty());
   for (const auto* entry : entries) {
     EXPECT_TRUE(FindDropdownItem(resolver_list, entry->ui_name,
                                  entry->doh_server_config.server_template(),

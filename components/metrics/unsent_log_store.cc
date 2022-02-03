@@ -238,18 +238,18 @@ void UnsentLogStore::Purge() {
 }
 
 void UnsentLogStore::ReadLogsFromPrefList(const base::Value& list_value) {
-  if (list_value.GetList().empty()) {
+  if (list_value.GetListDeprecated().empty()) {
     metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::LIST_EMPTY);
     return;
   }
 
-  const size_t log_count = list_value.GetList().size();
+  const size_t log_count = list_value.GetListDeprecated().size();
 
   DCHECK(list_.empty());
   list_.resize(log_count);
 
   for (size_t i = 0; i < log_count; ++i) {
-    const base::Value& value = list_value.GetList()[i];
+    const base::Value& value = list_value.GetListDeprecated()[i];
     const base::DictionaryValue* dict = nullptr;
     if (value.is_dict())
       dict = &base::Value::AsDictionaryValue(value);

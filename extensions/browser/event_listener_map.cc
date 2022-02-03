@@ -289,7 +289,7 @@ void EventListenerMap::LoadFilteredLazyListeners(
     // We skip entries if they are malformed.
     if (!it.value().is_list())
       continue;
-    for (const base::Value& filter_value : it.value().GetList()) {
+    for (const base::Value& filter_value : it.value().GetListDeprecated()) {
       if (!filter_value.is_dict())
         continue;
       const base::DictionaryValue* filter =

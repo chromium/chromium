@@ -81,7 +81,7 @@ HistogramsMessageHandler::~HistogramsMessageHandler() {}
 
 JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
     const base::ListValue& args) {
-  base::Value::ConstListView args_list = args.GetList();
+  base::Value::ConstListView args_list = args.GetListDeprecated();
   AllowJavascript();
   JsParams params;
   if (args_list.size() > 0u && args_list[0].is_string())

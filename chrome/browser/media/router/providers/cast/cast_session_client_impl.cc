@@ -29,7 +29,7 @@ void ReportClientMessageParseError(const MediaRoute::Id& route_id,
 // null.
 void RemoveNullFields(base::Value& value) {
   if (value.is_list()) {
-    for (auto& item : value.GetList()) {
+    for (auto& item : value.GetListDeprecated()) {
       RemoveNullFields(item);
     }
   } else if (value.is_dict()) {

@@ -282,7 +282,7 @@ void EasyUnlockServiceRegular::SetStoredRemoteDevices(
 
   DictionaryPrefUpdate pairing_update(profile()->GetPrefs(),
                                       prefs::kEasyUnlockPairing);
-  if (devices.GetList().empty())
+  if (devices.GetListDeprecated().empty())
     pairing_update->RemoveKey(kKeyDevices);
   else
     pairing_update->SetKey(kKeyDevices, devices.Clone());

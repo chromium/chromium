@@ -304,7 +304,7 @@ bool CheckHeader(const base::DictionaryValue& dict,
       ADD_FAILURE();
       return false;
     }
-    base::Value::ConstListView name_value_pair = header.GetList();
+    base::Value::ConstListView name_value_pair = header.GetListDeprecated();
     if (name_value_pair.size() != 2u) {
       ADD_FAILURE();
       return false;
@@ -340,7 +340,7 @@ bool HasHeader(const base::DictionaryValue& dict,
       ADD_FAILURE();
       return false;
     }
-    base::Value::ConstListView name_value_pair = header.GetList();
+    base::Value::ConstListView name_value_pair = header.GetListDeprecated();
     if (name_value_pair.size() != 2u) {
       ADD_FAILURE();
       return false;

@@ -178,7 +178,7 @@ absl::optional<WeatherInfo> ToWeatherInfo(const base::Value& result) {
     return absl::nullopt;
 
   WeatherInfo weather_info;
-  const auto& list_result = result.GetList();
+  const auto& list_result = result.GetListDeprecated();
 
   weather_info.condition_icon_url = GetStringValue(
       list_result, backdrop::WeatherInfo::kConditionIconUrlFieldNumber);

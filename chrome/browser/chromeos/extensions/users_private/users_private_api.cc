@@ -121,7 +121,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   // Remove all supervised users. On the next step only supervised users
   // present on the device will be added back. Thus not present SU are
   // removed. No need to remove usual users as they can simply login back.
-  base::Value::ListView email_list_view = email_list.GetList();
+  base::Value::ListView email_list_view = email_list.GetListDeprecated();
   for (size_t i = 0; i < email_list_view.size(); ++i) {
     const std::string* email = email_list_view[i].GetIfString();
     if (email && user_manager->IsDeprecatedSupervisedAccountId(

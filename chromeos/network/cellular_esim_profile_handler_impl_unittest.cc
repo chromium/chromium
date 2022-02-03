@@ -465,23 +465,23 @@ TEST_F(CellularESimProfileHandlerImplTest,
   Init();
   base::Value euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_TRUE(euicc_paths_from_prefs.GetList().empty());
+  EXPECT_TRUE(euicc_paths_from_prefs.GetListDeprecated().empty());
 
   // Set device prefs; a new auto-refresh should have started but not yet
   // completed.
   SetDevicePrefs();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_TRUE(euicc_paths_from_prefs.GetList().empty());
+  EXPECT_TRUE(euicc_paths_from_prefs.GetListDeprecated().empty());
   EXPECT_FALSE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
 
   FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
+  EXPECT_EQ(1u, euicc_paths_from_prefs.GetListDeprecated().size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
-            euicc_paths_from_prefs.GetList()[0].GetString());
+            euicc_paths_from_prefs.GetListDeprecated()[0].GetString());
   EXPECT_TRUE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
 }
 
@@ -525,16 +525,16 @@ TEST_F(CellularESimProfileHandlerImplTest,
   // Verify that no EUICCs exist in pref.
   base::Value euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_TRUE(euicc_paths_from_prefs.GetList().empty());
+  EXPECT_TRUE(euicc_paths_from_prefs.GetListDeprecated().empty());
 
   // Verify that EUICCs are refreshed after the cellular device is added.
   AddCellularDevice();
   FastForwardProfileRefreshDelay();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
+  EXPECT_EQ(1u, euicc_paths_from_prefs.GetListDeprecated().size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
-            euicc_paths_from_prefs.GetList()[0].GetString());
+            euicc_paths_from_prefs.GetListDeprecated()[0].GetString());
 }
 
 }  // namespace chromeos

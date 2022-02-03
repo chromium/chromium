@@ -175,7 +175,7 @@ base::Value GetGssStatusCodeValue(GSSAPILibrary* gssapi_lib,
     messages.Append(message_string);
   } while (message_context != 0 && ++iterations < kMaxDisplayIterations);
 
-  if (messages.GetList().size() > 0)
+  if (messages.GetListDeprecated().size() > 0)
     rv.SetKey("message", std::move(messages));
   return rv;
 }

@@ -41,7 +41,7 @@ TEST_F(CrOSComponentInstallerMetadataTest, Add) {
   metadata_table->AddItem(kHashedUserId[0], kComponent[0]);
   metadata_table->AddItem(kHashedUserId[1], kComponent[1]);
   metadata_table->AddItem(kHashedUserId[0], kComponent[1]);
-  ASSERT_EQ(metadata_table->installed_items_.GetList().size(), 3U);
+  ASSERT_EQ(metadata_table->installed_items_.GetListDeprecated().size(), 3U);
   EXPECT_TRUE(
       metadata_table->HasComponentForUser(kHashedUserId[0], kComponent[0]));
   EXPECT_TRUE(
@@ -52,7 +52,7 @@ TEST_F(CrOSComponentInstallerMetadataTest, Add) {
       metadata_table->HasComponentForUser(kHashedUserId[1], kComponent[0]));
   // Add an existing item.
   metadata_table->AddItem(kHashedUserId[0], kComponent[0]);
-  EXPECT_EQ(metadata_table->installed_items_.GetList().size(), 3U);
+  EXPECT_EQ(metadata_table->installed_items_.GetListDeprecated().size(), 3U);
 }
 
 TEST_F(CrOSComponentInstallerMetadataTest, Delete) {
@@ -71,8 +71,9 @@ TEST_F(CrOSComponentInstallerMetadataTest, Delete) {
   // Delete component items.
   EXPECT_TRUE(metadata_table->DeleteItem(kHashedUserId[1], kComponent[1]));
   EXPECT_TRUE(metadata_table->DeleteItem(kHashedUserId[0], kComponent[1]));
-  ASSERT_EQ(metadata_table->installed_items_.GetList().size(), 1U);
-  const base::Value& item = metadata_table->installed_items_.GetList()[0];
+  ASSERT_EQ(metadata_table->installed_items_.GetListDeprecated().size(), 1U);
+  const base::Value& item =
+      metadata_table->installed_items_.GetListDeprecated()[0];
   EXPECT_EQ(item.FindKey(kMetadataContentItemHashedUserIdKey)->GetString(),
             kHashedUserId[0]);
   EXPECT_EQ(item.FindKey(kMetadataContentItemComponentKey)->GetString(),

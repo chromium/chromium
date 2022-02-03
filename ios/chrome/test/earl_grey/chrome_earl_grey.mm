@@ -483,7 +483,7 @@ UIWindow* GetAnyKeyWindow() {
                              @"The script response is not iteratble.");
 
   NSMutableDictionary* cookies = [NSMutableDictionary dictionary];
-  for (const auto& option : result.GetList()) {
+  for (const auto& option : result.GetListDeprecated()) {
     if (option.is_string()) {
       NSString* nameValuePair = base::SysUTF8ToNSString(option.GetString());
       NSMutableArray* cookieNameValue =

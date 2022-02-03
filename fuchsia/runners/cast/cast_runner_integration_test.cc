@@ -748,9 +748,10 @@ TEST_F(CastRunnerIntegrationTest, RemoteDebugging) {
   base::Value devtools_list =
       cr_fuchsia::GetDevToolsListFromPort(CastRunner::kRemoteDebuggingPort);
   ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetList().size(), 1u);
+  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
 
-  base::Value* devtools_url = devtools_list.GetList()[0].FindPath("url");
+  base::Value* devtools_url =
+      devtools_list.GetListDeprecated()[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), app_url.spec());
 }

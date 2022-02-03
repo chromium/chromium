@@ -159,7 +159,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
   list_args.Append(std::move(data_types));
   list_args.Append(1);
   list_args.Append(std::move(installed_apps));
-  HandleClearBrowsingData(list_args.GetList());
+  HandleClearBrowsingData(list_args.GetListDeprecated());
 }
 
 void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(
@@ -255,7 +255,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::vector<BrowsingDataType> data_type_vector;
 
   CHECK(args_list[1].is_list());
-  base::Value::ConstListView data_type_list = args_list[1].GetList();
+  base::Value::ConstListView data_type_list = args_list[1].GetListDeprecated();
   for (const base::Value& type : data_type_list) {
     const std::string pref_name = type.GetString();
     BrowsingDataType data_type =
@@ -354,7 +354,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   int period_selected = args_list[2].GetInt();
 
-  const base::Value::ConstListView installed_apps = args_list[3].GetList();
+  const base::Value::ConstListView installed_apps =
+      args_list[3].GetListDeprecated();
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
       ProcessInstalledApps(installed_apps);
 

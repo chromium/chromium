@@ -106,7 +106,7 @@ base::ListValue GetFakeParentsWithImage() {
   base::ListValue parents = GetFakeParentsWithoutImage();
   std::map<std::string, gfx::Image> profile_images = GetFakeProfileImageMap();
 
-  for (auto& parent : parents.GetList()) {
+  for (auto& parent : parents.GetListDeprecated()) {
     const std::string* obfuscated_gaia_id =
         parent.FindStringKey("obfuscatedGaiaId");
     DCHECK(obfuscated_gaia_id);

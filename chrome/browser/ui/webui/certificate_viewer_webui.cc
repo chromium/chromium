@@ -105,7 +105,7 @@ CertNodeBuilder& CertNodeBuilder::ChildIfNotNull(
 
 std::unique_ptr<base::DictionaryValue> CertNodeBuilder::Build() {
   DCHECK(!built_);
-  if (!children_.GetList().empty()) {
+  if (!children_.GetListDeprecated().empty()) {
     node_.SetKey("children", std::move(children_));
   }
   built_ = true;

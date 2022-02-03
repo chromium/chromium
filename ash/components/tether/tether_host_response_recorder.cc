@@ -100,7 +100,8 @@ bool TetherHostResponseRecorder::AddRecentResponse(
   updated_ids.EraseListValue(device_id_value);
 
   // Add the device ID to the front of the queue.
-  updated_ids.Insert(updated_ids.GetList().begin(), std::move(device_id_value));
+  updated_ids.Insert(updated_ids.GetListDeprecated().begin(),
+                     std::move(device_id_value));
 
   // Store the updated list back in |pref_service_|.
   pref_service_->Set(pref_name, std::move(updated_ids));

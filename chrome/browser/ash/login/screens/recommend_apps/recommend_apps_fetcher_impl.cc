@@ -571,7 +571,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   // Otherwise, the response should return a list of apps.
-  base::Value::ConstListView app_list = parsed_json.GetList();
+  base::Value::ConstListView app_list = parsed_json.GetListDeprecated();
   if (app_list.empty()) {
     DVLOG(1) << "No app in the response.";
     RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP);
@@ -621,7 +621,8 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_ERROR);
-  RecordUmaResponseAppCount(static_cast<int>(output.GetList().size()));
+  RecordUmaResponseAppCount(
+      static_cast<int>(output.GetListDeprecated().size()));
 
   return output;
 }

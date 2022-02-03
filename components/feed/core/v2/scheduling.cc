@@ -25,7 +25,7 @@ bool ValueToVector(const base::Value& value,
                    std::vector<base::TimeDelta>* result) {
   if (!value.is_list())
     return false;
-  for (const base::Value& entry : value.GetList()) {
+  for (const base::Value& entry : value.GetListDeprecated()) {
     absl::optional<base::TimeDelta> delta = base::ValueToTimeDelta(entry);
     if (!delta)
       return false;

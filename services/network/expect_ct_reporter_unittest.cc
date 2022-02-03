@@ -133,7 +133,7 @@ void CheckReportCertificateChain(
     const base::ListValue& chain) {
   std::vector<std::string> pem_encoded_chain;
   expected_cert->GetPEMEncodedChain(&pem_encoded_chain);
-  base::Value::ConstListView chain_list = chain.GetList();
+  base::Value::ConstListView chain_list = chain.GetListDeprecated();
   ASSERT_EQ(pem_encoded_chain.size(), chain_list.size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
@@ -168,7 +168,7 @@ net::ct::SignedCertificateTimestamp::Origin SCTOriginStringToOrigin(
     return ::testing::AssertionFailure() << "Failed to serialize SCT";
   }
 
-  for (const base::Value& report_sct_value : report_list.GetList()) {
+  for (const base::Value& report_sct_value : report_list.GetListDeprecated()) {
     if (!report_sct_value.is_dict()) {
       return ::testing::AssertionFailure()
              << "Failed to get dictionary value from report SCT list";
@@ -215,7 +215,7 @@ net::ct::SignedCertificateTimestamp::Origin SCTOriginStringToOrigin(
 void CheckReportSCTs(
     const net::SignedCertificateTimestampAndStatusList& expected_scts,
     const base::ListValue& scts) {
-  EXPECT_EQ(expected_scts.size(), scts.GetList().size());
+  EXPECT_EQ(expected_scts.size(), scts.GetListDeprecated().size());
   for (const auto& expected_sct : expected_scts) {
     ASSERT_TRUE(
         FindSCTInReportList(expected_sct.sct, expected_sct.status, scts));

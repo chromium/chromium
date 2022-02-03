@@ -54,7 +54,7 @@ std::unique_ptr<base::DictionaryValue> NetworkProperties::ToValue(
          ++it) {
       frequency_list.Append(*it);
     }
-    if (!frequency_list.GetList().empty())
+    if (!frequency_list.GetListDeprecated().empty())
       wifi.SetPath(onc::wifi::kFrequencyList, std::move(frequency_list));
     if (!bssid.empty())
       wifi.SetStringPath(onc::wifi::kBSSID, bssid);

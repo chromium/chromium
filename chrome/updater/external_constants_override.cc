@@ -69,7 +69,7 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
     case base::Value::Type::STRING:
       return {GURL(update_url_value.GetString())};
     case base::Value::Type::LIST:
-      return GURLVectorFromStringList(update_url_value.GetList());
+      return GURLVectorFromStringList(update_url_value.GetListDeprecated());
     default:
       LOG(FATAL) << "Unexpected type of override[" << kDevOverrideKeyUrl
                  << "]: " << base::Value::GetTypeName(update_url_value.type());

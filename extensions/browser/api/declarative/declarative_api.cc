@@ -109,7 +109,7 @@ void ConvertBinaryListElementsToBase64(base::Value::ListView args) {
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
     } else if (value.is_list()) {
-      ConvertBinaryListElementsToBase64(value.GetList());
+      ConvertBinaryListElementsToBase64(value.GetListDeprecated());
     } else if (value.is_dict()) {
       ConvertBinaryDictionaryValuesToBase64(value);
     }
@@ -125,7 +125,7 @@ void ConvertBinaryDictionaryValuesToBase64(base::Value& dict) {
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
     } else if (value.is_list()) {
-      ConvertBinaryListElementsToBase64(value.GetList());
+      ConvertBinaryListElementsToBase64(value.GetListDeprecated());
     } else if (value.is_dict()) {
       ConvertBinaryDictionaryValuesToBase64(value);
     }

@@ -853,7 +853,7 @@ void ShillToONCTranslator::TranslateAndAddListOfObjects(
   }
   DCHECK(field_signature->value_signature->onc_array_entry_signature);
   base::Value result(base::Value::Type::LIST);
-  for (const auto& it : list.GetList()) {
+  for (const auto& it : list.GetListDeprecated()) {
     if (!it.is_dict())
       continue;
     ShillToONCTranslator nested_translator(
@@ -868,7 +868,7 @@ void ShillToONCTranslator::TranslateAndAddListOfObjects(
   }
   // If there are no entries in the list, there is no need to expose this
   // field.
-  if (result.GetList().empty())
+  if (result.GetListDeprecated().empty())
     return;
   onc_object_.SetKey(onc_field_name, std::move(result));
 }

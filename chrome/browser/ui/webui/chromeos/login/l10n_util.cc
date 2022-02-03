@@ -483,7 +483,7 @@ std::string FindMostRelevantLocale(
     const base::ListValue& available_locales,
     const std::string& fallback_locale) {
   for (const auto& most_relevant : most_relevant_language_codes) {
-    for (const auto& entry : available_locales.GetList()) {
+    for (const auto& entry : available_locales.GetListDeprecated()) {
       const std::string* available_locale = nullptr;
       if (entry.is_dict())
         available_locale = entry.FindStringKey("value");

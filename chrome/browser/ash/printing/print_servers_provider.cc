@@ -70,8 +70,8 @@ TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
 
   std::set<std::string> print_server_ids;
   std::set<GURL> print_server_urls;
-  task_data.servers.reserve(json_blob.GetList().size());
-  for (const base::Value& val : json_blob.GetList()) {
+  task_data.servers.reserve(json_blob.GetListDeprecated().size());
+  for (const base::Value& val : json_blob.GetListDeprecated()) {
     if (!val.is_dict()) {
       LOG(WARNING) << "Entry in print servers policy skipped. "
                    << "Not a dictionary.";

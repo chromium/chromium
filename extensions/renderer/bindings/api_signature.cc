@@ -23,14 +23,14 @@ std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
     const base::Value& specification_list,
     bool uses_returns_async) {
   std::vector<std::unique_ptr<ArgumentSpec>> signature;
-  auto size = specification_list.GetList().size();
+  auto size = specification_list.GetListDeprecated().size();
   // If the API specification uses the returns_async format we will be pushing a
   // callback onto the end of the argument spec list during the call to the ctor
   // later, so we make room for it now when we reserve the size.
   if (uses_returns_async)
     size++;
   signature.reserve(size);
-  for (const auto& value : specification_list.GetList()) {
+  for (const auto& value : specification_list.GetListDeprecated()) {
     CHECK(value.is_dict());
     signature.push_back(std::make_unique<ArgumentSpec>(value));
   }
@@ -499,7 +499,7 @@ std::unique_ptr<APISignature> APISignature::CreateFromValues(
   if (!argument_specs.empty() &&
       argument_specs.back()->type() == ArgumentType::FUNCTION) {
     DCHECK(!returns_async_spec);
-    returns_async_spec = &spec_list.GetList().back();
+    returns_async_spec = &spec_list.GetListDeprecated().back();
     argument_specs.pop_back();
   }
 

@@ -343,7 +343,7 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
                                                 PrefValueMap* prefs) {
   DCHECK(filtered_list.is_list());
   std::vector<base::Value> pinned_apps_list;
-  for (const base::Value& entry : filtered_list.GetList()) {
+  for (const base::Value& entry : filtered_list.GetListDeprecated()) {
     base::Value app_dict(base::Value::Type::DICTIONARY);
     app_dict.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, entry.Clone());
     pinned_apps_list.push_back(std::move(app_dict));

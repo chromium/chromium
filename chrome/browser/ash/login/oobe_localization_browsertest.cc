@@ -73,7 +73,7 @@ class LanguageListWaiter : public WelcomeScreen::Observer {
 
  private:
   bool LanguageListReady() const {
-    return !welcome_screen_->language_list().GetList().empty();
+    return !welcome_screen_->language_list().GetListDeprecated().empty();
   }
 
   void CheckLanguageList() {

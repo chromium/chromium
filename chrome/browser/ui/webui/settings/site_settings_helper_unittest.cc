@@ -50,7 +50,7 @@ class SiteSettingsHelperTest : public testing::Test {
                      const std::string& pattern,
                      const std::string& pattern_display_name,
                      const ContentSetting setting) {
-    const base::Value& value = exceptions.GetList()[index];
+    const base::Value& value = exceptions.GetListDeprecated()[index];
     EXPECT_TRUE(value.is_dict());
     const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
     std::string actual_pattern;
@@ -102,7 +102,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
                                              /*incognito=*/false, &exceptions);
 
   // |exceptions| size should be 2. One blocked and one embargoed origins.
-  ASSERT_EQ(2U, exceptions.GetList().size());
+  ASSERT_EQ(2U, exceptions.GetListDeprecated().size());
   base::Value* value = nullptr;
   // Get last added origin.
   exceptions.Get(0, &value);
@@ -149,7 +149,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetList().size());
+    ASSERT_EQ(1U, exceptions.GetListDeprecated().size());
   }
 
   TestingProfile* incognito_profile =
@@ -163,7 +163,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
                                                /*extension_registry=*/nullptr,
                                                /*web_ui=*/nullptr,
                                                /*incognito=*/true, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetList().size());
+    ASSERT_EQ(0U, exceptions.GetListDeprecated().size());
   }
 
   {
@@ -184,7 +184,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
                                                /*incognito=*/true, &exceptions);
     // The exceptions size should be 1 because previously embargoed origin
     // was for a non-incognito profile.
-    ASSERT_EQ(1U, exceptions.GetList().size());
+    ASSERT_EQ(1U, exceptions.GetListDeprecated().size());
   }
 
   // Add an origin under embargo for incognito profile.
@@ -210,7 +210,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
                                                /*extension_registry=*/nullptr,
                                                /*web_ui=*/nullptr,
                                                /*incognito=*/true, &exceptions);
-    ASSERT_EQ(2U, exceptions.GetList().size());
+    ASSERT_EQ(2U, exceptions.GetListDeprecated().size());
   }
 }
 
@@ -226,7 +226,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetList().size());
+    ASSERT_EQ(0U, exceptions.GetListDeprecated().size());
   }
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -240,7 +240,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetList().size());
+    ASSERT_EQ(1U, exceptions.GetListDeprecated().size());
   }
 
   // Add an origin under embargo.
@@ -266,12 +266,12 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
-    ASSERT_EQ(2U, exceptions.GetList().size());
+    ASSERT_EQ(2U, exceptions.GetListDeprecated().size());
 
     // Fetch and check the first origin.
     const base::DictionaryValue* dictionary;
     std::string primary_pattern, display_name;
-    const base::Value* value = &exceptions.GetList()[0];
+    const base::Value* value = &exceptions.GetListDeprecated()[0];
     ASSERT_TRUE(value->is_dict());
     dictionary = &base::Value::AsDictionaryValue(*value);
     ASSERT_TRUE(
@@ -283,7 +283,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
     EXPECT_EQ(kOriginToBlock, display_name);
 
     // Fetch and check the second origin.
-    value = &exceptions.GetList()[1];
+    value = &exceptions.GetListDeprecated()[1];
     ASSERT_TRUE(value->is_dict());
     dictionary = &base::Value::AsDictionaryValue(*value);
     ASSERT_TRUE(
@@ -303,7 +303,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         kContentTypeCookies, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetList().size());
+    ASSERT_EQ(0U, exceptions.GetListDeprecated().size());
   }
 }
 
@@ -318,7 +318,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
                               /*extension_registry=*/nullptr,
                               /*web_ui=*/nullptr,
                               /*incognito=*/false, &exceptions);
-  EXPECT_EQ(0u, exceptions.GetList().size());
+  EXPECT_EQ(0u, exceptions.GetListDeprecated().size());
 
   map->SetDefaultContentSetting(kContentType, CONTENT_SETTING_ALLOW);
 
@@ -358,7 +358,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
                               /*web_ui=*/nullptr,
                               /*incognito=*/false, &exceptions);
 
-  EXPECT_EQ(5u, exceptions.GetList().size());
+  EXPECT_EQ(5u, exceptions.GetListDeprecated().size());
 
   // The policy exception should be returned first, the extension exception
   // second and pref exceptions afterwards.
@@ -740,7 +740,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
   // permissions are not displayed.
   base::Value exceptions =
       GetChooserExceptionListFromProfile(profile(), *chooser_type);
-  base::Value::ConstListView exceptions_list = exceptions.GetList();
+  base::Value::ConstListView exceptions_list = exceptions.GetListDeprecated();
   ASSERT_EQ(exceptions_list.size(), 4u);
 
   // This exception should describe the permissions for any device with the

@@ -547,7 +547,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
       continue;
 
     base::Value::ConstListView const prefetch_url_and_time =
-        base::Value::AsListValue(element.second).GetList();
+        base::Value::AsListValue(element.second).GetListDeprecated();
 
     if (prefetch_url_and_time.size() != 2 ||
         !prefetch_url_and_time[0].is_string() ||

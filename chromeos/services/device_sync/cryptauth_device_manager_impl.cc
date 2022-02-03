@@ -289,7 +289,7 @@ base::Value UnlockKeyToDictionary(const cryptauth::ExternalDeviceInfo& device) {
 void AddBeaconSeedsToExternalDevice(
     const base::Value& beacon_seeds,
     cryptauth::ExternalDeviceInfo* external_device) {
-  for (const base::Value& seed_dictionary : beacon_seeds.GetList()) {
+  for (const base::Value& seed_dictionary : beacon_seeds.GetListDeprecated()) {
     if (!seed_dictionary.is_dict()) {
       PA_LOG(WARNING) << "Unable to retrieve BeaconSeed dictionary; "
                       << "skipping.";

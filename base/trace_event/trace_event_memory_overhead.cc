@@ -122,7 +122,7 @@ void TraceEventMemoryOverhead::AddValue(const Value& value) {
 
     case Value::Type::LIST:
       Add(kBaseValue, sizeof(Value));
-      for (const auto& v : value.GetList())
+      for (const auto& v : value.GetListDeprecated())
         AddValue(v);
       break;
 

@@ -101,7 +101,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
     }
 
     case base::Value::Type::LIST: {
-      base::Value::ConstListView list_view = value.GetList();
+      base::Value::ConstListView list_view = value.GetListDeprecated();
       CFMutableArrayRef array =
           CFArrayCreateMutable(NULL, list_view.size(), &kCFTypeArrayCallBacks);
       for (const base::Value& entry : list_view) {

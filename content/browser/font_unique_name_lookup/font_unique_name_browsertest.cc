@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
   // next SendCommand call.
   base::Value node_list =
       result->FindKeyOfType("nodeIds", base::Value::Type::LIST)->Clone();
-  base::Value::ConstListView nodes_view = node_list.GetList();
+  base::Value::ConstListView nodes_view = node_list.GetListDeprecated();
   ASSERT_EQ(nodes_view.size(), num_added_nodes);
   ASSERT_EQ(nodes_view.size(), base::size(kExpectedFontFamilyNames));
   for (size_t i = 0; i < nodes_view.size(); ++i) {

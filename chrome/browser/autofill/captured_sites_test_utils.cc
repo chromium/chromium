@@ -268,7 +268,7 @@ absl::optional<std::vector<std::string>> FindPopulateStringVector(
   }
 
   std::vector<std::string> strings;
-  for (const base::Value& item : container_iter->second.GetList()) {
+  for (const base::Value& item : container_iter->second.GetListDeprecated()) {
     if (!item.is_string()) {
       if (absl::holds_alternative<base::StringPiece>(key_descriptor)) {
         ADD_FAILURE() << "Failed to extract element of '"
@@ -988,7 +988,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     return false;
   }
 
-  auto action_list = action_list_container_iter->second.GetList();
+  auto action_list = action_list_container_iter->second.GetListDeprecated();
   ExecutionState execution_state{.length =
                                      static_cast<int>(action_list.size())};
   if (command_file_path.has_value()) {
@@ -1370,7 +1370,7 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(
     return false;
   }
 
-  for (const auto& command : list_container_iter->second.GetList()) {
+  for (const auto& command : list_container_iter->second.GetListDeprecated()) {
     if (!command.is_string()) {
       ADD_FAILURE() << "command is not a string: " << command;
       return false;
@@ -1648,7 +1648,8 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(
     ADD_FAILURE() << "Failed to extract wait assertions list from action";
     return false;
   }
-  for (const base::Value& assertion : list_container_iter->second.GetList()) {
+  for (const base::Value& assertion :
+       list_container_iter->second.GetListDeprecated()) {
     if (!assertion.is_string()) {
       ADD_FAILURE() << "Assertion is not a string: " << assertion;
       return false;

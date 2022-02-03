@@ -328,7 +328,8 @@ void PolicyUITest::VerifyPolicies(
   for (size_t i = 0; i < expected_policies.size(); ++i) {
     const std::vector<std::string> expected_policy = expected_policies[i];
     ASSERT_TRUE(actual_policies[i].is_list());
-    base::Value::ConstListView actual_policy = actual_policies[i].GetList();
+    base::Value::ConstListView actual_policy =
+        actual_policies[i].GetListDeprecated();
     ASSERT_EQ(expected_policy.size(), actual_policy.size());
     for (size_t j = 0; j < expected_policy.size(); ++j) {
       const std::string* value = actual_policy[j].GetIfString();

@@ -727,7 +727,7 @@ bool ParseListOfStages(const base::Value& value, int* out_stages) {
     return false;
 
   int stages = 0;
-  for (const auto& entry : value.GetList()) {
+  for (const auto& entry : value.GetListDeprecated()) {
     if (!entry.is_string())
       return false;
     const std::string& stage_name = entry.GetString();

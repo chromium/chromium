@@ -306,7 +306,8 @@ TEST(ExtensionProxyApiHelpers, JoinUrlList) {
 
   std::string out;
   std::string error;
-  ASSERT_TRUE(JoinUrlList(list.GetList(), ";", &out, &error, &bad_message));
+  ASSERT_TRUE(
+      JoinUrlList(list.GetListDeprecated(), ";", &out, &error, &bad_message));
   EXPECT_EQ("s1;s2;s3", out);
   EXPECT_FALSE(bad_message);
 }

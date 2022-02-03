@@ -416,7 +416,7 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::ListValue* args) {
 
   std::vector<BrowsingHistoryService::HistoryEntry> items_to_remove;
   const base::Value& items = args->GetListDeprecated()[1];
-  base::Value::ConstListView list = items.GetList();
+  base::Value::ConstListView list = items.GetListDeprecated();
   items_to_remove.reserve(list.size());
   for (size_t i = 0; i < list.size(); ++i) {
     // Each argument is a dictionary with properties "url" and "timestamps".

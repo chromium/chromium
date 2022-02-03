@@ -54,7 +54,7 @@ std::string AXFormatValue(const base::Value& value) {
   // List: exposed as [value1, ..., valueN];
   if (value.is_list()) {
     std::string output;
-    for (const auto& item : value.GetList()) {
+    for (const auto& item : value.GetListDeprecated()) {
       if (!output.empty()) {
         output += ", ";
       }

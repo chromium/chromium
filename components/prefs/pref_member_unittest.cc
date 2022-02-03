@@ -240,7 +240,8 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_FALSE(string_list.IsDefaultValue());
 
   // Try removing through the pref.
-  EXPECT_TRUE(expected_list.EraseListIter(expected_list.GetList().begin()));
+  EXPECT_TRUE(
+      expected_list.EraseListIter(expected_list.GetListDeprecated().begin()));
   expected_vector.erase(expected_vector.begin());
   prefs.Set(kStringListPref, expected_list);
 

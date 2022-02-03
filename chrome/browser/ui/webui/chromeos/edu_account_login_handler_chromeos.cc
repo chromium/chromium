@@ -293,7 +293,7 @@ void EduAccountLoginHandler::OnParentProfileImagesFetched(
     std::map<std::string, gfx::Image> profile_images) {
   profile_image_fetcher_.reset();
 
-  for (auto& parent : parents.GetList()) {
+  for (auto& parent : parents.GetListDeprecated()) {
     const std::string* obfuscated_gaia_id =
         parent.FindStringKey(kObfuscatedGaiaIdKey);
     DCHECK(obfuscated_gaia_id);

@@ -195,7 +195,7 @@ v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
 
   v8::Context::Scope context_scope(context);
   WTF::Vector<v8::Local<v8::Value>> args;
-  for (auto const& argument : arguments.GetList()) {
+  for (auto const& argument : arguments.GetListDeprecated()) {
     args.push_back(converter->ToV8Value(&argument, context));
   }
 

@@ -241,7 +241,7 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
       scripting::kScriptsCanExecuteEverywhere);
 
   UserScriptList scripts;
-  for (const base::Value& value : list.GetList()) {
+  for (const base::Value& value : list.GetListDeprecated()) {
     std::u16string error;
     std::unique_ptr<api::content_scripts::ContentScript> content_script =
         api::content_scripts::ContentScript::FromValue(value, &error);

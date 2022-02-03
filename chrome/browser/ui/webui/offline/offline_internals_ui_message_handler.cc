@@ -93,7 +93,8 @@ void OfflineInternalsUIMessageHandler::HandleDeleteSelectedPages(
   std::string callback_id = args_list[0].GetString();
 
   std::vector<int64_t> offline_ids;
-  base::Value::ConstListView offline_ids_from_arg = args_list[1].GetList();
+  base::Value::ConstListView offline_ids_from_arg =
+      args_list[1].GetListDeprecated();
   for (size_t i = 0; i < offline_ids_from_arg.size(); i++) {
     std::string value = offline_ids_from_arg[i].GetString();
     int64_t int_value;
@@ -117,7 +118,8 @@ void OfflineInternalsUIMessageHandler::HandleDeleteSelectedRequests(
   std::string callback_id = args_list[0].GetString();
 
   std::vector<int64_t> offline_ids;
-  base::Value::ConstListView offline_ids_from_arg = args_list[1].GetList();
+  base::Value::ConstListView offline_ids_from_arg =
+      args_list[1].GetListDeprecated();
   for (size_t i = 0; i < offline_ids_from_arg.size(); i++) {
     std::string value = offline_ids_from_arg[i].GetString();
     int64_t int_value;

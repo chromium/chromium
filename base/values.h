@@ -825,11 +825,11 @@ class BASE_EXPORT ListValue : public Value {
   // ListValue no longer supports iteration. Instead, use GetList() to get the
   // underlying list:
   //
-  // for (const auto& entry : list_value.GetList()) {
+  // for (const auto& entry : list_value.GetListDeprecated()) {
   //   ...
   //
-  // for (auto it = list_value.GetList().begin();
-  //      it != list_value.GetList().end(); ++it) {
+  // for (auto it = list_value.GetListDeprecated().begin();
+  //      it != list_value.GetListDeprecated().end(); ++it) {
   //   ...
 };
 

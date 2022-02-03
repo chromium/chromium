@@ -149,14 +149,15 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   JSONWriter::Write(*result, &result_string);
   VLOG(2) << result_string;
 
-  EXPECT_EQ(devices.size(), sink_list.GetList().size());
+  EXPECT_EQ(devices.size(), sink_list.GetListDeprecated().size());
 
   // Iterate through both lists in lockstep and compare. The order
   // should be identical.
   size_t ix = 0;
   AudioDeviceDescriptions::const_iterator it = devices.begin();
-  for (; ix < sink_list.GetList().size() && it != devices.end(); ++ix, ++it) {
-    const base::Value& value = sink_list.GetList()[ix];
+  for (; ix < sink_list.GetListDeprecated().size() && it != devices.end();
+       ++ix, ++it) {
+    const base::Value& value = sink_list.GetListDeprecated()[ix];
     EXPECT_TRUE(value.is_dict());
     const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
     std::string sink_id;

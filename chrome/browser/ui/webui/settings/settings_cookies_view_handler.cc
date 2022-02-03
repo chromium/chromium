@@ -479,7 +479,8 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
   }
 
   // Sort the list into alphabetical order based on site name.
-  std::sort(site_list.GetList().begin(), site_list.GetList().end(),
+  std::sort(site_list.GetListDeprecated().begin(),
+            site_list.GetListDeprecated().end(),
             [=](const base::Value& a, const base::Value& b) {
               return *a.FindStringKey(kSite) < *b.FindStringKey(kSite);
             });

@@ -41,8 +41,8 @@ constexpr PrefMap kPrefSessionStorageAccessLevel = {
 std::vector<std::string> GetKeysFromList(const base::Value& list) {
   DCHECK(list.is_list());
   std::vector<std::string> keys;
-  keys.reserve(list.GetList().size());
-  for (const auto& value : list.GetList()) {
+  keys.reserve(list.GetListDeprecated().size());
+  for (const auto& value : list.GetListDeprecated()) {
     auto* as_string = value.GetIfString();
     if (as_string)
       keys.push_back(*as_string);

@@ -468,8 +468,8 @@ bool BrowsingDataRemoverFunction::ParseOrigins(const base::Value& list_value,
                                                std::vector<url::Origin>* result,
                                                ResponseValue* error_response) {
   DCHECK(list_value.is_list());
-  result->reserve(list_value.GetList().size());
-  for (const auto& value : list_value.GetList()) {
+  result->reserve(list_value.GetListDeprecated().size());
+  for (const auto& value : list_value.GetListDeprecated()) {
     if (!value.is_string()) {
       *error_response = BadMessage();
       return false;

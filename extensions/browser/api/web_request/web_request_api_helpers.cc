@@ -544,7 +544,7 @@ bool ExtraInfoSpec::InitFromValue(content::BrowserContext* browser_context,
   *extra_info_spec = 0;
   if (!value.is_list())
     return false;
-  base::Value::ConstListView value_list = value.GetList();
+  base::Value::ConstListView value_list = value.GetListDeprecated();
   for (size_t i = 0; i < value_list.size(); ++i) {
     const std::string* str = value_list[i].GetIfString();
     if (!str)

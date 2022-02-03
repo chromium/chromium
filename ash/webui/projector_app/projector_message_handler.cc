@@ -112,7 +112,7 @@ bool GetUserPrefName(const base::Value& args, std::string* out) {
   if (!args.is_list())
     return false;
 
-  const auto& args_list = args.GetList();
+  const auto& args_list = args.GetListDeprecated();
 
   if (args_list.size() != 1 || !args_list[0].is_string())
     return false;
@@ -128,7 +128,7 @@ bool GetSetUserPrefArgs(const base::Value& args, SetUserPrefArgs* out) {
   if (!args.is_list())
     return false;
 
-  const auto& args_list = args.GetList();
+  const auto& args_list = args.GetListDeprecated();
 
   if (args_list.size() != 2 || !args_list[0].is_string()) {
     return false;
@@ -301,8 +301,8 @@ void ProjectorMessageHandler::StartProjectorSession(
   // The first entry is the drive directory to save the screen cast to.
   // TODO(b/177959166): Pass the directory to ProjectorController when starting
   // a new session.
-  DCHECK_EQ(func_args.GetList().size(), 1u);
-  auto storage_dir_name = func_args.GetList()[0].GetString();
+  DCHECK_EQ(func_args.GetListDeprecated().size(), 1u);
+  auto storage_dir_name = func_args.GetListDeprecated()[0].GetString();
   if (RE2::PartialMatch(storage_dir_name, kInvalidStorageDirNameRegex)) {
     ResolveJavascriptCallback(args[0], base::Value(false));
     return;
@@ -330,10 +330,11 @@ void ProjectorMessageHandler::GetOAuthTokenForAccount(
 
   const auto& requested_account = args[1];
   DCHECK(requested_account.is_list());
-  DCHECK_EQ(requested_account.GetList().size(), 1u);
+  DCHECK_EQ(requested_account.GetListDeprecated().size(), 1u);
 
   auto& oauth_token_fetch_callback = args[0].GetString();
-  const std::string& email = requested_account.GetList()[0].GetString();
+  const std::string& email =
+      requested_account.GetListDeprecated()[0].GetString();
 
   oauth_token_fetcher_.GetAccessTokenFor(
       email,
@@ -347,7 +348,7 @@ void ProjectorMessageHandler::SendXhr(const base::Value::ConstListView args) {
   DCHECK_EQ(args.size(), 2u);
   const auto& callback_id = args[0].GetString();
 
-  const auto& func_args = args[1].GetList();
+  const auto& func_args = args[1].GetListDeprecated();
   // Four function arguments:
   // 1. The request URL.
   // 2. The request method, for example: GET

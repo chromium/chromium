@@ -113,18 +113,21 @@ TEST_F(NetworkUtilTest, ParseScanResults) {
   std::vector<CellularScanResult> scan_results;
 
   // Empty list value.
-  EXPECT_TRUE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_TRUE(
+      ParseCellularScanResults(list.GetListDeprecated(), &scan_results));
 
   // List contains invalid item.
   list.Append(0);
-  EXPECT_FALSE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_FALSE(
+      ParseCellularScanResults(list.GetListDeprecated(), &scan_results));
 
   // Scan result has no network id.
   list.ClearList();
   base::Value dict_value_1(base::Value::Type::DICTIONARY);
   dict_value_1.SetStringKey(shill::kStatusProperty, "available");
   list.Append(std::move(dict_value_1));
-  EXPECT_TRUE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_TRUE(
+      ParseCellularScanResults(list.GetListDeprecated(), &scan_results));
   EXPECT_TRUE(scan_results.empty());
 
   // Mixed parse results.
@@ -140,7 +143,8 @@ TEST_F(NetworkUtilTest, ParseScanResults) {
   dict_value_3.SetStringKey(shill::kLongNameProperty, "Long Name");
   list.Append(std::move(dict_value_3));
 
-  EXPECT_TRUE(ParseCellularScanResults(list.GetList(), &scan_results));
+  EXPECT_TRUE(
+      ParseCellularScanResults(list.GetListDeprecated(), &scan_results));
   EXPECT_EQ(static_cast<size_t>(2), scan_results.size());
   EXPECT_EQ("000001", scan_results[0].network_id);
   EXPECT_EQ("unknown", scan_results[0].status);

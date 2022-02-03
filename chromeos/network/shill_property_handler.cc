@@ -426,8 +426,8 @@ void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
   std::set<std::string>& requested_updates = requested_updates_[type];
   std::set<std::string> new_requested_updates;
   NET_LOG(DEBUG) << "UpdateProperties: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetList().size();
-  for (const auto& entry : entries.GetList()) {
+                 << ": " << entries.GetListDeprecated().size();
+  for (const auto& entry : entries.GetListDeprecated()) {
     const std::string* path = entry.GetIfString();
     if (!path || (*path).empty())
       continue;
@@ -450,7 +450,7 @@ void ShillPropertyHandler::UpdateObserved(ManagedState::ManagedType type,
       (type == ManagedState::MANAGED_TYPE_NETWORK) ? observed_networks_
                                                    : observed_devices_;
   ShillPropertyObserverMap new_observed;
-  for (const auto& entry : entries.GetList()) {
+  for (const auto& entry : entries.GetListDeprecated()) {
     const std::string* path = entry.GetIfString();
     if (!path || (*path).empty())
       continue;
@@ -482,7 +482,7 @@ void ShillPropertyHandler::UpdateAvailableTechnologies(
     const base::Value& technologies) {
   NET_LOG(EVENT) << "AvailableTechnologies:" << technologies;
   std::set<std::string> new_available_technologies;
-  for (const base::Value& technology : technologies.GetList())
+  for (const base::Value& technology : technologies.GetListDeprecated())
     new_available_technologies.insert(technology.GetString());
   if (new_available_technologies == available_technologies_)
     return;
@@ -503,7 +503,7 @@ void ShillPropertyHandler::UpdateEnabledTechnologies(
     const base::Value& technologies) {
   NET_LOG(EVENT) << "EnabledTechnologies:" << technologies;
   std::set<std::string> new_enabled_technologies;
-  for (const base::Value& technology : technologies.GetList())
+  for (const base::Value& technology : technologies.GetListDeprecated())
     new_enabled_technologies.insert(technology.GetString());
   if (new_enabled_technologies == enabled_technologies_)
     return;
@@ -514,7 +514,7 @@ void ShillPropertyHandler::UpdateEnabledTechnologies(
   for (auto it = disabling_technologies_.begin();
        it != disabling_technologies_.end();) {
     base::Value technology_value(*it);
-    if (!base::Contains(technologies.GetList(), technology_value))
+    if (!base::Contains(technologies.GetListDeprecated(), technology_value))
       it = disabling_technologies_.erase(it);
     else
       ++it;
@@ -536,7 +536,7 @@ void ShillPropertyHandler::UpdateUninitializedTechnologies(
     const base::Value& technologies) {
   NET_LOG(EVENT) << "UninitializedTechnologies:" << technologies;
   std::set<std::string> new_uninitialized_technologies;
-  for (const base::Value& technology : technologies.GetList())
+  for (const base::Value& technology : technologies.GetListDeprecated())
     new_uninitialized_technologies.insert(technology.GetString());
   if (new_uninitialized_technologies == uninitialized_technologies_)
     return;
@@ -659,7 +659,7 @@ void ShillPropertyHandler::RequestIPConfigsList(
     const base::Value& ip_config_list_value) {
   if (!ip_config_list_value.is_list())
     return;
-  for (const auto& entry : ip_config_list_value.GetList()) {
+  for (const auto& entry : ip_config_list_value.GetListDeprecated()) {
     RequestIPConfig(type, path, entry);
   }
 }

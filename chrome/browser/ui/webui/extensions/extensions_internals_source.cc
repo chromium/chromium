@@ -453,9 +453,9 @@ void AddEventListenerData(extensions::EventRouter* event_router,
                              base::Value(base::Value::Type::LIST));
     } else {
       // Set the count and the events values.
-      event_listeners.SetKey(
-          kCountKey,
-          base::Value(base::checked_cast<int>(it->second.GetList().size())));
+      event_listeners.SetKey(kCountKey,
+                             base::Value(base::checked_cast<int>(
+                                 it->second.GetListDeprecated().size())));
       event_listeners.SetKey(kListenersKey, std::move(it->second));
     }
     output_entry.SetKey(kEventsListenersKey, std::move(event_listeners));

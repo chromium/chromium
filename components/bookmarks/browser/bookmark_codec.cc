@@ -230,7 +230,7 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
 bool BookmarkCodec::DecodeChildren(const base::Value& child_value_list,
                                    BookmarkNode* parent) {
   DCHECK(child_value_list.is_list());
-  for (const base::Value& child_value : child_value_list.GetList()) {
+  for (const base::Value& child_value : child_value_list.GetListDeprecated()) {
     if (!child_value.is_dict())
       return false;
     DecodeNode(child_value, parent, nullptr);

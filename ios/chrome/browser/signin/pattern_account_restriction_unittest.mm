@@ -26,7 +26,8 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
   base::Value value{base::Value::Type::LIST};
   value.Append("*gmail.com");
   value.Append("*google.com");
-  auto restriction = PatternAccountRestrictionFromValue(value.GetList());
+  auto restriction =
+      PatternAccountRestrictionFromValue(value.GetListDeprecated());
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
@@ -37,7 +38,8 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
 // restrictions are not set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
   base::Value value{base::Value::Type::LIST};
-  auto restriction = PatternAccountRestrictionFromValue(value.GetList());
+  auto restriction =
+      PatternAccountRestrictionFromValue(value.GetListDeprecated());
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
@@ -50,7 +52,8 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithBadPattern) {
   base::Value value{base::Value::Type::LIST};
   value.Append("*gmail.com\\");
   value.Append("*google.com");
-  auto restriction = PatternAccountRestrictionFromValue(value.GetList());
+  auto restriction =
+      PatternAccountRestrictionFromValue(value.GetListDeprecated());
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), true);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);

@@ -218,8 +218,8 @@ TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
 
     base::Value results(simple_api::OnTestTypeFired::Create(some_test_type));
     ASSERT_TRUE(results.is_list());
-    ASSERT_EQ(1u, results.GetList().size());
-    EXPECT_EQ(*expected, results.GetList()[0]);
+    ASSERT_EQ(1u, results.GetListDeprecated().size());
+    EXPECT_EQ(*expected, results.GetListDeprecated()[0]);
   }
 }
 

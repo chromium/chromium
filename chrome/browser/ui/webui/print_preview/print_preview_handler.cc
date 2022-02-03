@@ -1250,13 +1250,13 @@ void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
                                           const base::ListValue& printers) {
   DCHECK(printer_type == mojom::PrinterType::kExtension ||
          printer_type == mojom::PrinterType::kLocal);
-  DCHECK(!printers.GetList().empty());
+  DCHECK(!printers.GetListDeprecated().empty());
   FireWebUIListener("printers-added",
                     base::Value(static_cast<int>(printer_type)), printers);
 
   if (printer_type == mojom::PrinterType::kLocal &&
       !has_logged_printers_count_) {
-    ReportNumberOfPrinters(printers.GetList().size());
+    ReportNumberOfPrinters(printers.GetListDeprecated().size());
     has_logged_printers_count_ = true;
   }
 }

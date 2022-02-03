@@ -283,7 +283,7 @@ bool URLPatternSet::Populate(const base::ListValue& value,
                              bool allow_file_access,
                              std::string* error) {
   std::vector<std::string> patterns;
-  for (const base::Value& pattern : value.GetList()) {
+  for (const base::Value& pattern : value.GetListDeprecated()) {
     const std::string* item = pattern.GetIfString();
     if (!item)
       return false;

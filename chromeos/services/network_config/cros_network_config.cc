@@ -838,12 +838,12 @@ mojom::ManagedStringListPtr GetManagedStringList(const base::Value* dict,
       return nullptr;
     }
     auto result = mojom::ManagedStringList::New();
-    for (const base::Value& e : managed_dict.active_value.GetList())
+    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
       result->active_value.push_back(e.GetString());
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<std::string>();
-      for (const base::Value& e : managed_dict.policy_value.GetList())
+      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
         result->policy_value->push_back(e.GetString());
     }
     return result;
@@ -946,12 +946,12 @@ mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
       NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
       return result;
     }
-    for (const base::Value& e : managed_dict.active_value.GetList())
+    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
       result->active_value.push_back(GetSubjectAltName(&e));
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::SubjectAltNamePtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetList())
+      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
         result->policy_value.push_back(GetSubjectAltName(&e));
     }
     return result;
@@ -1112,12 +1112,12 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
       return nullptr;
     }
     auto result = mojom::ManagedApnList::New();
-    for (const base::Value& e : managed_dict.active_value.GetList())
+    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
       result->active_value.push_back(GetApnProperties(&e));
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::ApnPropertiesPtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetList())
+      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
         result->policy_value->push_back(GetApnProperties(&e));
     }
     return result;
@@ -1433,12 +1433,12 @@ mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
       NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
       return result;
     }
-    for (const base::Value& e : managed_dict.active_value.GetList())
+    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
       result->active_value.push_back(GetWireGuardPeerProperties(&e));
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::WireGuardPeerPropertiesPtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetList())
+      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
         result->policy_value->push_back(GetWireGuardPeerProperties(&e));
     }
     return result;

@@ -1274,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
       content::EvalJs(prerender_render_frame_host, "eventsSeen");
   std::vector<std::string> eventsSeen;
   base::Value resultsList = results.ExtractList();
-  for (auto& result : resultsList.GetList())
+  for (auto& result : resultsList.GetListDeprecated())
     eventsSeen.push_back(result.GetString());
   EXPECT_THAT(eventsSeen, testing::ElementsAreArray(
                               {"accessGeolocation (prerendering: true)",

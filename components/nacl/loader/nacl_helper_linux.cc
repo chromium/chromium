@@ -71,7 +71,7 @@ std::string GetCommandLineFeatureFlagChoice(
     return "";
   }
 
-  for (const auto& flag : flags_list.value().GetList()) {
+  for (const auto& flag : flags_list.value().GetListDeprecated()) {
     if (!flag.is_string())
       continue;
     std::string flag_string = flag.GetString();

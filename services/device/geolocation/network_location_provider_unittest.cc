@@ -297,14 +297,15 @@ class GeolocationNetworkProviderTest : public testing::Test {
       CreateReferenceWifiScanDataJson(expected_wifi_aps, wifi_start_index,
                                       &expected_wifi_aps_json);
       EXPECT_EQ(size_t(expected_wifi_aps),
-                expected_wifi_aps_json.GetList().size());
+                expected_wifi_aps_json.GetListDeprecated().size());
 
       const base::ListValue* wifi_aps_json;
       ASSERT_TRUE(
           JsonGetList("wifiAccessPoints", *request_json, &wifi_aps_json));
-      for (size_t i = 0; i < expected_wifi_aps_json.GetList().size(); ++i) {
+      for (size_t i = 0; i < expected_wifi_aps_json.GetListDeprecated().size();
+           ++i) {
         const base::Value& expected_json_value =
-            expected_wifi_aps_json.GetList()[i];
+            expected_wifi_aps_json.GetListDeprecated()[i];
         ASSERT_TRUE(expected_json_value.is_dict());
         const base::DictionaryValue& expected_json =
             base::Value::AsDictionaryValue(expected_json_value);

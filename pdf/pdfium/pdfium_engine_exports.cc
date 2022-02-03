@@ -189,7 +189,7 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   // use "~children" instead of "children" because we pretty-print the
   // result of this as JSON and the keys are sorted; it's much easier to
   // understand when the children are the last key.
-  if (!children.GetList().empty())
+  if (!children.GetListDeprecated().empty())
     result.SetKey("~children", std::move(children));
 
   return result;

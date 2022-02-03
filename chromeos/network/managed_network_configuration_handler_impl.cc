@@ -542,7 +542,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
   // This stores all GUIDs of policies that have changed or are new.
   std::set<std::string> modified_policies;
 
-  for (const base::Value& network : network_configs_onc.GetList()) {
+  for (const base::Value& network : network_configs_onc.GetListDeprecated()) {
     const std::string* guid_str =
         network.FindStringKey(::onc::network_config::kGUID);
     DCHECK(guid_str && !guid_str->empty());
@@ -1004,7 +1004,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
     for (const auto iter : device_state->ip_configs().DictItems())
       ip_configs.Append(iter.second.Clone());
   }
-  if (!ip_configs.GetList().empty()) {
+  if (!ip_configs.GetListDeprecated().empty()) {
     properties->SetKey(shill::kIPConfigsProperty, std::move(ip_configs));
   }
 }

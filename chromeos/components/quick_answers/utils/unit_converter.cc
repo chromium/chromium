@@ -84,9 +84,9 @@ const Value* UnitConverter::FindProperDestinationUnit(
 
 const Value* UnitConverter::GetConversionForCategory(
     const std::string& target_category) {
-  if (rule_set_.GetList().empty())
+  if (rule_set_.GetListDeprecated().empty())
     return nullptr;
-  for (const Value& conversion : rule_set_.GetList()) {
+  for (const Value& conversion : rule_set_.GetListDeprecated()) {
     const auto* category = conversion.FindStringPath(kCategoryPath);
     if (category && *category == target_category)
       return &conversion;

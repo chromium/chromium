@@ -189,7 +189,7 @@ absl::optional<std::vector<std::string>> ParseLocales(
   }
 
   std::vector<std::string> locales;
-  for (const auto& iter : as_value.value().GetList()) {
+  for (const auto& iter : as_value.value().GetListDeprecated()) {
     if (!iter.is_string())
       continue;
     locales.push_back(iter.GetString());

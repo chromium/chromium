@@ -239,13 +239,13 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
     // |can_set_volume| and |can_mute| are not used, because the receiver volume
     // info obtained in SetSession() is used instead.
     media_status_.can_play_pause = base::Contains(
-        commands_list.GetList(), base::Value(kMediaCommandPause));
-    media_status_.can_seek =
-        base::Contains(commands_list.GetList(), base::Value(kMediaCommandSeek));
+        commands_list.GetListDeprecated(), base::Value(kMediaCommandPause));
+    media_status_.can_seek = base::Contains(commands_list.GetListDeprecated(),
+                                            base::Value(kMediaCommandSeek));
     media_status_.can_skip_to_next_track = base::Contains(
-        commands_list.GetList(), base::Value(kMediaCommandQueueNext));
+        commands_list.GetListDeprecated(), base::Value(kMediaCommandQueueNext));
     media_status_.can_skip_to_previous_track = base::Contains(
-        commands_list.GetList(), base::Value(kMediaCommandQueuePrev));
+        commands_list.GetListDeprecated(), base::Value(kMediaCommandQueuePrev));
   }
 
   const base::Value* player_state = status_value.FindKey("playerState");

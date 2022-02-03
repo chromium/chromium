@@ -342,7 +342,7 @@ class SiteSettingsHandlerTest : public testing::Test {
 
     const base::Value& exceptions = *data.arg3();
     ASSERT_TRUE(exceptions.is_list());
-    EXPECT_EQ(0U, exceptions.GetList().size());
+    EXPECT_EQ(0U, exceptions.GetListDeprecated().size());
   }
 
   void ValidatePattern(bool expected_validity,
@@ -1208,7 +1208,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         /*incognito=*/false, &exceptions);
 
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
-    ASSERT_EQ(2U, exceptions.GetList().size());
+    ASSERT_EQ(2U, exceptions.GetListDeprecated().size());
   }
 
   {
@@ -1227,7 +1227,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetList().size());
+    ASSERT_EQ(1U, exceptions.GetListDeprecated().size());
   }
 
   {
@@ -1246,7 +1246,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetList().size());
+    ASSERT_EQ(0U, exceptions.GetListDeprecated().size());
   }
 }
 
@@ -2266,7 +2266,7 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
     if (!exceptions.is_list())
       return false;
 
-    for (const auto& exception : exceptions.GetList()) {
+    for (const auto& exception : exceptions.GetListDeprecated()) {
       const std::string* exception_display_name =
           exception.FindStringKey(site_settings::kDisplayName);
       if (!exception_display_name)
@@ -2298,7 +2298,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 
   const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
       kUsbChooserGroupName, /*expected_total_calls=*/1u);
-  EXPECT_EQ(exceptions.GetList().size(), 5u);
+  EXPECT_EQ(exceptions.GetListDeprecated().size(), 5u);
 
   // Don't include WebUI schemes.
   const std::string kWebUIOriginStr =
@@ -2324,8 +2324,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
         kUsbChooserGroupName, /*expected_total_calls=*/1u);
-    EXPECT_EQ(exceptions.GetList().size(), 7u);
-    for (const auto& exception : exceptions.GetList()) {
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 7u);
+    for (const auto& exception : exceptions.GetListDeprecated()) {
       LOG(INFO) << exception.FindKey(site_settings::kDisplayName)->GetString();
     }
   }
@@ -2339,7 +2339,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
         kUsbChooserGroupName, /*expected_total_calls=*/3u);
-    EXPECT_EQ(exceptions.GetList().size(), 5u);
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 5u);
   }
 }
 
@@ -2361,7 +2361,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
         kUsbChooserGroupName, /*expected_total_calls=*/1u);
-    EXPECT_EQ(exceptions.GetList().size(), 5u);
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 5u);
   }
 
   // User granted USB permissions for devices also containing policy permissions
@@ -2392,7 +2392,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
     // a policy granted permission for the "Gizmo" device.
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
         kUsbChooserGroupName, /*expected_total_calls=*/4u);
-    EXPECT_EQ(exceptions.GetList().size(), 5u);
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 5u);
 
     // Ensure that the sites list does not contain the URLs of the removed
     // permission.
@@ -2411,7 +2411,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   {
     const base::Value& exceptions =
         GetChooserExceptionListFromWebUiCallData(kUsbChooserGroupName, 5u);
-    EXPECT_EQ(exceptions.GetList().size(), 5u);
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 5u);
 
     // User granted exceptions that are also granted by policy are only
     // displayed through the policy granted site exception, so ensure that the
@@ -2438,7 +2438,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
         kUsbChooserGroupName, /*expected_total_calls=*/8u);
-    EXPECT_EQ(exceptions.GetList().size(), 5u);
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 5u);
 
     // Ensure that the sites list still displays a site exception entry for an
     // origin of kGoogleOriginStr.  Since now the device has had its
@@ -2464,7 +2464,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   {
     const base::Value& exceptions =
         GetChooserExceptionListFromWebUiCallData(kUsbChooserGroupName, 9u);
-    EXPECT_EQ(exceptions.GetList().size(), 5u);
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 5u);
     EXPECT_TRUE(ChooserExceptionContainsSiteException(exceptions, "Widget",
                                                       kAndroidOriginStr));
   }
@@ -2485,7 +2485,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
         kUsbChooserGroupName, /*expected_total_calls=*/12u);
-    EXPECT_EQ(exceptions.GetList().size(), 4u);
+    EXPECT_EQ(exceptions.GetListDeprecated().size(), 4u);
     EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Widget",
                                                        kAndroidOriginStr));
   }

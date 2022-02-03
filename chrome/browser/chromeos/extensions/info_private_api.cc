@@ -267,7 +267,7 @@ ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(!args().empty() && args()[0].is_list());
-  base::Value::ConstListView list = args()[0].GetList();
+  base::Value::ConstListView list = args()[0].GetListDeprecated();
 
   base::Value result(base::Value::Type::DICTIONARY);
   for (size_t i = 0; i < list.size(); ++i) {

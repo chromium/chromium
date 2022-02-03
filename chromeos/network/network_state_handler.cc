@@ -1275,7 +1275,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
 
   ManagedStateList* managed_list = GetManagedList(type);
   NET_LOG(DEBUG) << "UpdateManagedList: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetList().size();
+                 << ": " << entries.GetListDeprecated().size();
   // Create a map of existing entries. Assumes all entries in |managed_list|
   // are unique.
   std::map<std::string, std::unique_ptr<ManagedState>> managed_map;
@@ -1288,7 +1288,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   managed_list->clear();
   // Updates managed_list and request updates for new entries.
   std::set<std::string> list_entries;
-  for (const auto& iter : entries.GetList()) {
+  for (const auto& iter : entries.GetListDeprecated()) {
     const std::string* path = iter.GetIfString();
     if (!path)
       continue;
@@ -2242,7 +2242,7 @@ void NetworkStateHandler::ProcessIsUserLoggedIn(
   }
   // The profile list contains the shared profile on the login screen. Once the
   // user is logged in there is more than one profile in the profile list.
-  is_user_logged_in_ = profile_list.GetList().size() > 1;
+  is_user_logged_in_ = profile_list.GetListDeprecated().size() > 1;
 }
 
 }  // namespace chromeos

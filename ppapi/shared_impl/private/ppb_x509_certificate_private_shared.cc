@@ -26,21 +26,22 @@ void PPB_X509Certificate_Fields::SetField(
   DCHECK(value);
   uint32_t index = static_cast<uint32_t>(field);
   // Pad the list with null values if necessary.
-  while (index >= values_.GetList().size())
+  while (index >= values_.GetListDeprecated().size())
     values_.Append(base::Value());
-  values_.GetList()[index] = base::Value::FromUniquePtrValue(std::move(value));
+  values_.GetListDeprecated()[index] =
+      base::Value::FromUniquePtrValue(std::move(value));
 }
 
 PP_Var PPB_X509Certificate_Fields::GetFieldAsPPVar(
     PP_X509Certificate_Private_Field field) const {
   uint32_t index = static_cast<uint32_t>(field);
-  if (index >= values_.GetList().size()) {
+  if (index >= values_.GetListDeprecated().size()) {
     // Our list received might be smaller than the number of fields, so just
     // return null if the index is OOB.
     return PP_MakeNull();
   }
 
-  const base::Value& value = values_.GetList()[index];
+  const base::Value& value = values_.GetListDeprecated()[index];
   switch (value.type()) {
     case base::Value::Type::NONE:
       return PP_MakeNull();

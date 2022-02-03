@@ -79,7 +79,7 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
     base::Time time_now) {
   if (!serialized.is_list())
     return nullptr;
-  const base::Value::ConstListView& list_view = serialized.GetList();
+  const base::Value::ConstListView& list_view = serialized.GetListDeprecated();
 
   if (list_view.size() != 4)
     return nullptr;

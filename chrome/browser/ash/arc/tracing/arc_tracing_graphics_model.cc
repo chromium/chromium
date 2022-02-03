@@ -1449,12 +1449,12 @@ bool LoadEvents(const base::Value* value,
     return false;
   int64_t previous_timestamp = 0;
   for (const auto& entry : value->GetListDeprecated()) {
-    if (!entry.is_list() || entry.GetList().size() < 2)
+    if (!entry.is_list() || entry.GetListDeprecated().size() < 2)
       return false;
-    if (!entry.GetList()[0].is_int())
+    if (!entry.GetListDeprecated()[0].is_int())
       return false;
     const BufferEventType type =
-        static_cast<BufferEventType>(entry.GetList()[0].GetInt());
+        static_cast<BufferEventType>(entry.GetListDeprecated()[0].GetInt());
 
     if (!IsInRange(type, BufferEventType::kBufferQueueDequeueStart,
                    BufferEventType::kBufferFillJank) &&
@@ -1473,15 +1473,17 @@ bool LoadEvents(const base::Value* value,
       return false;
     }
 
-    if (!entry.GetList()[1].is_double() && !entry.GetList()[1].is_int())
+    if (!entry.GetListDeprecated()[1].is_double() &&
+        !entry.GetListDeprecated()[1].is_int())
       return false;
-    const int64_t timestamp = entry.GetList()[1].GetDouble();
+    const int64_t timestamp = entry.GetListDeprecated()[1].GetDouble();
     if (timestamp < previous_timestamp)
       return false;
-    if (entry.GetList().size() == 3) {
-      if (!entry.GetList()[2].is_string())
+    if (entry.GetListDeprecated().size() == 3) {
+      if (!entry.GetListDeprecated()[2].is_string())
         return false;
-      out_events->emplace_back(type, timestamp, entry.GetList()[2].GetString());
+      out_events->emplace_back(type, timestamp,
+                               entry.GetListDeprecated()[2].GetString());
     } else {
       out_events->emplace_back(type, timestamp);
     }

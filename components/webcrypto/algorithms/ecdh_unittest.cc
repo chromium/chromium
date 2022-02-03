@@ -78,11 +78,11 @@ TEST_F(WebCryptoEcdhTest, DeriveBitsKnownAnswer) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("ecdh.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);
@@ -126,10 +126,10 @@ TEST_F(WebCryptoEcdhTest, DeriveBitsKnownAnswer) {
 
   const base::DictionaryValue* test = nullptr;
   bool valid_p521_keys = false;
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     EXPECT_TRUE(test_value.is_dict());
     test = &base::Value::AsDictionaryValue(test_value);
     absl::optional<bool> keys = test->FindBoolKey("valid_p521_keys");
@@ -311,7 +311,7 @@ TEST_F(WebCryptoEcdhTest, ImportKeyEmptyUsage) {
   base::Value tests;
   ASSERT_TRUE(ReadJsonTestFileAsList("ecdh.json", &tests));
 
-  const base::Value& test_value = tests.GetList()[0];
+  const base::Value& test_value = tests.GetListDeprecated()[0];
   ASSERT_TRUE(test_value.is_dict());
   const base::DictionaryValue* test =
       &base::Value::AsDictionaryValue(test_value);

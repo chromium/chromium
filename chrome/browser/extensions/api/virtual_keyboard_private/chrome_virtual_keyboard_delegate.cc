@@ -486,7 +486,7 @@ void ChromeVirtualKeyboardDelegate::OnGetHistoryValuesAfterItemsUpdated(
     return;
 
   // Broadcast an api event for each updated item.
-  for (auto& item : updated_items.GetList()) {
+  for (auto& item : updated_items.GetListDeprecated()) {
     keyboard_api::ClipboardItem clipboard_item;
     if (item.FindKey("imageData")) {
       clipboard_item.image_data =

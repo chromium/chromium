@@ -157,7 +157,7 @@ void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
       message_callbacks_.find(message);
   if (callback != message_callbacks_.end()) {
     // Forward this message and content on.
-    callback->second.Run(args.GetList());
+    callback->second.Run(args.GetListDeprecated());
   }
 
   // Look up the deprecated callback for this message.

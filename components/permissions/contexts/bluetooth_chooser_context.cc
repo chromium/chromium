@@ -94,7 +94,7 @@ void AddManufacturerDataTo(
   auto& manufacturer_data_list =
       *permission_object->FindListKey(kManufacturerDataKey);
   for (const auto& manufacturer_data_permission :
-       manufacturer_data_list.GetList()) {
+       manufacturer_data_list.GetListDeprecated()) {
     manufacturer_data_set.insert(
         static_cast<uint16_t>(manufacturer_data_permission.GetInt()));
   }

@@ -133,7 +133,7 @@ base::Value FormatJsonDict(const base::StringPiece input,
 // |profile_id|.
 base::Value GetByProfileId(const base::Value& all_processes,
                            const std::string& profile_id) {
-  for (const base::Value& process : all_processes.GetList()) {
+  for (const base::Value& process : all_processes.GetListDeprecated()) {
     if (profile_id == *process.FindStringKey("certProfileId"))
       return process.Clone();
   }
@@ -279,7 +279,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, NoProcesses) {
   base::Value all_processes;
   ASSERT_NO_FATAL_FAILURE(RefreshCertProvisioningProcesses(
       &all_processes, /*out_profile_ids=*/nullptr));
-  EXPECT_TRUE(all_processes.GetList().empty());
+  EXPECT_TRUE(all_processes.GetListDeprecated().empty());
 }
 
 TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {

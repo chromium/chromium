@@ -66,7 +66,7 @@ double LayoutInstabilityTest::CheckTraceData(Value& expectations,
   analyzer.FindEvents(Query::EventNameIs("LayoutShift"), &events);
 
   size_t i = 0;
-  for (const Value& expectation : expectations.GetList()) {
+  for (const Value& expectation : expectations.GetListDeprecated()) {
     optional<double> score = expectation.FindDoubleKey("score");
     if (score && *score == 0.0) {
       // {score:0} expects no layout shift.

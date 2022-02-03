@@ -58,7 +58,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
     if (!value.is_list())
       return false;
     CellularScanResults parsed_results;
-    if (!network_util::ParseCellularScanResults(value.GetList(),
+    if (!network_util::ParseCellularScanResults(value.GetListDeprecated(),
                                                 &parsed_results))
       return false;
     scan_results_.swap(parsed_results);
@@ -67,7 +67,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
     if (!value.is_list())
       return false;
     CellularSIMSlotInfos parsed_results;
-    if (!network_util::ParseCellularSIMSlotInfo(value.GetList(),
+    if (!network_util::ParseCellularSIMSlotInfo(value.GetListDeprecated(),
                                                 &parsed_results)) {
       return false;
     }
@@ -208,7 +208,7 @@ bool DeviceState::IsSimLocked() const {
 }
 
 bool DeviceState::HasAPN(const std::string& access_point_name) const {
-  for (const auto& apn : apn_list_.GetList()) {
+  for (const auto& apn : apn_list_.GetListDeprecated()) {
     // bogus empty entries in the list might have been converted to a list while
     // traveling over D-Bus, skip them rather than crashing below.
     if (!apn.is_dict())

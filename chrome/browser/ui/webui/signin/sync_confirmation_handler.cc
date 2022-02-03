@@ -125,7 +125,7 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
 void SyncConfirmationHandler::RecordConsent(const base::ListValue* args) {
   CHECK_EQ(2U, args->GetListDeprecated().size());
   base::Value::ConstListView consent_description =
-      args->GetListDeprecated()[0].GetList();
+      args->GetListDeprecated()[0].GetListDeprecated();
   const std::string& consent_confirmation =
       args->GetListDeprecated()[1].GetString();
 

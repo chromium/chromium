@@ -281,7 +281,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(
 
   base::Value language_list{base::Value::Type::LIST};
   if (screen_) {
-    if (!screen_->language_list().GetList().empty() &&
+    if (!screen_->language_list().GetListDeprecated().empty() &&
         screen_->language_list_locale() == application_locale) {
       language_list = screen_->language_list().Clone();
     } else {
@@ -289,7 +289,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(
     }
   }
 
-  if (language_list.GetList().empty())
+  if (language_list.GetListDeprecated().empty())
     language_list = std::move(*GetMinimalUILanguageList());
 
   dict->SetKey("languageList", std::move(language_list));
@@ -308,7 +308,7 @@ void WelcomeScreenHandler::Initialize() {
   }
 
   // Reload localized strings if they are already resolved.
-  if (screen_ && !screen_->language_list().GetList().empty())
+  if (screen_ && !screen_->language_list().GetListDeprecated().empty())
     ReloadLocalizedContent();
   UpdateA11yState();
 }
@@ -394,7 +394,7 @@ base::ListValue WelcomeScreenHandler::GetTimezoneList() {
   base::Value::ConstListView timezones_view = timezones->GetListDeprecated();
   for (size_t i = 0; i < timezones_view.size(); ++i) {
     CHECK(timezones_view[i].is_list());
-    base::Value::ConstListView timezone = timezones_view[i].GetList();
+    base::Value::ConstListView timezone = timezones_view[i].GetListDeprecated();
 
     std::string timezone_id = timezone[0].GetString();
     std::string timezone_name = timezone[1].GetString();
