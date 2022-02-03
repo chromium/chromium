@@ -37,7 +37,7 @@ const char kSecondSpeechResult[] = "the brown fox jumped over the lazy dog";
 
 const char kEnglishLocale[] = "en-US";
 
-inline const void SetLocale(const std::string& locale) {
+inline void SetLocale(const std::string& locale) {
   g_browser_process->SetApplicationLocale(locale);
 }
 

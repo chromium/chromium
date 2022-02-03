@@ -31,7 +31,7 @@ inline const std::string& GetLocale() {
   return g_browser_process->GetApplicationLocale();
 }
 
-inline const speech::LanguageCode GetLocaleLanguageCode() {
+inline speech::LanguageCode GetLocaleLanguageCode() {
   return speech::GetLanguageCode(GetLocale());
 }
 

@@ -28,7 +28,7 @@ inline const std::string& GetLocale() {
   return g_browser_process->GetApplicationLocale();
 }
 
-inline const void SetLocale(const std::string& locale) {
+inline void SetLocale(const std::string& locale) {
   g_browser_process->SetApplicationLocale(locale);
 }
 
