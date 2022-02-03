@@ -29,7 +29,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/third_party/mozilla_security_manager/nsNSSCertHelper.h"
 #include "chrome/third_party/mozilla_security_manager/nsNSSCertificate.h"
-#include "components/url_formatter/url_formatter.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -311,60 +310,6 @@ string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
 string ProcessRawBitsSignatureWrap(CERTCertificate* cert_handle) {
   return ProcessRawBits(cert_handle->signatureWrap.signature.data,
                         cert_handle->signatureWrap.signature.len);
-}
-
-std::string ProcessIDN(const std::string& input) {
-  // Convert the ASCII input to a string16 for ICU.
-  std::u16string input16;
-  input16.reserve(input.length());
-  input16.insert(input16.end(), input.begin(), input.end());
-
-  std::u16string output16 = url_formatter::IDNToUnicode(input);
-  if (input16 == output16)
-    return input;  // Input did not contain any encoded data.
-
-  // Input contained encoded data, return formatted string showing original and
-  // decoded forms.
-  return l10n_util::GetStringFUTF8(IDS_CERT_INFO_IDN_VALUE_FORMAT, input16,
-                                   output16);
-}
-
-std::string ProcessRawBytesWithSeparators(const unsigned char* data,
-                                          size_t data_length,
-                                          char hex_separator,
-                                          char line_separator) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
-  // Each input byte creates two output hex characters + a space or newline,
-  // except for the last byte.
-  std::string ret;
-  size_t kMin = 0U;
-
-  if (!data_length)
-    return std::string();
-
-  ret.reserve(std::max(kMin, data_length * 3 - 1));
-
-  for (size_t i = 0; i < data_length; ++i) {
-    unsigned char b = data[i];
-    ret.push_back(kHexChars[(b >> 4) & 0xf]);
-    ret.push_back(kHexChars[b & 0xf]);
-    if (i + 1 < data_length) {
-      if ((i + 1) % 16 == 0)
-        ret.push_back(line_separator);
-      else
-        ret.push_back(hex_separator);
-    }
-  }
-  return ret;
-}
-
-std::string ProcessRawBytes(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytesWithSeparators(data, data_length, ' ', '\n');
-}
-
-std::string ProcessRawBits(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytes(data, (data_length + 7) / 8);
 }
 
 }  // namespace x509_certificate_model

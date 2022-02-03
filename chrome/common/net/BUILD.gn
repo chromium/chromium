@@ -28,6 +28,15 @@ static_library("net") {
     "//ui/base",
   ]
 
+  if (!is_android) {
+    sources += [
+      # x509_certificate_model is used by the WebUI certificate viewer, which
+      # is not used on Android or iOS (but iOS is already implicitly excluded).
+      "x509_certificate_model.cc",
+      "x509_certificate_model.h",
+    ]
+  }
+
   if (use_nss_certs) {
     sources += [
       "x509_certificate_model_nss.cc",
