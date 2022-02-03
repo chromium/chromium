@@ -138,10 +138,6 @@ TYPE_NAME_FOR_CF_TYPE_DECL(SecPolicy);
 
 #undef TYPE_NAME_FOR_CF_TYPE_DECL
 
-// Retain/release calls for memory management in C++.
-BASE_EXPORT void NSObjectRetain(void* obj);
-BASE_EXPORT void NSObjectRelease(void* obj);
-
 // Returns the base bundle ID, which can be set by SetBaseBundleID but
 // defaults to a reasonable string. This never returns NULL. BaseBundleID
 // returns a pointer to static storage that must not be freed.

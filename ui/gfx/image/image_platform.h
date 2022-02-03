@@ -30,27 +30,33 @@
 #include "ui/gfx/image/image_skia_util_mac.h"
 #endif
 
-namespace gfx {
-namespace internal {
+namespace gfx::internal {
+
+class ImageRep;
+class ImageRepCocoa;
+class ImageRepCocoaTouch;
 
 #if BUILDFLAG(IS_IOS)
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
     UIImage* uiimage);
 UIImage* UIImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
-gfx::Size UIImageSize(UIImage* image);
+
+UIImage* UIImageOfImageRepCocoaTouch(const ImageRepCocoaTouch* image_rep);
+std::unique_ptr<ImageRep> MakeImageRepCocoaTouch(UIImage* image);
 #elif BUILDFLAG(IS_MAC)
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     NSImage* nsimage);
 NSImage* NSImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps,
                         CGColorSpaceRef color_space);
-gfx::Size NSImageSize(NSImage* image);
+
+NSImage* NSImageOfImageRepCocoa(const ImageRepCocoa* image_rep);
+std::unique_ptr<ImageRep> MakeImageRepCocoa(NSImage* image);
 #endif
 
 ImageSkia ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
     const ImageSkia* image_skia);
 
-}  // namespace internal
-}  // namespace gfx
+}  // namespace gfx::internal
 
 #endif  // UI_GFX_IMAGE_IMAGE_PLATFORM_H_

@@ -93,18 +93,6 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
   }
 }
 
-TEST_F(MacUtilTest, NSObjectRetainRelease) {
-  base::scoped_nsobject<NSArray> array(
-      [[NSArray alloc] initWithObjects:@"foo", nil]);
-  EXPECT_EQ(1U, [array retainCount]);
-
-  NSObjectRetain(array);
-  EXPECT_EQ(2U, [array retainCount]);
-
-  NSObjectRelease(array);
-  EXPECT_EQ(1U, [array retainCount]);
-}
-
 TEST_F(MacUtilTest, IsOSEllipsis) {
   int32_t major, minor, bugfix;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);

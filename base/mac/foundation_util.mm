@@ -231,16 +231,6 @@ TYPE_NAME_FOR_CF_TYPE_DEFN(SecPolicy)
 
 #undef TYPE_NAME_FOR_CF_TYPE_DEFN
 
-void NSObjectRetain(void* obj) {
-  id<NSObject> nsobj = static_cast<id<NSObject> >(obj);
-  [nsobj retain];
-}
-
-void NSObjectRelease(void* obj) {
-  id<NSObject> nsobj = static_cast<id<NSObject> >(obj);
-  [nsobj release];
-}
-
 static const char* base_bundle_id;
 
 const char* BaseBundleID() {

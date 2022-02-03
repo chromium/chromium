@@ -11,10 +11,8 @@
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_internal.h"
 #include "ui/gfx/image/image_png_rep.h"
-
-namespace gfx {
-namespace internal {
 
 namespace {
 
@@ -33,10 +31,52 @@ NSImage* GetErrorNSImage() {
 
 }  // namespace
 
+namespace gfx {
+
+namespace internal {
+
+class ImageRepCocoa final : public ImageRep {
+ public:
+  explicit ImageRepCocoa(NSImage* image)
+      : ImageRep(Image::kImageRepCocoa),
+        image_(image, base::scoped_policy::RETAIN) {
+    CHECK(image_);
+  }
+
+  ImageRepCocoa(const ImageRepCocoa&) = delete;
+  ImageRepCocoa& operator=(const ImageRepCocoa&) = delete;
+
+  ~ImageRepCocoa() override { image_.reset(); }
+
+  int Width() const override { return Size().width(); }
+
+  int Height() const override { return Size().height(); }
+
+  gfx::Size Size() const override {
+    int width = static_cast<int>(image_.get().size.width);
+    int height = static_cast<int>(image_.get().size.height);
+    return gfx::Size(width, height);
+  }
+
+  NSImage* image() const { return image_; }
+
+ private:
+  base::scoped_nsobject<NSImage> image_;
+};
+
+const ImageRepCocoa* ImageRep::AsImageRepCocoa() const {
+  CHECK_EQ(type_, Image::kImageRepCocoa);
+  return reinterpret_cast<const ImageRepCocoa*>(this);
+}
+ImageRepCocoa* ImageRep::AsImageRepCocoa() {
+  return const_cast<ImageRepCocoa*>(
+      static_cast<const ImageRep*>(this)->AsImageRepCocoa());
+}
+
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     NSImage* nsimage) {
   DCHECK(nsimage);
-  CGImageRef cg_image = [nsimage CGImageForProposedRect:NULL
+  CGImageRef cg_image = [nsimage CGImageForProposedRect:nullptr
                                                 context:nil
                                                   hints:nil];
   if (!cg_image) {
@@ -64,17 +104,15 @@ NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps,
   }
 
   base::scoped_nsobject<NSImage> image;
-  for (size_t i = 0; i < image_png_reps.size(); ++i) {
-    scoped_refptr<base::RefCountedMemory> png = image_png_reps[i].raw_data;
+  for (const auto& image_png_rep : image_png_reps) {
+    scoped_refptr<base::RefCountedMemory> png = image_png_rep.raw_data;
     CHECK(png.get());
     base::scoped_nsobject<NSData> ns_data(
         [[NSData alloc] initWithBytes:png->front() length:png->size()]);
     base::scoped_nsobject<NSBitmapImageRep> ns_image_rep(
         [[NSBitmapImageRep alloc] initWithData:ns_data]);
     if (!ns_image_rep) {
-      LOG(ERROR) << "Unable to decode PNG at "
-                 << image_png_reps[i].scale
-                 << ".";
+      LOG(ERROR) << "Unable to decode PNG at " << image_png_rep.scale << ".";
       return GetErrorNSImage();
     }
 
@@ -96,7 +134,7 @@ NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps,
     }
 
     if (!image.get()) {
-      float scale = image_png_reps[i].scale;
+      float scale = image_png_rep.scale;
       NSSize image_size = NSMakeSize([ns_image_rep pixelsWide] / scale,
                                      [ns_image_rep pixelsHigh] / scale);
       image.reset([[NSImage alloc] initWithSize:image_size]);
@@ -107,13 +145,21 @@ NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps,
   return image.autorelease();
 }
 
-gfx::Size NSImageSize(NSImage* image) {
-  NSSize size = [image size];
-  int width = static_cast<int>(size.width);
-  int height = static_cast<int>(size.height);
-  return gfx::Size(width, height);
+NSImage* NSImageOfImageRepCocoa(const ImageRepCocoa* image_rep) {
+  return image_rep->image();
 }
 
-} // namespace internal
-} // namespace gfx
+std::unique_ptr<ImageRep> MakeImageRepCocoa(NSImage* image) {
+  return std::make_unique<internal::ImageRepCocoa>(image);
+}
 
+}  // namespace internal
+
+Image::Image(NSImage* image) {
+  if (image) {
+    storage_ = new internal::ImageStorage(Image::kImageRepCocoa);
+    AddRepresentation(std::make_unique<internal::ImageRepCocoa>(image));
+  }
+}
+
+}  // namespace gfx

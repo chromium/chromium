@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #import <UIKit/UIKit.h>
+
 #include <cmath>
 #include <limits>
 
@@ -13,12 +14,10 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_internal.h"
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
-
-namespace gfx {
-namespace internal {
 
 namespace {
 
@@ -57,8 +56,51 @@ UIImage* CreateUIImageFromImagePNGRep(const gfx::ImagePNGRep& image_png_rep) {
 
 }  // namespace
 
+namespace gfx {
+
+namespace internal {
+
+class ImageRepCocoaTouch final : public ImageRep {
+ public:
+  explicit ImageRepCocoaTouch(UIImage* image)
+      : ImageRep(Image::kImageRepCocoaTouch),
+        image_(image, base::scoped_policy::RETAIN) {
+    CHECK(image_);
+  }
+
+  ImageRepCocoaTouch(const ImageRepCocoaTouch&) = delete;
+  ImageRepCocoaTouch& operator=(const ImageRepCocoaTouch&) = delete;
+
+  ~ImageRepCocoaTouch() override { image_.reset(); }
+
+  int Width() const override { return Size().width(); }
+
+  int Height() const override { return Size().height(); }
+
+  gfx::Size Size() const override {
+    int width = static_cast<int>(image_.get().size.width);
+    int height = static_cast<int>(image_.get().size.height);
+    return gfx::Size(width, height);
+  }
+
+  UIImage* image() const { return image_; }
+
+ private:
+  base::scoped_nsobject<UIImage> image_;
+};
+
+const ImageRepCocoaTouch* ImageRep::AsImageRepCocoaTouch() const {
+  CHECK_EQ(type_, Image::kImageRepCocoaTouch);
+  return reinterpret_cast<const ImageRepCocoaTouch*>(this);
+}
+ImageRepCocoaTouch* ImageRep::AsImageRepCocoaTouch() {
+  return const_cast<ImageRepCocoaTouch*>(
+      static_cast<const ImageRep*>(this)->AsImageRepCocoaTouch());
+}
+
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
     UIImage* uiimage) {
+  DCHECK(uiimage);
   NSData* data = UIImagePNGRepresentation(uiimage);
 
   if ([data length] == 0)
@@ -113,22 +155,32 @@ ImageSkia ImageSkiaFromPNG(
   // iOS does not expose libpng, so conversion from PNG to ImageSkia must go
   // through UIImage.
   ImageSkia image_skia;
-  for (size_t i = 0; i < image_png_reps.size(); ++i) {
+  for (const auto& image_png_rep : image_png_reps) {
     base::scoped_nsobject<UIImage> uiimage(
-        CreateUIImageFromImagePNGRep(image_png_reps[i]));
-    gfx::ImageSkiaRep image_skia_rep = ImageSkiaRepOfScaleFromUIImage(
-        uiimage, image_png_reps[i].scale);
+        CreateUIImageFromImagePNGRep(image_png_rep));
+    gfx::ImageSkiaRep image_skia_rep =
+        ImageSkiaRepOfScaleFromUIImage(uiimage, image_png_rep.scale);
     if (!image_skia_rep.is_null())
       image_skia.AddRepresentation(image_skia_rep);
   }
   return image_skia;
 }
 
-gfx::Size UIImageSize(UIImage* image) {
-  int width = static_cast<int>(image.size.width);
-  int height = static_cast<int>(image.size.height);
-  return gfx::Size(width, height);
+UIImage* UIImageOfImageRepCocoaTouch(const ImageRepCocoaTouch* image_rep) {
+  return image_rep->image();
 }
 
-} // namespace internal
-} // namespace gfx
+std::unique_ptr<ImageRep> MakeImageRepCocoaTouch(UIImage* image) {
+  return std::make_unique<internal::ImageRepCocoaTouch>(image);
+}
+
+}  // namespace internal
+
+Image::Image(UIImage* image) {
+  if (image) {
+    storage_ = new internal::ImageStorage(Image::kImageRepCocoaTouch);
+    AddRepresentation(std::make_unique<internal::ImageRepCocoaTouch>(image));
+  }
+}
+
+}  // namespace gfx
