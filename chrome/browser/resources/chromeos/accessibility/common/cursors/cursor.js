@@ -726,8 +726,11 @@ cursors.WrappingCursor = class extends cursors.Cursor {
 
       // Case 1: forwards (find the root-like node).
       let directedFocus;
-      while (!AutomationPredicate.root(endpoint) && endpoint.parent) {
+      while (endpoint.parent) {
         if (directedFocus = getDirectedFocus(endpoint)) {
+          break;
+        }
+        if (AutomationPredicate.root(endpoint)) {
           break;
         }
         endpoint = endpoint.parent;

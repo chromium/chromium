@@ -4028,3 +4028,64 @@ TEST_F('ChromeVoxBackgroundTest', 'ListBoxItemsNavigation', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'CrossWindowNextPreviousFocus', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+<div aria-label="first"><button>second</button><button>third</button></div>
+<div aria-label="fourth"><button>fifth</button><button>sixth</button></div>
+`;
+  this.runWithLoadedTree(site, function(root) {
+    // Fake out the divs to be windows.
+    const window1 = root.children[0];
+    const window2 = root.children[1];
+    Object.defineProperty(window1, 'role', {get: () => RoleType.WINDOW});
+    Object.defineProperty(window2, 'role', {get: () => RoleType.WINDOW});
+
+    // Linear nav should just wrap inside the first window.
+    mockFeedback.call(doCmd('nextObject'))
+        .expectSpeech('third', 'Button')
+
+        // Wrap.
+        .call(doCmd('nextObject'))
+        .expectSpeech('second', 'Button', 'first, window')
+
+        // Wrap.
+        .call(doCmd('previousObject'))
+        .expectSpeech('third', 'Button')
+
+        .call(() => {
+          // Link the two "windows" with next/previous focus.
+          Object.defineProperty(window1, 'nextFocus', {get: () => window2});
+          Object.defineProperty(window2, 'previousFocus', {get: () => window1});
+        })
+
+        // window1 -> window2.
+        .call(doCmd('nextObject'))
+        .expectSpeech('fifth', 'Button', 'fourth, window')
+
+        // window2 -> window1.
+        .call(doCmd('previousObject'))
+        .expectSpeech('third', 'Button', 'first, window')
+
+        .call(() => {
+          // Link the two "windows" with next/previous focus in a slightly
+          // different way.
+          Object.defineProperty(window1, 'previousFocus', {get: () => window2});
+          Object.defineProperty(window2, 'nextFocus', {get: () => window1});
+        })
+
+        .call(doCmd('previousObject'))
+        .expectSpeech('second', 'Button')
+
+        // window1 -> window2.
+        .call(doCmd('previousObject'))
+        .expectSpeech('sixth', 'Button', 'fourth, window')
+
+        // window2 -> window1.
+        .call(doCmd('nextObject'))
+        .expectSpeech('second', 'Button', 'first, window')
+
+        .replay();
+  });
+});
