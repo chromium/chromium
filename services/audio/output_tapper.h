@@ -13,22 +13,19 @@
 #include "base/strings/string_piece.h"
 #include "services/audio/reference_output.h"
 
-namespace media {
-class AudioBus;
-}  // namespace media
-
 namespace audio {
 class DeviceOutputListener;
 
-class OutputTapper final : public ReferenceOutput::Listener {
+class OutputTapper {
  public:
   using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
 
   OutputTapper(DeviceOutputListener* device_output_listener,
+               ReferenceOutput::Listener* listener,
                LogCallback log_callback);
   OutputTapper(const OutputTapper&) = delete;
   OutputTapper& operator=(const OutputTapper&) = delete;
-  ~OutputTapper() final;
+  ~OutputTapper();
 
   void SetOutputDeviceForAec(const std::string& output_device_id);
   void Start();
@@ -36,10 +33,6 @@ class OutputTapper final : public ReferenceOutput::Listener {
 
  private:
   class UmaLogger;
-  // Listener
-  void OnPlayoutData(const media::AudioBus& audio_bus,
-                     int sample_rate,
-                     base::TimeDelta delay) final;
 
   void StartListening();
 
@@ -47,6 +40,7 @@ class OutputTapper final : public ReferenceOutput::Listener {
   bool active_ = false;
   std::string output_device_id_;
   raw_ptr<DeviceOutputListener> const device_output_listener_;
+  raw_ptr<ReferenceOutput::Listener> const listener_;
   const LogCallback log_callback_;
   std::unique_ptr<UmaLogger> uma_logger_;
 };

@@ -37,11 +37,15 @@ class OutputTapper::UmaLogger {
 };
 
 OutputTapper::OutputTapper(DeviceOutputListener* device_output_listener,
+                           ReferenceOutput::Listener* listener,
                            LogCallback log_callback)
     : device_output_listener_(device_output_listener),
+      listener_(listener),
       log_callback_(std::move(log_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(device_output_listener_);
+  DCHECK(listener_);
+  DCHECK(log_callback_);
 }
 
 OutputTapper::~OutputTapper() {
@@ -74,17 +78,10 @@ void OutputTapper::Start() {
 void OutputTapper::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
-  device_output_listener_->StopListening(this);
+  device_output_listener_->StopListening(listener_);
   log_callback_.Run("OutputTapper: stop listening");
   active_ = false;
   uma_logger_.reset();
-}
-
-void OutputTapper::OnPlayoutData(const media::AudioBus& audio_bus,
-                                 int sample_rate,
-                                 base::TimeDelta delay) {
-  TRACE_EVENT2("audio", "OutputTapper::OnData", " this ",
-               static_cast<void*>(this), "delay", delay.InMillisecondsF());
 }
 
 void OutputTapper::StartListening() {
@@ -93,7 +90,7 @@ void OutputTapper::StartListening() {
   uma_logger_ = std::make_unique<UmaLogger>(output_device_id_);
   log_callback_.Run(base::StrCat(
       {"OutputTapper: listening to output device: ", output_device_id_}));
-  device_output_listener_->StartListening(this, output_device_id_);
+  device_output_listener_->StartListening(listener_, output_device_id_);
 }
 
 }  // namespace audio

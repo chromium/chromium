@@ -81,6 +81,10 @@ struct MEDIA_EXPORT AudioProcessingSettings {
     return NeedWebrtcAudioProcessing() || stereo_mirroring;
   }
 
+  bool NeedPlayoutReference() const {
+    return echo_cancellation || automatic_gain_control;
+  }
+
   // Stringifies the settings for human-readable logging.
   std::string ToString() const;
 };

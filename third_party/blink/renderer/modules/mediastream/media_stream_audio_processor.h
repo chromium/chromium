@@ -108,6 +108,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   ~MediaStreamAudioProcessor() override;
 
  private:
+  class PlayoutListener;
   friend class MediaStreamAudioProcessorTest;
 
   // Format of input to ProcessCapturedAudio().
@@ -134,8 +135,9 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // Handles audio processing, rebuffering, and input/output formatting.
   media::AudioProcessor audio_processor_;
 
-  // TODO(crbug.com/704136): Replace with Member at some point.
-  scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source_;
+  // Manages subscription to the playout reference audio. Must be outlived by
+  // |audio_processor_|.
+  std::unique_ptr<PlayoutListener> playout_listener_;
 
   // Task runner for the main render thread.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;

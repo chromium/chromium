@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_processing.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,6 +36,7 @@ class UserInputMonitor;
 }  // namespace media
 
 namespace audio {
+class AudioProcessorHandler;
 class OutputTapper;
 class DeviceOutputListener;
 class InputStreamActivityMonitor;
@@ -172,6 +174,9 @@ class InputController final : public StreamMonitor {
   void OnStreamInactive(Snoopable* snoopable) override;
 
  private:
+  // TODO(https://crbug.com/1224845): Remove after the output mixing experiment.
+  class NoopReferenceOutputListener;
+
   // Used to log the result of capture startup.
   // This was previously logged as a boolean with only the no callback and OK
   // options. The enum order is kept to ensure backwards compatibility.
@@ -245,6 +250,14 @@ class InputController final : public StreamMonitor {
   // Called once at first audio callback.
   void ReportIsAlive();
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  // Called from the constructor. Helper to isolate logic setting up audio
+  // processing components.
+  void MaybeSetUpAudioProcessing(
+      const absl::optional<media::AudioProcessingSettings>& settings,
+      DeviceOutputListener* device_output_listener);
+#endif
+
   static StreamType ParamsToStreamType(const media::AudioParameters& params);
 
   // This class must be used on the audio manager thread.
@@ -266,6 +279,16 @@ class InputController final : public StreamMonitor {
   double max_volume_ = 0.0;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  // Handles audio processing effects applied to the microphone capture audio.
+  std::unique_ptr<AudioProcessorHandler> audio_processor_handler_;
+
+  // Placeholder for `audio_processor_handler_` when it is not created but
+  // `output_tapper_` still needs a ReferenceOutput::Listener to subscribe.
+  // TODO(https://crbug.com/1224845): Remove after the output mixing experiment.
+  std::unique_ptr<NoopReferenceOutputListener> noop_reference_output_listener_;
+
+  // Manages the `audio_processor_handler_` or
+  // `noop_reference_output_listener_` subscription to output audio.
   std::unique_ptr<OutputTapper> output_tapper_;
 #endif
 

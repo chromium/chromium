@@ -27,10 +27,13 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_processing.h"
 #include "media/base/user_input_monitor.h"
+#include "services/audio/audio_processor_handler.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"
 #include "services/audio/output_tapper.h"
+#include "services/audio/reference_output.h"
 
 namespace audio {
 namespace {
@@ -112,6 +115,28 @@ float AveragePower(const media::AudioBus& buffer) {
 #endif  // AUDIO_POWER_MONITORING
 
 }  // namespace
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+// No-op implementation of ReferenceOutput::Listener to allow the
+// InputController to subscribe to playout audio without instantiating a more
+// heavy-duty Listener subclass.
+// TODO(https://crbug.com/1224845): Remove after the output mixing experiment.
+class InputController::NoopReferenceOutputListener
+    : public ReferenceOutput::Listener {
+ public:
+  NoopReferenceOutputListener() {}
+
+ private:
+  // ReferenceOutput::Listener implementation.
+  void OnPlayoutData(const media::AudioBus& audio_bus,
+                     int sample_rate,
+                     base::TimeDelta delay) final {
+    TRACE_EVENT2("audio", "NoopReferenceOutputListener::OnPlayoutData",
+                 " this ", static_cast<void*>(this), "delay",
+                 delay.InMillisecondsF());
+  }
+};
+#endif  // CHROME_WIDE_ECHO_CANCELLATION
 
 // Private subclass of AIC that covers the state while capturing audio.
 // This class implements the callback interface from the lower level audio
@@ -224,14 +249,10 @@ InputController::InputController(EventHandler* event_handler,
   DCHECK(activity_monitor_);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (device_output_listener) {
-    // Unretained() is safe, because |event_handler_| outlives
-    // |output_tapper_|.
-    output_tapper_ = std::make_unique<OutputTapper>(
-        device_output_listener,
-        base::BindRepeating(&EventHandler::OnLog,
-                            base::Unretained(event_handler_)));
-  }
+  // TODO(https://crbug.com/1215061): Receive real processing settings via the
+  // constructor.
+  absl::optional<media::AudioProcessingSettings> processing_settings;
+  MaybeSetUpAudioProcessing(processing_settings, device_output_listener);
 #endif
 
   if (!user_input_monitor_) {
@@ -239,6 +260,39 @@ InputController::InputController(EventHandler* event_handler,
         "AIC::InputController() => (WARNING: keypress monitoring is disabled)");
   }
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+void InputController::MaybeSetUpAudioProcessing(
+    const absl::optional<media::AudioProcessingSettings>& settings,
+    DeviceOutputListener* device_output_listener) {
+  if (!device_output_listener)
+    return;
+
+  // TODO(https://crbug.com/1224845): Clean up this initialization logic once
+  // the output mixing experiment is over.
+  // |settings| will not be populated while the mixing experiment is ongoing, so
+  // there is no interference here. The mixing experiment always gets a
+  // NoopReferenceOutputListener.
+  ReferenceOutput::Listener* output_listener = nullptr;
+  if (settings && settings->NeedAudioModification()) {
+    audio_processor_handler_ =
+        std::make_unique<AudioProcessorHandler>(*settings);
+    if (settings->NeedPlayoutReference())
+      output_listener = audio_processor_handler_.get();
+  } else {
+    noop_reference_output_listener_ =
+        std::make_unique<NoopReferenceOutputListener>();
+    output_listener = noop_reference_output_listener_.get();
+  }
+  if (output_listener) {
+    // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
+    output_tapper_ = std::make_unique<OutputTapper>(
+        device_output_listener, output_listener,
+        base::BindRepeating(&EventHandler::OnLog,
+                            base::Unretained(event_handler_)));
+  }
+}
+#endif
 
 InputController::~InputController() {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);

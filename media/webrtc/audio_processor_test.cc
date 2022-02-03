@@ -651,48 +651,4 @@ TEST(AudioProcessorCallbackTest,
   audio_processor.ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
                                        1.0, false);
 }
-
-TEST_F(AudioProcessorTest,
-       RequiresPlayoutReferenceWhenEchoCancellationIsEnabled) {
-  MockProcessedCaptureCallback mock_capture_callback;
-  AudioProcessingSettings settings;
-  DisableDefaultSettings(settings);
-  settings.echo_cancellation = true;
-  AudioProcessor audio_processor(
-      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params_,
-      AudioProcessor::GetDefaultOutputFormat(params_, settings));
-  EXPECT_TRUE(audio_processor.RequiresPlayoutReference());
-}
-
-TEST_F(AudioProcessorTest, RequiresPlayoutReferenceWhenGainControlIsEnabled) {
-  MockProcessedCaptureCallback mock_capture_callback;
-  AudioProcessingSettings settings;
-  DisableDefaultSettings(settings);
-  settings.automatic_gain_control = true;
-  AudioProcessor audio_processor(
-      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params_,
-      AudioProcessor::GetDefaultOutputFormat(params_, settings));
-  EXPECT_TRUE(audio_processor.RequiresPlayoutReference());
-}
-
-TEST_F(AudioProcessorTest,
-       DoesNotRequirePlayoutReferenceWhenAecAndAgcIsDisabled) {
-  MockProcessedCaptureCallback mock_capture_callback;
-  AudioProcessingSettings settings;
-  // Disable effects that need the playout signal.
-  settings.echo_cancellation = false;
-  settings.automatic_gain_control = false;
-  // Enable all other effects.
-  settings.experimental_automatic_gain_control = true;
-  settings.noise_suppression = true;
-  settings.transient_noise_suppression = true;
-  settings.high_pass_filter = true;
-  settings.stereo_mirroring = true;
-  settings.force_apm_creation = true;
-  AudioProcessor audio_processor(
-      mock_capture_callback.Get(), LogCallbackForTesting(), settings, params_,
-      AudioProcessor::GetDefaultOutputFormat(params_, settings));
-  EXPECT_FALSE(audio_processor.RequiresPlayoutReference());
-}
-
 }  // namespace media
