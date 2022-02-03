@@ -3469,7 +3469,31 @@ def _CheckAndroidInfoBarDeprecation(input_api, output_api):
   return infobar_deprecation.CheckDeprecationOnUpload(input_api, output_api)
 
 
-class PydepsChecker(object):
+class _PydepsCheckerResult:
+  def __init__(self, cmd, pydeps_path, process, old_contents):
+    self._cmd = cmd
+    self._pydeps_path = pydeps_path
+    self._process = process
+    self._old_contents = old_contents
+
+  def GetError(self):
+    """Returns an error message, or None."""
+    import difflib
+    if self._process.wait() != 0:
+      # STDERR should already be printed.
+      return 'Command failed: ' + self._cmd
+    new_contents = self._process.stdout.read().splitlines()[2:]
+    if self._old_contents != new_contents:
+      diff = '\n'.join(difflib.context_diff(self._old_contents, new_contents))
+      return ('File is stale: {}\n'
+              'Diff (apply to fix):\n'
+              '{}\n'
+              'To regenerate, run:\n\n'
+              '    {}').format(self._pydeps_path, diff, self._cmd)
+    return None
+
+
+class PydepsChecker:
   def __init__(self, input_api, pydeps_files):
     self._file_cache = {}
     self._input_api = input_api
@@ -3526,9 +3550,8 @@ class PydepsChecker(object):
         affected_pydeps.update(file_to_pydeps_map.get(local_path, ()))
     return affected_pydeps
 
-  def DetermineIfStale(self, pydeps_path):
+  def DetermineIfStaleAsync(self, pydeps_path):
     """Runs print_python_deps.py to see if the files is stale."""
-    import difflib
     import os
 
     old_pydeps_data = self._LoadFile(pydeps_path).splitlines()
@@ -3546,11 +3569,10 @@ class PydepsChecker(object):
       old_contents = []
     env = dict(os.environ)
     env['PYTHONDONTWRITEBYTECODE'] = '1'
-    new_pydeps_data = self._input_api.subprocess.check_output(
-        cmd + ' --output ""', shell=True, env=env, encoding='utf-8')
-    new_contents = new_pydeps_data.splitlines()[2:]
-    if old_contents != new_contents:
-      return cmd, '\n'.join(difflib.context_diff(old_contents, new_contents))
+    process = self._input_api.subprocess.Popen(
+        cmd + ' --output ""', shell=True, env=env,
+        stdout=self._input_api.subprocess.PIPE, encoding='utf-8')
+    return _PydepsCheckerResult(cmd, pydeps_path, process, old_contents)
 
 
 def _ParseGclientArgs():
@@ -3573,8 +3595,6 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
   if not input_api.platform.startswith('linux'):
     return []
 
-  is_android = _ParseGclientArgs().get('checkout_android', 'false') == 'true'
-  pydeps_to_check = _ALL_PYDEPS_FILES if is_android else _GENERIC_PYDEPS_FILES
   results = []
   # First, check for new / deleted .pydeps.
   for f in input_api.AffectedFiles(include_deletes=True):
@@ -3597,6 +3617,7 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
   if results:
     return results
 
+  is_android = _ParseGclientArgs().get('checkout_android', 'false') == 'true'
   checker = checker_for_tests or PydepsChecker(input_api, _ALL_PYDEPS_FILES)
   affected_pydeps = set(checker.ComputeAffectedPydeps())
   affected_android_pydeps = affected_pydeps.intersection(
@@ -3611,19 +3632,14 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
         'Possibly stale pydeps files:\n{}'.format(
             '\n'.join(affected_android_pydeps))))
 
-  affected_pydeps_to_check = affected_pydeps.intersection(set(pydeps_to_check))
-  for pydep_path in affected_pydeps_to_check:
-    try:
-      result = checker.DetermineIfStale(pydep_path)
-      if result:
-        cmd, diff = result
-        results.append(output_api.PresubmitError(
-            'File is stale: %s\nDiff (apply to fix):\n%s\n'
-            'To regenerate, run:\n\n    %s' %
-            (pydep_path, diff, cmd)))
-    except input_api.subprocess.CalledProcessError as error:
-      return [output_api.PresubmitError('Error running: %s' % error.cmd,
-          long_text=error.output)]
+  all_pydeps = _ALL_PYDEPS_FILES if is_android else _GENERIC_PYDEPS_FILES
+  pydeps_to_check = affected_pydeps.intersection(all_pydeps)
+  # Process these concurrently, as each one takes 1-2 seconds.
+  pydep_results = [checker.DetermineIfStaleAsync(p) for p in pydeps_to_check]
+  for result in pydep_results:
+    error_msg = result.GetError()
+    if error_msg:
+      results.append(output_api.PresubmitError(error_msg))
 
   return results
 
