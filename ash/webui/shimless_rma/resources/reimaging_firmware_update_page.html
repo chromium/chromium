@@ -1,8 +1,10 @@
 <style include="cr-shared-style shimless-rma-shared">
 </style>
-
 <base-page>
   <div slot="left-pane">
+    <iron-icon icon="shimless-icon:warning" class="warning-icon"
+        hidden="[[!shouldShowWarning_]]">
+    </iron-icon>
     <h1>[[i18n('firmwareUpdatePageTitleText')]]</h1>
     <div id="firmwareUpdateStatus" class="instructions">
       [[getStatusString_(status_)]]

@@ -789,7 +789,13 @@ export class FakeShimlessRmaService {
               /** @type {!UpdateRoFirmwareStatus} */ (status));
         });
     if (this.automaticallyTriggerUpdateRoFirmwareObservation_) {
-      this.triggerUpdateRoFirmwareObserver(UpdateRoFirmwareStatus.kComplete, 0);
+      this.triggerUpdateRoFirmwareObserver(UpdateRoFirmwareStatus.kWaitUsb, 0);
+      this.triggerUpdateRoFirmwareObserver(
+          UpdateRoFirmwareStatus.kUpdating, 1000);
+      this.triggerUpdateRoFirmwareObserver(
+          UpdateRoFirmwareStatus.kRebooting, 2000);
+      this.triggerUpdateRoFirmwareObserver(
+          UpdateRoFirmwareStatus.kComplete, 3000);
     }
   }
 

@@ -78,6 +78,12 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
         type: Boolean,
         value: false,
       },
+
+      /** @protected {boolean} */
+      shouldShowWarning_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -105,6 +111,8 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
   onUpdateRoFirmwareStatusChanged(status) {
     this.status_ = status;
     this.shouldShowSpinner_ = this.status_ === UpdateRoFirmwareStatus.kUpdating;
+    this.shouldShowWarning_ =
+        this.status_ === UpdateRoFirmwareStatus.kFileNotFound;
 
     const disabled = this.status_ != UpdateRoFirmwareStatus.kComplete;
     this.dispatchEvent(new CustomEvent(

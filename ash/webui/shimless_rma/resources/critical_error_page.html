@@ -4,11 +4,6 @@
     width: 300px;
   }
 
-  .small-icon {
-    height: 20px;
-    width: 20px;
-  }
-
   #exitToLoginButton {
     border-color: var(--google-blue-600);
     border-radius: 12px;
@@ -21,8 +16,7 @@
 </style>
 <base-page>
   <div slot="left-pane">
-    <iron-icon icon="shimless-icon:warning"
-        class="small-icon">
+    <iron-icon icon="shimless-icon:warning" class="warning-icon">
     </iron-icon>
     <h1>[[i18n('criticalErrorTitleText')]]</h1>
     <div class="instructions">[[i18n('criticalErrorMessageText')]]</div>
