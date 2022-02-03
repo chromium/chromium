@@ -66,6 +66,7 @@ class SearchControllerImplNew : public SearchController {
   void AddProvider(size_t group_id,
                    std::unique_ptr<SearchProvider> provider) override;
   void SetResults(const SearchProvider* provider, Results results) override;
+  void Publish() override;
   ChromeSearchResult* FindSearchResult(const std::string& result_id) override;
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;
@@ -95,9 +96,6 @@ class SearchControllerImplNew : public SearchController {
 
   // Rank the results of |provider_type|.
   void Rank(ash::AppListSearchResultType provider_type);
-
-  // Publish results to ash.
-  void Publish();
 
   void SetSearchResults(const SearchProvider* provider);
 

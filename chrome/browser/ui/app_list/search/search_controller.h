@@ -90,6 +90,8 @@ class SearchController {
   // Update the controller with the given results. Used only if the categorical
   // search feature flag is enabled.
   virtual void SetResults(const SearchProvider* provider, Results results) = 0;
+  // Publishes results to ash.
+  virtual void Publish() = 0;
 
   virtual ChromeSearchResult* FindSearchResult(
       const std::string& result_id) = 0;

@@ -64,6 +64,7 @@ class SearchControllerImpl : public SearchController {
   void AddProvider(size_t group_id,
                    std::unique_ptr<SearchProvider> provider) override;
   void SetResults(const SearchProvider* provider, Results results) override;
+  void Publish() override;
   ChromeSearchResult* FindSearchResult(const std::string& result_id) override;
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;

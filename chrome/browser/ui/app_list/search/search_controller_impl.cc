@@ -142,6 +142,11 @@ void SearchControllerImpl::SetResults(const SearchProvider* provider,
   NOTREACHED();
 }
 
+void SearchControllerImpl::Publish() {
+  // Should only be called when IsCategoricalSearchEnabled is true.
+  NOTREACHED();
+}
+
 void SearchControllerImpl::OnResultsChangedWithType(
     ash::AppListSearchResultType result_type) {
   OnResultsChanged();
