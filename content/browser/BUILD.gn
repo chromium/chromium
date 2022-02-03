@@ -2111,8 +2111,6 @@ source_set("browser") {
       "../app_shim_remote_cocoa/web_drag_source_mac.mm",
       "accessibility/accessibility_event_recorder_mac.h",
       "accessibility/accessibility_event_recorder_mac.mm",
-      "accessibility/accessibility_tree_formatter_mac.h",
-      "accessibility/accessibility_tree_formatter_mac.mm",
       "accessibility/browser_accessibility_cocoa.h",
       "accessibility/browser_accessibility_cocoa.mm",
       "accessibility/browser_accessibility_mac.h",

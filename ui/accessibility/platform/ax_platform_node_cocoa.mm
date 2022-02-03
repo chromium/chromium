@@ -433,6 +433,10 @@ bool IsAXSetter(SEL selector) {
 
 @synthesize node = _node;
 
+- (ui::AXPlatformNodeDelegate*)nodeDelegate {
+  return _node ? _node->GetDelegate() : nil;
+}
+
 - (BOOL)instanceActive {
   return _node != nullptr;
 }

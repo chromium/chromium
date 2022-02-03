@@ -16,6 +16,7 @@
 namespace ui {
 
 class AXPlatformNodeBase;
+class AXPlatformNodeDelegate;
 
 struct AXAnnouncementSpec {
   AXAnnouncementSpec();
@@ -49,6 +50,7 @@ AX_EXPORT
 
 @property(nonatomic, readonly) NSRect boundsInScreen;
 @property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
+@property(nonatomic, readonly) ui::AXPlatformNodeDelegate* nodeDelegate;
 
 // Returns the data necessary to queue an NSAccessibility announcement if
 // |eventType| should be announced, or nullptr otherwise.

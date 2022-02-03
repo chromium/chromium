@@ -177,6 +177,8 @@ source_set("platform") {
         "inspect/ax_inspect_utils_mac.mm",
         "inspect/ax_transform_mac.h",
         "inspect/ax_transform_mac.mm",
+        "inspect/ax_tree_formatter_mac.h",
+        "inspect/ax_tree_formatter_mac.mm",
         "inspect/ax_tree_indexer_mac.h",
       ]
 

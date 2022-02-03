@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_mac.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
@@ -10,11 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_cocoa.h"
-#include "content/browser/accessibility/browser_accessibility_mac.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
@@ -31,24 +27,8 @@ using base::StringPrintf;
 using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
 using std::string;
-using ui::AXPositionOf;
-using ui::AXPropertyFilter;
-using ui::AXPropertyNode;
-using ui::AXNSObjectToBaseValue;
-using ui::AXNilToBaseValue;
-using ui::AXNSPointToBaseValue;
-using ui::AXTreeIndexerMac;
-using ui::AXAttributeNamesOf;
-using ui::AXAttributeValueOf;
-using ui::AXCallStatementInvoker;
-using ui::AXSizeOf;
-using ui::AXFormatValue;
-using ui::AXMakeConst;
-using ui::AXMakeOrderedKey;
-using ui::AXMakeSetKey;
-using ui::AXOptionalNSObject;
 
-namespace content {
+namespace ui {
 
 namespace {
 
@@ -59,11 +39,11 @@ const char kNotApplicable[] = "_const_n/a";
 
 }  // namespace
 
-AccessibilityTreeFormatterMac::AccessibilityTreeFormatterMac() = default;
+AXTreeFormatterMac::AXTreeFormatterMac() = default;
 
-AccessibilityTreeFormatterMac::~AccessibilityTreeFormatterMac() = default;
+AXTreeFormatterMac::~AXTreeFormatterMac() = default;
 
-void AccessibilityTreeFormatterMac::AddDefaultFilters(
+void AXTreeFormatterMac::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   static NSArray* default_attributes = [@[
     @"AXAutocompleteValue=*", @"AXDescription=*", @"AXRole=*", @"AXTitle=*",
@@ -79,28 +59,27 @@ void AccessibilityTreeFormatterMac::AddDefaultFilters(
   }
 }
 
-base::Value AccessibilityTreeFormatterMac::BuildTree(
-    ui::AXPlatformNodeDelegate* root) const {
+base::Value AXTreeFormatterMac::BuildTree(AXPlatformNodeDelegate* root) const {
   DCHECK(root);
   return BuildTree(root->GetNativeViewAccessible());
 }
 
-base::Value AccessibilityTreeFormatterMac::BuildTreeForSelector(
+base::Value AXTreeFormatterMac::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   AXUIElementRef node = nil;
-  std::tie(node, std::ignore) = ui::FindAXUIElement(selector);
+  std::tie(node, std::ignore) = FindAXUIElement(selector);
   if (node == nil) {
     return base::Value(base::Value::Type::DICTIONARY);
   }
   return BuildTreeForAXUIElement(node);
 }
 
-base::Value AccessibilityTreeFormatterMac::BuildTreeForAXUIElement(
+base::Value AXTreeFormatterMac::BuildTreeForAXUIElement(
     AXUIElementRef node) const {
   return BuildTree(static_cast<id>(node));
 }
 
-base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
+base::Value AXTreeFormatterMac::BuildTree(const id root) const {
   DCHECK(root);
 
   AXTreeIndexerMac indexer(root);
@@ -115,11 +94,11 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
   return dict;
 }
 
-std::string AccessibilityTreeFormatterMac::EvaluateScript(
+std::string AXTreeFormatterMac::EvaluateScript(
     const AXTreeSelector& selector,
-    const ui::AXInspectScenario& scenario) const {
+    const AXInspectScenario& scenario) const {
   AXUIElementRef root = nil;
-  std::tie(root, std::ignore) = ui::FindAXUIElement(selector);
+  std::tie(root, std::ignore) = FindAXUIElement(selector);
   if (!root)
     return "";
 
@@ -130,18 +109,18 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
   return result;
 }
 
-std::string AccessibilityTreeFormatterMac::EvaluateScript(
-    ui::AXPlatformNodeDelegate* root,
-    const std::vector<ui::AXScriptInstruction>& instructions,
+std::string AXTreeFormatterMac::EvaluateScript(
+    AXPlatformNodeDelegate* root,
+    const std::vector<AXScriptInstruction>& instructions,
     size_t start_index,
     size_t end_index) const {
   return EvaluateScript(root->GetNativeViewAccessible(), instructions,
                         start_index, end_index);
 }
 
-std::string AccessibilityTreeFormatterMac::EvaluateScript(
+std::string AXTreeFormatterMac::EvaluateScript(
     id platform_root,
-    const std::vector<ui::AXScriptInstruction>& instructions,
+    const std::vector<AXScriptInstruction>& instructions,
     size_t start_index,
     size_t end_index) const {
   base::Value scripts(base::Value::Type::LIST);
@@ -182,13 +161,12 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
   return contents;
 }
 
-base::Value AccessibilityTreeFormatterMac::BuildNode(
-    ui::AXPlatformNodeDelegate* node) const {
+base::Value AXTreeFormatterMac::BuildNode(AXPlatformNodeDelegate* node) const {
   DCHECK(node);
   return BuildNode(node->GetNativeViewAccessible());
 }
 
-base::Value AccessibilityTreeFormatterMac::BuildNode(const id node) const {
+base::Value AXTreeFormatterMac::BuildNode(const id node) const {
   DCHECK(node);
 
   AXTreeIndexerMac indexer(node);
@@ -202,15 +180,12 @@ base::Value AccessibilityTreeFormatterMac::BuildNode(const id node) const {
   return dict;
 }
 
-void AccessibilityTreeFormatterMac::RecursiveBuildTree(
-    const id node,
-    const NSRect& root_rect,
-    const AXTreeIndexerMac* indexer,
-    base::Value* dict) const {
-  BrowserAccessibility* platform_node =
-      ui::IsNSAccessibilityElement(node)
-          ? [static_cast<BrowserAccessibilityCocoa*>(node) owner]
-          : nullptr;
+void AXTreeFormatterMac::RecursiveBuildTree(const id node,
+                                            const NSRect& root_rect,
+                                            const AXTreeIndexerMac* indexer,
+                                            base::Value* dict) const {
+  AXPlatformNodeDelegate* platform_node =
+      IsNSAccessibilityElement(node) ? [node nodeDelegate] : nullptr;
 
   if (platform_node && !ShouldDumpNode(*platform_node))
     return;
@@ -219,7 +194,7 @@ void AccessibilityTreeFormatterMac::RecursiveBuildTree(
   if (platform_node && !ShouldDumpChildren(*platform_node))
     return;
 
-  NSArray* children = ui::AXChildrenOf(node);
+  NSArray* children = AXChildrenOf(node);
   base::Value child_dict_list(base::Value::Type::LIST);
   for (id child in children) {
     base::Value child_dict(base::Value::Type::DICTIONARY);
@@ -229,11 +204,10 @@ void AccessibilityTreeFormatterMac::RecursiveBuildTree(
   dict->SetPath(kChildrenDictAttr, std::move(child_dict_list));
 }
 
-void AccessibilityTreeFormatterMac::AddProperties(
-    const id node,
-    const NSRect& root_rect,
-    const AXTreeIndexerMac* indexer,
-    base::Value* dict) const {
+void AXTreeFormatterMac::AddProperties(const id node,
+                                       const NSRect& root_rect,
+                                       const AXTreeIndexerMac* indexer,
+                                       base::Value* dict) const {
   // Chromium special attributes.
   dict->SetPath(kLocalPositionDictAttr, PopulateLocalPosition(node, root_rect));
 
@@ -267,7 +241,7 @@ void AccessibilityTreeFormatterMac::AddProperties(
   }
 }
 
-base::Value AccessibilityTreeFormatterMac::PopulateLocalPosition(
+base::Value AXTreeFormatterMac::PopulateLocalPosition(
     const id node,
     const NSRect& root_rect) const {
   // The NSAccessibility position of an object is in global coordinates and
@@ -285,7 +259,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateLocalPosition(
       static_cast<int>(-node_position.y - node_size.height - root_top)));
 }
 
-std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
+std::string AXTreeFormatterMac::ProcessTreeForOutput(
     const base::DictionaryValue& dict) const {
   std::string error_value;
   if (dict.GetString("error", &error_value))
@@ -332,6 +306,6 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
   return line;
 }
 
-}  // namespace content
+}  // namespace ui
 
 #pragma clang diagnostic pop

@@ -26,10 +26,15 @@ namespace {
 const ui::AXPropertyFilter::Type ALLOW_EMPTY =
     ui::AXPropertyFilter::ALLOW_EMPTY;
 
-class AccessibilityTreeFormatterMacBrowserTest : public ContentBrowserTest {
+// ui::AXTreeFormatterMac browser tests.
+//
+// Run:
+//   out_dir/content_browsertests
+//     --gtest_filter="AXTreeFormatterMacBrowserTest.*"
+class AXTreeFormatterMacBrowserTest : public ContentBrowserTest {
  public:
-  AccessibilityTreeFormatterMacBrowserTest() {}
-  ~AccessibilityTreeFormatterMacBrowserTest() override {}
+  AXTreeFormatterMacBrowserTest() = default;
+  ~AXTreeFormatterMacBrowserTest() override = default;
 
   // Checks the formatted accessible tree for the given data URL.
   void TestFormat(const char* url,
@@ -59,7 +64,7 @@ class AccessibilityTreeFormatterMacBrowserTest : public ContentBrowserTest {
   }
 };
 
-void AccessibilityTreeFormatterMacBrowserTest::TestFormat(
+void AXTreeFormatterMacBrowserTest::TestFormat(
     const char* url,
     const std::vector<ui::AXPropertyFilter>& property_filters,
     const std::vector<ui::AXNodeFilter>& node_filters,
@@ -86,7 +91,7 @@ void AccessibilityTreeFormatterMacBrowserTest::TestFormat(
   EXPECT_EQ(actual, expected);
 }
 
-void AccessibilityTreeFormatterMacBrowserTest::TestFormat(
+void AXTreeFormatterMacBrowserTest::TestFormat(
     const char* url,
     const std::vector<const char*>& filters,
     const char* expected) const {
@@ -97,7 +102,7 @@ void AccessibilityTreeFormatterMacBrowserTest::TestFormat(
   TestFormat(url, property_filters, {}, expected);
 }
 
-void AccessibilityTreeFormatterMacBrowserTest::TestScript(
+void AXTreeFormatterMacBrowserTest::TestScript(
     const char* url,
     const std::vector<const char*>& scripts,
     const char* expected) const {
@@ -125,7 +130,7 @@ void AccessibilityTreeFormatterMacBrowserTest::TestScript(
   EXPECT_EQ(actual, expected);
 }
 
-void AccessibilityTreeFormatterMacBrowserTest::TestWrongParameters(
+void AXTreeFormatterMacBrowserTest::TestWrongParameters(
     const char* url,
     const std::vector<const char*>& parameters,
     const char* filter_pattern,
@@ -150,8 +155,7 @@ void AccessibilityTreeFormatterMacBrowserTest::TestWrongParameters(
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       DefaultAttributes) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, DefaultAttributes) {
   TestFormat(R"~~(data:text/html,
                     <input aria-label='input'>)~~",
              {},
@@ -161,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Filters_NoWildcardProperty) {
   TestFormat(R"~~(data:text/html,
                     <input class='classolasso'>)~~",
@@ -172,8 +176,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Filters_LineIndex) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Filters_LineIndex) {
   TestFormat(R"~~(data:text/html,
                     <input class='input_at_3rd_line'>
                     <input class='input_at_4th_line'>
@@ -186,8 +189,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Serialize_AXTextMarker) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Serialize_AXTextMarker) {
   TestFormat(R"~~(data:text/html,
                     <p>Paragraph</p>)~~",
              {":3;AXStartTextMarker=*"}, R"~~(AXWebArea
@@ -196,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Serialize_AXTextMarkerRange) {
   TestFormat(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>
@@ -209,8 +211,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Serialize_NSRange) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Serialize_NSRange) {
   TestFormat(R"~~(data:text/html,<input id='input' value='alphabet'>
                     <script>
                       let input = document.getElementById('input');
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_Int) {
   TestFormat(R"~~(data:text/html,
                     <p contentEditable='true'>Text</p>)~~",
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_Int_WrongParameters) {
   TestWrongParameters(R"~~(data:text/html,
                            <p contentEditable='true'>Text</p>)~~",
@@ -243,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray) {
   TestFormat(R"~~(data:text/html,
                     <table role="grid"><tr><td>CELL</td></tr></table>)~~",
@@ -259,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray_NilValue) {
   TestFormat(R"~~(data:text/html,
                     <table role="grid"></table>)~~",
@@ -269,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray_WrongParameters) {
   TestWrongParameters(R"~~(data:text/html,
                            <table role="grid"><tr><td>CELL</td></tr></table>)~~",
@@ -286,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_TextMarkerArray) {
   TestScript(
       R"~~(data:text/html,
@@ -299,7 +300,7 @@ textbox.AXTextMarkerRangeForUnorderedTextMarkers([text_range.anchor, text_range.
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_NSRange) {
   TestFormat(R"~~(data:text/html,
                     <p contentEditable='true'>Text</p>)~~",
@@ -309,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_NSRange_WrongParameters) {
   TestWrongParameters(R"~~(data:text/html,
                            <p contentEditable='true'>Text</p>)~~",
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_UIElement) {
   TestFormat(R"~~(data:text/html,
                     <p contentEditable='true'>Text</p>)~~",
@@ -331,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_UIElement_WrongParameters) {
   TestWrongParameters(R"~~(data:text/html,
                            <p contentEditable='true'>Text</p>)~~",
@@ -343,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_TextMarker) {
   TestFormat(R"~~(data:text/html,
                     <p>Text</p>)~~",
@@ -354,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_TextMarker_WrongParameters) {
   TestWrongParameters(
       R"~~(data:text/html,
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_TextMarkerRange) {
   TestFormat(R"~~(data:text/html,
                     <p>Text</p>)~~",
@@ -380,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    AccessibilityTreeFormatterMacBrowserTest,
+    AXTreeFormatterMacBrowserTest,
     ParameterizedAttributes_TextMarkerRange_WrongParameters) {
   TestWrongParameters(
       R"~~(data:text/html,
@@ -394,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, NestedCalls) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, NestedCalls) {
   TestFormat(R"~~(data:text/html,
                     <p>Text</p>)~~",
              {":1;AXIndexForTextMarker(AXTextMarkerForIndex(0))"},
@@ -404,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, NestedCalls) {
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script) {
   TestScript(R"~~(data:text/html,
                     <input aria-label='input'>)~~",
              {":3.AXRole"},
@@ -412,8 +413,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script) {
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_Document) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Document) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
              {"document.AXRole"},
@@ -421,8 +421,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_ByDOMId) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_ByDOMId) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
              {"textbox.AXRole"},
@@ -430,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_ByDOMId_WrongDOMId) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
@@ -439,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_UnrecognizedAttribute) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
@@ -448,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_NotApplicableAttribute) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox'>)~~",
@@ -457,8 +456,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_NullValue) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_NullValue) {
   TestScript(R"~~(data:text/html,
                     <input id='input'>)~~",
              {"input.AXTitleUIElement"},
@@ -466,8 +464,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_Comment) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Comment) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
              {"// textbox.AXRolio"},
@@ -475,21 +472,19 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_Object_IntArray) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Object_IntArray) {
   TestScript("data:text/html,", {"var:= [3, 4]"},
              R"~~(var=[3, 4]
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_Object_NSRange) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Object_NSRange) {
   TestScript("data:text/html,", {"var:= {loc: 3, len: 2}"},
              R"~~(var={loc: 3, len: 2}
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Object_TextMarker) {
   TestScript(R"~~(data:text/html,
                     <textarea id="textarea">Text</textarea>)~~",
@@ -498,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Object_TextMarkerArray) {
   TestScript(R"~~(data:text/html,
                     <textarea id="textarea">Text</textarea>)~~",
@@ -507,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Object_TextMarkerRange) {
   TestScript(R"~~(data:text/html,
                     <textarea id="textarea">Text</textarea>)~~",
@@ -516,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Chain) {
   TestScript(R"~~(data:text/html,
                     <input id='input' aria-label='input'>)~~",
              {"input.AXFocusableAncestor.AXRole"},
@@ -524,8 +519,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_Chain_Array) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Chain_Array) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
              {"p.AXChildren[0].AXRole"},
@@ -533,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Chain_Array_OutOfRange) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
@@ -542,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Chain_Array_Count) {
   TestScript(R"~~(data:text/html,
                     <p id='p'><span>1</span><span>2</span><span>3</span></p>)~~",
@@ -551,8 +545,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_Chain_Array_Has) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Chain_Array_Has) {
   TestScript(R"~~(data:text/html,
                     <button id='b'></button>)~~",
              {"b.accessibilityAttributeNames.has(AXRole)"},
@@ -560,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Chain_Array_Has_No) {
   TestScript(R"~~(data:text/html,
                     <button id='b'></button>)~~",
@@ -569,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Chain_TextRange_Anchor) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
@@ -578,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Chain_TextRange_Focus) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
@@ -587,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Chain_TextRange_Error) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
@@ -596,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Variables_AXElement) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
@@ -606,8 +599,7 @@ text.AXRole='AXStaticText'
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_Variables_Null) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_Variables_Null) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
              {"var:= p.AXTitleUIElement", "var"},
@@ -616,8 +608,7 @@ var=NULL
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_ActionNames) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_ActionNames) {
   TestScript(
       R"~~(data:text/html,
                     <button id='button'>Press me</button>)~~",
@@ -626,15 +617,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_PerformAction) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_PerformAction) {
   TestScript(R"~~(data:text/html,
                     <button id='button'>Press me</button>)~~",
              {"button.AXPerformAction(AXPress)"}, R"~~()~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       Script_SetAttribute) {
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, Script_SetAttribute) {
   TestScript(
       R"~~(data:text/html,
                     <textarea id="textarea">Text</textarea>)~~",
@@ -644,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Accessibility_API) {
   TestScript(R"~~(data:text/html,
                     <button id='b'></button>)~~",
@@ -653,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        Script_Accessibility_API_With_Argument) {
   TestScript(R"~~(data:text/html,
                     <button id='b'></button>)~~",

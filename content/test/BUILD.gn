@@ -1734,7 +1734,7 @@ test("content_browsertests") {
 
   if (is_mac) {
     sources += [
-      "../browser/accessibility/accessibility_tree_formatter_mac_browsertest.mm",
+      "../browser/accessibility/ax_tree_formatter_mac_browsertest.mm",
       "../browser/accessibility/browser_accessibility_cocoa_browsertest.mm",
       "../browser/accessibility/hit_testing_mac_browsertest.mm",
       "../browser/form_controls_browsertest_mac.h",

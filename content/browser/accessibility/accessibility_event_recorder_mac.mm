@@ -14,10 +14,10 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 
 namespace content {
 
@@ -131,7 +131,7 @@ void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
                                                   CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
 
-  auto formatter = AccessibilityTreeFormatterMac();
+  auto formatter = ui::AXTreeFormatterMac();
   formatter.SetPropertyFilters(property_filters_,
                                ui::AXTreeFormatter::kFiltersDefaultSet);
 
