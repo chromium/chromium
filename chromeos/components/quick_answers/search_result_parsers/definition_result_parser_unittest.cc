@@ -68,6 +68,12 @@ class DefinitionResultParserTest : public testing::Test {
     return result;
   }
 
+  void SetHeadWord(Value* result, const std::string& headword) {
+    result->FindListPath("dictionaryResult.entries")
+        ->GetList()[0]
+        .SetStringPath("headword", headword);
+  }
+
   std::unique_ptr<DefinitionResultParser> parser_;
 };
 
@@ -103,10 +109,34 @@ TEST_F(DefinitionResultParserTest, EmptyValue) {
 
 TEST_F(DefinitionResultParserTest, NoQueryTerm) {
   Value result =
-      BuildDictionaryResult("", "ˌənˈfaT͟Həməb(ə)l",
+      BuildDictionaryResult("", "ˌənˈfaT͟Həməb(ə)",
                             "incapable of being fully explored or understood.");
   QuickAnswer quick_answer;
   EXPECT_FALSE(parser_->Parse(&result, &quick_answer));
+}
+
+TEST_F(DefinitionResultParserTest, NoQueryTermShouldFallbackToHeadword) {
+  Value result =
+      BuildDictionaryResult("", "ˌənˈfaT͟Həməb(ə)",
+                            "incapable of being fully explored or understood.");
+  SetHeadWord(&result, "unfathomable");
+  QuickAnswer quick_answer;
+  EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
+
+  const auto& expected_title = "unfathomable · /ˌənˈfaT͟Həməb(ə)/";
+  EXPECT_EQ(expected_title, GetQuickAnswerTextForTesting(quick_answer.title));
+}
+
+TEST_F(DefinitionResultParserTest, ShouldPrioritizeQueryTerm) {
+  Value result =
+      BuildDictionaryResult("Unfathomable", "ˌənˈfaT͟Həməb(ə)",
+                            "incapable of being fully explored or understood.");
+  SetHeadWord(&result, "Unfathomable");
+  QuickAnswer quick_answer;
+  EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
+
+  const auto& expected_title = "Unfathomable · /ˌənˈfaT͟Həməb(ə)/";
+  EXPECT_EQ(expected_title, GetQuickAnswerTextForTesting(quick_answer.title));
 }
 
 TEST_F(DefinitionResultParserTest, NoPhonetic) {

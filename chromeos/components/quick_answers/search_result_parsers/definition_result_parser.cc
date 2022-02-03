@@ -18,14 +18,15 @@ using base::Value;
 
 constexpr char kHttpsPrefix[] = "https:";
 
-constexpr char kQueryTermPath[] = "dictionaryResult.queryTerm";
 constexpr char kDictionaryEntriesPath[] = "dictionaryResult.entries";
-constexpr char kSenseFamiliesKey[] = "senseFamilies";
-constexpr char kSensesKey[] = "senses";
 constexpr char kDefinitionPathUnderSense[] = "definition.text";
+constexpr char kHeadwordKey[] = "headword";
 constexpr char kPhoneticsKey[] = "phonetics";
 constexpr char kPhoneticsTextKey[] = "text";
 constexpr char kPhoneticsAudioKey[] = "oxfordAudio";
+constexpr char kSenseFamiliesKey[] = "senseFamilies";
+constexpr char kSensesKey[] = "senses";
+constexpr char kQueryTermPath[] = "dictionaryResult.queryTerm";
 
 }  // namespace
 
@@ -41,21 +42,23 @@ bool DefinitionResultParser::Parse(const Value* result,
   // Get definition and phonetics.
   const std::string* definition = ExtractDefinition(first_entry);
   if (!definition) {
-    LOG(ERROR) << "Fail in extracting definition";
+    LOG(ERROR) << "Fail in extracting definition.";
     return false;
   }
   const std::string* phonetics = ExtractPhoneticsText(first_entry);
 
-  const std::string* query_term = result->FindStringPath(kQueryTermPath);
-  if (!query_term) {
-    LOG(ERROR) << "Fail in extracting query term";
+  // If query term path not found, fallback to use headword.
+  const std::string* query = result->FindStringPath(kQueryTermPath);
+  if (!query)
+    query = first_entry->FindStringPath(kHeadwordKey);
+  if (!query) {
+    LOG(ERROR) << "Fail in extracting query.";
     return false;
   }
 
   const std::string& secondary_answer =
-      phonetics
-          ? BuildDefinitionTitleText(query_term->c_str(), phonetics->c_str())
-          : query_term->c_str();
+      phonetics ? BuildDefinitionTitleText(query->c_str(), phonetics->c_str())
+                : query->c_str();
   quick_answer->result_type = ResultType::kDefinitionResult;
   quick_answer->title.push_back(
       std::make_unique<QuickAnswerText>(secondary_answer));
