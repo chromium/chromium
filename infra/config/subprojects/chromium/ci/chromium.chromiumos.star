@@ -53,7 +53,7 @@ ci.builder(
             "cipd_archive_datas": [
                 {
                     "yaml_files": [
-                        "gen_linux_ash_chromium_cipd_yaml_cipd.yaml",
+                        "test_ash_chrome.yaml",
                     ],
                     "refs": [
                         "{%channel%}",

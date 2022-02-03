@@ -9909,18 +9909,14 @@ if (is_chromeos_ash) {
 
 # This target is for Lacros version skew testing.
 if (is_chromeos_ash) {
-  cipd_package_definition_by_file("gen_linux_ash_chromium_cipd_yaml") {
+  copy("test_ash_chrome_cipd_yaml") {
     testonly = true
-    buildtype = "dev"
-    arch = "64bit"
-    files_file = "//chrome/tools/build/chromeos/FILES.cfg"
-    package = "chromium/testing/linux-ash-chromium/x86_64/ash.zip"
-    description = "Prebuilt test binary."
-    install_mode = "copy"
     deps = [
       ":test_ash_chrome",
       "//chrome",
     ]
+    sources = [ "//infra/archive_config/test-ash-chrome.yaml" ]
+    outputs = [ "$root_out_dir/test_ash_chrome.yaml" ]
   }
 }
 
