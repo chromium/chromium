@@ -216,7 +216,7 @@ void LocalTranslator::TranslateOpenVPN() {
   shill_dictionary_->SetKey(shill::kOpenVPNRemoteCertKUProperty,
                             base::Value(cert_ku));
 
-  SetClientCertProperties(client_cert::CONFIG_TYPE_OPENVPN, onc_object_,
+  SetClientCertProperties(client_cert::ConfigType::kOpenVpn, onc_object_,
                           shill_dictionary_);
 
   const std::string* compression_algorithm =
@@ -248,7 +248,7 @@ void LocalTranslator::TranslateOpenVPN() {
 void LocalTranslator::TranslateIPsec() {
   const auto ike_version = onc_object_->FindIntKey(::onc::ipsec::kIKEVersion);
   if (ike_version.has_value() && ike_version.value() == 2) {
-    SetClientCertProperties(client_cert::CONFIG_TYPE_IKEV2, onc_object_,
+    SetClientCertProperties(client_cert::ConfigType::kIkev2, onc_object_,
                             shill_dictionary_);
 
     // The translation table set in this object is for L2TP/IPsec, so we do the
@@ -264,7 +264,7 @@ void LocalTranslator::TranslateIPsec() {
                             shill::kIKEv2RemoteIdentityProperty);
   } else {
     // For L2TP/IPsec.
-    SetClientCertProperties(client_cert::CONFIG_TYPE_L2TP_IPSEC, onc_object_,
+    SetClientCertProperties(client_cert::ConfigType::kL2tpIpsec, onc_object_,
                             shill_dictionary_);
     CopyFieldsAccordingToSignature();
   }
@@ -367,7 +367,7 @@ void LocalTranslator::TranslateEAP() {
     }
   }
 
-  SetClientCertProperties(client_cert::CONFIG_TYPE_EAP, onc_object_,
+  SetClientCertProperties(client_cert::ConfigType::kEap, onc_object_,
                           shill_dictionary_);
 
   // Set shill::kEapUseLoginPasswordProperty according to whether or not the

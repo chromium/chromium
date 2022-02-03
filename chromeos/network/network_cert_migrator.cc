@@ -95,16 +95,16 @@ class NetworkCertMigrator::MigrationTask
     int configured_slot_id = -1;
     std::string pkcs11_id;
     chromeos::client_cert::ConfigType config_type =
-        chromeos::client_cert::CONFIG_TYPE_NONE;
+        chromeos::client_cert::ConfigType::kNone;
     chromeos::client_cert::GetClientCertFromShillProperties(
         properties, &config_type, &configured_slot_id, &pkcs11_id);
-    if (config_type == chromeos::client_cert::CONFIG_TYPE_NONE ||
+    if (config_type == chromeos::client_cert::ConfigType::kNone ||
         pkcs11_id.empty()) {
       return result;
     }
 
     // OpenVPN configuration doesn't have a slot id to migrate.
-    if (config_type == chromeos::client_cert::CONFIG_TYPE_OPENVPN)
+    if (config_type == chromeos::client_cert::ConfigType::kOpenVpn)
       return result;
 
     int real_slot_id = -1;

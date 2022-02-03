@@ -726,7 +726,7 @@ TEST_F(ClientCertResolverTest, UserPolicyUsesSystemTokenSync) {
 
   base::Value shill_properties(base::Value::Type::DICTIONARY);
   ClientCertResolver::ResolveClientCertificateSync(
-      client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
+      client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
       GetString(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(test_cert_id_, pkcs11_id);
@@ -765,7 +765,7 @@ TEST_F(ClientCertResolverTest, DevicePolicyUsesSystemTokenSync) {
 
   base::Value shill_properties(base::Value::Type::DICTIONARY);
   ClientCertResolver::ResolveClientCertificateSync(
-      client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
+      client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
       GetString(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(test_cert_id_, pkcs11_id);
@@ -806,7 +806,7 @@ TEST_F(ClientCertResolverTest, DevicePolicyDoesNotUseUserTokenSync) {
 
   base::Value shill_properties(base::Value::Type::DICTIONARY);
   ClientCertResolver::ResolveClientCertificateSync(
-      client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
+      client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
       GetString(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(std::string(), pkcs11_id);

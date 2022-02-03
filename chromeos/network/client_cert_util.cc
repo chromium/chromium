@@ -110,7 +110,7 @@ void GetClientCertFromShillProperties(const base::Value& shill_properties,
                                       ConfigType* cert_config_type,
                                       int* tpm_slot,
                                       std::string* pkcs11_id) {
-  *cert_config_type = CONFIG_TYPE_NONE;
+  *cert_config_type = ConfigType::kNone;
   *tpm_slot = -1;
   pkcs11_id->clear();
 
@@ -128,7 +128,7 @@ void GetClientCertFromShillProperties(const base::Value& shill_properties,
         provider_properties->FindStringKey(shill::kOpenVPNClientCertIdProperty);
     if (pkcs11_id_str) {
       *pkcs11_id = *pkcs11_id_str;
-      *cert_config_type = CONFIG_TYPE_OPENVPN;
+      *cert_config_type = ConfigType::kOpenVpn;
       return;
     }
 
@@ -146,7 +146,7 @@ void GetClientCertFromShillProperties(const base::Value& shill_properties,
         return;
       }
 
-      *cert_config_type = CONFIG_TYPE_L2TP_IPSEC;
+      *cert_config_type = ConfigType::kL2tpIpsec;
     }
 
     // Look for IKEv2 specific properties.
@@ -163,7 +163,7 @@ void GetClientCertFromShillProperties(const base::Value& shill_properties,
         return;
       }
 
-      *cert_config_type = CONFIG_TYPE_IKEV2;
+      *cert_config_type = ConfigType::kIkev2;
     }
     return;
   }
@@ -187,7 +187,7 @@ void GetClientCertFromShillProperties(const base::Value& shill_properties,
       return;
     }
     *pkcs11_id = GetPkcs11AndSlotIdFromEapCertId(*cert_id, tpm_slot);
-    *cert_config_type = CONFIG_TYPE_EAP;
+    *cert_config_type = ConfigType::kEap;
   }
 }
 
@@ -196,10 +196,10 @@ void SetShillProperties(const ConfigType cert_config_type,
                         const std::string& pkcs11_id,
                         base::Value* properties) {
   switch (cert_config_type) {
-    case CONFIG_TYPE_NONE: {
+    case ConfigType::kNone: {
       return;
     }
-    case CONFIG_TYPE_OPENVPN: {
+    case ConfigType::kOpenVpn: {
       properties->SetKey(shill::kOpenVPNPinProperty,
                          base::Value(kDefaultTPMPin));
       // Note: OpenVPN does not have a slot property, see crbug.com/769550.
@@ -207,7 +207,7 @@ void SetShillProperties(const ConfigType cert_config_type,
                          base::Value(pkcs11_id));
       break;
     }
-    case CONFIG_TYPE_L2TP_IPSEC: {
+    case ConfigType::kL2tpIpsec: {
       properties->SetKey(shill::kL2tpIpsecPinProperty,
                          base::Value(kDefaultTPMPin));
       properties->SetKey(shill::kL2tpIpsecClientCertSlotProperty,
@@ -216,7 +216,7 @@ void SetShillProperties(const ConfigType cert_config_type,
                          base::Value(pkcs11_id));
       break;
     }
-    case CONFIG_TYPE_IKEV2: {
+    case ConfigType::kIkev2: {
       // PIN property is not used by shill for a IKEv2 service since it is a
       // fixed value.
       properties->SetKey(shill::kIKEv2ClientCertSlotProperty,
@@ -225,7 +225,7 @@ void SetShillProperties(const ConfigType cert_config_type,
                          base::Value(pkcs11_id));
       break;
     }
-    case CONFIG_TYPE_EAP: {
+    case ConfigType::kEap: {
       properties->SetKey(shill::kEapPinProperty, base::Value(kDefaultTPMPin));
       std::string key_id =
           base::StringPrintf("%i:%s", tpm_slot, pkcs11_id.c_str());
@@ -243,17 +243,17 @@ void SetShillProperties(const ConfigType cert_config_type,
 void SetEmptyShillProperties(const ConfigType cert_config_type,
                              base::Value* properties) {
   switch (cert_config_type) {
-    case CONFIG_TYPE_NONE: {
+    case ConfigType::kNone: {
       return;
     }
-    case CONFIG_TYPE_OPENVPN: {
+    case ConfigType::kOpenVpn: {
       properties->SetKey(shill::kOpenVPNPinProperty,
                          base::Value(std::string()));
       properties->SetKey(shill::kOpenVPNClientCertIdProperty,
                          base::Value(std::string()));
       break;
     }
-    case CONFIG_TYPE_L2TP_IPSEC: {
+    case ConfigType::kL2tpIpsec: {
       properties->SetKey(shill::kL2tpIpsecPinProperty,
                          base::Value(std::string()));
       properties->SetKey(shill::kL2tpIpsecClientCertSlotProperty,
@@ -262,7 +262,7 @@ void SetEmptyShillProperties(const ConfigType cert_config_type,
                          base::Value(std::string()));
       break;
     }
-    case CONFIG_TYPE_IKEV2: {
+    case ConfigType::kIkev2: {
       // PIN property is not used by shill for a IKEv2 service since it is a
       // fixed value.
       properties->SetKey(shill::kIKEv2ClientCertSlotProperty,
@@ -271,7 +271,7 @@ void SetEmptyShillProperties(const ConfigType cert_config_type,
                          base::Value(std::string()));
       break;
     }
-    case CONFIG_TYPE_EAP: {
+    case ConfigType::kEap: {
       properties->SetKey(shill::kEapPinProperty, base::Value(std::string()));
       // Shill requires both CertID and KeyID for TLS connections, despite the
       // fact that by convention they are the same ID, because one identifies
@@ -284,7 +284,7 @@ void SetEmptyShillProperties(const ConfigType cert_config_type,
 }
 
 ClientCertConfig::ClientCertConfig()
-    : location(CONFIG_TYPE_NONE),
+    : location(ConfigType::kNone),
       client_cert_type(onc::client_cert::kClientCertTypeNone) {}
 
 ClientCertConfig::ClientCertConfig(const ClientCertConfig& other) = default;
@@ -306,7 +306,7 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
       return;
 
     dict_with_client_cert = eap;
-    cert_config->location = CONFIG_TYPE_EAP;
+    cert_config->location = ConfigType::kEap;
   }
 
   const base::Value* vpn =
@@ -317,14 +317,15 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
     const base::Value* l2tp = vpn->FindDictKey(::onc::vpn::kL2TP);
     if (openvpn) {
       dict_with_client_cert = openvpn;
-      cert_config->location = CONFIG_TYPE_OPENVPN;
+      cert_config->location = ConfigType::kOpenVpn;
     } else if (ipsec) {
       dict_with_client_cert = ipsec;
       // Currently we support two kinds of IPsec-based VPN:
       // - L2TP/IPsec: IKE version is 1 and |l2tp| is set;
       // - IKEv2: IKE version is 2 and |l2tp| is not set.
       // Thus we only use |l2tp| to distinguish between these two cases.
-      cert_config->location = l2tp ? CONFIG_TYPE_L2TP_IPSEC : CONFIG_TYPE_IKEV2;
+      cert_config->location =
+          l2tp ? ConfigType::kL2tpIpsec : ConfigType::kIkev2;
     } else {
       return;
     }
@@ -337,7 +338,7 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
     if (!eap)
       return;
     dict_with_client_cert = eap;
-    cert_config->location = CONFIG_TYPE_EAP;
+    cert_config->location = ConfigType::kEap;
   }
 
   if (dict_with_client_cert) {

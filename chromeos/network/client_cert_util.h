@@ -23,15 +23,15 @@ namespace client_cert {
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDefaultTPMPin[];
 
-enum ConfigType {
-  CONFIG_TYPE_NONE,
-  CONFIG_TYPE_OPENVPN,
+enum class ConfigType {
+  kNone,
+  kOpenVpn,
   // We need two separate types for L2TP/IPsec and IKEv2: both of them are used
   // for IPsec and have the same properties, the only difference is that they
   // are mapped to different sets of shill service properties.
-  CONFIG_TYPE_L2TP_IPSEC,
-  CONFIG_TYPE_IKEV2,
-  CONFIG_TYPE_EAP,
+  kL2tpIpsec,
+  kIkev2,
+  kEap,
 };
 
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertConfig {
@@ -80,7 +80,7 @@ std::string GetPkcs11AndSlotIdFromEapCertId(const std::string& cert_id,
 // and |pkcs11_id| are filled accordingly. In case of OpenVPN or because the
 // property was not set, |tpm_slot| will be set to -1.
 // If an error occurred or no client configuration is found, |cert_config_type|
-// will be set to CONFIG_TYPE_NONE, |tpm_slot| to -1 and |pkcs11_id| to the
+// will be set to ConfigType::kNone, |tpm_slot| to -1 and |pkcs11_id| to the
 // empty string.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void GetClientCertFromShillProperties(const base::Value& shill_properties,
