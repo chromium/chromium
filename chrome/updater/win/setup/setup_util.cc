@@ -253,10 +253,13 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   com_service_command.AppendSwitch(kEnableLoggingSwitch);
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                         kLoggingModuleSwitchValue);
+
+  // TODO(crbug.com/1292806) : SERVICE_DEMAND_START will change to
+  // SERVICE_AUTO_START once the Wake task is plumbed into the service startup.
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
-      GetServiceDisplayName(internal_service).c_str(), com_service_command,
-      UPDATER_KEY,
+      GetServiceDisplayName(internal_service).c_str(), SERVICE_DEMAND_START,
+      com_service_command, UPDATER_KEY,
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),
       {}));

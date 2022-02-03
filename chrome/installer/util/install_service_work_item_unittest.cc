@@ -25,6 +25,7 @@ namespace {
 
 constexpr wchar_t kServiceName[] = L"InstallServiceWorkItemService";
 constexpr wchar_t kServiceDisplayName[] = L"InstallServiceWorkItemService";
+constexpr uint32_t kServiceStartType = SERVICE_DEMAND_START;
 constexpr base::FilePath::CharType kServiceProgramPath[] =
     FILE_PATH_LITERAL("c:\\windows\\SysWow64\\cmd.exe");
 
@@ -133,7 +134,7 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName,
+      kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);
 
@@ -194,7 +195,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName,
+      kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);
 
@@ -211,7 +212,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
 
 TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName,
+      kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);
   ASSERT_TRUE(item->Do());
@@ -220,7 +221,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
 
   // Same command line:
   auto item_upgrade = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName,
+      kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);
   EXPECT_TRUE(item_upgrade->Do());
@@ -246,18 +247,18 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
   EXPECT_TRUE(IsServiceGone(item_upgrade.get()));
 }
 
-TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLine) {
+TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineAndStartType) {
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName,
+      kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);
   ASSERT_TRUE(item->Do());
 
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
 
-  // New command line.
+  // New command line and start type.
   auto item_upgrade = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName,
+      kServiceName, kServiceDisplayName, SERVICE_AUTO_START,
       base::CommandLine::FromString(L"NewCmd.exe arg1 arg2"), kProductRegPath,
       kClsids, kIids);
   EXPECT_TRUE(item_upgrade->Do());
@@ -286,7 +287,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLine) {
 
 TEST_F(InstallServiceWorkItemTest, Do_ServiceName) {
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName,
+      kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);
 

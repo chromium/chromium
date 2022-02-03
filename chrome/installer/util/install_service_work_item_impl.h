@@ -56,6 +56,7 @@ class InstallServiceWorkItemImpl {
 
   InstallServiceWorkItemImpl(const std::wstring& service_name,
                              const std::wstring& display_name,
+                             uint32_t start_type,
                              const base::CommandLine& service_cmd_line,
                              const std::wstring& registry_path,
                              const std::vector<GUID>& clsids,
@@ -180,6 +181,10 @@ class InstallServiceWorkItemImpl {
 
   // The service name displayed to the user.
   const std::wstring display_name_;
+
+  // The service start options. This parameter is typically SERVICE_AUTO_START
+  // or SERVICE_DEMAND_START.
+  const uint32_t start_type_;
 
   // The desired service command line.
   const base::CommandLine service_cmd_line_;

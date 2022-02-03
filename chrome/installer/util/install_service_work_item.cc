@@ -12,12 +12,14 @@ namespace installer {
 InstallServiceWorkItem::InstallServiceWorkItem(
     const std::wstring& service_name,
     const std::wstring& display_name,
+    uint32_t start_type,
     const base::CommandLine& service_cmd_line,
     const std::wstring& registry_path,
     const std::vector<GUID>& clsids,
     const std::vector<GUID>& iids)
     : impl_(std::make_unique<InstallServiceWorkItemImpl>(service_name,
                                                          display_name,
+                                                         start_type,
                                                          service_cmd_line,
                                                          registry_path,
                                                          clsids,
@@ -38,8 +40,10 @@ bool InstallServiceWorkItem::DeleteService(const std::wstring& service_name,
                                            const std::wstring& registry_path,
                                            const std::vector<GUID>& clsids,
                                            const std::vector<GUID>& iids) {
+  // The `display_name`, `start_type`, and `service_cmd_line` are ignored by
+  // `InstallServiceWorkItemImpl` for `DeleteServiceImpl`.
   return InstallServiceWorkItemImpl(
-             service_name, std::wstring(),
+             service_name, std::wstring(), SERVICE_DISABLED,
              base::CommandLine(base::CommandLine::NO_PROGRAM), registry_path,
              clsids, iids)
       .DeleteServiceImpl();

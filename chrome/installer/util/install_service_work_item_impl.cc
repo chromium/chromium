@@ -29,7 +29,6 @@ namespace installer {
 namespace {
 
 constexpr uint32_t kServiceType = SERVICE_WIN32_OWN_PROCESS;
-constexpr uint32_t kServiceStartType = SERVICE_DEMAND_START;
 constexpr uint32_t kServiceErrorControl = SERVICE_ERROR_NORMAL;
 constexpr wchar_t kServiceDependencies[] = L"RPCSS\0";
 
@@ -155,6 +154,7 @@ bool operator==(const InstallServiceWorkItemImpl::ServiceConfig& lhs,
 InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     const std::wstring& service_name,
     const std::wstring& display_name,
+    uint32_t start_type,
     const base::CommandLine& service_cmd_line,
     const std::wstring& registry_path,
     const std::vector<GUID>& clsids,
@@ -162,6 +162,7 @@ InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     : com_registration_work_items_(WorkItem::CreateWorkItemList()),
       service_name_(service_name),
       display_name_(display_name),
+      start_type_(start_type),
       service_cmd_line_(service_cmd_line),
       registry_path_(registry_path),
       clsids_(clsids),
@@ -414,10 +415,10 @@ bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
 InstallServiceWorkItemImpl::ServiceConfig
 InstallServiceWorkItemImpl::MakeUpgradeServiceConfig(
     const ServiceConfig& original_config) {
-  ServiceConfig new_config(
-      kServiceType, kServiceStartType, kServiceErrorControl,
-      service_cmd_line_.GetCommandLineString(), kServiceDependencies,
-      GetCurrentServiceDisplayName());
+  ServiceConfig new_config(kServiceType, start_type_, kServiceErrorControl,
+                           service_cmd_line_.GetCommandLineString(),
+                           kServiceDependencies,
+                           GetCurrentServiceDisplayName());
 
   if (original_config.type == new_config.type)
     new_config.type = SERVICE_NO_CHANGE;
@@ -586,7 +587,7 @@ std::vector<wchar_t> InstallServiceWorkItemImpl::MultiSzToVector(
 bool InstallServiceWorkItemImpl::InstallNewService() {
   DCHECK(!service_.IsValid());
   bool success = InstallService(
-      ServiceConfig(kServiceType, kServiceStartType, kServiceErrorControl,
+      ServiceConfig(kServiceType, start_type_, kServiceErrorControl,
                     service_cmd_line_.GetCommandLineString(),
                     kServiceDependencies, GetCurrentServiceDisplayName()));
   if (success)
