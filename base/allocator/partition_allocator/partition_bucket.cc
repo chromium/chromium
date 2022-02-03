@@ -27,8 +27,7 @@
 #include "base/debug/alias.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -169,7 +168,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   using ::partition_alloc::internal::ScopedUnlockGuard;
 
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            bits::IsPowerOfTwo(slot_span_alignment));
+            base::bits::IsPowerOfTwo(slot_span_alignment));
 
   // No static EXCLUSIVE_LOCKS_REQUIRED(), as the checker doesn't understand
   // scoped unlocking.
@@ -330,12 +329,12 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Since direct map metadata is larger than PartitionPage, make sure the
     // first and the last bytes are on the same system page, i.e. within the
     // super page metadata region.
-    PA_DCHECK(
-        bits::AlignDown(reinterpret_cast<uintptr_t>(metadata),
-                        SystemPageSize()) ==
-        bits::AlignDown(reinterpret_cast<uintptr_t>(metadata) +
-                            sizeof(PartitionDirectMapMetadata<thread_safe>) - 1,
-                        SystemPageSize()));
+    PA_DCHECK(base::bits::AlignDown(reinterpret_cast<uintptr_t>(metadata),
+                                    SystemPageSize()) ==
+              base::bits::AlignDown(
+                  reinterpret_cast<uintptr_t>(metadata) +
+                      sizeof(PartitionDirectMapMetadata<thread_safe>) - 1,
+                  SystemPageSize()));
     PA_DCHECK(page == &metadata->page);
     page->is_valid = true;
     PA_DCHECK(!page->has_valid_span_after_this);
@@ -515,7 +514,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   PA_DCHECK(slot_span_committed_size <= slot_span_reservation_size);
 
   uintptr_t adjusted_next_partition_page =
-      bits::AlignUp(root->next_partition_page, slot_span_alignment);
+      base::bits::AlignUp(root->next_partition_page, slot_span_alignment);
   if (UNLIKELY(adjusted_next_partition_page + slot_span_reservation_size >
                root->next_partition_page_end)) {
     // AllocNewSuperPage() may crash (e.g. address space exhaustion), put data
@@ -530,7 +529,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
     }
     // AllocNewSuperPage() updates root->next_partition_page, re-query.
     adjusted_next_partition_page =
-        bits::AlignUp(root->next_partition_page, slot_span_alignment);
+        base::bits::AlignUp(root->next_partition_page, slot_span_alignment);
     PA_CHECK(adjusted_next_partition_page + slot_span_reservation_size <=
              root->next_partition_page_end);
   }
@@ -696,7 +695,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
                           PageAccessibilityConfiguration::kReadWrite,
                           PageAccessibilityDisposition::kRequireUpdate);
     }
-    PCScan::RegisterNewSuperPage(root, super_page);
+    ::base::internal::PCScan::RegisterNewSuperPage(root, super_page);
   }
 
   return payload;
@@ -744,9 +743,9 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   uintptr_t return_slot =
       slot_span_start + (size * slot_span->num_allocated_slots);
   uintptr_t next_slot = return_slot + size;
-  uintptr_t commit_start = bits::AlignUp(return_slot, SystemPageSize());
+  uintptr_t commit_start = base::bits::AlignUp(return_slot, SystemPageSize());
   PA_DCHECK(next_slot > commit_start);
-  uintptr_t commit_end = bits::AlignUp(next_slot, SystemPageSize());
+  uintptr_t commit_end = base::bits::AlignUp(next_slot, SystemPageSize());
   // If the slot was partially committed, |return_slot| and |next_slot| fall
   // in different pages. If the slot was fully uncommitted, |return_slot| points
   // to the page start and |next_slot| doesn't, thus only the latter gets
@@ -898,7 +897,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     size_t slot_span_alignment,
     bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            bits::IsPowerOfTwo(slot_span_alignment));
+            base::bits::IsPowerOfTwo(slot_span_alignment));
 
   // The slow path is called when the freelist is empty. The only exception is
   // when a higher-order alignment is requested, in which case the freelist
@@ -961,8 +960,8 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
             ->IncrementNumberOfNonemptySlotSpans();
 
         // Re-activating an empty slot span, update accounting.
-        size_t dirty_size = bits::AlignUp(new_slot_span->GetProvisionedSize(),
-                                          SystemPageSize());
+        size_t dirty_size = base::bits::AlignUp(
+            new_slot_span->GetProvisionedSize(), SystemPageSize());
         PA_DCHECK(root->empty_slot_spans_dirty_bytes >= dirty_size);
         root->empty_slot_spans_dirty_bytes -= dirty_size;
 
@@ -1053,5 +1052,4 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
 
 template struct PartitionBucket<ThreadSafe>;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

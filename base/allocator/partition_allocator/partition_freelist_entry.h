@@ -21,8 +21,7 @@
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -71,7 +70,7 @@ class EncodedPartitionFreelistEntryPtr {
 #if defined(ARCH_CPU_BIG_ENDIAN)
     uintptr_t transformed = ~address;
 #else
-    uintptr_t transformed = ByteSwapUintPtrT(address);
+    uintptr_t transformed = base::ByteSwapUintPtrT(address);
 #endif
     return transformed;
   }
@@ -261,7 +260,7 @@ static_assert(kSmallestBucket >= sizeof(PartitionFreelistEntry),
 // it's 0, it gets patched to 1), and ref-count gets added to it.
 namespace {
 constexpr size_t kSmallestUsedBucket =
-    bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
+    base::bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
 }
 static_assert(kSmallestUsedBucket >=
                   sizeof(PartitionFreelistEntry) + sizeof(PartitionRefCount),
@@ -304,7 +303,14 @@ ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
   return GetNextInternal(extra, false);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::PartitionFreelistEntry;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_FREELIST_ENTRY_H_

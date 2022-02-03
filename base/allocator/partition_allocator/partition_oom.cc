@@ -9,8 +9,7 @@
 #include "base/debug/alias.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 OomFunction g_oom_handling_function = nullptr;
 
@@ -34,5 +33,4 @@ PartitionOutOfMemoryWithLargeVirtualSize(size_t virtual_size) {
 
 #endif  // !defined(ARCH_CPU_64_BITS)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

@@ -33,8 +33,7 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // An "extent" is a span of consecutive superpages. We link the partition's next
 // extent (if there is one) to the very start of a superpage's metadata area.
@@ -84,7 +83,7 @@ SuperPagesEndFromExtent(PartitionSuperPageExtentEntry<thread_safe>* extent) {
          (extent->number_of_consecutive_super_pages * kSuperPageSize);
 }
 
-using AllocationStateMap =
+using AllocationStateMap = ::base::internal::
     StateBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
 
 // Metadata of the slot span.
@@ -395,14 +394,14 @@ PartitionSuperPageToExtent(uintptr_t super_page) {
 // size is a multiple of partition page size.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 ReservedStateBitmapSize() {
-  return bits::AlignUp(sizeof(AllocationStateMap), PartitionPageSize());
+  return base::bits::AlignUp(sizeof(AllocationStateMap), PartitionPageSize());
 }
 
 // Size that should be committed for state bitmap (if present) inside a super
 // page. It is a multiple of system page size.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 CommittedStateBitmapSize() {
-  return bits::AlignUp(sizeof(AllocationStateMap), SystemPageSize());
+  return base::bits::AlignUp(sizeof(AllocationStateMap), SystemPageSize());
 }
 
 // Returns the address/pointer to the state bitmap in the super page. It's the
@@ -830,7 +829,25 @@ void IterateSlotSpans(uintptr_t super_page,
                         slot_span->bucket->get_pages_per_slot_span());
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::AllocationStateMap;
+using ::partition_alloc::internal::CommittedStateBitmapSize;
+using ::partition_alloc::internal::IterateSlotSpans;
+using ::partition_alloc::internal::PartitionPage;
+using ::partition_alloc::internal::PartitionSuperPageExtentEntry;
+using ::partition_alloc::internal::PartitionSuperPageToExtent;
+using ::partition_alloc::internal::PartitionSuperPageToMetadataArea;
+using ::partition_alloc::internal::ReservedStateBitmapSize;
+using ::partition_alloc::internal::SlotSpanMetadata;
+using ::partition_alloc::internal::StateBitmapFromAddr;
+using ::partition_alloc::internal::SuperPageStateBitmap;
+using ::partition_alloc::internal::SuperPageStateBitmapAddr;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_PAGE_H_

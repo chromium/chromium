@@ -1815,4 +1815,12 @@ static_assert(offsetof(ThreadSafePartitionRoot, lock_) ==
 
 }  // namespace base
 
+namespace partition_alloc::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::base::internal::ScopedSyscallTimer;
+
+}  // namespace partition_alloc::internal
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ROOT_H_

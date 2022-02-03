@@ -5,8 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -16,12 +15,13 @@
 #include "base/compiler_specific.h"
 #include "base/thread_annotations.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
+
 constexpr int kPartitionNumSystemPagesPerSlotSpanBits = 8;
-}
+
+}  // namespace
 
 template <bool thread_safe>
 struct PartitionBucket {
@@ -193,7 +193,14 @@ struct PartitionBucket {
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::PartitionBucket;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_H_

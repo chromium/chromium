@@ -9,8 +9,7 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 template <bool thread_safe>
 struct PartitionDirectMapExtent {
@@ -70,7 +69,15 @@ PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
               ->direct_map_extent;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::PartitionDirectMapExtent;
+using ::partition_alloc::internal::PartitionDirectMapMetadata;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_

@@ -37,6 +37,11 @@ static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
 
+constexpr bool ThreadSafe = true;
+
+template <bool thread_safe>
+struct SlotSpanMetadata;
+
 }  // namespace partition_alloc::internal
 
 namespace base {
@@ -47,10 +52,8 @@ using ::partition_alloc::internal::kAlignment;
 
 namespace internal {
 
-template <bool thread_safe>
-struct SlotSpanMetadata;
-
-constexpr bool ThreadSafe = true;
+using ::partition_alloc::internal::SlotSpanMetadata;
+using ::partition_alloc::internal::ThreadSafe;
 
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -67,6 +70,23 @@ using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
 class PartitionStatsDumper;
 
 }  // namespace base
+
+namespace partition_alloc {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::base::PartitionRoot;
+
+namespace internal {
+
+#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
+    BUILDFLAG(USE_BACKUP_REF_PTR)
+using ::base::internal::CheckThatSlotOffsetIsZero;
+#endif
+
+}  // namespace internal
+
+}  // namespace partition_alloc
 
 // From https://clang.llvm.org/docs/AttributeReference.html#malloc:
 //

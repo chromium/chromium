@@ -23,8 +23,7 @@
 #include "base/bits.h"
 #include "base/dcheck_is_on.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -65,7 +64,7 @@ ALWAYS_INLINE void PartitionDirectUnmap(
       SlotSpanMetadata<thread_safe>::ToSlotSpanStart(slot_span);
   // The mapping may start at an unspecified location within a super page, but
   // we always reserve memory aligned to super page size.
-  reservation_start = bits::AlignDown(reservation_start, kSuperPageSize);
+  reservation_start = base::bits::AlignDown(reservation_start, kSuperPageSize);
 
   // All the metadata have been updated above, in particular the mapping has
   // been unlinked. We can safely release the memory outside the lock, which is
@@ -216,7 +215,8 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   PA_DCHECK(!bucket->is_direct_mapped());
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(this);
   // If lazy commit is enabled, only provisioned slots are committed.
-  size_t dirty_size = bits::AlignUp(GetProvisionedSize(), SystemPageSize());
+  size_t dirty_size =
+      base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
   size_t size_to_decommit =
       kUseLazyCommit ? dirty_size : bucket->get_bytes_per_span();
 
@@ -301,6 +301,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
 }
 
 namespace {
+
 void UnmapNow(uintptr_t reservation_start,
               size_t reservation_size,
               pool_handle pool) {
@@ -356,9 +357,9 @@ void UnmapNow(uintptr_t reservation_start,
   AddressPoolManager::GetInstance()->UnreserveAndDecommit(
       pool, reservation_start, reservation_size);
 }
+
 }  // namespace
 
 template struct SlotSpanMetadata<ThreadSafe>;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
