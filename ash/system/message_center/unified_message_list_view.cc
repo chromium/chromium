@@ -829,7 +829,10 @@ MessageView* UnifiedMessageListView::CreateMessageView(
   auto* view =
       MessageViewFactory::Create(notification, /*shown_in_popup=*/false)
           .release();
-  view->SetIsNested();
+  // Setting grouped notifications as nested is handled in
+  // `AshNotificationView`.
+  if (!notification.group_child())
+    view->SetIsNested();
   view->AddObserver(this);
   message_center_view_->ConfigureMessageView(view);
   return view;
