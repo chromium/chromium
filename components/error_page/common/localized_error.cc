@@ -525,19 +525,12 @@ base::DictionaryValue GetStandardMenuItemsText() {
   return standard_menu_items_text;
 }
 
-// Returns true if the error is due to a disconnected network.
-bool IsOfflineError(const std::string& error_domain, int error_code) {
-  return ((error_code == net::ERR_INTERNET_DISCONNECTED &&
-           error_domain == Error::kNetErrorDomain) ||
-          (error_code == error_page::DNS_PROBE_FINISHED_NO_INTERNET &&
-           error_domain == Error::kDnsProbeErrorDomain));
-}
-
 // Gets the icon class for a given |error_domain| and |error_code|.
 const char* GetIconClassForError(const std::string& error_domain,
                                  int error_code) {
-  return IsOfflineError(error_domain, error_code) ? "icon-offline"
-                                                  : "icon-generic";
+  return LocalizedError::IsOfflineError(error_domain, error_code)
+             ? "icon-offline"
+             : "icon-generic";
 }
 
 base::DictionaryValue SingleEntryDictionary(base::StringPiece path,
@@ -894,7 +887,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
     const std::string& locale,
     bool is_blocked_by_extension) {
   LocalizedError::PageState result;
-  if (IsOfflineError(error_domain, error_code)) {
+  if (LocalizedError::IsOfflineError(error_domain, error_code)) {
     result.is_offline_error = true;
 
     // These strings are to be read by a screen reader during the dino game.
@@ -1092,7 +1085,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
 #if BUILDFLAG(IS_ANDROID)
   if (!is_post && !result.reload_button_shown && !is_incognito &&
       failed_url.is_valid() && failed_url.SchemeIsHTTPOrHTTPS() &&
-      IsOfflineError(error_domain, error_code)) {
+      LocalizedError::IsOfflineError(error_domain, error_code)) {
     if (!auto_fetch_feature_enabled) {
       result.download_button_shown = true;
       result.strings.SetPath({"downloadButton", "msg"},
@@ -1117,7 +1110,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
       "closeDescriptionPopup",
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_SUGGESTION_CLOSE_POPUP_BUTTON));
 
-  if (IsOfflineError(error_domain, error_code) && !is_incognito) {
+  if (LocalizedError::IsOfflineError(error_domain, error_code) &&
+      !is_incognito) {
     result.offline_content_feature_enabled = offline_content_feature_enabled;
     if (offline_content_feature_enabled) {
       result.strings.SetStringPath("suggestedOfflineContentPresentation", "on");
@@ -1145,6 +1139,33 @@ LocalizedError::PageState LocalizedError::GetPageState(
   return result;
 }
 
+LocalizedError::PageState LocalizedError::GetPageStateForOverriddenErrorPage(
+    base::Value string_dict,
+    int error_code,
+    const std::string& error_domain,
+    const GURL& failed_url,
+    const std::string& locale) {
+  LocalizedError::PageState result;
+
+  result.strings.MergeDictionary(&string_dict);
+  webui::SetLoadTimeDataDefaults(locale, &result.strings);
+
+  if (failed_url.SchemeIsHTTPOrHTTPS()) {
+    result.strings.SetStringPath(
+        "title", url_formatter::IDNToUnicode(failed_url.host()));
+  } else {
+    std::u16string failed_url_string(url_formatter::FormatUrl(
+        failed_url, url_formatter::kFormatUrlOmitNothing,
+        net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
+    // URLs are always LTR.
+    if (base::i18n::IsRTL())
+      base::i18n::WrapStringWithLTRFormatting(&failed_url_string);
+    result.strings.SetStringPath("title", failed_url_string);
+  }
+
+  return result;
+}
+
 std::u16string LocalizedError::GetErrorDetails(const std::string& error_domain,
                                                int error_code,
                                                bool is_secure_dns_network_error,
@@ -1166,6 +1187,15 @@ bool LocalizedError::HasStrings(const std::string& error_domain,
   return LookupErrorMap(error_domain, error_code,
                         /*is_secure_dns_network_error=*/false,
                         /*is_post=*/false) != nullptr;
+}
+
+// Returns true if the error is due to a disconnected network.
+bool LocalizedError::IsOfflineError(const std::string& error_domain,
+                                    int error_code) {
+  return ((error_code == net::ERR_INTERNET_DISCONNECTED &&
+           error_domain == Error::kNetErrorDomain) ||
+          (error_code == error_page::DNS_PROBE_FINISHED_NO_INTERNET &&
+           error_domain == Error::kDnsProbeErrorDomain));
 }
 
 }  // namespace error_page

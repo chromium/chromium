@@ -11056,7 +11056,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
       navigation_request->GetResolveErrorInfo(), error_page_content,
       std::move(subresource_loader_factories), std::move(policy_container),
       GetContentClient()->browser()->GetAlternativeErrorPageOverrideInfo(
-          navigation_request->GetURL(), GetBrowserContext()),
+          navigation_request->GetURL(), GetBrowserContext(), error_code),
       BuildCommitFailedNavigationCallback(navigation_request));
 }
 

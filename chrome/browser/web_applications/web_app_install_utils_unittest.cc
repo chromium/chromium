@@ -44,10 +44,10 @@ using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 namespace {
 
-const char16_t kAppShortName[] = u"Test short name";
-const char16_t kAppTitle[] = u"Test title";
-const char16_t kAlternativeAppTitle[] = u"Different test title";
-const char16_t kShortcutItemName[] = u"shortcut item ";
+const char16_t kAppTestShortName[] = u"Test short name";
+const char16_t kAppTestTitle[] = u"Test title";
+const char16_t kAlternativeAppTestTitle[] = u"Different test title";
+const char16_t kShortcutItemTestName[] = u"shortcut item ";
 
 constexpr SquareSizePx kIconSize = 64;
 
@@ -73,7 +73,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
       blink::features::kFileHandlingIcons);
 
   WebAppInstallInfo web_app_info;
-  web_app_info.title = kAlternativeAppTitle;
+  web_app_info.title = kAlternativeAppTestTitle;
   web_app_info.start_url = GURL("http://www.notchromium.org");
   apps::IconInfo info;
   const GURL kAppIcon1("fav1.png");
@@ -84,7 +84,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
-  manifest.short_name = kAppShortName;
+  manifest.short_name = kAppTestShortName;
 
   const GURL kFileHandlingIcon("fav1.png");
   {
@@ -123,7 +123,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(kAppShortName, web_app_info.title);
+  EXPECT_EQ(kAppTestShortName, web_app_info.title);
   EXPECT_EQ(kAppUrl, web_app_info.start_url);
   EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
@@ -138,7 +138,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
-  manifest.name = kAppTitle;
+  manifest.name = kAppTestTitle;
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
@@ -168,7 +168,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(kAppTitle, web_app_info.title);
+  EXPECT_EQ(kAppTestTitle, web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
   ASSERT_EQ(2u, web_app_info.display_override.size());
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_override[0]);
@@ -211,11 +211,11 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
 
   blink::mojom::Manifest manifest;
   manifest.name = absl::nullopt;
-  manifest.short_name = kAppShortName;
+  manifest.short_name = kAppTestShortName;
 
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
-  EXPECT_EQ(kAppShortName, web_app_info.title);
+  EXPECT_EQ(kAppTestShortName, web_app_info.title);
 }
 
 // Test that maskable icons are parsed as separate manifest_icons from the
@@ -346,7 +346,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   feature_list.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
 
   WebAppInstallInfo web_app_info;
-  web_app_info.title = kAlternativeAppTitle;
+  web_app_info.title = kAlternativeAppTestTitle;
   web_app_info.start_url = GURL("http://www.notchromium.org");
   apps::IconInfo info;
   const GURL kAppIcon1("fav1.png");
@@ -357,7 +357,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
-  manifest.short_name = kAppShortName;
+  manifest.short_name = kAppTestShortName;
 
   const GURL kFileHandlingIcon("fav1.png");
   {
@@ -392,7 +392,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
 
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(kAppShortName, web_app_info.title);
+  EXPECT_EQ(kAppTestShortName, web_app_info.title);
   EXPECT_EQ(kAppUrl, web_app_info.start_url);
   EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
@@ -408,7 +408,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
-  manifest.name = kAppTitle;
+  manifest.name = kAppTestTitle;
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
@@ -430,7 +430,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   // Test that shortcuts in the manifest replace those in |web_app_info|.
   const GURL kShortcutItemUrl("http://www.chromium.org/shortcuts/action");
   blink::Manifest::ShortcutItem shortcut_item;
-  shortcut_item.name = std::u16string(kShortcutItemName) + u"4";
+  shortcut_item.name = std::u16string(kShortcutItemTestName) + u"4";
   shortcut_item.url = kShortcutItemUrl;
 
   const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
@@ -441,7 +441,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
 
   manifest.shortcuts.push_back(shortcut_item);
 
-  shortcut_item.name = std::u16string(kShortcutItemName) + u"5";
+  shortcut_item.name = std::u16string(kShortcutItemTestName) + u"5";
 
   const GURL kIconUrl3("http://www.chromium.org/shortcuts/icon3.png");
   icon.src = kIconUrl3;
@@ -453,7 +453,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   manifest.shortcuts.push_back(shortcut_item);
 
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(kAppTitle, web_app_info.title);
+  EXPECT_EQ(kAppTestTitle, web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
   // Sanity check that original copy was not changed.
   EXPECT_EQ(0u, web_app_info_original.shortcuts_menu_item_infos.size());
@@ -533,7 +533,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcutIcons) {
   blink::mojom::Manifest manifest;
   for (unsigned int i = 0; i < kNumTestIcons; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
-    shortcut_item.name = kShortcutItemName + base::NumberToString16(i);
+    shortcut_item.name = kShortcutItemTestName + base::NumberToString16(i);
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
@@ -586,7 +586,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestShortcutIconsTooLarge) {
   blink::mojom::Manifest manifest;
   for (int i = 1; i <= 20; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
-    shortcut_item.name = kShortcutItemName + base::NumberToString16(i);
+    shortcut_item.name = kShortcutItemTestName + base::NumberToString16(i);
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
@@ -622,7 +622,7 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   {
     WebAppShortcutsMenuItemInfo shortcut_item;
     std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_manifest_icons;
-    shortcut_item.name = std::u16string(kShortcutItemName) + u"1";
+    shortcut_item.name = std::u16string(kShortcutItemTestName) + u"1";
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
     icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
@@ -636,7 +636,7 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   {
     WebAppShortcutsMenuItemInfo shortcut_item;
     std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_manifest_icons;
-    shortcut_item.name = std::u16string(kShortcutItemName) + u"2";
+    shortcut_item.name = std::u16string(kShortcutItemTestName) + u"2";
     icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
     shortcut_manifest_icons.push_back(icon);

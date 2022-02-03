@@ -117,6 +117,8 @@ source_set("web_applications") {
     "web_app_internals_utils.h",
     "web_app_mover.cc",
     "web_app_mover.h",
+    "web_app_offline.cc",
+    "web_app_offline.h",
     "web_app_origin_association_manager.cc",
     "web_app_origin_association_manager.h",
     "web_app_origin_association_task.cc",
@@ -238,6 +240,7 @@ source_set("web_applications") {
     "//chrome/common",
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
+    "//components/resources:components_resources_grit",
 
     # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
     "//components/crx_file",
@@ -618,6 +621,7 @@ source_set("web_applications_browser_tests") {
     "web_app_icon_manager_browsertest.cc",
     "web_app_internals_browsertest.cc",
     "web_app_mover_browsertest.cc",
+    "web_app_offline_browsertest.cc",
     "web_app_origin_association_manager_browsertest.cc",
     "web_app_url_loader_browsertest.cc",
   ]

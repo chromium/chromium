@@ -20,11 +20,14 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/available_offline_content.mojom.h"
 #include "chrome/renderer/net/available_offline_content_helper.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/net_error_info.h"
+#include "components/grit/components_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_render_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,8 +35,10 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -834,6 +839,38 @@ TEST_F(NetErrorHelperCoreTest, CanShowNetworkDiagnostics) {
   core()->ExecuteButtonPress(NetErrorHelperCore::DIAGNOSE_ERROR);
   EXPECT_EQ(1, diagnose_error_count());
   EXPECT_EQ(GURL(kFailedUrl), diagnose_error_url());
+}
+
+TEST_F(NetErrorHelperCoreTest, AlternativeErrorPageNoUpdates) {
+  // Relevant strings for the alternative error page can be found in
+  // `chrome/browser/web_applications/web_app_offline.h`
+  auto alternative_error_page_info =
+      content::mojom::AlternativeErrorPageOverrideInfo::New();
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("theme_color", skia::SkColorToHexString(SK_ColorBLUE));
+  dict.SetStringKey("customized_background_color",
+                    skia::SkColorToHexString(SK_ColorYELLOW));
+  dict.SetStringKey("app_short_name", "Test Short Name");
+  dict.SetStringKey(
+      "web_app_default_offline_message",
+      l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
+  alternative_error_page_info->alternative_error_page_params = std::move(dict);
+  alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
+
+  // Loading fails, and an error page is requested.
+  std::string html;
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, std::move(alternative_error_page_info), &html);
+
+  // Expect that for all probe updates the error page does not change
+  core()->OnCommitLoad(NetErrorHelperCore::MAIN_FRAME, error_url());
+  core()->OnFinishLoad(NetErrorHelperCore::MAIN_FRAME);
+  core()->OnNetErrorInfo(error_page::DNS_PROBE_STARTED);
+  core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
+  core()->OnNetErrorInfo(error_page::DNS_PROBE_STARTED);
+  core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
+  EXPECT_EQ(0, update_count());
 }
 
 #if BUILDFLAG(IS_ANDROID)

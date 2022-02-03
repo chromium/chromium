@@ -2180,11 +2180,13 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Gets information required for an alternative error page from web app's
   // manifest for |url|, including theme color, background color and app short
-  // name. Information is returned in a struct. Default implementation returns
-  // nullptr.
+  // name. The |error_code| is the network error as specified in
+  // `net/base/net_error_list.h`. Information is returned in a struct. Default
+  // implementation returns nullptr.
   virtual mojom::AlternativeErrorPageOverrideInfoPtr
   GetAlternativeErrorPageOverrideInfo(const GURL& url,
-                                      BrowserContext* browser_context);
+                                      BrowserContext* browser_context,
+                                      int32_t error_code);
 };
 
 }  // namespace content

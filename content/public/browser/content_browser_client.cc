@@ -1300,7 +1300,8 @@ bool ContentBrowserClient::IsFirstPartySetsEnabled() {
 mojom::AlternativeErrorPageOverrideInfoPtr
 ContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     const GURL& url,
-    BrowserContext* browser_context) {
+    BrowserContext* browser_context,
+    int32_t error_code) {
   return nullptr;
 }
 

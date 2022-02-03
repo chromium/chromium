@@ -148,6 +148,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_offline.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
@@ -6442,14 +6443,11 @@ bool ChromeContentBrowserClient::IsFirstPartySetsEnabled() {
 content::mojom::AlternativeErrorPageOverrideInfoPtr
 ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     const GURL& url,
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    int32_t error_code) {
 #if BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsDefaultOfflinePage)) {
-    return nullptr;
-  }
-
-  return web_app::GetAppManifestInfo(url, browser_context);
+  return web_app::GetOfflinePageInfo(url, browser_context, error_code);
 #endif  //  BUILDFLAG(IS_ANDROID)
 }

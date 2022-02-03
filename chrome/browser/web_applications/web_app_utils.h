@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_offline.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 

@@ -36,7 +36,8 @@ class AlternativeErrorPageOverrideInfoBrowserTest
     web_app::test::InstallPwaForCurrentUrl(browser());
     content::BrowserContext* context = browser()->profile();
 
-    return browser_client.GetAlternativeErrorPageOverrideInfo(app_url, context);
+    return browser_client.GetAlternativeErrorPageOverrideInfo(
+        app_url, context, net::ERR_INTERNET_DISCONNECTED);
   }
 
  private:
@@ -60,7 +61,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest, Manifest) {
 
   // Expect mojom struct with default background and theme colors.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("background_color"),
+  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
+                "customized_background_color"),
             base::Value(skia::SkColorToHexString(SK_ColorWHITE)));
   EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
             base::Value(skia::SkColorToHexString(SK_ColorBLACK)));
@@ -76,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with customized theme color and default background
   // color.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("background_color"),
+  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
+                "customized_background_color"),
             base::Value(skia::SkColorToHexString(SK_ColorWHITE)));
   EXPECT_EQ(
       *info->alternative_error_page_params.FindKey("theme_color"),
@@ -93,7 +96,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with default theme color and customized background
   // color.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("background_color"),
+  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
+                "customized_background_color"),
             base::Value(skia::SkColorToHexString(SK_ColorBLUE)));
   EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
             base::Value(skia::SkColorToHexString(SK_ColorBLACK)));
@@ -110,7 +114,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   content::BrowserContext* context = browser()->profile();
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      browser_client.GetAlternativeErrorPageOverrideInfo(app_url, context);
+      browser_client.GetAlternativeErrorPageOverrideInfo(
+          app_url, context, net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct to be null.
   EXPECT_FALSE(info);
@@ -172,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   content::BrowserContext* context = browser()->profile();
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      browser_client.GetAlternativeErrorPageOverrideInfo(app_url, context);
+      browser_client.GetAlternativeErrorPageOverrideInfo(
+          app_url, context, net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct customized with HTML page title.
   EXPECT_TRUE(info);
@@ -189,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   // Expect mojom struct with custom theme and background color.
   EXPECT_TRUE(info);
-  EXPECT_EQ(*info->alternative_error_page_params.FindKey("background_color"),
+  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
+                "customized_background_color"),
             base::Value(skia::SkColorToHexString(SK_ColorYELLOW)));
   EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
             base::Value(skia::SkColorToHexString(SK_ColorGREEN)));

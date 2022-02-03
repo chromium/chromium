@@ -6,11 +6,6 @@ module content.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
 
-// |alternative_error_page_params| dictionary key values.
-const string kAppShortName = "app_short_name";
-const string kThemeColor = "theme_color";
-const string kBackgroundColor = "background_color";
-
 // Stores information about an alternative error page to use in place of the
 // embedder's default error page.
 struct AlternativeErrorPageOverrideInfo {

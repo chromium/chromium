@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -19,7 +21,9 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/grit/components_resources.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "skia/ext/skia_utils_base.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -137,18 +141,22 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
       content::mojom::AlternativeErrorPageOverrideInfo::New();
   // TODO(crbug.com/1285128): Ensure sufficient contrast.
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(content::mojom::kThemeColor,
-              base::Value(skia::SkColorToHexString(
-                  web_app_registrar.GetAppThemeColor(*app_id).value_or(
-                      SK_ColorBLACK))));
-  dict.SetKey(content::mojom::kBackgroundColor,
-              base::Value(skia::SkColorToHexString(
-                  web_app_registrar.GetAppBackgroundColor(*app_id).value_or(
-                      SK_ColorWHITE))));
-  dict.SetKey(content::mojom::kAppShortName,
-              base::Value(web_app_registrar.GetAppShortName(*app_id)));
+  dict.SetStringKey(
+      web_app::kThemeColor,
+      skia::SkColorToHexString(
+          web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK)));
+  dict.SetStringKey(
+      web_app::kBackgroundColor,
+      skia::SkColorToHexString(
+          web_app_registrar.GetAppBackgroundColor(*app_id).value_or(
+              SK_ColorWHITE)));
+  dict.SetStringKey(web_app::kAppShortName,
+                    web_app_registrar.GetAppShortName(*app_id));
+  dict.SetStringKey(
+      web_app::kMessage,
+      l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
-
+  alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
   return alternative_error_page_info;
 }
 

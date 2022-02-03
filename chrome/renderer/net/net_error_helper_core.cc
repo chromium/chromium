@@ -211,7 +211,8 @@ void NetErrorHelperCore::PrepareErrorPageForMainFrame(
   std::string error_param;
   error_page::Error error = pending_error_page_info->error;
 
-  if (IsNetDnsError(pending_error_page_info->error)) {
+  if (!alternative_error_page_info &&
+      IsNetDnsError(pending_error_page_info->error)) {
     // The last probe status needs to be reset if this is a DNS error.  This
     // means that if a DNS error page is committed but has not yet finished
     // loading, a DNS probe status scheduled to be sent to it may be thrown
