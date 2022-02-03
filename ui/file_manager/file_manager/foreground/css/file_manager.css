@@ -69,7 +69,7 @@ a:focus {
 /* Main part of the dialog between header and footer. */
 .dialog-container {
   align-items: stretch;
-  background-color: rgb(250, 250, 250);  /* Makes #drag-container invisible. */
+  background-color: var(--cros-bg-color);
   display: flex;
   flex: auto;
   flex-direction: row;
@@ -77,27 +77,19 @@ a:focus {
   position: relative;
 }
 
-body.files-ng .dialog-container {
-  background-color: var(--cros-bg-color);
-}
-
 /* List and grid are inside this container. */
 .dialog-main {
   align-items: stretch;
-  background: rgb(245, 245, 245);
+  background-color: inherit;
   display: flex;
   flex: auto;
   flex-direction: column;
 }
 
-body.files-ng .dialog-main {
-  background-color: inherit;
-}
-
 /* Directory tree at the left. */
 .dialog-navigation-list {
-  background-color: rgb(250, 250, 250);
-  border-inline-end: 1px solid rgba(0, 0, 0, 15%);
+  background-color: inherit;
+  border-inline-end: none;
   display: flex;
   flex: none;
   flex-direction: column;
@@ -106,11 +98,6 @@ body.files-ng .dialog-main {
   overflow: auto;
   position: relative;
   width: 240px;
-}
-
-body.files-ng .dialog-navigation-list {
-  background-color: inherit;
-  border-inline-end: none;
 }
 
 .dialog-navigation-list-contents {
@@ -350,7 +337,7 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
 
 #directory-tree .tree-row > .file-row > .root-eject {
   --text-color: currentColor;
-  --hover-bg-color: rgba(0, 0, 0, 4%);
+  --hover-bg-color: var(--cros-ripple-color);
   min-width: 32px;
   padding: 0;
 }
@@ -364,11 +351,11 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 }
 
 #directory-tree .tree-row > .root-eject:focus {
-  outline: 1px auto rgb(77, 144, 254);
+  outline: 1px auto var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row > .file-row > .root-eject:focus {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row > .root-eject:active {
@@ -377,7 +364,7 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 }
 
 #directory-tree .tree-row > .file-row > .root-eject:active {
-  --ink-color: rgba(0, 0, 0, 88%);
+  --ink-color: var(--cros-ripple-color);
   border-width: 0;
 }
 
@@ -1057,7 +1044,7 @@ body.check-select #search-box {
 }
 
 html:not(.pointer-active) .dialog-header.files-ng #search-box .clear:hover {
-  background-color: rgba(0, 0, 0, 4%);
+  background-color: var(--cros-ripple-color);
 }
 
 .dialog-header.files-ng #search-box .clear > .icon {
@@ -1362,20 +1349,14 @@ body.check-select .breadcrumbs {
 /* The toolbar indicator that means the current directory is read only. */
 #read-only-indicator {
   align-items: center;
-  background-color: rgba(0, 0, 0, 20%);
+  background-color: var(--cros-highlight-color-hover);
   border-radius: 16px;
   display: flex;
   flex: none;
   height: 32px;
-  margin-inline-start: 4px;
-  padding: 0 16px;
-}
-
-body.files-ng #read-only-indicator {
-  background-color: var(--cros-highlight-color-hover);
   margin-inline-start: 12px;
-  padding-inline-end: 16px;
-  padding-inline-start: 12px;
+  padding: 0 16px;
+  padding-inline: 16px 12px;
 }
 
 body.check-select #read-only-indicator {
@@ -1465,40 +1446,6 @@ body.files-ng .trash-warning {
   transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
               opacity 150ms ease 50ms;
   visibility: visible;
-}
-
-body.files-ng .downloads-warning a:link,
-body.files-ng .volume-warning a:link {
-  color: var(--google-blue-600);
-}
-
-body.files-ng .downloads-warning .warning-icon {
-  -webkit-mask-image: url(../images/files/ui/warning.svg);
-  background-color: var(--google-grey-700);
-  background-size: 20px 20px;
-  flex: none;
-  height: 20px;
-  margin-inline-end: 12px;
-  margin-inline-start: 8px;
-  width: 20px;
-}
-
-body.files-ng .warning-message .link-wrapper {
-  display: inline;
-}
-
-body.files-ng .warning-message .link-wrapper > a {
-  display: inline-block;
-  outline-offset: -2px;
-  padding: 0 4px;
-  text-decoration: none;
-}
-
-body.files-ng .downloads-warning[hidden] {
-  display: flex !important;  /* Overrides [hidden] for animation. */
-  height: 0;
-  opacity: 0;
-  visibility: hidden;
 }
 
 @keyframes heightAnimation {
@@ -1999,18 +1946,23 @@ li[renaming=''] .badge {
 
 /* Container for a table header. */
 .table-header {
-  border-bottom: 1px solid rgb(210, 210, 210);
+  border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
+  color: var(--cros-text-color-secondary);
   flex: none;
-  height: 40px;
+  font-family: 'Roboto Medium';
+  height: 48px;
+  line-height: 20px;
 }
 
 /* Text label in a table header. */
 .table-header-label {
-  color: rgb(100, 100, 100);
-  font-weight: 500;
-  line-height: 40px;
+  color: inherit;
+  font-weight: normal;
+  line-height: 20px;
   margin: 0 10px;
+  margin-inline-end: 0;
+  margin-inline-start: 32px;
 }
 
 .table-row-cell > * {
@@ -2021,7 +1973,7 @@ li[renaming=''] .badge {
 }
 
 .table-row-cell {
-  color: rgb(100, 100, 100);
+  color: var(--cros-text-color-secondary);
 }
 
 .table-row-cell > .detail-name {
@@ -2029,7 +1981,7 @@ li[renaming=''] .badge {
 }
 
 .table-row-cell > .detail-name {
-  color: rgb(74, 74, 74);
+  color: var(--cros-text-color-primary);
 }
 
 .table-row-cell {
@@ -2064,7 +2016,7 @@ body.files-ng #list-container list li .detail-icon {
 #list-container li .detail-checkmark {
   background-position: center;
   background-repeat: no-repeat;
-  color: var(--google-blue-600);
+  color: var(--cros-icon-color-selection);
   height: 28px;
   isolation: isolate;
   opacity: 0;
@@ -2236,21 +2188,6 @@ cr-menu.chrome-menu hr {
   font-size: 0;
 }
 
-div.shade {
-  /* transition: opacity 1000ms linear; */
-  background-color: rgba(255, 255, 255, 80%);
-  bottom: 0;
-  left: 0;
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-div.shade[fadein] {
-  opacity: 1;
-}
-
 /* Message panel for unmounted Drive */
 #format-panel {
   bottom: 0;
@@ -2291,25 +2228,8 @@ body[unformatted] #format-panel > .error,
   display: flex;
 }
 
-.plain-link {
-  color: rgb(17, 85, 204);
-  cursor: pointer;
-  text-decoration: none;
-}
-
 .buttonbar > * {
   position: relative;
-}
-
-#volume-space-info-contents {
-  align-items: center;
-  display: flex;
-}
-
-#volume-space-info-contents > div {
-  display: flex;
-  flex: auto;
-  margin-inline-start: 15px;
 }
 
 #list-container .table-header-inner {
@@ -2327,22 +2247,6 @@ body[unformatted] #format-panel > .error,
 
 body.files-ng #list-container .table-header-cell:first-child {
   padding-inline-start: 0;
-}
-
-body.files-ng .table-header {
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: var(--cros-text-color-secondary);
-  font-family: 'Roboto Medium';
-  height: 48px;
-  line-height: 20px;
-}
-
-body.files-ng .table-header-label {
-  color: inherit;
-  font-weight: normal;
-  line-height: 20px;
-  margin-inline-end: 0;
-  margin-inline-start: 32px;
 }
 
 body.files-ng .table-header-cell {
@@ -2479,7 +2383,6 @@ body.files-ng .table-row-cell:first-child > * {
 
 body.files-ng .table-row-cell .filename-label {
   color: var(--cros-text-color-primary);
-
   padding-top: 0;
 }
 
@@ -2539,7 +2442,7 @@ body.files-ng #list-container
 }
 
 .install-linux-package-details-frame {
-  border: 1px solid lightgray;
+  border: 1px solid var(--cros-separator-color);
   display: block;
   height: 150px;
   overflow: scroll;
@@ -2700,6 +2603,7 @@ files-toast {
   margin-top: 5px;
 }
 
+/* TODO(crbug.com/1287914): Update these colors to semantic equivalents. */
 .file-type-filter-button {
   align-items: center;
   /* don't use browser's default <button> background-color. */
