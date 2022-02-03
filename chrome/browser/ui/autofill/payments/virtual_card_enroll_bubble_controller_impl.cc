@@ -71,18 +71,8 @@ void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
 }
 
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetWindowTitle() const {
-  switch (virtual_card_enrollment_fields_->virtual_card_enrollment_source) {
-    case VirtualCardEnrollmentSource::kUpstream:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_UPSTREAM_DIALOG_TITLE_LABEL);
-    case VirtualCardEnrollmentSource::kDownstream:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DOWNSTREAM_DIALOG_TITLE_LABEL);
-    case VirtualCardEnrollmentSource::kNone:
-    case VirtualCardEnrollmentSource::kSettingsPage:
-      NOTREACHED();
-      return std::u16string();
-  }
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL);
 }
 
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetExplanatoryMessage()

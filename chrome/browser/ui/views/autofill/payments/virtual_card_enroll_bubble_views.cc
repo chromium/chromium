@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -74,6 +75,22 @@ void VirtualCardEnrollBubbleViews::OnDialogDeclined() {
 }
 
 void VirtualCardEnrollBubbleViews::AddedToWidget() {
+  auto header_view = std::make_unique<views::BoxLayoutView>();
+  header_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  header_view->SetInsideBorderInsets(ChromeLayoutProvider::Get()
+                                         ->GetInsetsMetric(views::INSETS_DIALOG)
+                                         .set_bottom(0));
+
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG),
+      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK),
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
+
+  header_view->AddChildView(std::move(image_view));
+
+  GetBubbleFrameView()->SetHeaderView(std::move(header_view));
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAndSeparatorView>(
           GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
@@ -107,20 +124,37 @@ VirtualCardEnrollBubbleViews::CreateMainContentView() {
   view->SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
-  // Add main image
-  auto* const main_image =
-      view->AddChildView(std::make_unique<views::ImageView>());
-  main_image->SetImage(
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          GetNativeTheme()->ShouldUseDarkColors()
-              ? IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK
-              : IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG));
+  // If applicable, add the explanation label.  Appears above the card
+  // info.
+  std::u16string explanation = controller_->GetExplanatoryMessage();
+  if (!explanation.empty()) {
+    auto* const explanation_label =
+        view->AddChildView(std::make_unique<views::StyledLabel>());
+    explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    explanation_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
+    explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    explanation_label->SetText(explanation);
+
+    views::StyledLabel::RangeStyleInfo style_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &VirtualCardEnrollBubbleViews::LearnMoreLinkClicked,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    uint32_t offset =
+        explanation.length() - controller_->GetLearnMoreLinkText().length();
+    explanation_label->AddStyleRange(
+        gfx::Range(offset,
+                   offset + controller_->GetLearnMoreLinkText().length()),
+        style_info);
+  }
 
   // Add the card network icon, 'Virtual card', and obfuscated last four digits.
   auto* description_view =
       view->AddChildView(std::make_unique<views::BoxLayoutView>());
   description_view->SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
+  description_view->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
 
   const VirtualCardEnrollmentFields* virtual_card_enrollment_fields =
       controller_->GetVirtualCardEnrollmentFields();
@@ -157,30 +191,6 @@ VirtualCardEnrollBubbleViews::CreateMainContentView() {
   linked_styling.text_style = views::style::STYLE_SECONDARY;
   card_identifier_label->AddStyleRange(gfx::Range(offset, offset + length),
                                        linked_styling);
-
-  // If applicable, add the explanation label.  Appears below the card
-  // info.
-  std::u16string explanation = controller_->GetExplanatoryMessage();
-  if (!explanation.empty()) {
-    auto* const explanation_label =
-        view->AddChildView(std::make_unique<views::StyledLabel>());
-    explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    explanation_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
-    explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-    explanation_label->SetText(explanation);
-
-    views::StyledLabel::RangeStyleInfo style_info =
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &VirtualCardEnrollBubbleViews::LearnMoreLinkClicked,
-            weak_ptr_factory_.GetWeakPtr()));
-
-    uint32_t offset =
-        explanation.length() - controller_->GetLearnMoreLinkText().length();
-    explanation_label->AddStyleRange(
-        gfx::Range(offset,
-                   offset + controller_->GetLearnMoreLinkText().length()),
-        style_info);
-  }
   return view;
 }
 
