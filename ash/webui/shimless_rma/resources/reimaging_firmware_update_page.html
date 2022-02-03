@@ -4,11 +4,16 @@
 <base-page>
   <div slot="left-pane">
     <h1>[[i18n('firmwareUpdatePageTitleText')]]</h1>
-    <div id="firmwareUpdateStatus" class="instructions">[[statusString_]]</div>
+    <div id="firmwareUpdateStatus" class="instructions">
+      [[getStatusString_(status_)]]
+    </div>
   </div>
   <div slot="right-pane">
-    <!-- TODO(gavindodd): Replace with spinner -->
-    <iron-icon icon="shimless:shimless-placeholder"
-        class="large-icon"></iron-icon>
+    <iron-icon icon="[[getIcon_(status_)]]" class="large-icon"
+        hidden$="[[shouldShowSpinner_]]">
+    </iron-icon>
+    <paper-spinner-lite class="large-spinner" hidden$="[[!shouldShowSpinner_]]"
+        active>
+    </paper-spinner-lite>
   </div>
 </base-page>

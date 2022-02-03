@@ -15,12 +15,23 @@ import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult, UpdateRoFirmwareObserverInterface, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma_types.js';
 
 /** @type {!Object<!UpdateRoFirmwareStatus, string>} */
-const updateRoFirmwareStatusTextKeys = {
+const STATUS_TEXT_KEY_MAP = {
+  // kDownloading state is not used in V1.
+  [UpdateRoFirmwareStatus.kDownloading]: '',
   [UpdateRoFirmwareStatus.kWaitUsb]: 'firmwareUpdateWaitForUsbText',
   [UpdateRoFirmwareStatus.kFileNotFound]: 'firmwareUpdateFileNotFoundText',
   [UpdateRoFirmwareStatus.kUpdating]: 'firmwareUpdatingText',
   [UpdateRoFirmwareStatus.kRebooting]: 'firmwareUpdateRebootText',
   [UpdateRoFirmwareStatus.kComplete]: 'firmwareUpdateCompleteText',
+};
+
+/** @type {!Object<!UpdateRoFirmwareStatus, string>} */
+const STATUS_ICON_MAP = {
+  // TODO(gavinwill): Replace with actual illustrations.
+  [UpdateRoFirmwareStatus.kWaitUsb]: 'shimless:insert-firmware',
+  [UpdateRoFirmwareStatus.kFileNotFound]: '',
+  [UpdateRoFirmwareStatus.kRebooting]: 'shimless:shimless-placeholder',
+  [UpdateRoFirmwareStatus.kComplete]: 'shimless:shimless-placeholder',
 };
 
 /**
@@ -54,12 +65,18 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
       /** @protected {!UpdateRoFirmwareStatus} */
       status_: {
         type: Object,
+        value: UpdateRoFirmwareStatus.kWaitUsb,
       },
 
-      /** @protected */
+      /** @protected {string} */
       statusString_: {
         type: String,
-        computed: 'computeStatusString_(status_)',
+      },
+
+      /** @protected {boolean} */
+      shouldShowSpinner_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -81,25 +98,14 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
   }
 
   /**
-   * @protected
-   * @return {string}
-   */
-  computeStatusString_() {
-    // kDownloading state is not used in V1.
-    if (!this.status_ || this.status_ == UpdateRoFirmwareStatus.kDownloading) {
-      return '';
-    }
-    return this.i18n(updateRoFirmwareStatusTextKeys[this.status_]);
-  }
-
-  /**
    * Implements UpdateRoFirmwareObserver.onUpdateRoFirmwareStatusChanged()
-   * TODO(joonbug): Add error handling and display failure using cr-dialog.
    * @protected
    * @param {!UpdateRoFirmwareStatus} status
    */
   onUpdateRoFirmwareStatusChanged(status) {
     this.status_ = status;
+    this.shouldShowSpinner_ = this.status_ === UpdateRoFirmwareStatus.kUpdating;
+
     const disabled = this.status_ != UpdateRoFirmwareStatus.kComplete;
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
@@ -114,6 +120,22 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
     } else {
       return Promise.reject(new Error('RO Firmware update is not complete.'));
     }
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getStatusString_() {
+    return this.i18n(STATUS_TEXT_KEY_MAP[this.status_]);
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getIcon_() {
+    return STATUS_ICON_MAP[this.status_];
   }
 }
 
