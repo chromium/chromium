@@ -51,7 +51,6 @@ void StorageInfoFetcher::ClearStorage(const std::string& host,
       FROM_HERE,
       base::BindOnce(
           &storage::QuotaManager::DeleteHostData, quota_manager_, host, type,
-          storage::AllQuotaClientTypes(),
           base::BindOnce(&StorageInfoFetcher::OnUsageClearedInternal, this)));
 }
 

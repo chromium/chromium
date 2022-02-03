@@ -345,12 +345,9 @@ class QuotaManagerImplTest : public testing::Test {
     return future.Get();
   }
 
-  QuotaStatusCode DeleteHostData(const std::string& host,
-                                 StorageType type,
-                                 QuotaClientTypes quota_client_types) {
+  QuotaStatusCode DeleteHostData(const std::string& host, StorageType type) {
     base::test::TestFuture<QuotaStatusCode> future;
-    quota_manager_impl_->DeleteHostData(
-        host, type, std::move(quota_client_types), future.GetCallback());
+    quota_manager_impl_->DeleteHostData(host, type, future.GetCallback());
     return future.Get();
   }
 
@@ -1263,9 +1260,9 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_NukeManager) {
 
   base::test::TestFuture<QuotaStatusCode> future_foo;
   base::test::TestFuture<QuotaStatusCode> future_bar;
-  quota_manager_impl()->DeleteHostData("foo.com", kTemp, AllQuotaClientTypes(),
+  quota_manager_impl()->DeleteHostData("foo.com", kTemp,
                                        future_foo.GetCallback());
-  quota_manager_impl()->DeleteHostData("bar.com", kTemp, AllQuotaClientTypes(),
+  quota_manager_impl()->DeleteHostData("bar.com", kTemp,
                                        future_bar.GetCallback());
 
   // Nuke before waiting for callbacks.
@@ -1972,8 +1969,7 @@ TEST_F(QuotaManagerImplTest, GetEvictionRoundInfo) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataNoClients) {
-  EXPECT_EQ(DeleteHostData(std::string(), kTemp, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData(std::string(), kTemp), QuotaStatusCode::kOk);
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
@@ -1993,8 +1989,7 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
   GetHostUsageWithBreakdown("foo.com", kPerm);
   int64_t predelete_host_pers = usage();
 
-  EXPECT_EQ(DeleteHostData(std::string(), kTemp, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData(std::string(), kTemp), QuotaStatusCode::kOk);
 
   global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(global_usage_result.usage, predelete_global_tmp);
@@ -2005,8 +2000,7 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
   GetHostUsageWithBreakdown("foo.com", kPerm);
   EXPECT_EQ(predelete_host_pers, usage());
 
-  EXPECT_EQ(DeleteHostData("foo.com", kTemp, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData("foo.com", kTemp), QuotaStatusCode::kOk);
 
   global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(predelete_global_tmp - 1, global_usage_result.usage);
@@ -2052,12 +2046,9 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
   GetHostUsageWithBreakdown("bar.com", kPerm);
   const int64_t predelete_bar_pers = usage();
 
-  EXPECT_EQ(DeleteHostData("foo.com", kTemp, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
-  EXPECT_EQ(DeleteHostData("bar.com", kTemp, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
-  EXPECT_EQ(DeleteHostData("foo.com", kTemp, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData("foo.com", kTemp), QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData("bar.com", kTemp), QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData("foo.com", kTemp), QuotaStatusCode::kOk);
 
   const BucketTableEntries& entries = DumpBucketTable();
   for (const auto& entry : entries) {
@@ -2128,10 +2119,8 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
   GetHostUsageWithBreakdown("bar.com", kPerm);
   EXPECT_EQ(1000, usage());
 
-  EXPECT_EQ(DeleteHostData("foo.com", kPerm, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
-  EXPECT_EQ(DeleteHostData("bar.com", kPerm, AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData("foo.com", kPerm), QuotaStatusCode::kOk);
+  EXPECT_EQ(DeleteHostData("bar.com", kPerm), QuotaStatusCode::kOk);
 
   const BucketTableEntries& entries = DumpBucketTable();
   for (const auto& entry : entries) {
@@ -2699,54 +2688,6 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }
 
-TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleHost) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com:1111/", kTemp, 1},
-  };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com:2222/", kTemp, 2},
-  };
-  static const MockStorageKeyData kData3[] = {
-      {"http://foo.com:3333/", kTemp, 4},
-  };
-  static const MockStorageKeyData kData4[] = {
-      {"http://foo.com:4444/", kTemp, 8},
-  };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  const int64_t predelete_foo_tmp = usage();
-
-  EXPECT_EQ(DeleteHostData("foo.com", kTemp, {QuotaClientType::kFileSystem}),
-            QuotaStatusCode::kOk);
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_foo_tmp - 1, usage());
-
-  EXPECT_EQ(
-      DeleteHostData("foo.com", kTemp, {QuotaClientType::kServiceWorkerCache}),
-      QuotaStatusCode::kOk);
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
-
-  EXPECT_EQ(DeleteHostData("foo.com", kTemp, {QuotaClientType::kDatabase}),
-            QuotaStatusCode::kOk);
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
-
-  EXPECT_EQ(
-      DeleteHostData("foo.com", kTemp, {QuotaClientType::kIndexedDatabase}),
-      QuotaStatusCode::kOk);
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
-}
-
 TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
   static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
@@ -2784,46 +2725,6 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
   DeleteBucketData(foo_bucket->ToBucketLocator(),
                    {QuotaClientType::kServiceWorkerCache,
                     QuotaClientType::kIndexedDatabase});
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
-}
-
-TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com:1111/", kTemp, 1},
-  };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com:2222/", kTemp, 2},
-  };
-  static const MockStorageKeyData kData3[] = {
-      {"http://foo.com:3333/", kTemp, 4},
-  };
-  static const MockStorageKeyData kData4[] = {
-      {"http://foo.com:4444/", kTemp, 8},
-  };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  const int64_t predelete_foo_tmp = usage();
-
-  EXPECT_EQ(DeleteHostData("foo.com", kTemp,
-                           {QuotaClientType::kFileSystem,
-                            QuotaClientType::kServiceWorkerCache}),
-            QuotaStatusCode::kOk);
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
-
-  EXPECT_EQ(DeleteHostData("foo.com", kTemp,
-                           {QuotaClientType::kDatabase,
-                            QuotaClientType::kIndexedDatabase}),
-            QuotaStatusCode::kOk);
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }

@@ -322,19 +322,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                             blink::mojom::StorageType type,
                             bool enabled);
 
-  // DeleteHostData deletes buckets of a particular blink::mojom::StorageType
-  // with storage keys that match the specified host.
-  // DeleteBucketData will only delete the specified bucket.
-  // Each method additionally requires a `quota_client_types` which specifies
-  // the types of QuotaClients to delete from the storage key.
-  // Pass in QuotaClientType::AllClients() to remove all clients from the
-  // storage key, regardless of type.
+  // Deletes `bucket` data for the specified `quota_client_types`. Pass in
+  // QuotaClientType::AllClients() to remove bucket data for all quota clients.
   virtual void DeleteBucketData(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
+  // Deletes buckets of a particular blink::mojom::StorageType with storage keys
+  // that match the specified host.
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
-                      QuotaClientTypes quota_client_types,
                       StatusCallback callback);
 
   // Queries QuotaDatabase for the bucket with `storage_key` and `bucket_name`
