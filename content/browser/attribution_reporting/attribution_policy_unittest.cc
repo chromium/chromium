@@ -12,31 +12,25 @@
 namespace content {
 
 TEST(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
-  AttributionPolicy policy;
+  EXPECT_EQ(0u,
+            SanitizeTriggerData(8, CommonSourceInfo::SourceType::kNavigation));
+  EXPECT_EQ(1u,
+            SanitizeTriggerData(9, CommonSourceInfo::SourceType::kNavigation));
 
-  EXPECT_EQ(0u, policy.SanitizeTriggerData(
-                    8, CommonSourceInfo::SourceType::kNavigation));
-  EXPECT_EQ(1u, policy.SanitizeTriggerData(
-                    9, CommonSourceInfo::SourceType::kNavigation));
-
-  EXPECT_EQ(
-      0u, policy.SanitizeTriggerData(2, CommonSourceInfo::SourceType::kEvent));
-  EXPECT_EQ(
-      1u, policy.SanitizeTriggerData(3, CommonSourceInfo::SourceType::kEvent));
+  EXPECT_EQ(0u, SanitizeTriggerData(2, CommonSourceInfo::SourceType::kEvent));
+  EXPECT_EQ(1u, SanitizeTriggerData(3, CommonSourceInfo::SourceType::kEvent));
 }
 
 TEST(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
-  AttributionPolicy policy;
-
   for (uint64_t trigger_data = 0; trigger_data < 8; trigger_data++) {
     EXPECT_EQ(trigger_data,
-              policy.SanitizeTriggerData(
-                  trigger_data, CommonSourceInfo::SourceType::kNavigation));
+              SanitizeTriggerData(trigger_data,
+                                  CommonSourceInfo::SourceType::kNavigation));
   }
   for (uint64_t trigger_data = 0; trigger_data < 2; trigger_data++) {
     EXPECT_EQ(trigger_data,
-              policy.SanitizeTriggerData(trigger_data,
-                                         CommonSourceInfo::SourceType::kEvent));
+              SanitizeTriggerData(trigger_data,
+                                  CommonSourceInfo::SourceType::kEvent));
   }
 }
 
@@ -46,7 +40,7 @@ TEST(AttributionPolicyTest, NoExpiryForImpression_DefaultUsed) {
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(
         impression_time + base::Days(30),
-        AttributionPolicy().GetExpiryTimeForImpression(
+        GetExpiryTimeForImpression(
             /*declared_expiry=*/absl::nullopt, impression_time, source_type));
   }
 }
@@ -57,8 +51,8 @@ TEST(AttributionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
 
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(impression_time + base::Days(30),
-              AttributionPolicy().GetExpiryTimeForImpression(
-                  declared_expiry, impression_time, source_type));
+              GetExpiryTimeForImpression(declared_expiry, impression_time,
+                                         source_type));
   }
 }
 
@@ -77,8 +71,8 @@ TEST(AttributionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
   for (auto source_type : kSourceTypes) {
     for (const auto& test_case : kTestCases) {
       EXPECT_EQ(impression_time + test_case.want_expiry,
-                AttributionPolicy().GetExpiryTimeForImpression(
-                    test_case.declared_expiry, impression_time, source_type));
+                GetExpiryTimeForImpression(test_case.declared_expiry,
+                                           impression_time, source_type));
     }
   }
 }
@@ -105,8 +99,8 @@ TEST(AttributionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(
         impression_time + test_case.want_expiry,
-        AttributionPolicy().GetExpiryTimeForImpression(
-            test_case.declared_expiry, impression_time, test_case.source_type));
+        GetExpiryTimeForImpression(test_case.declared_expiry, impression_time,
+                                   test_case.source_type));
   }
 }
 
@@ -116,8 +110,8 @@ TEST(AttributionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
 
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(impression_time + base::Days(10),
-              AttributionPolicy().GetExpiryTimeForImpression(
-                  declared_expiry, impression_time, source_type));
+              GetExpiryTimeForImpression(declared_expiry, impression_time,
+                                         source_type));
   }
 }
 
@@ -132,8 +126,8 @@ TEST(AttributionPolicyTest, GetFailedReportDelay) {
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected, AttributionPolicy().GetFailedReportDelay(
-                                      test_case.failed_send_attempts))
+    EXPECT_EQ(test_case.expected,
+              GetFailedReportDelay(test_case.failed_send_attempts))
         << "failed_send_attempts=" << test_case.failed_send_attempts;
   }
 }

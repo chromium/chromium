@@ -294,10 +294,6 @@ void AttributionManagerImpl::SendReportsForWebUI(
                            weak_factory_.GetWeakPtr(), std::move(done)));
 }
 
-const AttributionPolicy& AttributionManagerImpl::GetAttributionPolicy() const {
-  return attribution_policy_;
-}
-
 void AttributionManagerImpl::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
@@ -481,7 +477,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   if (info.status == SendResult::Status::kTransientFailure) {
     report.set_failed_send_attempts(report.failed_send_attempts() + 1);
     const absl::optional<base::TimeDelta> delay =
-        attribution_policy_.GetFailedReportDelay(report.failed_send_attempts());
+        GetFailedReportDelay(report.failed_send_attempts());
     if (delay.has_value()) {
       should_retry = true;
       report.set_report_time(report.report_time() + *delay);

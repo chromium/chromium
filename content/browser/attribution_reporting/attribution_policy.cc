@@ -5,31 +5,25 @@
 #include "content/browser/attribution_reporting/attribution_policy.h"
 
 #include <math.h>
+#include <stdint.h>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 
 namespace content {
 
-AttributionPolicy::AttributionPolicy() = default;
-
-AttributionPolicy::~AttributionPolicy() = default;
-
-uint64_t AttributionPolicy::SanitizeTriggerData(
-    uint64_t trigger_data,
-    CommonSourceInfo::SourceType source_type) const {
+uint64_t SanitizeTriggerData(uint64_t trigger_data,
+                             CommonSourceInfo::SourceType source_type) {
   const uint64_t cardinality = TriggerDataCardinality(source_type);
   return trigger_data % cardinality;
 }
 
-base::Time AttributionPolicy::GetExpiryTimeForImpression(
+base::Time GetExpiryTimeForImpression(
     const absl::optional<base::TimeDelta>& declared_expiry,
     base::Time impression_time,
-    CommonSourceInfo::SourceType source_type) const {
+    CommonSourceInfo::SourceType source_type) {
   constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
   constexpr base::TimeDelta kDefaultImpressionExpiry = base::Days(30);
 
@@ -46,8 +40,7 @@ base::Time AttributionPolicy::GetExpiryTimeForImpression(
          base::clamp(expiry, kMinImpressionExpiry, kDefaultImpressionExpiry);
 }
 
-absl::optional<base::TimeDelta> AttributionPolicy::GetFailedReportDelay(
-    int failed_send_attempts) const {
+absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   DCHECK_GT(failed_send_attempts, 0);
 
   const int kMaxFailedSendAttempts = 2;

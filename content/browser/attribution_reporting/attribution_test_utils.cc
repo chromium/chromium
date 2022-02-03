@@ -140,10 +140,6 @@ void MockAttributionManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-const AttributionPolicy& MockAttributionManager::GetAttributionPolicy() const {
-  return policy_;
-}
-
 void MockAttributionManager::NotifySourcesChanged() {
   for (Observer& observer : observers_)
     observer.OnSourcesChanged();

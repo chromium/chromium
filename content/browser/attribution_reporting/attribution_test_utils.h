@@ -19,7 +19,6 @@
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -222,7 +221,6 @@ class MockAttributionManager : public AttributionManager {
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  const AttributionPolicy& GetAttributionPolicy() const override;
 
   void NotifySourcesChanged();
   void NotifyReportsChanged();
@@ -234,7 +232,6 @@ class MockAttributionManager : public AttributionManager {
       const AttributionStorage::CreateReportResult& result);
 
  private:
-  AttributionPolicy policy_;
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };
 

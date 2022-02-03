@@ -299,13 +299,11 @@ void AttributionHost::RegisterConversion(
   if (!allowed)
     return;
 
-  const AttributionPolicy& policy = attribution_manager->GetAttributionPolicy();
-
   const auto sanitize_trigger_data =
       [&](const uint64_t unsanitized, CommonSourceInfo::SourceType source_type,
           devtools_instrumentation::AttributionReportingIssueType issue_type) {
         const uint64_t sanitized =
-            policy.SanitizeTriggerData(unsanitized, source_type);
+            SanitizeTriggerData(unsanitized, source_type);
 
         if (sanitized != unsanitized) {
           devtools_instrumentation::ReportAttributionReportingIssue(

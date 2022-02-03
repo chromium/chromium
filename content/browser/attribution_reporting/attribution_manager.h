@@ -22,7 +22,6 @@ class Origin;
 
 namespace content {
 
-class AttributionPolicy;
 class AttributionTrigger;
 class StorableSource;
 class StoredSource;
@@ -95,10 +94,6 @@ class AttributionManager {
   virtual void SendReportsForWebUI(
       const std::vector<AttributionReport::EventLevelData::Id>& ids,
       base::OnceClosure done) = 0;
-
-  // Returns the AttributionPolicy that is used to control API policies such
-  // as noise.
-  virtual const AttributionPolicy& GetAttributionPolicy() const = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time.

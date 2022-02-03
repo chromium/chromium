@@ -19,7 +19,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
@@ -116,7 +115,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   void SendReportsForWebUI(
       const std::vector<AttributionReport::EventLevelData::Id>& ids,
       base::OnceClosure done) override;
-  const AttributionPolicy& GetAttributionPolicy() const override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
@@ -179,10 +177,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   raw_ptr<StoragePartitionImpl> storage_partition_;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
-
-  // Policy used for controlling API configurations such as reporting and
-  // attribution models.
-  AttributionPolicy attribution_policy_;
 
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
