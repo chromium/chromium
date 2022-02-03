@@ -172,7 +172,7 @@ class AuthenticationServiceTest : public PlatformTest {
 
   // Sets a restricted pattern.
   void SetPattern(const std::string pattern) {
-    base::ListValue allowed_patterns;
+    base::Value allowed_patterns(base::Value::Type::LIST);
     allowed_patterns.Append(pattern);
     GetApplicationContext()->GetLocalState()->Set(
         prefs::kRestrictAccountsToPatterns, allowed_patterns);
