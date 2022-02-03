@@ -248,6 +248,9 @@ void LocalTranslator::TranslateOpenVPN() {
 void LocalTranslator::TranslateIPsec() {
   const auto ike_version = onc_object_->FindIntKey(::onc::ipsec::kIKEVersion);
   if (ike_version.has_value() && ike_version.value() == 2) {
+    SetClientCertProperties(client_cert::CONFIG_TYPE_IKEV2, onc_object_,
+                            shill_dictionary_);
+
     // The translation table set in this object is for L2TP/IPsec, so we do the
     // copy manually.
     CopyFieldFromONCToShill(::onc::ipsec::kAuthenticationType,
@@ -261,7 +264,7 @@ void LocalTranslator::TranslateIPsec() {
                             shill::kIKEv2RemoteIdentityProperty);
   } else {
     // For L2TP/IPsec.
-    SetClientCertProperties(client_cert::CONFIG_TYPE_IPSEC, onc_object_,
+    SetClientCertProperties(client_cert::CONFIG_TYPE_L2TP_IPSEC, onc_object_,
                             shill_dictionary_);
     CopyFieldsAccordingToSignature();
   }

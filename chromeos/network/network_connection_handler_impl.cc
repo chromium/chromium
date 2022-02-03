@@ -77,7 +77,7 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
       // always return true here (otherwise we will never attempt to connect).
       // TODO(stevenjb/cernekee): Fix this?
       return true;
-    case client_cert::CONFIG_TYPE_IPSEC: {
+    case client_cert::CONFIG_TYPE_L2TP_IPSEC: {
       if (!provider_properties)
         return false;
 
@@ -93,6 +93,14 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
       std::string identity =
           GetStringFromDictionary(properties, shill::kEapIdentityProperty);
       return !cert_id.empty() && !key_id.empty() && !identity.empty();
+    }
+    case client_cert::CONFIG_TYPE_IKEV2: {
+      if (!provider_properties)
+        return false;
+
+      std::string client_cert_id = GetStringFromDictionary(
+          *provider_properties, shill::kIKEv2ClientCertIdProperty);
+      return !client_cert_id.empty();
     }
   }
   NOTREACHED();
@@ -668,21 +676,24 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   client_cert::ConfigType client_cert_type = client_cert::CONFIG_TYPE_NONE;
   if (*type == shill::kTypeVPN) {
+    // Check the VPN types that may use the client cert: OpenVPN, L2TP/IPsec,
+    // and IKEv2.
     if (vpn_provider_type == shill::kProviderOpenVpn) {
       client_cert_type = client_cert::CONFIG_TYPE_OPENVPN;
-    } else {
+    } else if (vpn_provider_type == shill::kProviderL2tpIpsec) {
       // L2TP/IPSec only requires a certificate if one is specified in ONC
       // or one was configured by the UI. Otherwise it is L2TP/IPSec with
       // PSK and doesn't require a certificate.
-      //
-      // TODO(benchan): Modify shill to specify the authentication type via
-      // the kL2tpIpsecAuthenticationType property, so that Chrome doesn't need
-      // to deduce the authentication type based on the
-      // kL2tpIpsecClientCertIdProperty here (and also in VPNConfigView).
       if (!vpn_client_cert_id.empty() ||
           cert_config_from_policy.client_cert_type !=
               ::onc::client_cert::kClientCertTypeNone) {
-        client_cert_type = client_cert::CONFIG_TYPE_IPSEC;
+        client_cert_type = client_cert::CONFIG_TYPE_L2TP_IPSEC;
+      }
+    } else if (vpn_provider_type == shill::kProviderIKEv2) {
+      const std::string* auth_type =
+          properties->FindStringKey(shill::kIKEv2AuthenticationTypeProperty);
+      if (auth_type && *auth_type == shill::kIKEv2AuthenticationTypeCert) {
+        client_cert_type = client_cert::CONFIG_TYPE_IKEV2;
       }
     }
   } else if (*type == shill::kTypeWifi) {

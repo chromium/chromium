@@ -26,8 +26,12 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDefaultTPMPin[];
 enum ConfigType {
   CONFIG_TYPE_NONE,
   CONFIG_TYPE_OPENVPN,
-  CONFIG_TYPE_IPSEC,
-  CONFIG_TYPE_EAP
+  // We need two separate types for L2TP/IPsec and IKEv2: both of them are used
+  // for IPsec and have the same properties, the only difference is that they
+  // are mapped to different sets of shill service properties.
+  CONFIG_TYPE_L2TP_IPSEC,
+  CONFIG_TYPE_IKEV2,
+  CONFIG_TYPE_EAP,
 };
 
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertConfig {

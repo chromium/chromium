@@ -331,6 +331,8 @@ void ShillToONCTranslator::TranslateIPsec() {
     TranslateWithTableAndSet(shill::kIKEv2AuthenticationTypeProperty,
                              kIKEv2AuthenticationTypeTable,
                              ::onc::ipsec::kAuthenticationType);
+    SetPKCS11Id(shill_dictionary_, shill::kIKEv2ClientCertIdProperty,
+                shill::kIKEv2ClientCertSlotProperty, &onc_object_);
     return;
   }
 
