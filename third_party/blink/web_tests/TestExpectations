@@ -7564,7 +7564,7 @@ crbug.com/1291488 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTC
 crbug.com/1292296 http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js [ Failure Pass ]
 
 # Flaky due to timing issue.
-crbug.com/1293515 wpt_internal/resource-timing/initiator-type-early-hints-preload.h2.window.html [ Pass Failure ]
+crbug.com/1293515 wpt_internal/resource-timing/initiator-type-early-hints-preload.h2.window.html [ Failure Pass ]
 
 # Sheriff 2022-02-01
 # Flaky test on Mac
