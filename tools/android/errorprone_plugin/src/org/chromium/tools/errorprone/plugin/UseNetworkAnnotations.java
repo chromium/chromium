@@ -15,6 +15,8 @@ import com.google.errorprone.matchers.Description;
 import com.google.errorprone.matchers.Matcher;
 import com.google.errorprone.util.ASTHelpers;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 
 import java.nio.file.Path;
@@ -38,11 +40,12 @@ public class UseNetworkAnnotations
         extends BugChecker implements BugChecker.MethodInvocationTreeMatcher {
     private static final String URL_CLASS_NAME = "java.net.URL";
     private static final String OPEN_CONNECTION_METHOD_NAME = "openConnection";
+    private static final String OPEN_STREAM_METHOD_NAME = "openStream";
 
     private static final Matcher<ExpressionTree> METHOD_MATCHER =
             anyOf(instanceMethod()
                             .onDescendantOf(URL_CLASS_NAME)
-                            .namedAnyOf(OPEN_CONNECTION_METHOD_NAME));
+                            .namedAnyOf(OPEN_CONNECTION_METHOD_NAME, OPEN_STREAM_METHOD_NAME));
 
     /**
      * Allow-listed prefixes, starting relative to the src/ dir. It is OK to call
@@ -54,6 +57,16 @@ public class UseNetworkAnnotations
                     "android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/"
                             + "NetworkFetcherTask.java",
                     "components/cronet/", "chromecast/", "clank/test/"));
+
+    private static String getMethodName(MethodInvocationTree tree) {
+        if (tree.getMethodSelect() instanceof MemberSelectTree) {
+            return ((MemberSelectTree) tree.getMethodSelect()).getIdentifier().toString();
+        }
+        if (tree.getMethodSelect() instanceof IdentifierTree) {
+            return ((IdentifierTree) tree.getMethodSelect()).getName().toString();
+        }
+        return "";
+    }
 
     @Override
     public Description matchMethodInvocation(MethodInvocationTree tree, VisitorState state) {
@@ -84,9 +97,12 @@ public class UseNetworkAnnotations
             }
         }
 
-        return buildDescription(tree)
-                .setMessage("Direct use of URL#openConnection() is forbidden in Chromium. Use "
-                        + "ChromiumNetworkAdapter#openConnection() instead.")
-                .build();
+        String methodName = getMethodName(tree);
+        String warningMessage =
+                String.format("Direct use of URL#%1$s() is forbidden in Chromium. Use "
+                                + "ChromiumNetworkAdapter#%1$s() instead.",
+                        methodName);
+
+        return buildDescription(tree).setMessage(warningMessage).build();
     }
 }
