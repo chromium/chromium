@@ -174,15 +174,16 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
 void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
   bool offline_limit_expired = false;
   const std::string sanitized_email = gaia::SanitizeEmail(email);
-  const AccountId account_id = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId account_id = known_user.GetAccountId(
       sanitized_email, std::string(), AccountType::UNKNOWN);
   const absl::optional<base::TimeDelta> offline_signin_interval =
-      user_manager::known_user::GetOfflineSigninLimit(account_id);
+      known_user.GetOfflineSigninLimit(account_id);
 
   // Further checks only if the limit is set.
   if (offline_signin_interval) {
     const base::Time last_online_signin =
-        user_manager::known_user::GetLastOnlineSignin(account_id);
+        known_user.GetLastOnlineSignin(account_id);
 
     offline_limit_expired =
         login::TimeToOnlineSignIn(last_online_signin,

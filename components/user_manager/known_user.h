@@ -60,7 +60,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   // Returns `nullptr` if value is not found or not a string.
   const std::string* FindStringPath(const AccountId& account_id,
-                                    base::StringPiece path);
+                                    base::StringPiece path) const;
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
@@ -231,7 +231,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   void SetPasswordSyncToken(const AccountId& account_id,
                             const std::string& token);
 
-  std::string GetPasswordSyncToken(const AccountId& account_id);
+  const std::string* GetPasswordSyncToken(const AccountId& account_id) const;
 
   // Saves the current major version as the version in which the user completed
   // the onboarding flow.
@@ -405,26 +405,6 @@ void USER_MANAGER_EXPORT
 ClearProfileRequiresPolicy(const AccountId& account_id);
 
 // TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetLastOnlineSignin instead.
-void USER_MANAGER_EXPORT SetLastOnlineSignin(const AccountId& account_id,
-                                             base::Time time);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetLastOnlineSignin instead.
-base::Time USER_MANAGER_EXPORT GetLastOnlineSignin(const AccountId& account_id);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetOfflineSigninLimit instead.
-void USER_MANAGER_EXPORT
-SetOfflineSigninLimit(const AccountId& account_id,
-                      absl::optional<base::TimeDelta> time_limit);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetOfflineSigninLimit instead.
-absl::optional<base::TimeDelta> USER_MANAGER_EXPORT
-GetOfflineSigninLimit(const AccountId& account_id);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
 // KnownUser::SetIsEnterpriseManaged instead.
 void USER_MANAGER_EXPORT SetIsEnterpriseManaged(const AccountId& account_id,
                                                 bool is_enterprise_managed);
@@ -442,18 +422,6 @@ void USER_MANAGER_EXPORT SetAccountManager(const AccountId& account_id,
 void USER_MANAGER_EXPORT
 SetUserLastLoginInputMethodId(const AccountId& account_id,
                               const std::string& input_method_id);
-
-// Setter and getter for password sync token used for syncing SAML passwords
-// across multiple user devices.
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetPasswordSyncToken instead.
-void USER_MANAGER_EXPORT SetPasswordSyncToken(const AccountId& account_id,
-                                              const std::string& token);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetPasswordSyncToken instead.
-std::string USER_MANAGER_EXPORT
-GetPasswordSyncToken(const AccountId& account_id);
 
 }  // namespace known_user
 }  // namespace user_manager

@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,22 +31,6 @@ const char kSyncToken[] = "sync-token-1";
 constexpr base::TimeDelta kSyncTokenCheckInterval = base::Minutes(6);
 
 constexpr base::TimeDelta kSyncTokenCheckBelowInterval = base::Minutes(4);
-
-class FakeUserManagerWithLocalState : public FakeChromeUserManager {
- public:
-  FakeUserManagerWithLocalState()
-      : test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
-    RegisterPrefs(test_local_state_->registry());
-  }
-  ~FakeUserManagerWithLocalState() override = default;
-
-  PrefService* GetLocalState() const override {
-    return test_local_state_.get();
-  }
-
- private:
-  std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-};
 
 }  // namespace
 
@@ -79,14 +64,14 @@ class PasswordSyncTokenVerifierTest : public testing::Test {
 
 PasswordSyncTokenVerifierTest::PasswordSyncTokenVerifierTest() {
   std::unique_ptr<FakeChromeUserManager> fake_user_manager =
-      std::make_unique<FakeUserManagerWithLocalState>();
+      std::make_unique<FakeChromeUserManager>();
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(fake_user_manager));
 
   user_manager_ =
       static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  known_user_ =
-      std::make_unique<user_manager::KnownUser>(user_manager_->GetLocalState());
+  known_user_ = std::make_unique<user_manager::KnownUser>(
+      g_browser_process->local_state());
 }
 
 PasswordSyncTokenVerifierTest::~PasswordSyncTokenVerifierTest() {
@@ -98,7 +83,7 @@ void PasswordSyncTokenVerifierTest::SetUp() {
   primary_profile_ = profile_manager_.CreateTestingProfile("test1");
 
   user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      saml_login_account_id_, /* is_afiliated = */ false,
+      saml_login_account_id_, /* is_affiliated = */ false,
       user_manager::UserType::USER_TYPE_REGULAR, primary_profile_);
   user_manager_->LoginUser(saml_login_account_id_);
   // ActiveUser in FakeChromeUserManager needs to be set explicitly.
@@ -185,7 +170,7 @@ TEST_F(PasswordSyncTokenVerifierTest, SyncTokenNotSet) {
   CreatePasswordSyncTokenVerifier();
   verifier_->FetchSyncTokenOnReauth();
   verifier_->OnTokenFetched(kSyncToken);
-  EXPECT_EQ(known_user_->GetPasswordSyncToken(saml_login_account_id_),
+  EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
             kSyncToken);
   EXPECT_EQ(
       primary_profile_->GetPrefs()->GetString(prefs::kSamlPasswordSyncToken),
@@ -197,7 +182,7 @@ TEST_F(PasswordSyncTokenVerifierTest, InitialSyncTokenListEmpty) {
   verifier_->FetchSyncTokenOnReauth();
   verifier_->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kGetNoList);
   verifier_->OnTokenCreated(kSyncToken);
-  EXPECT_EQ(known_user_->GetPasswordSyncToken(saml_login_account_id_),
+  EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
             kSyncToken);
   EXPECT_EQ(
       primary_profile_->GetPrefs()->GetString(prefs::kSamlPasswordSyncToken),
@@ -210,7 +195,7 @@ TEST_F(PasswordSyncTokenVerifierTest, SyncTokenInitForUser) {
   // Token API not initilized for the user - request token creation.
   verifier_->OnTokenFetched(std::string());
   verifier_->OnTokenCreated(kSyncToken);
-  EXPECT_EQ(known_user_->GetPasswordSyncToken(saml_login_account_id_),
+  EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
             kSyncToken);
   EXPECT_EQ(
       primary_profile_->GetPrefs()->GetString(prefs::kSamlPasswordSyncToken),

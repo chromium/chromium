@@ -508,11 +508,11 @@ TEST_F(KnownUserTest, PinAutosubmitBackfillNeeded) {
 
 TEST_F(KnownUserTest, PasswordSyncToken) {
   KnownUser known_user(local_state());
-  EXPECT_EQ(known_user.GetPasswordSyncToken(kDefaultAccountId), std::string());
+  EXPECT_FALSE(known_user.GetPasswordSyncToken(kDefaultAccountId));
 
   known_user.SetPasswordSyncToken(kDefaultAccountId, "test");
 
-  EXPECT_EQ(known_user.GetPasswordSyncToken(kDefaultAccountId), "test");
+  EXPECT_EQ(*known_user.GetPasswordSyncToken(kDefaultAccountId), "test");
 }
 
 TEST_F(KnownUserTest, CleanEphemeralUsersRemovesEphemeralAdOnly) {

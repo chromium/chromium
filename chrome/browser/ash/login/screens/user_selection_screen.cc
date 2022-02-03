@@ -478,13 +478,14 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
     return true;
   }
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   const absl::optional<base::TimeDelta> offline_signin_time_limit =
-      user_manager::known_user::GetOfflineSigninLimit(user->GetAccountId());
+      known_user.GetOfflineSigninLimit(user->GetAccountId());
   if (!offline_signin_time_limit)
     return false;
 
   const base::Time last_gaia_signin_time =
-      user_manager::known_user::GetLastOnlineSignin(user->GetAccountId());
+      known_user.GetLastOnlineSignin(user->GetAccountId());
   if (last_gaia_signin_time == base::Time())
     return false;
   const base::Time now = base::DefaultClock::GetInstance()->Now();

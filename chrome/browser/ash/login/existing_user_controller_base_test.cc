@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
 
 namespace ash {
@@ -17,6 +19,12 @@ class FakeUserManagerWithLocalState : public FakeChromeUserManager {
       : mock_user_manager_(mock_user_manager),
         test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
     RegisterPrefs(test_local_state_->registry());
+    device_settings_cache::RegisterPrefs(test_local_state_->registry());
+    TestingBrowserProcess::GetGlobal()->SetLocalState(test_local_state_.get());
+  }
+
+  ~FakeUserManagerWithLocalState() override {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   PrefService* GetLocalState() const override {

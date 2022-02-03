@@ -438,8 +438,8 @@ void InSessionPasswordChangeManager::OnTokenCreated(
   // Set token value in prefs for in-session operations and ephemeral users and
   // local settings for login screen sync.
   prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
-  user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
-                                                 sync_token);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), sync_token);
 }
 
 void InSessionPasswordChangeManager::OnTokenFetched(

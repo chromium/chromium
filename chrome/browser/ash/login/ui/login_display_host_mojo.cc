@@ -822,13 +822,14 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
     const AccountId& account_id) {
   bool offline_limit_expired = false;
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   const absl::optional<base::TimeDelta> offline_signin_interval =
-      user_manager::known_user::GetOfflineSigninLimit(account_id);
+      known_user.GetOfflineSigninLimit(account_id);
 
   // Check if the limit is set only.
   if (offline_signin_interval) {
     const base::Time last_online_signin =
-        user_manager::known_user::GetLastOnlineSignin(account_id);
+        known_user.GetLastOnlineSignin(account_id);
     offline_limit_expired =
         login::TimeToOnlineSignIn(last_online_signin,
                                   offline_signin_interval.value()) <=

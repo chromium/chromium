@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
+#include <memory>
 
 #include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_features.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,22 +35,6 @@ const char kSAMLUserEmail2[] = "bob@corp.example.com";
 constexpr base::TimeDelta kSamlOnlineShortDelay = base::Seconds(10);
 
 const char kFakeToken[] = "fake-token";
-
-class FakeUserManagerWithLocalState : public FakeChromeUserManager {
- public:
-  FakeUserManagerWithLocalState()
-      : test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
-    RegisterPrefs(test_local_state_->registry());
-  }
-  ~FakeUserManagerWithLocalState() override = default;
-
-  PrefService* GetLocalState() const override {
-    return test_local_state_.get();
-  }
-
- private:
-  std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-};
 
 }  // namespace
 
@@ -96,14 +82,14 @@ InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
       features::kEnableSamlReauthenticationOnLockscreen);
 
   std::unique_ptr<FakeChromeUserManager> fake_user_manager =
-      std::make_unique<FakeUserManagerWithLocalState>();
+      std::make_unique<FakeChromeUserManager>();
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(fake_user_manager));
 
   user_manager_ =
       static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  known_user_ =
-      std::make_unique<user_manager::KnownUser>(user_manager_->GetLocalState());
+  known_user_ = std::make_unique<user_manager::KnownUser>(
+      g_browser_process->local_state());
 }
 
 InSessionPasswordSyncManagerTest::~InSessionPasswordSyncManagerTest() {
@@ -116,10 +102,10 @@ void InSessionPasswordSyncManagerTest::SetUp() {
   secondary_profile_ = profile_manager_.CreateTestingProfile("test2");
 
   user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      saml_login_account_id1_, /* is_afiliated = */ false,
+      saml_login_account_id1_, /* is_affiliated = */ false,
       user_manager::UserType::USER_TYPE_REGULAR, primary_profile_);
   user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      saml_login_account_id2_, /* is_afiliated = */ false,
+      saml_login_account_id2_, /* is_affiliated = */ false,
       user_manager::UserType::USER_TYPE_REGULAR, secondary_profile_);
   user_manager_->AddUser(saml_login_account_id2_);
   user_manager_->LoginUser(saml_login_account_id1_);
@@ -292,9 +278,10 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateTokenNotInitialized) {
   EXPECT_EQ(InSessionReauthReason(),
             InSessionPasswordSyncManager::ReauthenticationReason::kNone);
   EXPECT_FALSE(IsTokenFetcherCreated());
-  std::string sync_token =
+  const std::string* sync_token =
       known_user_->GetPasswordSyncToken(saml_login_account_id1_);
-  EXPECT_EQ(kFakeToken, sync_token);
+  ASSERT_TRUE(sync_token);
+  EXPECT_EQ(kFakeToken, *sync_token);
 }
 
 TEST_F(InSessionPasswordSyncManagerTest, PolicySetToFalse) {
