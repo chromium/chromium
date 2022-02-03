@@ -12,11 +12,7 @@
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/vector_icon_types.h"
 
-namespace content {
-class NavigationHandle;
-}
 class CommandUpdater;
 class PrefService;
 
@@ -38,8 +34,7 @@ class ReaderModeIconView : public PageActionIconView,
   // content:WebContentsObserver overrides:
   // Detect when navigation to the distilled page completes. This is required to
   // correctly update the icon's inkdrop.
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryMainDocumentElementAvailable() override;

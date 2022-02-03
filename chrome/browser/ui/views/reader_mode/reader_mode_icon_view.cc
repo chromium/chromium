@@ -60,11 +60,7 @@ ReaderModeIconView::~ReaderModeIconView() {
   DCHECK(!DistillabilityObserver::IsInObserverList());
 }
 
-void ReaderModeIconView::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
-    return;
-
+void ReaderModeIconView::PrimaryPageChanged(content::Page& page) {
   if (GetVisible())
     views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
                                               nullptr);
