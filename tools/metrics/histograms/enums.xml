@@ -43744,9 +43744,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     Journeys, UI.
   </summary>
   <int value="0" label="Unknown"/>
-  <int value="1" label="kLinkClick">Link Clicked from UI</int>
-  <int value="2" label="kCloseTab">
-    The UI interaction ended without opening anything on the page.
+  <int value="1" label="kLinkClick">Followed a link in the same tab.</int>
+  <int value="2" label="kCloseTab">The tab was closed.</int>
+  <int value="3" label="kSameDocNavigation">
+    Followed a same-doc link (i.e., the 'Chrome history' and 'Tabs from other
+    devices' links) in the same tab without returning to the HistoryClusters UI.
   </int>
 </enum>
 

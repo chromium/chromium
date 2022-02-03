@@ -35,6 +35,11 @@ namespace history_clusters {
 
 namespace {
 
+enum class UiTab {
+  kBasicHistory = 0,
+  kClustersUi = 1,
+};
+
 void ValidateHistoryClustersUKMEntry(const ukm::mojom::UkmEntry* entry,
                                      HistoryClustersInitialState init_state,
                                      HistoryClustersFinalState final_state,
@@ -70,17 +75,69 @@ class HistoryClustersMetricsBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures({history_clusters::internal::kJourneys}, {});
   }
 
+  // Toggle to the specified `tab`, either the basic history (0) or clusters UI
+  // (1).
+  void ToggleToUi(UiTab tab) {
+    std::string tab_string = tab == UiTab::kClustersUi ? "1" : "0";
+    std::string execute_string = "";
+    execute_string += R"(
+        import('chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js')
+          .then((polymerModule)=> {
+            polymerModule.flush();
+            const historyApp = document.querySelector('#history-app');
+            const tab = )" +
+                      tab_string + R"(;
+            historyApp.shadowRoot.querySelector('cr-tabs').selected = tab;
+            window.domAutomationController.send(true);
+          });)";
+    bool result = false;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+        browser()->tab_strip_model()->GetActiveWebContents(), execute_string,
+        &result));
+    EXPECT_TRUE(result);
+  }
+
+  // Creates and follows an anchor link. Since we can't differentiate between
+  // that and actual visit links, it'll log the final state as `kLinkClick`,
+  // which is useful since the browser tests won't populate journeys, and we
+  // have no other way to trigger `kLinkClick`.
+  void FollowBrowserManagedLink() {
+    std::string execute_string = "";
+    execute_string += R"(
+        import('chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js')
+          .then((polymerModule)=> {
+            polymerModule.flush();
+            let link = document.createElement('a');
+            link.href = 'https://google.com';
+            link.click();
+            window.domAutomationController.send(true);
+          });)";
+    bool result = false;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+        browser()->tab_strip_model()->GetActiveWebContents(), execute_string,
+        &result));
+    EXPECT_TRUE(result);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
                        NoUKMEventOnOtherPages) {
+  base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Navigate to and away from a site. The UKM events are recorded when leaving
+  // a page.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://foo2.com")));
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(0u, entries.size());
+  histogram_tester.ExpectTotalCount("History.Clusters.Actions.FinalState", 0);
+  histogram_tester.ExpectTotalCount("History.Clusters.Actions.DidMakeQuery", 0);
+  histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
 // Flaky on Win, Linux and Mac. http://crbug.com/1282122
@@ -181,19 +238,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
-  bool toggled_to_basic = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(), R"(
-        const polymerPath =
-            'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-        import(polymerPath).then((polymerModule)=> {
-          polymerModule.flush();
-          const historyApp = document.querySelector('#history-app');
-          historyApp.shadowRoot.querySelector('cr-tabs').selected = 0;
-          window.domAutomationController.send(true);
-        });)",
-      &toggled_to_basic));
-  EXPECT_TRUE(toggled_to_basic);
+  ToggleToUi(UiTab::kBasicHistory);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
   auto entries =
@@ -202,10 +247,39 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   auto* ukm_entry = entries[0];
   ValidateHistoryClustersUKMEntry(
       ukm_entry, HistoryClustersInitialState::kDirectNavigation,
-      HistoryClustersFinalState::kCloseTab, 0, 1);
+      HistoryClustersFinalState::kSameDocNavigation, 0, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kDirectNavigation, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Actions.FinalState",
+      HistoryClustersFinalState::kSameDocNavigation, 1);
+  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
+                                      false, 1);
+  histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
+                       DirectNavigationWithToggleToBasicAndToggleBack) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  ToggleToUi(UiTab::kBasicHistory);
+  ToggleToUi(UiTab::kClustersUi);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* ukm_entry = entries[0];
+  ValidateHistoryClustersUKMEntry(
+      ukm_entry, HistoryClustersInitialState::kIndirectNavigation,
+      HistoryClustersFinalState::kCloseTab, 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Actions.InitialState",
+      HistoryClustersInitialState::kIndirectNavigation, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
                                       HistoryClustersFinalState::kCloseTab, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
@@ -213,19 +287,20 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
-// TODO(manukh): Adjust the expectations for the navigation tests.
+// Assumed to be flaky since the above tests are flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_IndirectNavigation DISABLED_IndirectNavigation
+#else
+#define MAYBE_IndirectNavigation IndirectNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
-                       DISABLED_IndirectNavigation) {
+                       MAYBE_IndirectNavigation) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIHistoryURL)));
-  EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "document.querySelector('#history-app').shadowRoot.querySelector('#"
-      "content-side-bar').shadowRoot.querySelector('#historyClusters').click()",
-      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+  ToggleToUi(UiTab::kClustersUi);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
   auto entries =
@@ -240,6 +315,39 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
       HistoryClustersInitialState::kIndirectNavigation, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
                                       HistoryClustersFinalState::kCloseTab, 1);
+  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
+                                      false, 1);
+  histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
+}
+
+// Assumed to be flaky since the above tests are flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_LinkClick DISABLED_LinkClick
+#else
+#define MAYBE_LinkClick LinkClick
+#endif
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest, MAYBE_LinkClick) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  FollowBrowserManagedLink();
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* ukm_entry = entries[0];
+  ValidateHistoryClustersUKMEntry(
+      ukm_entry, HistoryClustersInitialState::kDirectNavigation,
+      HistoryClustersFinalState::kLinkClick, 0, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Actions.InitialState",
+      HistoryClustersInitialState::kDirectNavigation, 1);
+  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
+                                      HistoryClustersFinalState::kLinkClick, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
                                       false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
