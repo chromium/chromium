@@ -59,8 +59,6 @@ luci.realm(
 )
 
 luci.builder.defaults.experiments.set({
-    # Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
-    "luci.use_realms": 100,
     # Enable resultsink for dev swarming tasks.
     "chromium.resultdb.result_sink": 100,
 })
