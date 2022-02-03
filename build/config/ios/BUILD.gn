@@ -127,7 +127,7 @@ config("runtime_library") {
   # libclang_rt.iossim.a for arm64 simulator builds. This can be
   # removed when an arm64 slice is added to upstream Clang.
   if (target_environment == "simulator" && current_cpu == "arm64") {
-    assert(xcode_version_int == 1300)
+    assert(1300 <= xcode_version_int && xcode_version_int <= 1321)
     ldflags += [
       "-lSystem",
       rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
@@ -141,8 +141,7 @@ config("runtime_library") {
   # for catalyst build. This can be removed when a catalyst slice is added
   # to upstream Clang.
   if (target_environment == "catalyst") {
-    assert(xcode_version_int == 1300 || xcode_version_int == 1310 ||
-           xcode_version_int == 1320 || xcode_version_int == 1321)
+    assert(1300 <= xcode_version_int && xcode_version_int <= 1321)
     ldflags += [
       "-lSystem",
       rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
