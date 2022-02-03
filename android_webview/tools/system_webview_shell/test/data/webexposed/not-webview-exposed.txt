@@ -224,7 +224,7 @@ interface BluetoothDevice : EventTarget
 interface BluetoothRemoteGATTCharacteristic : EventTarget
 interface BluetoothRemoteGATTDescriptor
 interface BluetoothRemoteGATTServer
-interface BluetoothRemoteGATTService : EventTarget
+interface BluetoothRemoteGATTService
 interface BluetoothUUID
 
 # WebUSB is not implemented on WebView. crbug.com/933055
