@@ -41,6 +41,8 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
   // BitmapFetcherDelegate:
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
 
+  int dedup_priority() const { return dedup_priority_; }
+
  private:
   void UpdateIcon();
   void UpdateTitleAndDetails();
@@ -61,6 +63,10 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
       const std::vector<ash::SearchResultActionType>& button_actions);
 
   ash::SearchResultType GetSearchResultType() const;
+
+  // Indicates the priority of a result for deduplicatin. Results with the same
+  // ID but lower |dedup_priority| are removed.
+  int dedup_priority_ = 0;
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;

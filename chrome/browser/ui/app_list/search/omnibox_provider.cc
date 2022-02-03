@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 
+#include <iterator>
+#include <string>
+#include <utility>
+
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
@@ -45,6 +50,28 @@ int ProviderTypes() {
   // duplication with search results from DriveFS.
   return AutocompleteClassifier::DefaultOmniboxProviders() &
          ~AutocompleteProvider::TYPE_DOCUMENT;
+}
+
+void RemoveDuplicates(std::vector<std::unique_ptr<OmniboxResult>>& results) {
+  // Sort the results by deduplication priority and then filter from left to
+  // right. This ensures that higher priority results are retained.
+  sort(results.begin(), results.end(),
+       [](const std::unique_ptr<OmniboxResult>& a,
+          const std::unique_ptr<OmniboxResult>& b) {
+         return a->dedup_priority() > b->dedup_priority();
+       });
+
+  base::flat_set<std::string> seen_ids;
+  for (auto iter = results.begin(); iter != results.end();) {
+    bool inserted = seen_ids.insert((*iter)->id()).second;
+    if (!inserted) {
+      // C++11:: The return value of erase(iter) is an iterator pointing to the
+      // next element in the container.
+      iter = results.erase(iter);
+    } else {
+      ++iter;
+    }
+  }
 }
 
 }  //  namespace
@@ -106,6 +133,10 @@ ash::AppListSearchResultType OmniboxProvider::ResultType() const {
 void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
   SearchProvider::Results new_results;
   new_results.reserve(result.size());
+
+  std::vector<std::unique_ptr<OmniboxResult>> list_results;
+  list_results.reserve(result.size());
+
   for (const AutocompleteMatch& match : result) {
     // Do not return a match in any of these cases:
     // - The URL is invalid.
@@ -120,17 +151,20 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       continue;
     }
 
-    std::unique_ptr<ChromeSearchResult> result;
     if (!is_zero_state_input_ && IsAnswer(match)) {
-      result = std::make_unique<OmniboxAnswerResult>(profile_, list_controller_,
-                                                     controller_.get(), match);
+      new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
+          profile_, list_controller_, controller_.get(), match));
     } else {
-      result = std::make_unique<OmniboxResult>(
+      list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_, controller_.get(), &favicon_cache_, match,
-          is_zero_state_input_);
+          is_zero_state_input_));
     }
-    new_results.emplace_back(std::move(result));
   }
+
+  // Deduplicate the list results and then move-concatenate it into new_results.
+  RemoveDuplicates(list_results);
+  std::move(list_results.begin(), list_results.end(),
+            std::back_inserter(new_results));
 
   SwapResults(&new_results);
 }

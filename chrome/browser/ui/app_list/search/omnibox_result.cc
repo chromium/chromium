@@ -41,15 +41,20 @@ namespace {
 
 constexpr SkColor kListIconColor = gfx::kGoogleGrey700;
 
-// Types of generic icon to show with a result.
-enum class IconType {
+// Priority numbers for deduplication. Higher numbers indicate higher priority.
+constexpr int kRichEntityPriority = 2;
+constexpr int kHistoryPriority = 1;
+constexpr int kDefaultPriority = 0;
+
+// Subtype for generic results.
+enum class Subtype {
   kDomain,
   kSearch,
   kHistory,
   kCalculator,
 };
 
-IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
+Subtype MatchTypeToSubtype(AutocompleteMatchType::Type type) {
   switch (type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::HISTORY_URL:
@@ -65,7 +70,7 @@ IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::PEDAL_DEPRECATED:
-      return IconType::kDomain;
+      return Subtype::kDomain;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
     case AutocompleteMatchType::SEARCH_SUGGEST:
@@ -77,34 +82,34 @@ IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      return IconType::kSearch;
+      return Subtype::kSearch;
 
     case AutocompleteMatchType::SEARCH_HISTORY:
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
-      return IconType::kHistory;
+      return Subtype::kHistory;
 
     case AutocompleteMatchType::CALCULATOR:
-      return IconType::kCalculator;
+      return Subtype::kCalculator;
 
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
-      return IconType::kDomain;
+      return Subtype::kDomain;
   }
 }
 
 // AutocompleteMatchType::Type to vector icon, used for app list.
 const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
-  switch (MatchTypeToIconType(type)) {
-    case IconType::kDomain:
+  switch (MatchTypeToSubtype(type)) {
+    case Subtype::kDomain:
       return ash::kOmniboxGenericIcon;
-    case IconType::kSearch:
+    case Subtype::kSearch:
       return ash::kSearchIcon;
-    case IconType::kHistory:
+    case Subtype::kHistory:
       return ash::kHistoryIcon;
-    case IconType::kCalculator:
+    case Subtype::kCalculator:
       return ash::kEqualIcon;
   }
 }
@@ -134,26 +139,20 @@ OmniboxResult::OmniboxResult(Profile* profile,
 
   // Omnibox results are categorized as Search and Assistant if they are search
   // suggestions, and Web otherwise.
-  switch (match_.type) {
-    case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
-    case AutocompleteMatchType::SEARCH_SUGGEST:
-    case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
-    case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
-    case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE:
-    case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
-    case AutocompleteMatchType::CONTACT_DEPRECATED:
-    case AutocompleteMatchType::VOICE_SUGGEST:
-    case AutocompleteMatchType::CLIPBOARD_TEXT:
-    case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      SetCategory(Category::kSearchAndAssistant);
-      break;
-    default:
-      SetCategory(Category::kWeb);
-      break;
-  }
+  SetCategory(MatchTypeToSubtype(match_.type) == Subtype::kSearch
+                  ? Category::kSearchAndAssistant
+                  : Category::kWeb);
 
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
   set_relevance(match_.relevance / kMaxOmniboxScore);
+
+  if (IsRichEntity()) {
+    dedup_priority_ = kRichEntityPriority;
+  } else if (MatchTypeToSubtype(match_.type) == Subtype::kHistory) {
+    dedup_priority_ = kHistoryPriority;
+  } else {
+    dedup_priority_ = kDefaultPriority;
+  }
 
   const bool is_omnibox_search = AutocompleteMatch::IsSearchType(match_.type);
   SetIsOmniboxSearch(is_omnibox_search);
@@ -259,7 +258,7 @@ void OmniboxResult::UpdateIcon() {
   // Use a favicon if eligible. If the result should have a favicon but
   // there isn't one in the cache, fall through to using a generic icon
   // instead.
-  if (favicon_cache_ && MatchTypeToIconType(match_.type) == IconType::kDomain) {
+  if (favicon_cache_ && MatchTypeToSubtype(match_.type) == Subtype::kDomain) {
     const auto icon = favicon_cache_->GetFaviconForPageUrl(
         match_.destination_url, base::BindOnce(&OmniboxResult::OnFaviconFetched,
                                                weak_factory_.GetWeakPtr()));
