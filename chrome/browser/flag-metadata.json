@@ -4647,7 +4647,7 @@
   {
     "name": "per-desk-wallpaper",
     "owners": ["xiaohuic", "skau", "janetmac"],
-    "expiry_milestone": 102
+    "expiry_milestone": 107
   },
   {
     "name": "percent-based-scrolling",
