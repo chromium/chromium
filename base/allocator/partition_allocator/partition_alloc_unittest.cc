@@ -925,12 +925,12 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 #endif
   }
 
-  // Can we allocate a massive (512MB) size?
-  // Allocate 512MB, but +1, to test for cookie writing alignment issues.
+  // Can we allocate a massive (128MB) size?
+  // Add +1, to test for cookie writing alignment issues.
   // Test this only if the device has enough memory or it might fail due
   // to OOM.
   if (IsLargeMemoryDevice()) {
-    void* ptr = allocator.root()->Alloc(512 * 1024 * 1024 + 1, type_name);
+    void* ptr = allocator.root()->Alloc(128 * 1024 * 1024 + 1, type_name);
     allocator.root()->Free(ptr);
   }
 
@@ -1045,7 +1045,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
 
   // Allocate something very large, and uneven.
   if (IsLargeMemoryDevice()) {
-    requested_size = 512 * 1024 * 1024 - 1;
+    requested_size = 128 * 1024 * 1024 - 1;
     predicted_capacity =
         allocator.root()->AllocationCapacityFromRequestedSize(requested_size);
     ptr = allocator.root()->Alloc(requested_size, type_name);
@@ -3034,7 +3034,7 @@ TEST_F(PartitionAllocTest, AlignedAllocations) {
                           kMaxBucketed + 1,
                           2 * kMaxBucketed,
                           base::kSuperPageSize - 2 * PartitionPageSize(),
-                          10 * kMaxBucketed};
+                          4 * kMaxBucketed};
   for (size_t alloc_size : alloc_sizes) {
     for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
          alignment <<= 1) {

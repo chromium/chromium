@@ -426,7 +426,14 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-TEST(PartitionAllocPageAllocatorTest, ReadExecutePages) {
+// TODO(crbug.com/1291888): Understand why we can't read from Read-Execute pages
+// on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
+#else
+#define MAYBE_ReadExecutePages ReadExecutePages
+#endif  // BUILDFLAG(IS_IOS)
+TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
   uintptr_t buffer = AllocPages(
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadExecute, PageTag::kChromium);

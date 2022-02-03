@@ -44,8 +44,8 @@ class PartitionAllocAddressPoolManagerTest : public testing::Test {
 
   AddressPoolManager* GetAddressPoolManager() { return manager_.get(); }
 
-  static constexpr size_t kPageCnt = 4096;
-  static constexpr size_t kPoolSize = kSuperPageSize * kPageCnt;
+  static constexpr size_t kPoolSize = kPoolMaxSize;
+  static constexpr size_t kPageCnt = kPoolSize / kSuperPageSize;
 
   std::unique_ptr<AddressPoolManagerForTesting> manager_;
   uintptr_t base_address_;

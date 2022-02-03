@@ -212,8 +212,15 @@ constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask & kMemTagUnmask;
 #if defined(PA_HAS_64_BITS_POINTERS)
 // The Configurable Pool is only available in 64-bit mode
 constexpr size_t kNumPools = 3;
-constexpr size_t kPoolMaxSize = 8 * kGiB;
+// TODO(crbug.com/1250788): Remove the iOS special case, once larger address
+// space can be used there. This limitation isn't meant for releasing, but is ok
+// to keep for now only because nothing uses PartitionAlloc on iOS yet.
+#if BUILDFLAG(IS_IOS)
+constexpr size_t kPoolMaxSize = kGiB / 4;
 #else
+constexpr size_t kPoolMaxSize = 8 * kGiB;
+#endif
+#else  // defined(PA_HAS_64_BITS_POINTERS)
 constexpr size_t kNumPools = 2;
 constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif

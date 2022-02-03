@@ -172,8 +172,14 @@ class BASE_EXPORT PartitionAddressSpace {
   // memory cage, which requires that ArrayBuffers be located inside of it.
   static constexpr size_t kRegularPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
+// TODO(crbug.com/1250788): Remove the iOS special case.
+#if BUILDFLAG(IS_IOS)
+  static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
+  static constexpr size_t kConfigurablePoolMinSize = kPoolMaxSize;
+#else
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
+#endif
   static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
                     base::bits::IsPowerOfTwo(kBRPPoolSize) &&
                     base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
