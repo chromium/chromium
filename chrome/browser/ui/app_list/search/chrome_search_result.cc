@@ -45,7 +45,7 @@ void ChromeSearchResult::SetTitleTags(const Tags& tags) {
 
 void ChromeSearchResult::MaybeUpdateTitleVector() {
   // Create and setup title tags if not set explicitly.
-  if (!explicit_title_vector) {
+  if (!explicit_title_vector_) {
     std::vector<TextItem> text_vector;
     TextItem text_item(ash::SearchResultTextItemType::kString);
     text_item.SetText(metadata_->title);
@@ -69,7 +69,7 @@ void ChromeSearchResult::SetDetailsTags(const Tags& tags) {
 
 void ChromeSearchResult::MaybeUpdateDetailsVector() {
   // Create and setup details tags if not set explicitly.
-  if (!explicit_details_vector) {
+  if (!explicit_details_vector_) {
     std::vector<TextItem> text_vector;
     TextItem text_item(ash::SearchResultTextItemType::kString);
     text_item.SetText(metadata_->details);
@@ -81,13 +81,13 @@ void ChromeSearchResult::MaybeUpdateDetailsVector() {
 
 void ChromeSearchResult::SetTitleTextVector(const TextVector& text_vector) {
   metadata_->title_vector = text_vector;
-  explicit_title_vector = true;
+  explicit_title_vector_ = true;
   SetSearchResultMetadata();
 }
 
 void ChromeSearchResult::SetDetailsTextVector(const TextVector& text_vector) {
   metadata_->details_vector = text_vector;
-  explicit_details_vector = true;
+  explicit_details_vector_ = true;
   SetSearchResultMetadata();
 }
 

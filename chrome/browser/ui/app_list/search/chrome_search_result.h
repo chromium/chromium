@@ -227,8 +227,8 @@ class ChromeSearchResult {
   bool dismiss_view_on_open_ = true;
 
   // Whether the text vector is explicitly set by chrome.
-  bool explicit_title_vector = false;
-  bool explicit_details_vector = false;
+  bool explicit_title_vector_ = false;
+  bool explicit_details_vector_ = false;
 
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 
