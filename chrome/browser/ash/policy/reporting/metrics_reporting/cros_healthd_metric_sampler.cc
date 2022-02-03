@@ -80,8 +80,8 @@ void HandleBusResult(MetricCallback callback,
       case cros_healthd::BusResult::Tag::BUS_DEVICES: {
         for (const auto& bus_device : bus_result->get_bus_devices()) {
           const auto& bus_info = bus_device->bus_info;
-          if (bus_info->is_thunderbolt_bus_info()) {
-            if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
+          if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
+            if (bus_info->is_thunderbolt_bus_info()) {
               auto* const thunderbolt_info_out =
                   metric_data.mutable_info_data()
                       ->mutable_bus_device_info()
@@ -90,6 +90,23 @@ void HandleBusResult(MetricCallback callback,
               thunderbolt_info_out->set_security_level(
                   TranslateThunderboltSecurityLevel(
                       bus_info->get_thunderbolt_bus_info()->security_level));
+            }
+          } else if (metric_type ==
+                     CrosHealthdMetricSampler::MetricType::kTelemetry) {
+            if (bus_info->is_usb_bus_info()) {
+              auto* const usb_telemetry_out =
+                  metric_data.mutable_telemetry_data()->mutable_usb_telemetry();
+              anything_reported = true;
+              usb_telemetry_out->set_vid(
+                  bus_info->get_usb_bus_info()->vendor_id);
+              usb_telemetry_out->set_pid(
+                  bus_info->get_usb_bus_info()->product_id);
+              usb_telemetry_out->set_class_id(
+                  bus_info->get_usb_bus_info()->class_id);
+              usb_telemetry_out->set_subclass_id(
+                  bus_info->get_usb_bus_info()->subclass_id);
+              usb_telemetry_out->set_vendor(bus_device->vendor_name);
+              usb_telemetry_out->set_name(bus_device->product_name);
             }
           }
         }

@@ -66,7 +66,33 @@ cros_healthd::TelemetryInfoPtr CreateCpuResult(
   return telemetry_info;
 }
 
-cros_healthd::TelemetryInfoPtr CreateBusResult(
+cros_healthd::TelemetryInfoPtr CreateUsbBusResult(uint8_t class_id,
+                                                  uint8_t subclass_id,
+                                                  uint16_t vendor_id,
+                                                  uint16_t product_id,
+                                                  const char* vendor_name,
+                                                  const char* product_name) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+
+  std::vector<cros_healthd::BusDevicePtr> bus_devices;
+
+  auto usb_device = cros_healthd::BusDevice::New();
+  usb_device->vendor_name = vendor_name;
+  usb_device->product_name = product_name;
+  usb_device->bus_info =
+      cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
+          class_id, subclass_id, /*protocol_id=*/0, vendor_id, product_id,
+          /*interfaces = */
+          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>()));
+
+  bus_devices.push_back(std::move(usb_device));
+
+  telemetry_info->bus_result =
+      cros_healthd::BusResult::NewBusDevices(std::move(bus_devices));
+  return telemetry_info;
+}
+
+cros_healthd::TelemetryInfoPtr CreateThunderboltBusResult(
     cros_healthd::ThunderboltSecurityLevel security_level) {
   auto telemetry_info = cros_healthd::TelemetryInfo::New();
   std::vector<cros_healthd::BusDevicePtr> bus_devices;
@@ -192,6 +218,32 @@ class CrosHealthdMetricSamplerMemoryEncryptionTest
     : public CrosHealthdMetricSamplerTest,
       public testing::WithParamInterface<MemoryEncryptionTestCase> {};
 
+TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
+  // Max value for 8-bit unsigned integer
+  constexpr uint8_t kClassId = 255;
+  constexpr uint8_t kSubclassId = 1;
+  // Max value for 16-bit unsigned integer
+  constexpr uint16_t kVendorId = 65535;
+  constexpr uint16_t kProductId = 1;
+  constexpr char kVendorName[] = "VendorName";
+  constexpr char kProductName[] = "ProductName";
+
+  MetricData result = CollectData(
+      CreateUsbBusResult(kClassId, kSubclassId, kVendorId, kProductId,
+                         kVendorName, kProductName),
+      cros_healthd::ProbeCategoryEnum::kBus,
+      CrosHealthdMetricSampler::MetricType::kTelemetry, MetricData{});
+
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_usb_telemetry());
+  EXPECT_EQ(result.telemetry_data().usb_telemetry().class_id(), kClassId);
+  EXPECT_EQ(result.telemetry_data().usb_telemetry().subclass_id(), kSubclassId);
+  EXPECT_EQ(result.telemetry_data().usb_telemetry().vid(), kVendorId);
+  EXPECT_EQ(result.telemetry_data().usb_telemetry().pid(), kProductId);
+  EXPECT_EQ(result.telemetry_data().usb_telemetry().name(), kProductName);
+  EXPECT_EQ(result.telemetry_data().usb_telemetry().vendor(), kVendorName);
+}
+
 TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
        TestMemoryEncryptionReporting) {
   const MemoryEncryptionTestCase& test_case = GetParam();
@@ -217,7 +269,7 @@ TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
 TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
   const TbtTestCase& test_case = GetParam();
   MetricData result =
-      CollectData(CreateBusResult(test_case.healthd_security_level),
+      CollectData(CreateThunderboltBusResult(test_case.healthd_security_level),
                   cros_healthd::ProbeCategoryEnum::kBus,
                   CrosHealthdMetricSampler::MetricType::kInfo);
   ASSERT_TRUE(result.has_info_data());
