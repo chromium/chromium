@@ -18,6 +18,7 @@
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_app_info_parser.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -86,6 +87,8 @@ class DialAppDiscoveryService {
                                 const std::string& app_name,
                                 DialAppInfoCallback app_info_cb);
 
+  void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
+
  private:
   friend class DialAppDiscoveryServiceTest;
 
@@ -149,6 +152,8 @@ class DialAppDiscoveryService {
 
   // Safe DIAL parser. Does the parsing in a utility process.
   std::unique_ptr<SafeDialAppInfoParser> parser_;
+
+  mojo::Remote<mojom::Logger> logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

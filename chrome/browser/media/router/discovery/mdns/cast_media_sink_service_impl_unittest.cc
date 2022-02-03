@@ -1337,21 +1337,21 @@ TEST_P(CastMediaSinkServiceImplTest, TestCreateCastSocketOpenParams) {
 TEST_P(CastMediaSinkServiceImplTest, BindLogger) {
   std::unique_ptr<LoggerImpl> logger_1 = std::make_unique<LoggerImpl>();
   mojo::PendingRemote<mojom::Logger> pending_remote_1;
-  logger_1->Bind(pending_remote_1.InitWithNewPipeAndPassReceiver());
+  logger_1->BindReceiver(pending_remote_1.InitWithNewPipeAndPassReceiver());
   media_sink_service_impl_.BindLogger(std::move(pending_remote_1));
 
   // Trying to bind another pending remote no-ops instead of causing
   // a DCHECK failure from binding to a remote that's already bound.
   mojo::PendingRemote<mojom::Logger> pending_remote_2;
   std::unique_ptr<LoggerImpl> logger_2 = std::make_unique<LoggerImpl>();
-  logger_2->Bind(pending_remote_2.InitWithNewPipeAndPassReceiver());
+  logger_2->BindReceiver(pending_remote_2.InitWithNewPipeAndPassReceiver());
   media_sink_service_impl_.BindLogger(std::move(pending_remote_2));
 
   // Trying to bind a disconnected receiver should work.
   logger_1.reset();
   std::unique_ptr<LoggerImpl> logger_3 = std::make_unique<LoggerImpl>();
   mojo::PendingRemote<mojom::Logger> pending_remote_3;
-  logger_3->Bind(pending_remote_3.InitWithNewPipeAndPassReceiver());
+  logger_3->BindReceiver(pending_remote_3.InitWithNewPipeAndPassReceiver());
   media_sink_service_impl_.BindLogger(std::move(pending_remote_3));
 }
 

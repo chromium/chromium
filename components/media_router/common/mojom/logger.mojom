@@ -50,4 +50,8 @@ interface Logger {
       string sink_id,
       string media_source,
       string session_id);
+
+  // Binds this logger to a new pending receiver, allowing any code with access
+  // to a Logger to create a new receiver for it.
+  BindReceiver(pending_receiver<Logger> receiver);
 };

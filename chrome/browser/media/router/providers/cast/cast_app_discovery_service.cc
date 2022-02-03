@@ -129,6 +129,9 @@ void CastAppDiscoveryServiceImpl::Refresh() {
 
 void CastAppDiscoveryServiceImpl::BindLogger(
     mojo::PendingRemote<mojom::Logger> pending_remote) {
+  // TODO(crbug.com/1293535): Simplify how logger instances are made available
+  // to their clients.
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Reset |logger_| if it is bound to a disconnected remote.
   if (logger_.is_bound())

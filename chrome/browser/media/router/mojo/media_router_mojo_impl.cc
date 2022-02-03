@@ -725,7 +725,7 @@ void MediaRouterMojoImpl::OnProviderConnectionError(
 
 void MediaRouterMojoImpl::GetLogger(
     mojo::PendingReceiver<mojom::Logger> receiver) {
-  logger_.Bind(std::move(receiver));
+  logger_.BindReceiver(std::move(receiver));
 }
 
 LoggerImpl* MediaRouterMojoImpl::GetLogger() {

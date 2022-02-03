@@ -47,8 +47,7 @@ class LoggerImpl : mojom::Logger {
                 const std::string& sink_id,
                 const std::string& media_source,
                 const std::string& session_id) override;
-
-  void Bind(mojo::PendingReceiver<mojom::Logger> receiver);
+  void BindReceiver(mojo::PendingReceiver<mojom::Logger> receiver) override;
 
   std::string GetLogsAsJson() const;
   base::Value GetLogsAsValue() const;

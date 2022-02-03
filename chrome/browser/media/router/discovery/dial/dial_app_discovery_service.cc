@@ -8,6 +8,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "net/http/http_status_code.h"
@@ -16,6 +17,8 @@
 namespace media_router {
 
 namespace {
+
+const char kLoggerComponent[] = "DialAppDiscoveryService";
 
 GURL GetAppUrl(const media_router::MediaSinkInternal& sink,
                const std::string& app_name) {
@@ -64,6 +67,15 @@ void DialAppDiscoveryService::FetchDialAppInfo(
       std::make_unique<DialAppDiscoveryService::PendingRequest>(
           sink, app_name, std::move(app_info_cb), this));
   pending_requests_.back()->Start();
+}
+
+void DialAppDiscoveryService::BindLogger(
+    mojo::PendingRemote<mojom::Logger> pending_remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (logger_.is_bound())
+    return;
+  logger_.Bind(std::move(pending_remote));
+  logger_.reset_on_disconnect();
 }
 
 void DialAppDiscoveryService::SetParserForTest(
@@ -146,6 +158,14 @@ void DialAppDiscoveryService::PendingRequest::OnDialAppInfoParsed(
         .Run(sink_id_, app_name_,
              DialAppInfoResult(nullptr, DialAppInfoResultCode::kParsingError));
   } else {
+    if (service_->logger_.is_bound()) {
+      service_->logger_->LogInfo(
+          mojom::LogCategory::kDiscovery, kLoggerComponent,
+          base::StringPrintf("DIAL sink supports disconnect: %s",
+                             parsed_app_info->allow_stop ? "true" : "false"),
+          sink_id_, "", "");
+    }
+
     RecordDialFetchAppInfo(DialAppInfoResultCode::kOk);
     std::move(app_info_cb_)
         .Run(sink_id_, app_name_,
