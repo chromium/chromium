@@ -10,6 +10,8 @@ namespace web {
 class WebState;
 }
 
+// TODO(crbug.com/1293395): Refactor ManageAccountsDelegate into a C++ abstract
+// class.
 @protocol ManageAccountsDelegate<NSObject>
 
 // Called when Gaia cookies have been regenerated for a specific user sign-in.

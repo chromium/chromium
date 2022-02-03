@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_BROWSER_VIEW_COMMON_TAB_HELPER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_BROWSER_VIEW_COMMON_TAB_HELPER_DELEGATE_H_
 
-#import "components/signin/ios/browser/manage_accounts_delegate.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
@@ -20,8 +19,6 @@
 // that the BVC conforms to to zero.
 @protocol CommonTabHelperDelegate <
     BubblePresenterDelegate,
-    // TODO(crbug.com/1272476): Factor ManageAccountsDelegate out of the BVC.
-    ManageAccountsDelegate,
     // TODO(crbug.com/1272483): Factor NetExportTabHelperDelegate out of the
     // BVC.
     NetExportTabHelperDelegate,

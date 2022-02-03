@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
@@ -1079,6 +1080,11 @@
   if (loadingAgent) {
     loadingAgent->SetDelegate(self);
   }
+
+  id<ApplicationCommands> applicationCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  AccountConsistencyBrowserAgent::CreateForBrowser(
+      self.browser, self.viewController, applicationCommandHandler);
 }
 
 // Uninstalls delegates for self.browser.

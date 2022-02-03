@@ -21,8 +21,6 @@
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sessions/core/tab_restore_service_helper.h"
-#include "components/signin/core/browser/account_reconcilor.h"
-#import "components/signin/ios/browser/account_consistency_service.h"
 #include "components/signin/ios/browser/active_state_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -51,8 +49,6 @@
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#include "ios/chrome/browser/signin/account_reconcilor_factory.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
@@ -2644,12 +2640,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   CaptivePortalTabHelper::CreateForWebState(webState, self);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
-
-  if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
-              self.browserState)) {
-    accountConsistencyService->SetWebStateHandler(webState, self);
-  }
 }
 
 // DEPRECATED -- Do not add further logic to this method.
@@ -2670,12 +2660,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
-  }
-
-  if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
-              self.browserState)) {
-    accountConsistencyService->RemoveWebStateHandler(webState);
   }
 
   // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
@@ -4691,59 +4675,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - ManageAccountsDelegate
 // TODO(crbug.com/1272476): Factor ManageAccountsDelegate out of the BVC. It can
 // be a browser agent instead.
-
-- (void)onRestoreGaiaCookies {
-  signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForBrowserState(self.browserState)
-          ->GetState());
-  [self.dispatcher showSigninAccountNotificationFromViewController:self];
-}
-
-- (void)onManageAccounts {
-  signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForBrowserState(self.browserState)
-          ->GetState());
-  [self.dispatcher showAccountsSettingsFromViewController:self];
-}
-
-- (void)onShowConsistencyPromo:(const GURL&)url
-                      webState:(web::WebState*)webState {
-  signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForBrowserState(self.browserState)
-          ->GetState());
-  if (self.currentWebState == webState)
-    [self.dispatcher showConsistencyPromoFromViewController:self URL:url];
-}
-
-- (void)onAddAccount {
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AUTHENTICATION_OPERATION_ADD_ACCOUNT
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
-  DCHECK(self.dispatcher);
-  [self.dispatcher showSignin:command baseViewController:self];
-}
-
-- (void)onGoIncognito:(const GURL&)url {
-  // The user taps on go incognito from the mobile U-turn webpage (the web page
-  // that displays all users accounts available in the content area). As the
-  // user chooses to go to incognito, the mobile U-turn page is no longer
-  // neeeded. The current solution is to go back in history. This has the
-  // advantage of keeping the current browsing session and give a good user
-  // experience when the user comes back from incognito.
-  WebNavigationBrowserAgent::FromBrowser(self.browser)->GoBack();
-
-  if (url.is_valid()) {
-    OpenNewTabCommand* command = [[OpenNewTabCommand alloc]
-         initWithURL:url
-            referrer:web::Referrer()  // Strip referrer when switching modes.
-         inIncognito:YES
-        inBackground:NO
-            appendTo:kLastTab];
-    [self.dispatcher openURLInNewTab:command];
-  } else {
-    [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
-  }
-}
 
 #pragma mark - SigninPresenter
 
