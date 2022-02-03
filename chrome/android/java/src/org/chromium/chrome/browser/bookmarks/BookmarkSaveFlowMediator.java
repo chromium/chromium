@@ -52,7 +52,8 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
      * @param subscriptionsManager Used to manage the price-tracking subscriptions.
      */
     public BookmarkSaveFlowMediator(BookmarkModel bookmarkModel, PropertyModel propertyModel,
-            Context context, Runnable closeRunnable, SubscriptionsManager subscriptionsManager) {
+            Context context, Runnable closeRunnable,
+            @Nullable SubscriptionsManager subscriptionsManager) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(this);
 
