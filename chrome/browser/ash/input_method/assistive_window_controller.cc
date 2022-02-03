@@ -68,7 +68,7 @@ void AssistiveWindowController::InitSuggestionWindow() {
   // via some parameter.
   suggestion_window_view_ = ui::ime::SuggestionWindowView::Create(
       GetParentView(), this,
-      ui::ime::SuggestionWindowView::Orientation::kHorizontal);
+      ui::ime::SuggestionWindowView::Orientation::kVertical);
   views::Widget* widget = suggestion_window_view_->GetWidget();
   widget->AddObserver(this);
   widget->Show();
