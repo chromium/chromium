@@ -116,15 +116,33 @@ void GpuWatchdogTest::SetUp() {
   full_thread_time_on_windows_ = timeout_ * kMaxCountOfMoreGpuThreadTimeAllowed;
 
 #elif BUILDFLAG(IS_MAC)
+  // Use slow timeout for Mac versions < 11.00 and for MacBookPro model <
+  // MacBookPro14,1
+  bool use_slow_timeout = false;
   int os_version = base::mac::internal::MacOSVersion();
-  // Use slow timeout for Mac versions < 11.00.
+
   if (os_version <= 1100) {
+    use_slow_timeout = true;
+  } else {
+    std::string model_str = base::SysInfo::HardwareModelName();
+    size_t found_position = model_str.find("MacBookPro");
+    constexpr size_t model_version_pos = 10;
+
+    // A MacBookPro is found.
+    if (found_position == 0 && model_str.size() > model_version_pos) {
+      // model_ver_str = "MacBookProXX,X", model_ver_str = "XX,X"
+      std::string model_ver_str = model_str.substr(model_version_pos);
+      int major_model_ver = std::atoi(model_ver_str.c_str());
+      // For version < 14,1
+      if (major_model_ver < 14) {
+        use_slow_timeout = true;
+      }
+    }
+  }
+
+  if (use_slow_timeout) {
     timeout_ = kGpuWatchdogTimeoutForTestingSlow;
     extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
-  } else {
-    // To prevent flakiness on the very first test, call Sleep() once before
-    // tests start.
-    base::PlatformThread::Sleep(timeout_ / 4);
   }
 
 #elif BUILDFLAG(IS_ANDROID)
