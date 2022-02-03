@@ -823,19 +823,9 @@ bool WaylandWindow::CommitOverlays(
       std::max(overlays.size() - num_background_planes,
                wayland_subsurfaces_.size() + 1));
 
-  // TODO(fangzhoug): Keeping this surface alive removes the black background
-  // when doing animation of showing/hiding auxiliary windows. i.e. Without
-  // overlay delegation feature, black background is shown on tooltip. So keep a
-  // fake config for primary_subsurface when it is not in the overlay list, such
-  // that the frame_manager does not destroy the subsurface.
-  subsurfaces_to_overlays.emplace_back(
-      primary_subsurface(),
-      num_primary_planes ? std::move(*split)
-                         : ui::ozone::mojom::WaylandOverlayConfig::New());
-  if (!num_primary_planes) {
-    auto& primary_config = subsurfaces_to_overlays.back().second;
-    primary_config->opacity =
-        primary_subsurface()->wayland_surface()->opacity();
+  if (num_primary_planes) {
+    subsurfaces_to_overlays.emplace_back(primary_subsurface(),
+                                         std::move(*split));
   }
 
   {

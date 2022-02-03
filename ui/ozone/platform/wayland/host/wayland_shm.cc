@@ -11,7 +11,17 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kShmFormat = WL_SHM_FORMAT_ARGB8888;
+
+// Given that buffers for canvas surfaces are submitted with alpha disabled,
+// using a format with alpha channel results in popup surfaces that have black
+// background when they are shown with fade out animation. Thus, disable this
+// channel so that exo sets the background of these canvas surface transparent.
+constexpr uint32_t kShmFormat =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    WL_SHM_FORMAT_XRGB8888;
+#else
+    WL_SHM_FORMAT_ARGB8888;
+#endif
 }  // namespace
 
 // static
