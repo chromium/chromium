@@ -93,4 +93,8 @@ struct AuctionAdConfig {
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   AuctionAdConfigNonSharedParams auction_ad_config_non_shared_params;
+
+  // Nested auctions whose results will also be fed to `seller`. Only the top
+  // level auction config can have component auctions.
+  array<AuctionAdConfig> component_auctions;
 };

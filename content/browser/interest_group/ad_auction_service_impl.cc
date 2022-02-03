@@ -123,7 +123,8 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   return true;
 }
 
-bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
+bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config,
+                    bool is_top_level_auction) {
   // The seller origin has to be HTTPS.
   if (config.seller.scheme() != url::kHttpsScheme)
     return false;
@@ -152,6 +153,14 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
       if (buyer.scheme() != url::kHttpsScheme)
         return false;
     }
+  }
+
+  for (const auto& component_auction : config.component_auctions) {
+    // Component auctions may not have their own nested component auctions.
+    if (!is_top_level_auction)
+      return false;
+    if (!IsAuctionValid(*component_auction, /*is_top_level_auction=*/false))
+      return false;
   }
 
   return true;
@@ -273,7 +282,7 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
     mojo::ReportBadMessage("Unexpected request");
     return;
   }
-  if (!IsAuctionValid(*config)) {
+  if (!IsAuctionValid(*config, /*is_top_level_auction=*/true)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }

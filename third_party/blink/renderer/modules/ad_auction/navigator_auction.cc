@@ -628,6 +628,58 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
   return true;
 }
 
+// Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
+// to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
+// return null on failure.
+mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
+    bool is_top_level,
+    ScriptState& script_state,
+    const ExecutionContext& context,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& config) {
+  auto mojo_config = mojom::blink::AuctionAdConfig::New();
+  mojo_config->auction_ad_config_non_shared_params =
+      mojom::blink::AuctionAdConfigNonSharedParams::New();
+  if (!CopySellerFromIdlToMojo(exception_state, config, *mojo_config) ||
+      !CopyDecisionLogicUrlFromIdlToMojo(context, exception_state, config,
+                                         *mojo_config) ||
+      !CopyTrustedScoringSignalsFromIdlToMojo(context, exception_state, config,
+                                              *mojo_config) ||
+      !CopyInterestGroupBuyersFromIdlToMojo(exception_state, config,
+                                            *mojo_config) ||
+      !CopyAuctionSignalsFromIdlToMojo(script_state, exception_state, config,
+                                       *mojo_config) ||
+      !CopySellerSignalsFromIdlToMojo(script_state, exception_state, config,
+                                      *mojo_config) ||
+      !CopyPerBuyerSignalsFromIdlToMojo(script_state, exception_state, config,
+                                        *mojo_config)) {
+    return mojom::blink::AuctionAdConfigPtr();
+  }
+
+  // Recursively handle component auctions, if there are any.
+  if (config.hasComponentAuctions()) {
+    for (const auto& idl_component_auction : config.componentAuctions()) {
+      // Component auctions may not have their own nested component auctions.
+      if (!is_top_level) {
+        exception_state.ThrowTypeError(
+            "Auctions listed in componentAuctions may not have their own "
+            "nested componentAuctions.");
+        return mojom::blink::AuctionAdConfigPtr();
+      }
+
+      auto mojo_component_auction =
+          IdlAuctionConfigToMojo(/*is_top_level=*/false, script_state, context,
+                                 exception_state, *idl_component_auction);
+      if (!mojo_component_auction)
+        return mojom::blink::AuctionAdConfigPtr();
+      mojo_config->component_auctions.emplace_back(
+          std::move(mojo_component_auction));
+    }
+  }
+
+  return mojo_config;
+}
+
 // finalizeAd() validation methods
 bool ValidateAdsObject(ExceptionState& exception_state, const Ads* ads) {
   if (!ads || !ads->IsValid()) {
@@ -849,24 +901,10 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              const AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
-  auto mojo_config = mojom::blink::AuctionAdConfig::New();
-  mojo_config->auction_ad_config_non_shared_params =
-      mojom::blink::AuctionAdConfigNonSharedParams::New();
-  if (!CopySellerFromIdlToMojo(exception_state, *config, *mojo_config) ||
-      !CopyDecisionLogicUrlFromIdlToMojo(*context, exception_state, *config,
-                                         *mojo_config) ||
-      !CopyTrustedScoringSignalsFromIdlToMojo(*context, exception_state,
-                                              *config, *mojo_config) ||
-      !CopyInterestGroupBuyersFromIdlToMojo(exception_state, *config,
-                                            *mojo_config) ||
-      !CopyAuctionSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                       *mojo_config) ||
-      !CopySellerSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                      *mojo_config) ||
-      !CopyPerBuyerSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                        *mojo_config)) {
+  auto mojo_config = IdlAuctionConfigToMojo(
+      /*is_top_level=*/true, *script_state, *context, exception_state, *config);
+  if (!mojo_config)
     return ScriptPromise();
-  }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

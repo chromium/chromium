@@ -1772,6 +1772,75 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidComponentAuctionsArray) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'componentAuctions' property from 'AuctionAdConfig': The "
+      "provided value cannot be converted to a sequence.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      componentAuctions: ''
+  })"));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidComponentAuctionsElementType) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'componentAuctions' property from 'AuctionAdConfig': "
+      "The provided value is not of type 'AuctionAdConfig'.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      componentAuctions: ['test']
+  })"));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidComponentAuctionsAuctionConfig) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': seller "
+      "'http://test.com' for AuctionAdConfig must be a valid https origin.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      componentAuctions: [{
+        seller: 'http://test.com',
+        decisionLogicUrl: 'http://test.com'
+      }]
+  })"));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidComponentAuctionDepth) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Auctions "
+      "listed in componentAuctions may not have their own nested "
+      "componentAuctions.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      componentAuctions: [{
+        seller: 'https://test2.com',
+        decisionLogicUrl: 'https://test2.com',
+        componentAuctions: [{
+          seller: 'https://test3.com',
+          decisionLogicUrl: 'https://test3.com',
+        }]
+      }]
+  })"));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignals) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
@@ -3921,6 +3990,20 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
     return absl::nullopt;
   }
 
+  // Creates a valid AuctionAdConfigPtr which will run an auction with the
+  // InterestGroup added in SetUpOnMainThread() participating and winning.
+  blink::mojom::AuctionAdConfigPtr CreateValidAuctionConfig() {
+    auto config = blink::mojom::AuctionAdConfig::New();
+    config->seller = test_origin_a_;
+    config->decision_logic_url =
+        https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+    config->auction_ad_config_non_shared_params =
+        blink::mojom::AuctionAdConfigNonSharedParams::New();
+    config->auction_ad_config_non_shared_params->interest_group_buyers = {
+        test_origin_a_};
+    return config;
+  }
+
   url::Origin test_origin_a_;
   GURL ad_url_;
 };
@@ -4096,6 +4179,30 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       blink::mojom::AuctionAdConfigNonSharedParams::New();
   config->auction_ad_config_non_shared_params->interest_group_buyers = {
       test_origin_a_};
+
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
+                       InvalidComponentAuctionUrl) {
+  auto config = CreateValidAuctionConfig();
+  auto component_auction_config = CreateValidAuctionConfig();
+  // This is invalid because it's cross-origin to the seller.
+  component_auction_config->decision_logic_url =
+      https_server_->GetURL("d.test", "/interest_group/decision_logic.js");
+  config->component_auctions.emplace_back(std::move(component_auction_config));
+
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
+}
+
+// Test that component auctions with their own component auctions are rejected.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
+                       InvalidComponentAuctionDepth) {
+  auto config = CreateValidAuctionConfig();
+  auto component_auction_config = CreateValidAuctionConfig();
+  component_auction_config->component_auctions.emplace_back(
+      CreateValidAuctionConfig());
+  config->component_auctions.emplace_back(std::move(component_auction_config));
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
