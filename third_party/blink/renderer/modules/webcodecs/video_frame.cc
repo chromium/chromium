@@ -40,9 +40,10 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
-#include "third_party/blink/renderer/modules/webcodecs/parsed_copy_to_options.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_layout.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -308,22 +309,29 @@ absl::optional<media::VideoPixelFormat> CopyToFormat(
 }
 
 void CopyMappablePlanes(const media::VideoFrame& src_frame,
-                        const ParsedCopyToOptions& layout,
+                        const gfx::Rect& src_rect,
+                        const VideoFrameLayout& dest_layout,
                         base::span<uint8_t> dest_buffer) {
-  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
-    const uint8_t* src = src_frame.data(i) +
-                         layout.planes[i].top * src_frame.stride(i) +
-                         layout.planes[i].left_bytes;
+  for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
+    const gfx::Size sample_size =
+        media::VideoFrame::SampleSize(dest_layout.Format(), i);
+    const int sample_bytes =
+        media::VideoFrame::BytesPerElement(dest_layout.Format(), i);
+    const uint8_t* src =
+        src_frame.data(i) +
+        src_rect.y() / sample_size.height() * src_frame.stride(i) +
+        src_rect.x() / sample_size.width() * sample_bytes;
     libyuv::CopyPlane(src, static_cast<int>(src_frame.stride(i)),
-                      dest_buffer.data() + layout.planes[i].offset,
-                      static_cast<int>(layout.planes[i].stride),
-                      static_cast<int>(layout.planes[i].width_bytes),
-                      static_cast<int>(layout.planes[i].height));
+                      dest_buffer.data() + dest_layout.Offset(i),
+                      static_cast<int>(dest_layout.Stride(i)),
+                      src_rect.width() / sample_size.width() * sample_bytes,
+                      src_rect.height() / sample_size.height());
   }
 }
 
 bool CopyTexturablePlanes(const media::VideoFrame& src_frame,
-                          const ParsedCopyToOptions& layout,
+                          const gfx::Rect& src_rect,
+                          const VideoFrameLayout& dest_layout,
                           base::span<uint8_t> dest_buffer) {
   auto wrapper = SharedGpuContext::ContextProviderWrapper();
   if (!wrapper)
@@ -338,19 +346,66 @@ bool CopyTexturablePlanes(const media::VideoFrame& src_frame,
   if (!ri)
     return false;
 
-  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
-    gfx::Rect src_rect(layout.planes[i].left, layout.planes[i].top,
-                       layout.planes[i].width, layout.planes[i].height);
-    uint8_t* dest_pixels = dest_buffer.data() + layout.planes[i].offset;
+  for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
+    const gfx::Size sample_size =
+        media::VideoFrame::SampleSize(dest_layout.Format(), i);
+    gfx::Rect plane_src_rect(src_rect.x() / sample_size.width(),
+                             src_rect.y() / sample_size.height(),
+                             src_rect.width() / sample_size.width(),
+                             src_rect.height() / sample_size.height());
+    uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
     if (!media::ReadbackTexturePlaneToMemorySync(
-            src_frame, i, src_rect, dest_pixels, layout.planes[i].stride, ri,
-            gr_context)) {
+            src_frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i),
+            ri, gr_context)) {
       // It's possible to fail after copying some but not all planes, leaving
       // the output buffer in a corrupt state D:
       return false;
     }
   }
 
+  return true;
+}
+
+bool ParseCopyToOptions(const media::VideoFrame& frame,
+                        VideoFrameCopyToOptions* options,
+                        ExceptionState& exception_state,
+                        VideoFrameLayout* dest_layout_out,
+                        gfx::Rect* src_rect_out = nullptr) {
+  DCHECK(dest_layout_out);
+
+  auto copy_to_format = CopyToFormat(frame);
+  if (!copy_to_format) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Operation is not supported when format is null.");
+    return false;
+  }
+
+  gfx::Rect src_rect = frame.visible_rect();
+  if (options->hasRect()) {
+    src_rect =
+        ToGfxRect(options->rect(), "rect", frame.coded_size(), exception_state);
+    if (exception_state.HadException())
+      return false;
+  }
+  if (!ValidateCropAlignment(*copy_to_format, src_rect,
+                             options->hasRect() ? "rect" : "visibleRect",
+                             exception_state)) {
+    return false;
+  }
+
+  gfx::Size dest_coded_size = src_rect.size();
+  VideoFrameLayout dest_layout(*copy_to_format, dest_coded_size);
+  if (options->hasLayout()) {
+    dest_layout = VideoFrameLayout(*copy_to_format, dest_coded_size,
+                                   options->layout(), exception_state);
+    if (exception_state.HadException())
+      return false;
+  }
+
+  *dest_layout_out = dest_layout;
+  if (src_rect_out)
+    *src_rect_out = src_rect;
   return true;
 }
 
@@ -658,22 +713,29 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                        coded_width, coded_height));
     return nullptr;
   }
-  const gfx::Size coded_size(static_cast<int>(coded_width),
-                             static_cast<int>(coded_height));
+  const gfx::Size src_coded_size(static_cast<int>(coded_width),
+                                 static_cast<int>(coded_height));
 
-  // Validate visibleRect and layout.
-  VideoFrameCopyToOptions* adapted_init =
-      MakeGarbageCollected<VideoFrameCopyToOptions>();
-  if (init->hasVisibleRect())
-    adapted_init->setRect(init->visibleRect());
-  if (init->hasLayout())
-    adapted_init->setLayout(init->layout());
+  // Validate visibleRect.
+  gfx::Rect src_visible_rect(src_coded_size);
+  if (init->hasVisibleRect()) {
+    src_visible_rect = ToGfxRect(init->visibleRect(), "visibleRect",
+                                 src_coded_size, exception_state);
+    if (exception_state.HadException() ||
+        !ValidateOffsetAlignment(media_fmt, src_visible_rect, "visibleRect",
+                                 exception_state)) {
+      return nullptr;
+    }
+  }
 
-  ParsedCopyToOptions copy_options(adapted_init, media_fmt, coded_size,
-                                   gfx::Rect(coded_size), exception_state);
-  if (exception_state.HadException())
-    return nullptr;
-  const gfx::Rect visible_rect = copy_options.rect;
+  // Validate layout.
+  VideoFrameLayout src_layout(media_fmt, src_coded_size);
+  if (init->hasLayout()) {
+    src_layout = VideoFrameLayout(media_fmt, src_coded_size, init->layout(),
+                                  exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+  }
 
   // Validate data.
   auto buffer = AsSpan<const uint8_t>(data);
@@ -681,33 +743,37 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     exception_state.ThrowTypeError("data is detached.");
     return nullptr;
   }
-  if (buffer.size() < copy_options.min_buffer_size) {
+  if (buffer.size() < src_layout.Size()) {
     exception_state.ThrowTypeError("data is not large enough.");
     return nullptr;
   }
 
   // Validate display (natural) size.
-  gfx::Size display_size(static_cast<uint32_t>(visible_rect.width()),
-                         static_cast<uint32_t>(visible_rect.height()));
+  gfx::Size display_size = src_visible_rect.size();
   if (init->hasDisplayWidth() || init->hasDisplayHeight()) {
     display_size = ParseAndValidateDisplaySize(init, exception_state);
     if (exception_state.HadException())
       return nullptr;
   }
 
+  // Set up the copy to be minimally-sized.
+  gfx::Rect crop = AlignCrop(media_fmt, src_visible_rect);
+  gfx::Size dest_coded_size = crop.size();
+  gfx::Rect dest_visible_rect = gfx::Rect(src_visible_rect.size());
+
   // Create a frame.
   const auto timestamp = base::Microseconds(init->timestamp());
   auto& frame_pool = CachedVideoFramePool::From(*execution_context);
-  auto frame = frame_pool.CreateFrame(media_fmt, coded_size, visible_rect,
-                                      display_size, timestamp);
+  auto frame = frame_pool.CreateFrame(
+      media_fmt, dest_coded_size, dest_visible_rect, display_size, timestamp);
   if (!frame) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
         String::Format("Failed to create a VideoFrame with format: %s, "
                        "coded size: %s, visibleRect: %s, display size: %s.",
                        VideoPixelFormatToString(media_fmt).c_str(),
-                       coded_size.ToString().c_str(),
-                       visible_rect.ToString().c_str(),
+                       dest_coded_size.ToString().c_str(),
+                       dest_visible_rect.ToString().c_str(),
                        display_size.ToString().c_str()));
     return nullptr;
   }
@@ -729,12 +795,14 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   // Copy planes.
-  for (wtf_size_t i = 0; i < copy_options.num_planes; ++i) {
-    libyuv::CopyPlane(buffer.data() + copy_options.planes[i].offset,
-                      static_cast<int>(copy_options.planes[i].stride),
-                      frame->data(i), static_cast<int>(frame->stride(i)),
-                      static_cast<int>(copy_options.planes[i].width_bytes),
-                      static_cast<int>(copy_options.planes[i].height));
+  for (wtf_size_t i = 0; i < media::VideoFrame::NumPlanes(media_fmt); i++) {
+    const gfx::Size sample_size = media::VideoFrame::SampleSize(media_fmt, i);
+    const int sample_bytes = media::VideoFrame::BytesPerElement(media_fmt, i);
+    const int row_bytes = crop.width() / sample_size.width() * sample_bytes;
+    const int rows = crop.height() / sample_size.height();
+    libyuv::CopyPlane(buffer.data() + src_layout.Offset(i),
+                      static_cast<int>(src_layout.Stride(i)), frame->data(i),
+                      static_cast<int>(frame->stride(i)), row_bytes, rows);
   }
 
   return MakeGarbageCollected<VideoFrame>(std::move(frame),
@@ -885,21 +953,11 @@ uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
     return 0;
   }
 
-  auto copy_to_format = CopyToFormat(*local_frame);
-  if (!copy_to_format) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "allocationSize() is not yet implemented when format is null.");
-    return 0;
-  }
-
-  ParsedCopyToOptions layout(options, *copy_to_format,
-                             local_frame->coded_size(),
-                             local_frame->visible_rect(), exception_state);
-  if (exception_state.HadException())
+  VideoFrameLayout dest_layout;
+  if (!ParseCopyToOptions(*local_frame, options, exception_state, &dest_layout))
     return 0;
 
-  return layout.min_buffer_size;
+  return dest_layout.Size();
 }
 
 ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
@@ -913,21 +971,12 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // TODO(crbug.com/1176464): Use async texture readback.
-  auto copy_to_format = CopyToFormat(*local_frame);
-  if (!copy_to_format) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "copyTo() is not yet implemented when format is null.");
+  VideoFrameLayout dest_layout;
+  gfx::Rect src_rect;
+  if (!ParseCopyToOptions(*local_frame, options, exception_state, &dest_layout,
+                          &src_rect)) {
     return ScriptPromise();
   }
-
-  // Compute layout.
-  ParsedCopyToOptions layout(options, *copy_to_format,
-                             local_frame->coded_size(),
-                             local_frame->visible_rect(), exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
 
   // Validate destination buffer.
   auto buffer = AsSpan<uint8_t>(destination);
@@ -935,14 +984,14 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     exception_state.ThrowTypeError("destination is detached.");
     return ScriptPromise();
   }
-  if (buffer.size() < layout.min_buffer_size) {
+  if (buffer.size() < dest_layout.Size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return ScriptPromise();
   }
 
   // Copy planes.
   if (local_frame->IsMappable()) {
-    CopyMappablePlanes(*local_frame, layout, buffer);
+    CopyMappablePlanes(*local_frame, src_rect, dest_layout, buffer);
   } else if (local_frame->HasGpuMemoryBuffer()) {
     auto mapped_frame = media::ConvertToMemoryMappedFrame(local_frame);
     if (!mapped_frame) {
@@ -950,22 +999,22 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
                                         "Failed to read VideoFrame data.");
       return ScriptPromise();
     }
-    CopyMappablePlanes(*mapped_frame, layout, buffer);
+    CopyMappablePlanes(*mapped_frame, src_rect, dest_layout, buffer);
   } else {
     DCHECK(local_frame->HasTextures());
-    if (!CopyTexturablePlanes(*local_frame, layout, buffer)) {
+    if (!CopyTexturablePlanes(*local_frame, src_rect, dest_layout, buffer)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");
       return ScriptPromise();
     }
   }
 
-  // Convert and return |layout|.
+  // Convert and return |dest_layout|.
   HeapVector<Member<PlaneLayout>> result;
-  for (wtf_size_t i = 0; i < layout.num_planes; i++) {
+  for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
     auto* plane = MakeGarbageCollected<PlaneLayout>();
-    plane->setOffset(layout.planes[i].offset);
-    plane->setStride(layout.planes[i].stride);
+    plane->setOffset(dest_layout.Offset(i));
+    plane->setStride(dest_layout.Stride(i));
     result.push_back(plane);
   }
 
