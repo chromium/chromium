@@ -220,7 +220,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     issuance_date = std::min(sct->timestamp, issuance_date);
   }
 
-  // Certificates issued after this date (February 1, 2022, OO:OO:OO GMT)
+  // Certificates issued after this date (April 15, 2022, OO:OO:OO GMT)
   // will be subject to the new CT policy, which:
   // -Removes the One Google log requirement.
   // -Introduces a log operator diversity (at least 2 SCTs that come from
@@ -230,7 +230,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   // Increases the SCT requirements for certificates with a lifetime between
   // 180 days and 15 months, from 2 to 3.
   const base::Time kPolicyUpdateDate =
-      base::Time::UnixEpoch() + base::Seconds(1643673600);
+      base::Time::UnixEpoch() + base::Seconds(1649980800);
   bool use_2022_policy =
       base::FeatureList::IsEnabled(
           features::kCertificateTransparency2022PolicyAllCerts) ||

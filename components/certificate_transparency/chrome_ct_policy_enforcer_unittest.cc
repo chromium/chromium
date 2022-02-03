@@ -692,7 +692,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
     entry.current_operator_ = "Operator " + base::NumberToString(i);
     operator_history[scts[i]->log_id] = entry;
     // Set timestamp to 1 day before new policy comes in effect.
-    EXPECT_TRUE(base::Time::FromUTCExploded({2022, 1, 0, 31, 0, 0, 0, 0},
+    EXPECT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 14, 0, 0, 0, 0},
                                             &scts[i]->timestamp));
   }
   chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
@@ -717,7 +717,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
     entry.current_operator_ = "Operator " + base::NumberToString(i);
     operator_history[scts[i]->log_id] = entry;
     // Set timestamp to the day new policy comes in effect.
-    EXPECT_TRUE(base::Time::FromUTCExploded({2022, 2, 0, 1, 0, 0, 0, 0},
+    EXPECT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 15, 0, 0, 0, 0},
                                             &scts[i]->timestamp));
   }
   chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);

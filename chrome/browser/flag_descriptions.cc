@@ -506,7 +506,7 @@ const char kCertificateTransparency2022PolicyName[] =
     "Certificate Transparency 2022 Policy";
 const char kCertificateTransparency2022PolicyDescription[] =
     "Enables the 2022 policy for Certificate Transparency requirements for "
-    "certificates issued after February 1, 2022. This policy increases the "
+    "certificates issued after April 15, 2022. This policy increases the "
     "number of SCTs required for certificates with a lifetime over 180 days, "
     "and replaces the one Google log requirement with log operator diversity "
     "requirements.";
