@@ -146,4 +146,9 @@ void RankerDelegate::AddRanker(std::unique_ptr<Ranker> ranker) {
   rankers_.emplace_back(std::move(ranker));
 }
 
+void RankerDelegate::OnBurnInPeriodElapsed() {
+  for (auto& ranker : rankers_)
+    ranker->OnBurnInPeriodElapsed();
+}
+
 }  // namespace app_list

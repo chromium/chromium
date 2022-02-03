@@ -42,6 +42,7 @@ class RankerDelegate : public Ranker {
                            ProviderType provider) override;
   void Train(const LaunchData& launch) override;
   void Remove(ChromeSearchResult* result) override;
+  void OnBurnInPeriodElapsed() override;
 
  private:
   void AddRanker(std::unique_ptr<Ranker> ranker);
