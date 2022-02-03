@@ -306,6 +306,10 @@ struct WebAppInstallInfo {
 
   // A mapping from locales to translated fields.
   base::flat_map<std::u16string, blink::Manifest::TranslationItem> translations;
+
+  // The declared permissions policy to apply as the baseline policy for all
+  // documents belonging to the application.
+  std::vector<blink::Manifest::PermissionsPolicyDeclaration> permissions_policy;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

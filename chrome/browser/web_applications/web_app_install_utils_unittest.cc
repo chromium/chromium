@@ -117,6 +117,14 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
+    auto declaration =
+        blink::mojom::ManifestPermissionsPolicyDeclaration::New();
+    declaration->feature = "bluetooth";
+    declaration->allowlist = {"*"};
+    manifest.permissions_policy.push_back(std::move(declaration));
+  }
+
+  {
     // Ensure an empty NoteTaking struct is ignored.
     manifest.note_taking = blink::mojom::ManifestNoteTaking::New();
   }
@@ -204,6 +212,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_FALSE(url_handler.has_origin_wildcard);
   EXPECT_EQ(GURL("http://example.com/new-note-url"),
             web_app_info.note_taking_new_note_url);
+
+  // Check permissions policy was updated.
+  EXPECT_EQ(1u, web_app_info.permissions_policy.size());
+  auto declaration = web_app_info.permissions_policy[0];
+  EXPECT_EQ(declaration.feature, "bluetooth");
+  EXPECT_EQ(1u, declaration.allowlist.size());
+  EXPECT_EQ("*", declaration.allowlist[0]);
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {

@@ -375,6 +375,11 @@ void WebApp::SetParentAppId(const absl::optional<AppId>& parent_app_id) {
   parent_app_id_ = parent_app_id;
 }
 
+void WebApp::SetPermissionsPolicy(
+    std::vector<PermissionsPolicyDeclaration> permissions_policy) {
+  permissions_policy_ = std::move(permissions_policy);
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -468,7 +473,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.window_controls_overlay_enabled_,
         app.is_storage_isolated_,
         app.launch_handler_,
-        app.parent_app_id_
+        app.parent_app_id_,
+        app.permissions_policy_
         // clang-format on
     );
   };
@@ -623,6 +629,20 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("parent_app_id",
                     parent_app_id_ ? *parent_app_id_ : AppId());
+
+  if (!permissions_policy_.empty()) {
+    base::Value& policy_list = *root.SetKey(
+        "permissions_policy", base::Value(base::Value::Type::LIST));
+    for (const auto& decl : permissions_policy_) {
+      base::Value json_decl(base::Value::Type::DICTIONARY);
+      json_decl.SetStringKey("feature", decl.feature);
+      base::Value& allowlist_json =
+          *json_decl.SetKey("allowlist", base::Value(base::Value::Type::LIST));
+      for (const std::string& origin : decl.allowlist)
+        allowlist_json.Append(origin);
+      policy_list.Append(std::move(json_decl));
+    }
+  }
 
   root.SetKey("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
 

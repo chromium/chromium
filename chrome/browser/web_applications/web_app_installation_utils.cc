@@ -114,6 +114,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
 
   web_app.SetStorageIsolated(web_app_info.is_storage_isolated);
+  web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
 
   web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
   web_app.SetDownloadedShortcutsMenuIconsSizes(

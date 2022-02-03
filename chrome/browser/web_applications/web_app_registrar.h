@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -71,6 +72,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // like shortcuts. |IsLocallyInstalled| apps is a subset of |IsInstalled|
   // apps. On Chrome OS all apps are always locally installed.
   bool IsLocallyInstalled(const AppId& app_id) const;
+
+  // Returns the permissions policy declared as declared in the manifest for
+  // the app with |app_id|. This permissions policy is not yet parsed by the
+  // PermissionsPolicyParser, and thus may contain invalid permissions and/or
+  // origin allowlists.
+  std::vector<PermissionsPolicyDeclaration> GetPermissionsPolicy(
+      const AppId& app_id) const;
 
   // Returns true if the app was preinstalled and NOT installed via any other
   // mechanism.

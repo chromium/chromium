@@ -239,6 +239,10 @@ class WebApp {
 
   const absl::optional<AppId>& parent_app_id() const { return parent_app_id_; }
 
+  const std::vector<PermissionsPolicyDeclaration>& permissions_policy() const {
+    return permissions_policy_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -314,6 +318,8 @@ class WebApp {
   void SetStorageIsolated(bool is_storage_isolated);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
+  void SetPermissionsPolicy(
+      std::vector<PermissionsPolicyDeclaration> permissions_policy);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -391,6 +397,7 @@ class WebApp {
   bool is_storage_isolated_ = false;
   absl::optional<LaunchHandler> launch_handler_;
   absl::optional<AppId> parent_app_id_;
+  std::vector<PermissionsPolicyDeclaration> permissions_policy_;
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()

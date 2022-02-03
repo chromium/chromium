@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -22,6 +23,13 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::vector<std::string> features = {
+    "default_on_feature", "default_self_feature", "default_disabled_feature"};
+
+}  // namespace
 
 namespace web_app {
 namespace test {
@@ -114,6 +122,35 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
   }
 
   return share_target;
+}
+
+std::vector<PermissionsPolicyDeclaration> CreateRandomPermissionsPolicy(
+    RandomHelper& random) {
+  const int num_permissions_policy_declarations =
+      random.next_uint(features.size());
+
+  std::vector<std::string> available_features;
+  for (const auto& feature : features)
+    available_features.push_back(feature);
+
+  const auto suffix = random.next_uint();
+  std::default_random_engine rng;
+  std::shuffle(available_features.begin(), available_features.end(), rng);
+
+  std::vector<PermissionsPolicyDeclaration> permissions_policy(
+      num_permissions_policy_declarations);
+  for (int i = 0; i < num_permissions_policy_declarations; ++i) {
+    permissions_policy[i].feature = available_features[i];
+    for (unsigned int j = 0; j < 5; ++j) {
+      std::string suffix_str =
+          base::NumberToString(suffix) + base::NumberToString(j);
+
+      const auto origin =
+          url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
+      permissions_policy[i].allowlist.push_back(origin.Serialize());
+    }
+  }
+  return permissions_policy;
 }
 
 std::vector<apps::ProtocolHandlerInfo> CreateRandomProtocolHandlers(
@@ -431,6 +468,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetParentAppId(base::NumberToString(random.next_uint()));
 
   app->SetHandleLinks(random.next_enum<blink::mojom::HandleLinks>());
+
+  if (random.next_bool())
+    app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));
 
   // `random` should not be used after the chromeos block if the result
   // is expected to be deterministic across cros and non-cros builds.

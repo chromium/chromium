@@ -489,6 +489,15 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   }
 
   web_app_info->translations = manifest.translations;
+
+  web_app_info->permissions_policy.clear();
+  for (const auto& decl : manifest.permissions_policy) {
+    PermissionsPolicyDeclaration copy;
+    copy.feature = decl->feature;
+    for (const auto& origin : decl->allowlist)
+      copy.allowlist.push_back(origin);
+    web_app_info->permissions_policy.push_back(std::move(copy));
+  }
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(

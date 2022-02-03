@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -577,6 +578,18 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->set_parent_app_id(*web_app.parent_app_id_);
   }
 
+  if (!web_app.permissions_policy().empty()) {
+    auto& policy = *local_data->mutable_permissions_policy();
+    for (const auto& decl : web_app.permissions_policy()) {
+      WebAppPermissionsPolicy proto_policy;
+      proto_policy.set_feature(decl.feature);
+      for (const auto& origin : decl.allowlist) {
+        proto_policy.add_allowlist(origin);
+      }
+      policy.Add(std::move(proto_policy));
+    }
+  }
+
   return local_data;
 }
 
@@ -1084,6 +1097,19 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   if (local_data.has_parent_app_id()) {
     web_app->parent_app_id_ = local_data.parent_app_id();
+  }
+
+  if (local_data.permissions_policy_size()) {
+    std::vector<PermissionsPolicyDeclaration> policy;
+    for (const auto& decl_proto : local_data.permissions_policy()) {
+      PermissionsPolicyDeclaration decl;
+      decl.feature = decl_proto.feature();
+      for (const std::string& origin : decl_proto.allowlist()) {
+        decl.allowlist.push_back(origin);
+      }
+      policy.push_back(decl);
+    }
+    web_app->SetPermissionsPolicy(policy);
   }
 
   return web_app;
