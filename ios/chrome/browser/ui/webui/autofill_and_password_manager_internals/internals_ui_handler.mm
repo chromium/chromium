@@ -59,12 +59,12 @@ InternalsUIHandler::~InternalsUIHandler() {
 }
 
 void InternalsUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "loaded", base::BindRepeating(&InternalsUIHandler::OnLoaded,
                                     base::Unretained(this)));
 }
 
-void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
+void InternalsUIHandler::OnLoaded(const base::Value::ConstListView args) {
   base::Value load_event(call_on_load_);
   base::Value empty;
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",

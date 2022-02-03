@@ -52,7 +52,7 @@ class InternalsUIHandler : public web::WebUIIOSMessageHandler,
   void EndSubscription();
 
   // JavaScript call handler.
-  void OnLoaded(const base::ListValue* args);
+  void OnLoaded(const base::Value::ConstListView args);
 
  private:
   // JavaScript function to be called on load.
