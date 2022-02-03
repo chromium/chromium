@@ -313,15 +313,13 @@ interface NetworkService {
   ClearSCTAuditingCache();
 
   // Configures SCT auditing.
-  // This allows the embedder to specify whether SCT auditing should be enabled,
-  // what sampling rate to use on reports, where reports should be sent, and the
-  // traffic annotation to use.
+  // This allows the embedder to specify what sampling rate to use on SCT
+  // auditing reports, where reports should be sent, and the traffic annotation
+  // to use.
   [EnableIf=is_ct_supported]
-  ConfigureSCTAuditing(bool enabled,
-                       double sampling_rate,
+  ConfigureSCTAuditing(double sampling_rate,
                        url.mojom.Url report_uri,
                        MutableNetworkTrafficAnnotationTag traffic_annotation);
-
 
   // Updates the log list used for CT verification. `update_time` should
   // contain the timestamp that the log list was considered fresh/current, in

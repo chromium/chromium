@@ -68,6 +68,8 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/sct_status_flags.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_options.h"
@@ -143,6 +145,7 @@
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
+#include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -7433,6 +7436,52 @@ TEST_F(NetworkContextTest, HttpAuthUrlFilter) {
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogleSubdomain));
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kBlocked));
 }
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+// Tests that NetworkContext doesn't enqueue SCT reports for auditing if the
+// feature is disabled.
+TEST_F(NetworkContextTest, DisableSCTReportAuditing) {
+  const char kHostname[] = "foo.test.";
+  scoped_refptr<net::X509Certificate> chain =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(chain.get());
+  const net::HostPortPair kHostPortPair = net::HostPortPair(kHostname, 0);
+
+  scoped_refptr<net::ct::SignedCertificateTimestamp> sct(
+      new net::ct::SignedCertificateTimestamp());
+  sct->version = net::ct::SignedCertificateTimestamp::V1;
+
+  // The particular value of the log ID doesn't matter; it just has to be the
+  // correct length.
+  const unsigned char kTestLogId[] = {
+      0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+      0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+      0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+  const std::string log_id(reinterpret_cast<const char*>(kTestLogId),
+                           sizeof(kTestLogId));
+  sct->log_id = log_id;
+  sct->timestamp = base::Time::Now();
+  sct->origin = net::ct::SignedCertificateTimestamp::SCT_EMBEDDED;
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  sct_list.push_back(
+      net::SignedCertificateTimestampAndStatus(sct, net::ct::SCT_STATUS_OK));
+
+  for (bool enabled : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "Enabled: " << enabled);
+    base::HistogramTester histograms;
+    mojom::NetworkContextParamsPtr params =
+        CreateNetworkContextParamsForTesting();
+    params->enable_sct_auditing = enabled;
+    std::unique_ptr<NetworkContext> network_context =
+        CreateContextWithParams(std::move(params));
+    network_context->MaybeEnqueueSCTReport(kHostPortPair, chain.get(),
+                                           sct_list);
+    histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSampled",
+                                enabled ? 1 : 0);
+    network_service()->ClearSCTAuditingCache();
+  }
+}
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 }  // namespace
 

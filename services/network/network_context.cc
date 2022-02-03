@@ -353,7 +353,6 @@ class SCTAuditingDelegate : public net::SCTAuditingDelegate {
       const net::X509Certificate* validated_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps) override;
-  bool IsSCTAuditingEnabled() override;
 
  private:
   base::WeakPtr<NetworkContext> context_;
@@ -374,12 +373,6 @@ void SCTAuditingDelegate::MaybeEnqueueReport(
     return;
   context_->MaybeEnqueueSCTReport(host_port_pair, validated_certificate_chain,
                                   signed_certificate_timestamps);
-}
-
-bool SCTAuditingDelegate::IsSCTAuditingEnabled() {
-  if (!context_)
-    return false;
-  return context_->sct_auditing_handler()->is_enabled();
 }
 
 // Filters `log_list` for disqualified or Google-operated logs,
@@ -1401,8 +1394,7 @@ int NetworkContext::CheckCTComplianceForSignedExchange(
           net::TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
           cert_verify_result.policy_compliance, network_isolation_key);
 
-  if (url_request_context_->sct_auditing_delegate() &&
-      url_request_context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {
+  if (url_request_context_->sct_auditing_delegate()) {
     url_request_context_->sct_auditing_delegate()->MaybeEnqueueReport(
         host_port_pair, verified_cert, cert_verify_result.scts);
   }

@@ -65,12 +65,9 @@ GURL& SCTReportingService::GetReportURLInstance() {
 
 // static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
-  bool is_sct_auditing_enabled =
-      base::FeatureList::IsEnabled(features::kSCTAuditing);
   double sct_sampling_rate = features::kSCTAuditingSamplingRate.Get();
   content::GetNetworkService()->ConfigureSCTAuditing(
-      is_sct_auditing_enabled, sct_sampling_rate,
-      SCTReportingService::GetReportURLInstance(),
+      sct_sampling_rate, SCTReportingService::GetReportURLInstance(),
       net::MutableNetworkTrafficAnnotationTag(
           kSCTAuditReportTrafficAnnotation));
 }
@@ -116,7 +113,8 @@ void SCTReportingService::SetReportingEnabled(bool enabled) {
 }
 
 void SCTReportingService::OnPreferenceChanged() {
-  const bool enabled = safe_browsing_service_ &&
+  const bool enabled = base::FeatureList::IsEnabled(features::kSCTAuditing) &&
+                       safe_browsing_service_ &&
                        safe_browsing_service_->enabled_by_prefs() &&
                        safe_browsing::IsExtendedReportingEnabled(pref_service_);
   SetReportingEnabled(enabled);

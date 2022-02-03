@@ -60,7 +60,6 @@ class SCTAuditingHandlerTest : public testing::Test {
 
     // Set up SCT auditing configuration.
     auto* cache = network_service_->sct_auditing_cache();
-    cache->set_enabled(true);
     cache->set_sampling_rate(1.0);
     cache->set_report_uri(GURL("https://example.test"));
     cache->set_traffic_annotation(
@@ -247,7 +246,6 @@ TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
     auto* file_writer = handler.GetFileWriterForTesting();
     ASSERT_TRUE(file_writer);
 
-    ASSERT_TRUE(handler.is_enabled());
     ASSERT_FALSE(file_writer->HasPendingWrite());
 
     // Add a Reporter to the Handler and check that it gets scheduled to be

@@ -77,7 +77,6 @@ class SCTAuditingCacheTest : public testing::Test {
   // sets up the URLLoaderFactory. Individual tests can directly call the set_*
   // methods to tweak the configuration.
   void InitSCTAuditing(SCTAuditingCache* cache) {
-    cache->set_enabled(true);
     cache->set_sampling_rate(1.0);
     cache->set_report_uri(GURL("https://example.test"));
     cache->set_traffic_annotation(
@@ -181,26 +180,6 @@ net::HashValue ComputeCacheKey(
 }
 
 }  // namespace
-
-// Test that if auditing is disabled, no reports are cached.
-TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenAuditingDisabled) {
-  SCTAuditingCache cache(10);
-  InitSCTAuditing(&cache);
-  cache.set_enabled(false);
-
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions1", "signature1", base::Time::Now(),
-                       net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair, chain_.get(),
-                           sct_list);
-
-  EXPECT_EQ(0u, cache.GetCacheForTesting()->size());
-  EXPECT_EQ(0u, network_context_->sct_auditing_handler()
-                    ->GetPendingReportersForTesting()
-                    ->size());
-}
 
 // Test that inserting and retrieving a report works.
 TEST_F(SCTAuditingCacheTest, InsertAndRetrieveReport) {

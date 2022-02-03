@@ -70,9 +70,13 @@ void SCTAuditingCache::MaybeEnqueueReport(
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
-  if (!enabled_)
-    return;
-
+  if (!histogram_timer_.IsRunning()) {
+    // High-water-mark metrics get logged hourly (rather than once-per-session
+    // at shutdown, as Network Service shutdown is not consistent and
+    // non-browser processes can fail to report metrics during shutdown).
+    histogram_timer_.Start(FROM_HERE, base::Hours(1), this,
+                           &SCTAuditingCache::ReportHWMMetrics);
+  }
   auto report = std::make_unique<sct_auditing::SCTClientReport>();
   auto* tls_report = report->add_certificate_report();
 
@@ -163,28 +167,8 @@ void SCTAuditingCache::ClearCache() {
   dedupe_cache_.Clear();
 }
 
-void SCTAuditingCache::set_enabled(bool enabled) {
-  enabled_ = enabled;
-  SetPeriodicMetricsEnabled(enabled);
-}
-
 void SCTAuditingCache::ReportHWMMetrics() {
-  if (!enabled_)
-    return;
   RecordSCTAuditingCacheHighWaterMarkMetrics(dedupe_cache_size_hwm_);
-}
-
-void SCTAuditingCache::SetPeriodicMetricsEnabled(bool enabled) {
-  // High-water-mark metrics get logged hourly (rather than once-per-session at
-  // shutdown, as Network Service shutdown is not consistent and non-browser
-  // processes can fail to report metrics during shutdown). The timer should
-  // only be running if SCT auditing is enabled.
-  if (enabled) {
-    histogram_timer_.Start(FROM_HERE, base::Hours(1), this,
-                           &SCTAuditingCache::ReportHWMMetrics);
-  } else {
-    histogram_timer_.Stop();
-  }
 }
 
 }  // namespace network

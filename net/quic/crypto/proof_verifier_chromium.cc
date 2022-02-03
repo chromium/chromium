@@ -540,8 +540,7 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
           cert_verify_result.policy_compliance,
           proof_verifier_->network_isolation_key_);
 
-  if (sct_auditing_delegate_ &&
-      sct_auditing_delegate_->IsSCTAuditingEnabled()) {
+  if (sct_auditing_delegate_) {
     sct_auditing_delegate_->MaybeEnqueueReport(
         HostPortPair(hostname_, port_), cert_verify_result.verified_cert.get(),
         cert_verify_result.scts);

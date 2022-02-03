@@ -72,7 +72,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
 
   void ClearCache();
 
-  void set_enabled(bool enabled);
   void set_sampling_rate(double rate) { sampling_rate_ = rate; }
   void set_report_uri(const GURL& report_uri) { report_uri_ = report_uri; }
   void set_popular_scts(std::vector<std::vector<uint8_t>> popular_scts) {
@@ -93,7 +92,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
 
  private:
   void ReportHWMMetrics();
-  void SetPeriodicMetricsEnabled(bool enabled);
 
   // Value `bool` is ignored in the dedupe cache. This cache only stores
   // recently seen hashes of SCTs in order to deduplicate on SCTs, and the bool
@@ -106,7 +104,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // as an optimization for hashdance clients.
   std::vector<std::vector<uint8_t>> popular_scts_;
 
-  bool enabled_ = false;
   double sampling_rate_ = 0;
   GURL report_uri_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;

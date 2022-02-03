@@ -693,11 +693,9 @@ void NetworkService::ClearSCTAuditingCache() {
 }
 
 void NetworkService::ConfigureSCTAuditing(
-    bool enabled,
     double sampling_rate,
     const GURL& reporting_uri,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  sct_auditing_cache_->set_enabled(enabled);
   sct_auditing_cache_->set_sampling_rate(sampling_rate);
   sct_auditing_cache_->set_report_uri(reporting_uri);
   sct_auditing_cache_->set_traffic_annotation(traffic_annotation);

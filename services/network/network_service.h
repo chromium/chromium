@@ -180,8 +180,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
                     ParseHeadersCallback callback) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
-  void ConfigureSCTAuditing(bool enabled,
-                            double sampling_rate,
+  void ConfigureSCTAuditing(double sampling_rate,
                             const GURL& reporting_uri,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;

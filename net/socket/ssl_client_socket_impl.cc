@@ -1356,8 +1356,7 @@ int SSLClientSocketImpl::CheckCTCompliance() {
           server_cert_verify_result_.policy_compliance,
           ssl_config_.network_isolation_key);
 
-  if (context_->sct_auditing_delegate() &&
-      context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {
+  if (context_->sct_auditing_delegate()) {
     context_->sct_auditing_delegate()->MaybeEnqueueReport(
         host_and_port_, server_cert_verify_result_.verified_cert.get(),
         server_cert_verify_result_.scts);
