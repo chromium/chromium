@@ -5,12 +5,17 @@
 #include "content/public/test/bluetooth_test_utils.h"
 
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
+#include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 
 namespace content {
 
 void SetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter) {
   BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
       std::move(adapter));
+}
+
+void IgnoreBluetoothVisibilityRequirementsForTesting() {
+  WebBluetoothServiceImpl::IgnoreVisibilityRequirementsForTesting();
 }
 
 }  // namespace content

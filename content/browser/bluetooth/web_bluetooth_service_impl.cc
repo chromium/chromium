@@ -194,6 +194,11 @@ void BluetoothDelegateCredentialsCallback(
   std::move(callback).Run(delegate_result, base::UTF16ToUTF8(result));
 }
 
+bool& ShouldIgnoreVisibilityRequirementsForTesting() {
+  static bool should_ignore_visibility_requirements = false;
+  return should_ignore_visibility_requirements;
+}
+
 }  // namespace
 
 // Parameters for a call to RemoteCharacteristicStartNotifications. Used to
@@ -251,6 +256,11 @@ WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
   }
   NOTREACHED();
   return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
+}
+
+// static
+void WebBluetoothServiceImpl::IgnoreVisibilityRequirementsForTesting() {
+  ShouldIgnoreVisibilityRequirementsForTesting() = true;
 }
 
 class WebBluetoothServiceImpl::AdvertisementClient {
@@ -710,6 +720,10 @@ content::RenderFrameHost* WebBluetoothServiceImpl::GetRenderFrameHost() {
 }
 
 void WebBluetoothServiceImpl::OnVisibilityChanged(Visibility visibility) {
+  if (ShouldIgnoreVisibilityRequirementsForTesting()) {
+    return;
+  }
+
   if (visibility == content::Visibility::HIDDEN ||
       visibility == content::Visibility::OCCLUDED) {
     ClearAdvertisementClients();
@@ -718,6 +732,10 @@ void WebBluetoothServiceImpl::OnVisibilityChanged(Visibility visibility) {
 
 void WebBluetoothServiceImpl::OnWebContentsLostFocus(
     RenderWidgetHost* render_widget_host) {
+  if (ShouldIgnoreVisibilityRequirementsForTesting()) {
+    return;
+  }
+
   ClearAdvertisementClients();
 }
 

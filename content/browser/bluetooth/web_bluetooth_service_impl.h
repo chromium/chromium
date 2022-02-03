@@ -84,6 +84,12 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
+  // Calling this methods prevents WebBluetoothServiceImpl from clearing up its
+  // WatchAdvertisement clients when the window either loses focus or becomes
+  // hidden or occluded. This method is meant to be called from browser tests to
+  // prevent flakiness.
+  static void IgnoreVisibilityRequirementsForTesting();
+
   WebBluetoothServiceImpl(const WebBluetoothServiceImpl&) = delete;
   WebBluetoothServiceImpl& operator=(const WebBluetoothServiceImpl&) = delete;
 

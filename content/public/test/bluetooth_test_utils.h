@@ -17,6 +17,11 @@ namespace content {
 // BluetoothAdapterFactoryWrapper::GetAdapter().
 void SetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
+// Configure WebBluetoothServiceImpl to not clear its advertisement clients
+// lists when the window loses focus or becomes hidden or occluded, to avoid
+// flakiness in browser tests.
+void IgnoreBluetoothVisibilityRequirementsForTesting();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_BLUETOOTH_TEST_UTILS_H_

@@ -31,6 +31,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/bluetooth_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
@@ -740,6 +741,17 @@ class WebBluetoothTestWithNewPermissionsBackendEnabled
       const WebBluetoothTestWithNewPermissionsBackendEnabled&) = delete;
   WebBluetoothTestWithNewPermissionsBackendEnabled& operator=(
       const WebBluetoothTestWithNewPermissionsBackendEnabled&) = delete;
+
+  void SetUp() override {
+    // Called to prevent flakiness that may arise from changes in the window
+    // visibility. WebBluetoothServiceImpl may clear up its WatchAdvertisement
+    // client lists before being able to simulate the device advertisement when
+    // the window visibility changes or lose focus, resulting in timeouts from
+    // promises that never resolve. This function prevents this clean up from
+    // happening.
+    content::IgnoreBluetoothVisibilityRequirementsForTesting();
+    WebBluetoothTest::SetUp();
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
