@@ -55,6 +55,11 @@ const char kLauncherAppSortDescription[] =
     "To evaluate an enhanced Launcher experience that enables users to reorder "
     "their apps in order to find them more easily.";
 
+const char kLeakDetectionUnauthenticated[] =
+    "Leak detection for signed out users.";
+const char kLeakDetectionUnauthenticatedDescription[] =
+    "Enables leak detection feature for signed out users.";
+
 const char kAllowInsecureLocalhostName[] =
     "Allow invalid certificates for resources loaded from localhost.";
 const char kAllowInsecureLocalhostDescription[] =

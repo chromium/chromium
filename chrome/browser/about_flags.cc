@@ -7946,6 +7946,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(certificate_transparency::features::
                             kCertificateTransparency2022PolicyAllCerts)},
 
+    {"leak-detection-unauthenticated",
+     flag_descriptions::kLeakDetectionUnauthenticated,
+     flag_descriptions::kLeakDetectionUnauthenticatedDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kLeakDetectionUnauthenticated)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
