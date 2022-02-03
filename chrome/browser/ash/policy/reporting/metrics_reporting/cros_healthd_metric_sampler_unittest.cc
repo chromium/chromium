@@ -169,10 +169,12 @@ cros_healthd::TelemetryInfoPtr CreateBootPerformanceResult(
 
 MetricData CollectData(cros_healthd::TelemetryInfoPtr telemetry_info,
                        cros_healthd::ProbeCategoryEnum probe_category,
-                       CrosHealthdMetricSampler::MetricType metric_type) {
+                       CrosHealthdMetricSampler::MetricType metric_type,
+                       MetricData metric_data) {
   chromeos::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   CrosHealthdMetricSampler sampler(probe_category, metric_type);
+  sampler.SetMetricData(metric_data);
   test::TestEvent<MetricData> metric_collect_event;
 
   sampler.Collect(metric_collect_event.cb());
@@ -252,7 +254,7 @@ TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
           test_case.healthd_encryption_state, test_case.max_keys,
           test_case.key_length, test_case.healthd_encryption_algorithm)),
       cros_healthd::ProbeCategoryEnum::kMemory,
-      CrosHealthdMetricSampler::MetricType::kInfo);
+      CrosHealthdMetricSampler::MetricType::kInfo, MetricData{});
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_memory_info());
@@ -271,7 +273,7 @@ TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
   MetricData result =
       CollectData(CreateThunderboltBusResult(test_case.healthd_security_level),
                   cros_healthd::ProbeCategoryEnum::kBus,
-                  CrosHealthdMetricSampler::MetricType::kInfo);
+                  CrosHealthdMetricSampler::MetricType::kInfo, MetricData{});
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_bus_device_info());
   ASSERT_TRUE(result.info_data().bus_device_info().has_thunderbolt_info());
@@ -280,10 +282,34 @@ TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
       test_case.reporting_security_level);
 }
 
+TEST_F(CrosHealthdMetricSamplerTest, SetMetricData) {
+  MetricData metric_data;
+  auto* const memory_encryption_info_out = metric_data.mutable_info_data()
+                                               ->mutable_memory_info()
+                                               ->mutable_tme_info();
+  memory_encryption_info_out->set_key_length(1);
+  // Pass a null memory result so that only encryption state is set.
+  MetricData result = CollectData(
+      CreateMemoryResult(nullptr), cros_healthd::ProbeCategoryEnum::kMemory,
+      CrosHealthdMetricSampler::MetricType::kInfo, metric_data);
+
+  ASSERT_TRUE(result.has_info_data());
+  ASSERT_TRUE(result.info_data().has_memory_info());
+  ASSERT_TRUE(result.info_data().memory_info().has_tme_info());
+
+  // Since only encryption state should be set by the sampler, we can verify
+  // that the keylength field set above propagated to the metric data.
+  const auto& tme_info = result.info_data().memory_info().tme_info();
+  EXPECT_EQ(tme_info.key_length(), 1);
+  EXPECT_EQ(tme_info.encryption_state(),
+            ::reporting::MEMORY_ENCRYPTION_STATE_DISABLED);
+}
+
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerConfigured) {
-  MetricData result = CollectData(CreateCpuResult(CreateKeylockerInfo(true)),
-                                  cros_healthd::ProbeCategoryEnum::kCpu,
-                                  CrosHealthdMetricSampler::MetricType::kInfo);
+  MetricData result =
+      CollectData(CreateCpuResult(CreateKeylockerInfo(true)),
+                  cros_healthd::ProbeCategoryEnum::kCpu,
+                  CrosHealthdMetricSampler::MetricType::kInfo, MetricData{});
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_cpu_info());
@@ -293,9 +319,10 @@ TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerConfigured) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerUnconfigured) {
-  MetricData result = CollectData(CreateCpuResult(CreateKeylockerInfo(false)),
-                                  cros_healthd::ProbeCategoryEnum::kCpu,
-                                  CrosHealthdMetricSampler::MetricType::kInfo);
+  MetricData result =
+      CollectData(CreateCpuResult(CreateKeylockerInfo(false)),
+                  cros_healthd::ProbeCategoryEnum::kCpu,
+                  CrosHealthdMetricSampler::MetricType::kInfo, MetricData{});
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_cpu_info());
@@ -305,9 +332,9 @@ TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerUnconfigured) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerUnsupported) {
-  MetricData result = CollectData(CreateCpuResult(nullptr),
-                                  cros_healthd::ProbeCategoryEnum::kCpu,
-                                  CrosHealthdMetricSampler::MetricType::kInfo);
+  MetricData result = CollectData(
+      CreateCpuResult(nullptr), cros_healthd::ProbeCategoryEnum::kCpu,
+      CrosHealthdMetricSampler::MetricType::kInfo, MetricData{});
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_cpu_info());
@@ -366,7 +393,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioNormalTest) {
           /*input_gain=*/50, /*input_device_name=*/"airpods", /*underruns=*/2,
           /*severe_underruns=*/2)),
       cros_healthd::ProbeCategoryEnum::kAudio,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
+      CrosHealthdMetricSampler::MetricType::kTelemetry, MetricData{});
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_audio_telemetry());
@@ -384,7 +411,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioEmptyTest) {
           /*input_gain=*/0, /*input_device_name=*/"", /*underruns=*/0,
           /*severe_underruns=*/0)),
       cros_healthd::ProbeCategoryEnum::kAudio,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
+      CrosHealthdMetricSampler::MetricType::kTelemetry, MetricData{});
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_audio_telemetry());
@@ -394,12 +421,12 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioEmptyTest) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceCommonBehavior) {
-  MetricData result =
-      CollectData(CreateBootPerformanceResult(
-                      kBootUpSeconds, kBootUpTimestampSeconds, kShutdownSeconds,
-                      kShutdownTimestampSeconds, kShutdownReason),
-                  cros_healthd::ProbeCategoryEnum::kBootPerformance,
-                  CrosHealthdMetricSampler::MetricType::kTelemetry);
+  MetricData result = CollectData(
+      CreateBootPerformanceResult(kBootUpSeconds, kBootUpTimestampSeconds,
+                                  kShutdownSeconds, kShutdownTimestampSeconds,
+                                  kShutdownReason),
+      cros_healthd::ProbeCategoryEnum::kBootPerformance,
+      CrosHealthdMetricSampler::MetricType::kTelemetry, MetricData{});
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_boot_performance_telemetry());
@@ -423,12 +450,12 @@ TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceCommonBehavior) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceShutdownReasonNA) {
-  MetricData result =
-      CollectData(CreateBootPerformanceResult(
-                      kBootUpSeconds, kBootUpTimestampSeconds, kShutdownSeconds,
-                      kShutdownTimestampSeconds, kShutdownReasonNotApplicable),
-                  cros_healthd::ProbeCategoryEnum::kBootPerformance,
-                  CrosHealthdMetricSampler::MetricType::kTelemetry);
+  MetricData result = CollectData(
+      CreateBootPerformanceResult(kBootUpSeconds, kBootUpTimestampSeconds,
+                                  kShutdownSeconds, kShutdownTimestampSeconds,
+                                  kShutdownReasonNotApplicable),
+      cros_healthd::ProbeCategoryEnum::kBootPerformance,
+      CrosHealthdMetricSampler::MetricType::kTelemetry, MetricData{});
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_boot_performance_telemetry());

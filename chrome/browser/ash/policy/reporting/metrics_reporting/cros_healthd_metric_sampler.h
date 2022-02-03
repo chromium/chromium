@@ -30,7 +30,17 @@ class CrosHealthdMetricSampler : public Sampler {
   // Collect is called to invoke the healthd probing process.
   void Collect(MetricCallback callback) override;
 
+  // Set the metric data that the sampler will collect on. This can be used if
+  // part of the info or telemetry collected for the probe category is set
+  // without the the healthd metric sampler. After one call to Collect(), this
+  // metric data is cleared.
+  void SetMetricData(MetricData metric_data);
+
  private:
+  // The metric data to populate when calling Collect(). This can be set using
+  // SetMetricData and is cleared after every call to Collect()
+  MetricData metric_data_;
+
   // probe_category is the category to probe from the health daemon.
   const chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category_;
 
