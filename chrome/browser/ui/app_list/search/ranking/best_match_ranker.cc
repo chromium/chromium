@@ -44,7 +44,9 @@ bool ShouldIgnoreProvider(ProviderType type) {
 bool ShouldIgnoreResult(const ChromeSearchResult* result) {
   // TODO(crbug.com/1199206): We should have a more robust way of determining
   // omnibox subtypes than using the metrics type.
-  return result->metrics_type() == ash::OMNIBOX_WEB_QUERY;
+  return result->metrics_type() == ash::OMNIBOX_WEB_QUERY ||
+         result->metrics_type() == ash::OMNIBOX_ANSWER ||
+         result->metrics_type() == ash::OMNIBOX_CALCULATOR;
 }
 
 }  // namespace
