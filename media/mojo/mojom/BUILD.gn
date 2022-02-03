@@ -361,10 +361,6 @@ mojom("mojom") {
           cpp = "::media::internal::StatusData"
         },
         {
-          mojom = "media.mojom.Status"
-          cpp = "::media::Status"
-        },
-        {
           mojom = "media.mojom.EncoderStatus"
           cpp = "::media::EncoderStatus"
         },

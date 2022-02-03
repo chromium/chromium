@@ -250,7 +250,7 @@ MATCHER_P(SameStatusCode, status, "") {
   }
 }
 
-// Compares an `arg` Status.code() to a test-supplied StatusCode.
+// Compares an `arg` TypedStatus<T>.code() to a test-supplied StatusCode.
 MATCHER_P(HasStatusCode, status_code, "") {
   return arg.code() == status_code;
 }

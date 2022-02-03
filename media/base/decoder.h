@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_DECODER_H_
 #define MEDIA_BASE_DECODER_H_
 
+#include <ostream>
 #include <string>
 
 #include "media/base/media_export.h"

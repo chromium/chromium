@@ -30,10 +30,6 @@ enum BufferingStateChangeReason;
 [Native]
 enum ChannelLayout;
 
-// See media/base/status_codes.h for descriptions.
-[Native]
-enum StatusCode;
-
 // See media/base/media_content_type.h for descriptions.
 [Native]
 enum MediaContentType;
@@ -488,10 +484,6 @@ struct StatusData {
   array<mojo_base.mojom.Value> frames;
   array<StatusData> causes;
   mojo_base.mojom.Value data;
-};
-
-struct Status {
-  StatusData? internal;
 };
 
 struct EncoderStatus {

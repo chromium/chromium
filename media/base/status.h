@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
-#include "media/base/status_codes.h"
 
 // Mojo namespaces for serialization friend declarations.
 namespace mojo {
@@ -459,18 +458,6 @@ template <typename T>
 inline bool operator!=(typename T::Codes code, const TypedStatus<T>& status) {
   return status != code;
 }
-
-// Define TypedStatus<StatusCode> as Status in the media namespace for
-// backwards compatibility. Also define StatusOr as Status::Or for the
-// same reason.
-struct GeneralStatusTraits {
-  using Codes = StatusCode;
-  static constexpr StatusGroupType Group() { return "GeneralStatusCode"; }
-  static constexpr StatusCode DefaultEnumValue() { return StatusCode::kOk; }
-};
-using Status = TypedStatus<GeneralStatusTraits>;
-template <typename T>
-using StatusOr = Status::Or<T>;
 
 // Convenience function to return |kOk|.
 // OK won't have a message, trace, or data associated with them, and DCHECK

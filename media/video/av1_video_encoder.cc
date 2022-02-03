@@ -324,7 +324,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         options_.frame_size, frame->timestamp());
 
     if (resized_frame) {
-      Status conv_status =
+      auto conv_status =
           ConvertAndScaleFrame(*frame, *resized_frame, resize_buf_);
       if (!conv_status.is_ok()) {
         std::move(done_cb).Run(

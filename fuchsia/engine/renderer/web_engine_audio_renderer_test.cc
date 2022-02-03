@@ -39,7 +39,6 @@ class TestDemuxerStream : public media::DemuxerStream {
     explicit ReadResult(const media::AudioDecoderConfig& config)
         : config(config) {}
 
-    media::Status status;
     absl::optional<media::AudioDecoderConfig> config;
     scoped_refptr<media::DecoderBuffer> buffer;
   };

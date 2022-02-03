@@ -21,8 +21,11 @@ struct EncoderStatusTraits {
     kEncoderInitializationError = 7,
     kEncoderFailedFlush = 8,
     kEncoderMojoConnectionError = 9,
+    kUnsupportedFrameFormat = 10,
+    kScalingError = 11,
+    kFormatConversionError = 12,
   };
-  static constexpr StatusGroupType Group() { return "EncoderStatusCodes"; }
+  static constexpr StatusGroupType Group() { return "EncoderStatus"; }
   static constexpr Codes DefaultEnumValue() { return Codes::kOk; }
 };
 

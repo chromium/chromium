@@ -95,6 +95,7 @@ source_set("formats") {
       "mp4/avc.h",
       "mp4/h264_annex_b_to_avc_bitstream_converter.cc",
       "mp4/h264_annex_b_to_avc_bitstream_converter.h",
+      "mp4/mp4_status.h",
       "mpeg/adts_constants.cc",
       "mpeg/adts_constants.h",
       "mpeg/adts_stream_parser.cc",

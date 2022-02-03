@@ -32,36 +32,21 @@ struct MediaSerializer<UselessThingToBeSerialized> {
 
 }  // namespace internal
 
-enum class NoDefaultNoOkType : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
-
-struct NoDefaultNoOkTypeTraits {
-  using Codes = NoDefaultNoOkType;
-  static constexpr StatusGroupType Group() {
-    return "GroupWithNoDefaultNoOkTypeForTests";
-  }
+struct NoOkStatusTypeTraits {
+  enum class Codes : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
+  static constexpr StatusGroupType Group() { return "NoDefaultNoOkType"; }
 };
 
-enum class NoDefaultHasOkType : StatusCodeType {
-  kOk = 0,
-  kFoo = 1,
-  kBar = 2,
-  kBaz = 3
-};
-
-struct NoDefaultHasOkTypeTraits {
-  using Codes = NoDefaultHasOkType;
-  static constexpr StatusGroupType Group() {
-    return "GroupWithNoDefaultHasOkTypeForTests";
-  }
-};
-
-enum class NonZeroOkType : StatusCodeType {
-  kOk = 100,
-  kFoo = 101,
+struct ZeroValueOkTypeTraits {
+  enum class Codes : StatusCodeType { kOk = 0, kFoo = 1, kBar = 2, kBaz = 3 };
+  static constexpr StatusGroupType Group() { return "ZeroValueOkTypeTraits"; }
 };
 
 struct NonZeroOkTypeTraits {
-  using Codes = NonZeroOkType;
+  enum class Codes : StatusCodeType {
+    kOk = 100,
+    kFoo = 0,
+  };
   static constexpr StatusGroupType Group() { return "GroupWithNonZeroOkType"; }
 };
 
@@ -72,20 +57,21 @@ struct MapValueCodeTraits {
   }
 };
 
-// Friend class of MediaLog for access to internal constants.
 class StatusTest : public testing::Test {
  public:
-  Status DontFail() { return OkStatus(); }
+  using NormalStatus = TypedStatus<ZeroValueOkTypeTraits>;
+
+  NormalStatus DontFail() { return OkStatus(); }
 
   // Return a failure, with a line number.  Record the lower and upper line
   // number limits so that we can make sure that the error's line is bounded.
   constexpr static int lower_line_limit_ = __LINE__;
-  Status FailEasily() {
-    return Status(StatusCode::kCodeOnlyForTesting, "Message");
+  NormalStatus FailEasily() {
+    return NormalStatus(NormalStatus::Codes::kFoo, "Message");
   }
   constexpr static int upper_line_limit_ = __LINE__;
 
-  Status FailRecursively(unsigned int count) {
+  NormalStatus FailRecursively(unsigned int count) {
     if (!count) {
       return FailEasily();
     }
@@ -93,26 +79,25 @@ class StatusTest : public testing::Test {
   }
 
   template <typename T>
-  Status FailWithData(const char* key, const T& t) {
-    return Status(StatusCode::kCodeOnlyForTesting, "Message", FROM_HERE)
+  NormalStatus FailWithData(const char* key, const T& t) {
+    return NormalStatus(NormalStatus::Codes::kFoo, "Message", FROM_HERE)
         .WithData(key, t);
   }
 
-  Status FailWithCause() {
-    Status err = FailEasily();
+  NormalStatus FailWithCause() {
+    NormalStatus err = FailEasily();
     return FailEasily().AddCause(std::move(err));
   }
 
-  Status DoSomethingGiveItBack(Status me) {
+  NormalStatus DoSomethingGiveItBack(NormalStatus me) {
     me.WithData("data", "Hey you! psst! Help me outta here! I'm trapped!");
     return me;
   }
 
-  // Make sure that the typical usage of StatusOr actually compiles.
-  StatusOr<std::unique_ptr<int>> TypicalStatusOrUsage(bool succeed) {
+  NormalStatus::Or<std::unique_ptr<int>> TypicalStatusOrUsage(bool succeed) {
     if (succeed)
       return std::make_unique<int>(123);
-    return Status(StatusCode::kCodeOnlyForTesting);
+    return NormalStatus::Codes::kFoo;
   }
 
   // Helpers for the Map test case.
@@ -154,13 +139,13 @@ class StatusTest : public testing::Test {
 };
 
 TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {
-  Status ok = DontFail();
+  NormalStatus ok = DontFail();
   base::Value actual = MediaSerialize(ok);
   ASSERT_EQ(actual.GetString(), "Ok");
 }
 
 TEST_F(StatusTest, SingleLayerError) {
-  Status failed = FailEasily();
+  NormalStatus failed = FailEasily();
   base::Value actual = MediaSerialize(failed);
   ASSERT_EQ(actual.DictSize(), 6ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
@@ -181,7 +166,7 @@ TEST_F(StatusTest, SingleLayerError) {
 }
 
 TEST_F(StatusTest, MultipleErrorLayer) {
-  Status failed = FailRecursively(3);
+  NormalStatus failed = FailRecursively(3);
   base::Value actual = MediaSerialize(failed);
   ASSERT_EQ(actual.DictSize(), 6ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
@@ -194,7 +179,7 @@ TEST_F(StatusTest, MultipleErrorLayer) {
 }
 
 TEST_F(StatusTest, CanHaveData) {
-  Status failed = FailWithData("example", "data");
+  NormalStatus failed = FailWithData("example", "data");
   base::Value actual = MediaSerialize(failed);
   ASSERT_EQ(actual.DictSize(), 6ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
@@ -209,7 +194,8 @@ TEST_F(StatusTest, CanHaveData) {
 }
 
 TEST_F(StatusTest, CanUseCustomSerializer) {
-  Status failed = FailWithData("example", UselessThingToBeSerialized("F"));
+  NormalStatus failed =
+      FailWithData("example", UselessThingToBeSerialized("F"));
   base::Value actual = MediaSerialize(failed);
   ASSERT_EQ(actual.DictSize(), 6ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
@@ -224,7 +210,7 @@ TEST_F(StatusTest, CanUseCustomSerializer) {
 }
 
 TEST_F(StatusTest, CausedByHasVector) {
-  Status causal = FailWithCause();
+  NormalStatus causal = FailWithCause();
   base::Value actual = MediaSerialize(causal);
   ASSERT_EQ(actual.DictSize(), 6ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
@@ -241,8 +227,8 @@ TEST_F(StatusTest, CausedByHasVector) {
 }
 
 TEST_F(StatusTest, CausedByCanAssignCopy) {
-  Status causal = FailWithCause();
-  Status copy_causal = causal;
+  NormalStatus causal = FailWithCause();
+  NormalStatus copy_causal = causal;
   base::Value causal_serialized = MediaSerialize(causal);
   base::Value copy_causal_serialized = MediaSerialize(copy_causal);
 
@@ -264,8 +250,8 @@ TEST_F(StatusTest, CausedByCanAssignCopy) {
 }
 
 TEST_F(StatusTest, CanCopyEasily) {
-  Status failed = FailEasily();
-  Status withData = DoSomethingGiveItBack(failed);
+  NormalStatus failed = FailEasily();
+  NormalStatus withData = DoSomethingGiveItBack(failed);
 
   base::Value actual = MediaSerialize(failed);
   ASSERT_EQ(actual.DictSize(), 6ul);
@@ -291,7 +277,7 @@ TEST_F(StatusTest, StatusOrTypicalUsage) {
 }
 
 TEST_F(StatusTest, StatusOrWithMoveOnlyType) {
-  StatusOr<std::unique_ptr<int>> status_or(std::make_unique<int>(123));
+  NormalStatus::Or<std::unique_ptr<int>> status_or(std::make_unique<int>(123));
   EXPECT_TRUE(status_or.has_value());
   EXPECT_FALSE(status_or.has_error());
   std::unique_ptr<int> result = std::move(status_or).value();
@@ -300,7 +286,7 @@ TEST_F(StatusTest, StatusOrWithMoveOnlyType) {
 }
 
 TEST_F(StatusTest, StatusOrWithCopyableType) {
-  StatusOr<int> status_or(123);
+  NormalStatus::Or<int> status_or(123);
   EXPECT_TRUE(status_or.has_value());
   EXPECT_FALSE(status_or.has_error());
   int result = std::move(status_or).value();
@@ -309,11 +295,12 @@ TEST_F(StatusTest, StatusOrWithCopyableType) {
 
 TEST_F(StatusTest, StatusOrMoveConstructionAndAssignment) {
   // Make sure that we can move-construct and move-assign a move-only value.
-  StatusOr<std::unique_ptr<int>> status_or_0(std::make_unique<int>(123));
+  NormalStatus::Or<std::unique_ptr<int>> status_or_0(
+      std::make_unique<int>(123));
 
-  StatusOr<std::unique_ptr<int>> status_or_1(std::move(status_or_0));
+  NormalStatus::Or<std::unique_ptr<int>> status_or_1(std::move(status_or_0));
 
-  StatusOr<std::unique_ptr<int>> status_or_2 = std::move(status_or_1);
+  NormalStatus::Or<std::unique_ptr<int>> status_or_2 = std::move(status_or_1);
 
   // |status_or_2| should have gotten the original.
   std::unique_ptr<int> value = std::move(status_or_2).value();
@@ -322,19 +309,19 @@ TEST_F(StatusTest, StatusOrMoveConstructionAndAssignment) {
 
 TEST_F(StatusTest, StatusOrCopyWorks) {
   // Make sure that we can move-construct and move-assign a move-only value.
-  StatusOr<int> status_or_0(123);
-  StatusOr<int> status_or_1(std::move(status_or_0));
-  StatusOr<int> status_or_2 = std::move(status_or_1);
+  NormalStatus::Or<int> status_or_0(123);
+  NormalStatus::Or<int> status_or_1(std::move(status_or_0));
+  NormalStatus::Or<int> status_or_2 = std::move(status_or_1);
   EXPECT_EQ(std::move(status_or_2).value(), 123);
 }
 
 TEST_F(StatusTest, StatusOrCodeIsOkWithValue) {
-  StatusOr<int> status_or(123);
-  EXPECT_EQ(status_or.code(), StatusCode::kOk);
+  NormalStatus::Or<int> status_or(123);
+  EXPECT_EQ(status_or.code(), NormalStatus::Codes::kOk);
 }
 
 TEST_F(StatusTest, TypedStatusWithNoDefaultAndNoOk) {
-  using NDStatus = TypedStatus<NoDefaultNoOkTypeTraits>;
+  using NDStatus = TypedStatus<NoOkStatusTypeTraits>;
 
   NDStatus foo = NDStatus::Codes::kFoo;
   EXPECT_EQ(foo.code(), NDStatus::Codes::kFoo);
@@ -361,7 +348,7 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultAndNoOk) {
 }
 
 TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
-  using NDStatus = TypedStatus<NoDefaultHasOkTypeTraits>;
+  using NDStatus = TypedStatus<ZeroValueOkTypeTraits>;
 
   NDStatus foo = NDStatus::Codes::kFoo;
   EXPECT_EQ(foo.code(), NDStatus::Codes::kFoo);
@@ -392,15 +379,15 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
 
 TEST_F(StatusTest, Okayness) {
   EXPECT_FALSE(
-      TypedStatus<NoDefaultNoOkTypeTraits>(NoDefaultNoOkTypeTraits::Codes::kFoo)
+      TypedStatus<NoOkStatusTypeTraits>(NoOkStatusTypeTraits::Codes::kFoo)
           .is_ok());
 
-  EXPECT_FALSE(TypedStatus<NoDefaultHasOkTypeTraits>(
-                   NoDefaultHasOkTypeTraits::Codes::kFoo)
-                   .is_ok());
-  EXPECT_TRUE(TypedStatus<NoDefaultHasOkTypeTraits>(
-                  NoDefaultHasOkTypeTraits::Codes::kOk)
-                  .is_ok());
+  EXPECT_FALSE(
+      TypedStatus<ZeroValueOkTypeTraits>(ZeroValueOkTypeTraits::Codes::kFoo)
+          .is_ok());
+  EXPECT_TRUE(
+      TypedStatus<ZeroValueOkTypeTraits>(ZeroValueOkTypeTraits::Codes::kOk)
+          .is_ok());
 
   EXPECT_FALSE(
       TypedStatus<NonZeroOkTypeTraits>(NonZeroOkTypeTraits::Codes::kFoo)
@@ -411,8 +398,8 @@ TEST_F(StatusTest, Okayness) {
 
 TEST_F(StatusTest, CanConvertOkToCode) {
   // OkStatus() should also be convertible to the enum directly.
-  NoDefaultHasOkTypeTraits::Codes code = OkStatus();
-  EXPECT_EQ(code, NoDefaultHasOkTypeTraits::Codes::kOk);
+  ZeroValueOkTypeTraits::Codes code = OkStatus();
+  EXPECT_EQ(code, ZeroValueOkTypeTraits::Codes::kOk);
 }
 
 TEST_F(StatusTest, OkStatusInitializesToOk) {
@@ -420,58 +407,58 @@ TEST_F(StatusTest, OkStatusInitializesToOk) {
   // status traits that has `kOk`.  We only test explicit construction, though
   // this is probably used as an implicit construction in practice when it's
   // a return value.
-  EXPECT_EQ(TypedStatus<NoDefaultHasOkTypeTraits>(OkStatus()).code(),
-            NoDefaultHasOkTypeTraits::Codes::kOk);
+  EXPECT_EQ(TypedStatus<ZeroValueOkTypeTraits>(OkStatus()).code(),
+            ZeroValueOkTypeTraits::Codes::kOk);
   EXPECT_EQ(TypedStatus<NonZeroOkTypeTraits>(OkStatus()).code(),
             NonZeroOkTypeTraits::Codes::kOk);
 }
 
 TEST_F(StatusTest, StatusOrEqOp) {
   // Test the case of a non-default (non-ok) status
-  StatusOr<std::string> failed = FailEasily();
-  ASSERT_TRUE(failed == StatusCode::kCodeOnlyForTesting);
-  ASSERT_FALSE(failed == StatusCode::kOk);
-  ASSERT_TRUE(failed != StatusCode::kOk);
-  ASSERT_FALSE(failed != StatusCode::kCodeOnlyForTesting);
+  NormalStatus::Or<std::string> failed = FailEasily();
+  ASSERT_TRUE(failed == NormalStatus::Codes::kFoo);
+  ASSERT_FALSE(failed == NormalStatus::Codes::kOk);
+  ASSERT_TRUE(failed != NormalStatus::Codes::kOk);
+  ASSERT_FALSE(failed != NormalStatus::Codes::kFoo);
 
-  StatusOr<std::string> success = std::string("Kirkland > Seattle");
-  ASSERT_TRUE(success != StatusCode::kCodeOnlyForTesting);
-  ASSERT_FALSE(success != StatusCode::kOk);
-  ASSERT_TRUE(success == StatusCode::kOk);
-  ASSERT_FALSE(success == StatusCode::kCodeOnlyForTesting);
+  NormalStatus::Or<std::string> success = std::string("Kirkland > Seattle");
+  ASSERT_TRUE(success != NormalStatus::Codes::kFoo);
+  ASSERT_FALSE(success != NormalStatus::Codes::kOk);
+  ASSERT_TRUE(success == NormalStatus::Codes::kOk);
+  ASSERT_FALSE(success == NormalStatus::Codes::kFoo);
 }
 
 TEST_F(StatusTest, OrTypeMapping) {
-  StatusOr<std::string> failed = FailEasily();
-  StatusOr<int> failed_int = std::move(failed).MapValue(
+  NormalStatus::Or<std::string> failed = FailEasily();
+  NormalStatus::Or<int> failed_int = std::move(failed).MapValue(
       [](std::string value) { return atoi(value.c_str()); });
-  ASSERT_TRUE(failed_int == StatusCode::kCodeOnlyForTesting);
+  ASSERT_TRUE(failed_int == NormalStatus::Codes::kFoo);
 
   // Try it with a c++ lambda
-  StatusOr<std::string> success = std::string("12345");
-  StatusOr<int> success_int = std::move(success).MapValue(
+  NormalStatus::Or<std::string> success = std::string("12345");
+  NormalStatus::Or<int> success_int = std::move(success).MapValue(
       [](std::string value) { return atoi(value.c_str()); });
-  ASSERT_TRUE(success_int == StatusCode::kOk);
+  ASSERT_TRUE(success_int == NormalStatus::Codes::kOk);
   ASSERT_EQ(std::move(success_int).value(), 12345);
 
   // try it with a lambda returning-lambda
   auto finder = [](char search) {
-    return [search](std::string seq) -> StatusOr<int> {
+    return [search](std::string seq) -> NormalStatus::Or<int> {
       auto count = std::count(seq.begin(), seq.end(), search);
       if (count == 0)
-        return StatusCode::kCodeOnlyForTesting;
+        return NormalStatus::Codes::kFoo;
       return count;
     };
   };
-  StatusOr<std::string> hw = std::string("hello world");
+  NormalStatus::Or<std::string> hw = std::string("hello world");
 
-  StatusOr<int> success_count = std::move(hw).MapValue(finder('l'));
-  ASSERT_TRUE(success_count == StatusCode::kOk);
+  NormalStatus::Or<int> success_count = std::move(hw).MapValue(finder('l'));
+  ASSERT_TRUE(success_count == NormalStatus::Codes::kOk);
   ASSERT_EQ(std::move(success_count).value(), 3);
 
   hw = std::string("hello world");
-  StatusOr<int> fail_count = std::move(hw).MapValue(finder('x'));
-  ASSERT_TRUE(fail_count == StatusCode::kCodeOnlyForTesting);
+  NormalStatus::Or<int> fail_count = std::move(hw).MapValue(finder('x'));
+  ASSERT_TRUE(fail_count == NormalStatus::Codes::kFoo);
 
   // Test it chained together! the return type should cascade through.
   auto case_0 = GetStartingValue(0).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
@@ -499,7 +486,7 @@ TEST_F(StatusTest, OrTypeMapping) {
 }
 
 TEST_F(StatusTest, OrTypeMappingToOtherOrType) {
-  using A = TypedStatus<NoDefaultNoOkTypeTraits>;
+  using A = TypedStatus<NoOkStatusTypeTraits>;
   using B = TypedStatus<MapValueCodeTraits>;
 
   auto unwrap = [](std::unique_ptr<int> ptr) -> A::Or<int> {

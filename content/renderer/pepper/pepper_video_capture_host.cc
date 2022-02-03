@@ -165,7 +165,7 @@ void PepperVideoCaptureHost::OnFrameReady(
                 buffers_[i].buffer->size(), frame->timestamp());
         int uv_size = mapped_frame->coded_size().GetArea() / 2;
         std::vector<uint8_t> temp_uv_buffer(uv_size);
-        media::Status status = media::ConvertAndScaleFrame(
+        media::EncoderStatus status = media::ConvertAndScaleFrame(
             *mapped_frame, *dst_frame, temp_uv_buffer);
         if (!status.is_ok())
           return;

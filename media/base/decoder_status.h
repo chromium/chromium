@@ -40,7 +40,7 @@ struct DecoderStatusTraits {
     kCantChangeCodec = 204,
     kFailedToCreateDecoder = 205,
   };
-  static constexpr StatusGroupType Group() { return "DecoderStatusCodes"; }
+  static constexpr StatusGroupType Group() { return "DecoderStatus"; }
   static constexpr Codes DefaultEnumValue() { return Codes::kOk; }
 };
 

@@ -55,7 +55,7 @@ class MojoAudioEncoder final : public AudioEncoder,
   using PendingCallbackHandle = PendingCallbacksList::iterator;
 
   // It is different from regular EncoderStatusCB because mojo only gives us
-  // `const Status&` instead of `Status`.
+  // `const EncoderStatus&` instead of `EncoderStatus`.
   using WrappedEncoderStatusCB =
       base::OnceCallback<void(const EncoderStatus& error)>;
 

@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
-#include "media/base/status.h"
 #include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/rect.h"
@@ -190,7 +190,7 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 // Copy pixel data from |src_frame| to |dst_frame| applying scaling and pixel
 // format conversion as needed. Both frames need to be mappabale and have either
 // I420 or NV12 pixel format.
-[[nodiscard]] MEDIA_EXPORT Status
+[[nodiscard]] MEDIA_EXPORT EncoderStatus
 ConvertAndScaleFrame(const VideoFrame& src_frame,
                      VideoFrame& dst_frame,
                      std::vector<uint8_t>& tmp_buf);

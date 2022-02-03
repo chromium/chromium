@@ -282,7 +282,7 @@ void VideoCaptureClient::OnBufferReady(
         nv12_to_i420_pool_->CreateFrame(
             media::PIXEL_FORMAT_I420, frame->coded_size(),
             frame->visible_rect(), frame->natural_size(), frame->timestamp());
-    media::Status status =
+    media::EncoderStatus status =
         media::ConvertAndScaleFrame(*frame, *new_frame, nv12_to_i420_tmp_buf_);
     if (!status.is_ok()) {
       LOG(DFATAL) << "Unable to convert frame to I420.";

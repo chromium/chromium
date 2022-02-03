@@ -228,16 +228,16 @@ scoped_refptr<media::VideoFrame> MakeScaledVideoFrame(
   if (tmp_buffer_needed) {
     std::unique_ptr<std::vector<uint8_t>> tmp_buffer =
         shared_resources->CreateTemporaryVectorBuffer();
-    media::Status status =
+    media::EncoderStatus status =
         media::ConvertAndScaleFrame(*source_frame, *dst_frame, *tmp_buffer);
     shared_resources->ReleaseTemporaryVectorBuffer(std::move(tmp_buffer));
-    return status == media::StatusCode::kOk ? dst_frame : nullptr;
+    return status.is_ok() ? dst_frame : nullptr;
   }
 
   std::vector<uint8_t> tmp_buffer;
-  media::Status status =
+  media::EncoderStatus status =
       media::ConvertAndScaleFrame(*source_frame, *dst_frame, tmp_buffer);
-  return status == media::StatusCode::kOk ? dst_frame : nullptr;
+  return status.is_ok() ? dst_frame : nullptr;
 }
 
 scoped_refptr<media::VideoFrame> MaybeConvertAndScaleFrame(

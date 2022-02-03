@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "media/base/status_codes.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -743,17 +742,17 @@ bool ReadbackTexturePlaneToMemorySync(const VideoFrame& src_frame,
                                              dest_pixels, dest_stride, ri);
 }
 
-Status ConvertAndScaleFrame(const VideoFrame& src_frame,
-                            VideoFrame& dst_frame,
-                            std::vector<uint8_t>& tmp_buf) {
+EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
+                                   VideoFrame& dst_frame,
+                                   std::vector<uint8_t>& tmp_buf) {
   constexpr auto kDefaultFiltering = libyuv::kFilterBox;
   if (!src_frame.IsMappable() || !dst_frame.IsMappable())
-    return Status(StatusCode::kUnsupportedFrameFormatError);
+    return EncoderStatus::Codes::kUnsupportedFrameFormat;
 
   // I420A can only be produced from I420A.
   if (dst_frame.format() == PIXEL_FORMAT_I420A &&
       src_frame.format() != PIXEL_FORMAT_I420A) {
-    return Status(StatusCode::kUnsupportedFrameFormatError);
+    return EncoderStatus::Codes::kUnsupportedFrameFormat;
   }
 
   if ((dst_frame.format() == PIXEL_FORMAT_I420 ||
@@ -782,7 +781,7 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
           kDefaultFiltering);
       if (error)
-        return Status(StatusCode::kInvalidArgument);
+        return EncoderStatus::Codes::kScalingError;
       src_data = tmp_buf.data();
       src_stride = stride;
     }
@@ -800,7 +799,9 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
           dst_frame.visible_data(VideoFrame::kVPlane),
           dst_frame.stride(VideoFrame::kVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
-      return error ? Status(StatusCode::kInvalidArgument) : Status();
+      if (error)
+        return EncoderStatus::Codes::kFormatConversionError;
+      return OkStatus();
     }
 
     auto convert_fn = (src_frame.format() == PIXEL_FORMAT_XBGR ||
@@ -813,7 +814,9 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
         dst_frame.visible_data(VideoFrame::kUVPlane),
         dst_frame.stride(VideoFrame::kUVPlane),
         dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
-    return error ? Status(StatusCode::kInvalidArgument) : Status();
+    if (error)
+      return EncoderStatus::Codes::kFormatConversionError;
+    return OkStatus();
   }
 
   // Converting between YUV formats doesn't change the color space.
@@ -849,7 +852,9 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
         dst_frame.visible_data(VideoFrame::kVPlane),
         dst_frame.stride(VideoFrame::kVPlane), dst_frame.visible_rect().width(),
         dst_frame.visible_rect().height(), kDefaultFiltering);
-    return error ? Status(StatusCode::kInvalidArgument) : Status();
+    if (error)
+      return EncoderStatus::Codes::kScalingError;
+    return OkStatus();
   }
 
   // Both frames are NV12, only scaling is required.
@@ -867,7 +872,9 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
         dst_frame.stride(VideoFrame::kUVPlane),
         dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
         kDefaultFiltering);
-    return error ? Status(StatusCode::kInvalidArgument) : Status();
+    if (error)
+      return EncoderStatus::Codes::kScalingError;
+    return OkStatus();
   }
 
   if (dst_frame.format() == PIXEL_FORMAT_I420 &&
@@ -887,7 +894,9 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
           dst_frame.visible_data(VideoFrame::kVPlane),
           dst_frame.stride(VideoFrame::kVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
-      return error ? Status(StatusCode::kInvalidArgument) : Status();
+      if (error)
+        return EncoderStatus::Codes::kFormatConversionError;
+      return OkStatus();
     } else {
       // Both resize and NV12-to-I420 conversion are required.
       // First, split UV planes into two, basically producing a I420 frame.
@@ -923,7 +932,9 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
           dst_frame.stride(VideoFrame::kVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
           kDefaultFiltering);
-      return error ? Status(StatusCode::kInvalidArgument) : Status();
+      if (error)
+        return EncoderStatus::Codes::kScalingError;
+      return OkStatus();
     }
   }
 
@@ -944,7 +955,9 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
           dst_frame.visible_data(VideoFrame::kUVPlane),
           dst_frame.stride(VideoFrame::kUVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
-      return error ? Status(StatusCode::kInvalidArgument) : Status();
+      if (error)
+        return EncoderStatus::Codes::kFormatConversionError;
+      return OkStatus();
     } else {
       // Both resize and I420-to-NV12 conversion are required.
       // First, merge U and V planes into one, basically producing a NV12 frame.
@@ -977,11 +990,13 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
           dst_frame.stride(VideoFrame::kUVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
           kDefaultFiltering);
-      return error ? Status(StatusCode::kInvalidArgument) : Status();
+      if (error)
+        return EncoderStatus::Codes::kScalingError;
+      return OkStatus();
     }
   }
 
-  return Status(StatusCode::kUnsupportedFrameFormatError)
+  return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
       .WithData("src", src_frame.AsHumanReadableString())
       .WithData("dst", dst_frame.AsHumanReadableString());
 }

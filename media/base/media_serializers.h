@@ -16,7 +16,6 @@
 #include "media/base/media_serializers_base.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/status.h"
-#include "media/base/status_codes.h"
 #include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -428,14 +427,6 @@ struct MediaSerializer<SerializableBufferingState<T>> {
       result.SetBoolKey("for_suspended_start", value.suspended_start);
 
     return result;
-  }
-};
-
-// enum (simple)
-template <>
-struct MediaSerializer<StatusCode> {
-  static inline base::Value Serialize(StatusCode code) {
-    return base::Value(static_cast<int>(code));
   }
 };
 

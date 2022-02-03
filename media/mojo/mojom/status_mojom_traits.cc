@@ -4,7 +4,6 @@
 
 #include "media/mojo/mojom/status_mojom_traits.h"
 
-#include "media/base/status_codes.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 

@@ -505,7 +505,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
           base::span<uint8_t>(src, result.size),
           base::span<uint8_t>(dst.get(), dst_size), &config_changed,
           &actual_output_size);
-      if (status.code() == StatusCode::kH264BufferTooSmall) {
+      if (status.code() == MP4Status::Codes::kBufferTooSmall) {
         // Between AnnexB and AVCC bitstream formats, the start code length and
         // the nal size length can be different. See H.264 specification at
         // http://www.itu.int/rec/T-REC-H.264. Retry the conversion if the
