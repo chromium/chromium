@@ -6977,16 +6977,39 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.browser_guest_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
       {
         "policies": {
           "BrowserGuestModeEnabled": true
         },
         "prefs": {
           "profile.browser_guest_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserGuestModeEnabled": false
+        },
+        "prefs": {
+          "profile.browser_guest_enabled": {
+            "location": "local_state",
+            "value": false
           }
         }
       }
@@ -7015,16 +7038,39 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.add_person_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
       {
         "policies": {
           "BrowserAddPersonEnabled": true
         },
         "prefs": {
           "profile.add_person_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserAddPersonEnabled": false
+        },
+        "prefs": {
+          "profile.add_person_enabled": {
+            "location": "local_state",
+            "value": false
           }
         }
       }

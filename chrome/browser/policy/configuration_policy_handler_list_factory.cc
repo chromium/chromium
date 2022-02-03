@@ -630,6 +630,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebHidBlockedForUrls,
     prefs::kManagedWebHidBlockedForUrls,
     base::Value::Type::LIST },
+  { key::kBrowserAddPersonEnabled,
+    prefs::kBrowserAddPersonEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // !BUILDFLAG(IS_ANDROID)
   { key::kDefaultFileHandlingGuardSetting,
     prefs::kManagedDefaultFileHandlingGuardSetting,
@@ -1373,9 +1376,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   { key::kNativeMessagingUserLevelHosts,
     extensions::pref_names::kNativeMessagingUserLevelHosts,
-    base::Value::Type::BOOLEAN },
-  { key::kBrowserAddPersonEnabled,
-    prefs::kBrowserAddPersonEnabled,
     base::Value::Type::BOOLEAN },
   { key::kPrintPreviewUseSystemDefaultPrinter,
     prefs::kPrintPreviewUseSystemDefaultPrinter,
