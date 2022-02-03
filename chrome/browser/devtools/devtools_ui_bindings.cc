@@ -33,6 +33,7 @@
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/url_constants.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -76,6 +77,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "google_apis/google_api_keys.h"
@@ -1516,9 +1518,13 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     return;
 
   base::ListValue results;
+  base::ListValue component_extension_origins;
   bool have_user_installed_devtools_extensions = false;
   for (const scoped_refptr<const extensions::Extension>& extension :
        registry->enabled_extensions()) {
+    if (extensions::Manifest::IsComponentLocation(extension->location())) {
+      component_extension_origins.Append(extension->origin().Serialize());
+    }
     if (extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
             .is_empty()) {
       continue;
@@ -1559,6 +1565,8 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
                               is_developer_mode);
   }
 
+  CallClientMethod("DevToolsAPI", "setOriginsForbiddenForExtensions",
+                   std::move(component_extension_origins));
   CallClientMethod("DevToolsAPI", "addExtensions", std::move(results));
 }
 

@@ -7,16 +7,25 @@ function output(msg) {
 }
 
 async function test() {
-  const newPageURL = 'chrome://version/';
+  // The test driver uses the URL fragment of the initial inspected page to pass
+  // the URL to test against
+  const newPageURL = await new Promise((resolve, reject) => {
+    chrome.devtools.inspectedWindow.eval(
+        'location.hash.substr(1)', {}, (res, error) => {
+          if (error && error.isError)
+            reject(error);
+          else
+            resolve(res || error.value);
+        });
+  });
   const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
   chrome.tabs.update(inspectedTabId, {url: newPageURL});
-  await new Promise(resolve => chrome.tabs.onUpdated.addListener(
-      (tabId, changedProps) => {
+  await new Promise(
+      resolve => chrome.tabs.onUpdated.addListener((tabId, changedProps) => {
         if (inspectedTabId !== tabId || changedProps.url !== newPageURL)
           return;
         resolve();
-      }
-  ));
+      }));
   // There may be a number of inherent races between the page and the DevTools
   // during the navigation. Let's do a number of eval in a hope of catching some
   // of them.

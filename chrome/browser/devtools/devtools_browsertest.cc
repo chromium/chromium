@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -511,19 +513,9 @@ class DevToolsExtensionTest : public DevToolsTest {
     return GetExtensionByPath(registry->enabled_extensions(), path);
   }
 
-  // Loads a dynamically generated extension populated with a bunch of test
-  // pages. |name| is the extension name to use in the manifest.
-  // |devtools_page|, if non-empty, indicates which test page should be be
-  // listed as a devtools_page in the manifest.  If |devtools_page| is empty, a
-  // non-devtools extension is created instead. |panel_iframe_src| controls the
-  // src= attribute of the <iframe> element in the 'panel.html' test page.
-  const Extension* LoadExtensionForTest(const std::string& name,
-                                        const std::string& devtools_page,
-                                        const std::string& panel_iframe_src) {
-    test_extension_dirs_.push_back(
-        std::make_unique<extensions::TestExtensionDir>());
-    extensions::TestExtensionDir* dir = test_extension_dirs_.back().get();
-
+  std::string BuildExtensionManifest(const std::string& name,
+                                     const std::string& devtools_page = "",
+                                     const std::string& key = "") {
     extensions::DictionaryBuilder manifest;
     manifest.Set("name", name)
         .Set("version", "1")
@@ -539,8 +531,26 @@ class DevToolsExtensionTest : public DevToolsTest {
     // manifest.
     if (!devtools_page.empty())
       manifest.Set("devtools_page", devtools_page);
+    if (!key.empty())
+      manifest.Set("key", key);
+    return manifest.ToJSON();
+  }
 
-    dir->WriteManifest(manifest.ToJSON());
+  // Builds an extension populated with a bunch of test
+  // pages. |name| is the extension name to use in the manifest.
+  // |devtools_page|, if non-empty, indicates which test page should be be
+  // listed as a devtools_page in the manifest.  If |devtools_page| is empty, a
+  // non-devtools extension is created instead. |panel_iframe_src| controls the
+  // src= attribute of the <iframe> element in the 'panel.html' test page.
+  extensions::TestExtensionDir* BuildExtensionForTest(
+      const std::string& name,
+      const std::string& devtools_page,
+      const std::string& panel_iframe_src) {
+    test_extension_dirs_.push_back(
+        std::make_unique<extensions::TestExtensionDir>());
+    extensions::TestExtensionDir* dir = test_extension_dirs_.back().get();
+
+    dir->WriteManifest(BuildExtensionManifest(name, devtools_page));
 
     GURL http_frame_url =
         embedded_test_server()->GetURL("a.com", "/popup_iframe.html");
@@ -601,8 +611,16 @@ class DevToolsExtensionTest : public DevToolsTest {
                    "</iframe><iframe src='data:text/html,foo'>"
                    "</iframe><iframe src='" +
                        web_url.spec() + "'></iframe></body></html>");
+    return dir;
+  }
 
-    // Install the extension.
+  // Loads a dynamically generated extension populated with a bunch of test
+  // pages.
+  const Extension* LoadExtensionForTest(const std::string& name,
+                                        const std::string& devtools_page,
+                                        const std::string& panel_iframe_src) {
+    extensions::TestExtensionDir* dir =
+        BuildExtensionForTest(name, devtools_page, panel_iframe_src);
     return LoadExtensionFromPath(dir->UnpackedPath());
   }
 
@@ -1631,9 +1649,49 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   RunTest("testConsoleContextNames", kPageWithContentScript);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestEvaluateOnChromeScheme) {
-  LoadExtension("chrome_scheme");
-  RunTest("waitForTestResultsAsMessage", kArbitraryPage);
+constexpr char kExtensionId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+constexpr char kPublicKey[] =
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
+    "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"
+    "kDuI7caxEGUucpP7GJRRHnm8Sx+"
+    "y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB";
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectChromeScheme) {
+  LoadExtension("can_inspect_url");
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#chrome://version/"}));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectDevtoolsScheme) {
+  LoadExtension("can_inspect_url");
+  RunTest(
+      "waitForTestResultsAsMessage",
+      base::StrCat({kArbitraryPage,
+                    "#devtools://devtools/bundled/devtools_compatibility.js"}));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectComponentExtension) {
+  extensions::ExtensionService* extension_service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+  extensions::ComponentLoader* component_loader =
+      extension_service->component_loader();
+  extensions::ExtensionRegistry* extension_registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  extensions::TestExtensionDir* extension_dir = BuildExtensionForTest(
+      "Component extension", "" /* devtools_page */, "" /* panel_iframe_src */);
+  std::string manifest = BuildExtensionManifest(
+      "Component extension", "" /* devtools_page */, kPublicKey);
+  component_loader->set_ignore_allowlist_for_testing(true);
+  std::string extension_id =
+      component_loader->Add(manifest, extension_dir->UnpackedPath());
+  ASSERT_TRUE(extension_registry->enabled_extensions().GetByID(extension_id));
+
+  LoadExtension("can_inspect_url");
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#chrome-extension://", kExtensionId,
+                        "/simple_test_page.html"}));
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.
