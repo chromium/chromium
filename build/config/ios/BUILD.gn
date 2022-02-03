@@ -207,8 +207,16 @@ config("ios_dynamic_flags") {
     _swift_compatibility_libs_dir =
         "$_swift_compatibility_libs_dir_prefix/iphoneos"
   } else if (target_environment == "catalyst") {
-    _swift_compatibility_libs_dir =
-        "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+    # The Swift compatibility libraries have changed location starting with
+    # Xcode 13.0, so check the version of Xcode when deciding which path to
+    # use.
+    if (xcode_version_int >= 1300) {
+      _swift_compatibility_libs_dir =
+          "$_swift_compatibility_libs_dir_prefix/macosx"
+    } else {
+      _swift_compatibility_libs_dir =
+          "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+    }
   }
 
   lib_dirs = [
