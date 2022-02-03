@@ -879,8 +879,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
-// TODO(crbug.com/1271946): Flaky on mac arm64.
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/1271946): Flaky on mac arm64 and CrOS (M98 only).
+#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_CHROMEOS)
 #define MAYBE_PolicyCorruptedOnStartup DISABLED_PolicyCorruptedOnStartup
 #else
 #define MAYBE_PolicyCorruptedOnStartup PolicyCorruptedOnStartup
