@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/webui/grit/ash_sample_system_web_app_resources.h"
+#include "ash/grit/ash_sample_system_web_app_resources.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"

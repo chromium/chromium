@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/grit/ash_shimless_rma_resources.h",
   "+chromeos/dbus",
   "+chromeos/dbus/power",
   "+chromeos/dbus/rmad",

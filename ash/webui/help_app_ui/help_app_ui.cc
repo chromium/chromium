@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/grit/ash_help_app_resources.h"
+#include "ash/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/help_app_page_handler.h"

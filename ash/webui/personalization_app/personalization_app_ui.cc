@@ -5,8 +5,8 @@
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/grit/ash_personalization_app_resources.h"
-#include "ash/webui/grit/ash_personalization_app_resources_map.h"
+#include "ash/grit/ash_personalization_app_resources.h"
+#include "ash/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"

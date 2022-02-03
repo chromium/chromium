@@ -8,9 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/grit/ash_shimless_rma_resources.h"
+#include "ash/grit/ash_shimless_rma_resources_map.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "ash/webui/grit/ash_shimless_rma_resources.h"
-#include "ash/webui/grit/ash_shimless_rma_resources_map.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "base/containers/span.h"

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/webui/grit/ash_multidevice_debug_resources.h"
+#include "ash/grit/ash_multidevice_debug_resources.h"
 #include "ash/webui/multidevice_debug/proximity_auth_webui_handler.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
 #include "base/bind.h"

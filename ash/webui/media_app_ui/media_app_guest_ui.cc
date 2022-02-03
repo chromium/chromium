@@ -4,7 +4,7 @@
 
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 
-#include "ash/webui/grit/ash_media_app_resources.h"
+#include "ash/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
