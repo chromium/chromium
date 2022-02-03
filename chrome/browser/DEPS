@@ -39,6 +39,7 @@ include_rules = [
   "+chromeos",
   "+components/about_ui",
   "+components/account_id",
+  "+components/app_constants/constants.h",
   "+components/federated_learning",
   # TODO(b/129295708): Remove after move is complete.
   "+components/arc",

@@ -9,9 +9,9 @@
 
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/app_constants/constants.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
 HostedAppsCounter::HostedAppsCounter(Profile* profile)
@@ -35,7 +35,7 @@ void HostedAppsCounter::Count() {
     // Exclude kChromeAppId because this is not a proper hosted app. It is just
     // a shortcut to launch Chrome on Chrome OS.
     if (special_storage_policy->NeedsProtection(extension.get()) &&
-        extension->id() != extension_misc::kChromeAppId) {
+        extension->id() != app_constants::kChromeAppId) {
       names.push_back(extension->short_name());
     }
   }

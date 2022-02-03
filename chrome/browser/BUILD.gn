@@ -6616,6 +6616,7 @@ static_library("browser") {
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/extensions/api",
       "//chrome/common/extensions/api:extensions_features",
+      "//components/app_constants",
       "//components/drive",
       "//components/guest_view/browser",
       "//media/cast:sender",
