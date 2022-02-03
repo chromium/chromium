@@ -4105,8 +4105,9 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyAcceptChUaReducedOriginTrialBrowserTest,
   EXPECT_EQ(GetLastRequestedURL()->path(), "/simple_3p_ot.html");
 }
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyAcceptChUaReducedOriginTrialBrowserTest,
-                       ThirdPartyIframeUaReducedWithSubresourceRequests) {
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyAcceptChUaReducedOriginTrialBrowserTest,
+    DISABLED_ThirdPartyIframeUaReducedWithSubresourceRequests) {
   // The first navigation is to opt-into the OT.  Since there are subresource
   // requests, the last processed requests from the first navigation will have
   // the reduced UA string.
