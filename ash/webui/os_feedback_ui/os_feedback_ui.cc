@@ -14,6 +14,7 @@
 #include "content/public/common/url_constants.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/webui_allowlist.h"
 
 namespace ash {
 
@@ -56,6 +57,15 @@ OSFeedbackUI::OSFeedbackUI(content::WebUI* web_ui)
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source.release());
+
+  // Register common permissions for chrome-untrusted:// pages.
+  // TODO(https://crbug.com/1113568): Remove this after common permissions are
+  // granted by default.
+  auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
+  const url::Origin untrusted_origin =
+      url::Origin::Create(GURL(kChromeUIOSFeedbackUntrustedUrl));
+  webui_allowlist->RegisterAutoGrantedPermission(
+      untrusted_origin, ContentSettingsType::JAVASCRIPT);
 }
 
 OSFeedbackUI::~OSFeedbackUI() = default;

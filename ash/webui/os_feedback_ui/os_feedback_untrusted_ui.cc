@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/grit/ash_os_feedback_resources.h"
 #include "ash/grit/ash_os_feedback_untrusted_resources.h"
 #include "ash/grit/ash_os_feedback_untrusted_resources_map.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
@@ -38,6 +39,10 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
 
   untrusted_source->AddResourcePaths(base::make_span(
       kAshOsFeedbackUntrustedResources, kAshOsFeedbackUntrustedResourcesSize));
+  untrusted_source->AddResourcePath("help_content.js",
+                                    IDR_ASH_OS_FEEDBACK_HELP_CONTENT_JS);
+  untrusted_source->AddResourcePath("feedback_types.js",
+                                    IDR_ASH_OS_FEEDBACK_FEEDBACK_TYPES_JS);
 
   untrusted_source->SetDefaultResource(
       IDR_ASH_OS_FEEDBACK_UNTRUSTED_UNTRUSTED_INDEX_HTML);
@@ -53,6 +58,10 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
   // TODO(b/194964287): Audit and tighten CSP.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "");
+
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src 'self' chrome-untrusted://resources;");
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, untrusted_source.release());
