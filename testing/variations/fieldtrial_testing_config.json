@@ -954,6 +954,27 @@
             ]
         }
     ],
+    "AutofillUpstream": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220124",
+                    "enable_features": [
+                        "AutofillUpstream"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillUseAlternativeStateNameMap": [
         {
             "platforms": [
