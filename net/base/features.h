@@ -34,8 +34,7 @@ NET_EXPORT extern const base::Feature kAvoidH2Reprioritization;
 // origin requests are restricted to contain at most the source origin.
 NET_EXPORT extern const base::Feature kCapReferrerToOriginOnCrossOrigin;
 
-// When enabled, ParsedCookie will allow the domain attribute to be the
-// empty string.
+// Enables the ParsedCookie domain attribute to be the empty string.
 NET_EXPORT extern const base::Feature kCookieDomainAttributeEmptyString;
 
 // Support for altering the parameters used for DNS transaction timeout. See

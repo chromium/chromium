@@ -1008,15 +1008,6 @@ TYPED_TEST_P(CookieStoreTest, InvalidDomainTest) {
   // More specific sub-domain than allowed.
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "a=1; domain=.yo.foo.bar.com"));
 
-// The iOS networking stack uses the iOS cookie parser, which we do not
-// control. Its handling of multiple domain= values in cookie string varies
-// depending on iOS version. See https://crbug.com/639167
-#if !BUILDFLAG(IS_IOS)
-  // Regression test for https://crbug.com/601786
-  EXPECT_FALSE(
-      this->SetCookie(cs, url_foobar, "a=1; domain=.yo.foo.bar.com; domain="));
-#endif  // !BUILDFLAG(IS_IOS)
-
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "b=2; domain=.foo.com"));
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "c=3; domain=.bar.foo.com"));
 
