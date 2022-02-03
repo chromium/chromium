@@ -22,6 +22,9 @@ the category of the branch:
 * CROS_LTS_BRANCHES - The resource is defined only for the long-term support branches
     (LTC and LTR).
     [`branch_type.CROS_LTS in settings.branch_types`]
+* FUCHSIA_LTS_BRANCHES - The resource is defined only for the fuchsia support
+    branches.
+    [`branch_type.FUCHSIA_LTS in settings.branch_types`]
 
 The `branch_selector` argument can also be one of the following constants
 composing multiple categories:
@@ -32,6 +35,8 @@ composing multiple categories:
     trunk -> beta -> stable -> desktop extended stable
 * CROS_LTS_MILESTONE - The resource is defined for a branch as it move through the
     long-term suport release channels: trunk -> beta -> stable -> LTC -> LTR.
+* FUCHSIA_LTS_MILESTONE - The resource is define only for a branch as it moves
+    through the fuchsia support channels: trunk -> beta -> stable -> Fuchsia LTS.
 * ALL_BRANCHES - The resource is defined for all branches and main/trunk.
 * NOT_MAIN - The resource is defined for all branches, but not for main/trunk.
 
@@ -54,8 +59,9 @@ MAIN = _branch_selector("MAIN")
 STANDARD_BRANCHES = _branch_selector("STANDARD_BRANCHES")
 DESKTOP_EXTENDED_STABLE_BRANCHES = _branch_selector("DESKTOP_EXTENDED_STABLE_BRANCHES")
 CROS_LTS_BRANCHES = _branch_selector("CROS_LTS_BRANCHES")
+FUCHSIA_LTS_BRANCHES = _branch_selector("FUCHSIA_LTS_BRANCHES")
 
-_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES, CROS_LTS_BRANCHES)
+_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES, CROS_LTS_BRANCHES, FUCHSIA_LTS_BRANCHES)
 
 def _normalize_branch_selector(branch_selector):
     """Convert provided branch selector to a set of basic selectors.
@@ -100,6 +106,9 @@ def _matches(branch_selector):
         elif b == CROS_LTS_BRANCHES:
             if branch_type.CROS_LTS in settings.branch_types:
                 return True
+        elif b == FUCHSIA_LTS_BRANCHES:
+            if branch_type.FUCHSIA_LTS in settings.branch_types:
+                return True
         else:
             fail("elements of branch_selectors must be one of {}, got {!r}"
                 .format(_BRANCH_SELECTORS, b))
@@ -141,11 +150,13 @@ branches = struct(
     STANDARD_BRANCHES = STANDARD_BRANCHES,
     DESKTOP_EXTENDED_STABLE_BRANCHES = DESKTOP_EXTENDED_STABLE_BRANCHES,
     CROS_LTS_BRANCHES = CROS_LTS_BRANCHES,
+    FUCHSIA_LTS_BRANCHES = FUCHSIA_LTS_BRANCHES,
 
     # Branch selectors for tracking milestones through release channels
     STANDARD_MILESTONE = (MAIN, STANDARD_BRANCHES),
     DESKTOP_EXTENDED_STABLE_MILESTONE = (MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES),
     CROS_LTS_MILESTONE = (MAIN, STANDARD_BRANCHES, CROS_LTS_BRANCHES),
+    FUCHSIA_LTS_MILESTONE = (MAIN, STANDARD_BRANCHES, FUCHSIA_LTS_BRANCHES),
 
     # Branch selectors to apply widely to branches
     ALL_BRANCHES = _BRANCH_SELECTORS,

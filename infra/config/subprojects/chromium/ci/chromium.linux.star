@@ -27,7 +27,7 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.linux",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     ordering = {
         None: ["release", "debug"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
@@ -127,7 +127,7 @@ ci.builder(
 
 ci.builder(
     name = "Fuchsia ARM64",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuchsia|a64",
@@ -146,7 +146,7 @@ ci.builder(
 
 ci.builder(
     name = "Fuchsia x64",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuchsia|x64",
@@ -265,7 +265,7 @@ ci.builder(
 
 ci.builder(
     name = "fuchsia-arm64-cast",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuchsia|cast",
@@ -296,7 +296,7 @@ ci.builder(
 
 ci.builder(
     name = "fuchsia-x64-cast",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuchsia|cast",
