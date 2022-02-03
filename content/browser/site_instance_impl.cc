@@ -316,13 +316,6 @@ bool SiteInstanceImpl::HasProcess() {
 }
 
 RenderProcessHost* SiteInstanceImpl::GetProcess() {
-  // TODO(erikkay) It would be nice to ensure that the renderer type had been
-  // properly set before we get here.  The default tab creation case winds up
-  // with no site set at this point, so it will default to TYPE_NORMAL.  This
-  // may not be correct, so we'll wind up potentially creating a process that
-  // we then throw away, or worse sharing a process with the wrong process type.
-  // See crbug.com/43448.
-
   // Create a new process if ours went away or was reused.
   if (!process_) {
     // Check if the ProcessReusePolicy should be updated.
