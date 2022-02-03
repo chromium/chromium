@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/escape.h"
 #include "net/base/mime_util.h"
@@ -95,9 +96,10 @@ TerminalSource::TerminalSource(Profile* profile,
   const url::Origin terminal_origin = url::Origin::Create(GURL(source));
   CHECK(!terminal_origin.opaque());
   for (auto permission :
-       {ContentSettingsType::JAVASCRIPT, ContentSettingsType::NOTIFICATIONS,
-        ContentSettingsType::CLIPBOARD_READ_WRITE, ContentSettingsType::COOKIES,
-        ContentSettingsType::IMAGES, ContentSettingsType::SOUND}) {
+       {ContentSettingsType::CLIPBOARD_READ_WRITE, ContentSettingsType::COOKIES,
+        ContentSettingsType::IMAGES, ContentSettingsType::JAVASCRIPT,
+        ContentSettingsType::NOTIFICATIONS, ContentSettingsType::POPUPS,
+        ContentSettingsType::SOUND}) {
     webui_allowlist->RegisterAutoGrantedPermission(terminal_origin, permission);
   }
 }
