@@ -303,10 +303,14 @@ class LacrosThreadPriorityDelegate
     : public base::LaunchOptions::PreExecDelegate {
  public:
   void RunAsyncSafe() override {
+    // TODO(crbug.com/1289736): Currently, this is causing some deadlock issue.
+    // It looks like inside the function, we seem to call async unsafe API.
+    // For the mitigation, disabling this temporarily.
+    // We should revisit here, and see the impact of performance.
     // SetCurrentThreadPriority() needs file I/O on /proc and /sys.
-    base::ScopedAllowBlocking allow_blocking;
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::NORMAL);
+    // base::ScopedAllowBlocking allow_blocking;
+    // base::PlatformThread::SetCurrentThreadPriority(
+    //     base::ThreadPriority::NORMAL);
   }
 };
 
