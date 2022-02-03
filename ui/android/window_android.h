@@ -35,6 +35,17 @@ class WindowAndroidObserver;
 // WindowAndroid is also the root of a ViewAndroid tree.
 class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
  public:
+  class ScopedWindowAndroidForTesting {
+   public:
+    ScopedWindowAndroidForTesting(WindowAndroid* window);
+    ~ScopedWindowAndroidForTesting();
+
+    WindowAndroid* get() { return window_; }
+
+   private:
+    raw_ptr<WindowAndroid> window_;
+  };
+
   static WindowAndroid* FromJavaWindowAndroid(
       const base::android::JavaParamRef<jobject>& jwindow_android);
 
@@ -94,7 +105,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   float mouse_wheel_scroll_factor() const { return mouse_wheel_scroll_factor_; }
 
-  static WindowAndroid* CreateForTesting();
+  static std::unique_ptr<ScopedWindowAndroidForTesting> CreateForTesting();
 
   // Return the window token for this window, if one exists.
   base::android::ScopedJavaLocalRef<jobject> GetWindowToken();

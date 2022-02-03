@@ -517,7 +517,7 @@ test("ui_android_unittests") {
     "overscroll_refresh_unittest.cc",
     "resources/resource_manager_impl_unittest.cc",
     "run_all_unittests.cc",
-    "view_android_unittests.cc",
+    "view_android_unittest.cc",
   ]
   deps = [
     ":android",

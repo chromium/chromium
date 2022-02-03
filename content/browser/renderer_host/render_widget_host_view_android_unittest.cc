@@ -276,9 +276,9 @@ TEST_F(RenderWidgetHostViewAndroidTest, InsetVisualViewport) {
 }
 
 TEST_F(RenderWidgetHostViewAndroidTest, HideWindowRemoveViewAddViewShowWindow) {
-  std::unique_ptr<ui::WindowAndroid> window(
-      ui::WindowAndroid::CreateForTesting());
-  window->AddChild(parent_view());
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(parent_view());
   EXPECT_TRUE(render_widget_host_view_android()->IsShowing());
   // The layer should be visible once attached to a window.
   EXPECT_FALSE(render_widget_host_view_android()
@@ -287,7 +287,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, HideWindowRemoveViewAddViewShowWindow) {
                    ->hide_layer_and_subtree());
 
   // Hiding the window should and removing the view should hide the layer.
-  window->OnVisibilityChanged(nullptr, nullptr, false);
+  window->get()->OnVisibilityChanged(nullptr, nullptr, false);
   parent_view()->RemoveFromParent();
   EXPECT_TRUE(render_widget_host_view_android()->IsShowing());
   EXPECT_TRUE(render_widget_host_view_android()
@@ -297,8 +297,8 @@ TEST_F(RenderWidgetHostViewAndroidTest, HideWindowRemoveViewAddViewShowWindow) {
 
   // Adding the view back to a window and notifying the window is visible should
   // make the layer visible again.
-  window->AddChild(parent_view());
-  window->OnVisibilityChanged(nullptr, nullptr, true);
+  window->get()->AddChild(parent_view());
+  window->get()->OnVisibilityChanged(nullptr, nullptr, true);
   EXPECT_TRUE(render_widget_host_view_android()->IsShowing());
   EXPECT_FALSE(render_widget_host_view_android()
                    ->GetNativeView()

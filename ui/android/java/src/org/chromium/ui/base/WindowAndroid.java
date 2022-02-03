@@ -650,6 +650,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     /**
      * Destroys the c++ WindowAndroid object if one has been created.
      */
+    @CalledByNative
     public void destroy() {
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
         if (mNativeWindowAndroid != 0) {

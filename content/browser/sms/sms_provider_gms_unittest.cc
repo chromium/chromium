@@ -67,7 +67,7 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kWebOtpBackend, GetSwitch());
 
-    test_window_ = ui::WindowAndroid::CreateForTesting();
+    window_ = ui::WindowAndroid::CreateForTesting();
 
     provider_ = std::make_unique<SmsProviderGms>();
 
@@ -75,15 +75,12 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
         Java_FakeSmsRetrieverClient_create(AttachCurrentThread()));
 
     provider_->SetClientAndWindowForTesting(j_fake_sms_retriever_client_,
-                                            test_window_->GetJavaObject());
+                                            window_->get()->GetJavaObject());
 
     provider_->AddObserver(&observer_);
   }
 
-  void TearDown() {
-    RenderViewHostTestHarness::TearDown();
-    test_window_->Destroy(nullptr, nullptr);
-  }
+  void TearDown() { RenderViewHostTestHarness::TearDown(); }
 
   void TriggerSms(const std::string& sms) {
     if (GetSwitch() == switches::kWebOtpBackendUserConsent) {
@@ -152,7 +149,7 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
   NiceMock<MockObserver> observer_;
   base::android::ScopedJavaGlobalRef<jobject> j_fake_sms_retriever_client_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<ui::WindowAndroid> test_window_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
 };
 
 class SmsProviderGmsTest : public ::testing::WithParamInterface<std::string>,

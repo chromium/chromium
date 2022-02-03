@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/android/view_android.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/event_forwarder.h"
@@ -288,7 +289,8 @@ class Observer : public ViewAndroidObserver {
 };
 
 TEST(ViewAndroidTest, Observer) {
-  std::unique_ptr<WindowAndroid> window(WindowAndroid::CreateForTesting());
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
 
   Observer top_observer;
   Observer bottom_observer;
@@ -307,7 +309,7 @@ TEST(ViewAndroidTest, Observer) {
     EXPECT_FALSE(bottom_observer.attached_);
 
     // Views in a tree all get notified of 'attached' event.
-    window->AddChild(&top);
+    window->get()->AddChild(&top);
     EXPECT_TRUE(top_observer.attached_);
     EXPECT_TRUE(bottom_observer.attached_);
 
@@ -321,7 +323,7 @@ TEST(ViewAndroidTest, Observer) {
     top.RemoveFromParent();
     EXPECT_FALSE(top_observer.attached_);
 
-    window->AddChild(&top);
+    window->get()->AddChild(&top);
     EXPECT_TRUE(top_observer.attached_);
 
     // View, upon addition to a tree in the attached state, should be notified.
@@ -343,7 +345,8 @@ TEST(ViewAndroidTest, Observer) {
 }
 
 TEST(ViewAndroidTest, WindowAndroidDestructionDetachesAllViewAndroid) {
-  std::unique_ptr<WindowAndroid> window(WindowAndroid::CreateForTesting());
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
   ViewAndroid top;
   ViewAndroid bottom;
 
@@ -353,7 +356,7 @@ TEST(ViewAndroidTest, WindowAndroidDestructionDetachesAllViewAndroid) {
   top.AddObserver(&top_observer);
   bottom.AddObserver(&bottom_observer);
 
-  window->AddChild(&top);
+  window->get()->AddChild(&top);
   top.AddChild(&bottom);
 
   EXPECT_TRUE(top_observer.attached_);

@@ -89,12 +89,8 @@ class ResourceManagerTest : public testing::Test {
  public:
   ResourceManagerTest()
       : window_android_(WindowAndroid::CreateForTesting()),
-        resource_manager_(window_android_) {
+        resource_manager_(window_android_->get()) {
     resource_manager_.Init(&ui_resource_manager_);
-  }
-
-  ~ResourceManagerTest() override {
-    window_android_->Destroy(nullptr, nullptr);
   }
 
   void PreloadResource(ui::SystemUIResourceType type) {
@@ -113,7 +109,7 @@ class ResourceManagerTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<WindowAndroid> window_android_;
+  std::unique_ptr<WindowAndroid::ScopedWindowAndroidForTesting> window_android_;
 
  protected:
   MockUIResourceManager ui_resource_manager_;

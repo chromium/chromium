@@ -45,7 +45,7 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
         if (DEBUG) Log.d(TAG, "Registering intent filters.");
         IntentFilter filter = new IntentFilter();
         filter.addAction(SmsRetriever.SMS_RETRIEVED_ACTION);
-        mContext.registerReceiver(this, filter);
+        mContext.registerReceiver(this, filter, SmsRetriever.SEND_PERMISSION, null);
     }
 
     public SmsRetrieverClient createClient() {
