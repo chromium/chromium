@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Frames with `allow-top-navigation` should be able to navigate the top frame even when `allow-top-navigation-by-user-activation` is set. assert_equals: expected "can navigate" but got "cannot navigate"
-Harness: the test ran to completion.
-
