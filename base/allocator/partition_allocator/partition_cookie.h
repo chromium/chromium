@@ -9,8 +9,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/compiler_specific.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 static constexpr size_t kCookieSize = 16;
 
@@ -43,7 +42,20 @@ ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}
 
 #endif  // DCHECK_IS_ON()
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::kCookieSize;
+using ::partition_alloc::internal::kPartitionCookieSizeAdjustment;
+using ::partition_alloc::internal::PartitionCookieCheckValue;
+using ::partition_alloc::internal::PartitionCookieWriteValue;
+#if DCHECK_IS_ON()
+using ::partition_alloc::internal::kCookieValue;
+#endif  // DCHECK_IS_ON()
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_COOKIE_H_
