@@ -90,6 +90,7 @@
         a:layout_width="match_parent"
         a:layout_height="wrap_content"
         a:orientation="horizontal"
+        a:gravity="end"
         a:paddingLeft="24dp"
         a:paddingRight="24dp"
         a:paddingBottom="16dp">
@@ -97,23 +98,14 @@
       <org.chromium.ui.widget.ButtonCompat
           a:id="@+id/qr_reject"
           style="@style/TextButton"
-          a:layout_gravity="start"
+          a:paddingEnd="36dp"
           a:layout_width="wrap_content"
           a:layout_height="wrap_content"
           a:text="@string/cablev2_qr_dont_allow" />
 
-      <!-- This consumes all extra horizontal space and so right-aligns everything
-           that follows. -->
-      <View
-        a:layout_width="0dp"
-        a:layout_height="0dp"
-        a:layout_weight="1"
-        a:visibility="invisible"/>
-
       <org.chromium.ui.widget.ButtonCompat
           a:id="@+id/qr_connect"
           style="@style/FilledButton.Flat"
-          a:layout_gravity="end"
           a:layout_width="wrap_content"
           a:layout_height="wrap_content"
           a:text="@string/cablev2_qr_allow" />
