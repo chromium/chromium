@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -35,6 +36,15 @@ OSFeedbackUI::OSFeedbackUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {
   auto source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIOSFeedbackHost));
+
+  // Add ability to request chrome-untrusted://os-feedback URLs.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+  // We need a CSP override to use the chrome-untrusted:// scheme in the host.
+  const std::string csp =
+      std::string("frame-src ") + kChromeUIOSFeedbackUntrustedUrl + ";";
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, csp);
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");

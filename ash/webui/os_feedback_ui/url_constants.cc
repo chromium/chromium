@@ -8,5 +8,8 @@ namespace ash {
 
 const char kChromeUIOSFeedbackHost[] = "os-feedback";
 const char kChromeUIOSFeedbackUrl[] = "chrome://os-feedback";
+const char kChromeUIOSFeedbackUntrustedHost[] = "os-feedback";
+const char kChromeUIOSFeedbackUntrustedUrl[] =
+    "chrome-untrusted://os-feedback/";
 
 }  // namespace ash

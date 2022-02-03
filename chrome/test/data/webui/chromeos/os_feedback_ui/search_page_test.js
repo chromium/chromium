@@ -67,6 +67,13 @@ export function searchPageTestSuite() {
           page.shadowRoot.querySelector('#helpContentFrame');
       assertTrue(!!helpContentFrame);
 
+      // Verify the iframe is in the page.
+      const untrustedFrame = page.shadowRoot.querySelector('iframe');
+      assertTrue(!!untrustedFrame);
+      assertEquals(
+          'chrome-untrusted://os-feedback/untrusted_index.html',
+          untrustedFrame.src);
+
       // Verify the continue button is in the page.
       const btnContinue = page.shadowRoot.querySelector('#btnContinue');
       assertTrue(!!btnContinue);

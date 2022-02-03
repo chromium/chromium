@@ -214,6 +214,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/ash_media_app_resources.pak",
         "$root_gen_dir/ash/ash_multidevice_debug_resources.pak",
         "$root_gen_dir/ash/ash_os_feedback_resources.pak",
+        "$root_gen_dir/ash/ash_os_feedback_untrusted_resources.pak",
         "$root_gen_dir/ash/ash_personalization_app_resources.pak",
         "$root_gen_dir/ash/ash_print_management_resources.pak",
         "$root_gen_dir/ash/ash_projector_app_trusted_resources.pak",
