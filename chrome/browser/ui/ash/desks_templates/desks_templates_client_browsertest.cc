@@ -19,6 +19,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
+#include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -63,6 +65,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -2027,6 +2030,87 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
   widget1->CloseNow();
   arc_helper()->GetAppHost()->OnTaskDestroyed(kTaskId2);
   arc_helper()->StopInstance();
+}
+
+class DesksTemplatesClientPolicyTest : public policy::PolicyTest {
+ public:
+  void SetDeskTemplateEnabledPolicy(bool policy_value) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kDeskTemplatesEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(policy_value),
+                 nullptr);
+    UpdateProviderPolicy(policies);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class DesksTemplatesClientPolicyWithFeatureEnabledTest
+    : public DesksTemplatesClientPolicyTest {
+ public:
+  DesksTemplatesClientPolicyWithFeatureEnabledTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kDesksTemplates);
+  }
+};
+
+// Tests that the desks templates feature should be controlled by policy.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientPolicyWithFeatureEnabledTest,
+                       CanBeControlledByPolicy) {
+  const PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+
+  EXPECT_FALSE(
+      prefs->FindPreference(ash::prefs::kDeskTemplatesEnabled)->IsManaged());
+
+  // Without setting up the enterprise policy, desk templates feature is
+  // controlled by feature flag, which is enabled in this test.
+  EXPECT_TRUE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+
+  // Disable desk templates through policy.
+  SetDeskTemplateEnabledPolicy(false);
+  // Desk templates feature should be disabled, despite feature flag is set to
+  // enabled.
+  EXPECT_FALSE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+
+  // Enable desk templates through policy.
+  SetDeskTemplateEnabledPolicy(true);
+  // Desk templates feature should be enabled.
+  EXPECT_TRUE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+}
+
+class DesksTemplatesClientPolicyWithFeatureDisabledTest
+    : public DesksTemplatesClientPolicyTest {
+ public:
+  DesksTemplatesClientPolicyWithFeatureDisabledTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.Init();
+  }
+};
+
+// Tests that the desks templates feature should be controlled by policy.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientPolicyWithFeatureDisabledTest,
+                       CanBeControlledByPolicy) {
+  const PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+
+  EXPECT_FALSE(
+      prefs->FindPreference(ash::prefs::kDeskTemplatesEnabled)->IsManaged());
+
+  // Without setting up the enterprise policy, desk templates feature is
+  // controlled by feature flag, which is disabled in this test.
+  EXPECT_FALSE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+
+  // Disable desk templates through policy.
+  SetDeskTemplateEnabledPolicy(false);
+  // Desk templates feature should be disabled.
+  EXPECT_FALSE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+
+  // Enable desk templates through policy.
+  SetDeskTemplateEnabledPolicy(true);
+  // Desk templates feature should be enabled, despite feature flag is set to
+  // disabled.
+  EXPECT_TRUE(ash::desks_templates_util::AreDesksTemplatesEnabled());
 }
 
 class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {

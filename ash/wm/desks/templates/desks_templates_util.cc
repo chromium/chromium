@@ -27,13 +27,23 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 bool AreDesksTemplatesEnabled() {
-  // Always allow the feature to be used if it is explicitly enabled. Otherwise
-  // check the policy.
-  if (features::AreDesksTemplatesEnabled())
-    return true;
-
   PrefService* pref_service = GetPrimaryUserPrefService();
-  return pref_service && pref_service->GetBoolean(prefs::kDeskTemplatesEnabled);
+
+  DCHECK(pref_service);
+
+  const PrefService::Preference* desk_templates_pref =
+      pref_service->FindPreference(prefs::kDeskTemplatesEnabled);
+
+  DCHECK(desk_templates_pref);
+
+  if (desk_templates_pref->IsManaged()) {
+    // Let policy settings override flags configuration.
+    return pref_service->GetBoolean(prefs::kDeskTemplatesEnabled);
+  }
+
+  // Allow the feature to be enabled by user when there is not explicit
+  // policy.
+  return features::AreDesksTemplatesEnabled();
 }
 
 }  // namespace desks_templates_util
