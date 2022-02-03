@@ -36,7 +36,8 @@ TEST_F(CorsExposedHeadersTest, ValidInput) {
   EXPECT_EQ(Parse(CredentialsMode::kOmit, " \t   \t\t a"),
             HTTPHeaderSet({"a"}));
 
-  EXPECT_EQ(Parse(CredentialsMode::kOmit, "a , "), HTTPHeaderSet({"a", ""}));
+  EXPECT_EQ(Parse(CredentialsMode::kOmit, "a , "), HTTPHeaderSet({"a"}));
+  EXPECT_EQ(Parse(CredentialsMode::kOmit, " , a"), HTTPHeaderSet({"a"}));
 }
 
 TEST_F(CorsExposedHeadersTest, DuplicatedEntries) {
@@ -57,8 +58,6 @@ TEST_F(CorsExposedHeadersTest, InvalidInput) {
 
   EXPECT_TRUE(Parse(CredentialsMode::kOmit, " , ").empty());
 
-  EXPECT_TRUE(Parse(CredentialsMode::kOmit, " , a").empty());
-
   EXPECT_TRUE(Parse(CredentialsMode::kOmit, "").empty());
 
   EXPECT_TRUE(Parse(CredentialsMode::kOmit, " ").empty());
@@ -67,6 +66,16 @@ TEST_F(CorsExposedHeadersTest, InvalidInput) {
   EXPECT_TRUE(
       Parse(CredentialsMode::kOmit, AtomicString(String::FromUTF8("\xC5\x81")))
           .empty());
+}
+
+TEST_F(CorsExposedHeadersTest, WithEmptyElements) {
+  EXPECT_EQ(Parse(CredentialsMode::kOmit, ", bb-8"), HTTPHeaderSet({"bb-8"}));
+
+  EXPECT_EQ(Parse(CredentialsMode::kOmit, ", , , bb-8"),
+            HTTPHeaderSet({"bb-8"}));
+
+  EXPECT_EQ(Parse(CredentialsMode::kOmit, ", , , bb-8,"),
+            HTTPHeaderSet({"bb-8"}));
 }
 
 TEST_F(CorsExposedHeadersTest, Wildcard) {
