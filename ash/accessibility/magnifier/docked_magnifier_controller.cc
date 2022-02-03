@@ -77,9 +77,15 @@ inline gfx::Rect SeparatorBoundsFromViewportBounds(
 }
 
 // Returns the child container in |root| that should be used as the parent of
-// viewport widget and the separator layer.
+// viewport widget.
 aura::Window* GetViewportParentContainerForRoot(aura::Window* root) {
   return root->GetChildById(kShellWindowId_DockedMagnifierContainer);
+}
+
+// Returns the child container in |root| that should be used as the parent of
+// the separator layer.
+aura::Window* GetViewportParentContainerForDivider(aura::Window* root) {
+  return root->GetChildById(kShellWindowId_OverlayContainer);
 }
 
 }  // namespace
@@ -598,9 +604,9 @@ void DockedMagnifierController::CreateMagnifierViewport() {
   params.accept_events = false;
   params.bounds = viewport_bounds;
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  aura::Window* const parent =
+  aura::Window* const viewport_parent =
       GetViewportParentContainerForRoot(current_source_root_window_);
-  params.parent = parent;
+  params.parent = viewport_parent;
   params.name = kDockedMagnifierViewportWindowName;
   viewport_widget_->Init(std::move(params));
 
@@ -610,7 +616,11 @@ void DockedMagnifierController::CreateMagnifierViewport() {
   separator_layer_->SetColor(SK_ColorBLACK);
   separator_layer_->SetBounds(
       SeparatorBoundsFromViewportBounds(viewport_bounds));
-  parent->layer()->Add(separator_layer_.get());
+  aura::Window* const separator_parent =
+      ::features::IsDockedMagnifierResizingEnabled()
+          ? GetViewportParentContainerForDivider(current_source_root_window_)
+          : viewport_parent;
+  separator_parent->layer()->Add(separator_layer_.get());
 
   // 3- Create a background layer that will show a dark gray color behind the
   //    magnifier layer. It has the same bounds as the viewport.
