@@ -84,12 +84,14 @@ WebUIConfigList CreateConfigs() {
     register_config(std::make_unique<UntrustedProjectorUIConfig>());
   if (ash::features::IsProjectorAnnotatorEnabled())
     register_config(std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
-  if (ash::features::IsFileManagerSwaEnabled())
+  if (ash::features::IsFileManagerSwaEnabled()) {
     register_config(
         std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());
-  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback))
+  }
+  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
     register_config(
         std::make_unique<ash::feedback::OsFeedbackUntrustedUIConfig>());
+  }
 #if !defined(OFFICIAL_BUILD)
   register_config(std::make_unique<ash::UntrustedSampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
