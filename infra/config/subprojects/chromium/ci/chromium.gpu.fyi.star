@@ -122,24 +122,6 @@ ci.thin_tester(
     triggered_by = ["GPU FYI Android arm64 Builder"],
 )
 
-ci.thin_tester(
-    name = "Android FYI SkiaRenderer GL (Nexus 5X)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|skgl|M64",
-        short_name = "N5X",
-    ),
-    triggered_by = ["GPU FYI Android arm64 Builder"],
-)
-
-ci.thin_tester(
-    name = "Android FYI SkiaRenderer Vulkan (Pixel 2)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|skv|P32",
-        short_name = "P2",
-    ),
-    triggered_by = ["GPU FYI Android arm Builder"],
-)
-
 ci.gpu.linux_builder(
     name = "ChromeOS FYI Release (amd64-generic)",
     # Runs a lot of tests + VMs are slower than real hardware, so increase the
@@ -229,15 +211,6 @@ ci.gpu.linux_builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
-)
-
-# Builder + tester.
-ci.gpu.linux_builder(
-    name = "Linux FYI SkiaRenderer Dawn Release (Intel HD 630)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel",
-        short_name = "skd",
-    ),
 )
 
 ci.gpu.mac_builder(
@@ -356,24 +329,6 @@ ci.thin_tester(
     # TODO(https://crbug.com/986939): Remove this increased timeout once more
     # devices are added.
     execution_timeout = 18 * time.hour,
-    triggered_by = ["GPU FYI Linux Builder"],
-)
-
-ci.thin_tester(
-    name = "Linux FYI SkiaRenderer Vulkan (Intel HD 630)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel",
-        short_name = "skv",
-    ),
-    triggered_by = ["GPU FYI Linux Builder"],
-)
-
-ci.thin_tester(
-    name = "Linux FYI SkiaRenderer Vulkan (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Nvidia",
-        short_name = "skv",
-    ),
     triggered_by = ["GPU FYI Linux Builder"],
 )
 
@@ -587,15 +542,6 @@ ci.thin_tester(
         short_name = "xr",
     ),
     triggered_by = ["GPU FYI XR Win x64 Builder"],
-)
-
-# Builder + tester.
-gpu_fyi_windows_builder(
-    name = "Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
-        short_name = "skd",
-    ),
 )
 
 ci.thin_tester(

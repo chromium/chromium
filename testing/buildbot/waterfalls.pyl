@@ -4110,33 +4110,6 @@
                 'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
-      'Android FYI SkiaRenderer GL (Nexus 5X)': {
-              'os_type': 'android',
-              'browser_config': 'android-chromium',
-              'skip_merge_script': True,
-              'mixins': [
-                      'has_native_resultdb_integration',
-              'marshmallow',
-              'bullhead',
-              ],
-              'test_suites': {
-                      'gpu_telemetry_tests': 'gpu_skia_renderer_egl_telemetry_tests',
-              }
-      },
-      'Android FYI SkiaRenderer Vulkan (Pixel 2)': {
-              'os_type': 'android',
-              'browser_config': 'android-chromium',
-              'skip_merge_script': True,
-              'mixins': [
-                      'has_native_resultdb_integration',
-              'pie_fleet',
-              'walleye',
-              ],
-              'test_suites': {
-                      'gtest_tests': 'gpu_skia_renderer_vulkan_gtests',
-                      'gpu_telemetry_tests': 'gpu_skia_renderer_vulkan_telemetry_tests',
-              },
-      },
       'ChromeOS FYI Release (amd64-generic)': {
               'additional_compile_targets': [
                       'chromiumos_preflight',
@@ -4283,7 +4256,7 @@
               ],
               'test_suites': {
                       'gtest_tests': 'gpu_fyi_linux_release_gtests',
-                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_vulkan_telemetry_tests',
               },
       },
       'Linux FYI Release (Intel UHD 630)': {
@@ -4305,40 +4278,7 @@
               ],
               'test_suites': {
                       'gtest_tests': 'gpu_fyi_linux_release_gtests',
-                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-              },
-      },
-      'Linux FYI SkiaRenderer Dawn Release (Intel HD 630)': {
-              'os_type': 'linux',
-              'browser_config': 'release',
-              'mixins': [
-                      'linux_intel_hd_630_stable',
-              ],
-              'test_suites': {
-                      'gtest_tests': 'gpu_skia_renderer_dawn_gtests',
-                      'gpu_telemetry_tests': 'gpu_skia_renderer_dawn_telemetry_tests',
-              },
-      },
-      'Linux FYI SkiaRenderer Vulkan (Intel HD 630)': {
-              'os_type': 'linux',
-              'browser_config': 'release',
-              'mixins': [
-                      'linux_intel_hd_630_stable',
-              ],
-              'test_suites': {
-                      'gtest_tests': 'gpu_fyi_vulkan_gtests',
-                      'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
-              },
-      },
-      'Linux FYI SkiaRenderer Vulkan (NVIDIA)': {
-              'os_type': 'linux',
-              'browser_config': 'release',
-              'mixins': [
-                      'linux_nvidia_gtx_1660_stable',
-              ],
-              'test_suites': {
-                      'gtest_tests': 'gpu_fyi_vulkan_gtests',
-                      'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_vulkan_telemetry_tests',
               },
       },
       'Mac FYI ASAN (Intel)': {
@@ -4721,17 +4661,6 @@
         ],
         'test_suites': {
           'isolated_scripts': 'win_specific_xr_perf_tests',
-        },
-      },
-      'Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)': {
-        'os_type': 'win',
-        'browser_config': 'release_x64',
-        'mixins': [
-          'win10_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_skia_renderer_dawn_gtests',
-          'gpu_telemetry_tests': 'gpu_skia_renderer_dawn_telemetry_tests',
         },
       },
       'Win10 FYI x86 Release (NVIDIA)': {

@@ -2760,36 +2760,6 @@
       },
     },
 
-    'gpu_fyi_vulkan_gtests': {
-      'vulkan_content_browsertests': {
-        'args': [
-          '--enable-gpu',
-          '--test-launcher-bot-mode',
-          '--test-launcher-jobs=1',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/vulkan.content_browsertests.filter',
-          '--enable-features=UseSkiaRenderer,UiGpuRasterization,Vulkan',
-          '--use-vulkan=native',
-          '--enable-gpu-rasterization',
-          '--disable-software-compositing-fallback',
-          '--disable-vulkan-fallback-to-gl-for-testing',
-          '--disable-headless-mode',
-        ],
-        'linux_args': [ '--no-xvfb' ],
-        'test': 'content_browsertests',
-      },
-      'vulkan_tests': {
-        'args': [
-          '--enable-gpu',
-          '--test-launcher-bot-mode',
-          '--test-launcher-jobs=1',
-          '--disable-headless-mode',
-        ],
-        'linux_args': [ '--no-xvfb' ],
-        'test': 'vulkan_tests',
-      },
-
-    },
-
     'gpu_fyi_vulkan_swiftshader_gtests': {
       'vulkan_swiftshader_content_browsertests': {
         'args': [
@@ -3135,189 +3105,6 @@
         'mixins': [
           'has_native_resultdb_integration',
         ],
-      },
-    },
-
-    'gpu_skia_renderer_dawn_gtests': {
-      'cc_unittests': {
-        'linux_args': [
-          '--no-xvfb',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/gpu.linux.skiarenderer_dawn_cc_unittests.filter',
-        ],
-      },
-      'viz_unittests': {
-        'linux_args': [
-          '--no-xvfb',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/gpu.linux.skiarenderer_dawn_viz_unittests.filter',
-        ],
-      },
-    },
-
-    'gpu_skia_renderer_dawn_telemetry_tests': {
-      'dawn_pixel_skia': {
-        'name': 'dawn_pixel_skia_gold_test',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'win_args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer,SkiaDawn',
-        ],
-        'linux_args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer,UiGpuRasterization,SkiaDawn --enable-gpu-rasterization --use-vulkan=native',
-        ],
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-        'telemetry_test_name': 'pixel',
-      },
-      'screenshot_sync': {
-        'args': [
-          '--dont-restore-color-profile-after-test',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'win_args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer,SkiaDawn',
-          # TODO(crbug.com/1021566): Enable the rest of these tests once Canvas
-          # is supported on Skia Dawn.
-          '--test-filter=ScreenshotSync_GPURasterWithDivs::ScreenshotSync_SWRasterWithDivs',
-        ],
-        'linux_args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer,UiGpuRasterization,SkiaDawn --enable-gpu-rasterization --use-vulkan=native',
-          '--test-filter=ScreenshotSync_GPURasterWithDivs',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-    },
-
-    'gpu_skia_renderer_egl_telemetry_tests': {
-      'egl_pixel_skia': {
-        'name': 'egl_pixel_skia_gold_test',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--enable-features=UseSkiaRenderer --use-gl=egl --enable-gpu-rasterization --disable-software-compositing-fallback --disable-headless-mode',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-        'telemetry_test_name': 'pixel',
-      },
-    },
-
-    'gpu_skia_renderer_non_vulkan_telemetry_tests': {
-      'context_lost': {
-        'args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer',
-          '$$MAGIC_SUBSTITUTION_GPUIsASANFlag',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'gpu_process': {
-        'name': 'gpu_process_launch_tests',
-        'args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'hardware_accelerated_feature': {
-        'args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'maps': {
-        'name': 'maps_pixel_test',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--enable-features=UseSkiaRenderer',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-      },
-      'screenshot_sync': {
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--enable-features=UseSkiaRenderer',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'skia_renderer_pixel_skia_gold_test': {
-        'name': 'skia_renderer_pixel_skia_gold_test',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--enable-features=UseSkiaRenderer',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-        'telemetry_test_name': 'pixel',
-      },
-    },
-
-    'gpu_skia_renderer_vulkan_gtests': {
-      'vulkan_content_browsertests': {
-        'args': [
-          '--use-vulkan=native',
-          '--disable-vulkan-fallback-to-gl-for-testing',
-          '--enable-features=UseSkiaRenderer,Vulkan',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'android_swarming': {
-          'shards': 12,
-        },
-        'test': 'content_browsertests',
       },
     },
 
@@ -6460,6 +6247,19 @@
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 
+    # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
+    # paths are merged. This should mirror
+    # `gpu_fyi_linux_release_telemetry_tests` but with additional
+    # `gpu_skia_renderer_vulkan_telemetry_tests`
+    'gpu_fyi_linux_release_vulkan_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_skia_renderer_vulkan_telemetry_tests',
+    ],
+
     'gpu_fyi_mac_debug_gtests': [
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
@@ -6717,11 +6517,6 @@
       'gpu_webgl_conformance_validating_telemetry_tests',
       'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_validating_telemetry_tests',
-    ],
-
-    'gpu_skia_renderer_telemetry_tests': [
-      'gpu_skia_renderer_non_vulkan_telemetry_tests',
-      'gpu_skia_renderer_vulkan_telemetry_tests',
     ],
 
     'gpu_swangle_telemetry_tests': [

@@ -63,11 +63,6 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
-    name = "gpu-fyi-try-android-m-nexus-5x-skgl-64",
-    pool = "luci.chromium.gpu.android.nexus5x.try",
-)
-
-gpu_android_builder(
     name = "gpu-fyi-try-android-m-nexus-9-64",
     pool = "luci.chromium.gpu.android.nexus9.try",
 )
@@ -79,11 +74,6 @@ gpu_android_builder(
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-p-pixel-2-32",
-    pool = "luci.chromium.gpu.android.pixel2.chromium.try",
-)
-
-gpu_android_builder(
-    name = "gpu-fyi-try-android-p-pixel-2-skv-32",
     pool = "luci.chromium.gpu.android.pixel2.chromium.try",
 )
 
@@ -165,16 +155,6 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
-    name = "gpu-fyi-try-linux-intel-sk-dawn-rel",
-    pool = "luci.chromium.gpu.linux.intel.try",
-)
-
-gpu_linux_builder(
-    name = "gpu-fyi-try-linux-intel-skv",
-    pool = "luci.chromium.gpu.linux.intel.try",
-)
-
-gpu_linux_builder(
     name = "gpu-fyi-try-linux-nvidia-dbg",
     pool = "luci.chromium.gpu.linux.nvidia.try",
 )
@@ -186,11 +166,6 @@ gpu_linux_builder(
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-nvidia-rel",
-    pool = "luci.chromium.gpu.linux.nvidia.try",
-)
-
-gpu_linux_builder(
-    name = "gpu-fyi-try-linux-nvidia-skv",
     pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
@@ -343,11 +318,6 @@ gpu_win_builder(
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-exp-64",
-    pool = "luci.chromium.gpu.win10.nvidia.try",
-)
-
-gpu_win_builder(
-    name = "gpu-fyi-try-win10-nvidia-sk-dawn-rel-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 

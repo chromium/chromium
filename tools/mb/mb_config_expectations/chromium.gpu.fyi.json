@@ -287,20 +287,6 @@
       "use_remoteexec": true
     }
   },
-  "Linux FYI SkiaRenderer Dawn Release (Intel HD 630)": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "enable_skia_dawn_gtests": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "skia_use_dawn": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "Optional Android Release (Nexus 5X)": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
@@ -328,20 +314,6 @@
       "target_os": "android",
       "use_goma": true,
       "use_static_angle": true
-    }
-  },
-  "Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "enable_skia_dawn_gtests": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "skia_use_dawn": true,
-      "symbol_level": 1,
-      "use_goma": true
     }
   },
   "gpu-fyi-chromeos-jacuzzi-exp": {

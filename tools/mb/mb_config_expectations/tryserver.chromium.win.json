@@ -133,20 +133,6 @@
       "use_goma": true
     }
   },
-  "gpu-fyi-try-win10-nvidia-sk-dawn-rel-64": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "enable_skia_dawn_gtests": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "skia_use_dawn": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "gpu-fyi-try-win7-amd-rel-32": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
