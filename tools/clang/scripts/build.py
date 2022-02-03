@@ -912,17 +912,18 @@ def main():
     print('Profile generated.')
 
   compiler_rt_args = [
-    '-DCOMPILER_RT_BUILD_CRT=OFF',
-    '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
-    '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
-    '-DCOMPILER_RT_BUILD_ORC=OFF',
-    '-DCOMPILER_RT_BUILD_PROFILE=ON',
-    '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
-    '-DCOMPILER_RT_BUILD_XRAY=OFF',
+      # Build crtbegin/crtend. It's just two tiny TUs, so just enable this
+      # everywhere, even though we only need it on Linux.
+      '-DCOMPILER_RT_BUILD_CRT=ON',
+      '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
+      '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
+      '-DCOMPILER_RT_BUILD_ORC=OFF',
+      '-DCOMPILER_RT_BUILD_PROFILE=ON',
+      '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
+      '-DCOMPILER_RT_BUILD_XRAY=OFF',
   ]
   if sys.platform == 'darwin':
     compiler_rt_args.extend([
-        '-DCOMPILER_RT_BUILD_BUILTINS=ON',
         '-DCOMPILER_RT_ENABLE_IOS=ON',
         '-DCOMPILER_RT_ENABLE_WATCHOS=OFF',
         '-DCOMPILER_RT_ENABLE_TVOS=OFF',
@@ -933,8 +934,12 @@ def main():
         # We don't need 32-bit intel support for macOS, we only ship 64-bit.
         '-DDARWIN_osx_ARCHS=arm64;x86_64',
     ])
-  else:
+
+  if sys.platform == 'win32':
+    # https://crbug.com/1293778
     compiler_rt_args.append('-DCOMPILER_RT_BUILD_BUILTINS=OFF')
+  else:
+    compiler_rt_args.append('-DCOMPILER_RT_BUILD_BUILTINS=ON')
 
   # LLVM uses C++11 starting in llvm 3.5. On Linux, this means libstdc++4.7+ is
   # needed, on OS X it requires libc++. clang only automatically links to libc++
