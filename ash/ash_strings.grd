@@ -4552,6 +4552,45 @@ New install
       <message name="IDS_REMOVE_SUGGESTION_BUTTON_LABEL" desc="Remove suggestion button label">
         Remove
       </message>
+      <message name="IDS_APP_LIST_KEYBOARD_SHORTCUT_OR" desc="Joiner text for several keyboard shortcuts that all do the same thing. Eg: 'Ctrl-A or Ctrl-B or Ctrl-C'">
+        Or
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Just now' should apply to any time within the last few minutes.">
+        Edited just now
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_EDITED_PAST_MONTH" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Edited in the past month
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_EDITED_PAST_WEEK" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Edited in the past week
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_EDITED_RECENTLY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Recently' should apply to any time between 'just now' and 'a week ago'.">
+        Edited recently
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_EDITED_TODAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Edited today
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_EDITED_YESTERDAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Edited yesterday
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Just now' should apply to any time within the last few minutes.">
+        Opened just now
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_OPENED_PAST_MONTH" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Opened in the past month
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_OPENED_PAST_WEEK" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Opened in the past week
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_OPENED_RECENTLY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown. 'Recently' should apply to any time between 'just now' and 'a week ago'.">
+        Opened recently
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_OPENED_TODAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Opened today
+      </message>
+      <message name="IDS_APP_LIST_CONTINUE_OPENED_YESTERDAY" desc="Text displayed under a file suggestion in the launcher, describing why it is being shown.">
+        Opened yesterday
+      </message>
       <message name="IDS_APP_LIST_START_ASSISTANT" desc="Tooltip for the button that starts Google Assistant from the search box in the app list.">
         Google Assistant
       </message>
