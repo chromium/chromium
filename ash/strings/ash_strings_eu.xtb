@@ -4,7 +4,7 @@
 <translation id="1012876632442809908">USB-C gailua (aurrealdeko ataka)</translation>
 <translation id="1013598600051641573"><ph name="RESOLUTION" />-ko bereizmenera (<ph name="REFRESH_RATE" /> Hz) aldatu da <ph name="DISPLAY_NAME" /> pantaila. Aldaketak gordetzeko, sakatu berresteko botoia. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
 <translation id="1013923882670373915">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Idatzi PIN kode hau gailuan: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Pantaila-argazki audiodunak ateratzeko tresnak</translation>
+<translation id="1014111206066007277">Pantaila-bideoen tresnak</translation>
 <translation id="1024261588257374085">Pantaila-argazki partziala hautatu da</translation>
 <translation id="1032891413405719768">Pila agortzen ari zaio arkatzari</translation>
 <translation id="1036073649888683237">Jakinarazpenak kudeatzeko, joan ezarpenetara</translation>
@@ -1077,7 +1077,7 @@ Berriki instalatu da</translation>
 <translation id="826107067893790409">Sakatu Sartu <ph name="USER_EMAIL_ADDRESS" /> desblokeatzeko</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Itzuli gailuaren aurreko bertsiora ordubete barru}other{Itzuli gailuaren aurreko bertsiora # ordu barru}}</translation>
-<translation id="8281279285293265212">Ezin izan da gorde pantaila-argazki audioduna</translation>
+<translation id="8281279285293265212">Ezin izan da gorde pantaila-bideoa</translation>
 <translation id="8284362522226889623">Aurreko lan-eremura itzultzeko, pasatu lau hatz ezkerrera</translation>
 <translation id="828708037801473432">Desaktibatuta</translation>
 <translation id="8297006494302853456">Ahula</translation>
