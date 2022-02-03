@@ -443,6 +443,9 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
                                          HotseatState to_state) override;
   void OnHotseatTransitionAnimationAborted() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // views::WidgetDelegateView:
   bool CanActivate() const override;
   void ReorderChildLayers(ui::Layer* parent_layer) override;
@@ -520,6 +523,7 @@ void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
     return;
   }
 
+  DCHECK(scrollable_shelf_view_);
   SetTranslucentBackground(
       scrollable_shelf_view_->GetHotseatBackgroundBounds());
 }
@@ -600,6 +604,15 @@ void HotseatWidget::DelegateView::OnHotseatTransitionAnimationAborted() {
   DCHECK_GT(blur_lock_, 0);
 
   --blur_lock_;
+}
+
+void HotseatWidget::DelegateView::OnThemeChanged() {
+  views::WidgetDelegateView::OnThemeChanged();
+
+  // Only update the background when the `scrollable_shelf_view_` is
+  // initialized.
+  if (scrollable_shelf_view_)
+    UpdateTranslucentBackground();
 }
 
 bool HotseatWidget::DelegateView::CanActivate() const {
