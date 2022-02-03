@@ -213,8 +213,7 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
     SetDetailsTextVector(details_vector);
   }
 
-  // Bold the title fields.
-  SetBigTitleTextVector(AddBoldTags(big_title_text_vector()));
+  // Bold the title field.
   SetTitleTextVector(AddBoldTags(title_text_vector()));
 
   // TODO(crbug.com/1250154): Remove these once the migration to TextVectors
