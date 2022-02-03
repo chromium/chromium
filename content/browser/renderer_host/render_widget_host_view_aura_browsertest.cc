@@ -533,8 +533,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies that getting active input control accounts for iframe positioning.
+// Flaky: crbug.com/1293700
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
-                       TextControlBoundingRegionInIframe) {
+                       DISABLED_TextControlBoundingRegionInIframe) {
   GURL page(
       embedded_test_server()->GetURL("example.com", "/input_in_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), page));
