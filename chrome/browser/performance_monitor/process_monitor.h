@@ -17,6 +17,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/performance_monitor/resource_coalition_mac.h"
+#include "components/power_metrics/resource_coalition_mac.h"
 #endif
 
 namespace performance_monitor {
@@ -75,7 +76,7 @@ class ProcessMonitor {
     // Process coalition data. Only available for aggregated metrics (not
     // individual processes), on some Mac devices. absl::nullopt if not
     // available.
-    absl::optional<ResourceCoalition::DataRate> coalition_data;
+    absl::optional<power_metrics::CoalitionResourceUsageRate> coalition_data;
 #endif
   };
 

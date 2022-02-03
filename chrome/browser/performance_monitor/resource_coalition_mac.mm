@@ -80,12 +80,6 @@ absl::optional<uint64_t> GetCurrentCoalitionId(
 
 }  // namespace
 
-ResourceCoalition::DataRate::DataRate() = default;
-ResourceCoalition::DataRate::DataRate(const DataRate& other) = default;
-ResourceCoalition::DataRate& ResourceCoalition::DataRate::operator=(
-    const DataRate& other) = default;
-ResourceCoalition::DataRate::~DataRate() = default;
-
 ResourceCoalition::ResourceCoalition()
     : mach_timebase_(power_metrics::GetSystemMachTimeBase()),
       energy_impact_coefficients_(
@@ -98,7 +92,8 @@ ResourceCoalition::ResourceCoalition()
 
 ResourceCoalition::~ResourceCoalition() = default;
 
-absl::optional<ResourceCoalition::DataRate> ResourceCoalition::GetDataRate() {
+absl::optional<power_metrics::CoalitionResourceUsageRate>
+ResourceCoalition::GetDataRate() {
   DCHECK(IsAvailable());
   DCHECK_EQ(
       power_metrics::GetProcessCoalitionId(base::GetCurrentProcId()).value(),
@@ -109,7 +104,7 @@ absl::optional<ResourceCoalition::DataRate> ResourceCoalition::GetDataRate() {
       base::TimeTicks::Now());
 }
 
-absl::optional<ResourceCoalition::DataRate>
+absl::optional<power_metrics::CoalitionResourceUsageRate>
 ResourceCoalition::GetDataRateFromFakeDataForTesting(
     std::unique_ptr<coalition_resource_usage> old_data_sample,
     std::unique_ptr<coalition_resource_usage> recent_data_sample,
@@ -145,93 +140,14 @@ void ResourceCoalition::SetCoalitionId(absl::optional<uint64_t> coalition_id) {
   }
 }
 
-absl::optional<ResourceCoalition::DataRate>
-ResourceCoalition::GetCoalitionDataDiff(
-    const coalition_resource_usage& new_sample,
-    const coalition_resource_usage& old_sample,
-    base::TimeDelta interval_length) {
-  bool new_samples_exceeds_or_equals_old_ones =
-      std::tie(new_sample.cpu_time, new_sample.interrupt_wakeups,
-               new_sample.platform_idle_wakeups, new_sample.bytesread,
-               new_sample.byteswritten, new_sample.gpu_time,
-               new_sample.energy) >=
-      std::tie(old_sample.cpu_time, old_sample.interrupt_wakeups,
-               old_sample.platform_idle_wakeups, old_sample.bytesread,
-               old_sample.byteswritten, old_sample.gpu_time, old_sample.energy);
-  DCHECK_EQ(new_sample.cpu_time_eqos_len,
-            static_cast<uint64_t>(COALITION_NUM_THREAD_QOS_TYPES));
-  // Check for an overflow in the QoS data.
-  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    if (new_sample.cpu_time_eqos[i] < old_sample.cpu_time_eqos[i]) {
-      new_samples_exceeds_or_equals_old_ones = false;
-      break;
-    }
-  }
-  if (!new_samples_exceeds_or_equals_old_ones)
-    return absl::nullopt;
-
-  ResourceCoalition::DataRate ret;
-
-  auto get_rate_per_second = [&interval_length](uint64_t new_sample,
-                                                uint64_t old_sample) -> double {
-    DCHECK_GE(new_sample, old_sample);
-    uint64_t diff = new_sample - old_sample;
-    return diff / interval_length.InSecondsF();
-  };
-
-  auto get_timedelta_rate_per_second = [&interval_length, self = this](
-                                           uint64_t new_sample,
-                                           uint64_t old_sample) -> double {
-    DCHECK_GE(new_sample, old_sample);
-    // Compute the delta in s, being careful to avoid truncation due to integral
-    // division.
-    double delta_sample_s =
-        power_metrics::MachTimeToNs(new_sample - old_sample,
-                                    self->mach_timebase_) /
-        static_cast<double>(base::Time::kNanosecondsPerSecond);
-    return delta_sample_s / interval_length.InSecondsF();
-  };
-
-  ret.cpu_time_per_second =
-      get_timedelta_rate_per_second(new_sample.cpu_time, old_sample.cpu_time);
-  ret.interrupt_wakeups_per_second = get_rate_per_second(
-      new_sample.interrupt_wakeups, old_sample.interrupt_wakeups);
-  ret.platform_idle_wakeups_per_second = get_rate_per_second(
-      new_sample.platform_idle_wakeups, old_sample.platform_idle_wakeups);
-  ret.bytesread_per_second =
-      get_rate_per_second(new_sample.bytesread, old_sample.bytesread);
-  ret.byteswritten_per_second =
-      get_rate_per_second(new_sample.byteswritten, old_sample.byteswritten);
-  ret.gpu_time_per_second =
-      get_timedelta_rate_per_second(new_sample.gpu_time, old_sample.gpu_time);
-  ret.power_nw = get_rate_per_second(new_sample.energy, old_sample.energy);
-
-  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    ret.qos_time_per_second[i] = get_timedelta_rate_per_second(
-        new_sample.cpu_time_eqos[i], old_sample.cpu_time_eqos[i]);
-  }
-
-  if (energy_impact_coefficients_.has_value()) {
-    ret.energy_impact_per_second =
-        (power_metrics::ComputeEnergyImpactForResourceUsage(
-             new_sample, energy_impact_coefficients_.value(), mach_timebase_) -
-         power_metrics::ComputeEnergyImpactForResourceUsage(
-             old_sample, energy_impact_coefficients_.value(), mach_timebase_)) /
-        interval_length.InSecondsF();
-  } else {
-    // TODO(siggi): Use something else here as sentinel?
-    ret.energy_impact_per_second = 0;
-  }
-
-  return ret;
-}
-
-absl::optional<ResourceCoalition::DataRate> ResourceCoalition::GetDataRateImpl(
+absl::optional<power_metrics::CoalitionResourceUsageRate>
+ResourceCoalition::GetDataRateImpl(
     std::unique_ptr<coalition_resource_usage> new_data_sample,
     base::TimeTicks now) {
-  auto ret =
-      GetCoalitionDataDiff(*new_data_sample.get(), *last_data_sample_.get(),
-                           now - last_data_sample_timestamp_);
+  auto ret = power_metrics::GetCoalitionResourceUsageRate(
+      *last_data_sample_, *new_data_sample, now - last_data_sample_timestamp_,
+      mach_timebase_, energy_impact_coefficients_);
+
   last_data_sample_.swap(new_data_sample);
   last_data_sample_timestamp_ = now;
 

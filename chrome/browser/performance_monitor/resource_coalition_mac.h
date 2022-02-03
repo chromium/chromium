@@ -35,29 +35,6 @@ namespace performance_monitor {
 // data retrieved by this class is experimental only.
 class ResourceCoalition {
  public:
-  // The data tracked by the coalition.
-  // TODO(sebmarchand): This is only a subset of the available data, we should
-  // probably record more data.
-  struct DataRate {
-    DataRate();
-    DataRate(const DataRate& other);
-    DataRate& operator=(const DataRate& other);
-    ~DataRate();
-
-    double cpu_time_per_second;
-    double interrupt_wakeups_per_second;
-    double platform_idle_wakeups_per_second;
-    double bytesread_per_second;
-    double byteswritten_per_second;
-    double gpu_time_per_second;
-    // Only makes sense on Intel macs, not computed on M1 macs.
-    double energy_impact_per_second;
-    // Only available on M1 macs as of September 2021.
-    double power_nw;
-
-    double qos_time_per_second[COALITION_NUM_THREAD_QOS_TYPES];
-  };
-
   // Note: The constructor will record whether or not coalition data are
   // available to UMA.
   ResourceCoalition();
@@ -72,14 +49,15 @@ class ResourceCoalition {
   // or since the creation of this object, returns nullopt if not available
   // or if one of the data counter has overflowed.
   // This should only be called if |IsAvailable| returns true.
-  absl::optional<DataRate> GetDataRate();
+  absl::optional<power_metrics::CoalitionResourceUsageRate> GetDataRate();
 
  protected:
   void SetCoalitionIDToCurrentProcessIdForTesting();
 
   // Compute the data change rate between |old_data_sample| and
   // |recent_data_sample| over an interval of length |interval_length|.
-  absl::optional<DataRate> GetDataRateFromFakeDataForTesting(
+  absl::optional<power_metrics::CoalitionResourceUsageRate>
+  GetDataRateFromFakeDataForTesting(
       std::unique_ptr<coalition_resource_usage> old_data_sample,
       std::unique_ptr<coalition_resource_usage> recent_data_sample,
       base::TimeDelta interval_length);
@@ -96,17 +74,8 @@ class ResourceCoalition {
  private:
   void SetCoalitionId(absl::optional<uint64_t> coalition_id);
 
-  // Computes the diff between two coalition_resource_usage objects and stores
-  // the per-second change rate for each field in a ResourceCoalition::Data
-  // object that will then be returned. Returns nullopt if any of the samples
-  // has overflowed.
-  absl::optional<DataRate> GetCoalitionDataDiff(
-      const coalition_resource_usage& new_sample,
-      const coalition_resource_usage& old_sample,
-      base::TimeDelta interval_length);
-
   // Implementation details for GetDataRate.
-  absl::optional<DataRate> GetDataRateImpl(
+  absl::optional<power_metrics::CoalitionResourceUsageRate> GetDataRateImpl(
       std::unique_ptr<coalition_resource_usage> new_data_sample,
       base::TimeTicks now);
 

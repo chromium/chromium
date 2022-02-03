@@ -371,12 +371,14 @@ void PowerMetricsReporter::ReportResourceCoalitionHistograms(
 
     // EnergyImpact is reported in centi-EI, so scaled up by a factor of 100
     // for the histogram recording.
-    constexpr double kEnergyImpactScalingFactor = 100.0;
-    base::UmaHistogramCounts100000(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition.EnergyImpact",
-                      scenario_suffix}),
-        std::roundl(metrics.coalition_data->energy_impact_per_second *
-                    kEnergyImpactScalingFactor));
+    if (metrics.coalition_data->energy_impact_per_second.has_value()) {
+      constexpr double kEnergyImpactScalingFactor = 100.0;
+      base::UmaHistogramCounts100000(
+          base::StrCat({"PerformanceMonitor.ResourceCoalition.EnergyImpact",
+                        scenario_suffix}),
+          std::roundl(metrics.coalition_data->energy_impact_per_second.value() *
+                      kEnergyImpactScalingFactor));
+    }
 
     constexpr int kNanoWattToMilliWatt = 1000 * 1000;
     // Use a maximum of 100 watts, or 100 * 1000 milliwatts.

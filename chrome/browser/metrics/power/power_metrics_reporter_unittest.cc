@@ -49,6 +49,25 @@ performance_monitor::ProcessMonitor::Metrics GetFakeProcessMetrics() {
   return metrics;
 }
 
+#if BUILDFLAG(IS_MAC)
+power_metrics::CoalitionResourceUsageRate GetFakeResourceUsageRate() {
+  power_metrics::CoalitionResourceUsageRate rate;
+  rate.cpu_time_per_second = 0.1;
+  rate.interrupt_wakeups_per_second = 0.3;
+  rate.platform_idle_wakeups_per_second = 2;
+  rate.bytesread_per_second = 10;
+  rate.byteswritten_per_second = 0.1;
+  rate.gpu_time_per_second = 0.8;
+  rate.energy_impact_per_second = 3.0;
+  rate.power_nw = 1000;
+
+  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i)
+    rate.qos_time_per_second[i] = i * 0.1;
+
+  return rate;
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
 class PowerMetricsReporterAccess : public PowerMetricsReporter {
@@ -1187,20 +1206,8 @@ TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
 TEST_F(PowerMetricsReporterUnitTest, ReportResourceCoalitionHistograms) {
   base::HistogramTester histogram_tester;
   performance_monitor::ProcessMonitor::Metrics metrics;
-  performance_monitor::ResourceCoalition::DataRate coalition_data = {};
-
-  coalition_data.cpu_time_per_second = 0.1;
-  coalition_data.interrupt_wakeups_per_second = 0.3;
-  coalition_data.platform_idle_wakeups_per_second = 2;
-  coalition_data.bytesread_per_second = 10;
-  coalition_data.byteswritten_per_second = 0.1;
-  coalition_data.gpu_time_per_second = 0.8;
-  coalition_data.energy_impact_per_second = 3.0;
-  coalition_data.power_nw = 1000;
-
-  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i)
-    coalition_data.qos_time_per_second[i] = i * 0.1;
-
+  power_metrics::CoalitionResourceUsageRate coalition_data =
+      GetFakeResourceUsageRate();
   metrics.coalition_data = coalition_data;
 
   std::vector<const char*> suffixes = {"", ".Foo", ".Bar"};
@@ -1243,7 +1250,7 @@ TEST_F(PowerMetricsReporterUnitTest, ReportResourceCoalitionHistograms) {
     histogram_tester.ExpectUniqueSample(
         base::StrCat({"PerformanceMonitor.ResourceCoalition.EnergyImpact",
                       scenario_suffix}),
-        coalition_data.energy_impact_per_second * 100.0, 1);
+        coalition_data.energy_impact_per_second.value() * 100.0, 1);
 
     // Power is reported in milliwatts (mj/s), the data is in nj/s so it has to
     // be divided by 1000000.
@@ -1287,5 +1294,28 @@ TEST_F(PowerMetricsReporterUnitTest, ReportResourceCoalitionHistograms) {
              scenario_suffix}),
         coalition_data.qos_time_per_second[6] * 10000, 1);
   }
+}
+
+// Verify that no energy impact histogram is reported when
+// `CoalitionResourceUsageRate::energy_impact_per_second` is nullopt.
+TEST_F(PowerMetricsReporterUnitTest,
+       ReportResourceCoalitionHistograms_NoEnergyImpact) {
+  base::HistogramTester histogram_tester;
+  performance_monitor::ProcessMonitor::Metrics metrics;
+  power_metrics::CoalitionResourceUsageRate coalition_data =
+      GetFakeResourceUsageRate();
+
+  coalition_data.energy_impact_per_second.reset();
+
+  metrics.coalition_data = coalition_data;
+
+  std::vector<const char*> suffixes = {"", ".Foo"};
+  PowerMetricsReporterAccess::ReportResourceCoalitionHistograms(metrics,
+                                                                suffixes);
+
+  histogram_tester.ExpectTotalCount(
+      "PerformanceMonitor.ResourceCoalition.EnergyImpact", 0);
+  histogram_tester.ExpectTotalCount(
+      "PerformanceMonitor.ResourceCoalition.EnergyImpact.Foo", 0);
 }
 #endif  // BUILDFLAG(IS_MAC)

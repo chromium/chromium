@@ -7,6 +7,8 @@
 #include <libproc.h>
 
 #include "base/check_op.h"
+#include "components/power_metrics/energy_impact_mac.h"
+#include "components/power_metrics/mach_time_mac.h"
 
 extern "C" int coalition_info_resource_usage(
     uint64_t cid,
@@ -131,6 +133,77 @@ coalition_resource_usage GetCoalitionResourceUsageDifference(
   ret.pm_writes = left.pm_writes - right.pm_writes;
 
   return ret;
+}
+
+absl::optional<CoalitionResourceUsageRate> GetCoalitionResourceUsageRate(
+    const coalition_resource_usage& begin,
+    const coalition_resource_usage& end,
+    base::TimeDelta interval_duration,
+    mach_timebase_info_data_t timebase,
+    absl::optional<EnergyImpactCoefficients> energy_impact_coefficients) {
+  // Validate that |end| >= |begin|.
+  bool end_greater_or_equal_begin =
+      std::tie(end.cpu_time, end.interrupt_wakeups, end.platform_idle_wakeups,
+               end.bytesread, end.byteswritten, end.gpu_time, end.energy) >=
+      std::tie(begin.cpu_time, begin.interrupt_wakeups,
+               begin.platform_idle_wakeups, begin.bytesread, begin.byteswritten,
+               begin.gpu_time, begin.energy);
+  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
+    if (end.cpu_time_eqos[i] < begin.cpu_time_eqos[i])
+      end_greater_or_equal_begin = false;
+  }
+  if (!end_greater_or_equal_begin)
+    return absl::nullopt;
+
+  auto get_rate_per_second = [&interval_duration](uint64_t begin,
+                                                  uint64_t end) -> double {
+    DCHECK_GE(end, begin);
+    uint64_t diff = end - begin;
+    return diff / interval_duration.InSecondsF();
+  };
+
+  auto get_time_rate_per_second = [&interval_duration, &timebase](
+                                      uint64_t begin, uint64_t end) -> double {
+    DCHECK_GE(end, begin);
+    // Compute the delta in s, being careful to avoid truncation due to integral
+    // division.
+    double delta_sample_s =
+        power_metrics::MachTimeToNs(end - begin, timebase) /
+        static_cast<double>(base::Time::kNanosecondsPerSecond);
+    return delta_sample_s / interval_duration.InSecondsF();
+  };
+
+  CoalitionResourceUsageRate result;
+
+  result.cpu_time_per_second =
+      get_time_rate_per_second(begin.cpu_time, end.cpu_time);
+  result.interrupt_wakeups_per_second =
+      get_rate_per_second(begin.interrupt_wakeups, end.interrupt_wakeups);
+  result.platform_idle_wakeups_per_second = get_rate_per_second(
+      begin.platform_idle_wakeups, end.platform_idle_wakeups);
+  result.bytesread_per_second =
+      get_rate_per_second(begin.bytesread, end.bytesread);
+  result.byteswritten_per_second =
+      get_rate_per_second(begin.byteswritten, end.byteswritten);
+  result.gpu_time_per_second =
+      get_time_rate_per_second(begin.gpu_time, end.gpu_time);
+  result.power_nw = get_rate_per_second(begin.energy, end.energy);
+
+  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
+    result.qos_time_per_second[i] =
+        get_time_rate_per_second(begin.cpu_time_eqos[i], end.cpu_time_eqos[i]);
+  }
+
+  if (energy_impact_coefficients.has_value()) {
+    result.energy_impact_per_second =
+        (ComputeEnergyImpactForResourceUsage(
+             end, energy_impact_coefficients.value(), timebase) -
+         ComputeEnergyImpactForResourceUsage(
+             begin, energy_impact_coefficients.value(), timebase)) /
+        interval_duration.InSecondsF();
+  }
+
+  return result;
 }
 
 }  // power_metrics
