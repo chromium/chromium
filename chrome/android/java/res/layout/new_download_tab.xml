@@ -2,7 +2,8 @@
 <!-- Copyright 2022 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,50 +13,49 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- TODO: Add contentDescription. -->
-    <ImageView
-        android:id="@+id/cct_download_animation"
-        android:layout_width="324dp"
-        android:layout_height="322dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/new_download_tab_animation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/cct_download_heading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="43dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="217dp"
-        android:textAppearance="@style/TextAppearance.DownloadDialogTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cct_download_animation" />
+        <!-- TODO: Add contentDescription. -->
+        <ImageView
+            android:id="@+id/cct_download_animation"
+            android:layout_width="324dp"
+            android:layout_height="322dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/new_download_tab_animation"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/cct_download_heading"
+            android:layout_width="324dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.DownloadDialogTitle"
+            android:layout_gravity="center_horizontal"/>
+
+        <FrameLayout
+            android:id="@+id/cct_download_file_info"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="16dp"/>
+    </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/cct_download_file_info"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:layout_constraintTop_toBottomOf="@+id/cct_download_heading"/>
+        android:layout_height="wrap_content">
 
-    <org.chromium.components.browser_ui.widget.DualControlLayout
-        android:id="@+id/cct_download_button_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:background="@color/default_bg_color"
-        app:stackedMargin="24dp"
-        app:buttonAlignment="end"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <org.chromium.components.browser_ui.widget.DualControlLayout
+            android:id="@+id/cct_download_button_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@color/default_bg_color"
+            app:stackedMargin="24dp"
+            app:buttonAlignment="end"/>
+    </FrameLayout>
+</FrameLayout>
