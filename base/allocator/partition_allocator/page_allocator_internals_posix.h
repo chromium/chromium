@@ -260,8 +260,8 @@ void DecommitSystemPagesInternal(
   // pages in the region.
   DiscardSystemPages(address, length);
 
-  bool change_permissions = accessibility_disposition ==
-                            PageAccessibilityDisposition::kUpdatePermissions;
+  bool change_permissions =
+      accessibility_disposition == PageAccessibilityDisposition::kRequireUpdate;
 #if DCHECK_IS_ON()
   // This is not guaranteed, show that we're serious.
   //
@@ -315,7 +315,7 @@ void RecommitSystemPagesInternal(
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
   if (accessibility_disposition ==
-      PageAccessibilityDisposition::kUpdatePermissions) {
+      PageAccessibilityDisposition::kRequireUpdate) {
     SetSystemPagesAccess(address, length, accessibility);
   }
 
@@ -335,7 +335,7 @@ bool TryRecommitSystemPagesInternal(
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
   if (accessibility_disposition ==
-      PageAccessibilityDisposition::kUpdatePermissions) {
+      PageAccessibilityDisposition::kRequireUpdate) {
     bool ok = TrySetSystemPagesAccess(address, length, accessibility);
     if (!ok)
       return false;

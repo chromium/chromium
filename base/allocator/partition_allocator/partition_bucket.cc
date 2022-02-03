@@ -285,7 +285,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
           SystemPageSize(),
 #endif
           PageAccessibilityConfiguration::kReadWrite,
-          PageAccessibilityDisposition::kUpdatePermissions);
+          PageAccessibilityDisposition::kRequireUpdate);
     }
 
     // No need to hold root->lock_. Now that memory is reserved, no other
@@ -371,8 +371,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // single page, then this is likely hopeless anyway, and we will crash very
     // soon.
     const bool ok = root->TryRecommitSystemPagesForData(
-        slot_start, slot_size,
-        PageAccessibilityDisposition::kUpdatePermissions);
+        slot_start, slot_size, PageAccessibilityDisposition::kRequireUpdate);
     if (!ok) {
       if (!return_null) {
         PartitionOutOfMemoryCommitFailure(root, slot_size);
@@ -565,7 +564,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
 
     root->RecommitSystemPagesForData(
         slot_span_start, slot_span_committed_size,
-        PageAccessibilityDisposition::kUpdatePermissions);
+        PageAccessibilityDisposition::kRequireUpdate);
   }
 
   PA_CHECK(get_slots_per_span() <=
@@ -638,7 +637,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
         SystemPageSize(),
 #endif
         PageAccessibilityConfiguration::kReadWrite,
-        PageAccessibilityDisposition::kUpdatePermissions);
+        PageAccessibilityDisposition::kRequireUpdate);
   }
 
   // If we were after a specific address, but didn't get it, assume that
@@ -695,7 +694,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
                           PageAccessibilityConfiguration::kReadWrite,
-                          PageAccessibilityDisposition::kUpdatePermissions);
+                          PageAccessibilityDisposition::kRequireUpdate);
     }
     PCScan::RegisterNewSuperPage(root, super_page);
   }
@@ -766,15 +765,14 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 
   // If lazy commit is enabled, meaning system pages in the slot span come
   // in an initially decommitted state, commit them here.
-  // Note, we can't use
-  // PageAccessibilityDisposition::kKeepPermissionsIfPossible, because we have
-  // no knowledge which pages have been committed before (it doesn't matter on
-  // Windows anyway).
+  // Note, we can't use PageAccessibilityDisposition::kAllowKeepForPerf, because
+  // we have no knowledge which pages have been committed before (it doesn't
+  // matter on Windows anyway).
   if (kUseLazyCommit) {
     // TODO(lizeb): Handle commit failure.
     root->RecommitSystemPagesForData(
         commit_start, commit_end - commit_start,
-        PageAccessibilityDisposition::kUpdatePermissions);
+        PageAccessibilityDisposition::kRequireUpdate);
   }
 
   if (LIKELY(size <= kMaxMemoryTaggingSize)) {
@@ -992,12 +990,12 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
             SlotSpanMetadata<thread_safe>::ToSlotSpanStart(new_slot_span);
         // Since lazy commit isn't used, we have a guarantee that all slot span
         // pages have been previously committed, and then decommitted using
-        // PageAccessibilityDisposition::kKeepPermissionsIfPossible, so use the
+        // PageAccessibilityDisposition::kAllowKeepForPerf, so use the
         // same option as an optimization.
         // TODO(lizeb): Handle commit failure.
         root->RecommitSystemPagesForData(
             slot_span_start, new_slot_span->bucket->get_bytes_per_span(),
-            PageAccessibilityDisposition::kKeepPermissionsIfPossible);
+            PageAccessibilityDisposition::kAllowKeepForPerf);
       }
 
       new_slot_span->Reset();

@@ -183,7 +183,7 @@ void DecommitSystemPagesInternal(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   if (accessibility_disposition ==
-      PageAccessibilityDisposition::kUpdatePermissions) {
+      PageAccessibilityDisposition::kRequireUpdate) {
     SetSystemPagesAccess(address, length,
                          PageAccessibilityConfiguration::kInaccessible);
   }
@@ -213,7 +213,7 @@ void RecommitSystemPagesInternal(
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
   if (accessibility_disposition ==
-      PageAccessibilityDisposition::kUpdatePermissions) {
+      PageAccessibilityDisposition::kRequireUpdate) {
     SetSystemPagesAccess(address, length, accessibility);
   }
 }
@@ -227,7 +227,7 @@ bool TryRecommitSystemPagesInternal(
   // it. However, if decommit changed the permissions, recommit has to change
   // them back.
   if (accessibility_disposition ==
-      PageAccessibilityDisposition::kUpdatePermissions) {
+      PageAccessibilityDisposition::kRequireUpdate) {
     return TrySetSystemPagesAccess(address, length, accessibility);
   }
   return true;

@@ -37,10 +37,10 @@ enum class PageAccessibilityDisposition {
   // PageAccessibilityConfiguration::kInaccessible;
   // Recommit will set to whatever was requested, other than
   // PageAccessibilityConfiguration::kInaccessible).
-  kUpdatePermissions,
+  kRequireUpdate,
   // Will not update permissions, if the platform supports that (POSIX & Fuchsia
   // only).
-  kKeepPermissionsIfPossible,
+  kAllowKeepForPerf,
 };
 
 // macOS supports tagged memory regions, to help in debugging. On Android,
@@ -58,7 +58,7 @@ BASE_EXPORT uintptr_t NextAlignedWithOffset(uintptr_t ptr,
                                             uintptr_t alignment,
                                             uintptr_t requested_offset);
 
-// Allocate one or more pages.
+// Allocates one or more pages.
 //
 // The requested |address| is just a hint; the actual address returned may
 // differ. The returned address will be aligned to |align_offset| modulo |align|
@@ -100,7 +100,7 @@ AllocPagesWithAlignOffset(uintptr_t address,
                           PageAccessibilityConfiguration page_accessibility,
                           PageTag page_tag);
 
-// Free one or more pages starting at |address| and continuing for |length|
+// Frees one or more pages starting at |address| and continuing for |length|
 // bytes.
 //
 // |address| and |length| must match a previous call to |AllocPages|. Therefore,
@@ -109,7 +109,7 @@ AllocPagesWithAlignOffset(uintptr_t address,
 BASE_EXPORT void FreePages(uintptr_t address, size_t length);
 BASE_EXPORT void FreePages(void* address, size_t length);
 
-// Mark one or more system pages, starting at |address| with the given
+// Marks one or more system pages, starting at |address| with the given
 // |page_accessibility|. |length| must be a multiple of |SystemPageSize()|
 // bytes.
 //
@@ -124,7 +124,7 @@ BASE_EXPORT void FreePages(void* address, size_t length);
     size_t length,
     PageAccessibilityConfiguration page_accessibility);
 
-// Mark one or more system pages, starting at |address| with the given
+// Marks one or more system pages, starting at |address| with the given
 // |page_accessibility|. |length| must be a multiple of |SystemPageSize()|
 // bytes.
 //
@@ -138,40 +138,38 @@ BASE_EXPORT void SetSystemPagesAccess(
     size_t length,
     PageAccessibilityConfiguration page_accessibility);
 
-// Decommit one or more system pages starting at |address| and continuing for
+// Decommits one or more system pages starting at |address| and continuing for
 // |length| bytes. |address| and |length| must be aligned to a system page
 // boundary.
 //
-// |accessibility_disposition| allows to specify whether the pages should be
-// made inaccessible (PageAccessibilityDisposition::kUpdatePermissions), or left
-// as is (PageAccessibilityDisposition::kKeepPermissionsIfPossible, POSIX &
-// Fuchsia only). The latter should only be used as an optimization if you
-// really know what you're doing.
-// TODO(bartekn): Ideally, all callers should use
-// PageAccessibilityDisposition::kUpdatePermissions, for better security, but
-// that may lead to a perf regression. Tracked at http://crbug.com/766882.
+// This API will crash if the operation cannot be performed!
 //
-// Decommitted means that physical resources (RAM or swap) backing the allocated
-// virtual address range may be released back to the system, but the address
-// space is still allocated to the process (possibly using up page table entries
-// or other accounting resources). There is no guarantee that the pages are
-// zeroed, see |DecommittedMemoryIsAlwaysZeroed()| for such a guarantee. Unless
-// PageAccessibilityDisposition::kKeepPermissionsIfPossible disposition is used,
-// any access to a decommitted region of memory is an error and will generate a
-// fault.
+// If disposition is PageAccessibilityDisposition::kRequireUpdate (recommended),
+// the decommitted pages will be made inaccessible before the call returns.
+// While it is always a programming error to access decommitted pages without
+// first recommitting them, callers may use
+// PageAccessibilityDisposition::kAllowKeepForPerf to allow the implementation
+// to skip changing permissions (use with care), for performance reasons (see
+// crrev.com/c/2567282 and crrev.com/c/2563038 for perf regressions encountered
+// in the past). Implementations may choose to always modify permissions, hence
+// accessing those pages may or may not trigger a fault.
 //
-// This operation is not atomic on all platforms.
+// Decommitting means that physical resources (RAM or swap/pagefile) backing the
+// allocated virtual address range may be released back to the system, but the
+// address space is still allocated to the process (possibly using up page table
+// entries or other accounting resources). There is no guarantee that the pages
+// are zeroed, unless |DecommittedMemoryIsAlwaysZeroed()| is true.
+//
+// This operation may not be atomic on some platforms.
 //
 // Note: "Committed memory" is a Windows Memory Subsystem concept that ensures
 // processes will not fault when touching a committed memory region. There is
 // no analogue in the POSIX & Fuchsia memory API where virtual memory pages are
 // best-effort allocated resources on the first touch. If
-// PageAccessibilityDisposition::kUpdatePermissions disposition is used, this
-// API behaves in a platform-agnostic way by simulating the Windows "decommit"
-// state by both discarding the region (allowing the OS to avoid swap
-// operations) *and* changing the page protections so accesses fault.
-//
-// This API will crash if the operation cannot be performed.
+// PageAccessibilityDisposition::kRequireUpdate disposition is used, this API
+// behaves in a platform-agnostic way by simulating the Windows "decommit" state
+// by both discarding the region (allowing the OS to avoid swap operations)
+// *and* changing the page protections so accesses fault.
 BASE_EXPORT void DecommitSystemPages(
     uintptr_t address,
     size_t length,
@@ -181,7 +179,7 @@ BASE_EXPORT void DecommitSystemPages(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition);
 
-// Decommit one or more system pages starting at |address| and continuing for
+// Decommits one or more system pages starting at |address| and continuing for
 // |length| bytes. |address| and |length| must be aligned to a system page
 // boundary.
 //
@@ -203,26 +201,26 @@ constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {
 #endif
 }
 
-// Recommit one or more system pages, starting at |address| and continuing for
-// |length| bytes with the given |page_accessibility| (must not be
-// PageAccessibilityConfiguration::kInaccessible). |address| and |length| must
-// be aligned to a system page boundary.
+// (Re)Commits one or more system pages, starting at |address| and continuing
+// for |length| bytes with the given |page_accessibility| (must not be
+// PageAccessibilityConfiguration::kInaccessible). |address| and |length|
+// must be aligned to a system page boundary.
 //
-// |accessibility_disposition| allows to specify whether the page permissions
-// should be set to |page_accessibility|
-// (PageAccessibilityDisposition::kUpdatePermissions), or left as is
-// (PageAccessibilityDisposition::kKeepPermissionsIfPossible, POSIX & Fuchsia
-// only). The latter can only be used if the pages were previously accessible
-// and decommitted with
-// PageAccessibilityDisposition::kKeepPermissionsIfPossible. It is ok, however,
-// to recommit with PageAccessibilityDisposition::kUpdatePermissions even if
-// pages were decommitted with
-// PageAccessibilityDisposition::kKeepPermissionsIfPossible (merely losing an
-// optimization).
+// This API will crash if the operation cannot be performed!
 //
-// This operation is not atomic on all platforms.
+// If disposition is PageAccessibilityConfiguration::kRequireUpdate, the calls
+// updates the pages to |page_accessibility|. This can be used regardless of
+// what disposition was used to decommit the pages.
+// PageAccessibilityConfiguration::kAllowKeepForPerf allows the implementation
+// to leave the page permissions, if that improves performance. This option can
+// only be used if the pages were previously accessible and decommitted with
+// that same option.
 //
-// This API will crash if the operation cannot be performed.
+// The memory will be zeroed when it is committed for the first time. However,
+// there is no such guarantee when memory is recommitted, unless
+// |DecommittedMemoryIsAlwaysZeroed()| is true.
+//
+// This operation may not be atomic on some platforms.
 BASE_EXPORT void RecommitSystemPages(
     uintptr_t address,
     size_t length,

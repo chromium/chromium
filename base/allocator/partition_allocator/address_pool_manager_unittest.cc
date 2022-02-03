@@ -196,7 +196,7 @@ TEST_F(PartitionAllocAddressPoolManagerTest, DecommittedDataIsErased) {
   ASSERT_TRUE(address);
   RecommitSystemPages(address, kSuperPageSize,
                       PageAccessibilityConfiguration::kReadWrite,
-                      PageAccessibilityDisposition::kUpdatePermissions);
+                      PageAccessibilityDisposition::kRequireUpdate);
 
   memset(reinterpret_cast<void*>(address), 42, kSuperPageSize);
   GetAddressPoolManager()->UnreserveAndDecommit(pool_, address, kSuperPageSize);
@@ -206,7 +206,7 @@ TEST_F(PartitionAllocAddressPoolManagerTest, DecommittedDataIsErased) {
   ASSERT_EQ(address, address2);
   RecommitSystemPages(address2, kSuperPageSize,
                       PageAccessibilityConfiguration::kReadWrite,
-                      PageAccessibilityDisposition::kUpdatePermissions);
+                      PageAccessibilityDisposition::kRequireUpdate);
 
   uint32_t sum = 0;
   for (size_t i = 0; i < kSuperPageSize; i++) {

@@ -98,7 +98,7 @@ bool PageAllocator::ReleasePages(void* address,
   // safe to just decommit the tail.
   base::DecommitSystemPages(
       release_base, release_size,
-      ::partition_alloc::PageAccessibilityDisposition::kUpdatePermissions);
+      ::partition_alloc::PageAccessibilityDisposition::kRequireUpdate);
 #else
 #error Unsupported platform
 #endif
@@ -110,13 +110,13 @@ bool PageAllocator::SetPermissions(void* address,
                                    Permission permissions) {
   // If V8 sets permissions to none, we can discard the memory.
   if (permissions == v8::PageAllocator::Permission::kNoAccess) {
-    // Use PageAccessibilityDisposition::kKeepPermissionsIfPossible as an
+    // Use PageAccessibilityDisposition::kAllowKeepForPerf as an
     // optimization, to avoid perf regression (see crrev.com/c/2563038 for
     // details). This may cause the memory region to still be accessible on
     // certain platforms, but at least the physical pages will be discarded.
-    base::DecommitSystemPages(address, length,
-                              ::partition_alloc::PageAccessibilityDisposition::
-                                  kKeepPermissionsIfPossible);
+    base::DecommitSystemPages(
+        address, length,
+        ::partition_alloc::PageAccessibilityDisposition::kAllowKeepForPerf);
     return true;
   } else {
     return base::TrySetSystemPagesAccess(address, length,

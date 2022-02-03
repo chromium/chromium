@@ -289,7 +289,7 @@ void CommitCardTable() {
   RecommitSystemPages(PartitionAddressSpace::RegularPoolBase(),
                       sizeof(QuarantineCardTable),
                       PageAccessibilityConfiguration::kReadWrite,
-                      PageAccessibilityDisposition::kUpdatePermissions);
+                      PageAccessibilityDisposition::kRequireUpdate);
 #endif
 }
 
@@ -1417,7 +1417,7 @@ PCScanInternal::SuperPages GetSuperPagesAndCommitStateBitmaps(
       RecommitSystemPages(SuperPageStateBitmapAddr(super_page),
                           state_bitmap_size_to_commit,
                           PageAccessibilityConfiguration::kReadWrite,
-                          PageAccessibilityDisposition::kUpdatePermissions);
+                          PageAccessibilityDisposition::kRequireUpdate);
       super_pages.push_back(super_page);
     }
   }
