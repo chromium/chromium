@@ -2290,7 +2290,7 @@ bool Animation::Update(TimingUpdateReason reason) {
 
   ClearOutdated();
   bool idle = CalculateAnimationPlayState() == kIdle;
-  if (!idle)
+  if (!idle && reason == kTimingUpdateForAnimationFrame)
     UpdateFinishedState(UpdateType::kContinuous, NotificationType::kAsync);
 
   if (content_) {
