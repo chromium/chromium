@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1186201132766001848">检查密码</translation>
-<translation id="1195210374336998651">转到应用设置</translation>
 <translation id="1195558154361252544">除您允许的网站外，已自动阻止所有其他网站显示通知</translation>
 <translation id="1197088940767939838">橙色</translation>
 <translation id="1201402288615127009">下一步</translation>
@@ -836,7 +835,6 @@
 <translation id="3587738293690942763">中间</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}=1{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}other{您可以随时重置自己所属的群组。大约需要 {NUM_DAYS} 天的时间才能加入新群组。}}</translation>
-<translation id="3596012367874587041">应用设置</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">已被您的管理员禁用的应用</translation>
 <translation id="3608932978122581043">送纸方向</translation>
@@ -1963,6 +1961,7 @@
 <translation id="7334320624316649418">恢复顺序调整(&amp;R)</translation>
 <translation id="7335157162773372339">可以询问能否使用您的摄像头</translation>
 <translation id="7337248890521463931">显示更多行</translation>
+<translation id="7337418456231055214">未填充虚拟卡号？点击“信用卡详细信息”即可复制。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">在您的平台上不可用。</translation>
 <translation id="733923710415886693">该服务器的证书未通过证书透明度政策进行披露。</translation>
 <translation id="734600844861828519">11x15</translation>

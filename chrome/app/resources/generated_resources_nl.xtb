@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}other{Over # seconden word je automatisch uitgelogd.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}}</translation>
 <translation id="1193927020065025187">Deze site probeert je mogelijk zover te krijgen dat je opdringerige meldingen toestaat</translation>
+<translation id="1195210374336998651">Ga naar app-instellingen</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1195558154361252544">Meldingen zijn automatisch geblokkeerd voor alle sites, behalve de meldingen die je toestaat</translation>
 <translation id="1197088940767939838">Oranje</translation>
@@ -384,6 +385,7 @@
 <translation id="1396259464226642517">Was dit resultaat onverwacht? <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">De gebruikersnaam en het wachtwoord die je hebt opgegeven, komen niet overeen</translation>
 <translation id="1397500194120344683">Geen geschikte apparaten. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Je bent op deze apparaten ingelogd bij Chrome, dus kun je ze als beveiligingssleutels gebruiken.</translation>
 <translation id="1398853756734560583">Maximaliseren</translation>
 <translation id="139911022479327130">Ontgrendel je telefoon en bevestig dat jij het bent</translation>
 <translation id="1401308693935339022">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van dit apparaat gebruiken. Google kan periodiek locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren.</translation>
@@ -1168,6 +1170,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2163470535490402084">Maak verbinding met internet om in te loggen op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Donkere modus aanzetten</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 schakelaar</translation>
+<translation id="2165102982098084499">Je hebt deze apparaten gekoppeld door een QR-code te scannen.</translation>
 <translation id="2165177462441582039">Kiezen hoelang elk item gemarkeerd moet blijven</translation>
 <translation id="2166369534954157698">Pa's wijze lynx bezag vroom het fikse aquaduct</translation>
 <translation id="2169062631698640254">Toch inloggen</translation>
@@ -1893,6 +1896,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="287205682142673348">Poortdoorschakeling</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> toevoegen…</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
+<translation id="2873995907777332853">Details tonen over het blokkeren van alle cookies</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
 <translation id="2875698561019555027">(Chrome-foutpagina's)</translation>
 <translation id="2876336351874743617">Vinger 2</translation>
@@ -1940,6 +1944,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2915873080513663243">Automatisch scannen</translation>
 <translation id="2916073183900451334">Als je op een webpagina op Tab drukt, worden links en velden in formulieren gemarkeerd</translation>
 <translation id="2916745397441987255">Extensies zoeken</translation>
+<translation id="2918484639460781603">Ga naar instellingen</translation>
 <translation id="2918484644467055090">Dit apparaat kan niet worden ingeschreven bij de organisatie waarbij je account hoort, omdat het apparaat is aangewezen voor beheer door een andere organisatie.</translation>
 <translation id="2920852127376356161">Geen toestemming om protocollen te verwerken</translation>
 <translation id="2921081876747860777">Stel een wachtwoord in om je lokale gegevens te beschermen.</translation>
@@ -2196,6 +2201,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3189187154924005138">Grote cursor</translation>
 <translation id="3190558889382726167">Wachtwoord opgeslagen</translation>
 <translation id="3192947282887913208">Audiobestanden</translation>
+<translation id="3194786596445804250">Details tonen over het blokkeren van cookies van derden</translation>
 <translation id="3197453258332670132">Gerelateerde informatie voor je tekstselectie bekijken door met de rechtermuisknop te klikken of de selectie lang ingedrukt te houden</translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3200061262156232574">In je winkelwagentje</translation>
@@ -2563,6 +2569,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3592260987370335752">&amp;Meer informatie</translation>
 <translation id="3593152357631900254">Fuzzy-pinyinmethode aanzetten</translation>
 <translation id="3593965109698325041">Naambeperkingen voor certificaten</translation>
+<translation id="3596012367874587041">App-instellingen</translation>
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="3599221874935822507">Verhoogd</translation>
 <translation id="3599863153486145794">Hiermee wordt de geschiedenis van alle ingelogde apparaten gewist. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5288,6 +5295,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6455264371803474013">Op specifieke sites</translation>
 <translation id="6455894534188563617">&amp;Nieuwe map</translation>
 <translation id="645705751491738698">JavaScript blijven blokkeren</translation>
+<translation id="6458347417133445570">Details tonen over het toestaan van alle cookies</translation>
 <translation id="6458701200018867744">Upload mislukt (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Gebruik selectie voor zoekactie</translation>
 <translation id="6459799433792303855">Het actieve venster is verplaatst naar een ander scherm.</translation>
@@ -5680,6 +5688,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Proxyinstellingen...</translation>
 <translation id="6860427144121307915">Openen in een tabblad</translation>
+<translation id="6863496016067551393">Alle extensies toegestaan</translation>
 <translation id="686366188661646310">Wachtwoord verwijderen?</translation>
 <translation id="6865313869410766144">Formuliergegevens voor 'Automatisch invullen'</translation>
 <translation id="6865598234501509159">Pagina is niet in het <ph name="LANGUAGE" /></translation>
@@ -5709,6 +5718,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6900651018461749106">Log opnieuw in om <ph name="USER_EMAIL" /> te updaten</translation>
 <translation id="6900654715912436255">Weet je zeker dat je deze zoekmachine wilt verwijderen?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Stem om als voorbeeld te beluisteren</translation>
 <translation id="6902336033320348843">Sectie niet ondersteund: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Apparaat koppelen aan domein</translation>
@@ -6717,6 +6727,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>
 <translation id="7920482456679570420">Woorden toevoegen waarvan je wilt dat de spellingcontrole deze overslaat</translation>
+<translation id="7922935920104868876">Details tonen over het blokkeren van cookies van derden in de incognitomodus</translation>
 <translation id="7924358170328001543">Fout bij doorschakelen van poort</translation>
 <translation id="7925108652071887026">Gegevens van Automatisch invullen</translation>
 <translation id="792514962475806987">Vastgezet zoomniveau:</translation>
@@ -6881,6 +6892,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8076835018653442223">Toegang tot lokale bestanden op je apparaat is ingetrokken door je beheerder</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Accounts die beschikbaar zijn voor gebruik met Android-apps</translation>
 <translation id="8081989000209387414">ADB-foutopsporing uitzetten?</translation>
 <translation id="8082106343289440791">Koppelen met '<ph name="DEVICE_NAME" />'?</translation>
 <translation id="8082390128630131497">Als je ADB-foutopsporing uitzet, wordt deze <ph name="DEVICE_TYPE" /> teruggezet op de fabrieksinstellingen. Alle gebruikersaccounts en lokale gegevens worden gewist.</translation>
@@ -7141,6 +7153,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8342861492835240085">Een verzameling selecteren</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="834785183489258869">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
+<translation id="8349499562373871073">Je kunt een bestaand account selecteren om met Android-apps te gebruiken of een nieuw Google-account toevoegen. Nadat je bent ingelogd bij een Android-app, kun je je account met andere Android-apps gebruiken. Je kunt de toegang tot Android-apps wijzigen in <ph name="LINK_BEGIN" />Instellingen &gt; Accounts<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Stylustools in dock</translation>
 <translation id="8351316842353540018">Altijd A11y-opties bekijken</translation>
 <translation id="8351419472474436977">Deze extensie heeft het beheer van je proxyinstellingen overgenomen. Dit betekent dat de extensie alles wat je online doet, kan wijzigen, beschadigen of bekijken. Als je niet zeker weet waarom deze wijziging heeft plaatsgevonden, is het waarschijnlijk een ongewenste wijziging.</translation>
@@ -7356,6 +7369,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8610103157987623234">Onjuiste indeling. Probeer het opnieuw.</translation>
 <translation id="8611682088849615761">Volledig beheer van MIDI-apparaten blijven toestaan voor deze site</translation>
 <translation id="8613164732773110792">Alleen kleine letters, cijfers, underscores of koppeltekens</translation>
+<translation id="8613645710357126807">Geen toestemming om extensies te gebruiken</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> is te groot voor een beveiligingscontrole. Je kunt bestanden tot 50 MB openen.</translation>
 <translation id="8615618338313291042">Incognitotoepassing: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> aan je contacten toevoegen</translation>

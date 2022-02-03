@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1186201132766001848">Нууц үгийг шалгах</translation>
-<translation id="1195210374336998651">Аппын тохиргоо руу очно уу</translation>
 <translation id="1195558154361252544">Таны зөвшөөрөх сайтаас бусад бүх сайтын мэдэгдлийг автоматаар хориглоно</translation>
 <translation id="1197088940767939838">Улбар шар</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
@@ -844,7 +843,6 @@
 <translation id="3587738293690942763">Дунд</translation>
 <translation id="3592413004129370115">Итали (Дугтуй)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Та бүлгээ хүссэн үедээ шинэчлэх боломжтой. Шинэ бүлэгт нэгдэхэд ойролцоогоор 1 өдөр зарцуулдаг.}=1{Та бүлгээ хүссэн үедээ шинэчлэх боломжтой. Шинэ бүлэгт нэгдэхэд ойролцоогоор 1 өдөр зарцуулдаг.}other{Та бүлгээ хүссэн үедээ шинэчлэх боломжтой. Шинэ бүлэгт нэгдэхэд ойролцоогоор {NUM_DAYS} өдөр зарцуулдаг.}}</translation>
-<translation id="3596012367874587041">Aппын тохиргоо</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Администратор аппликэйшнийг блоклосон</translation>
 <translation id="3608932978122581043">Чиглэлийг заах</translation>

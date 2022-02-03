@@ -225,6 +225,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
+<translation id="7342713658732509484">Les autorisations que vous avez déjà accordées aux sites Web et aux applis peuvent s'appliquer à ce compte. Si vous ne voulez pas que les sites Web ou applis aient accès aux infos de votre compte, utilisez le mode Invité dans le navigateur Chromium. Vous pouvez également gérer vos comptes Google dans <ph name="LINK_2_BEGIN" />Paramètres<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Votre contenu Web, vos favoris et toutes vos données Chromium sont conservés ici.</translation>
 <translation id="7349591376906416160">Votre administrateur système a configuré Chromium de sorte que <ph name="ALTERNATIVE_BROWSER_NAME" /> s'ouvre pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Vous pouvez ainsi faire plus facilement la distinction entre vos contenus personnels et professionnels.</translation>

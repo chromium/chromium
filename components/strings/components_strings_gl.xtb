@@ -70,7 +70,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1186201132766001848">Comprobar contrasinais</translation>
-<translation id="1195210374336998651">Ir á configuración da aplicación</translation>
 <translation id="1195558154361252544">Bloquéanse automaticamente as notificacións para todos os sitios, excepto para os que permitas</translation>
 <translation id="1197088940767939838">Laranxa</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -842,7 +841,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}=1{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}other{Podes restablecer o teu grupo cando queiras. Tardarás {NUM_DAYS} días en unirte a un grupo novo.}}</translation>
-<translation id="3596012367874587041">Axustes da aplicación</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">O administrador bloqueou a aplicación</translation>
 <translation id="3608932978122581043">Orientación da alimentación</translation>
@@ -1976,6 +1974,7 @@ Detalles adicionais:
 <translation id="7334320624316649418">&amp;Refacer de cambio de orde</translation>
 <translation id="7335157162773372339">Pode pedirche permiso para utilizar a cámara</translation>
 <translation id="7337248890521463931">Mostrar máis liñas</translation>
+<translation id="7337418456231055214">Non se autocompletou o número da tarxeta virtual? Para copialo, fai clic nos detalles da tarxeta. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Non está dispoñible na túa plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor non se indicou mediante Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

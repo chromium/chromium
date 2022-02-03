@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1186201132766001848">የይለፍ ቃላትዎን ይፈትሹ</translation>
-<translation id="1195210374336998651">ወደ የመተግበሪያ ቅንብሮች ይሂዱ</translation>
 <translation id="1195558154361252544">እርስዎ ከፈቀዱላቸው ጣቢያዎች በስተቀር ማሳወቂያዎች ለሁሉም ጣቢያዎች በራስ-ሰር ይታገዳሉ</translation>
 <translation id="1197088940767939838">ብርቱካናማ</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
@@ -838,7 +837,6 @@
 <translation id="3587738293690942763">መሃል</translation>
 <translation id="3592413004129370115">ጣልያንኛ (የደብዳቤ ፖስታ)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል አንድ ቀን ያህል ጊዜ ይወስዳል።}=1{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል አንድ ቀን ያህል ጊዜ ይወስዳል።}one{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል {NUM_DAYS} ቀኖች ያህል ጊዜ ይወስዳል።}other{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል {NUM_DAYS} ቀኖች ያህል ጊዜ ይወስዳል።}}</translation>
-<translation id="3596012367874587041">የመተግበሪያ ቅንብሮች</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />፣ <ph name="DOMAIN" />፣ <ph name="TIME" /></translation>
 <translation id="3603507503523709">መተግበሪያ በእርስዎ አስተዳዳሪ ታግዷል</translation>
 <translation id="3608932978122581043">የምገባ አቀማመጥ</translation>

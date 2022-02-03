@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1186201132766001848">পাসওয়ার্ড চেক করুন</translation>
-<translation id="1195210374336998651">অ্যাপ সেটিংসে যান</translation>
 <translation id="1195558154361252544">আপনার অনুমতি দেওয়া সাইট ছাড়া, বাকি সব সাইটের জন্য বিজ্ঞপ্তি অটোমেটিক ব্লক করা হয়েছে</translation>
 <translation id="1197088940767939838">কমলা</translation>
 <translation id="1201402288615127009">পরের</translation>
@@ -844,7 +843,6 @@
 <translation id="3587738293690942763">মাঝারি</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে প্রায় এক দিন সময় লাগে।}=1{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে প্রায় এক দিন সময় লাগে।}one{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে {NUM_DAYS} দিন সময় লাগে।}other{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে {NUM_DAYS} দিন সময় লাগে।}}</translation>
-<translation id="3596012367874587041">অ্যাপ সেটিংস</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">অ্যাপ্লিকেশনটিকে আপনার অ্যাডমিনিস্ট্রেটর  ব্লক করেছে</translation>
 <translation id="3608932978122581043">ফিড ওরিয়েন্টেশন</translation>

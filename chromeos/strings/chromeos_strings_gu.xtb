@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />માંથી <ph name="PRINTED_PAGES" /> પેજ પ્રિન્ટ કર્યા.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ. <ph name="PERCENTAGE_VALUE" />% પૂર્ણ થયું.</translation>
 <translation id="3459509316159669723">છાપવું</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="3484914941826596830">ફર્મવેયર અપડેટ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આ અપડેટમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
 <translation id="3486220673238053218">વિવરણ</translation>
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
 <translation id="3565064564551103223">મંજૂર કરેલા IPs</translation>
+<translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="357889014807611375">મીટર્ડ (ડેટા નિયંત્રણ) વાઇ-ફાઇ</translation>
 <translation id="3583278742022654445">સિગ્નલની પ્રબળતા નબળી છે. વાઇ-ફાઇ સિગ્નલના સૉર્સની વધુ નજીક જઈને પ્રયાસ કરી જુઓ.</translation>
 <translation id="3595596368722241419">બૅટરી પૂર્ણ ચાર્જ</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
-<translation id="7240035910874241640">બધા પેરિફેરલ અપ ટૂ ડેટ છે</translation>
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">વૉલપેપરના સંગ્રહો</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">ટ્રાફિક કાઉન્ટર</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="8503836310948963452">બસ થોડો વધુ સમય...</translation>
-<translation id="8520963233738002436">તમારું <ph name="DEVICE_NAME" /> અપ ટૂ ડેટ છે</translation>
 <translation id="8521021929829989041">વ્યક્તિગત ડિવાઇસ તરીકે ઉપયોગ કરો</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">તમારા મોબાઇલ ઑપરેટરને તેમના નેટવર્ક સાથે કનેક્ટ કરવા માટે, આ વિકલ્પની જરૂર પડી શકે છે. વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">ફરીથી ચલાવો</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{સ્કૅન કરો}=1{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}one{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}other{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}}</translation>
-<translation id="8994273342647807496">ઇન્સ્ટૉલ થઈ રહ્યું છે - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">ડિવાઇસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="9003704114456258138">આવર્તન</translation>
 <translation id="9039663905644212491">PEAP</translation>

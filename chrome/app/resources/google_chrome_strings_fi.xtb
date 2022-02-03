@@ -65,6 +65,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chrome-profiiliin. Chrome voi luoda sinulle oman profiilin, jotta selaamisesi pysyy erillään.</translation>
 <translation id="2580411288591421699">Ei voi asentaa samaa Google Chromen versiota, joka tällä hetkellä on käytössä. Sulje Google Chrome ja yritä uudelleen.</translation>
 <translation id="2586406160782125153">Selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Jos et halua, että sivustot ja sovellukset saavat pääsyn tilitietoihisi, käytä Chrome-selaimen Vierastilaa. Voit ylläpitää Google-tilejä myös <ph name="LINK_2_BEGIN" />asetuksissa<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome ei voi tarkistaa päivityksiä. Tarkista internetyhteytesi.</translation>
 <translation id="2644798301485385923">Chrome-käyttöjärjestelmä</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>

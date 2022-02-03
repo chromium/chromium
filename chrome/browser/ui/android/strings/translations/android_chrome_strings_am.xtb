@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ኦዲዮ ፋይል}one{# ኦዲዮ ፋይሎች}other{# ኦዲዮ ፋይሎች}}</translation>
 <translation id="265156376773362237">መደበኛ ቅድሚያ መጫን</translation>
 <translation id="2656405586795711023">የድር መተግበሪያዎች</translation>
+<translation id="2689830683995595741">Chromeን በመጠቀምዎ በ<ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChrome OS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ። <ph name="BEGIN_LINK3" />በFamily Link የሚቀናበሩ የGoogle መለያዎች የግላዊነት ማስታወቂያ<ph name="END_LINK3" /> እንዲሁም ይተገበራል።</translation>
 <translation id="2702516483241149200">አዲስ፦ ወደዚህ ጽሑፍ የሚሸበለል አገናኝ ያጋሩ</translation>
 <translation id="2704606927547763573">ተቀድቷል</translation>
 <translation id="2707726405694321444">ገጹን አድስ</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}}</translation>
 <translation id="4696983787092045100">ጽሑፍ ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="4699172675775169585">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
+<translation id="471759387343966120">በመቀጠልዎ በ<ph name="BEGIN_TOS_LINK" />የአገልግሎት ውል<ph name="END_TOS_LINK" /> እና <ph name="BEGIN_PRIVACY_LINK" />የግላዊነት\u00A0መመሪያ<ph name="END_PRIVACY_LINK" /> ይስማማሉ።\nመተግበሪያውን ለማሻሻል ለማገዝ Chrome የአጠቃቀም እና የስንክል ውሂብን ወደ Google ይልካል። <ph name="BEGIN_UMA_LINK" />ያቀናብሩ<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">ለመተርጎም ጥያቄ አቅርብ</translation>
 <translation id="4720023427747327413">በ<ph name="PRODUCT_NAME" /> ውስጥ ክፈት</translation>
 <translation id="4720982865791209136">Chrome እንዲሻሻል ያግዙ። <ph name="BEGIN_LINK" />የዳሰሳ ጥናት ይወሰዱ<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">ገጹን ማተም ላይ ችግር ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="6277722725779679269">ዋጋ ተከታተልን ማዘመን አልተቻለም</translation>
 <translation id="6278428485366576908">ገጽታ</translation>
+<translation id="6292420053234093573">Chromeን በመጠቀምዎ በ<ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChrome OS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ።</translation>
 <translation id="6294610283659775533">በተመሳሳዩ Google መለያ በገቡባቸው መሣሪያዎች መካከል ትሮችን መላክ ይችላሉ</translation>
 <translation id="6297765934698848803">የእርስዎን መሣሪያ የሚያስተዳድረው ድርጅት ካሜራዎን አጥፍቶታል።</translation>
 <translation id="6301525844455696527">በንባብ ዝርዝርዎ ላይ ተከታትለው ይድረሱባቸው</translation>
@@ -1171,6 +1174,7 @@
 <translation id="7663313374500954251">ይህ አሳሽ በ<ph name="PARENT_NAME" /> የሚተዳደር ነው።</translation>
 <translation id="7665369617277396874">መለያ ያክሉ</translation>
 <translation id="766587987807204883">እርስዎ ከመስመር ውጭ ሆነውም እንኳ ሊያነብቧቸው የሚችሏቸውን ጽሑፎች እዚህ ይመጣሉ</translation>
+<translation id="768232549260819724">ጂአይኤፍ ተቀድቷል</translation>
 <translation id="7682724950699840886">የሚከተሉትን ጠቃሚ ምክሮች ይሞክሩ፦ በእርስዎ መሣሪያ ላይ በቂ ባዶ ቦታ መኖሩን ያረጋግጡ፣ ወይም እንደገና ወደ ውጭ ለመላክ ይሞክሩ።</translation>
 <translation id="768618399695552958">የጎበኟቸው አንዳንድ ገጾች ቅድሚያ ተጭነዋል። ገጾች ከGoogle ጣቢያ ከተገናኙ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
 <translation id="7698359219371678927">በ<ph name="APP_NAME" /> ውስጥ ኢሜይል ይፍጠሩ</translation>
@@ -1349,6 +1353,7 @@
 <translation id="8570677896027847510">ፋይል ደህንነቱ በተጠበቀ ሁኔታ ሊወርድ አይችልም</translation>
 <translation id="8571213806525832805">ባለፉት 4 ሳምንቶች</translation>
 <translation id="8572344201470131220">ምስል ተቀድቷል</translation>
+<translation id="8580884231102452214">ጂአይኤፍ ቅዳ</translation>
 <translation id="8583805026567836021">የመለያ ውሂብን በማጽዳት ላይ</translation>
 <translation id="859046281437143747">ከተጨማሪ አማራጮች አዝራር ዋጋን ይከታተሉ</translation>
 <translation id="860043288473659153">የካርድ ያዢ ስም</translation>

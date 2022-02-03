@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Iphrinte ikhasi elingu-<ph name="PRINTED_PAGES" /> kwangu-<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Iskena ikhasi <ph name="PAGE_NUM" />. Kuqedwe <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Iyaphrinta</translation>
-<translation id="3462187165860821523">Ibuyekeza i-<ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Ngenkathi i-firmware ibuyekeza, ungakhiphi ukuxhuma le divayisi yangaphandle noma ucishe ikhompyutha. Unganciphisa leli windi. Lesi sibuyekezo singase sithathe imizuzu embalwa futhi idivayisi yakho yangaphandle ingase ingasebenzi phakathi nalesi sikhathi.</translation>
 <translation id="3486220673238053218">incazelo</translation>
 <translation id="3488065109653206955">Yenziwe yasebenza ngokungaphelele</translation>
 <translation id="3527036260304016759">Yehlukile - Iphutha elingaziwa</translation>
 <translation id="3532980081107202182">Kusele cishe amaminithi angu-<ph name="MIN_REMAINING" /></translation>
 <translation id="3565064564551103223">Ama-IP avunyelwe</translation>
+<translation id="3577473026931028326">Kunento engahambanga kahle. Zama futhi.</translation>
 <translation id="357889014807611375">I-Wi-Fi enemitha</translation>
 <translation id="3583278742022654445">Amandla esignali abuthakathaka. Zama ukusondela eduze komthombo wesiginali ye-Wi-Fi.</translation>
 <translation id="3595596368722241419">Ibhethri ligcwele</translation>
@@ -462,7 +462,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7177485034254901881">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />. Abalawuli bangase balungiselele ngokulawula kude idivayisi.</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
 <translation id="7216409898977639127">Umhlinzeki weselula</translation>
-<translation id="7240035910874241640">Yonke imikhawulo isesikhathini</translation>
 <translation id="7271040990581020067">Iskena sisasetshenziswa okwamanje. Zama futhi emuva kwesikhathi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Amaqoqo Wesithombe Sangemuva</translation>
@@ -563,7 +562,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8498220429738806196">Ukubalwa Kwethrafikhi</translation>
 <translation id="8503813439785031346">Igama lomsebenzisi</translation>
 <translation id="8503836310948963452">Amaninithi ambalwa nje asele…</translation>
-<translation id="8520963233738002436">I-<ph name="DEVICE_NAME" /> yakho isesikhathini</translation>
 <translation id="8521021929829989041">Sebenzisa njengedivayisi yomuntu siqu</translation>
 <translation id="8528615187455571738">I-Crosvm</translation>
 <translation id="8575298406870537639">Inkampani yenethiwekhi yakho idinga le nketho ukuze ixhume kunethiwekhi yayo. Xhumana nenkampani yakho yenethiwekhi mayelana nemininingwane.</translation>
@@ -607,7 +605,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8970109610781093811">Sebenzisa futhi</translation>
 <translation id="8983038754672563810">I-HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skena}=1{Skena ikhasi elingu-{NUMBER_OF_PAGES}}one{Skena ikhasi elingu-{NUMBER_OF_PAGES}}other{Skena ikhasi elingu-{NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Iyafaka - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Idivayisi inebhethri engu-<ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Imvamisa</translation>
 <translation id="9039663905644212491">I-PEAP</translation>

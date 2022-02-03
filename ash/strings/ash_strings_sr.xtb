@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">Помоћник (учитава се...)</translation>
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
 <translation id="1864454756846565995">Уређај са USB прикључком типа C (задњи порт)</translation>
+<translation id="1879018240766558464">Прозори без архивирања тренутно нису подржани. Друге апликације ће бити сачуване.</translation>
 <translation id="1882814835921407042">Нема мобилне мреже</translation>
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Откључајте отиском прста</translation>
@@ -947,6 +948,7 @@
 <translation id="7366890467478514168">Повежите <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Сними прозор</translation>
 <translation id="7377169924702866686">Caps Lock је укључен.</translation>
+<translation id="7377481913241237033">Повежите се помоћу кода</translation>
 <translation id="7378203170292176219">Превуците да бисте изабрали област за снимање</translation>
 <translation id="7378594059915113390">Контроле за медије</translation>
 <translation id="7378889811480108604">Режим уштеде батерије је искључен</translation>
@@ -974,6 +976,7 @@
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7526573455193969409">Мрежа се можда надгледа</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux апликације и прозори без архивирања тренутно нису подржани. Друге апликације ће бити сачуване.</translation>
 <translation id="7544300628205093162">Позадинско осветљење тастатуре је укључено</translation>
 <translation id="7548434653388805669">Време је за спавање</translation>
 <translation id="7551643184018910560">Закачи на полицу</translation>

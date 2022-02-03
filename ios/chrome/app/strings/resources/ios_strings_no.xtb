@@ -452,6 +452,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Innstillingen for informasjonskapsler gjelder for alle faner. For å ta i bruk en ny innstilling på en åpen fane, last inn fanen på nytt.</translation>
 <translation id="5190835502935405962">Bokmerkerad</translation>
+<translation id="519530786644929958">Nedlastingen mislyktes. Det er ikke mulig å prøve på nytt.</translation>
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5210365745912300556">Lukk fanen</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>

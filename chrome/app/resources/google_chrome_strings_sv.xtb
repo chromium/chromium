@@ -69,6 +69,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> är redan inloggad på den här Chrome-profilen. Du kan hålla isär webbinformationen genom att skapa en egen profil i Chrome.</translation>
 <translation id="2580411288591421699">Det går inte att installera samma version av Google Chrome som redan körs. Stäng Google Chrome och försök igen.</translation>
 <translation id="2586406160782125153">Webbinformationen raderas från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
+<translation id="260478105521939126">Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Om du inte vill ge webbplatser och appar åtkomst till information i ditt konto kan du använda gästläget i webbläsaren Chrome. Du kan även hantera dina Google-konton i <ph name="LINK_2_BEGIN" />inställningarna<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome kan inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2644798301485385923">Chrome OS-system</translation>
 <translation id="2652691236519827073">Öppna länkar i en ny flik i Chrome</translation>

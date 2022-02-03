@@ -70,7 +70,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1186201132766001848">Provjeri lozinke</translation>
-<translation id="1195210374336998651">Idite u postavke aplikacije</translation>
 <translation id="1195558154361252544">Obavještenja se automatski blokiraju za sve web lokacije osim onih koje omogućite</translation>
 <translation id="1197088940767939838">Narandžasta</translation>
 <translation id="1201402288615127009">Naprijed</translation>
@@ -843,7 +842,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3587738293690942763">Srednje</translation>
 <translation id="3592413004129370115">Italijanska (koverta)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike jedan dan da se pridružite novoj grupi.}=1{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike jedan dan da se pridružite novoj grupi.}one{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike {NUM_DAYS} dan da se pridružite novoj grupi.}few{Možete vratiti grupu na zadano kad god želite. Potrebna su otprilike {NUM_DAYS} dana da se pridružite novoj grupi.}other{Možete vratiti grupu na zadano kad god želite. Potrebno je otprilike {NUM_DAYS} dana da se pridružite novoj grupi.}}</translation>
-<translation id="3596012367874587041">Postavke aplikacije</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikaciju je blokirao vaš administrator</translation>
 <translation id="3608932978122581043">Orijentacija sažetka sadržaja</translation>
@@ -1977,7 +1975,7 @@ Dodatni detalji:
 <translation id="7334320624316649418">&amp;Ponovi preuređivanje</translation>
 <translation id="7335157162773372339">Može tražiti da koristi kameru</translation>
 <translation id="7337248890521463931">Prikaži više redova</translation>
-<translation id="7337418456231055214">Broj virtualne kartice nije ispunjen? Kliknite podatke o kartici da biste kopirali. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="7337418456231055214">Broj virtuelne kartice nije ispunjen? Kliknite na detalje kartice da ih kopirate. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nije dostupno na vašoj platformi.</translation>
 <translation id="733923710415886693">Potvrda servera nije otkrivena korištenjem pravila o transparentnosti potvrde.</translation>
 <translation id="734600844861828519">11 x 15</translation>

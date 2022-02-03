@@ -207,6 +207,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart card.}other{Awtomatiko kang masa-sign out sa loob ng # na segundo.
 Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart card.}}</translation>
 <translation id="1193927020065025187">Posibleng sinusubukan kang linlangin ng site na ito para payagan ang mga nakakasagabal na notification</translation>
+<translation id="1195210374336998651">Pumunta sa mga setting ng app</translation>
 <translation id="1195447618553298278">Hindi kilalang error.</translation>
 <translation id="1195558154361252544">Awtomatikong naka-block ang mga notification para sa lahat ng site maliban sa mga pinapayagan mo</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -1960,6 +1961,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2915873080513663243">Awtomatikong Pag-scan</translation>
 <translation id="2916073183900451334">Ang pagpindot sa Tab sa isang webpage ay nagha-highlight ng mga link, pati na rin ang mga field ng form</translation>
 <translation id="2916745397441987255">Maghanap sa mga extension</translation>
+<translation id="2918484639460781603">Pumunta sa mga setting</translation>
 <translation id="2918484644467055090">Hindi puwedeng i-enroll ang device na ito sa organisasyon kung saan nabibilang ang iyong account dahil minarkahan ang device para pamahalaan ng ibang organisasyon.</translation>
 <translation id="2920852127376356161">Hindi pinapayagang mangasiwa ng mga protocol</translation>
 <translation id="2921081876747860777">Mangyaring gumawa ng password upang protektahan ang iyong lokal na data.</translation>
@@ -2584,6 +2586,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3592260987370335752">&amp;Matuto nang higit pa</translation>
 <translation id="3593152357631900254">Paganahin ang Fuzzy-Pinyin mode</translation>
 <translation id="3593965109698325041">Mga Limitasyon sa Pangalan ng Certificate</translation>
+<translation id="3596012367874587041">Mga setting ng app</translation>
 <translation id="3596414637720633074">I-block ang third-party na cookies sa Incognito</translation>
 <translation id="3599221874935822507">Raised</translation>
 <translation id="3599863153486145794">Kini-clear ang history sa lahat ng naka-sign in na device. Maaaring may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

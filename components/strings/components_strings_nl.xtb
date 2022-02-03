@@ -70,7 +70,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1186201132766001848">Wachtwoorden controleren</translation>
-<translation id="1195210374336998651">Ga naar app-instellingen</translation>
 <translation id="1195558154361252544">Meldingen zijn automatisch geblokkeerd voor alle sites, behalve de meldingen die je toestaat</translation>
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="1201402288615127009">Volgende</translation>
@@ -836,7 +835,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3587738293690942763">Midden</translation>
 <translation id="3592413004129370115">Italian (envelop)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Je kunt je groep op elk moment resetten. Het duurt ongeveer 1 dag om aan een nieuwe groep deel te nemen.}=1{Je kunt je groep op elk moment resetten. Het duurt ongeveer 1 dag om aan een nieuwe groep deel te nemen.}other{Je kunt je groep op elk moment resetten. Het duurt {NUM_DAYS} dagen om aan een nieuwe groep deel te nemen.}}</translation>
-<translation id="3596012367874587041">App-instellingen</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">App geblokkeerd door je beheerder</translation>
 <translation id="3608932978122581043">Invoerrichting</translation>
@@ -1968,6 +1966,7 @@ Aanvullende informatie:
 <translation id="7334320624316649418">&amp;Opnieuw volgorde wijzigen</translation>
 <translation id="7335157162773372339">Kan vragen of deze site je camera mag gebruiken</translation>
 <translation id="7337248890521463931">Meer regels bekijken</translation>
+<translation id="7337418456231055214">Virtueel kaartnummer niet ingevuld? Klik op de kaartgegevens om ze te kopiëren. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Niet beschikbaar op je platform.</translation>
 <translation id="733923710415886693">Het certificaat van de server is niet bekendgemaakt via Certificaattransparantie.</translation>
 <translation id="734600844861828519">11x15</translation>

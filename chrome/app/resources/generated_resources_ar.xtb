@@ -208,6 +208,7 @@
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}other{سيتم تسجيل خروجك تلقائيًا بعد # ثانية.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}}</translation>
 <translation id="1193927020065025187">قد يحاول هذا الموقع الإلكتروني خداعك للسماح بإشعارات غير مرغوب فيها.</translation>
+<translation id="1195210374336998651">الانتقال إلى إعدادات التطبيق</translation>
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
 <translation id="1195558154361252544">يتم حظر الإشعارات تلقائيًا لجميع المواقع الإلكترونية باستثناء المواقع التي تسمح بها.</translation>
 <translation id="1197088940767939838">برتقالي</translation>
@@ -388,6 +389,7 @@
 <translation id="1396259464226642517">هل كانت هذه النتيجة غير متوقعة؟ <ph name="BEGIN_LINK" />إرسال تعليقات<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">اسم المستخدم وكلمة المرور اللذان أدخلتهما غير متطابقين</translation>
 <translation id="1397500194120344683">لا تتوفَّر أجهزة مؤهَّلة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">‏أنت مسجّل دخولك إلى Chrome على هذه الأجهزة، ما يعني أنّ بإمكانك استخدامها كمفاتيح أمان.</translation>
 <translation id="1398853756734560583">تكبير</translation>
 <translation id="139911022479327130">فتح قفل هاتفك وتأكيد هويتك</translation>
 <translation id="1401308693935339022">‏يمكنك استخدام الموقع الجغرافي. يمكنك السماح للتطبيقات والخدمات التي لديها إذن تحديد الموقع الجغرافي باستخدام الموقع الجغرافي لهذا الجهاز. ويجوز لشركة Google جمع بيانات الموقع الجغرافي بشكل دوري واستخدام هذه البيانات بطريقة لا تعرّف الهوية لتحسين دقة الموقع والخدمات المستندة إلى الموقع الجغرافي.</translation>
@@ -1172,6 +1174,7 @@
 <translation id="2163470535490402084">يُرجى الاتصال بالإنترنت لتسجيل الدخول إلى <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> ومفتاح تبديل آخر</translation>
+<translation id="2165102982098084499">تم ربط هذه الأجهزة من خلال المسح الضوئي لرمز الاستجابة السريعة.</translation>
 <translation id="2165177462441582039">اختَر مدة إبقاء كل عنصر مميّزًا.</translation>
 <translation id="2166369534954157698">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>
 <translation id="2169062631698640254">تسجيل الدخول على أيّ حال</translation>
@@ -1899,6 +1902,7 @@
 <translation id="287205682142673348">إعادة توجيه المنفذ</translation>
 <translation id="287286579981869940">جارٍ إضافة <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
+<translation id="2873995907777332853">عرض تفاصيل حظر جميع ملفات تعريف الارتباط</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
 <translation id="2875698561019555027">‏(صفحات الخطأ في Chrome)</translation>
 <translation id="2876336351874743617">إصبع 2</translation>
@@ -1946,6 +1950,7 @@
 <translation id="2915873080513663243">المسح التلقائي</translation>
 <translation id="2916073183900451334">يؤدي الضغط على علامة تبويب في صفحة الويب إلى إبراز الروابط وكذلك حقول النماذج</translation>
 <translation id="2916745397441987255">بحث في الإضافات</translation>
+<translation id="2918484639460781603">الانتقال إلى الإعدادات</translation>
 <translation id="2918484644467055090">لا يمكن تسجيل هذا الجهاز في المؤسّسة التي ينتمي إليها حسابك لإنه ستتم إدارة الجهاز من قِبَل مؤسّسة أخرى.</translation>
 <translation id="2920852127376356161">المواقع الإلكترونية التي لا يُسمح لها بمعالجة البروتوكولات</translation>
 <translation id="2921081876747860777">يُرجى إنشاء كلمة مرور لحماية بياناتك المحلية.</translation>
@@ -2202,6 +2207,7 @@
 <translation id="3189187154924005138">مؤشّر الماوس الكبير</translation>
 <translation id="3190558889382726167">تم حفظ كلمة المرور</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
+<translation id="3194786596445804250">عرض تفاصيل حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3197453258332670132">يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار لعرض المعلومات ذات الصلة بالنص الذي اختَرته.</translation>
 <translation id="3199127022143353223">الخوادم</translation>
 <translation id="3200061262156232574">المنتجات داخل سلّة التسوّق</translation>
@@ -2570,6 +2576,7 @@
 <translation id="3592260987370335752">&amp;مزيد من المعلومات</translation>
 <translation id="3593152357631900254">تفعيل وضع شبيه بـ "بين ين"</translation>
 <translation id="3593965109698325041">قيود اسم الشهادة</translation>
+<translation id="3596012367874587041">إعدادات التطبيق</translation>
 <translation id="3596414637720633074">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفّح المتخفي</translation>
 <translation id="3599221874935822507">مرتفعة</translation>
 <translation id="3599863153486145794">‏يمسح السجل من كل الأجهزة التي تم تسجيل الدخول عليها. وقد يتضمن حسابك في Google نماذج أخرى من سجل التصفح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5294,6 +5301,7 @@
 <translation id="6455264371803474013">على مواقع إلكترونية محددة</translation>
 <translation id="6455894534188563617">&amp;مجلد جديد</translation>
 <translation id="645705751491738698">‏متابعة منع تشغيل JavaScript</translation>
+<translation id="6458347417133445570">عرض تفاصيل السماح بجميع ملفات تعريف الارتباط</translation>
 <translation id="6458701200018867744">تعذَّر التحميل (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">استخدام التحديد للبحث</translation>
 <translation id="6459799433792303855">تم نقل نافذة نشطة إلى شاشة عرض أخرى.</translation>
@@ -5686,6 +5694,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
 <translation id="6860097299815761905">إعدادات الخادم الوكيل...</translation>
 <translation id="6860427144121307915">فتح في علامة تبويب</translation>
+<translation id="6863496016067551393">المواقع الإلكترونية التي تسمح باستخدام كل الإضافات</translation>
 <translation id="686366188661646310">هل تريد حذف كلمة المرور؟</translation>
 <translation id="6865313869410766144">الملء التلقائي للبيانات</translation>
 <translation id="6865598234501509159">الصفحة ليست باللغة <ph name="LANGUAGE" />.</translation>
@@ -5715,6 +5724,7 @@
 <translation id="6900532703269623216">حماية مُحسّنة</translation>
 <translation id="6900651018461749106">تسجيل الدخول مرة أخرى لتحديث <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">هل تريد فعلاً حذف محرك البحث هذا؟</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">صوت للمعاينة</translation>
 <translation id="6902336033320348843">القسم غير متاح: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">انضمام الجهاز إلى النطاق</translation>
@@ -6726,6 +6736,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> ثوانٍ</translation>
 <translation id="7920363873148656176">بإمكان <ph name="ORIGIN" /> عرض الملف <ph name="FILENAME" />.</translation>
 <translation id="7920482456679570420">يُرجى إضافة كلمات تريد أن يتخطاها التدقيق الإملائي.</translation>
+<translation id="7922935920104868876">عرض تفاصيل حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفّح المتخفي</translation>
 <translation id="7924358170328001543">خطأ في إعادة توجيه المنفذ</translation>
 <translation id="7925108652071887026">ملء البيانات تلقائيًا</translation>
 <translation id="792514962475806987">مستوى التكبير الذي تم إرساؤه:</translation>
@@ -6890,6 +6901,7 @@
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8076835018653442223">أوقف المشرف إمكانية الوصول إلى الملفات المحلية على جهازك.</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">‏الحسابات المتوفّرة لاستخدامها مع تطبيقات Android</translation>
 <translation id="8081989000209387414">‏هل تريد إيقاف خيار "تصحيح الأخطاء عبر ADB"؟</translation>
 <translation id="8082106343289440791">هل تريد الإقران مع جهاز "<ph name="DEVICE_NAME" />"؟</translation>
 <translation id="8082390128630131497">‏سيؤدي إيقاف خيار "تصحيح الأخطاء عبر ADB" إلى إعادة ضبط جهاز <ph name="DEVICE_TYPE" /> هذا على الإعدادات الأصلية. وسيتم محو جميع حسابات المستخدمين والبيانات المحلّية.</translation>
@@ -7151,6 +7163,7 @@
 <translation id="8342861492835240085">اختيار مجموعة</translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
 <translation id="834785183489258869">في وضع التصفُّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً. قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
+<translation id="8349499562373871073">‏يمكنك اختيار حساب حالي لاستخدامه في تطبيقات Android أو إضافة حساب جديد على Google. بعد تسجيل الدخول إلى أحد تطبيقات Android، يمكنك استخدام الحساب في تطبيقات Android الأخرى. يمكنك تغيير الحساب المستخدم للوصول إلى تطبيقات Android من خلال <ph name="LINK_BEGIN" />الإعدادات &gt; الحسابات<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">أدوات قلم الشاشة في لوحة الأدوات</translation>
 <translation id="8351316842353540018">عرض خيارات إمكانية الوصول دائمًا</translation>
 <translation id="8351419472474436977">أصبح بإمكان هذه الإضافة التحكم في إعدادات الخادم الوكيل التابعة لك، مما يعني أن بإمكانها تغيير أي إجراء لك على الإنترنت أو قطعه أو التجسس عليه. إذا كنت غير متيقن من سبب حدوث هذا التغيير، فأنت لا ترغب فيه على الأرجح.</translation>
@@ -7366,6 +7379,7 @@
 <translation id="8610103157987623234">تنسيق غير صحيح، يُرجى إعادة المحاولة</translation>
 <translation id="8611682088849615761">‏مواصلة السماح لهذا الموقع الإلكتروني بالتحكُّم الكامل بأجهزة MIDI</translation>
 <translation id="8613164732773110792">أحرف صغيرة أو أرقام أو شرطات سفلية أو شرطات فقط</translation>
+<translation id="8613645710357126807">المواقع الإلكترونية التي لا تسمح باستخدام الإضافات</translation>
 <translation id="8613786722548417558">إنّ حجم الملف <ph name="FILE_NAME" /> كبير جدًا بالنسبة إلى فحص الأمان. يمكنك فتح ملفات لا يزيد حجمها عن 50 ميغابايت.</translation>
 <translation id="8615618338313291042">تطبيق وضع التصفح المتخفي: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">إضافة <ph name="CONTACT_NAME" /> إلى جهات الاتصال</translation>

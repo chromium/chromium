@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> ページを印刷しました。</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ページ目をスキャンしています。<ph name="PERCENTAGE_VALUE" />% 完了。</translation>
 <translation id="3459509316159669723">印刷</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> を更新しています</translation>
 <translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
 <translation id="3565064564551103223">許可する IP</translation>
+<translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="357889014807611375">従量制 Wi-Fi</translation>
 <translation id="3583278742022654445">電波が弱い状態です。Wi-Fi　信号の発生元に近づいてみてください。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
-<translation id="7240035910874241640">周辺機器はすべて最新の状態です</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">壁紙のコレクション</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">トラフィック カウンタ</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> は最新の状態です</translation>
 <translation id="8521021929829989041">個人のデバイスとして使用</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">再実行</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページをスキャン}other{{NUMBER_OF_PAGES} ページをスキャン}}</translation>
-<translation id="8994273342647807496">インストールしています - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="9003704114456258138">周波数</translation>
 <translation id="9039663905644212491">PEAP</translation>

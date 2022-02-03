@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> میں سے <ph name="PRINTED_PAGES" /> پرنٹ کئے ہوئے صفحات۔</translation>
 <translation id="345898999683440380">صفحہ <ph name="PAGE_NUM" /> اسکین ہو رہا ہے۔ <ph name="PERCENTAGE_VALUE" />% مکمل ہو گیا۔</translation>
 <translation id="3459509316159669723">پرنٹ کیا جا رہا ہے</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> اپ ڈیٹ ہو رہا ہے</translation>
 <translation id="3484914941826596830">فرم ویئر اپ ڈیٹ کرنے کے دوران اس خارجی آلے کو ان پلگ یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
 <translation id="3565064564551103223">‏اجازت یافتہ IPs</translation>
+<translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="357889014807611375">‏میٹرڈ Wi-Fi</translation>
 <translation id="3583278742022654445">‏کمزور سگنل کی مضبوطی۔ Wi-Fi سگنل ماخذ کے قریب منتقل کرنے کی کوشش کریں۔</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
-<translation id="7240035910874241640">سبھی پیریفیرلز اپ ٹو ڈیٹ ہیں</translation>
 <translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">وال پیپر کے مجموعے</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">ٹریفک کاؤنٹرز</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8503836310948963452">صرف چند مزید منٹ...</translation>
-<translation id="8520963233738002436">آپ کا <ph name="DEVICE_NAME" /> اپ ٹو ڈیٹ ہے</translation>
 <translation id="8521021929829989041">ذاتی آلے کے طور پر استعمال کریں</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">آپ کے کیریئر کو اپنے نیٹ ورک سے منسلک ہونے کیلئے اس اختیار کی ضرورت پڑ سکتی ہے۔ تفصیلات کیلئے اپنے کیریئر سے رابطہ کریں۔</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">دوبارہ چلائيں</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکین کریں}=1{{NUMBER_OF_PAGES} صفحہ اسکین کریں}other{{NUMBER_OF_PAGES} صفحہ اسکین کریں}}</translation>
-<translation id="8994273342647807496"><ph name="PERCENTAGE_VALUE" /> انسٹال ہو رہا ہے</translation>
 <translation id="8997710128084572139">آلے میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="9003704114456258138">فریکوئنسی</translation>
 <translation id="9039663905644212491">PEAP</translation>

@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканування сторінки <ph name="PAGE_NUM" />. Виконано <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Друк</translation>
-<translation id="3462187165860821523">Пристрій <ph name="DEVICE_NAME" /> оновлюється</translation>
 <translation id="3484914941826596830">Поки мікропрограма оновлюється, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Оновлення може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
 <translation id="3486220673238053218">визначення</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3565064564551103223">Дозволені IP-адреси</translation>
+<translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
 <translation id="3583278742022654445">Низький рівень сигналу. Підійдіть ближче до джерела сигналу Wi-Fi.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
-<translation id="7240035910874241640">Усі периферійні пристрої оновлено</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Колекції фонових малюнків</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">Лічильники трафіку</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8503836310948963452">Залишилося кілька хвилин…</translation>
-<translation id="8520963233738002436">Ваш пристрій <ph name="DEVICE_NAME" /> оновлено</translation>
 <translation id="8521021929829989041">Використовувати як особистий пристрій</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Можливо, вам доведеться ввімкнути це налаштування, щоб підключитися до мережі. Щоб дізнатися більше, зверніться до свого оператора.</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}many{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
-<translation id="8994273342647807496">Встановлення – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Рівень заряду акумулятора пристрою – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9039663905644212491">PEAP</translation>

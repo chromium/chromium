@@ -70,7 +70,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1186201132766001848">Verificar senhas</translation>
-<translation id="1195210374336998651">Acessar as configurações do app</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto aqueles que têm permissão</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1201402288615127009">Próxima</translation>
@@ -839,7 +838,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3587738293690942763">Meio</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}=1{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}one{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dia para fazer parte de um novo grupo.}other{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dias para fazer parte de um novo grupo.}}</translation>
-<translation id="3596012367874587041">Configurações do app</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
 <translation id="3608932978122581043">Fornecer orientação</translation>
@@ -1968,6 +1966,7 @@ Mais detalhes:
 <translation id="7334320624316649418">&amp;Refazer reordenar</translation>
 <translation id="7335157162773372339">Pode pedir para usar a câmera</translation>
 <translation id="7337248890521463931">Mostrar mais linhas</translation>
+<translation id="7337418456231055214">O número do cartão virtual não foi preenchido? Clique nos detalhes do cartão para copiar. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Não está disponível na sua plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor não foi divulgado por meio da Transparência dos certificados.</translation>
 <translation id="734600844861828519">11x15</translation>

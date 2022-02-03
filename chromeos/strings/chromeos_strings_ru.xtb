@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Напечатано страниц: <ph name="PRINTED_PAGES" /> из <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканирование страницы <ph name="PAGE_NUM" />. Выполнено <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Печать</translation>
-<translation id="3462187165860821523">Обновление встроенного ПО для устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3484914941826596830">Пока выполняется обновление встроенного ПО, не отключайте внешнее устройство и не выключайте компьютер. Это окно можно свернуть. Обновление займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
 <translation id="3486220673238053218">узнать определение</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
 <translation id="3532980081107202182">Осталось примерно <ph name="MIN_REMAINING" /> мин.</translation>
 <translation id="3565064564551103223">Разрешенные IP-адреса</translation>
+<translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
 <translation id="357889014807611375">Wi-Fi с тарификацией</translation>
 <translation id="3583278742022654445">Слабый сигнал Wi-Fi. Попробуйте разместить устройство ближе к источнику сигнала.</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
-<translation id="7240035910874241640">Встроенное ПО для всех периферийных устройств уже обновлено.</translation>
 <translation id="7271040990581020067">Сканер уже используется. Повторите попытку позже.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Коллекция обоев</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">Счетчики трафика</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8503836310948963452">Осталось несколько минут…</translation>
-<translation id="8520963233738002436">Обновление для устройства "<ph name="DEVICE_NAME" />" установлено</translation>
 <translation id="8521021929829989041">Использовать как личное устройство</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
-<translation id="8994273342647807496">Установка: <ph name="PERCENTAGE_VALUE" /> %…</translation>
 <translation id="8997710128084572139">Устройство заряжено на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9039663905644212491">PEAP</translation>

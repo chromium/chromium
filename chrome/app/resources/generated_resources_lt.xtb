@@ -209,6 +209,7 @@
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.}other{Būsite automatiškai atjungti po # sekundžių.
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.}}</translation>
 <translation id="1193927020065025187">Šioje svetainėje gali būti bandoma apgaule priversti jus leisti nepageidaujamus pranešimus</translation>
+<translation id="1195210374336998651">Eiti į programos nustatymus</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
 <translation id="1195558154361252544">Pranešimai automatiškai blokuojami visose svetainėse, išskyrus svetaines, kuriose leidote rodyti</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
@@ -1960,6 +1961,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2915873080513663243">Automatinis nuskaitymas</translation>
 <translation id="2916073183900451334">Paspaudus tinklalapio skirtuką paryškinamos nuorodos ir formos laukai</translation>
 <translation id="2916745397441987255">Ieškoti plėtinių</translation>
+<translation id="2918484639460781603">Eiti į nustatymus</translation>
 <translation id="2918484644467055090">Šio įrenginio negalima užregistruoti organizacijoje, kuriai priklauso paskyra, nes pažymėta, kad įrenginys tvarkomas kitos organizacijos.</translation>
 <translation id="2920852127376356161">Neleidžiama apdoroti protokolų</translation>
 <translation id="2921081876747860777">Sukurkite slaptažodį, kad apsaugotumėte vietinius duomenis.</translation>
@@ -2584,6 +2586,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3592260987370335752">&amp;Sužinokite daugiau</translation>
 <translation id="3593152357631900254">Įgalinti netikslų Pinjino režimą</translation>
 <translation id="3593965109698325041">Sertifikato pavadinimo apribojimai</translation>
+<translation id="3596012367874587041">Programos nustatymai</translation>
 <translation id="3596414637720633074">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
 <translation id="3599221874935822507">Iškilęs</translation>
 <translation id="3599863153486145794">Išvaloma visų įrenginių, prie kurių prisijungta, istorija. „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

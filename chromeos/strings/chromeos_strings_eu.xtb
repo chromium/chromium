@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> orria inprimatu da.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />garren orria eskaneatzen. % <ph name="PERCENTAGE_VALUE" /> osatuta.</translation>
 <translation id="3459509316159669723">Inprimaketa</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> gailua eguneratzen</translation>
 <translation id="3484914941826596830">Firmwarea eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="3486220673238053218">definizioa</translation>
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
 <translation id="3565064564551103223">Baimena duten IPak</translation>
+<translation id="3577473026931028326">Arazo bat izan da. Saiatu berriro.</translation>
 <translation id="357889014807611375">wifi neurtua</translation>
 <translation id="3583278742022654445">Seinalearen indarra ahula da. Saiatu wifi-seinalearen iturburura hurbiltzen.</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
@@ -462,7 +462,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua. Baliteke administratzaileek urrunetik konfiguratzea gailua.</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7216409898977639127">Zerbitzu mugikorraren hornitzailea</translation>
-<translation id="7240035910874241640">Gailu periferiko guztiak eguneratuta daude</translation>
 <translation id="7271040990581020067">Eskanerra erabiltzen ari zara. Saiatu berriro geroago.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Horma-paperen bildumak</translation>
@@ -563,7 +562,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8498220429738806196">Trafiko-kontagailuak</translation>
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
 <translation id="8503836310948963452">Minutu gutxi batzuk baino ez…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> gailua eguneratuta dago</translation>
 <translation id="8521021929829989041">Erabili gailu pertsonal gisa</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Baliteke zure operadoreak aukera hau eskatzea haren sarera konektatzeko. Horri buruzko xehetasunak lortzeko, jarri operadorearekin harremanetan.</translation>
@@ -607,7 +605,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8970109610781093811">Abiarazi berriro</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Eskaneatu}=1{Eskaneatu {NUMBER_OF_PAGES} orria}other{Eskaneatu {NUMBER_OF_PAGES} orri}}</translation>
-<translation id="8994273342647807496">Instalatzen (% <ph name="PERCENTAGE_VALUE" />)</translation>
 <translation id="8997710128084572139">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuari.</translation>
 <translation id="9003704114456258138">Maiztasuna</translation>
 <translation id="9039663905644212491">PEAP</translation>

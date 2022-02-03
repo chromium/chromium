@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Sahifa chop etildi: <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ta sahifa skanerlandi. <ph name="PERCENTAGE_VALUE" />% tugallandi.</translation>
 <translation id="3459509316159669723">Chop etish</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> yangilanmoqda</translation>
 <translation id="3484914941826596830">Mikrodastur yangilanayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu yangilanish bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
 <translation id="3565064564551103223">Ruxsat etilgan IP manzillar</translation>
+<translation id="3577473026931028326">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="357889014807611375">Cheklangan trafikli Wi-Fi</translation>
 <translation id="3583278742022654445">Signal darajasi zaif. Wi-Fi signal manbasiga yaqinlashtiring.</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
@@ -462,7 +462,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
-<translation id="7240035910874241640">Barcha tashqi qurilmalar taʼminoti yangilangan</translation>
 <translation id="7271040990581020067">Skaner hozir band. Keyinroq urining.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Fon rasmlari termasi</translation>
@@ -563,7 +562,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8498220429738806196">Traffik hisoblagichlari</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> tizimi eng oxirgi versiyada</translation>
 <translation id="8521021929829989041">Shaxsiy qurilma sifatida foydalanish</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
@@ -607,7 +605,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8970109610781093811">Qayta tekshirish</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanerlash}=1{{NUMBER_OF_PAGES} sahifani skanerlash}other{{NUMBER_OF_PAGES} sahifani skanerlash}}</translation>
-<translation id="8994273342647807496">Oʻrnatilmoqda - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Qurilma batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="9003704114456258138">Chastotasi</translation>
 <translation id="9039663905644212491">PEAP</translation>

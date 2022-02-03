@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Yazdırılan sayfa: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. sayfa taranıyor %<ph name="PERCENTAGE_VALUE" /> tamamlandı</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> güncelleniyor</translation>
 <translation id="3484914941826596830">Donanım yazılımı güncellenirken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
 <translation id="3565064564551103223">İzin verilen IP'ler</translation>
+<translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3583278742022654445">Düşük sinyal gücü. Kablosuz sinyal kaynağına yaklaşmayı deneyin.</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
@@ -462,7 +462,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
-<translation id="7240035910874241640">Tüm çevre birimleri güncel</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>
@@ -563,7 +562,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8498220429738806196">Trafik Sayaçları</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8503836310948963452">Sadece birkaç dakika kaldı…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> cihazınız güncel</translation>
 <translation id="8521021929829989041">Kişisel cihaz olarak kullanın</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatörünüz, ağlarına bağlanmak için bu seçeneği gerektirebilir. Ayrıntılı bilgiler için operatörünüzle iletişime geçin.</translation>
@@ -607,7 +605,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8970109610781093811">Yeniden çalıştır</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Tara}=1{Taranacak sayfa: {NUMBER_OF_PAGES}}other{Taranacak sayfa: {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Yükleniyor - %<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="8997710128084572139">Cihazın pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="9003704114456258138">Frekans</translation>
 <translation id="9039663905644212491">PEAP</translation>

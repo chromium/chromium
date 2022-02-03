@@ -205,6 +205,7 @@
 <ph name="DOMAIN" /> የእርስዎን ዘመናዊ ካርድ እንደገባ እንዲቆይ ይፈልግብዎታል።}other{በ# ሰከንዶች ውስጥ በራስ-ሰር ዘግተው እንዲወጡ ይደረጋሉ።
 <ph name="DOMAIN" /> የእርስዎን ዘመናዊ ካርድ እንደገባ እንዲቆይ ይፈልግብዎታል።}}</translation>
 <translation id="1193927020065025187">ይህ ጣቢያ በጣም ጣልቃ-ገብ ማሳወቂያዎችን እንዲፈቅዱ እርስዎን ለማታለል እየሞከረ ሊሆን ይችላል</translation>
+<translation id="1195210374336998651">ወደ የመተግበሪያ ቅንብሮች ይሂዱ</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1195558154361252544">እርስዎ ከፈቀዱላቸው ጣቢያዎች በስተቀር ማሳወቂያዎች ለሁሉም ጣቢያዎች በራስ-ሰር ይታገዳሉ</translation>
 <translation id="1197088940767939838">ብርቱካናማ</translation>
@@ -385,6 +386,7 @@
 <translation id="1396259464226642517">ይህ ውጤት ያልተጠበቀ ነበር? <ph name="BEGIN_LINK" />ግብረመልስ ይላኩ<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">ያስገቡት የተጠቃሚ ስም እና የይለፍ ቃል አይዛመዱም</translation>
 <translation id="1397500194120344683">ምንም ብቁ የሆኑ መሣሪያዎች የሉም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">እንደ የደህንነት ቁልፎች ሊጠቀሙባቸው እንዲችሉ በእነዚህ መሣሪያዎች ላይ ወደ Chrome ገብተዋል።</translation>
 <translation id="1398853756734560583">አስፋ</translation>
 <translation id="139911022479327130">ስልክዎን ይክፈቱትና እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="1401308693935339022">አካባቢን ተጠቀም። የአካባቢ ፈቃድ ያላቸው መተግበሪያዎች እና አገልግሎቶች የዚህ መሣሪያ አካባቢን እንዲጠቀሙ ይፍቀዱላቸው። Google በየጊዜው የአካባቢ ውሂብን ሊሰበስብ እና ይህን ውሂብ ስም-አልባ በሆነ መልኩ ተጠቅሞ የአካባቢን ትክክለኛነት እና በአካባቢ ላይ የተመሠረቱ አገልግሎቶችን ለማሻሻል ሊጠቀምበት ይችላል።</translation>
@@ -1176,6 +1178,7 @@
 <translation id="2163470535490402084">ወደ የእርስዎ <ph name="DEVICE_TYPE" /> ለመግባት እባክዎ ከበይነመረብ ጋር ይገናኙ።</translation>
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" />፣ <ph name="THIRD_SWITCH" /> እና 1 ተጨማሪ ማብሪያና ማጥፊያ</translation>
+<translation id="2165102982098084499">እነዚህን መሳሪያዎች QR ኮድ በመቃኘት አገናኝተዋል።</translation>
 <translation id="2165177462441582039">በእያንዳንዱ ንጥል ላይ ድምቀቱ ምን ያህል ጊዜ መቆየት እንዳለበት ይምረጡ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">ለማንኛውም ግባ</translation>
@@ -2575,6 +2578,7 @@
 <translation id="3592260987370335752">&amp;ተጨማሪ ይወቁ</translation>
 <translation id="3593152357631900254">ያልጠራ-በቻይና ፊደል መጻፊያ ሁነታን ያንቁ</translation>
 <translation id="3593965109698325041">የሰርቲፊኬት ስም እገዳዎች</translation>
+<translation id="3596012367874587041">የመተግበሪያ ቅንብሮች</translation>
 <translation id="3596414637720633074">ማንነትን በማያሳውቅ ሁነታ ሦስተኛ ወገን ኩኪዎች ያግዱ</translation>
 <translation id="3599221874935822507">የተነሣ</translation>
 <translation id="3599863153486145794">ታሪክን በመለያ ከገቡ ሁሉም መሣሪያዎች ላይ ያጸዳል። የእርስዎ Google መለያ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል</translation>
@@ -5693,6 +5697,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> ሰከንድ</translation>
 <translation id="6860097299815761905">የተኪ ቅንብሮች...</translation>
 <translation id="6860427144121307915">በትር ውስጥ ክፈት</translation>
+<translation id="6863496016067551393">ሁሉም ቅጥያዎች ተፈቅደዋል</translation>
 <translation id="686366188661646310">የይለፍ ቃል ይሰረዝ?</translation>
 <translation id="6865313869410766144">የራስ-ሙላ ቅጽ ውሂብ</translation>
 <translation id="6865598234501509159">ገጽ በ<ph name="LANGUAGE" /> አይደለም</translation>
@@ -5722,6 +5727,7 @@
 <translation id="6900532703269623216">የላቀ ጥበቃ</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />ን ለማዘመን በመለያ እንደገና ይግቡ</translation>
 <translation id="6900654715912436255">እርግጠኛ ነዎት ይህን የፍለጋ ፕሮግራም መሰረዝ ይፈልጋሉ?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">ቅድሚያ የሚታይ ድምጽ</translation>
 <translation id="6902336033320348843">ክፍል አይደገፍም፦ <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">መሣሪያን ከጎራ ጋር ቀላቅል</translation>
@@ -7379,6 +7385,7 @@ nil</translation>
 <translation id="8610103157987623234">ትክክል ያልሆነ ቅርጸት፣ እባክዎ እንደገና ይሞክሩ</translation>
 <translation id="8611682088849615761">ይህ መሣሪያ የMIDI መሣሪያዎችን ሙሉ ቁጥጥር እንዲኖረው መፍቀድ ይቀጥሉ</translation>
 <translation id="8613164732773110792">ንዑስ ሆሄ ቁምፊዎች፣ አኃዞች፣ የስር መስመሮች ወይም ሰረዞች ብቻ</translation>
+<translation id="8613645710357126807">ቅጥያዎችን መጠቀም አልተፈቀደም</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> ለደህንነት ፍተሻ በጣም ትልቅ ነው። እስከ 50 ሜባ የሚያህሉ ፋይሎችን መክፈት ይችላሉ።</translation>
 <translation id="8615618338313291042">ማንነትን የማያሳውቅ መተግበሪያ፦ <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />ን ወደ የእርስዎ እውቂያዎች ያክሉ</translation>

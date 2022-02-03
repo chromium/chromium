@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> inahitaji usiondoe kadi yako mahiri.}other{Utaondolewa kiotomatiki baada ya sekunde #.
 <ph name="DOMAIN" /> inahitaji usiondoe kadi yako mahiri.}}</translation>
 <translation id="1193927020065025187">Huenda tovuti hii inajaribu kukuhadaa ili uruhusu arifa zilizozuiwa</translation>
+<translation id="1195210374336998651">Nenda kwenye mipangilio ya programu</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
 <translation id="1195558154361252544">Arifa zinazuiwa kiotomatiki kwenye tovuti zote isipokuwa zile unazoruhusu</translation>
 <translation id="1197088940767939838">Rangi ya machungwa</translation>
@@ -2577,6 +2578,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3592260987370335752">&amp;Pata maelezo zaidi</translation>
 <translation id="3593152357631900254">Wezesha modi ya Pinyin isiyio bayana</translation>
 <translation id="3593965109698325041">Vizuizi vya Jina la Cheti</translation>
+<translation id="3596012367874587041">Mipangilio ya programu</translation>
 <translation id="3596414637720633074">Zuia vidakuzi vya watu au kampuni nyingine katika Hali Fiche</translation>
 <translation id="3599221874935822507">Imeinuliwa</translation>
 <translation id="3599863153486145794">Hufuta historia kwenye vifaa vyote ulivyotumia kuingia katika akaunti. Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2954,7 +2956,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3943582379552582368">&amp;Nyuma</translation>
 <translation id="3943857333388298514">Bandika</translation>
 <translation id="3945513714196326460">Jaribu jina fupi</translation>
-<translation id="3947643756376959257">Weka msimbo wa ufikiaji unaoonyeshwa kwenye Chromecast au TV.</translation>
+<translation id="3947643756376959257">Weka msimbo wa kufikia unaoonyeshwa kwenye Chromecast au TV.</translation>
 <translation id="3948027458879361203">Badilisha jina la mpangishaji</translation>
 <translation id="3948116654032448504">Tafuta <ph name="SEARCH_ENGINE" /> Picha</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> inaweza kubadilisha faili zilizo katika folda zifuatazo</translation>

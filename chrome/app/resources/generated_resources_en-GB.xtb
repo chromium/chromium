@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{You will be automatically signed out in # seconds.
 <ph name="DOMAIN" /> requires you to keep your smart card inserted.}}</translation>
 <translation id="1193927020065025187">This site may be trying to trick you into allowing intrusive notifications</translation>
+<translation id="1195210374336998651">Go to app settings</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
 <translation id="1195558154361252544">Notifications are automatically blocked for all sites except ones that you allow</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -1959,6 +1960,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2915873080513663243">Auto-scan</translation>
 <translation id="2916073183900451334">Pressing Tab on a web page highlights links, as well as form fields</translation>
 <translation id="2916745397441987255">Search extensions</translation>
+<translation id="2918484639460781603">Go to settings</translation>
 <translation id="2918484644467055090">This device cannot be enrolled to the organisation that your account belongs to because the device is marked for management by a different organisation.</translation>
 <translation id="2920852127376356161">Not allowed to handle protocols</translation>
 <translation id="2921081876747860777">Please create a password to protect your local data.</translation>
@@ -2583,6 +2585,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3592260987370335752">&amp;Learn more</translation>
 <translation id="3593152357631900254">Enable Fuzzy-Pinyin mode</translation>
 <translation id="3593965109698325041">Certificate Name Constraints</translation>
+<translation id="3596012367874587041">App settings</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3599221874935822507">Raised</translation>
 <translation id="3599863153486145794">Clears history from all signed-in devices. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

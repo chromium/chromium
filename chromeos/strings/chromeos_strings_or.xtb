@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />ଟି ପୃଷ୍ଠା ମଧ୍ୟରୁ <ph name="PRINTED_PAGES" /> ନମ୍ବର ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="345898999683440380">ପୃଷ୍ଠା <ph name="PAGE_NUM" />କୁ ସ୍କାନ୍ କରାଯାଉଛି। <ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="3459509316159669723">ପ୍ରିଣ୍ଟିଂ</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="3484914941826596830">ଫାର୍ମୱେରକୁ ଅପଡେଟ କରାଯାଉଥିବା ସମୟରେ ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏହି ଅପଡେଟ ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
 <translation id="3488065109653206955">ଆଶିଂକ ଭାବେ ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="3565064564551103223">ଅନୁମତି ଦିଆଯାଇଥିବା IPଗୁଡ଼ିକ</translation>
+<translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="357889014807611375">ମିଟର୍ ହୋଇଥିବା ୱାଇ-ଫାଇ</translation>
 <translation id="3583278742022654445">ସିଗନାଲ କ୍ଷମତା ଦୁର୍ବଳ ଅଟେ। ୱାଇ-ଫାଇ ସିଗନାଲ ସୋର୍ସ ନିକଟକୁ ଯାଇ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3595596368722241419">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
-<translation id="7240035910874241640">ସମସ୍ତ ପେରିଫେରାଲ ଅପ ଟୁ ଡେଟ ଅଛି</translation>
 <translation id="7271040990581020067">ସ୍କାନରକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ୱାଲପେପର୍ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରଗୁଡ଼ିକ</translation>
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8503836310948963452">ଆଉ ଅଳ୍ପ କିଛି ମିନିଟ୍ ଅଛି…</translation>
-<translation id="8520963233738002436">ଆପଣଙ୍କ <ph name="DEVICE_NAME" /> ଅପ ଟୁ ଡେଟ ଅଛି</translation>
 <translation id="8521021929829989041">ବ୍ୟକ୍ତିଗତ ଡିଭାଇସ୍ ପରି ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଏହାର ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଏହି ବିକଳ୍ପ ଆବଶ୍ୟକ କରିପାରେ। ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">ପୁଣି ଚଲାନ୍ତୁ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ସ୍କାନ୍ କରନ୍ତୁ}=1{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}other{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}}</translation>
-<translation id="8994273342647807496">ଇନଷ୍ଟଲ ହେଉଛି - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">ଡିଭାଇସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="9003704114456258138">ଫ୍ରିକ୍ୱେନ୍ସୀ</translation>
 <translation id="9039663905644212491">PEAP</translation>

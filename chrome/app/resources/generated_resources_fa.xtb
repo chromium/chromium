@@ -207,6 +207,7 @@
 برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.}other{# ثانیه دیگر به‌طور خودکار از سیستم خارج خواهید شد.
 برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.}}</translation>
 <translation id="1193927020065025187">شاید این سایت تلاش می‌کند شما را برای مجاز کردن اعلان‌های مزاحم فریب دهد.</translation>
+<translation id="1195210374336998651">رفتن به تنظیمات برنامه</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1195558154361252544">اعلان‌ها به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="1197088940767939838">نارنجی</translation>
@@ -387,6 +388,7 @@
 <translation id="1396259464226642517">این نتیجه غیرمنتظره بود؟ <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">نام کاربری و گذرواژه‌ای که وارد کرده‌اید، مطابقت ندارند</translation>
 <translation id="1397500194120344683">دستگاه واجد شرایطی وجود ندارد. <ph name="LINK_BEGIN" />بیشتر بدانید.<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">‏در این دستگاه‌ها به سیستم Chrome وارد شده‌اید، بنابراین می‌توانید از آن‌ها به‌عنوان کلید امنیتی استفاده کنید.</translation>
 <translation id="1398853756734560583">بزرگ کردن</translation>
 <translation id="139911022479327130">باز کردن قفل تلفن و تأیید کردن اینکه خودتان هستید</translation>
 <translation id="1401308693935339022">‏استفاده از مکان. به برنامه‌ها و سرویس‌هایی که اجازه مکان دارند اجازه می‌دهید از مکان این دستگاه استفاده کنند. Google ممکن است به‌صورت دوره‌ای داده‌های مکان را جمع‌آوری کند و از این داده‌ها به شیوه‌ای ناشناس برای بهبود دقت مکان و خدمات مکان‌مبنا استفاده کند.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="2163470535490402084">لطفاً برای ورود به سیستم در <ph name="DEVICE_TYPE" /> خود، به اینترنت وصل شوید.</translation>
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" />، و ۱ کلید دیگر</translation>
+<translation id="2165102982098084499">این دستگاه‌ها را با اسکن کردن رمزینه پاسخ‌سریع پیوند داده‌اید.</translation>
 <translation id="2165177462441582039">انتخاب کنید هر مورد چه مدت برجسته بماند</translation>
 <translation id="2166369534954157698">روباه قهوه‌ای چالاک از روی سگ تنبل پرید</translation>
 <translation id="2169062631698640254">در هر صورت وارد سیستم شود</translation>
@@ -1954,6 +1957,7 @@
 <translation id="2915873080513663243">اسکن-خودکار</translation>
 <translation id="2916073183900451334">‏فشار دادن Tab در صفحهٔ وب، پیوندها و قسمت‌های فرم را برجسته می‌کند</translation>
 <translation id="2916745397441987255">جستجوی افزونه‌ها</translation>
+<translation id="2918484639460781603">رفتن به تنظیمات</translation>
 <translation id="2918484644467055090">نمی‌توان این دستگاه را در سازمانی که حسابتان متعلق به آن است ثبت‌نام کرد زیرا دستگاه برای مدیریت توسط سازمان دیگری علامت‌گذاری شده است.</translation>
 <translation id="2920852127376356161">اجازه ندارد پروتکل‌ها را کنترل کند</translation>
 <translation id="2921081876747860777">لطفاً برای محافظت از داده محلی گذرواژه‌ای ایجاد کنید.</translation>
@@ -2578,6 +2582,7 @@
 <translation id="3592260987370335752">&amp;بیشتر بیاموزید</translation>
 <translation id="3593152357631900254">‏فعال کردن حالت Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">محدودیتهای نام گواهی</translation>
+<translation id="3596012367874587041">تنظیمات برنامه</translation>
 <translation id="3596414637720633074">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
 <translation id="3599221874935822507">برجسته</translation>
 <translation id="3599863153486145794">‏سابقه را از همه دستگاه‌های به سیستم واردشده پاک می‌کند. ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
@@ -5699,6 +5704,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
 <translation id="6860097299815761905">تنظیمات پراکسی...</translation>
 <translation id="6860427144121307915">باز کردن در یک برگه</translation>
+<translation id="6863496016067551393">همه افزونه‌ها مجاز هستند</translation>
 <translation id="686366188661646310">گذرواژه حذف شود؟</translation>
 <translation id="6865313869410766144">تکمیل خودکار داده‌های فرم</translation>
 <translation id="6865598234501509159">صفحه به زبان <ph name="LANGUAGE" /> نیست</translation>
@@ -5728,6 +5734,7 @@
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
 <translation id="6900651018461749106">برای به‌روزرسانی <ph name="USER_EMAIL" />، دوباره به سیستم وارد شوید</translation>
 <translation id="6900654715912436255">مطمئنید می‌خواهید این موتور جستجو را حذف کنید؟</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">انتخاب صدا برای پیش‌نمایش</translation>
 <translation id="6902336033320348843">بخش پشتیبانی نمی‌شود: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">اتصال دستگاه به دامنه</translation>
@@ -7380,6 +7387,7 @@
 <translation id="8610103157987623234">قالب نادرست است، لطفاً دوباره امتحان کنید</translation>
 <translation id="8611682088849615761">‏کنترل کامل این سایت روی دستگاه‌های MIDI همچنان مجاز باشد</translation>
 <translation id="8613164732773110792">نویسه‌های حروف کوچک، ارقام، زیرخط‌ها یا فقط خطوط تیره</translation>
+<translation id="8613645710357126807">استفاده از افزونه‌ها مجاز نیست</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> برای بررسی امنیتی بسیار بزرگ است. فایل‌های تا حداکثر ۵۰ مگابایت را می‌توانید باز کنید.</translation>
 <translation id="8615618338313291042">برنامه ناشناس: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">افزودن <ph name="CONTACT_NAME" /> به مخاطبین</translation>

@@ -70,7 +70,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1186201132766001848">Comprova les contrasenyes</translation>
-<translation id="1195210374336998651">Ves a la configuració de l'aplicació</translation>
 <translation id="1195558154361252544">Les notificacions de tots els llocs web estan bloquejades automàticament excepte les que permetis</translation>
 <translation id="1197088940767939838">Taronja</translation>
 <translation id="1201402288615127009">Següent</translation>
@@ -839,7 +838,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3587738293690942763">Mitjà</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Pots restablir el teu grup en qualsevol moment. Ha de transcórrer aproximadament un dia per unir-te a un grup nou.}=1{Pots restablir el teu grup en qualsevol moment. Ha de transcórrer aproximadament un dia per unir-te a un grup nou.}other{Pots restablir el teu grup en qualsevol moment. Han de transcórrer aproximadament {NUM_DAYS} dies per unir-te a un grup nou.}}</translation>
-<translation id="3596012367874587041">Configuració de l'aplicació</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicació bloquejada per l'administrador</translation>
 <translation id="3608932978122581043">Orientació de l'entrada</translation>
@@ -1968,6 +1966,7 @@ Detalls addicionals:
 <translation id="7334320624316649418">&amp;Refés el canvi d'ordre</translation>
 <translation id="7335157162773372339">Pot demanar permís per utilitzar la càmera</translation>
 <translation id="7337248890521463931">Mostra més línies</translation>
+<translation id="7337418456231055214">No s'ha emplenat el número de la targeta virtual? Fes clic als detalls de la targeta per copiar-los. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">No està disponible a la teva plataforma.</translation>
 <translation id="733923710415886693">El certificat del servidor no s'ha divulgat mitjançant la Transparència de certificats.</translation>
 <translation id="734600844861828519">11x15</translation>

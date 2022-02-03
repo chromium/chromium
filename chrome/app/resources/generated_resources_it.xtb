@@ -205,6 +205,7 @@
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.}other{Verrà eseguita automaticamente la disconnessione tra # secondi.
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.}}</translation>
 <translation id="1193927020065025187">Il sito potrebbe cercare di ingannarti per indurti a consentire notifiche invasive</translation>
+<translation id="1195210374336998651">Vai alle impostazioni dell'app</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
 <translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
 <translation id="1197088940767939838">Arancione</translation>
@@ -385,6 +386,7 @@
 <translation id="1396259464226642517">Questo risultato non era previsto? <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Il nome utente e la password inseriti non corrispondono</translation>
 <translation id="1397500194120344683">Nessun dispositivo idoneo. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Hai eseguito l'accesso a Chrome su questi dispositivi, pertanto puoi usarli come token di sicurezza.</translation>
 <translation id="1398853756734560583">Ingrandisci</translation>
 <translation id="139911022479327130">Sblocca il telefono e conferma la tua identità</translation>
 <translation id="1401308693935339022">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
@@ -1169,6 +1171,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2163470535490402084">Connettiti a Internet per accedere al tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Attiva la modalità Buio</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e 1 altro sensore</translation>
+<translation id="2165102982098084499">Hai collegato questi dispositivi scansionando un codice QR.</translation>
 <translation id="2165177462441582039">Scegli la durata dell'evidenziazione di ogni elemento</translation>
 <translation id="2166369534954157698">Pranzo d'acqua fa volti sghembi</translation>
 <translation id="2169062631698640254">Accedi comunque</translation>
@@ -1895,6 +1898,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="287205682142673348">Port forwarding</translation>
 <translation id="287286579981869940">Aggiungi <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Spegni</translation>
+<translation id="2873995907777332853">Mostra dettagli sul blocco di tutti i cookie</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
 <translation id="2875698561019555027">(pagine di errore Chrome)</translation>
 <translation id="2876336351874743617">Dito 2</translation>
@@ -1942,6 +1946,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2915873080513663243">Scansione automatica</translation>
 <translation id="2916073183900451334">Se premi Tab in una pagina web vengono evidenziati i link, così come i campi dei moduli</translation>
 <translation id="2916745397441987255">Cerca tra le estensioni</translation>
+<translation id="2918484639460781603">Passa alle impostazioni</translation>
 <translation id="2918484644467055090">Questo dispositivo non può essere registrato nell'organizzazione a cui appartiene il tuo account perché è contrassegnato per essere gestito da un'altra organizzazione.</translation>
 <translation id="2920852127376356161">Non autorizzati a gestire protocolli</translation>
 <translation id="2921081876747860777">Crea una password per proteggere i tuoi dati locali.</translation>
@@ -2198,6 +2203,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3189187154924005138">Puntatore grande</translation>
 <translation id="3190558889382726167">Password salvata</translation>
 <translation id="3192947282887913208">File audio</translation>
+<translation id="3194786596445804250">Mostra dettagli sul blocco dei cookie di terze parti</translation>
 <translation id="3197453258332670132">Se fai clic con il pulsante destro del mouse o se applichi una pressione prolungata, vengono mostrate informazioni correlate al testo selezionato</translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3200061262156232574">Nel tuo carrello degli acquisti</translation>
@@ -2565,6 +2571,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3592260987370335752">&amp;Ulteriori informazioni</translation>
 <translation id="3593152357631900254">Abilita modalità Fuzzy pinyin</translation>
 <translation id="3593965109698325041">Vincoli nomi certificati</translation>
+<translation id="3596012367874587041">Impostazioni app</translation>
 <translation id="3596414637720633074">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
 <translation id="3599221874935822507">In rilievo</translation>
 <translation id="3599863153486145794">Consente di cancellare la cronologia da tutti i dispositivi su cui hai eseguito l'accesso. Il tuo Account Google potrebbe avere altri tipi di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5292,6 +5299,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6455264371803474013">Su siti specifici</translation>
 <translation id="6455894534188563617">&amp;Nuova cartella</translation>
 <translation id="645705751491738698">Continua a bloccare JavaScript</translation>
+<translation id="6458347417133445570">Mostra dettagli sull'accettazione di tutti i cookie</translation>
 <translation id="6458701200018867744">Caricamento non riuscito (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilizza selezione per Trova</translation>
 <translation id="6459799433792303855">Finestra attiva spostata in un altro schermo.</translation>
@@ -5684,6 +5692,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Impostazioni proxy...</translation>
 <translation id="6860427144121307915">Apri in una scheda</translation>
+<translation id="6863496016067551393">Uso di tutte le estensioni consentito</translation>
 <translation id="686366188661646310">Vuoi eliminare la password?</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
 <translation id="6865598234501509159">La pagina non è in <ph name="LANGUAGE" /></translation>
@@ -5713,6 +5722,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6900532703269623216">Protezione avanzata</translation>
 <translation id="6900651018461749106">Accedi nuovamente per aggiornare <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Vuoi eliminare questo motore di ricerca?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voce per l'anteprima</translation>
 <translation id="6902336033320348843">Sezione non supportata: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Aggiungi il dispositivo al dominio</translation>
@@ -6723,6 +6733,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> può visualizzare <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Aggiungi le parole che vuoi non vengano segnalate dal controllo ortografico</translation>
+<translation id="7922935920104868876">Mostra dettagli sul blocco di cookie di terze parti nella modalità di navigazione in incognito</translation>
 <translation id="7924358170328001543">Errore durante port forwarding</translation>
 <translation id="7925108652071887026">Dati della Compilazione automatica</translation>
 <translation id="792514962475806987">Livello di zoom ancorato:</translation>
@@ -6887,6 +6898,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8076835018653442223">L'accesso ai file locali sul dispositivo è stato disattivato dall'amministratore</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Account che è possibile usare con app per Android</translation>
 <translation id="8081989000209387414">Disattivare il debug ADB?</translation>
 <translation id="8082106343289440791">Vuoi eseguire l'accoppiamento con "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">La disattivazione del debug ADB ripristinerà le impostazioni di fabbrica di questo <ph name="DEVICE_TYPE" />. Tutti gli account utente e i dati locali verranno resettati.</translation>
@@ -7147,6 +7159,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8342861492835240085">Seleziona una raccolta</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="834785183489258869">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
+<translation id="8349499562373871073">Puoi selezionare un account esistente da usare con le app per Android o aggiungere un nuovo Account Google. Dopo aver eseguito l'accesso a un'app per Android, potrai usare il tuo account con altre app per Android. Puoi modificare l'accesso alle app per Android in <ph name="LINK_BEGIN" />Impostazioni &gt; Account<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Strumenti stilo nel dock</translation>
 <translation id="8351316842353540018">Mostrare sempre le impostazioni di accessibilità</translation>
 <translation id="8351419472474436977">Questa estensione ha assunto il controllo delle tue impostazioni proxy, il che significa che può cambiare, interrompere o spiare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
@@ -7362,6 +7375,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8610103157987623234">Formato errato, riprova</translation>
 <translation id="8611682088849615761">Continua a consentire a questo sito di avere il controllo totale dei dispositivi MIDI</translation>
 <translation id="8613164732773110792">Solo caratteri minuscoli, numeri, trattini bassi o trattini</translation>
+<translation id="8613645710357126807">Uso delle estensioni non consentito</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> è troppo grande per essere sottoposto a un controllo di sicurezza. La dimensione massima dei file che puoi aprire è di 50 MB.</translation>
 <translation id="8615618338313291042">Applicazione in incognito: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Aggiungi <ph name="CONTACT_NAME" /> ai tuoi contatti</translation>

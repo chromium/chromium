@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1186201132766001848">Құпия сөздерді тексеру</translation>
-<translation id="1195210374336998651">Қолданба параметрлеріне өту</translation>
 <translation id="1195558154361252544">Сіз рұқсат еткеннен басқа сайттар үшін хабарландырулар автоматты түрде бөгелді.</translation>
 <translation id="1197088940767939838">Қызғылт сары</translation>
 <translation id="1201402288615127009">Келесі</translation>
@@ -842,7 +841,6 @@
 <translation id="3587738293690942763">Ортасы</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен бір күн алады.}=1{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен бір күн алады.}other{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен {NUM_DAYS} күн алады.}}</translation>
-<translation id="3596012367874587041">Қолданба параметрлері</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Қолданбаны әкімші бөгеген</translation>
 <translation id="3608932978122581043">Беру бағыты</translation>

@@ -290,6 +290,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ficheiro de audio}other{# ficheiros de audio}}</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
 <translation id="2656405586795711023">Aplicacións web</translation>
+<translation id="2689830683995595741">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén se aplica o <ph name="BEGIN_LINK3" />Aviso de privacidade das Contas de Google xestionadas a través de Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Novidade: Comparte unha ligazón que leve directamente a este texto</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2707726405694321444">Actualiza páxina</translation>
@@ -625,6 +626,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}}</translation>
 <translation id="4696983787092045100">Enviar texto a Os teus dispositivos</translation>
 <translation id="4699172675775169585">Imaxes e ficheiros almacenados na memoria caché</translation>
+<translation id="471759387343966120">Ao continuar, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo<ph name="END_TOS_LINK" /> e a <ph name="BEGIN_PRIVACY_LINK" />Política de\u00A0privacidade<ph name="END_PRIVACY_LINK" />.\nPara contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_UMA_LINK" />Xestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Ofrecer a tradución</translation>
 <translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Axuda a mellorar Chrome. <ph name="BEGIN_LINK" />Responder enquisa<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6277722725779679269">Non se puido actualizar Facer seguimento do prezo</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Podes enviar pestanas entre dispositivos nos que teñas a sesión iniciada coa mesma Conta de Google</translation>
 <translation id="6297765934698848803">A organización que xestiona o teu dispositivo desactivou a cámara.</translation>
 <translation id="6301525844455696527">Ponte ao día coa túa lista de lectura</translation>

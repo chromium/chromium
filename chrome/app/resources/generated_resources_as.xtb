@@ -207,6 +207,7 @@
 <ph name="DOMAIN" />ৰ বাবে আপুনি নিজৰ স্মাৰ্ট কাৰ্ডখন ভৰাই ৰখাৰ আৱশ্যক।}other{আপোনাক স্বয়ংক্ৰিয়ভাৱে # ছেকেণ্ডত ছাইন আউট কৰা হ’ব।
 <ph name="DOMAIN" />ৰ বাবে আপুনি নিজৰ স্মাৰ্ট কাৰ্ডখন ভৰাই ৰখাৰ আৱশ্যক।}}</translation>
 <translation id="1193927020065025187">এই ছাইটটোৱে আপোনাক বিনা অনুমতিত দেখুওৱা জাননীৰ অনুমতি দিবলৈ জালত পেলাব পাৰে</translation>
+<translation id="1195210374336998651">এপৰ ছেটিঙলৈ যাওক</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
 <translation id="1195558154361252544">আপুনি অনুমতি দিয়াটোৰ বাদে আন সকলো ছাইটৰ বাবে জাননীসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হয়</translation>
 <translation id="1197088940767939838">কমলা</translation>
@@ -2580,6 +2581,7 @@
 <translation id="3592260987370335752">&amp;অধিক জানক</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin ম’ড সক্ষম কৰক</translation>
 <translation id="3593965109698325041">প্ৰমাণপত্ৰৰ নামৰ সীমাবদ্ধতা</translation>
+<translation id="3596012367874587041">এপৰ ছেটিং</translation>
 <translation id="3596414637720633074">ইনক'গনিট'ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="3599221874935822507">উঠঙা</translation>
 <translation id="3599863153486145794">সকলো ছাইন ইন হৈ থকা ডিভাইচৰ পৰা ইতিহাস মচে। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত আপোনাৰ Google একাউণ্টৰ অন্য প্ৰকাৰৰ ব্ৰাউজিং ইতিহাস থাকিব পাৰে।</translation>

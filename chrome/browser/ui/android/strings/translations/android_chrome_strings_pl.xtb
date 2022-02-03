@@ -290,6 +290,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# plik dźwiękowy}few{# pliki dźwiękowe}many{# plików dźwiękowych}other{# pliku dźwiękowego}}</translation>
 <translation id="265156376773362237">Wczytywanie standardowe</translation>
 <translation id="2656405586795711023">Aplikacje internetowe</translation>
+<translation id="2689830683995595741">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />. Obowiązują też <ph name="BEGIN_LINK3" />Informacje na temat ochrony prywatności na kontach Google zarządzanych przez Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Nowość: udostępnij link przewijający do tego tekstu</translation>
 <translation id="2704606927547763573">Skopiowane</translation>
 <translation id="2707726405694321444">Odśwież stronę</translation>
@@ -625,6 +626,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Wyślij tekst na swoje urządzenia</translation>
 <translation id="4699172675775169585">Obrazy i pliki zapisane w pamięci podręcznej</translation>
+<translation id="471759387343966120">Przechodząc dalej, akceptujesz <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usługi<ph name="END_TOS_LINK" /> oraz <ph name="BEGIN_PRIVACY_LINK" />Politykę\u00A0prywatności<ph name="END_PRIVACY_LINK" />.\nAby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_UMA_LINK" />Zarządzaj<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Proponuj tłumaczenie</translation>
 <translation id="4720023427747327413">Otwórz w: <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Pomóż w ulepszaniu Chrome. <ph name="BEGIN_LINK" />Wypełnij ankietę<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6277522088822131679">Podczas drukowania strony wystąpił problem. Spróbuj ponownie.</translation>
 <translation id="6277722725779679269">Nie udało się zaktualizować monitorowanej ceny</translation>
 <translation id="6278428485366576908">Motyw</translation>
+<translation id="6292420053234093573">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Możesz przesyłać karty między urządzeniami zalogowanymi na to samo konto Google</translation>
 <translation id="6297765934698848803">Organizacja, która zarządza Twoim urządzeniem, wyłączyła aparat.</translation>
 <translation id="6301525844455696527">Nadrób zaległości w czytaniu</translation>
@@ -1171,6 +1174,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7663313374500954251">Tą przeglądarką zarządza <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Dodaj konto</translation>
 <translation id="766587987807204883">Tutaj pojawiają się artykuły, które możesz czytać, nawet gdy jesteś offline</translation>
+<translation id="768232549260819724">GIF został skopiowany</translation>
 <translation id="7682724950699840886">Skorzystaj z tych wskazówek: upewnij się, że masz wystarczająco dużo miejsca na urządzeniu, i ponownie spróbuj wyeksportować hasła.</translation>
 <translation id="768618399695552958">Niektóre z odwiedzanych przez Ciebie stron są wstępnie wczytywane. Serwery Google mogą wstępnie wczytywać strony, gdy prowadzą do nich linki z witryny Google.</translation>
 <translation id="7698359219371678927">Utwórz e-maila w aplikacji <ph name="APP_NAME" /></translation>
@@ -1349,6 +1353,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8570677896027847510">Nie można pobrać pliku w bezpieczny sposób</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
 <translation id="8572344201470131220">Obraz został skopiowany</translation>
+<translation id="8580884231102452214">Kopiuj GIF</translation>
 <translation id="8583805026567836021">Usuwam dane konta</translation>
 <translation id="859046281437143747">Monitoruj cenę za pomocą przycisku Więcej opcji</translation>
 <translation id="860043288473659153">Imię i nazwisko posiadacza karty</translation>

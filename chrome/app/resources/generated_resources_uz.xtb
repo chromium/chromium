@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.}other{Siz avtomatik tarzda # soniyadan keyin hisobingizdan chiqarilasiz.
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.}}</translation>
 <translation id="1193927020065025187">Bu saytda asabga teguvchi bildirishnomalarga ruxsat berilishi mumkin.</translation>
+<translation id="1195210374336998651">Ilova sozlamalarini ochish</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1195558154361252544">Bildirishnoamalar siz ruxsat bergan saytlardan tashqari barcha saytlar uchun taqiqlanadi</translation>
 <translation id="1197088940767939838">Apelsinrang</translation>
@@ -2570,6 +2571,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3592260987370335752">&amp;Batafsil ma’lumot</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin rejimini yoqish</translation>
 <translation id="3593965109698325041">Sertifikat nomiga cheklovlar</translation>
+<translation id="3596012367874587041">Ilova sozlamalari</translation>
 <translation id="3596414637720633074">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="3599221874935822507">Qavariq</translation>
 <translation id="3599863153486145794">Barcha kirilgan qurilmalardagi tarix o‘chiriladi. Google hisobingiz orqali bajargan internetdagi faoliyatingizni  <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>

@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1186201132766001848">بررسی گذرواژه‌ها</translation>
-<translation id="1195210374336998651">رفتن به تنظیمات برنامه</translation>
 <translation id="1195558154361252544">اعلان‌ها به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="1201402288615127009">بعدی</translation>
@@ -843,7 +842,6 @@
 <translation id="3587738293690942763">وسط</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{هرزمان خواستید می‌توانید گروه را بازنشانی کنید. پیوستن به گروه جدید حدود یک روز طول می‌کشد.}=1{هرزمان خواستید می‌توانید گروه را بازنشانی کنید. پیوستن به گروه جدید حدود یک روز طول می‌کشد.}one{هرزمان خواستید می‌توانید گروه را بازنشانی کنید. پیوستن به گروه جدید {NUM_DAYS} روز طول می‌کشد.}other{هرزمان خواستید می‌توانید گروه را بازنشانی کنید. پیوستن به گروه جدید {NUM_DAYS} روز طول می‌کشد.}}</translation>
-<translation id="3596012367874587041">تنظیمات برنامه</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3603507503523709">سرپرست برنامه را مسدود کرده است</translation>
 <translation id="3608932978122581043">جهت تغذیه کاغذ</translation>

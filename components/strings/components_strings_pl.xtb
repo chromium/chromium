@@ -70,7 +70,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1186201132766001848">Sprawdź hasła</translation>
-<translation id="1195210374336998651">Otwórz ustawienia aplikacji</translation>
 <translation id="1195558154361252544">Powiadomienia są automatycznie blokowane w przypadku wszystkich stron, chyba że na nie zezwolisz</translation>
 <translation id="1197088940767939838">Pomarańczowy</translation>
 <translation id="1201402288615127009">Dalej</translation>
@@ -839,7 +838,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3587738293690942763">Średni</translation>
 <translation id="3592413004129370115">Italian (koperta)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}=1{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}few{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dni.}many{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dni.}other{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dnia.}}</translation>
-<translation id="3596012367874587041">Ustawienia aplikacji</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikacja zablokowana przez administratora</translation>
 <translation id="3608932978122581043">Orientacja podajnika</translation>
@@ -1968,6 +1966,7 @@ Dodatkowe informacje:
 <translation id="7334320624316649418">&amp;Ponów zmianę kolejności</translation>
 <translation id="7335157162773372339">Może prosić o dostęp do kamery</translation>
 <translation id="7337248890521463931">Pokaż więcej wierszy</translation>
+<translation id="7337418456231055214">Nie uzupełniono numeru karty wirtualnej? Kliknij dane karty, które chcesz skopiować. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Niedostępny na Twojej platformie.</translation>
 <translation id="733923710415886693">Certyfikat serwera nie został ujawniony przez protokół Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

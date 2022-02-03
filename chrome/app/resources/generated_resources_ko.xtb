@@ -206,6 +206,7 @@
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.}other{#초 후에 자동으로 로그아웃됩니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.}}</translation>
 <translation id="1193927020065025187">이 사이트는 방해가 되는 알림을 허용하도록 사용자를 속일 수 있습니다.</translation>
+<translation id="1195210374336998651">앱 설정으로 이동</translation>
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
 <translation id="1197088940767939838">오렌지색</translation>
@@ -779,6 +780,7 @@
 <translation id="176587472219019965">새 창(&amp;N)</translation>
 <translation id="1766575458646819543">전체 화면 종료됨</translation>
 <translation id="1766957085594317166">다시 입력할 필요가 없도록 비밀번호를 Google 계정에 안전하게 저장하세요.</translation>
+<translation id="1767043563165955993">Android 앱에서 사용</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" />에 관한 의견 보내기</translation>
 <translation id="1768278914020124551">로그온 서버에 연결하는 중에 문제가 발생했습니다. 네트워크 연결 및 도메인 이름을 확인한 다음 다시 시도하세요.</translation>
 <translation id="1769104665586091481">새 창에서 링크 열기(&amp;W)</translation>
@@ -1115,6 +1117,7 @@
 <translation id="2113479184312716848">파일 열기(&amp;F)...</translation>
 <translation id="2113921862428609753">기관 정보 액세스</translation>
 <translation id="2114326799768592691">프레임 새로고침(&amp;F)</translation>
+<translation id="2114413269775311385">Android 앱에서 계정을 사용합니다. <ph name="LINK_BEGIN" />앱 설정<ph name="LINK_END" />에서 Android 앱에 대한 권한을 제어할 수 있습니다.</translation>
 <translation id="2114896190328250491">사진 제공: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">삽입된 SIM 카드 없음</translation>
 <translation id="2116619964159595185">사이트에서는 주로 저전력 비콘, 건강 또는 피트니스 추적기, 스마트 조명 전구를 설정 또는 동기화하는 기능을 지원하기 위해 블루투스 기기에 연결합니다.</translation>
@@ -1907,6 +1910,7 @@
 <translation id="287205682142673348">포트 전달</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> 추가...</translation>
 <translation id="2872961005593481000">종료</translation>
+<translation id="2873995907777332853">모든 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2875698561019555027">(Chrome 오류 페이지)</translation>
 <translation id="2876336351874743617">손가락 2</translation>
@@ -1954,6 +1958,7 @@
 <translation id="2915873080513663243">자동 스캔</translation>
 <translation id="2916073183900451334">웹페이지에서 Tab 키를 누르면 링크뿐 아니라 양식 입력란도 강조표시됩니다.</translation>
 <translation id="2916745397441987255">확장 프로그램 검색</translation>
+<translation id="2918484639460781603">설정으로 이동</translation>
 <translation id="2918484644467055090">이 기기는 다른 조직에서 관리하는 것으로 표시되어 있으므로 사용자의 계정이 속한 조직에 등록할 수 없습니다.</translation>
 <translation id="2920852127376356161">프로토콜을 처리하도록 허용되지 않음</translation>
 <translation id="2921081876747860777">비밀번호를 만들어 로컬 데이터 보호</translation>
@@ -2210,6 +2215,7 @@
 <translation id="3189187154924005138">큰 커서</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
+<translation id="3194786596445804250">서드 파티 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="3197453258332670132">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 선택한 텍스트에 관한 관련 정보가 표시됩니다.</translation>
 <translation id="3199127022143353223">서버</translation>
 <translation id="3200061262156232574">장바구니 항목</translation>
@@ -2577,6 +2583,7 @@
 <translation id="3592260987370335752">자세히 알아보기(&amp;L)</translation>
 <translation id="3593152357631900254">퍼지 병음 모드 사용</translation>
 <translation id="3593965109698325041">인증서 이름 제약조건</translation>
+<translation id="3596012367874587041">앱 설정</translation>
 <translation id="3596414637720633074">시크릿 모드에서 타사 쿠키 차단</translation>
 <translation id="3599221874935822507">양각</translation>
 <translation id="3599863153486145794">로그인된 모든 기기에서 방문 기록을 지웁니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 사용 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
@@ -2954,6 +2961,7 @@
 <translation id="3943582379552582368">뒤로(&amp;B)</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3945513714196326460">더 짧은 이름을 입력하세요.</translation>
+<translation id="3947643756376959257">Chromecast 또는 TV에 표시되는 액세스 코드를 입력합니다.</translation>
 <translation id="3948027458879361203">호스트 이름 변경</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />에서 다음 폴더의 파일을 수정할 수 있습니다.</translation>
@@ -3193,12 +3201,14 @@
 <translation id="4210048056321123003">가상 머신 다운로드 중</translation>
 <translation id="421182450098841253">북마크바 표시(&amp;S)</translation>
 <translation id="4211851069413100178">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Android 앱에서 사용 중지</translation>
 <translation id="42126664696688958">내보내기</translation>
 <translation id="42137655013211669">서버에서 이 리소스에 대한 액세스를 금지했습니다.</translation>
 <translation id="4217571870635786043">음성기록</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
+<translation id="4227605727325220318">새 Android 휴대전화 추가</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 허용되지 않음}other{일부 확장 프로그램이 허용되지 않음}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
@@ -4729,6 +4739,7 @@
 <translation id="5862109781435984885">실행기에 스타일러스 도구 표시</translation>
 <translation id="5862319196656206789">연결된 기기 설정</translation>
 <translation id="5863445608433396414">디버깅 기능 사용</translation>
+<translation id="5864147196375746035">관리 기기로 전송</translation>
 <translation id="5864195618110239517">종량제 연결 사용</translation>
 <translation id="5864754048328252126">충전 시 유휴 작업</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> 앱이 곧 일시중지됨</translation>
@@ -5298,6 +5309,7 @@
 <translation id="6455264371803474013">특정 사이트에서</translation>
 <translation id="6455894534188563617">새 폴더(&amp;N)</translation>
 <translation id="645705751491738698">자바스크립트 계속 차단</translation>
+<translation id="6458347417133445570">모든 쿠키 허용에 관한 세부정보 표시</translation>
 <translation id="6458701200018867744">업로드 실패(<ph name="WEBRTC_LOG_UPLOAD_TIME" />)</translation>
 <translation id="6459488832681039634">선택 부분으로 찾기</translation>
 <translation id="6459799433792303855">활성 창이 다른 디스플레이로 이동했습니다.</translation>
@@ -5908,6 +5920,7 @@
 <translation id="7086672505018440886">보관 파일에 Chrome 로그 파일을 포함합니다.</translation>
 <translation id="7088434364990739311">업데이트 확인을 시작하지 못했습니다(오류 코드: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">이 기기는 관리자에 의해 사용 중단 상태로 설정되었습니다. 기기를 등록에 사용하려면 관리자에게 기기를 대기 상태로 전환해 달라고 요청해야 합니다.</translation>
+<translation id="7090160970140261931"><ph name="DEVICE_TYPE" />에 계정을 추가하여 웹사이트 및 Android 앱에서 사용할 수 있습니다. Android 앱에서 어떤 계정을 사용할지 제어할 수도 있습니다.</translation>
 <translation id="7093220653036489319">빠른 답변</translation>
 <translation id="7093416310351037609">조직에서 데이터 안전 및 보안을 위해 조건을 충족하는 다운로드 항목을 모두 조직의 <ph name="WEB_DRIVE" /> 계정에 저장할 것을 요구합니다.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6728,6 +6741,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />초</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="7920482456679570420">맞춤법 검사를 건너뛸 단어를 추가합니다.</translation>
+<translation id="7922935920104868876">시크릿 모드에서 서드 파티 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="7924358170328001543">포트 전달 중 오류 발생</translation>
 <translation id="7925108652071887026">데이터 자동완성</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>
@@ -6892,6 +6906,7 @@
 <translation id="8076492880354921740">탭</translation>
 <translation id="8076835018653442223">관리자가 내 기기의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Android 앱과 사용할 수 있는 계정</translation>
 <translation id="8081989000209387414">ADB 디버깅을 사용 중지하시겠습니까?</translation>
 <translation id="8082106343289440791">‘<ph name="DEVICE_NAME" />’과(와) 페어링하시겠습니까?</translation>
 <translation id="8082390128630131497">ADB 디버깅을 사용 중지하면 이 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
@@ -6966,6 +6981,7 @@
 <translation id="8147900440966275470">탭 <ph name="NUM" />개 찾음</translation>
 <translation id="8148760431881541277">로그인 제한</translation>
 <translation id="8149564499626272569">USB 케이블로 휴대전화를 연결하여 인증</translation>
+<translation id="815114315010033526">대신 QR 코드 사용</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
 <translation id="8154912474061769055">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
@@ -6991,6 +7007,7 @@
 <translation id="8176332201990304395">분홍색 및 흰색</translation>
 <translation id="8177196903785554304">네트워크 세부정보</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
+<translation id="8179188928355984576">Android 앱에서 사용되지 않음</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽고 삭제할 수 있습니다.</translation>
 <translation id="8181215761849004992">도메인에 가입할 수 없습니다. 기기를 추가하기에 충분한 권한이 계정에 있는지 확인하세요.</translation>
@@ -7150,6 +7167,7 @@
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="834785183489258869">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
+<translation id="8349499562373871073">Android 앱과 사용할 기존 계정을 선택하거나 새로운 Google 계정을 추가할 수 있습니다. Android 앱에 로그인하면 계정을 다른 Android 앱에서도 사용할 수 있습니다. <ph name="LINK_BEGIN" />설정 &gt; 계정<ph name="LINK_END" />에서 Android 앱 액세스를 변경할 수 있습니다.</translation>
 <translation id="8350789879725387295">도크에 스타일러스 도구 표시</translation>
 <translation id="8351316842353540018">항상 접근성 옵션 표시</translation>
 <translation id="8351419472474436977">이 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경 및 중단하고 엿볼 수 있게 되었음을 의미합니다. 이와 같이 변경된 이유가 확실하지 않다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>

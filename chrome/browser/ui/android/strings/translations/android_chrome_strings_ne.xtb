@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# अडियो फाइल}other{# अडियो फाइलहरू}}</translation>
 <translation id="265156376773362237">पेज प्रिलोड गर्ने डिफल्ट मोड</translation>
 <translation id="2656405586795711023">वेब एपहरू</translation>
+<translation id="2689830683995595741">Chrome प्रयोग गरेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ। <ph name="BEGIN_LINK3" />Family Link मार्फत व्यवस्थापन गरिएका Google खाताहरूको गोपनीयता सूचना<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="2702516483241149200">नयाँ: स्क्रोल गरी यो पाठसम्म लैजाने लिंक सेयर गर्नुहोस्</translation>
 <translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
 <translation id="2707726405694321444">पृष्ठ ताजा गर्नुहोस्</translation>
@@ -624,6 +625,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4696983787092045100">आफ्ना यन्त्रहरूमा टेक्स्ट म्यासेज पठाउनुहोस्</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
+<translation id="471759387343966120">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" /> र <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता\u00A0नीति<ph name="END_PRIVACY_LINK" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />मा खोल्नुहोस्</translation>
 <translation id="4720982865791209136">Chrome लाई सुधार्न मद्दत गर्नुहोस्। <ph name="BEGIN_LINK" />सर्वेक्षणमा भाग लिनुहोस्।<ph name="END_LINK" /></translation>
@@ -906,6 +908,7 @@
 <translation id="6277522088822131679">पृष्ठ प्रिन्टिङ गर्नमा एक समस्या थियो। कृपया पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="6277722725779679269">ट्रयाक गरिएको मूल्य बदल्न सकिएन</translation>
 <translation id="6278428485366576908">विषयवस्तु</translation>
+<translation id="6292420053234093573">Chrome प्रयोग गरेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ।</translation>
 <translation id="6294610283659775533">तपाईं उही Google खातामार्फत साइन इन गरिएका एउटा डिभाइसबाट अर्को डिभाइसमा ट्याबहरू पठाउन सक्नुहुन्छ</translation>
 <translation id="6297765934698848803">तपाईंको डिभाइसको व्यवस्थापन गर्ने सङ्गठनले तपाईंको डिभाइसको क्यामेरा निष्क्रिय पारेको छ।</translation>
 <translation id="6301525844455696527">आफ्नो अध्ययन सूची हेर्न नभुल्नुहोस्</translation>

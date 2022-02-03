@@ -226,6 +226,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
+<translation id="7342713658732509484">Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Om du inte vill ge webbplatser och appar åtkomst till information i ditt konto kan du använda gästläget i webbläsaren Chromium. Du kan även hantera dina Google-konton i <ph name="LINK_2_BEGIN" />inställningarna<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Här finns webben, bokmärken och allt annat du använder Chromium till.</translation>
 <translation id="7349591376906416160">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7398989605938454041">Du kan hålla dina saker i Chromium åtskilda med hjälp av Chromium-profiler. Det gör det enklare att skilja på nytta och nöje.</translation>

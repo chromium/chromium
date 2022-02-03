@@ -290,6 +290,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audiodatei}other{# Audiodateien}}</translation>
 <translation id="265156376773362237">Standard-Vorabladen</translation>
 <translation id="2656405586795711023">Web-Apps</translation>
+<translation id="2689830683995595741">Wenn Sie Chrome verwenden, stimmen Sie damit den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu. Außerdem gelten die <ph name="BEGIN_LINK3" />Datenschutzhinweise für mit Family Link verwaltete Google-Konten<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2707726405694321444">Seite aktualisieren</translation>
@@ -625,6 +626,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}}</translation>
 <translation id="4696983787092045100">SMS an meine Geräte senden</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
+<translation id="471759387343966120">Wenn Sie fortfahren, akzeptieren Sie damit die <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen<ph name="END_TOS_LINK" /> und die <ph name="BEGIN_PRIVACY_LINK" />Datenschutzerklärung<ph name="END_PRIVACY_LINK" />.\nChrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_UMA_LINK" />Verwalten<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
 <translation id="4720023427747327413">In <ph name="PRODUCT_NAME" /> öffnen</translation>
 <translation id="4720982865791209136">Helfen Sie uns, Chrome zu verbessern. <ph name="BEGIN_LINK" />An Umfrage teilnehmen<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6277522088822131679">Beim Drucken der Seite ist ein Problem aufgetreten. Bitte versuchen Sie es erneut.</translation>
 <translation id="6277722725779679269">„Preis beobachten“ konnte nicht aktualisiert werden</translation>
 <translation id="6278428485366576908">Design</translation>
+<translation id="6292420053234093573">Wenn Sie Chrome verwenden, stimmen Sie damit den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu.</translation>
 <translation id="6294610283659775533">Sie können Tabs zwischen Geräten senden, auf denen Sie mit demselben Google-Konto angemeldet sind.</translation>
 <translation id="6297765934698848803">Die Organisation, die Ihr Gerät verwaltet, hat Ihre Kamera deaktiviert.</translation>
 <translation id="6301525844455696527">Lesen Sie weiter</translation>
@@ -1171,6 +1174,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7663313374500954251">Dieser Browser wird von <ph name="PARENT_NAME" /> verwaltet.</translation>
 <translation id="7665369617277396874">Konto hinzufügen</translation>
 <translation id="766587987807204883">Artikel erscheinen hier und können auch gelesen werden, wenn Sie offline sind</translation>
+<translation id="768232549260819724">GIF kopiert</translation>
 <translation id="7682724950699840886">Probieren Sie folgende Tipps aus: Sorgen Sie dafür, dass auf Ihrem Gerät ausreichend Speicherplatz vorhanden ist, und wiederholen Sie den Export.</translation>
 <translation id="768618399695552958">Einige der Seiten, die Sie besuchen, werden vorab geladen. Diese Seiten werden über Google-Server geladen, wenn sie von einer Google Sites-Website verlinkt sind.</translation>
 <translation id="7698359219371678927">E-Mail in <ph name="APP_NAME" /> erstellen</translation>
@@ -1349,6 +1353,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8570677896027847510">Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8572344201470131220">Bild kopiert</translation>
+<translation id="8580884231102452214">GIF kopieren</translation>
 <translation id="8583805026567836021">Kontodaten werden gelöscht</translation>
 <translation id="859046281437143747">Über die Schaltfläche „Weitere Optionen“ können Sie den Preis beobachten</translation>
 <translation id="860043288473659153">Name des Karteninhabers</translation>

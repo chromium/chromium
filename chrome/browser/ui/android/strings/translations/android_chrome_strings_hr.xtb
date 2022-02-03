@@ -290,6 +290,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audiodatoteka}one{# audiodatoteka}few{# audiodatoteke}other{# audiodatoteka}}</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
 <translation id="2656405586795711023">Web-aplikacije</translation>
+<translation id="2689830683995595741">Korištenjem Chromea prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Dodatne uvjete pružanja usluge za Google Chrome i OS Chrome<ph name="END_LINK2" />. Primjenjuje se i <ph name="BEGIN_LINK3" />Obavijest o privatnosti za Google račune kojima se upravlja putem Family Linka<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Novo: dijelite vezu koja se pomiče na ovaj tekst</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2707726405694321444">Osvježavanje stranice</translation>
@@ -625,6 +626,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Pošaljite SMS na svoje uređaje</translation>
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>
+<translation id="471759387343966120">Nastavkom upotrebe prihvaćate <ph name="BEGIN_TOS_LINK" />uvjete pružanja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_PRIVACY_LINK" />pravila o\u00A0privatnosti<ph name="END_PRIVACY_LINK" />.\nRadi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720023427747327413">Otvori u aplikaciji <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Pomognite poboljšati Chrome. <ph name="BEGIN_LINK" />Ispunite anketu<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6277522088822131679">Pojavio se problem prilikom ispisivanja stranice. Pokušajte ponovo.</translation>
 <translation id="6277722725779679269">Ažuriranje praćenja cijene nije uspjelo</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">Korištenjem Chromea prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Dodatne uvjete pružanja usluge za Google Chrome i OS Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Možete slati kartice među uređajima prijavljenima istim Google računom</translation>
 <translation id="6297765934698848803">Organizacija koja upravlja vašim uređajem isključila je vašu kameru.</translation>
 <translation id="6301525844455696527">Pročitajte ono što niste stigli</translation>
@@ -1171,6 +1174,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7663313374500954251">Preglednikom upravlja <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="766587987807204883">Ovdje će se prikazivati članci koje možete čitati i offline</translation>
+<translation id="768232549260819724">GIF je kopiran</translation>
 <translation id="7682724950699840886">Pokušajte napraviti sljedeće: provjerite ima li dovoljno prostora na uređaju i pokušajte ponoviti izvoz.</translation>
 <translation id="768618399695552958">Neke od stranica koje posjećujete predučitane su. Stranice na koje vodi veza s Googleove web-lokacije mogu se predučitati putem Googleovih poslužitelja.</translation>
 <translation id="7698359219371678927">Izradite e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
@@ -1349,6 +1353,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8570677896027847510">Datoteka se ne može sigurno preuzeti</translation>
 <translation id="8571213806525832805">Protekla 4 tjedna</translation>
 <translation id="8572344201470131220">Slika je kopirana</translation>
+<translation id="8580884231102452214">Kopiraj GIF</translation>
 <translation id="8583805026567836021">Brisanje podataka računa</translation>
 <translation id="859046281437143747">Pratite cijenu pomoću gumba Više opcija</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>

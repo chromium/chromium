@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Tulostettu <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> sivua.</translation>
 <translation id="345898999683440380">Skannataan sivu <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % valmis.</translation>
 <translation id="3459509316159669723">Tulostaminen</translation>
-<translation id="3462187165860821523">Päivitetään: <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laiteohjelmisto päivittyy. Voit pienentää ikkunan. Päivityksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
 <translation id="3486220673238053218">määritelmä</translation>
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3565064564551103223">Sallitut IP-osoitteet</translation>
+<translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3583278742022654445">Heikko signaalin voimakkuus. Kokeile siirtyä lähemmäs Wi-Fi-signaalin lähdettä.</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
@@ -462,7 +462,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
-<translation id="7240035910874241640">Kaikki lisälaitteet ovat ajan tasalla</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Taustakuvakokoelmat</translation>
@@ -563,7 +562,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8498220429738806196">Liikennelaskurit</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> on ajan tasalla</translation>
 <translation id="8521021929829989041">Käytä henkilökohtaisena laitteena</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operaattorisi saattaa vaatia tätä asetusta operaattorin verkkoon yhdistämistä varten. Lisätietoja saat operaattoriltasi.</translation>
@@ -607,7 +605,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skannaa}=1{Skannaa sivu {NUMBER_OF_PAGES}}other{Skannaa sivu {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Asennetaan – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="8997710128084572139">Laitteen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Taajuus</translation>
 <translation id="9039663905644212491">PEAP</translation>

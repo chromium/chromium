@@ -70,7 +70,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1186201132766001848">Zkontrolovat hesla</translation>
-<translation id="1195210374336998651">Přejít na nastavení aplikace</translation>
 <translation id="1195558154361252544">Oznámení jsou automaticky blokována u všech webů s výjimkou těch, u nichž je povolíte</translation>
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="1201402288615127009">Další</translation>
@@ -836,7 +835,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3587738293690942763">Střední</translation>
 <translation id="3592413004129370115">Italian (obálka)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně jeden den.}=1{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně jeden den.}few{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně {NUM_DAYS} dny.}many{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně {NUM_DAYS} dne.}other{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně {NUM_DAYS} dní.}}</translation>
-<translation id="3596012367874587041">Nastavení aplikace</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikace je blokována administrátorem</translation>
 <translation id="3608932978122581043">Orientace podávání</translation>
@@ -1962,6 +1960,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7334320624316649418">&amp;Opakovat změnu uspořádání</translation>
 <translation id="7335157162773372339">Může žádat o použití kamery</translation>
 <translation id="7337248890521463931">Zobrazit další řádky</translation>
+<translation id="7337418456231055214">Číslo virtuální karty není vyplněno? Klikněte na podrobnosti o kartě a zkopírujte ho. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Pro vaši platformu nedostupné.</translation>
 <translation id="733923710415886693">Certifikát serveru nebyl zveřejněn prostřednictvím projektu Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

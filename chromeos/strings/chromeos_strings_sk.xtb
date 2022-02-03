@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenuje sa <ph name="PAGE_NUM" />. strana. Dokončené: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tlač</translation>
-<translation id="3462187165860821523">Aktualizuje sa zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
 <translation id="3486220673238053218">definícia</translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3565064564551103223">Povolené adresy IP</translation>
+<translation id="3577473026931028326">Vyskytol sa problém. Skúste to znova.</translation>
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
 <translation id="3583278742022654445">Slabý signál. Skúste sa priblížiť k zdroju signálu Wi-Fi.</translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
@@ -462,7 +462,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
-<translation id="7240035910874241640">Všetky periférie sú aktuálne</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Zbierky tapiet</translation>
@@ -563,7 +562,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8498220429738806196">Počítadlá návštevnosti</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="8503836310948963452">Už iba niekoľko minút…</translation>
-<translation id="8520963233738002436">Vaše zariadenie <ph name="DEVICE_NAME" /> je aktuálne</translation>
 <translation id="8521021929829989041">Použiť osobné zariadenie</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Váš operátor môže túto možnosť vyžadovať na pripojenie k jeho sieti. Podrobnosti vám poskytne operátor.</translation>
@@ -607,7 +605,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenovať}=1{Skenovať {NUMBER_OF_PAGES} stránku}few{Skenovať {NUMBER_OF_PAGES} stránky}many{Skenovať {NUMBER_OF_PAGES} stránky}other{Skenovať {NUMBER_OF_PAGES} stránok}}</translation>
-<translation id="8994273342647807496">Inštaluje sa – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="8997710128084572139">Úroveň batérie zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9039663905644212491">PEAP</translation>

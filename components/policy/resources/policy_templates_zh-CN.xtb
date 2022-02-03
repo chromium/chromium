@@ -815,6 +815,30 @@
 
       默认情况下，这项企业政策会处于停用状态。</translation>
 <translation id="1949584741547056205">快速解答</translation>
+<translation id="1951288262199783797">如果启用此政策，您可创建一个由文件类型扩展名构成的字典及配套的网域列表，指定这些扩展名不会在哪些网域中触发基于文件类型扩展名的下载警告。这样一来，企业管理员便能针对已与某个所列网域关联的文件类型屏蔽基于文件类型扩展名的下载警告。例如，倘若扩展名“jnlp”与网域“website1.com”关联，用户在从“website1.com”下载“jnlp”文件时便不会看到警告，但在从“website2.com”下载“jnlp”文件时会看到警告。
+
+      即使具有此政策中为所列网域指定的文件类型扩展名，相关文件仍可能会触发并非以文件类型扩展名为依据的安全警告（例如混合内容下载警告和安全浏览警告）。
+
+      如果您停用或不配置此政策，当用户下载的文件触发基于文件类型扩展名的下载警告时，系统将会向用户显示警告。
+
+      如果您启用此政策：
+
+      * 网址格式应遵循 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns 上的要求。
+      * 所输入的文件类型扩展名必须采用小写 ASCII。罗列文件类型扩展名时不应添加前导分隔符，因此请输入“jnlp”而非“.jnlp”。
+
+      示例：
+
+      下列示例值会阻止扩展名“swf”、“exe”和“jnlp”在网域“*.example.com”中触发基于文件类型扩展名的下载警告。如果这样设置，在其他任何网域上，系统都会针对“exe”和“jnlp”文件向用户显示基于文件类型扩展名的下载警告，但不会针对“swf”文件显示此类警告。
+
+      [
+        { "file_extension": "jnlp", "domains": ["example.com"] },
+        { "file_extension": "exe", "domains": ["example.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+      请注意，尽管上例所示设置在所有网域中都不会针对“swf”文件显示基于文件类型扩展名的下载警告，但出于安全方面的考虑，我们不建议您在所有网域中针对任何危险文件类型扩展名限制此类警告的显示。上例中之所以显示相应设置，只是为了表明这样的设置是可行的。
+
+      如果此政策和 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> 都已启用，而且 DownloadRestrictions 设为屏蔽危险文件类型，系统会以 DownloadRestrictions 中针对下载文件的屏蔽设置为准。例如，倘若此政策设为允许从网域“website1.com”下载具有扩展名“exe”的文件，同时 DownloadRestrictions 设为屏蔽恶意下载内容和危险文件类型，系统仍会在所有网域中屏蔽文件类型扩展名为“exe”的下载文件。如果 DownloadRestrictions 未设为屏蔽危险文件类型，此政策中指定的文件类型将不会在所列网域中触发基于文件类型扩展名的下载警告。不妨详细了解 DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions)。</translation>
 <translation id="1960416154405676350">启用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1961091374249454164">此政策仅适用于受管理的访客会话。
       通过设置此政策，您可指定一个扩展程序 ID 列表，以表明要从受限受管理访客会话清理过程中排除哪些扩展程序（请参阅 <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />）。
@@ -1723,6 +1747,7 @@
       如果此政策设为 false，<ph name="BOREALIS_NAME" /> 会处于不可用状态。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="2968177167006045252">允许网站使用 SharedArrayBuffers</translation>
+<translation id="2969568582351417848">不针对所列网域中的指定文件类型显示基于文件类型扩展名的下载警告</translation>
 <translation id="2969797921412053304">此政策用于配置哪些网址有权在登录屏幕上的 SAML 流程中对设备身份执行远程认证。
 
       具体而言，如果某个网址与通过此政策提供的格式之一匹配，该网址就能接收 HTTP 标头（包含对远程认证质询的响应），以认证设备身份和设备状态。
@@ -2366,13 +2391,6 @@
       如果您停用了此设置，用户就无法使用“自动填充”功能。
 
       如果您启用了此设置或未设置值，那么“自动填充”功能仍由用户控制。这样，用户就能配置要自动填充的个人资料，并能自行决定是否要启用/停用“自动填充”功能。</translation>
-<translation id="3731968520685217674">通过设置此政策，您可以指定 Chrome 启动时的系统行为。关闭此设置相当于未对其进行配置，因为 <ph name="PRODUCT_NAME" /> 必须具有指定的启动行为。
-
-      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行更改它。
-
-      如果此政策设为 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />，某些依赖于会话的设置或用于指定退出时应执行什么操作的设置（例如：退出时清除浏览数据，或仅在会话期间有效的 Cookie）就会被关闭。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="3733014427925403568">间隔时段的开始日期和结束日期分别是周几。</translation>
 <translation id="3736879847913515635">允许通过用户管理器添加用户</translation>
 <translation id="3749259744154402564">不支持</translation>
@@ -2526,6 +2544,7 @@
     列出系统自动为演示用户安装的扩展程序（它们将安装在零售模式下的设备上）。安装后，这些扩展程序保存在该设备中，并且可以在离线状态下安装。
 
       每个列表条目都包含一个字典，其“extension-id”字段必须包含扩展程序 ID，而其“update-url”字段必须包含更新网址。</translation>
+<translation id="3869180930654347954">对所有受影响客户停用 First-Party Sets 功能</translation>
 <translation id="3870059789954671543">在登录屏幕上启用“键盘焦点突出显示”无障碍功能。
 
           此功能负责突出显示通过键盘操作成为焦点的对象。
@@ -2719,6 +2738,7 @@
       如果您停用了或未设置此政策，该服务会将用户转到 https://myaccount.google.com，以便其更改密码。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="4115501011761259824">对所有受影响客户启用 First-Party Sets 功能</translation>
 <translation id="4121350739760194865">阻止在新标签页上显示应用宣传信息</translation>
 <translation id="4122473079291425973">“新标签页”页面会显示卡片（若有可用内容），但用户可以更改此设置</translation>
 <translation id="4122565688998751716">此政策已被弃用，请改用“<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />”政策。
@@ -2858,6 +2878,14 @@
       如果相应设备不受管理或只有 1 个用户，此政策会被忽略，并且系统始终都会显示通知。
 
       如果受管理的设备上有多个用户帐号，仅当此政策已启用时，系统才会显示通知。</translation>
+<translation id="4293593564662654474">此政策提供了一种停用 First-Party Sets 功能的方式。
+
+                  如果此政策未设置或被设置为“启用”，系统会启用 First-Party Sets 功能。
+
+                  如果此政策被设置为“停用”，系统会停用 First-Party Sets 功能。
+
+                  First-Party Sets 功能的状态会决定 Chrome 是否会检索 First-Party Sets 列表。
+                  它还会控制 Chrome 是否支持 First-Party Sets 相关功能（例如 SameParty cookie 属性）。</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">设备的指定基座 MAC 地址</translation>
 <translation id="4314538398999793073">在 Kerberos 身份验证期间停用 CNAME 查找功能</translation>
@@ -2988,6 +3016,7 @@
 <translation id="449423975179525290">配置与 <ph name="PLUGIN_VM_NAME" /> 相关的政策。</translation>
 <translation id="449784980858429908">自动授权网站连接所有串行端口。</translation>
 <translation id="450080746522343150">拦截所有下载内容。</translation>
+<translation id="4508728400492074981">控制 First-Party Sets 功能的相关政策。</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
 <translation id="4512407512989846472">允许禁止指定网址向剪贴板中复制数据</translation>
 <translation id="4513691822411041977">不强制在 Google 搜索中使用安全搜索功能，也不强制使用 YouTube 受限模式</translation>
@@ -3103,6 +3132,16 @@
 <translation id="4617338332148204752">跳过“<ph name="PRODUCT_FRAME_NAME" />”中的元标记检查</translation>
 <translation id="4624417808625504735">禁止 JavaScript 在这些网站上使用 JIT</translation>
 <translation id="4625915093043961294">配置扩展程序安装白名单</translation>
+<translation id="4631165564645497047">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
+      如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书。
+      如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。
+
+      按照我们的计划，此政策将会从 <ph name="PRODUCT_OS_NAME" /> 81 版中移除，该版本将不再支持在 <ph name="PRODUCT_OS_NAME" />上使用旧版证书验证程序。
+
+      按照我们的计划，此政策将会从 Linux 上的 <ph name="PRODUCT_NAME" /> 83 版中移除，该版本将不再支持在 Linux 上使用旧版证书验证程序。
+
+      按照我们的计划，此政策将会从 Mac OS X 上的 <ph name="PRODUCT_NAME" /> 104 版中移除，该版本将不再支持在 Mac OS X 上使用旧版证书验证程序。
+      </translation>
 <translation id="4632343302005518762">允许 <ph name="PRODUCT_FRAME_NAME" />处理列出的内容类型</translation>
 <translation id="4632566332417930481">禁止在由企业政策安装的扩展程序中使用开发者工具，允许在其他情境中使用开发者工具</translation>
 <translation id="4635284822166984665">设备将于何时（以设备的本地时区表示）开始充电。</translation>
@@ -3416,6 +3455,7 @@
 <translation id="5075190314377370852">如果此政策设为 True，对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，<ph name="PRODUCT_NAME" /> 始终会执行撤消检查。如果 <ph name="PRODUCT_NAME" /> 无法获取撤消状态信息，<ph name="PRODUCT_NAME" /> 会将此类证书视为已撤消（硬性失败）。
 
       如果此政策设为 False 或未设置，<ph name="PRODUCT_NAME" /> 会使用现有的在线撤消检查设置。</translation>
+<translation id="5076953589932162038">First-Party Sets 功能设置</translation>
 <translation id="5078623750797048009">启用 PDF 注释</translation>
 <translation id="5081204761483900654">受限受管理访客会话</translation>
 <translation id="5082296146261894974">允许用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
@@ -4448,6 +4488,16 @@
 <translation id="631183702829488873">如果您启用了该功能，用户便会在登录屏幕和锁定屏幕上看到一个用于显示密码的按钮。
          这个按钮会在密码文本字段中显示为眼睛图标。如果您停用了该功能，这个按钮将不会显示。
       </translation>
+<translation id="6313108604615108577">此政策可控制是否要将 User-Agent 字符串的主要版本冻结为 99。
+
+      网站会通过 User-Agent 请求标头识别应用、操作系统、供应商和/或请求的用户代理的版本。
+      有些网站会对这种标头的格式做出假设，因此可能会在主要位置纳入三位数的版本字符串（如 100.0.0.0）时遇到问题。
+
+      如果此政策设置为“默认”或未设置，系统会将 User-Agent 字符串的主要版本默认设为浏览器设置。
+      如果设置为“ForceDisabled”，User-Agent 字符串将不会冻结主要版本。
+      如果设置为“ForceEnabled”，User-Agent 字符串会一律将主要版本回报为 99，并在次要位置纳入浏览器的主要版本。例如，浏览器版本 101.0.0.0 会发送一个 User-Agent 请求标头，将版本回报为 99.101.0.0。
+
+      此政策只是暂时性措施，日后会被弃用。请注意，如果同时启用此政策和<ph name="USER_AGENT_REDUCTION_POLICY_NAME" />政策，则 User-Agent 版本字符串会一律显示为 99.0.0.0。</translation>
 <translation id="6313170479290171718">此政策已被弃用，请改用 <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> 政策。
 
       如果此政策设为 True，系统会在登录时开启屏幕键盘。如果此政策设为 False，系统会在登录时关闭屏幕键盘。
@@ -4888,6 +4938,7 @@
       无论此政策是已启用还是已停用，chrome://flags 和任何其他可用于开启和关闭浏览器功能的方法都能正常起作用。</translation>
 <translation id="6794083666143216172">允许来源查询设备属性</translation>
 <translation id="6795485990775913659">仅允许在没有 PIN 码的情况下打印</translation>
+<translation id="6796215185873669533">将 User-Agent 字符串版本默认设为浏览器设置。</translation>
 <translation id="6800181452282128474">不向 Quirks Server 发送查询</translation>
 <translation id="68031099365512050">报告音频状态</translation>
 <translation id="6810445994095397827">在这些网站上阻止 JavaScript</translation>
@@ -5209,6 +5260,7 @@
 <translation id="7070525176564511548">每周（168 小时）必须输入一次密码</translation>
 <translation id="7072208053150563108">设备密码更改率</translation>
 <translation id="7072567600438630966">允许启用 Phone Hub。</translation>
+<translation id="7074437930865599190">将 User-Agent 字符串的主要版本冻结为 99</translation>
 <translation id="7079519252486108041">在这些网站上阻止弹出式窗口</translation>
 <translation id="707988220162760379">始终使用外部 PDF 查看器打开 PDF 文件</translation>
 <translation id="7081784525008938771">如果此政策已启用或未设置，播放视频时设备不会被视为闲置。这样，系统就不会开始应用闲置延迟时间、屏幕变暗延迟时间、屏幕关闭延迟时间和锁定延迟时间，也不会执行相应的操作。
@@ -5913,6 +5965,7 @@
       默认情况下，扩展程序或 Android 应用无权使用此类密钥（相当于针对扩展程序或 Android 应用将 allowCorporateKeyUsage 设为 False）。只有在针对某个扩展程序或 Android 应用将 allowCorporateKeyUsage 设为 True 的情况下，该扩展程序/应用才能利用被标记为供企业使用的平台密钥签署任意数据。为了防范黑客盗用密钥，切勿将这项权限授予不信任的扩展程序或 Android 应用。</translation>
 <translation id="7933141401888114454">允许创建受监管用户</translation>
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
+<translation id="7936302526928951356">User-Agent 字符串不会冻结主要版本。</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
 <translation id="7946350455013548764">如果此政策设为 3，系统会允许网站请求对 HID 设备的访问权限。如果此政策设为 2，系统会禁止网站访问 HID 设备。
@@ -6056,6 +6109,7 @@
 <translation id="8133152694354699657">如果此政策设为 True 或未设置，用户将能够使用“轻触搜索”功能，并能够开启或关闭该功能。
 
       如果此政策设为 False，系统会彻底关闭“轻触搜索”功能。</translation>
+<translation id="8136345780578030573">启用 First-Party Sets 功能。</translation>
 <translation id="8136906469922284163">如果此政策设为 True，网页将能够在取消加载的过程中显示弹出式窗口。
 
       如果此政策设为 False 或未设置，网页将无法在取消加载的过程中显示弹出式窗口。
@@ -6459,9 +6513,6 @@
 <translation id="8525526490824335042">Linux 容器</translation>
 <translation id="8528951285051082869">不允许任何 Web 应用通过 File Handling API 访问各类文件</translation>
 <translation id="8533145294731270627">拦截恶意下载内容和危险文件类型。</translation>
-<translation id="8537051350735478658">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 地址栏中显示搜索建议。如果此政策设为 False，系统会停用此类搜索建议功能。
-
-      如果您设置了此政策，用户便无法更改它。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
 <translation id="8543103455510904459">让您能够设置一系列网站网址格式，从而指定不允许哪些网站在运行 JavaScript 时启用 JIT（即时）编译器。
 
           停用 JavaScript JIT 后，<ph name="PRODUCT_NAME" /> 呈现网页内容的速度可能会更慢，且可能会停用 JavaScript 的某些部分（包括 WebAssembly）。停用 JavaScript JIT 可能会允许 <ph name="PRODUCT_NAME" /> 以更安全的配置呈现网页内容。
@@ -6714,6 +6765,7 @@
       此政策的每个列表项都是一个字符串，其中包含一个扩展程序 ID 和一个可选的“更新”网址（这两者之间以英文分号 [;] 分隔）。扩展程序 ID 是一个由 32 个字母构成的字符串；若想查看该字符串，一种方法是在开发者模式下访问 chrome://extensions。“更新”网址（若指定）应指向一个更新清单 XML 文档 (https://developer.chrome.com/extensions/autoupdate)。默认情况下，系统会使用 Chrome 网上应用店的更新网址。此政策中设置的“更新”网址仅用于初次安装；扩展程序的后续更新将会使用该扩展程序的清单中的更新网址。
 
        请注意：此政策不适用于无痕模式。了解如何托管扩展程序 (https://developer.chrome.com/extensions/hosting)。</translation>
+<translation id="8827275450034266143">User-Agent 字符串会将主要版本冻结为 99，并在次要位置纳入浏览器的主要版本。</translation>
 <translation id="8827366480126575426">协议处理程序所对应的协议。</translation>
 <translation id="8827417642396462482">允许其他 DNS 查询类型</translation>
 <translation id="8831911834413504983">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以运行 JavaScript。

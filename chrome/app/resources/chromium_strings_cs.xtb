@@ -226,6 +226,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nové okno</translation>
+<translation id="7342713658732509484">Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Pokud nechcete, aby weby nebo aplikace měly přístup k informacím o vašem účtu, použijte v prohlížeči Chromium režim hosta. Své účty Google můžete také spravovat v <ph name="LINK_2_BEGIN" />Nastavení<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Zde jsou k dispozici vaše weby, záložky a další obsah prohlížeče Chromium.</translation>
 <translation id="7349591376906416160">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel prohlížeč <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7398989605938454041">Pomocí profilů prohlížeče Chromium můžete všechny své údaje v prohlížeči Chromium uchovávat odděleně. Budete tak moci snáze oddělit zábavu od práce.</translation>

@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> səhifə çap edilib.</translation>
 <translation id="345898999683440380">Səhifə <ph name="PAGE_NUM" /> skanlanır. <ph name="PERCENTAGE_VALUE" />% tamamlanıb.</translation>
 <translation id="3459509316159669723">Çap edilir</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> güncəllənir</translation>
 <translation id="3484914941826596830">Proqram güncəllənərkən bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu güncəlləmə bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="3486220673238053218">təsvir</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
 <translation id="3565064564551103223">İcazə verilən IP'lər</translation>
+<translation id="3577473026931028326">Xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="3583278742022654445">Siqnal gücü zəifdir. Wi-Fi siqnal mənbəyinə yaxınlaşmağa çalışın.</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
-<translation id="7240035910874241640">Bütün əlavə cihazlar güncəldir</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Divar kağızı kolleksiyaları</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">Nəqliyyat Sayğacları</translation>
 <translation id="8503813439785031346">İstifadəçi adı</translation>
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> cihazınız güncəldir</translation>
 <translation id="8521021929829989041">Şəxsi cihaz kimi istifadə edin</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">Yenidən icra edin</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skan edin}=1{Bu səhifəni skan edin: {NUMBER_OF_PAGES}}other{Bu səhifəni skan edin: {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Quraşdırılır - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Cihazın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Tezlik</translation>
 <translation id="9039663905644212491">PEAP</translation>

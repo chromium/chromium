@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Odštampanih stanica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenira se stranica broj <ph name="PAGE_NUM" />. Završeno je <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
-<translation id="3462187165860821523">Ažuriranje uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Nemojte iskopčati ovaj vanjski uređaj ili isključiti računar dok traje ažuriranje firmvera. Ovaj prozor možete minimizirati. Ovo ažuriranje može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3488065109653206955">Djelimično aktivirano</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata greška</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3565064564551103223">Dozvoljeni IP protokoli</translation>
+<translation id="3577473026931028326">Nešto nije uredu. Pokušajte ponovo.</translation>
 <translation id="357889014807611375">WiFi mreža s naplatom</translation>
 <translation id="3583278742022654445">Slaba jačina signala. Pokušajte se približiti izvoru WiFi signala.</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
@@ -462,7 +462,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu daljinski konfigurirati uređaj.</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
-<translation id="7240035910874241640">Svi periferni uređaji su ažurirani</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Pokušajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Kolekcije pozadinskih slika</translation>
@@ -563,7 +562,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8498220429738806196">Brojači saobraćaja</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
-<translation id="8520963233738002436">Vaš uređaj <ph name="DEVICE_NAME" /> je ažuriran</translation>
 <translation id="8521021929829989041">Koristi kao lični uređaj</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>
@@ -607,7 +605,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8970109610781093811">Pokreni ponovo</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skeniraj}=1{Skeniraj {NUMBER_OF_PAGES}. stranicu}one{Skeniraj {NUMBER_OF_PAGES}. stranicu}few{Skeniraj {NUMBER_OF_PAGES}. stranicu}other{Skeniraj {NUMBER_OF_PAGES}. stranicu}}</translation>
-<translation id="8994273342647807496">Instaliranje – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9039663905644212491">PEAP</translation>

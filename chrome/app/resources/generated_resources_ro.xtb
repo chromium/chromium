@@ -205,6 +205,7 @@
 <ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.}other{Vei fi deconectat(ă) automat peste # de secunde.
 <ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.}}</translation>
 <translation id="1193927020065025187">Acest site ar putea încerca să te păcălească, astfel încât să permiți notificările deranjante</translation>
+<translation id="1195210374336998651">Accesează setările aplicației</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
 <translation id="1195558154361252544">Notificările sunt blocate automat pentru toate site-urile, cu excepția celor pe care le accepți</translation>
 <translation id="1197088940767939838">Portocaliu</translation>
@@ -1943,6 +1944,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2915873080513663243">Scanare automată</translation>
 <translation id="2916073183900451334">Dacă apeși Tab când ești pe o pagină, se evidențiază linkurile și câmpurile formularelor</translation>
 <translation id="2916745397441987255">Caută extensii</translation>
+<translation id="2918484639460781603">Accesați setările</translation>
 <translation id="2918484644467055090">Acest dispozitiv nu poate fi înregistrat în organizația căreia îi aparține contul tău, deoarece dispozitivul este atribuit unei alte organizații pentru gestionare.</translation>
 <translation id="2920852127376356161">Nu au permisiunea de a gestiona protocoale</translation>
 <translation id="2921081876747860777">Creează o parolă ca să protejezi datele locale.</translation>
@@ -2567,6 +2569,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3592260987370335752">&amp;Aflați mai multe</translation>
 <translation id="3593152357631900254">Activează modul Pinyin simplificat</translation>
 <translation id="3593965109698325041">Limitări privind numele certificatului</translation>
+<translation id="3596012367874587041">Setările aplicației</translation>
 <translation id="3596414637720633074">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3599221874935822507">În relief</translation>
 <translation id="3599863153486145794">Șterge istoricul de pe toate dispozitivele conectate. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

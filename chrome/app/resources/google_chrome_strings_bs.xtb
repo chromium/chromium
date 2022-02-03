@@ -69,6 +69,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2574930892358684005">Račun <ph name="EXISTING_USER" /> je već prijavljen na ovom Chrome profilu. Da vaše pregledanje ostane odvojeno, Chrome vam može kreirati vaš lični profil.</translation>
 <translation id="2580411288591421699">Nije moguće instalirati istu verziju Google Chromea koja je trenutno pokrenuta. Zatvorite Google Chrome i pokušajte ponovo.</translation>
 <translation id="2586406160782125153">Time će se izbrisati podaci o pregledavanju s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati na ovaj račun. Ako ne želite da web lokacije ili aplikacije pristupaju informacijama o vašem računu, koristite Način rada za gosta u pregledniku Chrome. Također možete upravljati Google računima u <ph name="LINK_2_BEGIN" />Postavkama<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome ne može provjeravati ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2644798301485385923">Sistem Chrome OS</translation>
 <translation id="2652691236519827073">Otvori link u novoj &amp;kartici Chromea</translation>

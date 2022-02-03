@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1186201132766001848">ກວດເບິ່ງລະຫັດຜ່ານ</translation>
-<translation id="1195210374336998651">ໄປຫາການຕັ້ງຄ່າແອັບ</translation>
 <translation id="1195558154361252544">ການແຈ້ງເຕືອນຖືກບລັອກໄວ້ໂດຍອັດຕະໂນມັດສຳລັບເວັບໄຊທັງໝົດ ຍົກເວັ້ນເວັບໄຊທີ່ທ່ານອະນຸຍາດ</translation>
 <translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
@@ -843,7 +842,6 @@
 <translation id="3587738293690942763">ເຄິ່ງກາງ</translation>
 <translation id="3592413004129370115">Italian (ຊອງຈົດໝາຍ)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ທ່ານສາມາດຣີເຊັດກຸ່ມຂອງທ່ານຕອນໃດກໍໄດ້. ມັນໃຊ້ເວລາປະມານໜຶ່ງມື້ເພື່ອເຂົ້າຮ່ວມກຸ່ມໃໝ່.}=1{ທ່ານສາມາດຣີເຊັດກຸ່ມຂອງທ່ານຕອນໃດກໍໄດ້. ມັນໃຊ້ເວລາປະມານໜຶ່ງມື້ເພື່ອເຂົ້າຮ່ວມກຸ່ມໃໝ່.}other{ທ່ານສາມາດຣີເຊັດກຸ່ມຂອງທ່ານຕອນໃດກໍໄດ້. ມັນໃຊ້ເວລາປະມານ {NUM_DAYS} ມື້ເພື່ອເຂົ້າຮ່ວມກຸ່ມໃໝ່.}}</translation>
-<translation id="3596012367874587041">ການຕັ້ງຄ່າແອັບ</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ບລັອກແອັບພລິເຄຊັນ</translation>
 <translation id="3608932978122581043">ປ້ອນເຈ້ຍຕາມທິດທາງ</translation>

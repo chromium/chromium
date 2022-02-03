@@ -70,7 +70,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1186201132766001848">Kontrollér passordene</translation>
-<translation id="1195210374336998651">Gå til appinnstillinger</translation>
 <translation id="1195558154361252544">Varsler blokkeres automatisk for alle nettsteder unntatt dem du tillater</translation>
 <translation id="1197088940767939838">Oransje</translation>
 <translation id="1201402288615127009">Neste</translation>
@@ -843,7 +842,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3587738293690942763">Midtre</translation>
 <translation id="3592413004129370115">Italian (konvolutt)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Du kan tilbakestille gruppen din når som helst. Det tar omtrent én dag å bli med i en ny gruppe.}=1{Du kan tilbakestille gruppen din når som helst. Det tar omtrent én dag å bli med i en ny gruppe.}other{Du kan tilbakestille gruppen din når som helst. Det tar omtrent {NUM_DAYS} dager å bli med i en ny gruppe.}}</translation>
-<translation id="3596012367874587041">Appinnstillinger</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Programmet er blokkert av administratoren din</translation>
 <translation id="3608932978122581043">Feed-retning</translation>

@@ -208,6 +208,9 @@
       Cette règle ne s'applique pas aux utilisateurs de kiosque.
 
       Avertissement : Les valeurs "Wipe" et "MinimalMigrate" entraînent la suppression des données locales.</translation>
+<translation id="1250597158212586309">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut choisir de fermer/restaurer les alertes de mot de passe compromis.
+
+      Si vous désactivez ce paramètre, les utilisateurs ne pourront plus fermer les alertes concernant les mots de passe compromis. S'il est activé, les utilisateurs pourront fermer ces alertes.</translation>
 <translation id="1252536192437793850">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un port série</translation>
 <translation id="1255159327956066463">Activer la fonctionnalité Fenêtre fantôme</translation>
 <translation id="125655429495551011">Si cette règle est définie sur une chaîne, celle-ci correspond au nom d'hôte de l'appareil lors de la requête DHCP. La chaîne peut contenir les variables <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> et <ph name="LOCATION_PLACEHOLDER" /> qui devront être remplacées par les valeurs sur l'appareil avant qu'elle ne soit utilisée comme nom d'hôte. Le résultat de ce remplacement doit former un nom d'hôte valide conformément à la norme RFC 1035, section 3.1.
@@ -834,6 +837,30 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Cette règle est désactivée par défaut.</translation>
 <translation id="1949584741547056205">Réponses rapides</translation>
+<translation id="1951288262199783797">Vous pouvez activer cette règle afin de créer un dictionnaire d'extensions de fichier et une liste correspondante de domaines qui seront exemptés d'avertissements de téléchargement basés sur l'extension. Cela permet aux administrateurs de l'entreprise de bloquer ces avertissements pour les fichiers associés à un domaine listé. Par exemple, si l'extension "jnlp" est associée à "website1.com", les utilisateurs verront un avertissement s'ils téléchargent des fichiers "jnlp" depuis "website1.com". En revanche, ils n'en verront pas s'ils téléchargent des fichiers "jnlp" depuis "website2.com".
+
+      Le téléchargement, depuis les domaines identifiés par cette règle, de fichiers dont l'extension est spécifiée fera toutefois l'objet d'avertissements de sécurité (non basés sur l'extension) pour signaler, par exemple, un contenu mixte ou une navigation sécurisée.
+
+      Si vous désactivez cette règle, ou que vous ne la configurez pas, les utilisateurs verront des avertissements s'ils téléchargent des fichiers des types spécifiés.
+
+      Si vous activez cette règle :
+
+      * Les URL doivent avoir le format décrit sur https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+      * L'extension doit être saisie au format ASCII, en minuscules. Les extensions doivent être listées sans le séparateur qui les précède (par exemple, indiquez "jlnp" et non ".jlnp").
+
+      Exemple :
+
+      La configuration suivante empêche que des avertissements s'affichent en cas de téléchargement de fichiers de type swf, exe et jnlp depuis le domaine *.example.com. L'utilisateur voit un avertissement s'il télécharge un fichier exe ou jnlp depuis un autre domaine, mais pas s'il télécharge un fichier swf.
+
+      [
+        { "file_extension": "jnlp", "domains": ["example.com"] },
+        { "file_extension": "exe", "domains": ["example.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+      Notez que même si les avertissements basés sur l'extension sont ici supprimés en cas de téléchargement d'un fichier swf depuis n'importe quel domaine, il n'est pas recommandé d'appliquer ce type de configuration aux extensions dangereuses, pour des raisons de sécurité. Cet exemple ne vise qu'à montrer qu'il est possible de le faire.
+
+      Si cette règle est activée en même temps que <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> et que cette autre règle est configurée pour bloquer les types de fichiers dangereux, les blocages de téléchargement qu'elle définit prévalent. Par exemple, si cette règle est configurée pour permettre les téléchargements de fichiers "exe" depuis "website1.com" et que la règle DownloadRestrictions est configurée pour bloquer les téléchargements malveillants et les types de fichiers dangereux, le téléchargement des fichiers "exe" sera alors quand même bloqué pour tous les domaines. Si la règle DownloadRestrictions n'est pas configurée pour bloquer les types de fichiers dangereux, les types de fichiers spécifiés dans cette règle seront exemptés des avertissements de téléchargement basé sur l'extension dans les domaines spécifiés. Pour en savoir plus sur la règle DownloadRestrictions, consultez la page https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1960416154405676350">Activer la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Cette règle ne concerne que les sessions Invité gérées.
       Cette règle permet de spécifier une liste d'identifiants d'extension exclus de la procédure de nettoyage des sessions Invité gérées restreintes (voir la règle <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
@@ -888,6 +915,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Les imprimantes connectées à <ph name="CLOUD_PRINT_NAME" /> sont considérées comme étant de type <ph name="PRINTER_TYPE_CLOUD" /> ; les autres sont de type <ph name="PRINTER_TYPE_LOCAL" />.
 
       Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises en compte. Par exemple, si vous ne spécifiez pas de connectivité, l'aperçu avant impression propose toutes sortes d'imprimantes, à la fois de type <ph name="PRINTER_TYPE_LOCAL" /> et <ph name="PRINTER_TYPE_CLOUD" />. Les structures d'expressions régulières doivent suivre la syntaxe JavaScript RegExp, et les correspondances sont sensibles à la casse.</translation>
+<translation id="2004382785802837840">Désactiver la fermeture des alertes de mot de passe compromis</translation>
 <translation id="2005506794355327448">Action à effectuer quand l'écran est rabattu.</translation>
 <translation id="2006530844219044261">Gestion de l'alimentation</translation>
 <translation id="2008514891623783266">La règle de gestion des adresses IP de WebRTC</translation>
@@ -1320,6 +1348,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2435232509335686514">Règle de configuration de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> pour la gestion des fichiers téléchargés</translation>
 <translation id="2436302465999055995">Faire de <ph name="LACROS_NAME" /> le seul navigateur disponible (pas encore implémenté)</translation>
 <translation id="2439187682308339104">Interdire à tous les sites de demander l'accès aux appareils HID via l'API WebHID</translation>
+<translation id="2439733504887695659">Activer la fermeture des alertes de mot de passe compromis pour les identifiants saisis</translation>
 <translation id="2448315169529769573">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> envoie à Google les statistiques d'utilisation et les données de diagnostic, y compris les rapports d'erreur. Si cette règle est désactivée, ces statistiques et ces données ne sont pas envoyées.
 
        Si cette règle n'est pas configurée, les statistiques et les données de diagnostic ne sont pas envoyées concernant les appareils non gérés, mais le sont pour les appareils gérés.</translation>
@@ -1752,6 +1781,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est définie sur "False", <ph name="BOREALIS_NAME" /> ne sera pas disponible. Si la règle est définie sur "True" ou n'est pas définie, <ph name="BOREALIS_NAME" /> sera disponible si et seulement si aucune autre règle ni aucun autre paramètre ne le désactivent.</translation>
 <translation id="2964373560810620158">Empêcher les utilisateurs de se servir du navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Autoriser les sites à utiliser SharedArrayBuffers</translation>
+<translation id="2969568582351417848">Désactiver les avertissements de téléchargement basés sur l'extension pour les types de fichier spécifiés selon le domaine</translation>
 <translation id="2969797921412053304">Cette règle permet de déterminer quelles URL sont autorisées à procéder à une attestation à distance de l'identité de l'appareil concerné pendant le flux SAML sur l'écran de connexion.
 
       Plus précisément, si une URL correspond à l'un des formats spécifiés dans cette règle, elle pourra recevoir un en-tête HTTP contenant une réponse à une attestation à distance (qui certifie l'identité et l'état de l'appareil concerné).
@@ -2400,13 +2430,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous désactivez ce paramètre, la saisie automatique n'est pas accessible aux utilisateurs.
 
       Si vous l'activez ou ne configurez aucune valeur, les utilisateurs contrôlent la saisie automatique. Ils peuvent alors l'activer ou la désactiver et configurer des profils de saisie automatique comme ils le souhaitent.</translation>
-<translation id="3731968520685217674">Permet de définir le comportement du système au démarrage. Désactiver cette règle revient à ne pas la configurer, car le comportement de <ph name="PRODUCT_NAME" /> au démarrage doit être spécifié.
-
-      Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, les utilisateurs peuvent la modifier.
-
-      Configurer cette règle sur <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> entraîne la désactivation de certains paramètres qui sont basés sur les sessions de navigation ou qui ont pour effet d'exécuter des actions lors de la fermeture du navigateur, comme la suppression des données de navigation ou des cookies d'une session.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="3733014427925403568">Jour de la semaine pour l'intervalle.</translation>
 <translation id="3736879847913515635">Autoriser l'ajout de personnes dans le gestionnaire d'utilisateurs</translation>
 <translation id="3749259744154402564">Non compatible</translation>
@@ -3138,6 +3161,16 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4624417808625504735">Empêcher JavaScript d'utiliser le JIT sur ces sites</translation>
 <translation id="4625915093043961294">Configurer la liste blanche d'installation des extensions</translation>
+<translation id="4631165564645497047">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
+      Lorsqu'il est désactivé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme.
+      Lorsqu'il n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.
+
+      Cette règle sera supprimée de la version 81 de <ph name="PRODUCT_OS_NAME" /> lorsque l'ancien outil de vérification des certificats sur <ph name="PRODUCT_OS_NAME" /> ne sera plus pris en charge.
+
+      Cette règle sera supprimée de la version 83 de <ph name="PRODUCT_NAME" /> pour Linux lorsque l'ancien outil de vérification des certificats sur Linux ne sera plus pris en charge.
+
+      Cette règle sera supprimée de la version 104 de <ph name="PRODUCT_NAME" /> pour Mac OS X lorsque l'ancien outil de vérification des certificats sur Mac OS X ne sera plus pris en charge.
+      </translation>
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
 <translation id="4632566332417930481">Interdire l'utilisation des outils pour les développeurs avec les extensions installées par la stratégie d'entreprise, mais autoriser l'utilisation des outils pour les développeurs dans les autres cas</translation>
 <translation id="4635284822166984665">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à se recharger.</translation>
@@ -3176,6 +3209,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
           Pour voir des exemples de formats, accédez à l'adresse https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Ouvrir une liste d'URL</translation>
+<translation id="4674542060943819878">Activer la fermeture des alertes de mot de passe compromis</translation>
 <translation id="4674871290487541952">Autoriser les algorithmes non sécurisés dans les vérifications de l'intégrité des mises à jour et des installations d'extension</translation>
 <translation id="4680961954980851756">Activer la saisie automatique</translation>
 <translation id="4685721728282448265">Algorithme clé-contrat post-quantique CECPQ2 activé pour TLS</translation>
@@ -6523,9 +6557,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8525526490824335042">Conteneur Linux</translation>
 <translation id="8528951285051082869">N'autoriser aucune appli Web à accéder à certains types de fichiers via l'API File Handling</translation>
 <translation id="8533145294731270627">Bloquer les téléchargements malveillants et les types de fichiers dangereux.</translation>
-<translation id="8537051350735478658">Si cette règle est définie sur "True", la fonctionnalité Suggestions de recherche est activée dans la barre d'adresse du navigateur <ph name="PRODUCT_NAME" />. Si cette règle est définie sur "False", cette fonctionnalité est désactivée.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, cette fonctionnalité est activée par défaut, mais les utilisateurs peuvent la désactiver à tout moment.</translation>
 <translation id="8543103455510904459">Permet de lister les formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter JavaScript avec le compilateur JIT (Just In Time) activé.
 
           Si le JIT pour JavaScript est désactivé, <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement et aussi désactiver des parties de JavaScript, y compris WebAssembly. Cette désactivation peut également permettre à <ph name="PRODUCT_NAME" /> d'afficher le contenu Web dans une configuration plus sûre.

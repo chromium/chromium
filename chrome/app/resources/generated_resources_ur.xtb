@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}other{آپ خودکار طور پر # سیکنڈ میں سائن آؤٹ ہو جائیں گے۔
 <ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}}</translation>
 <translation id="1193927020065025187">ممکن ہے یہ سائٹ آپ کو دھوکہ سے دخل انداز اطلاعات کی اجازت دینے کی کوشش کر رہی ہو</translation>
+<translation id="1195210374336998651">ایپ کی ترتیبات پر جائیں</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1195558154361252544">تمام سائٹس کے لیے اطلاعات کو خودکار طور پر مسدود کر دیا گیا ہے سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="1197088940767939838">نارنجی</translation>
@@ -384,6 +385,7 @@
 <translation id="1396259464226642517">کیا یہ نتیجہ غیر متوقع تھا؟ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">آپ کی جانب سے درج کردہ صارف نام اور پاس ورڈ مماثل نہیں ہیں</translation>
 <translation id="1397500194120344683">کوئی اہل آلہ نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">‏آپ ان آلات پر Chrome میں سائن ان ہیں، لہذا آپ انہیں سیکیورٹی کلیدوں کے طور پر استعمال کر سکتے ہیں۔</translation>
 <translation id="1398853756734560583">بڑا کریں</translation>
 <translation id="139911022479327130">اپنا فون غیر مقفل کریں اور تصدیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="1401308693935339022">‏مقام استعمال کریں۔ مقام کی اجازت والی ایپس اور سروسز کو اس آلہ کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کے لیے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
@@ -1168,6 +1170,7 @@
 <translation id="2163470535490402084">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="2163937499206714165">تاریک وضع آن کریں</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /> اور 1 مزید سوئچ</translation>
+<translation id="2165102982098084499">‏آپ نے QR کوڈ اسکین کر کے ان آلات کو لنک کیا ہے۔</translation>
 <translation id="2165177462441582039">منتخب کریں کہ ہائی لائٹ کو ہر آئٹم پر کتنی دیر رہنا چاہیے</translation>
 <translation id="2166369534954157698">ایک ٹیلے پر واقع مزار خواجہ فرید الدین گنج شکر کے احاطۂ صحن میں ذرا سی ژالہ باری چاندی کے ڈھیروں کی مثل بڑے غضب کا نظارہ دیتی ہے۔</translation>
 <translation id="2169062631698640254">بہر صورت سائن ان کریں</translation>
@@ -2565,6 +2568,7 @@
 <translation id="3592260987370335752">مزید &amp;جانیں</translation>
 <translation id="3593152357631900254">‏Fuzzy-Pinyin وضع فعال کریں</translation>
 <translation id="3593965109698325041">سرٹیفکیٹ نام کی پابندیاں</translation>
+<translation id="3596012367874587041">ایپ کی ترتیبات</translation>
 <translation id="3596414637720633074">پوشیدگی میں فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="3599221874935822507">ابھرا ہوا</translation>
 <translation id="3599863153486145794">‏سبھی سائن ان کردہ آلات سے سرگزشت صاف کر دیتا ہے۔ ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
@@ -5684,6 +5688,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
 <translation id="6860097299815761905">پراکسی کی ترتیبات…</translation>
 <translation id="6860427144121307915">ایک ٹیب میں کھولیں</translation>
+<translation id="6863496016067551393">سبھی ایکسٹینشنز کی اجازت ہے</translation>
 <translation id="686366188661646310">پاس ورڈ حذف کریں؟</translation>
 <translation id="6865313869410766144">آٹو فل فارم ڈیٹا</translation>
 <translation id="6865598234501509159">صفحہ <ph name="LANGUAGE" /> میں نہیں ہے</translation>
@@ -5713,6 +5718,7 @@
 <translation id="6900532703269623216">بہتر کردہ حفاظت</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> کو اپ ڈیٹ کرنے کے لیے دوبارہ سائن ان کریں</translation>
 <translation id="6900654715912436255">کیا آپ واقعی اس سرچ انجن کو حذف کرنا چاہتے ہیں؟</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">پیش منظر کی آواز</translation>
 <translation id="6902336033320348843">سیکشن تعاون یافتہ نہیں ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">آلہ کو ڈومین میں شامل کریں</translation>
@@ -7364,6 +7370,7 @@
 <translation id="8610103157987623234">غلط فارمیٹ، براہ کرم دوبارہ کوشش کریں</translation>
 <translation id="8611682088849615761">‏اس سائٹ کو MIDI آلات کا مکمل کنٹرول حاصل کرنے کی اجازت دینا جاری رکھیں</translation>
 <translation id="8613164732773110792">صرف چھوٹے حروف، ہندسے، انڈر سکورز یا ڈیشز</translation>
+<translation id="8613645710357126807">ایکسٹینشنز استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="8613786722548417558">‏سیکیورٹی چیک کیلئے <ph name="FILE_NAME" /> بہت بڑی ہے۔ آپ ‎50 MB تک کی فائلز کھول سکتے ہیں۔</translation>
 <translation id="8615618338313291042">پوشیدگی ایپ: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> کو اپنے رابطوں میں شامل کریں</translation>

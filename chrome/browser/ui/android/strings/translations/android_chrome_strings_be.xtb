@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аўдыяфайл}one{# аўдыяфайл}few{# аўдыяфайлы}many{# аўдыяфайлаў}other{# аўдыяфайла}}</translation>
 <translation id="265156376773362237">Стандартная перадзагрузка</translation>
 <translation id="2656405586795711023">Вэб-праграмы</translation>
+<translation id="2689830683995595741">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Таксама прымяняецца <ph name="BEGIN_LINK3" />Паведамленне аб прыватнасці ў дачыненні да Уліковых запісаў Google, якія кіруюцца праз Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Навінка: абагульце спасылку, пры выкарыстанні якой старонка прагартаецца гэтага фрагмента тэксту</translation>
 <translation id="2704606927547763573">Скапіравана</translation>
 <translation id="2707726405694321444">Абнавіць старонку</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Адправіць тэкст на вашы прылады</translation>
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
+<translation id="471759387343966120">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" /> і <ph name="BEGIN_PRIVACY_LINK" />Палітыку\u00A0прыватнасці<ph name="END_PRIVACY_LINK" />.\nChrome адпраўляе даныя пра выкарыстанне і збоі ў Google, якія дапамогуць палепшыць праграму. <ph name="BEGIN_UMA_LINK" />Кіраваць<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Прапаноўваць пераклад</translation>
 <translation id="4720023427747327413">Адкрыць у <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Дапамажыце палепшыць Chrome. <ph name="BEGIN_LINK" />Прыміце ўдзел у апытанні<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">Узнікла праблема з друкам старонкі. Паўтарыце спробу.</translation>
 <translation id="6277722725779679269">Абнавіць функцыю "Адсочванне цаны" не ўдалося</translation>
 <translation id="6278428485366576908">Тэма</translation>
+<translation id="6292420053234093573">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Вы можаце адпраўляць укладкі на свае прылады, на якіх выкананы ўваход у адзін і той жа Уліковы запіс Google</translation>
 <translation id="6297765934698848803">Арганізацыя, якая кіруе вашай прыладай, выключыла камеру.</translation>
 <translation id="6301525844455696527">Не забудзьце прачытаць</translation>

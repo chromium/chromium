@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Отпечатена страница <ph name="PRINTED_PAGES" /> од <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Се скенира страницата <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % завршено.</translation>
 <translation id="3459509316159669723">Се печати</translation>
-<translation id="3462187165860821523">Се ажурира <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Додека фирмверот се ажурира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ажурирањево може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3488065109653206955">Делумно активиран</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="3532980081107202182">Преостануваат околу <ph name="MIN_REMAINING" /> мин.</translation>
 <translation id="3565064564551103223">Дозволени IP адреси</translation>
+<translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="357889014807611375">Wi-Fi со ограничен интернет</translation>
 <translation id="3583278742022654445">Слаба јачина на сигналот. Обидете се да се приближите до изворот на сигналот за Wi-Fi.</translation>
 <translation id="3595596368722241419">Батеријата е полна</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
-<translation id="7240035910874241640">Сите периферни уреди се ажурирани</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Збирки тапети</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">Бројачи на сообраќај</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
-<translation id="8520963233738002436">Вашиот <ph name="DEVICE_NAME" /> е ажуриран</translation>
 <translation id="8521021929829989041">Користете како личен уред</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">Изврши повторно</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES} страница}one{Скенирај {NUMBER_OF_PAGES} страница}other{Скенирај {NUMBER_OF_PAGES} страници}}</translation>
-<translation id="8994273342647807496">Се инсталира - <ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="8997710128084572139">Нивото на батерија на уредот е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Зачестеност</translation>
 <translation id="9039663905644212491">PEAP</translation>

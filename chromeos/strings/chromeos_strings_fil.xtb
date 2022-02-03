@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Na-print ang page <ph name="PRINTED_PAGES" /> sa <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Sina-scan ang pahina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% na ang natapos.</translation>
 <translation id="3459509316159669723">Pagpi-print</translation>
-<translation id="3462187165860821523">Ina-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="3486220673238053218">kahulugan</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
 <translation id="3565064564551103223">Mga pinapayagang IP</translation>
+<translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
 <translation id="3583278742022654445">Mahina ang signal. Subukang mas lumapit sa source ng signal ng Wi-Fi.</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
@@ -462,7 +462,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
-<translation id="7240035910874241640">Up to date ang lahat ng peripheral</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Mga Koleksyon ng Wallpaper</translation>
@@ -563,7 +562,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8498220429738806196">Mga Traffic Counter</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8503836310948963452">Ilang minuto na lang...</translation>
-<translation id="8520963233738002436">Up to date ang iyong <ph name="DEVICE_NAME" /></translation>
 <translation id="8521021929829989041">Gamitin bilang personal na device</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Posibleng kailanganin ng iyong carrier ang opsyong ito para makakonekta sa network nito. Makipag-ugnayan sa iyong carrier para sa mga detalye.</translation>
@@ -607,7 +605,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{I-scan}=1{I-scan ang page {NUMBER_OF_PAGES}}one{I-scan ang page {NUMBER_OF_PAGES}}other{I-scan ang page {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Ini-install - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">May <ph name="BATTERY_PERCENTAGE" />% baterya ang device.</translation>
 <translation id="9003704114456258138">Frequency</translation>
 <translation id="9039663905644212491">PEAP</translation>

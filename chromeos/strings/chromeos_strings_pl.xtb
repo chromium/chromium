@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Wydrukowano stronę <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skanuję stronę <ph name="PAGE_NUM" />. Ukończono <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
-<translation id="3462187165860821523">Aktualizuję urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Podczas aktualizowania oprogramowania układowego nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Aktualizowanie może potrwać kilka minut i w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="3486220673238053218">definicja</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3565064564551103223">Dozwolone adresy IP</translation>
+<translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
 <translation id="3583278742022654445">Słaby sygnał. Zbliż się do źródła sygnału Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
@@ -353,6 +353,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5691511426247308406">Rodzina</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="5733298426544876109">Zaktualizuj: <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Stan portalu</translation>
 <translation id="5784136236926853061">Duże opóźnienie HTTP</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
@@ -462,7 +463,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
-<translation id="7240035910874241640">Wszystkie urządzenia peryferyjne używają aktualnej wersji oprogramowania</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Kolekcje tapet</translation>
@@ -563,7 +563,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8498220429738806196">Liczniki natężenia ruchu</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> używa aktualnej wersji oprogramowania</translation>
 <translation id="8521021929829989041">Użyj jako urządzenia osobistego</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>
@@ -607,7 +606,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanuj}=1{Skanuj {NUMBER_OF_PAGES} stronę}few{Skanuj {NUMBER_OF_PAGES} strony}many{Skanuj {NUMBER_OF_PAGES} stron}other{Skanuj {NUMBER_OF_PAGES} strony}}</translation>
-<translation id="8994273342647807496">Instaluję – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Poziom naładowania baterii urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Częstotliwość</translation>
 <translation id="9039663905644212491">PEAP</translation>

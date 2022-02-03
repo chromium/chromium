@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ ਪੰਨਾ <ph name="PRINTED_PAGES" /> ਨੂੰ ਪ੍ਰਿੰਟ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="345898999683440380">ਪੰਨਾ <ph name="PAGE_NUM" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। <ph name="PERCENTAGE_VALUE" />% ਮੁਕੰਮਲ।</translation>
 <translation id="3459509316159669723">ਪ੍ਰਿੰਟ ਕਰਨਾ</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3484914941826596830">ਫ਼ਰਮਵੇਅਰ ਦੇ ਅੱਪਡੇਟ ਹੋਣ ਦੌਰਾਨ ਇਸ ਬਾਹਰੀ ਡੀਵਾਈਸ ਨੂੰ ਅਣਪਲੱਗ ਨਾ ਕਰੋ ਜਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ। ਤੁਸੀਂ ਇਸ ਵਿੰਡੋ ਨੂੰ ਛੋਟਾ ਕਰ ਸਕਦੇ ਹੋ। ਇਸ ਅੱਪਡੇਟ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡਾ ਬਾਹਰੀ ਡੀਵਾਈਸ ਕੰਮ ਨਾ ਕਰੇ।</translation>
 <translation id="3486220673238053218">ਪਰਿਭਾਸ਼ਾ</translation>
 <translation id="3488065109653206955">ਅੰਸ਼ਕ ਤੌਰ ਤੇ ਸਕਿਰਿਆ ਕੀਤਾ</translation>
 <translation id="3527036260304016759">ਅਸਫਲ ਰਹੀ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="3565064564551103223">ਮਨਜ਼ੂਰਸ਼ੁਦਾ IP</translation>
+<translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="357889014807611375">ਮੀਟਰਡ ਵਾਈ-ਫਾਈ</translation>
 <translation id="3583278742022654445">ਸਿਗਨਲ ਦੀ ਕਮਜ਼ੋਰ ਤੀਬਰਤਾ। ਵਾਈ-ਫਾਈ ਸਿਗਨਲ ਸਰੋਤ ਦੇ ਨਜ਼ਦੀਕ ਜਾ ਕੇ ਦੇਖੋ।</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਇਦ ਪ੍ਰਸ਼ਾਸਕ ਰਿਮੋਟਲੀ ਡੀਵਾਈਸ ਦਾ ਸੰਰੂਪਣ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7216409898977639127">ਸੈਲਿਊਲਰ ਪ੍ਰਦਾਨਕ</translation>
-<translation id="7240035910874241640">ਸਾਰੇ ਪੈਰੀਫੈਰਲ ਅੱਪ-ਟੂ-ਡੇਟ ਹਨ</translation>
 <translation id="7271040990581020067">ਫ਼ਿਲਹਾਲ ਸਕੈਨਰ ਵਰਤੋਂ ਵਿੱਚ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ਵਾਲਪੇਪਰ ਸੰਗ੍ਰਹਿ</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰ</translation>
 <translation id="8503813439785031346">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="8503836310948963452">ਬਸ ਕੁਝ ਮਿੰਟ ਹੋਰ…</translation>
-<translation id="8520963233738002436">ਤੁਹਾਡਾ <ph name="DEVICE_NAME" /> ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ</translation>
 <translation id="8521021929829989041">ਨਿੱਜੀ ਡੀਵਾਈਸ ਵਜੋਂ ਵਰਤੋ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਨੂੰ ਆਪਣੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇਸ ਵਿਕਲਪ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ। ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">ਦੁਬਾਰਾ ਚਲਾਓ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ਸਕੈਨ ਕਰੋ}=1{{NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕਰੋ}other{{NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕਰੋ}}</translation>
-<translation id="8994273342647807496">ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">ਡੀਵਾਈਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="9003704114456258138">ਬਾਰੰਬਾਰਤਾ</translation>
 <translation id="9039663905644212491">PEAP</translation>

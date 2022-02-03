@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# فایل صوتی}one{# فایل صوتی}other{# فایل صوتی}}</translation>
 <translation id="265156376773362237">پیش‌بارگیری استاندارد</translation>
 <translation id="2656405586795711023">برنامه‌های وب</translation>
+<translation id="2689830683995595741">‏با استفاده کردن از Chrome، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید. <ph name="BEGIN_LINK3" />اعلان حریم‌خصوصی برای «حساب‌های Google» مدیریت‌شده با Family Link<ph name="END_LINK3" /> نیز اعمال می‌شود.</translation>
 <translation id="2702516483241149200">جدید: هم‌رسانی پیوندی که به این نوشتار پیمایش می‌کند</translation>
 <translation id="2704606927547763573">کپی شد</translation>
 <translation id="2707726405694321444">بازخوانی صفحه</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
 <translation id="4696983787092045100">ارسال نوشتار به دستگاه‌های شما</translation>
 <translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه پنهان</translation>
+<translation id="471759387343966120">‏درصورت ادامه دادن، با <ph name="BEGIN_TOS_LINK" />شرایط خدمات<ph name="END_TOS_LINK" /> و <ph name="BEGIN_PRIVACY_LINK" />خط‌مشی رازداری<ph name="END_PRIVACY_LINK" /> موافقت می‌کنید.\nبرای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_UMA_LINK" />مدیریت<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">پیشنهاد برای ترجمه</translation>
 <translation id="4720023427747327413">بازکردن در <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">‏به بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />در نظرسنجی شرکت کنید<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="6277722725779679269">«پیگیری قیمت» به‌روزرسانی نشد</translation>
 <translation id="6278428485366576908">طرح زمینه</translation>
+<translation id="6292420053234093573">‏با استفاده کردن از Chrome، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
 <translation id="6294610283659775533">‏برگه‌ها را می‌توانید بین دستگاه‌هایی که با یک «حساب Google» به سیستم وارد شدند ارسال کنید.</translation>
 <translation id="6297765934698848803">سازمانی که دستگاهتان را مدیریت می‌کند دوربین را خاموش کرده است.</translation>
 <translation id="6301525844455696527">به فهرست خواندن سر بزنید</translation>
@@ -1171,6 +1174,7 @@
 <translation id="7663313374500954251">این مرورگر را <ph name="PARENT_NAME" /> مدیریت می‌کند.</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
 <translation id="766587987807204883">مقاله‌ها اینجا نشان داده می‌شوند و حتی درحالت آفلاین هم می‌توانید آن‌ها را بخوانید.</translation>
+<translation id="768232549260819724">‏GIF کپی شد</translation>
 <translation id="7682724950699840886">نکات زیر را امتحان کنید: مطمئن شوید که در دستگاهتان فضای کافی وجود داشته باشد، سعی کنید دوباره صادر کنید.</translation>
 <translation id="768618399695552958">‏برخی‌از صفحاتی که بازدید می‌کنید پیش‌بارگیری شده‌اند وقتی صفحات از سایت Google پیوند داده شده باشند، ممکن است ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
 <translation id="7698359219371678927">ایجاد ایمیل در <ph name="APP_NAME" /></translation>
@@ -1349,6 +1353,7 @@
 <translation id="8570677896027847510">نمی‌توان این فایل را به‌طور ایمن بارگیری کرد</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
 <translation id="8572344201470131220">تصویر کپی شد</translation>
+<translation id="8580884231102452214">‏کپی کردن GIF</translation>
 <translation id="8583805026567836021">پاک‌سازی داده‌های حساب</translation>
 <translation id="859046281437143747">قیمت را ازطریق دکمه «گزینه‌های بیشتر» پیگیری کنید</translation>
 <translation id="860043288473659153">نام صاحب کارت</translation>

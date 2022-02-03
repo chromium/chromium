@@ -831,6 +831,30 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       Questo criterio aziendale è disattivato per impostazione predefinita.</translation>
 <translation id="1949584741547056205">Risposte rapide</translation>
+<translation id="1951288262199783797">Puoi attivare questo criterio per creare un dizionario di estensioni di tipi di file con un elenco di domini corrispondente che verrà esentato dagli avvisi relativi al download basati sulle estensioni dei tipi di file. Questo criterio consente agli amministratori aziendali di bloccare gli avvisi relativi al download basati sulle estensioni dei tipi di file per i file associati a un dominio presente nell'elenco. Ad esempio, se l'estensione "jnlp" viene associata a "sitoweb1.com", gli utenti non vedrebbero un avviso se scaricassero file "jnlp" da "sitoweb1.com", ma vedrebbero un avviso relativo al download se scaricassero file "jnlp" da "sitoweb2.com".
+
+      I file con estensioni dei tipi di file specificate per i domini identificati da questo criterio saranno comunque soggetti ad avvisi relativi alla sicurezza non basati sulle estensioni dei tipi di file, ad esempio gli avvisi relativi al download di contenuto misto e gli avvisi di Navigazione sicura.
+
+      Se disattivi questo criterio o non lo configuri, all'utente verranno mostrati avvisi per i tipi di file che attivano gli avvisi relativi al download basati sulle estensioni.
+
+      Se attivi questo criterio:
+
+      * Il pattern URL deve essere nel formato indicato all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+      * L'estensione del tipo di file inserita deve essere in formato ASCII minuscolo. Il separatore iniziale non deve essere incluso nel nome dell'estensione del tipo di file, quindi usa "jnlp" anziché ".jnlp".
+
+      Esempio:
+
+      Il valore di esempio che segue impedirebbe gli avvisi relativi al download basati sulle estensioni dei tipi di file swf, exe e jnlp per i domini *.example.com. All'utente verrà mostrato un avviso relativo al download basato sulle estensioni dei tipi di file su qualsiasi altro dominio per i file exe e jnlp, ma non per i file swf.
+
+      [
+        { "file_extension": "jnlp", "domains": ["example.com"] },
+        { "file_extension": "exe", "domains": ["example.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+      Tieni presente che, anche se nell'esempio precedente viene mostrata l'esclusione degli avvisi relativi al download basati sulle estensioni dei tipi di file per i file "swf" per tutti i domini, per motivi di sicurezza è sconsigliato applicare l'esclusione di tali avvisi per tutti i domini per le estensioni di tipi di file pericolosi. L'esclusione viene mostrata nell'esempio solamente per mostrare che è possibile farlo.
+
+      Se questo criterio viene attivato insieme al criterio <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> e DownloadRestrictions viene impostato in modo da bloccare i tipi di file pericolosi, i blocchi dei download stabiliti da DownloadRestrictions hanno la precedenza. Ad esempio, se questo criterio viene impostato in modo da consentire i download di file con estensione "exe" da "sitoweb1.com" e il criterio DownloadRestrictions viene impostato in modo da bloccare i download dannosi e i tipi di file pericolosi, i download dei file con estensione "exe" verranno comunque bloccati in tutti i domini. Se il criterio DownloadRestrictions non viene impostato in modo da bloccare i tipi di file pericolosi, i tipi di file specificati in questo criterio saranno esentati dagli avvisi relativi al download basati sulle estensioni dei tipi di file nei domini specificati. Scopri di più su DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).</translation>
 <translation id="1960416154405676350">Attiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Il criterio viene applicato soltanto alle sessioni Ospite gestite.
       La configurazione del criterio consente di specificare un elenco di ID delle estensioni esenti dalla procedura di pulizia della sessione Ospite gestita limitata (vedi <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
@@ -1756,6 +1780,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene impostato su falso, <ph name="BOREALIS_NAME" /> non sarà disponibile. In caso contrario (se il criterio non viene configurato o se viene impostato su vero) <ph name="BOREALIS_NAME" /> sarà disponibile soltanto se non viene disattivato da altri criteri o impostazioni.</translation>
 <translation id="2964373560810620158">Impedisci agli utenti di usare il browser <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Consenti ai siti di utilizzare il criterio SharedArrayBuffers</translation>
+<translation id="2969568582351417848">Disattiva gli avvisi relativi al download basati sulle estensioni dei tipi di file per tipi di file specifici sui domini</translation>
 <translation id="2969797921412053304">Questo criterio consente di configurare gli URL a cui verrà concesso l'accesso per usare l'attestazione remota dell'identità del dispositivo durante il flusso SAML nella schermata di accesso.
 
       Nello specifico, se un URL corrisponde a uno dei pattern specificati tramite questo criterio, l'URL potrà ricevere un'intestazione HTTP contenente una risposta a una richiesta di attestazione remota, che attesta l'identità e lo stato del dispositivo.
@@ -2405,13 +2430,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se disattivi questa impostazione, gli utenti non potranno accedere alla funzionalità di compilazione automatica.
 
       Se la attivi o se non la configuri, la funzionalità di compilazione automatica potrà essere gestita dagli utenti, che potranno quindi configurare i profili di compilazione automatica e attivare o disattivare a propria scelta questa funzionalità.</translation>
-<translation id="3731968520685217674">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non impostarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
-
-      Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono modificarlo.
-
-      Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o quella dei cookie della sessione.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3733014427925403568">Giorno della settimana dell'intervallo.</translation>
 <translation id="3736879847913515635">Attiva la funzione Aggiungi persona in Gestione utenti</translation>
 <translation id="3749259744154402564">Opzione non supportata</translation>
@@ -2565,6 +2583,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Consente di elencare le estensioni che vengono installate automaticamente per gli utenti Demo di dispositivi in modalità retail. Queste estensioni vengono salvate sul dispositivo e possono essere installate offline, dopo l'installazione.
 
       Ogni voce dell'elenco contiene un dizionario che deve includere l'ID dell'estensione nel campo "extension-id" e il relativo URL di aggiornamento nel campo "update-url".</translation>
+<translation id="3869180930654347954">Disattiva First-Party Sets per tutti gli utenti interessati</translation>
 <translation id="3870059789954671543">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso.
 
           Questa funzione consente di evidenziare l'elemento attivo impostato tramite tastiera.
@@ -2758,6 +2777,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Se il criterio viene disattivato o se non viene configurato, il servizio reindirizza gli utenti al sito https://myaccount.google.com per la modifica della propria password.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="4115501011761259824">Attiva First-Party Sets per tutti gli utenti interessati</translation>
 <translation id="4121350739760194865">Impedisci la visualizzazione delle promozioni di applicazioni nella pagina Nuova scheda</translation>
 <translation id="4122473079291425973">La pagina Nuova scheda mostra le schede se sono disponibili contenuti, ma consente all'utente di modificare l'impostazione</translation>
 <translation id="4122565688998751716">Questo criterio è deprecato. Utilizza il criterio "<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />".
@@ -2897,6 +2917,14 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il dispositivo non è gestito o se è presente un solo utente, il criterio viene ignorato e la notifica viene sempre visualizzata.
 
       Se sono presenti diversi account utente su un dispositivo gestito, la notifica viene visualizzata soltanto se il criterio è stato attivato.</translation>
+<translation id="4293593564662654474">Questo criterio consente di disattivare la funzionalità First-Party Sets.
+
+                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità First-Party Sets viene attivata.
+
+                  Se questo criterio viene impostato su Disattivato, la funzionalità First-Party Sets viene disattivata.
+
+                  Lo stato della funzionalità First-Party Sets stabilisce se Chrome recupera o meno l'elenco di First-Party Sets.
+                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate a First-Party Sets (ad esempio l'attributo per i cookie SameParty).</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
 <translation id="4314538398999793073">Disattiva ricerca CNAME durante l'autenticazione Kerberos</translation>
@@ -3027,6 +3055,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Concedi automaticamente ai siti l'autorizzazione a connettersi a tutte le porte seriali</translation>
 <translation id="450080746522343150">Blocca tutti i download.</translation>
+<translation id="4508728400492074981">Controlla i criteri relativi alla funzionalità First-Party Sets.</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
 <translation id="4512407512989846472">Consente di impedire la copia negli appunti per URL specifici</translation>
 <translation id="4513691822411041977">Non viene forzato l'uso di SafeSearch nella Ricerca Google o nella Modalità con restrizioni di YouTube</translation>
@@ -3143,6 +3172,16 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4624417808625504735">Impedisci a JavaScript di utilizzare JIT su questi siti</translation>
 <translation id="4625915093043961294">Configura la whitelist per l'installazione delle estensioni</translation>
+<translation id="4631165564645497047">Se questa impostazione viene attivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati integrato.
+      Se viene disattivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati precedente fornito dalla piattaforma.
+      Se non viene configurata, potrebbe essere utilizzato lo strumento di verifica dei certificati integrato o quello precedente.
+
+      È prevista la rimozione di questo criterio nella versione 81 di <ph name="PRODUCT_OS_NAME" />, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente su <ph name="PRODUCT_OS_NAME" />.
+
+      È prevista la rimozione di questo criterio nella versione 83 di <ph name="PRODUCT_NAME" /> per Linux, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente su Linux.
+
+      È prevista la rimozione di questo criterio nella versione 104 di <ph name="PRODUCT_NAME" /> per Mac OS X, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente su Mac OS X.
+      </translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
 <translation id="4632566332417930481">Non consentire l'utilizzo degli Strumenti per sviluppatori per le estensioni installate in base a norme aziendali; consenti l'utilizzo degli Strumenti per sviluppatori in altri contesti</translation>
 <translation id="4635284822166984665">L'ora in cui iniziare la ricarica del dispositivo, nel fuso orario locale del dispositivo.</translation>
@@ -3460,6 +3499,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5075190314377370852">Se il criterio è impostato su True, <ph name="PRODUCT_NAME" /> esegue sempre il controllo delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente. Se <ph name="PRODUCT_NAME" /> non riesce a recuperare informazioni sullo stato della revoca, tali certificati vengono considerati revocati da <ph name="PRODUCT_NAME" /> (hard-fail).
 
       Se il criterio è impostato su False o se non viene configurato, <ph name="PRODUCT_NAME" /> utilizza le impostazioni di controllo delle revoche online esistenti.</translation>
+<translation id="5076953589932162038">Impostazioni First-Party Sets</translation>
 <translation id="5078623750797048009">Attiva annotazioni PDF</translation>
 <translation id="5081204761483900654">Sessioni Ospite gestite limitate</translation>
 <translation id="5082296146261894974">Consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
@@ -4498,6 +4538,16 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="631183702829488873">Se attivata, questa funzionalità mostra un pulsante nella schermata di accesso e di blocco per la visualizzazione della password.
           È rappresentata con un'icona a forma di occhio nel campo della password. Il pulsante non è presente quando la funzionalità è disattivata.
       </translation>
+<translation id="6313108604615108577">Questo criterio consente di stabilire se bloccare o meno la versione principale della stringa dello user agent a 99.
+
+      L'intestazione della richiesta dello user agent consente ai siti web di identificare l'applicazione, il sistema operativo, il fornitore e/o la versione dello user agent richiedente.
+      Alcuni siti web fanno supposizioni in merito al tipo di formattazione dell'intestazione e potrebbero riscontrare problemi con le stringhe di versione che includono tre cifre nella posizione principale (ad esempio 100.0.0.0).
+
+      Se il criterio viene impostato su "Predefinito" o se non viene configurato, per la versione principale della stringa dello user agent verranno usate per impostazione predefinita le impostazioni del browser.
+      Se viene impostato su "ForceDisabled", la stringa dello user agent non bloccherà la versione principale.
+      Se viene impostato su "ForceEnabled", la stringa dello user agent segnalerà sempre la versione principale 99 e includerà la versione principale del browser nella posizione secondaria. Ad esempio, la versione del browser 101.0.0.0 invierebbe un'intestazione della richiesta dello user agent che segnala la versione 99.101.0.0.
+
+      Questo criterio è temporaneo e verrà ritirato in futuro. Tieni presente che se questo criterio e il criterio <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> sono entrambi attivi, la stringa della versione dello user agent sarà sempre 99.0.0.0.</translation>
 <translation id="6313170479290171718">Questo criterio è deprecato. Utilizza il criterio <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Se il criterio è impostato su True, la tastiera sullo schermo è attivata all'accesso. Se il criterio è impostato su False, la tastiera sullo schermo è disattivata all'accesso.
@@ -4940,6 +4990,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       chrome://flags e qualsiasi altro metodo per attivare e disattivare le funzionalità del browser continueranno a comportarsi come previsto a prescindere dall'attivazione o meno di questo criterio.</translation>
 <translation id="6794083666143216172">Consenti alle origini di richiedere gli attributi dei dispositivi</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
+<translation id="6796215185873669533">Usa per impostazione predefinita le impostazioni del browser per la versione della stringa dello user agent.</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
 <translation id="68031099365512050">Viene segnalato lo stato dell'audio</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
@@ -5261,6 +5312,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="7070525176564511548">Richiedi l'inserimento della password ogni settimana (168 ore)</translation>
 <translation id="7072208053150563108">Frequenza di modifica della password del computer</translation>
 <translation id="7072567600438630966">Consenti l'attivazione di Phone Hub</translation>
+<translation id="7074437930865599190">Blocca la versione principale della stringa dello user agent a 99</translation>
 <translation id="7079519252486108041">Blocca popup su questi siti</translation>
 <translation id="707988220162760379">Apri sempre i file PDF utilizzando un visualizzatore PDF esterno</translation>
 <translation id="7081784525008938771">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di video. In questo modo non viene raggiunto il ritardo di inattività, oscuramento dello schermo, spegnimento dello schermo e blocco dello schermo e non vengono compiute le azioni corrispondenti.
@@ -5968,6 +6020,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Per impostazione predefinita, un'estensione o un'app per Android non può utilizzare una chiave destinata all'uso aziendale, il che equivale a impostare il criterio allowCorporateKeyUsage su Falso per tale estensione. Solo se il criterio allowCorporateKeyUsage viene impostato su Vero per un'estensione o un'app per Android può utilizzare qualsiasi chiave della piattaforma contrassegnata per uso aziendale per firmare dati arbitrari. L'autorizzazione viene concessa solo se l'estensione o l'app per Android viene considerata protetta dall'accesso alla chiave di potenziali utenti malintenzionati.</translation>
 <translation id="7933141401888114454">Attivazione della creazione di utenti controllati</translation>
 <translation id="793473937901685727">Imposta la disponibilità dei certificati per le app ARC</translation>
+<translation id="7936302526928951356">La stringa dello user agent non bloccherà la versione principale.</translation>
 <translation id="7937766917976512374">Consenti o nega acquisizione video</translation>
 <translation id="7941975817681987555">Non prevedere le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="7946350455013548764">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso ai dispositivi HID. Se il criterio viene impostato su 2, viene negato l'accesso ai dispositivi HID.
@@ -6111,6 +6164,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="8133152694354699657">Se il criterio viene impostato su True o non viene impostato, la funzionalità Tocca per cercare sarà a disposizione degli utenti, che potranno scegliere se attivarla o disattivarla.
 
       Se il criterio viene impostato su False, la funzionalità Tocca per cercare verrà disattivata completamente.</translation>
+<translation id="8136345780578030573">Attiva First-Party Sets.</translation>
 <translation id="8136906469922284163">Se il criterio viene impostato su Vero, le pagine possono mostrare popup durante l'unload.
 
       Se il criterio viene impostato su Falso o se non viene configurato, le pagine non possono mostrare popup durante l'unload.
@@ -6518,9 +6572,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8528951285051082869">Non consentire ad alcuna app web di accedere a determinati tipi di file tramite l'API File Handling</translation>
 <translation id="8533145294731270627">Blocca download dannosi e tipi di file pericolosi.</translation>
-<translation id="8537051350735478658">Se il criterio è impostato su True, la funzionalità Suggerimenti per le ricerche viene attivata nella barra degli indirizzi di <ph name="PRODUCT_NAME" />. Se il criterio è impostato su False, tale funzionalità viene disattivata.
-
-      Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, la funzionalità Suggerimenti per le ricerche è attiva all'inizio, ma gli utenti possono disattivarla in qualsiasi momento.</translation>
 <translation id="8543103455510904459">Consente di impostare un elenco di pattern URL che specificano i siti non autorizzati a eseguire JavaScript con il compilatore JIT (Just In Time) attivato.
 
           Se JIT di JavaScript viene disattivato, <ph name="PRODUCT_NAME" /> potrebbe visualizzare i contenuti web più lentamente e disattivare inoltre alcune parti di JavaScript, incluso WebAssembly. Se JIT di JavaScript viene disattivato, <ph name="PRODUCT_NAME" /> potrebbe essere in grado di visualizzare contenuti web in una configurazione più sicura.
@@ -6774,6 +6825,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Ogni elemento nell'elenco del criterio è una stringa contenente un ID estensione e, facoltativamente, un URL "di aggiornamento" separati da punto e virgola (;). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo chrome://extensions quando è attiva la modalità sviluppatore. Se specificato, l'URL "di aggiornamento" deve indirizzare a un documento XML manifest di aggiornamento (https://developer.chrome.com/extensions/autoupdate). Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store. L'URL "di aggiornamento" impostato in questo criterio viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento nel file manifest dell'estensione.
 
        Nota: questo criterio non viene applicato alla Modalità di navigazione in incognito. Leggi ulteriori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
+<translation id="8827275450034266143">La stringa dello user agent bloccherà la versione principale a 99 e includerà la versione principale del browser nella posizione secondaria.</translation>
 <translation id="8827366480126575426">Il protocollo del gestore di protocollo.</translation>
 <translation id="8827417642396462482">Sono consentiti tipi di query DNS aggiuntivi</translation>
 <translation id="8831911834413504983">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono eseguire JavaScript.

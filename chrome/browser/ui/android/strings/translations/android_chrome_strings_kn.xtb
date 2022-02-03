@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ಆಡಿಯೋ ಫೈಲ್}one{# ಆಡಿಯೋ ಫೈಲ್‌ಗಳು}other{# ಆಡಿಯೋ ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="265156376773362237">ಪ್ರಮಾಣಿತ ಮುಂಚಿತ ಲೋಡ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="2656405586795711023">ವೆಬ್‌ ಆ್ಯಪ್‌ಗಳು</translation>
+<translation id="2689830683995595741">Chrome ಅನ್ನು ಬಳಸುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />Family Link ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುವ Google ಖಾತೆಗಳಿಗಾಗಿ ಗೌಪ್ಯತೆ ಸೂಚನೆ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="2702516483241149200">ಹೊಸ ವೈಶಿಷ್ಟ್ಯ: ಈ ಪಠ್ಯಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಆಗುವ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="2704606927547763573">ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2707726405694321444">ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
@@ -624,6 +625,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಪಠ್ಯವನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="4699172675775169585">ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು</translation>
+<translation id="471759387343966120">ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_TOS_LINK" />ಸೇವಾ ನಿಯಮಗಳು<ph name="END_TOS_LINK" /> ಮತ್ತು <ph name="BEGIN_PRIVACY_LINK" />ಗೌಪ್ಯತೆ\u00A0ನೀತಿ<ph name="END_PRIVACY_LINK" />ಗೆ ಸಮ್ಮತಿಸುತ್ತೀರಿ.\nಆ್ಯಪ್ ಅನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Chrome ಬಳಕೆ ಮತ್ತು ಕ್ರ್ಯಾಶ್ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. <ph name="BEGIN_UMA_LINK" />ನಿರ್ವಹಿಸಿ<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">ಅನುವಾದಿಸಲು ಅವಕಾಶಿಸಿ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4720982865791209136">Chrome ಸುಧಾರಣೆಗೆ ಸಹಾಯ ಮಾಡಿ. <ph name="BEGIN_LINK" />ಸಮೀಕ್ಷೆಯಲ್ಲಿ ಭಾಗವಹಿಸಿ<ph name="END_LINK" /></translation>
@@ -906,6 +908,7 @@
 <translation id="6277522088822131679">ಪುಟವನ್ನು ಮುದ್ರಿಸುವಲ್ಲಿ ಸಮಸ್ಯೆ ಕಂಡುಬಂದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6277722725779679269">ಟ್ರ್ಯಾಕ್ ಬೆಲೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="6278428485366576908">ಥೀಮ್</translation>
+<translation id="6292420053234093573">Chrome ಅನ್ನು ಬಳಸುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
 <translation id="6294610283659775533">ಒಂದೇ Google ಖಾತೆಯನ್ನು ಬಳಸಿಕೊಂಡು ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಸಾಧನಗಳ ನಡುವೆ ನೀವು ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕಳುಹಿಸಬಹುದು</translation>
 <translation id="6297765934698848803">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನಿರ್ವಹಿಸುವ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಆಫ್ ಮಾಡಿದೆ.</translation>
 <translation id="6301525844455696527">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ನೋಡಿ</translation>
@@ -1170,6 +1173,7 @@
 <translation id="7663313374500954251">ಈ ಬ್ರೌಸರ್ ಅನ್ನು <ph name="PARENT_NAME" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="7665369617277396874">ಖಾತೆಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="766587987807204883">ಲೇಖನಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ, ಅವುಗಳನ್ನು ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗಲೂ ಸಹ ಓದಬಹುದಾಗಿದೆ</translation>
+<translation id="768232549260819724">GIF ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7682724950699840886">ಕೆಳಗಿನ ಸಲಹೆಗಳನ್ನು ಬಳಸಿ ನೋಡಿ: ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶ ಇರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಂಡು, ಪುನಃ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="768618399695552958">ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳು ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಆಗುತ್ತವೆ. Google ಸೈಟ್‌ನಿಂದ ಲಿಂಕ್ ಮಾಡಿದಾಗ, ಪುಟಗಳನ್ನು Google ಸರ್ವರ್‌ಗಳ ಮೂಲಕ ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ನಲ್ಲಿ ಇಮೇಲ್ ರಚಿಸಿ</translation>
@@ -1348,6 +1352,7 @@
 <translation id="8570677896027847510">ಫೈಲ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="8572344201470131220">ಚಿತ್ರವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="8580884231102452214">GIF ನಕಲಿಸಿ</translation>
 <translation id="8583805026567836021">ಖಾತೆಯ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="859046281437143747">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳ ಬಟನ್‌ನಿಂದ ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="860043288473659153">ಕಾರ್ಡ್‌ಹೋಲ್ಡರ್ ಹೆಸರು</translation>

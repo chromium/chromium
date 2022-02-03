@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}other{Pecharase a túa sesión automaticamente en # segundos.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}}</translation>
 <translation id="1193927020065025187">É posible que este sitio estea tentando enganarte para que permitas notificacións intrusivas</translation>
+<translation id="1195210374336998651">Ir á configuración da aplicación</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1195558154361252544">Bloquéanse automaticamente as notificacións para todos os sitios, excepto para os que permitas</translation>
 <translation id="1197088940767939838">Laranxa</translation>
@@ -767,6 +768,7 @@
 <translation id="176587472219019965">&amp;Nova ventá</translation>
 <translation id="1766575458646819543">Saíches do modo de pantalla completa</translation>
 <translation id="1766957085594317166">Garda contrasinais de forma segura na túa Conta de Google e non volvas escribilos nunca</translation>
+<translation id="1767043563165955993">Usar con aplicacións Android</translation>
 <translation id="1768212860412467516">Envía comentarios sobre este experimento: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Produciuse un problema ao contactar co servidor de inicio de sesión. Comproba a conexión de rede, verifica o dominio e, despois, volve tentalo.</translation>
 <translation id="1769104665586091481">Abrir a ligazón nunha &amp;ventá nova</translation>
@@ -1102,6 +1104,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2113479184312716848">Abrir &amp;ficheiro...</translation>
 <translation id="2113921862428609753">Acceso a información de autoridades</translation>
 <translation id="2114326799768592691">Volver cargar &amp;marco</translation>
+<translation id="2114413269775311385">Usar esta conta con aplicacións Android. Podes controlar os permisos correspondentes ás aplicacións Android en <ph name="LINK_BEGIN" />Configuración das aplicacións<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Non se inseriu ningunha tarxeta SIM</translation>
 <translation id="2116619964159595185">Os sitios adoitan conectarse a dispositivos Bluetooth para ofrecerche determinadas funcións (por exemplo, configurar ou sincronizar unha baliza de baixo consumo, un dispositivo de seguimento da saúde ou da forma física, ou unha lámpada de luz intelixente)</translation>
@@ -1890,6 +1893,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="287205682142673348">Encamiñamento de portos</translation>
 <translation id="287286579981869940">Engadir a <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Pechar</translation>
+<translation id="2873995907777332853">Mostrar detalles sobre o bloqueo de todas as cookies</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875698561019555027">(Páxinas de erro de Chrome)</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
@@ -2193,6 +2197,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Gardouse o contrasinal</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
+<translation id="3194786596445804250">Mostrar detalles sobre o bloqueo de cookies de terceiros</translation>
 <translation id="3197453258332670132">Mostra información relacionada coa selección de texto ao mantela premida ou ao facer clic co botón dereito sobre ela</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">No teu carro da compra</translation>
@@ -2560,6 +2565,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3592260987370335752">&amp;Máis información</translation>
 <translation id="3593152357631900254">Activar modo de pinyin difuso</translation>
 <translation id="3593965109698325041">Restricións nos nomes de certificados</translation>
+<translation id="3596012367874587041">Axustes da aplicación</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="3599221874935822507">Elevada</translation>
 <translation id="3599863153486145794">Borra o historial de todos os dispositivos que teñen a sesión iniciada. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2937,6 +2943,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Proba cun nome máis curto</translation>
+<translation id="3947643756376959257">Mete o código de acceso que se mostra no Chromecast ou na televisión.</translation>
 <translation id="3948027458879361203">Cambiar nome do host</translation>
 <translation id="3948116654032448504">&amp;Buscar imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar os ficheiros dos seguintes cartafoles</translation>
@@ -3178,12 +3185,14 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4210048056321123003">Descargando máquina virtual</translation>
 <translation id="421182450098841253">&amp;Mostrar a barra de marcadores</translation>
 <translation id="4211851069413100178">Enviar datos de uso e de diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta <ph name="BEGIN_LINK1" />opción de configuración<ph name="END_LINK1" /> contrólaa o propietario. O cal pode optar por enviar datos de diagnóstico e uso deste dispositivo a Google. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa conta de Google. <ph name="BEGIN_LINK2" />Máis información<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Deixar de usar con aplicacións Android</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="42137655013211669">O servidor non permitiu acceder a este recurso.</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Produciuse un erro durante a activación.</translation>
 <translation id="4225397296022057997">En todos os sitios</translation>
+<translation id="4227605727325220318">Engadir teléfono Android novo</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensión non está permitida}other{Algunhas extensións non están permitidas}}</translation>
 <translation id="4231095370974836764">Instala aplicacións e xogos de Google Play no dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
@@ -4714,6 +4723,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5862109781435984885">Mostrar ferramentas do lapis óptico no estante</translation>
 <translation id="5862319196656206789">Configurar dispositivos conectados</translation>
 <translation id="5863445608433396414">Activar funcións de depuración</translation>
+<translation id="5864147196375746035">Emitir o contido nun dispositivo xestionado</translation>
 <translation id="5864195618110239517">Usar conexión de pago por consumo</translation>
 <translation id="5864754048328252126">Acción de inactividade durante a carga</translation>
 <translation id="5865508026715185451">A aplicación <ph name="APP_NAME" /> porase en pausa en breve</translation>
@@ -5283,6 +5293,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455894534188563617">&amp;Novo cartafol</translation>
 <translation id="645705751491738698">Continuar bloqueando JavaScript</translation>
+<translation id="6458347417133445570">Mostrar detalles sobre a concesión de permiso para todas as cookies</translation>
 <translation id="6458701200018867744">Produciuse un erro ao cargar o rexistro (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilizar selección para buscar</translation>
 <translation id="6459799433792303855">A ventá activa moveuse a outra pantalla.</translation>
@@ -5893,6 +5904,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7086672505018440886">Incluír ficheiros de rexistro de Chrome no arquivo.</translation>
 <translation id="7088434364990739311">Erro ao iniciar a comprobación da actualización (código de erro <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">O administrador cambiou o estado do dispositivo para que non se poida utilizar. Para que se poida rexistrar, o administrador debe colocar o dispositivo en estado pendente.</translation>
+<translation id="7090160970140261931">Podes engadir contas adicionais ao teu dispositivo (<ph name="DEVICE_TYPE" />) para utilizalas en sitios web e aplicacións Android. Tamén podes controlar cales das contas se utilizan con aplicacións Android.</translation>
 <translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093416310351037609">Por motivos de seguranza de datos, a túa organización esixe que todas as descargas aptas se garden na conta de <ph name="WEB_DRIVE" /> da túa organización.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6712,6 +6724,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Engade as palabras que queiras que omita o corrector ortográfico</translation>
+<translation id="7922935920104868876">Mostrar detalles sobre o bloqueo de cookies de terceiros no modo de incógnito</translation>
 <translation id="7924358170328001543">Produciuse un erro co encamiñamento do porto</translation>
 <translation id="7925108652071887026">Autocompletar datos</translation>
 <translation id="792514962475806987">Nivel de zoom da lupa ancorada:</translation>
@@ -6875,6 +6888,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8076835018653442223">O administrador desactivou o acceso aos ficheiros locais do teu dispositivo</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Contas dispoñibles para utilizar coas aplicacións Android</translation>
 <translation id="8081989000209387414">Queres desactivar a depuración de ADB?</translation>
 <translation id="8082106343289440791">Queres sincronizar o dispositivo co teclado (<ph name="DEVICE_NAME" />)?</translation>
 <translation id="8082390128630131497">A desactivación da depuración de ADB restablecerá a configuración de fábrica deste <ph name="DEVICE_TYPE" />. Eliminaranse todas as contas de usuario e os datos locais.</translation>
@@ -6949,6 +6963,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8147900440966275470"><ph name="NUM" /> pestana atopada</translation>
 <translation id="8148760431881541277">Limitar inicio de sesión</translation>
 <translation id="8149564499626272569">Verificar mediante o teléfono cun cable USB</translation>
+<translation id="815114315010033526">Utilizar código QR</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Non hai ningún ficheiro</translation>
 <translation id="8154912474061769055">As funcións de moitos sitios poden deixar de funcionar</translation>
@@ -6974,6 +6989,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8176332201990304395">Rosa e branco</translation>
 <translation id="8177196903785554304">Detalles da rede</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
+<translation id="8179188928355984576">Non se utiliza con aplicacións Android</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" pode ler e eliminar ficheiros de imaxes, vídeo e son nas localizacións seleccionadas.</translation>
 <translation id="8181215761849004992">O dispositivo non se puido vincular ao dominio. Comproba a túa conta para ver se tes privilexios suficientes para engadir dispositivos.</translation>
@@ -7133,6 +7149,7 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="8342861492835240085">Seleccionar unha colección</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="834785183489258869">Co modo de incógnito activado, os sitios web non poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios). As funcións dalgúns sitios poden deixar de funcionar.</translation>
+<translation id="8349499562373871073">Podes seleccionar unha conta existente para usala coas aplicacións Android ou engadir unha nova Conta de Google. Unha vez que inicies sesión nunha aplicación Android, a túa conta poderá utilizarse con outras destas aplicacións. Podes cambiar o acceso ás aplicacións Android en <ph name="LINK_BEGIN" />Configuración &gt; Contas<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Ferramentas do lapis óptico na base</translation>
 <translation id="8351316842353540018">Mostrar sempre as opcións de accesibilidade</translation>
 <translation id="8351419472474436977">Esta extensión asumiu o control da túa configuración de proxy, o que significa que pode cambiar, anular ou espiar todo o que fagas en liña. Se non estás seguro de por que se produciu este cambio, é probable que non che interese conservalo.</translation>

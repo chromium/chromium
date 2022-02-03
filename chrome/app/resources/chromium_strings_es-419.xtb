@@ -218,6 +218,7 @@
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido. Chromium no puede recuperar tu configuración.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
+<translation id="7342713658732509484">Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios web o apps accedan a la información de la cuenta, usa el Modo de Invitado en el navegador Chromium. También puedes administrar tus Cuentas de Google en <ph name="LINK_2_BEGIN" />Configuración<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Aquí puedes encontrar tus páginas web, favoritos y otros contenidos de Chromium.</translation>
 <translation id="7349591376906416160">El administrador del sistema configuró Chromium de manera que se abriera <ph name="ALTERNATIVE_BROWSER_NAME" /> para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">Con los perfiles de Chromium, puedes separar todo lo que tienes en Chromium. De esta manera, es más fácil separar el trabajo del entretenimiento.</translation>

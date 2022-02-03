@@ -164,12 +164,12 @@
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
-<translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
 <translation id="3565064564551103223">Adresses IP autorisées</translation>
+<translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3583278742022654445">Faible puissance du signal. Essayez de vous rapprocher de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
@@ -448,7 +448,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
-<translation id="7240035910874241640">Tous les périphériques sont à jour</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
@@ -547,7 +546,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
-<translation id="8520963233738002436">Votre <ph name="DEVICE_NAME" /> est à jour</translation>
 <translation id="8521021929829989041">Utiliser comme appareil personnel</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>
@@ -589,7 +587,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8970109610781093811">Exécuter de nouveau</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Numériser}=1{Numériser la page {NUMBER_OF_PAGES}}one{Numériser la page {NUMBER_OF_PAGES}}other{Numériser les pages {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Installation en cours… <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>

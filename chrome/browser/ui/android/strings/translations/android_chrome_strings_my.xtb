@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{အသံဖိုင် # ဖိုင်}other{အသံဖိုင် # ဖိုင်}}</translation>
 <translation id="265156376773362237">ပုံမှန် ကြိုဖွင့်မှု</translation>
 <translation id="2656405586795711023">ဝဘ်အက်ပ်များ</translation>
+<translation id="2689830683995595741">Chrome ကို အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုဆိုင်ရာ စည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုးဝန်ဆောင်မှု စည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />Family Link ဖြင့် ကြီးကြပ်ထားသည့် Google Account များအတွက် ပုဂ္ဂိုလ်ရေးဆိုင်ရာ ကြေညာချက်<ph name="END_LINK3" /> လည်း အကျုံးဝင်သည်။</translation>
 <translation id="2702516483241149200">အသစ်- ဤစာသားသို့ လှိမ့်သွားသည့် လင့်ခ်ကို မျှဝေနိုင်သည်</translation>
 <translation id="2704606927547763573">ကူးယူပြီးပါပြီ</translation>
 <translation id="2707726405694321444">စာမျက်နှာကို ဆန်းသစ်ယူရန်</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="4696983787092045100">'သင့်ကိရိယာများ' သို့ စာတိုပို့ရန်</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
+<translation id="471759387343966120">ရှေ့ဆက်ခြင်းအားဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်း<ph name="END_TOS_LINK" /> နှင့် <ph name="BEGIN_PRIVACY_LINK" />ပုဂ္ဂိုလ်ရေးဆိုင်ရာ\u00A0မူဝါဒ<ph name="END_PRIVACY_LINK" /> တို့ကို သဘောတူရာ ရောက်ပါသည်။\nအက်ပ်ပိုကောင်းလာစေရန် Chrome သည်အသုံးပြုမှုနှင့် ရပ်တန့်မှုဒေတာများကို Google သို့ပို့ပါသည်။ <ph name="BEGIN_UMA_LINK" />စီမံရန်<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="4720982865791209136">Chrome ပိုမိုကောင်းမွန်လာစေရန် ကူညီပါ။ <ph name="BEGIN_LINK" />စစ်တမ်းဖြေဆိုပါ<ph name="END_LINK" /></translation>
@@ -906,6 +908,7 @@
 <translation id="6277522088822131679">စာမျက်နှာ ပရင်ထုတ်ရာတွင် ပြဿနာရှိသည်။ ကျေးဇူးပြု၍ နောက်မှ ကြိုးစားပါ။</translation>
 <translation id="6277722725779679269">‘ဈေးနှုန်းစောင့်ကြည့်ခြင်း’ ကို အပ်ဒိတ်လုပ်၍မရပါ</translation>
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
+<translation id="6292420053234093573">Chrome ကို အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုဆိုင်ရာ စည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုးဝန်ဆောင်မှု စည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="6294610283659775533">တူညီသည့် Google Account ဖြင့် လက်မှတ်ထိုး ဝင်ထားသည့်စက်များအကြား တဘ်များပို့နိုင်သည်</translation>
 <translation id="6297765934698848803">သင့်စက်ကိုစီမံခန့်ခွဲသည့် အဖွဲ့အစည်းက ကင်မရာကို ပိတ်ထားသည်။</translation>
 <translation id="6301525844455696527">သင်၏ဖတ်ရန်စာရင်းကို အမီလိုက်ကြည့်ခြင်း</translation>
@@ -1170,6 +1173,7 @@
 <translation id="7663313374500954251">ဤဘရောင်ဇာကို <ph name="PARENT_NAME" /> ကစီမံသည်။</translation>
 <translation id="7665369617277396874">အကောင့် ထည့်ရန်</translation>
 <translation id="766587987807204883">သင်အော့ဖ်လိုင်းဖြစ်နေသော်လည်း ဤနေရာရှိ ဆောင်းပါးများကို ဖတ်နိုင်သည်</translation>
+<translation id="768232549260819724">GIF ကူးယူပြီးပါပြီ</translation>
 <translation id="7682724950699840886">အောက်ပါအကြံပြုချက်များကို စမ်းကြည့်ပါ− သင့်စက်ပစ္စည်းပေါ်တွင် နေရာအလုံအလောက်ရှိ မရှိ စစ်ဆေးပြီး ထပ်မံ၍ တင်ပို့ကြည့်ပါ</translation>
 <translation id="768618399695552958">သင်ဝင်ကြည့်သော စာမျက်နှာတစ်ချို့ကို ကြိုဖွင့်ထားသည်။ Google ဝဘ်ဆိုက်တစ်ခုမှ လင့်ခ်ချိတ်သည့်အခါ Google ဆာဗာများမှတစ်ဆင့် စာမျက်နှာများကို ကြိုဖွင့်ထားနိုင်ပါသည်။</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />  တွင် အီးမေးလ်ရေးပါ</translation>
@@ -1348,6 +1352,7 @@
 <translation id="8570677896027847510">ဖိုင်ကို လုံခြုံစွာ ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="8571213806525832805">ပြီးခဲ့သည့် ၄ ပတ်</translation>
 <translation id="8572344201470131220">ပုံကို ကူးယူပြီး</translation>
+<translation id="8580884231102452214">GIF ကူးယူရန်</translation>
 <translation id="8583805026567836021">အကောင့် ဒေတာအားရှင်းလင်းနေ</translation>
 <translation id="859046281437143747">‘နောက်ထပ်’ ရွေးစရာများခလုတ်မှနေ၍ ဈေးနှုန်းကို စောင့်ကြည့်နိုင်သည်</translation>
 <translation id="860043288473659153">ကတ်ကိုင်ဆောင်သူအမည်</translation>

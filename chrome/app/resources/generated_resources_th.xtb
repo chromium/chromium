@@ -204,6 +204,7 @@
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้}other{คุณจะออกจากระบบโดยอัตโนมัติใน # วินาที
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้}}</translation>
 <translation id="1193927020065025187">เว็บไซต์นี้อาจกำลังพยายามหลอกล่อคุณให้อนุญาตการแจ้งเตือนที่ล่วงล้ำ</translation>
+<translation id="1195210374336998651">ไปที่การตั้งค่าแอป</translation>
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="1195558154361252544">ระบบจะบล็อกการแจ้งเตือนของทุกเว็บไซต์โดยอัตโนมัติ ยกเว้นเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="1197088940767939838">สีส้ม</translation>
@@ -384,6 +385,7 @@
 <translation id="1396259464226642517">ผลลัพธ์นี้ต่างจากที่คาดไว้ไหม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">ชื่อผู้ใช้และรหัสผ่านที่คุณป้อนไม่ตรงกัน</translation>
 <translation id="1397500194120344683">ไม่มีอุปกรณ์ที่มีสิทธิ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">คุณลงชื่อเข้าใช้ Chrome ในอุปกรณ์เหล่านี้ จึงสามารถใช้อุปกรณ์ดังกล่าวเป็นคีย์ความปลอดภัย</translation>
 <translation id="1398853756734560583">ขยายใหญ่สุด</translation>
 <translation id="139911022479327130">ปลดล็อกโทรศัพท์และยืนยันว่าเป็นคุณ</translation>
 <translation id="1401308693935339022">ใช้ตำแหน่ง อนุญาตแอปและบริการที่มีสิทธิ์เข้าถึงตำแหน่งให้ใช้ตำแหน่งของอุปกรณ์นี้ Google อาจรวบรวมข้อมูลตำแหน่งเป็นระยะๆ และใช้ข้อมูลนี้แบบไม่ระบุตัวตนเพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการตามสถานที่</translation>
@@ -1167,6 +1169,7 @@
 <translation id="2163470535490402084">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
+<translation id="2165102982098084499">คุณลิงก์อุปกรณ์เหล่านี้ด้วยการสแกนคิวอาร์โค้ด</translation>
 <translation id="2165177462441582039">เลือกระยะเวลาที่ไฮไลต์ควรแสดงอยู่ที่แต่ละรายการ</translation>
 <translation id="2166369534954157698">สุนัขจิ้งจอกที่ปราดเปรียวกระโดดข้ามสุนัขเกียจคร้าน</translation>
 <translation id="2169062631698640254">ลงชื่อเข้าใช้ต่อไป</translation>
@@ -1941,6 +1944,7 @@
 <translation id="2915873080513663243">สแกนอัตโนมัติ</translation>
 <translation id="2916073183900451334">การกดแท็บบนหน้าเว็บจะเน้นลิงก์ และฟิลด์ของฟอร์ม</translation>
 <translation id="2916745397441987255">ค้นหาส่วนขยาย</translation>
+<translation id="2918484639460781603">ไปที่การตั้งค่า</translation>
 <translation id="2918484644467055090">ลงทะเบียนอุปกรณ์นี้กับองค์กรที่ใช้บัญชีของคุณอยู่ไม่ได้ เนื่องจากอุปกรณ์มีเครื่องหมายกำกับว่าได้รับการจัดการโดยองค์กรอื่น</translation>
 <translation id="2920852127376356161">ไม่อนุญาตให้จัดการโปรโตคอล</translation>
 <translation id="2921081876747860777">โปรดสร้างรหัสผ่านเพื่อปกป้องข้อมูลในเครื่อง</translation>
@@ -2565,6 +2569,7 @@
 <translation id="3592260987370335752">&amp;ดูข้อมูลเพิ่มเติม</translation>
 <translation id="3593152357631900254">เปิดการใช้งานโหมด Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">ข้อจำกัดของชื่อใบรับรอง</translation>
+<translation id="3596012367874587041">การตั้งค่าแอป</translation>
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3599221874935822507">ยกขึ้น</translation>
 <translation id="3599863153486145794">ล้างประวัติจากอุปกรณ์ที่ลงชื่อเข้าใช้ทั้งหมด บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -5685,6 +5690,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> วินาที</translation>
 <translation id="6860097299815761905">การตั้งค่าพร็อกซี...</translation>
 <translation id="6860427144121307915">เปิดในแท็บ</translation>
+<translation id="6863496016067551393">อนุญาตให้ใช้ส่วนขยายทั้งหมด</translation>
 <translation id="686366188661646310">ลบรหัสผ่านไหม</translation>
 <translation id="6865313869410766144">ข้อมูลแบบฟอร์มที่ป้อนอัตโนมัติ</translation>
 <translation id="6865598234501509159">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
@@ -5714,6 +5720,7 @@
 <translation id="6900532703269623216">การปกป้องที่ปรับปรุงแล้ว</translation>
 <translation id="6900651018461749106">ลงชื่อเข้าใช้อีกครั้งเพื่ออัปเดต <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">คุณแน่ใจไหมว่าต้องการลบเครื่องมือค้นหานี้</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">แสดงตัวอย่างเสียง</translation>
 <translation id="6902336033320348843">ส่วนที่ไม่รองรับ: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">นำอุปกรณ์เข้าร่วมโดเมน</translation>
@@ -7364,6 +7371,7 @@
 <translation id="8610103157987623234">รูปแบบไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
 <translation id="8611682088849615761">อนุญาตให้เว็บไซต์นี้มีสิทธิ์ควบคุมอุปกรณ์ MIDI โดยสมบูรณ์ต่อไป</translation>
 <translation id="8613164732773110792">อักขระตัวพิมพ์เล็ก ตัวเลข ขีดล่าง หรือขีดกลางเท่านั้น</translation>
+<translation id="8613645710357126807">ไม่อนุญาตให้ใช้ส่วนขยาย</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย ไฟล์ที่เปิดต้องมีขนาดไม่เกิน 50 MB</translation>
 <translation id="8615618338313291042">แอปพลิเคชันที่ไม่ระบุตัวตน: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">เพิ่ม <ph name="CONTACT_NAME" /> ลงในรายชื่อติดต่อ</translation>

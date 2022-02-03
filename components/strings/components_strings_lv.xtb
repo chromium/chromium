@@ -70,7 +70,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1186201132766001848">Pārbaudīt paroles</translation>
-<translation id="1195210374336998651">Pāriet uz lietotnes iestatījumiem</translation>
 <translation id="1195558154361252544">Paziņojumi tiek automātiski bloķēti visās vietnēs, izņemot tās, kurās atļāvāt to rādīšanu.</translation>
 <translation id="1197088940767939838">Oranža</translation>
 <translation id="1201402288615127009">Tālāk</translation>
@@ -843,7 +842,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3587738293690942763">vidējais</translation>
 <translation id="3592413004129370115">Italian (aploksne)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt aptuveni dienu.}=1{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt aptuveni dienu.}zero{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienas.}one{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienu.}other{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienas.}}</translation>
-<translation id="3596012367874587041">Lietotnes iestatījumi</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Lietojumprogrammu bloķēja jūsu administrators</translation>
 <translation id="3608932978122581043">Padeves virziens</translation>
@@ -1976,6 +1974,7 @@ Papildu informācija:
 <translation id="7334320624316649418">&amp;Atcelt pārkārtošanas atsaukšanu</translation>
 <translation id="7335157162773372339">Var pieprasīt atļauju izmantot jūsu kameru</translation>
 <translation id="7337248890521463931">Rādīt vairāk rindu</translation>
+<translation id="7337418456231055214">Vai nav ievadīts virtuālās kartes numurs? Noklikšķiniet uz kartes informācijas, lai to kopētu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nav pieejams jūsu platformā.</translation>
 <translation id="733923710415886693">Servera sertifikāts netika atklāts, izmantojot sertifikāta pārredzamību.</translation>
 <translation id="734600844861828519">11x15</translation>

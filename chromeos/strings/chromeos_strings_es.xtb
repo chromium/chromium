@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Se ha impreso la página <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Escaneando página <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
-<translation id="3462187165860821523">Actualizando <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Mientras se actualiza el firmware, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Es posible que esta actualización tarde unos minutos en instalarse y que tu dispositivo externo no funcione durante ese tiempo.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activación parcial</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="3565064564551103223">IPs permitidas</translation>
+<translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
 <translation id="3583278742022654445">Intensidad de la señal débil. Acércate a la fuente de la señal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
-<translation id="7240035910874241640">Todos los periféricos están actualizados</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
-<translation id="8520963233738002436">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
 <translation id="8521021929829989041">Usar como dispositivo personal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Es posible que tu operador requiera esta opción para conectarte a su red. Ponte en contacto con tu operador para obtener más información al respecto.</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">Volver a ejecutar</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escanear}=1{Escanear página {NUMBER_OF_PAGES}}other{Escanear página {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Instalando: <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="8997710128084572139">Nivel de batería del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9039663905644212491">PEAP</translation>

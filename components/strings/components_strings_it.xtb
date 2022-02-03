@@ -70,7 +70,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1186201132766001848">Controlla password</translation>
-<translation id="1195210374336998651">Vai alle impostazioni dell'app</translation>
 <translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
 <translation id="1197088940767939838">Arancione</translation>
 <translation id="1201402288615127009">Avanti</translation>
@@ -840,7 +839,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorrà circa un giorno per unirsi a un nuovo gruppo.}=1{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorrà circa un giorno per unirsi a un nuovo gruppo.}one{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorrà {NUM_DAYS} giorno per unirsi a un nuovo gruppo.}other{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorranno {NUM_DAYS} giorni per unirsi a un nuovo gruppo.}}</translation>
-<translation id="3596012367874587041">Impostazioni app</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Applicazione bloccata dal tuo amministratore</translation>
 <translation id="3608932978122581043">Fornisci orientamento</translation>
@@ -1973,6 +1971,7 @@ Ulteriori dettagli:
 <translation id="7334320624316649418">&amp;Ripeti ridisposizione</translation>
 <translation id="7335157162773372339">Può richiedere l'autorizzazione per utilizzare la videocamera</translation>
 <translation id="7337248890521463931">Mostra più righe</translation>
+<translation id="7337418456231055214">Il numero della carta virtuale non è stato compilato? Fai clic sui dettagli della carta per copiarli. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Non disponibile sulla piattaforma in uso.</translation>
 <translation id="733923710415886693">Il certificato del server non è stato reso pubblico tramite Certificate Transparency.</translation>
 <translation id="734600844861828519">11x15</translation>

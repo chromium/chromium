@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1186201132766001848">檢查密碼</translation>
-<translation id="1195210374336998651">前往應用程式設定</translation>
 <translation id="1195558154361252544">系統已自動封鎖所有網站的通知，但您允許的網站除外</translation>
 <translation id="1197088940767939838">橙色</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -838,7 +837,6 @@
 <translation id="3587738293690942763">中間</translation>
 <translation id="3592413004129370115">Italian (信封)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{您可隨時重設群組。加入新群組約需時 1 天。}=1{您可隨時重設群組。加入新群組約需時 1 天。}other{您可隨時重設群組。加入新群組約需時 {NUM_DAYS} 天。}}</translation>
-<translation id="3596012367874587041">應用程式設定</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">您的管理員已封鎖應用程式</translation>
 <translation id="3608932978122581043">送紙方向</translation>

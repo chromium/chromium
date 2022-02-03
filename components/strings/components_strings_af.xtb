@@ -70,7 +70,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1178581264944972037">Laat wag</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="1186201132766001848">Gaan wagwoorde na</translation>
-<translation id="1195210374336998651">Gaan na programinstellings toe</translation>
 <translation id="1195558154361252544">Kennisgewings word outomaties geblokkeer vir alle werwe behalwe dié wat jy toelaat</translation>
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="1201402288615127009">Volgende</translation>
@@ -843,7 +842,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3587738293690942763">Middel</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Jy kan jou groep enige tyd terugstel. Dit neem omtrent 'n dag om by 'n nuwe groep aan te sluit.}=1{Jy kan jou groep enige tyd terugstel. Dit neem omtrent 'n dag om by 'n nuwe groep aan te sluit.}other{Jy kan jou groep enige tyd terugstel. Dit neem {NUM_DAYS} dae om by 'n nuwe groep aan te sluit.}}</translation>
-<translation id="3596012367874587041">Programinstellings</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Jou administrateur blokkeer die program</translation>
 <translation id="3608932978122581043">Stroomoriëntasie</translation>

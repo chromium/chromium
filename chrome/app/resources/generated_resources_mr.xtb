@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.}other{तुम्हाला # सेकंदांनी आपोआप साइन आउट केले जाईल.
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.}}</translation>
 <translation id="1193927020065025187">ही साइट कदाचित तुम्हाला फसवून अनाहूत सूचनांना अनुमती द्यायला लावण्याचा प्रयत्न करत आहे</translation>
+<translation id="1195210374336998651">अ‍ॅप सेटिंग्जवर जा</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1195558154361252544">तुम्ही अनुमती दिलेली साइट वगळता सर्व साइटसाठी सूचना आपोआप ब्लॉक केल्या आहेत</translation>
 <translation id="1197088940767939838">नारिंगी</translation>
@@ -386,6 +387,7 @@
 <translation id="1396259464226642517">हा परिणाम अनपेक्षित होता का? <ph name="BEGIN_LINK" />फीडबॅक पाठवा<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">तुम्ही एंटर केलेले वापरकर्ता नाव आणि पासवर्ड जुळत नाही</translation>
 <translation id="1397500194120344683">कोणतीही पात्र डिव्हाइस नाहीत. <ph name="LINK_BEGIN" />अधिक जाणून घ्या.<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">तुम्ही या डिव्हाइसवर Chrome मध्ये साइन इन केलेले असल्यामुळे ती सिक्युरिटी की म्हणून वापरू शकता.</translation>
 <translation id="1398853756734560583">वाढवा</translation>
 <translation id="139911022479327130">तुमचा फोन अनलॉक करा आणि हे तुम्हीच आहात याची खात्री करा</translation>
 <translation id="1401308693935339022">स्थान वापरा. स्थान परवानगी असलेल्या अ‍ॅप्स आणि सेवांना या डिव्हाइसचे स्थान वापरू द्या. Google वेळोवेळी स्थान डेटा गोळा करू शकते आणि स्थान अचूकता व स्थानावर आधारित सेवांमध्ये सुधारणा करण्यासाठी हा डेटा निनावी पद्धतीने वापरू शकते.</translation>
@@ -1179,6 +1181,7 @@
 <translation id="2163470535490402084">कृपया आपल्‍या <ph name="DEVICE_TYPE" /> मध्‍ये साइन इन करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
+<translation id="2165102982098084499">तुम्ही QR कोड स्कॅन करून ही डिव्हाइस लिंक केली आहेत.</translation>
 <translation id="2165177462441582039">प्रत्येक आयटमवर किती वेळ हायलाइट रहावे ते निवडा</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
@@ -1908,6 +1911,7 @@
 <translation id="287205682142673348">पोर्ट फॉरवर्डिंग</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> जोडा...</translation>
 <translation id="2872961005593481000">बंद करा</translation>
+<translation id="2873995907777332853">सर्व कुकी ब्लॉक करण्यासंबंधित तपशील दाखवा</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
 <translation id="2875698561019555027">(Chrome एरर पेज)</translation>
 <translation id="2876336351874743617">दुसरे बोट</translation>
@@ -1955,6 +1959,7 @@
 <translation id="2915873080513663243">ऑटो-स्कॅन</translation>
 <translation id="2916073183900451334">वेबपेजवर टॅब दाबल्याने लिंक हायलाइट होतात, तसेच भाग तयार होतात</translation>
 <translation id="2916745397441987255">शोध विस्तार</translation>
+<translation id="2918484639460781603">सेटिंग्ज वर जा</translation>
 <translation id="2918484644467055090">तुमचे खाते ज्या संस्थेच्या मालकीचे आहे त्या संस्थेमध्ये या डिव्हाइसची नोंदणी केली जाऊ शकत नाही कारण डिव्हाइसवर वेगळ्या संस्थेने व्यवस्थापनासाठी खूण केली आहे.</translation>
 <translation id="2920852127376356161">प्रोटोकॉल हाताळण्याची अनुमती नाही</translation>
 <translation id="2921081876747860777">कृपया तुमचा स्थानिक डेटा संरक्षित करण्‍यासाठी एक पासवर्ड तयार करा.</translation>
@@ -2211,6 +2216,7 @@
 <translation id="3189187154924005138">मोठा कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेव्ह केला</translation>
 <translation id="3192947282887913208">ऑडिओ फाइल</translation>
+<translation id="3194786596445804250">तृतीय पक्ष कुकी ब्लॉक करण्यासंबंधित तपशील दाखवा</translation>
 <translation id="3197453258332670132">राइट क्लिक केल्यामुळे किंवा दाबून ठेवल्यामुळे, तुमच्या मजकूर निवडीशी संबंधित माहिती दाखवते</translation>
 <translation id="3199127022143353223">सर्व्हर</translation>
 <translation id="3200061262156232574">तुमच्या शॉपिंग कार्टमध्ये</translation>
@@ -2578,6 +2584,7 @@
 <translation id="3592260987370335752">&amp;अधिक जाणून घ्या</translation>
 <translation id="3593152357631900254"> Fuzzy-Pinyin मोड सक्षम करा</translation>
 <translation id="3593965109698325041">सर्टिफिकेट नाव प्रतिबंध</translation>
+<translation id="3596012367874587041">अ‍ॅप सेटिंग्ज</translation>
 <translation id="3596414637720633074">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="3599221874935822507">रेझ्ड</translation>
 <translation id="3599863153486145794">साइन-इन केलेल्या सर्व डिव्हाइसमधून इतिहास साफ करते. तुमच्या Google खात्यामध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर कदाचित ब्राउझिंगचे इतर फॉर्म असतील.</translation>
@@ -5305,6 +5312,7 @@
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
 <translation id="645705751491738698">JavaScript अवरोधित करणे सुरू ठेवा</translation>
+<translation id="6458347417133445570">सर्व कुकींना अनुमती देण्यासंबंधित तपशील दाखवा</translation>
 <translation id="6458701200018867744">अपलोड करता आले नाही (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">शोधण्यासाठी निवड वापरा</translation>
 <translation id="6459799433792303855">ॲक्टिव्ह विंडो दुसऱ्या डिस्प्लेवर हलवली आहे.</translation>
@@ -5697,6 +5705,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंद</translation>
 <translation id="6860097299815761905">प्रॉक्सी सेटिंग्ज...</translation>
 <translation id="6860427144121307915">एका टॅबमध्ये उघडा</translation>
+<translation id="6863496016067551393">सर्व एक्स्टेंशनना अनुमती आहे</translation>
 <translation id="686366188661646310">पासवर्ड हटवायचा का?</translation>
 <translation id="6865313869410766144">ऑटोफिल फॉर्म डेटा</translation>
 <translation id="6865598234501509159">पेज <ph name="LANGUAGE" /> मध्ये नाही</translation>
@@ -5726,6 +5735,7 @@
 <translation id="6900532703269623216">वर्धित संरक्षण</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> अपडेट करण्यासाठी पुन्हा साइन इन करा</translation>
 <translation id="6900654715912436255">तुम्हाला हे शोध इंजीन नक्की हटवायचे आहे का?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">पूर्वावलोकनासाठी व्हॉइस</translation>
 <translation id="6902336033320348843">विभाग सपोर्ट करत नाही: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">डोमेनशी डिव्हाइस जोडा</translation>
@@ -6734,6 +6744,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7919210519031517829"><ph name="DURATION" /> से</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> पाहता येते</translation>
 <translation id="7920482456679570420">तुम्हाला स्पेल चेकने वगळायला हवे असलेले शब्द जोडा</translation>
+<translation id="7922935920104868876">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक करण्यासंबंधित तपशील दाखवा</translation>
 <translation id="7924358170328001543">पोर्ट फॉरवर्ड करताना एरर आली</translation>
 <translation id="7925108652071887026">स्वयं-भरण डेटा</translation>
 <translation id="792514962475806987">डॉक केलेली झूम पातळी:</translation>
@@ -6898,6 +6909,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8076835018653442223">तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या डिव्‍हाइसवरील स्‍थानिक फायलीचा ॲक्सेस बंद केला आहे</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Android अ‍ॅप्ससह वापरण्यासाठी खाती उपलब्ध आहेत</translation>
 <translation id="8081989000209387414">ADB डीबगिंग बंद करायचे?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सोबत पेअर करायचे?</translation>
 <translation id="8082390128630131497">ADB डिबगिंग बंद केल्यामुळे हे <ph name="DEVICE_TYPE" /> फॅक्टरी सेटिंग्जवर रीसेट होईल. सर्व वापरकर्ता खाती आणि स्थानिक डेटा मिटवला जाईल.</translation>
@@ -7158,6 +7170,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8342861492835240085">संकलन निवडा</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="834785183489258869">गुप्त मोडमध्ये असताना, वेगवेगळ्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी साइट तुमच्या कुकी वापरू शकत नाहीत. उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्याकरिता. काही साइटवर वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
+<translation id="8349499562373871073">तुम्ही Android अ‍ॅप्ससह वापरण्यासाठी सध्याचे खाते निवडू शकता किंवा नवीन Google खाते जोडा. तुम्ही Android अ‍ॅपमध्ये साइन केल्यानंतर, तुमचे खाते दुसऱ्या Android अ‍ॅप्ससह वापरले जाऊ शकते. तुम्ही <ph name="LINK_BEGIN" />सेटिंग्ज &gt; खाती<ph name="LINK_END" /> मध्ये Android अ‍ॅप्सचा अ‍ॅक्सेस बदलू शकता.</translation>
 <translation id="8350789879725387295">डॉकमध्ये स्टायलस टूल</translation>
 <translation id="8351316842353540018">a11y पर्याय नेहमी दाखवा</translation>
 <translation id="8351419472474436977">या एक्स्टेंशनने तुमच्या प्रॉक्सी सेटिंग्जचे नियंत्रण घेतले आहे, याचा अर्थ ही बदलू शकते, खंडित होवू शकते किंवा तुम्ही ऑनलाइन करता ती कोणतीहीगोष्ट चोरून एकू शकतो. हा बदल का झाला, याबद्दल तुम्ही निश्चित नसल्यास, तुम्हाला कदाचित तो नको आहे.</translation>
@@ -7373,6 +7386,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8610103157987623234">चुकीचा फॉरमॅट, कृपया पुन्हा प्रयत्न करा</translation>
 <translation id="8611682088849615761">या साइटला MIDI डिव्हाइसचे पूर्ण नियंत्रण असण्याची अनुमती देणे पुढे सुरू ठेवा</translation>
 <translation id="8613164732773110792">फक्त लोअरकेस वर्ण, अंक, अंडरस्कोअर किंवा डॅश</translation>
+<translation id="8613645710357126807">एक्स्टेंशन वापरण्याची अनुमती नाही</translation>
 <translation id="8613786722548417558">सुरक्षा तपासणीसाठी <ph name="FILE_NAME" /> बरेच मोठे आहे. तुम्ही कमाल ५०MB च्या फाइल उघडू शकता.</translation>
 <translation id="8615618338313291042">गुप्त ॲप्लिकेशन: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> यांना तुमच्या संपर्कांमध्ये जोडा</translation>

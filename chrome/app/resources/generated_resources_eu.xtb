@@ -204,6 +204,7 @@
 Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.}other{# segundo barru amaituko da saioa automatikoki.
 Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.}}</translation>
 <translation id="1193927020065025187">Webgune hau zu iruzurtzen saiatzen ari da jakinarazpen oztopatzaileak baimen ditzazun</translation>
+<translation id="1195210374336998651">Joan aplikazioen ezarpenetara</translation>
 <translation id="1195447618553298278">Errore ezezaguna.</translation>
 <translation id="1195558154361252544">Webgune guztien jakinarazpenak automatikoki blokeatzen dira, zuk baimentzen dituzunenak izan ezik</translation>
 <translation id="1197088940767939838">Laranja</translation>
@@ -1893,6 +1894,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="287205682142673348">Ataka-birbideratzea</translation>
 <translation id="287286579981869940">Gehitu <ph name="PROVIDER_NAME" /></translation>
 <translation id="2872961005593481000">Itzali</translation>
+<translation id="2873995907777332853">Erakutsi cookie guztiak blokeatzeari buruzko xehetasunak</translation>
 <translation id="2874939134665556319">Aurreko pista</translation>
 <translation id="2875698561019555027">(Chrome errore-orriak)</translation>
 <translation id="2876336351874743617">2. hatz-marka</translation>
@@ -2196,6 +2198,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3189187154924005138">Kurtsore handia</translation>
 <translation id="3190558889382726167">Gorde da pasahitza</translation>
 <translation id="3192947282887913208">Audio-fitxategiak</translation>
+<translation id="3194786596445804250">Erakutsi hirugarrenen cookieak blokeatzeari buruzko xehetasunak</translation>
 <translation id="3197453258332670132">Eskuineko botoiarekin klik eginda edo luze sakatuta, erakutsi hautatutako testuarekin erlazionatutako informazioa</translation>
 <translation id="3199127022143353223">Zerbitzariak</translation>
 <translation id="3200061262156232574">Erosketa-saskian</translation>
@@ -2563,6 +2566,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3592260987370335752">&amp;Lortu informazio gehiago</translation>
 <translation id="3593152357631900254">Gaitu Fuzzy-Pinyin modua</translation>
 <translation id="3593965109698325041">Ziurtagiri-izenen murriztapenak</translation>
+<translation id="3596012367874587041">Aplikazioen ezarpenak</translation>
 <translation id="3596414637720633074">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="3599221874935822507">Goratua</translation>
 <translation id="3599863153486145794">Saioa hasita daukaten gailu guztietako historia garbitzen du. Google-ko kontuko historia arakatzeko beste modu batzuk aurki zenitzake <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
@@ -5290,6 +5294,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6455264371803474013">Webgune zehatzetan</translation>
 <translation id="6455894534188563617">&amp;Karpeta berria</translation>
 <translation id="645705751491738698">Jarraitu JavaScript blokeatzen</translation>
+<translation id="6458347417133445570">Erakutsi cookie guztiak erabiltzeko baimenari buruzko xehetasunak</translation>
 <translation id="6458701200018867744">Ezin izan da kargatu (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Erabili hautespena aurkitzeko</translation>
 <translation id="6459799433792303855">Beste pantaila batera eraman da leiho aktiboa.</translation>
@@ -6720,6 +6725,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> ikus dezake</translation>
 <translation id="7920482456679570420">Gehitu zer hitz nahi duzun ortografia-zuzentzaileak saltatzea</translation>
+<translation id="7922935920104868876">Erakutsi ezkutuko moduan hirugarrenen cookieak blokeatzeari buruzko xehetasunak</translation>
 <translation id="7924358170328001543">Errore bat gertatu da ataka desbideratzean</translation>
 <translation id="7925108652071887026">Bete datuak automatikoki</translation>
 <translation id="792514962475806987">Ainguratzearen zoom-maila:</translation>
@@ -6883,6 +6889,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8076492880354921740">Fitxak</translation>
 <translation id="8076835018653442223">Administratzaileak zure gailuko fitxategi lokaletarako sarbidea blokeatu du</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Android-erako aplikazioetan saioa hasteko erabilgarri dauden kontuak</translation>
 <translation id="8081989000209387414">ADB arazketa desgaitu nahi duzu?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" gailuarekin parekatu?</translation>
 <translation id="8082390128630131497">ADB arazketa desgaitzen baduzu, <ph name="DEVICE_TYPE" /> gailuaren jatorrizko ezarpenak berrezarriko dira. Erabiltzaile-kontu guztiak eta gailuko datuak ezabatu egingo dira.</translation>
@@ -7143,6 +7150,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8342861492835240085">Hautatu bilduma bat</translation>
 <translation id="8347227221149377169">Inprimatze-lanak</translation>
 <translation id="834785183489258869">Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
+<translation id="8349499562373871073">Lehendik daukazun kontu bat hauta dezakezu Android-erako aplikazioekin erabiltzeko. Bestela, gehitu Google-ko beste kontu bat. Android-erako aplikazio batean saioa hasten baduzu, kontu hori Android-erako beste aplikazio batzuetan erabili ahal izango da. Android-erako aplikazioetarako sarbidea aldatzeko, joan <ph name="LINK_BEGIN" />Ezarpenak &gt; Kontuak<ph name="LINK_END" /> atalera.</translation>
 <translation id="8350789879725387295">Arkatzaren tresnak oinarrian</translation>
 <translation id="8351316842353540018">Erakutsi beti erabilerraztasun-aukerak</translation>
 <translation id="8351419472474436977">Luzapen honek zure proxy-ezarpenen kontrola hartu du; alegia, sarean egiten duzun edozer alda, honda edo zelata dezake. Aldaketa zergatik gertatu den ziur ez badakizu, baliteke aldaketa nahi ez izatea.</translation>

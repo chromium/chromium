@@ -65,6 +65,7 @@
 <translation id="2574930892358684005">‏המשתמש <ph name="EXISTING_USER" /> כבר מחובר לפרופיל Chrome הזה. כדי להפריד בין פעילויות גלישה, Chrome יכול ליצור עבורך פרופיל משלך.</translation>
 <translation id="2580411288591421699">‏אין אפשרות להתקין את אותה גרסת Google Chrome הפועלת כעת. יש לסגור את Google Chrome ולנסות שוב.</translation>
 <translation id="2586406160782125153">‏הפעולה תמחק את נתוני הגלישה מהמכשיר. כדי לאחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">‏יכול להיות שהרשאות שכבר ניתנו לאתרים ולאפליקציות יחולו על החשבון הזה. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון, צריך להשתמש ב'מצב אורח' בדפדפן Chrome. יש לך גם אפשרות לנהל את חשבונות Google שלך ב<ph name="LINK_2_BEGIN" />הגדרות<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">‏Chrome לא יכול לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2644798301485385923">‏מערכת Chrome OS</translation>
 <translation id="2652691236519827073">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>

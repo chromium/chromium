@@ -70,7 +70,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1186201132766001848">Semak Kata Laluan</translation>
-<translation id="1195210374336998651">Pergi ke tetapan apl</translation>
 <translation id="1195558154361252544">Pemberitahuan disekat secara automatik untuk semua tapak kecuali tapak yang anda benarkan</translation>
 <translation id="1197088940767939838">Oren</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
@@ -843,7 +842,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3587738293690942763">Tengah</translation>
 <translation id="3592413004129370115">Itali (Sampul Surat)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Proses menyertai kumpulan baharu mengambil masa kira-kira sehari.}=1{Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Proses menyertai kumpulan baharu mengambil masa kira-kira sehari.}other{Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Proses menyertai kumpulan baharu mengambil masa kira-kira {NUM_DAYS} hari.}}</translation>
-<translation id="3596012367874587041">Tetapan apl</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikasi disekat oleh pentadbir anda</translation>
 <translation id="3608932978122581043">Orientasi suapan</translation>
@@ -1978,6 +1976,7 @@ Butiran tambahan:
 <translation id="7334320624316649418">&amp;Buat semula susun semula</translation>
 <translation id="7335157162773372339">Boleh meminta untuk menggunakan kamera anda</translation>
 <translation id="7337248890521463931">Tunjukkan lagi baris</translation>
+<translation id="7337418456231055214">Nombor kad maya tidak diisikan? Klik butiran kad untuk disalin. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Tidak tersedia pada platform anda.</translation>
 <translation id="733923710415886693">Sijil pelayan tidak didedahkan melalui Ketelusan Sijil.</translation>
 <translation id="734600844861828519">11x15</translation>

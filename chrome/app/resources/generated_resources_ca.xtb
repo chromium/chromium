@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.}other{Se't tancarà la sessió automàticament d'aquí a # segons.
 <ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.}}</translation>
 <translation id="1193927020065025187">Pot ser que aquest lloc web estigui provant d'enganyar-te perquè permetis les notificacions intrusives</translation>
+<translation id="1195210374336998651">Ves a la configuració de l'aplicació</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1195558154361252544">Les notificacions de tots els llocs web estan bloquejades automàticament excepte les que permetis</translation>
 <translation id="1197088940767939838">Taronja</translation>
@@ -768,6 +769,7 @@
 <translation id="176587472219019965">&amp;Finestra nova</translation>
 <translation id="1766575458646819543">S'ha sortit de la pantalla completa</translation>
 <translation id="1766957085594317166">Desa les contrasenyes de manera segura al teu Compte de Google i no caldrà que les tornis a escriure mai més</translation>
+<translation id="1767043563165955993">Utilitza amb les aplicacions d'Android</translation>
 <translation id="1768212860412467516">Envia suggeriments amb relació a <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">S'ha produït un problema en contactar amb el servidor d'inici de sessió. Comprova la connexió a la xarxa i el nom de domini, i torna-ho a provar.</translation>
 <translation id="1769104665586091481">Obre l'enllaç en una &amp;finestra nova</translation>
@@ -1103,6 +1105,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2113479184312716848">Obre un &amp;fitxer...</translation>
 <translation id="2113921862428609753">Accés a la informació d'entitats</translation>
 <translation id="2114326799768592691">Torna a carregar el &amp;marc</translation>
+<translation id="2114413269775311385">Utilitza aquest compte amb les aplicacions d'Android. Pots controlar els permisos de les aplicacions d'Android a <ph name="LINK_BEGIN" />Configuració de l'aplicació<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Foto feta per <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No hi ha cap targeta SIM inserida</translation>
 <translation id="2116619964159595185">Els llocs web solen connectar-se a dispositius Bluetooth per a funcions com ara configurar o sincronitzar una balisa de baix consum, una aplicació de seguiment de fitnes o salut, o una bombeta intel·ligent</translation>
@@ -1891,6 +1894,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="287205682142673348">Redirecció de ports</translation>
 <translation id="287286579981869940">Afegeix <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Apaga</translation>
+<translation id="2873995907777332853">Mostra els detalls sobre com es bloquegen totes les galetes</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875698561019555027">(Pàgines d'error de Chrome)</translation>
 <translation id="2876336351874743617">Dit 2</translation>
@@ -1938,6 +1942,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2915873080513663243">Cerca automàtica</translation>
 <translation id="2916073183900451334">En prémer la tecla de tabulació en una pàgina web, es ressalten els enllaços i els camps de formulari</translation>
 <translation id="2916745397441987255">Cerca extensions</translation>
+<translation id="2918484639460781603">Ves a la configuració</translation>
 <translation id="2918484644467055090">Aquest dispositiu no es pot inscriure a l'organització a la qual pertany el teu compte perquè està marcat perquè el gestioni una altra organització.</translation>
 <translation id="2920852127376356161">Sense permís per gestionar protocols</translation>
 <translation id="2921081876747860777">Crea una contrasenya per protegir les teves dades locals.</translation>
@@ -2194,6 +2199,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3189187154924005138">Cursor gran</translation>
 <translation id="3190558889382726167">S'ha desat la contrasenya</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
+<translation id="3194786596445804250">Mostra els detalls sobre com es permeten les galetes de tercers</translation>
 <translation id="3197453258332670132">Si mantens el text premut o hi fas clic amb el botó dret, es mostrarà informació relacionada amb el text seleccionat</translation>
 <translation id="3199127022143353223">Servidors</translation>
 <translation id="3200061262156232574">Al carretó electrònic</translation>
@@ -2561,6 +2567,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3592260987370335752">&amp;Més informació</translation>
 <translation id="3593152357631900254">Activa el mode pinyin per aproximació</translation>
 <translation id="3593965109698325041">Restriccions del nom de certificat</translation>
+<translation id="3596012367874587041">Configuració de l'aplicació</translation>
 <translation id="3596414637720633074">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="3599221874935822507">Elevat</translation>
 <translation id="3599863153486145794">Esborra l'historial de tots els dispositius en què tinguis iniciada la sessió. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del Compte de Google.</translation>
@@ -2937,6 +2944,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3943582379552582368">&amp;Enrere</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3945513714196326460">Prova un nom més curt</translation>
+<translation id="3947643756376959257">Introdueix el codi d'accés que es mostra al Chromecast o al televisor.</translation>
 <translation id="3948027458879361203">Canvia el nom d'amfitrió</translation>
 <translation id="3948116654032448504">&amp;Cerca la imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pot editar els fitxers de les carpetes següents</translation>
@@ -3178,12 +3186,14 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4210048056321123003">S'està baixant la màquina virtual</translation>
 <translation id="421182450098841253">&amp;Mostra la Barra d'adreces d'interès</translation>
 <translation id="4211851069413100178">Envia dades d'ús i de diagnòstic. Ajuda a millorar la teva experiència a Android enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. És possible que el propietari decideixi enviar a Google dades de diagnòstic i d'ús sobre aquest dispositiu. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Deixa d'utilitzar amb les aplicacions d'Android</translation>
 <translation id="42126664696688958">Exporta</translation>
 <translation id="42137655013211669">El servidor ha prohibit l'accés a aquest recurs.</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">S'ha produït un error durant l'activació.</translation>
 <translation id="4225397296022057997">En tots els llocs web</translation>
+<translation id="4227605727325220318">Afegeix un telèfon Android nou</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Aquesta extensió no està permesa}other{Algunes extensions no estan permeses}}</translation>
 <translation id="4231095370974836764">Instal·la aplicacions i jocs de Google Play al dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configura Kerberos</translation>
@@ -4716,6 +4726,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5862109781435984885">Mostra les eines del llapis òptic al prestatge</translation>
 <translation id="5862319196656206789">Configura els dispositius connectats</translation>
 <translation id="5863445608433396414">Activa les funcions de depuració</translation>
+<translation id="5864147196375746035">Emet a un dispositiu gestionat</translation>
 <translation id="5864195618110239517">Fes servir la connexió d'ús mesurat</translation>
 <translation id="5864754048328252126">Acció d'inactivitat mentre es carrega</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> aviat es posarà en pausa</translation>
@@ -5285,6 +5296,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6455264371803474013">En llocs web específics</translation>
 <translation id="6455894534188563617">Carpeta &amp;nova</translation>
 <translation id="645705751491738698">Continua bloquejant JavaScript</translation>
+<translation id="6458347417133445570">Mostra els detalls sobre com es permeten totes les galetes</translation>
 <translation id="6458701200018867744">Ha fallat la pujada (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilitza la selecció per a la cerca</translation>
 <translation id="6459799433792303855">La finestra activa s'ha mogut a una altra pantalla.</translation>
@@ -5895,6 +5907,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7086672505018440886">Inclou els fitxers de registre de Chrome a l'arxiu.</translation>
 <translation id="7088434364990739311">La comprovació d'actualització no s'ha pogut iniciar (codi d'error <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">L'administrador ha canviat l'estat d'aquest dispositiu perquè no es pugui utilitzar. Per permetre que us hi pugueu registrar, demaneu a l'administrador que en defineixi l'estat com a pendent.</translation>
+<translation id="7090160970140261931">Pots afegir comptes addicionals al <ph name="DEVICE_TYPE" /> per utilitzar-los amb les aplicacions d'Android i amb els llocs web. També pots controlar quins comptes es fan servir amb les aplicacions d'Android.</translation>
 <translation id="7093220653036489319">Respostes ràpides</translation>
 <translation id="7093416310351037609">Per motius de seguretat de les dades, la teva organització requereix que totes les baixades aptes es desin al compte de <ph name="WEB_DRIVE" /> de la teva organització.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6715,6 +6728,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pot veure <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Afegeix paraules que vulguis que el corrector ortogràfic passi per alt</translation>
+<translation id="7922935920104868876">Mostra els detalls sobre com es bloquegen les galetes de tercers en mode d'incògnit</translation>
 <translation id="7924358170328001543">Error en redireccionar el port</translation>
 <translation id="7925108652071887026">Dades d'emplenament automàtic</translation>
 <translation id="792514962475806987">Nivell de zoom acoblat:</translation>
@@ -6879,6 +6893,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8076835018653442223">L'administrador ha desactivat l'accés als fitxers locals del dispositiu</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Comptes disponibles per utilitzar-los amb aplicacions d'Android</translation>
 <translation id="8081989000209387414">Vols desactivar la depuració d'ADB?</translation>
 <translation id="8082106343289440791">El vols vincular amb "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">En desactivar la depuració d'ADB, es restablirà la configuració de fàbrica del dispositiu <ph name="DEVICE_TYPE" />. S'esborraran tots els comptes d'usuari i totes les dades locals.</translation>
@@ -6953,6 +6968,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8147900440966275470">S'ha trobat <ph name="NUM" /> pestanya</translation>
 <translation id="8148760431881541277">Limita l'inici de sessió</translation>
 <translation id="8149564499626272569">Verifica mitjançant el telèfon amb un cable USB</translation>
+<translation id="815114315010033526">Utilitza un codi QR</translation>
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154790740888707867">No hi ha cap fitxer</translation>
 <translation id="8154912474061769055">Pot ser que les funcions de molts llocs web no funcionin</translation>
@@ -6978,6 +6994,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8176332201990304395">Rosa i blanc</translation>
 <translation id="8177196903785554304">Informació sobre la xarxa</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Mou la pestanya a una finestra nova}other{Mou les pestanyes a una finestra nova}}</translation>
+<translation id="8179188928355984576">No s'utilitza amb les aplicacions d'Android</translation>
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" pot llegir imatges, vídeos i fitxers d'àudio a les ubicacions marcades, així com suprimir aquest contingut.</translation>
 <translation id="8181215761849004992">No es pot connectar el domini. Comprova al compte si tens prou privilegis per afegir-hi dispositius.</translation>
@@ -7138,6 +7155,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8342861492835240085">Selecciona una col·lecció</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="834785183489258869">En mode d'incògnit, els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
+<translation id="8349499562373871073">Pots seleccionar un compte existent per utilitzar-lo amb les aplicacions d'Android o bé afegir un compte de Google nou. Un cop inicies la sessió en una aplicació d'Android, el teu compte es pot fer servir amb altres aplicacions d'Android. Per canviar l'accés a les aplicacions d'Android, ves a <ph name="LINK_BEGIN" />Configuració &gt; Comptes<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Eines del llapis òptic a la barra d'aplicacions</translation>
 <translation id="8351316842353540018">Mostra sempre les opcions d'accessibilitat</translation>
 <translation id="8351419472474436977">Aquesta extensió ha passat a controlar la configuració del servidor intermediari. Això vol dir que pot modificar, desfer o espiar qualsevol acció que feu en línia. Si no esteu segur del motiu d'aquest canvi, és possible que no el vulgueu aplicar.</translation>

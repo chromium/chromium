@@ -290,6 +290,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fitxer d'àudio}other{# fitxers d'àudio}}</translation>
 <translation id="265156376773362237">Càrrega prèvia estàndard</translation>
 <translation id="2656405586795711023">Aplicacions web</translation>
+<translation id="2689830683995595741">En utilitzar Chrome, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />. També s'aplica l'<ph name="BEGIN_LINK3" />avís de privadesa per als Comptes de Google gestionats amb Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Nou: comparteix un enllaç que es desplaça fins a aquest text</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2707726405694321444">Actualitza la pàgina</translation>
@@ -625,6 +626,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}}</translation>
 <translation id="4696983787092045100">Envia text als teus dispositius</translation>
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
+<translation id="471759387343966120">En continuar, acceptes les <ph name="BEGIN_TOS_LINK" />condicions del servei<ph name="END_TOS_LINK" /> i la <ph name="BEGIN_PRIVACY_LINK" />política de privadesa<ph name="END_PRIVACY_LINK" />.\nPer ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_UMA_LINK" />Gestiona<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>
 <translation id="4720023427747327413">Obre a <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Ajuda a millorar Chrome. <ph name="BEGIN_LINK" />Respon a l'enquesta<ph name="END_LINK" />.</translation>
@@ -907,6 +909,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6277522088822131679">S'ha produït un problema en imprimir la pàgina. Torneu-ho a provar.</translation>
 <translation id="6277722725779679269">No s'ha pogut actualitzar el seguiment del preu</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">En utilitzar Chrome, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />les condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Pots enviar pestanyes entre dispositius en què tinguis la sessió iniciada al mateix Compte de Google</translation>
 <translation id="6297765934698848803">L'organització que gestiona el dispositiu ha desactivat la càmera.</translation>
 <translation id="6301525844455696527">Posa't al dia de la teva llista de lectura</translation>

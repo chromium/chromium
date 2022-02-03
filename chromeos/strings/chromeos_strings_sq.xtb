@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">U printua faqja <ph name="PRINTED_PAGES" /> nga <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Po skanon faqen <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% e përfunduar.</translation>
 <translation id="3459509316159669723">Po printon</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> po përditësohet</translation>
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
 <translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
 <translation id="3565064564551103223">IP-të e lejuara</translation>
+<translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="357889014807611375">Wi-Fi me matje</translation>
 <translation id="3583278742022654445">Fuqi e dobët e sinjalit. Provo t'i afrohesh më shumë burimit të sinjalit Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
-<translation id="7240035910874241640">Të gjitha pajisjet periferike janë të përditësuara</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">Matësit e trafikut</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
-<translation id="8520963233738002436">Pajisja jote <ph name="DEVICE_NAME" /> është e përditësuar</translation>
 <translation id="8521021929829989041">Përdore si pajisje personale</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">Ekzekuto përsëri</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skano}=1{Skano faqen {NUMBER_OF_PAGES}}other{Skano faqen {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Po instalohet - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
 <translation id="9003704114456258138">Frekuenca</translation>
 <translation id="9039663905644212491">PEAP</translation>

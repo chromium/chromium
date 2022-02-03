@@ -70,7 +70,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1186201132766001848">Skontrolovať heslá</translation>
-<translation id="1195210374336998651">Prejsť do nastavení aplikácie</translation>
 <translation id="1195558154361252544">Upozornenia sú automaticky blokované pre všetky weby okrem tých, ktoré povolíte</translation>
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="1201402288615127009">Ďalej</translation>
@@ -836,7 +835,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3587738293690942763">Stred</translation>
 <translation id="3592413004129370115">Italian (obálka)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}=1{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}few{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dni.}many{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dňa.}other{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dní.}}</translation>
-<translation id="3596012367874587041">Nastavenia aplikácie</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikácia bola zablokovaná vaším správcom</translation>
 <translation id="3608932978122581043">Orientácia zásobníka</translation>

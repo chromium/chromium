@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}other{Teid logitakse # sekundi pärast automaatselt välja.
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}}</translation>
 <translation id="1193927020065025187">See sait võib üritada meelitada teid lubama sekkuvaid märguandeid</translation>
+<translation id="1195210374336998651">Rakenduse seadete avamine</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
 <translation id="1195558154361252544">Märguanded blokeeritakse automaatselt kõigi saitide, välja arvatud lubatud saitide puhul.</translation>
 <translation id="1197088940767939838">Oranž</translation>
@@ -771,6 +772,7 @@
 <translation id="176587472219019965">&amp;Uus aken</translation>
 <translation id="1766575458646819543">Väljuti täisekraanirežiimist</translation>
 <translation id="1766957085594317166">Salvestage paroolid turvaliselt oma Google'i kontole ja te ei pea neid enam kunagi sisestama</translation>
+<translation id="1767043563165955993">Kasuta Androidi rakendustega</translation>
 <translation id="1768212860412467516">Katse <ph name="EXPERIMENT_NAME" /> kohta tagasiside saatmine.</translation>
 <translation id="1768278914020124551">Vabandust! Sisselogimisserveriga ühenduse võtmisel ilmnes probleem. Kontrollige oma võrguühendust ja domeeni nime ning proovige siis uuesti.</translation>
 <translation id="1769104665586091481">Ava link uues &amp;aknas</translation>
@@ -1106,6 +1108,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2113479184312716848">Ava &amp;fail ...</translation>
 <translation id="2113921862428609753">Juurdepääs keskuseteabele</translation>
 <translation id="2114326799768592691">Laadi &amp;raam uuesti</translation>
+<translation id="2114413269775311385">Kasutage seda kontot Androidi rakendustega. Saate Androidi rakenduste lube hallata jaotises <ph name="LINK_BEGIN" />Rakenduste seaded<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Foto autor: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM-kaarti pole sisestatud</translation>
 <translation id="2116619964159595185">Saidid loovad Bluetooth-seadmetega ühenduse tavaliselt teatud funktsioonide jaoks, nagu väikese energiakuluga majaka, tervise- või treeningurakenduse või nutivalgusti pirni seadistamine või sünkroonimine</translation>
@@ -1898,6 +1901,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="287205682142673348">Pordisiire</translation>
 <translation id="287286579981869940">Lisa <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
+<translation id="2873995907777332853">Kuva üksikasjad kõigi küpsisefailide blokeerimise kohta</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
 <translation id="2875698561019555027">(Chrome'i vealehed)</translation>
 <translation id="2876336351874743617">2. sõrm</translation>
@@ -1945,6 +1949,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2915873080513663243">Automaatne skannimine</translation>
 <translation id="2916073183900451334">Veebilehel tabeldusklahvi vajutades tõstetakse esile lingid ja ka vormiväljad</translation>
 <translation id="2916745397441987255">Otsige laiendusi</translation>
+<translation id="2918484639460781603">Ava seaded</translation>
 <translation id="2918484644467055090">Seda seadet ei saa registreerida organisatsioonis, kuhu teie konto kuulub, sest seade on märgitud teises organisatsioonis haldamiseks.</translation>
 <translation id="2920852127376356161">Pole lubatud protokolle käsitleda</translation>
 <translation id="2921081876747860777">Looge parool, et oma kohalikke andmeid kaitsta.</translation>
@@ -2201,6 +2206,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3189187154924005138">Suur kursor</translation>
 <translation id="3190558889382726167">Parool salvestati</translation>
 <translation id="3192947282887913208">Helifailid</translation>
+<translation id="3194786596445804250">Kuva üksikasjad kolmanda osapoole küpsisefailide blokeerimise kohta</translation>
 <translation id="3197453258332670132">Paremkliki või pika vajutusega kuvatakse valitud teksti kohta seotud teavet</translation>
 <translation id="3199127022143353223">Serverid</translation>
 <translation id="3200061262156232574">Teie ostukorvis</translation>
@@ -2568,6 +2574,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3592260987370335752">&amp;Lisateave</translation>
 <translation id="3593152357631900254">Luba hägus pinyini režiim</translation>
 <translation id="3593965109698325041">Sertifikaadi nimepiirangud</translation>
+<translation id="3596012367874587041">Rakenduse seaded</translation>
 <translation id="3596414637720633074">Blokeerige kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="3599221874935822507">Tõstetud</translation>
 <translation id="3599863153486145794">Kustutab ajaloo kõigist sisselogitud seadmetest. Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
@@ -2945,6 +2952,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3943582379552582368">&amp;Tagasi</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="3945513714196326460">Proovige lühemat nime</translation>
+<translation id="3947643756376959257">Sisestage Chromecastis või teleris kuvatud pääsukood.</translation>
 <translation id="3948027458879361203">Hosti nime muutmine</translation>
 <translation id="3948116654032448504">&amp;Otsi teenusest <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> saab muuta järgmistes kaustades olevaid faile</translation>
@@ -3186,12 +3194,14 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4210048056321123003">Virtuaalseadme allalaadimine</translation>
 <translation id="421182450098841253">Kuva &amp;järjehoidjariba</translation>
 <translation id="4211851069413100178">Saada kasutus- ja diagnostikaandmeid. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja  diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle <ph name="BEGIN_LINK1" />seade<ph name="END_LINK1" /> on jõustanud omanik. Omanik võib otsustada saata Google'ile selle seadme diagnostika- ja kasutusandmeid. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Lõpeta Androidi rakendustega kasutamine</translation>
 <translation id="42126664696688958">Eksportimine</translation>
 <translation id="42137655013211669">Server keelas juurdepääsu ressursile.</translation>
 <translation id="4217571870635786043">Dikteerimine</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Aktiveerimisel ilmnes viga.</translation>
 <translation id="4225397296022057997">Kõikidel saitidel</translation>
+<translation id="4227605727325220318">Lisa uus Android-telefon</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{See laiendus pole lubatud}other{Mõned laiendused pole lubatud}}</translation>
 <translation id="4231095370974836764">Installige Google Playst oma seadmesse <ph name="DEVICE_TYPE" /> rakendusi ja mänge. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberose seadistamine</translation>
@@ -4722,6 +4732,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5862109781435984885">Kuva riiulis elektronpliiatsi tööriistad</translation>
 <translation id="5862319196656206789">Ühendatud seadmete seadistamine</translation>
 <translation id="5863445608433396414">Silumisfunktsioonide lubamine</translation>
+<translation id="5864147196375746035">Ülekandmine hallatud seadmesse</translation>
 <translation id="5864195618110239517">Kasuta mahupõhist ühendust</translation>
 <translation id="5864754048328252126">Toiming Tegevusetu laadimise ajal</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> peatatakse varsti</translation>
@@ -5291,6 +5302,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6455264371803474013">Konkreetsetel saitidel</translation>
 <translation id="6455894534188563617">&amp;Uus kaust</translation>
 <translation id="645705751491738698">Jätka JavaScripti blokeerimist</translation>
+<translation id="6458347417133445570">Kuva üksikasjad kõigi küpsisefailide lubamise kohta</translation>
 <translation id="6458701200018867744">Üleslaadimine nurjus (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Kasuta otsimiseks valikut</translation>
 <translation id="6459799433792303855">Aktiivne aken teisaldati teisele ekraanile.</translation>
@@ -5901,6 +5913,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7086672505018440886">Kaasake sellesse arhiivi Chrome'i logifailid.</translation>
 <translation id="7088434364990739311">Värskenduste otsimist ei õnnestunud käivitada (veakood <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Administraator on määranud seadme mittetoetatud olekusse. Liitumise lubamiseks paluge administraatoril määrata seade ootel olekusse.</translation>
+<translation id="7090160970140261931">Saate oma seadmesse <ph name="DEVICE_TYPE" /> lisada täiendavaid kontosid, mida veebisaitide ja Androidi rakendustega kasutada. Samuti saate juhtida, milliseid kontosid Androidi rakendustega kasutatakse.</translation>
 <translation id="7093220653036489319">Kiired vastused</translation>
 <translation id="7093416310351037609">Andmete ohutuse ja turvalisuse huvides nõuab teie organisatsioon kõigi sobilike allalaadimiste salvestamist organisatsiooni teenuse <ph name="WEB_DRIVE" /> kontole.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6721,6 +6734,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> saab vaadata faili <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Lisage sõnad, mille soovite lasta õigekirjakontrollil vahele jätta</translation>
+<translation id="7922935920104868876">Kuva üksikasjad kolmanda osapoole küpsisefailide blokeerimise kohta inkognito režiimis</translation>
 <translation id="7924358170328001543">Viga pordi edastamisel</translation>
 <translation id="7925108652071887026">Andmete automaatne täitmine</translation>
 <translation id="792514962475806987">Dokitud luubi suumitase:</translation>
@@ -6885,6 +6899,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8076492880354921740">Vahelehed</translation>
 <translation id="8076835018653442223">Teie administraator on keelanud seadmes juurdepääsu kohalikele failidele</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Kontod, mis on saadaval Androidi rakendustega kasutamiseks</translation>
 <translation id="8081989000209387414">Kas keelata ADB silumine?</translation>
 <translation id="8082106343289440791">Kas siduda seadmega „<ph name="DEVICE_NAME" />”?</translation>
 <translation id="8082390128630131497">ADB silumise keelamine lähtestab seadme <ph name="DEVICE_TYPE" /> tehaseseadetele. Kõik kasutajakontod ja kohalikud andmed tühjendatakse.</translation>
@@ -6959,6 +6974,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8147900440966275470">Leiti <ph name="NUM" /> vaheleht</translation>
 <translation id="8148760431881541277">Sisselogimise piiramine</translation>
 <translation id="8149564499626272569">Kinnita telefoniga USB-kaabli kaudu</translation>
+<translation id="815114315010033526">Kasuta selle asemel QR-koodi</translation>
 <translation id="8151638057146502721">Seadista</translation>
 <translation id="8154790740888707867">Fail puudub</translation>
 <translation id="8154912474061769055">Funktsioonid ei pruugi paljudel saitidel toimida</translation>
@@ -6984,6 +7000,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8176332201990304395">Roosa ja valge</translation>
 <translation id="8177196903785554304">Võrgu üksikasjad</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Teisalda vaheleht uude aknasse}other{Teisalda vahelehed uude aknasse}}</translation>
+<translation id="8179188928355984576">Ei kasutata Androidi rakendustega</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />” saab märgitud asukohtade pildi-, video- ja helifaile lugeda ning kirjutada.</translation>
 <translation id="8181215761849004992">Domeeniga ei saa liituda. Kontrollige oma kontot ja veenduge, et teil oleks seadmete lisamiseks piisavad õigused.</translation>
@@ -7143,6 +7160,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8342861492835240085">Kogu valimine</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="834785183489258869">Inkognito režiimis ei saa saidid eri saitidel küpsisefailide kaudu teie sirvimistegevusi jälgida, näiteks selleks, et reklaame isikupärastada. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
+<translation id="8349499562373871073">Saate valida olemasoleva konto, mida kasutada Androidi rakendustega, või lisada uue Google'i konto. Kui Androidi rakendusse sisse logite, saab teie kontot kasutada muude Androidi rakendustega. Saate Androidi rakenduste juurdepääsu muuta menüüs <ph name="LINK_BEGIN" />Seaded &gt; Kontod<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Elektronpliiatsi tööriistad dokis</translation>
 <translation id="8351316842353540018">Kuva alati a11y valikud</translation>
 <translation id="8351419472474436977">Laiendus on hõivanud puhverserveri seaded, mis tähendab, et see saab muuta, lõhkuda või kuulata pealt kogu teie veebitegevust. Kui te pole kindel, miks see muudatus toimus, siis te tõenäoliselt ei taha seda.</translation>

@@ -70,7 +70,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1186201132766001848">Kontrollo fjalëkalimet</translation>
-<translation id="1195210374336998651">Shko te cilësimet e aplikacionit</translation>
 <translation id="1195558154361252544">Njoftimet janë bllokuar automatikisht për të gjitha sajtet përveçse për ato që lejon ti</translation>
 <translation id="1197088940767939838">Portokalli</translation>
 <translation id="1201402288615127009">Para</translation>
@@ -842,7 +841,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3587738293690942763">Mesatar</translation>
 <translation id="3592413004129370115">Italian (Zarf)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Mund ta rivendosësh grupin tënd në çdo kohë. Duhet rreth një ditë për t'u bashkuar në një grup të ri.}=1{Mund ta rivendosësh grupin tënd në çdo kohë. Duhet rreth një ditë për t'u bashkuar në një grup të ri.}other{Mund ta rivendosësh grupin tënd në çdo kohë. Duhen {NUM_DAYS} ditë për t'u bashkuar në një grup të ri.}}</translation>
-<translation id="3596012367874587041">Cilësimet e aplikacionit</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikacioni u bllokua nga administratori yt</translation>
 <translation id="3608932978122581043">Orientimi i furnizimit</translation>
@@ -1973,6 +1971,7 @@ Detaje shtesë:
 <translation id="7334320624316649418">&amp;Ribëj renditjen</translation>
 <translation id="7335157162773372339">Mund të kërkojë të përdorë kamerën tënde</translation>
 <translation id="7337248890521463931">Shfaq më shumë radhë</translation>
+<translation id="7337418456231055214">Nuk është plotësuar numri i kartës virtuale? Kliko detajet e kartës për t'i kopjuar. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Nuk ofrohet në këtë platformë.</translation>
 <translation id="733923710415886693">Certifikata e serverit nuk është zbuluar përmes "Transparencës së certifikatave".</translation>
 <translation id="734600844861828519">11x15</translation>

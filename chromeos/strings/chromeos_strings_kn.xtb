@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="PRINTED_PAGES" /> ಪುಟವನ್ನು ಮುದ್ರಿಸಲಾಗಿದೆ.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ನೇ ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ. <ph name="PERCENTAGE_VALUE" />% ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="3459509316159669723">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3484914941826596830">ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತಿರುವ ಸಮಯದಲ್ಲಿ, ಈ ಬಾಹ್ಯ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ ಅಥವಾ ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ಥಶಟ್ ಡೌನ್ ಮಾಡಬೇಡಿ. ನೀವು ಈ ವಿಂಡೋವನ್ನು ಕುಗ್ಗಿಸಬಹುದು. ಈ ಅಪ್‌ಡೇಟ್, ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನವು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="3486220673238053218">ವಿವರಣೆ</translation>
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="3565064564551103223">ಅನುಮತಿಸಲಾದ IP ಗಳು</translation>
+<translation id="3577473026931028326">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="3583278742022654445">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ ದುರ್ಬಲವಾಗಿದೆ. ವೈ-ಫೈ ಸಿಗ್ನಲ್ ಮೂಲದ ಸಮೀಪಕ್ಕೆ ಹೋಗಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ನಿರ್ವಾಹಕರು ರಿಮೋಟ್ ಆಗಿ ಸಾಧನವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
-<translation id="7240035910874241640">ಎಲ್ಲಾ ಪೆರಿಫೆರಲ್‌ಗಳು ಅಪ್‌ ಟು ಡೇಟ್‌‌ ಆಗಿವೆ</translation>
 <translation id="7271040990581020067">ಸ್ಕ್ಯಾನರ್ ಅನ್ನು ಪ್ರಸ್ತುತವಾಗಿ ಬಳಸಲಾಗುತ್ತಿದೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ವಾಲ್‌ಪೇಪರ್ ಸಂಗ್ರಹಗಳು</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳು</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="8503836310948963452">ಕೇವಲ ಕೆಲವೇ ನಿಮಿಷಗಳು…</translation>
-<translation id="8520963233738002436">ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಅಪ್‌ ಟು ಡೇಟ್‌ ಆಗಿದೆ</translation>
 <translation id="8521021929829989041">ವೈಯಕ್ತಿಕ ಸಾಧನವಾಗಿ ಬಳಸಿ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ನಿಮ್ಮ ವಾಹಕವು ತಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಈ ಆಯ್ಕೆಯ ಅಗತ್ಯವಿರಬಹುದು. ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">ಮತ್ತೆ ಚಾಲನೆ ಮಾಡಿ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ಸ್ಕ್ಯಾನ್}=1{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}one{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}other{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">ಸಾಧನದಲ್ಲಿ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿ ಇದೆ.</translation>
 <translation id="9003704114456258138">ಫ್ರೀಕ್ವೆನ್ಸಿ</translation>
 <translation id="9039663905644212491">PEAP</translation>

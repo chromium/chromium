@@ -70,7 +70,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1186201132766001848">Yfirfara aðgangsorð</translation>
-<translation id="1195210374336998651">Opna forritastillingar</translation>
 <translation id="1195558154361252544">Sjálfkrafa er lokað á tilkynningar fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
 <translation id="1197088940767939838">Appelsínugulur</translation>
 <translation id="1201402288615127009">Áfram</translation>
@@ -843,7 +842,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3587738293690942763">Miðja</translation>
 <translation id="3592413004129370115">Italian (umslag)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur um einn dag að ganga í nýjan hóp.}=1{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur um einn dag að ganga í nýjan hóp.}one{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur {NUM_DAYS} dag að ganga í nýjan hóp.}other{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur {NUM_DAYS} daga að ganga í nýjan hóp.}}</translation>
-<translation id="3596012367874587041">Forritastillingar</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Kerfisstjóri hefur lokað á þetta forrit</translation>
 <translation id="3608932978122581043">Inntaksstefna</translation>
@@ -1977,6 +1975,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7334320624316649418">Endu&amp;rtaka nýja röðun</translation>
 <translation id="7335157162773372339">Getur beðið um að nota myndavélina</translation>
 <translation id="7337248890521463931">Sýna fleiri línur</translation>
+<translation id="7337418456231055214">Var sýndarkortsnúmerið ekki útfyllt? Smelltu á upplýsingar kortsins til að afrita. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Ekki í boði fyrir stýrikerfið þitt.</translation>
 <translation id="733923710415886693">Vottorð vefþjóns var ekki birt í gegnum gagnsæi vottorðs.</translation>
 <translation id="734600844861828519">11x15</translation>

@@ -290,6 +290,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# skedar audio}other{# skedarë audio}}</translation>
 <translation id="265156376773362237">Ngarkimi paraprak standard</translation>
 <translation id="2656405586795711023">Aplikacionet e uebit</translation>
+<translation id="2689830683995595741">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />. Zbatohet gjithashtu <ph name="BEGIN_LINK3" />"Njoftimi i privatësisë" për "Llogaritë e menaxhuara të Google" me Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">E re: Ndaj një lidhje që të drejton te ky tekst</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2707726405694321444">Rifresko faqen</translation>
@@ -625,6 +626,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
 <translation id="4696983787092045100">Dërgo tekstin te pajisjet e tua</translation>
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
+<translation id="471759387343966120">Duke vazhduar, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit<ph name="END_TOS_LINK" /> dhe <ph name="BEGIN_PRIVACY_LINK" />Politikën e privatësisë<ph name="END_PRIVACY_LINK" />.\nPër të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_UMA_LINK" />Menaxho<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
 <translation id="4720023427747327413">Hape në <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Ndihmo në përmirësimin e Chrome. <ph name="BEGIN_LINK" />Plotëso anketën<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
 <translation id="6277722725779679269">Veçoria "Monitoro çmimin" nuk mund të përditësohej</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Mund të dërgosh skeda ndërmjet pajisjeve që janë të identifikuara me të njëjtën "Llogari të Google"</translation>
 <translation id="6297765934698848803">Organizata që menaxhon pajisjen tënde ka çaktivizuar kamerën tënde.</translation>
 <translation id="6301525844455696527">Mos e harro listën tënde të leximit</translation>

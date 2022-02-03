@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Sida <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" /> har skrivits ut.</translation>
 <translation id="345898999683440380">Skannar sida <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % har slutförts.</translation>
 <translation id="3459509316159669723">Skriva ut</translation>
-<translation id="3462187165860821523">Uppdaterar <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Koppla inte från den externa enheten eller stäng av datorn medan firmware uppdateras. Du kan minimera fönstret. Uppdateringen kan ta en stund och din externa enhet kanske inte fungerar under tiden.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvis aktiverat</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
 <translation id="3565064564551103223">Tillåtna IP-adresser</translation>
+<translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="357889014807611375">wifi med datapriser</translation>
 <translation id="3583278742022654445">Svag signalstyrka. Testa att gå närmare källan till wifi-signalen.</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
@@ -462,7 +462,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
-<translation id="7240035910874241640">All kringutrustning är uppdaterad</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlingar med bakgrunder</translation>
@@ -563,7 +562,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8498220429738806196">Trafikräknare</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8503836310948963452">Bara några minuter kvar …</translation>
-<translation id="8520963233738002436">Din <ph name="DEVICE_NAME" /> är uppdaterad</translation>
 <translation id="8521021929829989041">Använd en personlig enhet</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Det här alternativet kan krävas för att du ska kunna ansluta till operatörens nätverk. Kontakta operatören för mer information.</translation>
@@ -607,7 +605,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8970109610781093811">Kör igen</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Genomsök}=1{Genomsök sida {NUMBER_OF_PAGES}}other{Genomsök sida {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Installeras – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="8997710128084572139">Enhetens batterinivå är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9039663905644212491">PEAP</translation>

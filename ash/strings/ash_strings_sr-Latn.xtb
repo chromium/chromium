@@ -146,6 +146,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1836215606488044471">Pomoćnik (učitava se...)</translation>
 <translation id="1838895407229022812">Noćno svetlo je isključeno.</translation>
 <translation id="1864454756846565995">Uređaj sa USB priključkom tipa C (zadnji port)</translation>
+<translation id="1879018240766558464">Prozori bez arhiviranja trenutno nisu podržani. Druge aplikacije će biti sačuvane.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Preslikavanje u <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Otključajte otiskom prsta</translation>
@@ -947,6 +948,7 @@ Novo instaliranje</translation>
 <translation id="7366890467478514168">Povežite <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Snimi prozor</translation>
 <translation id="7377169924702866686">Caps Lock je uključen.</translation>
+<translation id="7377481913241237033">Povežite se pomoću koda</translation>
 <translation id="7378203170292176219">Prevucite da biste izabrali oblast za snimanje</translation>
 <translation id="7378594059915113390">Kontrole za medije</translation>
 <translation id="7378889811480108604">Režim uštede baterije je isključen</translation>
@@ -974,6 +976,7 @@ Novo instaliranje</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7526573455193969409">Mreža se možda nadgleda</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux aplikacije i prozori bez arhiviranja trenutno nisu podržani. Druge aplikacije će biti sačuvane.</translation>
 <translation id="7544300628205093162">Pozadinsko osvetljenje tastature je uključeno</translation>
 <translation id="7548434653388805669">Vreme je za spavanje</translation>
 <translation id="7551643184018910560">Zakači na policu</translation>

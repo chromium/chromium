@@ -65,6 +65,7 @@
 <translation id="2574930892358684005">A conta de <ph name="EXISTING_USER" /> já está conectada a este perfil do Chrome. Para manter sua navegação separada, o Chrome pode criar um perfil só para você.</translation>
 <translation id="2580411288591421699">Não é possível instalar a mesma versão do Google Chrome que está em execução. Feche o Google Chrome e tente novamente.</translation>
 <translation id="2586406160782125153">Essa ação excluirá seus dados de navegação desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">As permissões que você já concedeu a sites e apps podem ser aplicadas a esta conta. Se você não quer que sites ou apps tenham acesso às informações da sua conta, use o Modo convidado no navegador Chrome. Também é possível gerenciar suas Contas do Google nas <ph name="LINK_2_BEGIN" />Configurações<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">O Chrome não pode verificar se há atualizações. Verifique sua conexão com a Internet.</translation>
 <translation id="2644798301485385923">Sistema Chrome OS</translation>
 <translation id="2652691236519827073">Abrir link em nova &amp;guia do Chrome</translation>

@@ -290,6 +290,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ta audio fayl}other{# ta audio fayl}}</translation>
 <translation id="265156376773362237">Standart oldindan yuklash</translation>
 <translation id="2656405586795711023">Veb-ilovalar</translation>
+<translation id="2689830683995595741">Chromeni ishlatish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va Chrome OS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz. <ph name="BEGIN_LINK3" />Family Link bilan boshqariladigan Google hisoblari uchun Maxfiylik eslatmasi<ph name="END_LINK3" /> ham tatbiq qilinadi.</translation>
 <translation id="2702516483241149200">Yangi: bu matnga varaqlaydigan havolani ulashing</translation>
 <translation id="2704606927547763573">Nusxa olindi</translation>
 <translation id="2707726405694321444">Sahifani yangilash</translation>
@@ -625,6 +626,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}}</translation>
 <translation id="4696983787092045100">Matnni qurilmalaringizga yuborish</translation>
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>
+<translation id="471759387343966120">Davom etish orqali siz <ph name="BEGIN_TOS_LINK" />Xizmat shartlari<ph name="END_TOS_LINK" /> va <ph name="BEGIN_PRIVACY_LINK" />Maxfiylik siyosatiga<ph name="END_PRIVACY_LINK" /> rozilik bildirasiz.\nIlovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_UMA_LINK" />Boshqarish<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tarjima qilishni taklif qilish</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> orqali ochish</translation>
 <translation id="4720982865791209136">Chrome brauzerini yaxshilashga yordam bering. <ph name="BEGIN_LINK" />So‘rovnomada qatnashing.<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6277522088822131679">Sahifani chop etishda muammo yuzaga keldi. Qayta urinib ko‘ring.</translation>
 <translation id="6277722725779679269">Kuzatiladigan narx yangilanmadi</translation>
 <translation id="6278428485366576908">Mavzu</translation>
+<translation id="6292420053234093573">Chromeni ishlatish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va Chrome OS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz.</translation>
 <translation id="6294610283659775533">Varaqlarni bir xil Google hisobidan kirilgan qurilmalararo yuborish mumkin</translation>
 <translation id="6297765934698848803">Kamerangiz qurilmangizni boshqaruvchi tashkilot tomonidan oʻchirib qoʻyildi.</translation>
 <translation id="6301525844455696527">Mutolaa roʻyxatingiz esdan chiqmasin</translation>

@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Prentaði síðu <ph name="PRINTED_PAGES" /> af <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skannar síðu <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% lokið.</translation>
 <translation id="3459509316159669723">Prentun</translation>
-<translation id="3462187165860821523">Uppfærir <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Ekki taka þetta ytra tæki úr sambandi eða slökkva á tölvunni þinni á meðan fastbúnaðurinn uppfærist. Þú getur minnkað þennan glugga. Uppfærslan gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
 <translation id="3565064564551103223">Leyfðar IP-tölur</translation>
+<translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="357889014807611375">Wi-Fi net með mælda notkun</translation>
 <translation id="3583278742022654445">Lítill sendistyrkur. Prófaðu að færa þig nær WiFi-sendibúnaðinum.</translation>
 <translation id="3595596368722241419">Rafhlaða fullhlaðin</translation>
@@ -462,7 +462,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7177485034254901881"><ph name="MANAGER" /> hefur umsjón með þessu <ph name="DEVICE_TYPE" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
-<translation id="7240035910874241640">Öll jaðartæki eru uppfærð</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Veggfóðurssöfn</translation>
@@ -563,7 +562,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8498220429738806196">Talning umferðar</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> er uppfært</translation>
 <translation id="8521021929829989041">Nota sem persónulegt tæki</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Símafyrirtæki kunna að biðja þig um slíkt til að tengjast neti þeirra. Hafðu samband við símafyrirtækið til að fá frekari upplýsingar.</translation>
@@ -607,7 +605,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8970109610781093811">Keyra aftur</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanna}=1{Skanna síðu {NUMBER_OF_PAGES}}one{Skanna síðu {NUMBER_OF_PAGES}}other{Skanna síðu {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Setur upp – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Rafhleðsla tækisins er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Tíðni</translation>
 <translation id="9039663905644212491">PEAP</translation>

@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайла}}</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
 <translation id="2656405586795711023">Уеб приложения</translation>
+<translation id="2689830683995595741">С използването на Chrome приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Съобщението за поверителност за профилите в Google, управлявани чрез Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Ново: споделяне на връзка, която превърта до този текст</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Опресняване на страницата</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Изпращане на текст до устройствата ви</translation>
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
+<translation id="471759387343966120">Продължавайки, приемате <ph name="BEGIN_TOS_LINK" />Общите условия<ph name="END_TOS_LINK" /> и <ph name="BEGIN_PRIVACY_LINK" />Декларацията за поверителност<ph name="END_PRIVACY_LINK" />.\nС цел подобряване на приложението Chrome изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_UMA_LINK" />Управление<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Предложения за превод</translation>
 <translation id="4720023427747327413">Отваряне в <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Помогнете за подобряването на Chrome. <ph name="BEGIN_LINK" />Участвайте в анкетата<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">При отпечатването на страницата възникна проблем. Моля, опитайте отново.</translation>
 <translation id="6277722725779679269">Проследяваните цени не бяха актуализирани</translation>
 <translation id="6278428485366576908">Тема</translation>
+<translation id="6292420053234093573">С използването на Chrome приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Можете да изпращате раздели до други устройства, на които сте влезли в един и същ профил в Google</translation>
 <translation id="6297765934698848803">Организацията, която управлява устройството ви, е изключила камерата.</translation>
 <translation id="6301525844455696527">Не забравяйте списъка си за четене</translation>

@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}other{您将在 # 秒后自动退出。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>
 <translation id="1193927020065025187">此网站可能正试图诱骗您允许显示侵扰性通知</translation>
+<translation id="1195210374336998651">转到应用设置</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1195558154361252544">除您允许的网站外，已自动阻止所有其他网站显示通知</translation>
 <translation id="1197088940767939838">橙色</translation>
@@ -384,6 +385,7 @@
 <translation id="1396259464226642517">此结果出乎意料？<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">您输入的用户名和密码不匹配</translation>
 <translation id="1397500194120344683">没有任何符合条件的设备。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">您已在这些设备上登录 Chrome，因此您可以将他们用作安全密钥。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="139911022479327130">解锁您的手机并证实您的身份</translation>
 <translation id="1401308693935339022">使用位置信息。允许具有位置权限的应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
@@ -1165,6 +1167,7 @@
 <translation id="2163470535490402084">请连接到互联网，以便登录您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
+<translation id="2165102982098084499">您已通过扫描二维码关联这些设备。</translation>
 <translation id="2165177462441582039">选择系统应将每项内容突出显示多久</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">仍然登录</translation>
@@ -1890,6 +1893,7 @@
 <translation id="287205682142673348">端口转发</translation>
 <translation id="287286579981869940">添加“<ph name="PROVIDER_NAME" />”…</translation>
 <translation id="2872961005593481000">关机</translation>
+<translation id="2873995907777332853">显示屏蔽所有 Cookie 的有关详情</translation>
 <translation id="2874939134665556319">上一首</translation>
 <translation id="2875698561019555027">（Chrome 错误页面）</translation>
 <translation id="2876336351874743617">手指 2</translation>
@@ -1937,6 +1941,7 @@
 <translation id="2915873080513663243">自动扫描</translation>
 <translation id="2916073183900451334">在网页上按 Tab 可突出显示链接以及表单字段</translation>
 <translation id="2916745397441987255">搜索扩展程序</translation>
+<translation id="2918484639460781603">转到“设置”</translation>
 <translation id="2918484644467055090">该设备无法注册到您帐号所属的组织，因为它已被标记为受另一组织管理。</translation>
 <translation id="2920852127376356161">不得处理协议</translation>
 <translation id="2921081876747860777">请设置密码，以保护您的本地数据。</translation>
@@ -2193,6 +2198,7 @@
 <translation id="3189187154924005138">大号光标</translation>
 <translation id="3190558889382726167">密码已保存</translation>
 <translation id="3192947282887913208">音频文件</translation>
+<translation id="3194786596445804250">显示屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="3197453258332670132">只要您右键点击或长按所选文字，系统就会显示与其相关的信息</translation>
 <translation id="3199127022143353223">服务器</translation>
 <translation id="3200061262156232574">您的购物车内的商品</translation>
@@ -2560,6 +2566,7 @@
 <translation id="3592260987370335752">了解详情(&amp;L)</translation>
 <translation id="3593152357631900254">启用模糊拼音模式</translation>
 <translation id="3593965109698325041">证书名称约束</translation>
+<translation id="3596012367874587041">应用设置</translation>
 <translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3599221874935822507">凸起</translation>
 <translation id="3599863153486145794">清除所有登录过的设备上的历史记录。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
@@ -5286,6 +5293,7 @@
 <translation id="6455264371803474013">在特定网站上</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
 <translation id="645705751491738698">继续拦截 JavaScript</translation>
+<translation id="6458347417133445570">显示允许所有 Cookie 的有关详情</translation>
 <translation id="6458701200018867744">上传失败（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">使用所选内容查找</translation>
 <translation id="6459799433792303855">活动窗口已移至另一显示屏。</translation>
@@ -5678,6 +5686,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">代理设置...</translation>
 <translation id="6860427144121307915">在标签页中打开</translation>
+<translation id="6863496016067551393">允许运行所有扩展程序</translation>
 <translation id="686366188661646310">删除密码？</translation>
 <translation id="6865313869410766144">自动填充表单数据</translation>
 <translation id="6865598234501509159">不是<ph name="LANGUAGE" />网页</translation>
@@ -5707,6 +5716,7 @@
 <translation id="6900532703269623216">增强型保护</translation>
 <translation id="6900651018461749106">重新登录后即可更新 <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">确定要删除此搜索引擎吗？</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">要试听的语音</translation>
 <translation id="6902336033320348843">有区段不受支持：<ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">将设备加入网域</translation>
@@ -6716,6 +6726,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>
 <translation id="7920482456679570420">添加您想让“拼写检查”功能跳过的字词</translation>
+<translation id="7922935920104868876">显示在无痕模式下屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="7924358170328001543">转发端口时出错</translation>
 <translation id="7925108652071887026">自动填充数据</translation>
 <translation id="792514962475806987">停靠的放大镜的缩放级别：</translation>
@@ -6880,6 +6891,7 @@
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8076835018653442223">您的管理员已禁止访问您设备上的本地文件</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">可用于登录 Android 应用的帐号</translation>
 <translation id="8081989000209387414">停用 ADB 调试？</translation>
 <translation id="8082106343289440791">与“<ph name="DEVICE_NAME" />”配对？</translation>
 <translation id="8082390128630131497">停用 ADB 调试会将此<ph name="DEVICE_TYPE" />恢复出厂设置。所有用户帐号和本地数据都会被清空。</translation>
@@ -7140,6 +7152,7 @@
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="834785183489258869">不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
+<translation id="8349499562373871073">您可选择一个现有帐号以用于登录 Android 应用，或者添加一个新的 Google 帐号。只要登录了一款 Android 应用，您的帐号便可登录其他 Android 应用。您可在<ph name="LINK_BEGIN" />设置 &gt; 帐号<ph name="LINK_END" />部分中更改 Android 应用的权限。</translation>
 <translation id="8350789879725387295">在 Dock 中显示触控笔工具</translation>
 <translation id="8351316842353540018">始终显示无障碍设置选项</translation>
 <translation id="8351419472474436977">此扩展程序控制了您的代理设置，也就是说，它可以更改、破坏或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
@@ -7355,6 +7368,7 @@
 <translation id="8610103157987623234">格式不正确，请重试</translation>
 <translation id="8611682088849615761">继续允许此网站全面控制 MIDI 设备</translation>
 <translation id="8613164732773110792">只能包含小写字符、数字、下划线或连字符</translation>
+<translation id="8613645710357126807">不允许使用扩展程序</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 太大，无法进行安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="8615618338313291042">隐身模式下使用的应用...<ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">将“<ph name="CONTACT_NAME" />”添加到您的通讯录</translation>

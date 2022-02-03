@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.}other{Jy sal oor # sekondes outomaties afgemeld word.
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.}}</translation>
 <translation id="1193927020065025187">Hierdie werf probeer jou dalk mislei om indringerige kennisgewings toe te laat</translation>
+<translation id="1195210374336998651">Gaan na programinstellings toe</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1195558154361252544">Kennisgewings word outomaties geblokkeer vir alle werwe behalwe dié wat jy toelaat</translation>
 <translation id="1197088940767939838">Oranje</translation>
@@ -386,6 +387,7 @@
 <translation id="1396259464226642517">Was hierdie resultaat onverwags? <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Die gebruikernaam en wagwoord wat jy ingevoer het, pas nie</translation>
 <translation id="1397500194120344683">Geen geskikte toestelle nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Jy is by Chrome aangemeld op hierdie toestelle en daarom kan jy hulle as sekuriteitsleutels gebruik.</translation>
 <translation id="1398853756734560583">Maak groot</translation>
 <translation id="139911022479327130">Ontsluit jou foon en bevestig dat dit jy is</translation>
 <translation id="1401308693935339022">Gebruik ligging. Laat programme en dienste met liggingtoestemming toe om hierdie toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op 'n anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter.</translation>
@@ -1180,6 +1182,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2163470535490402084">Koppel aan die internet om by jou <ph name="DEVICE_TYPE" /> aan te meld.</translation>
 <translation id="2163937499206714165">Skakel donkermodus aan</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 skakelaar</translation>
+<translation id="2165102982098084499">Jy het hierdie toestelle gekoppel deur 'n QR-kode te skandeer.</translation>
 <translation id="2165177462441582039">Kies hoe lank die kleurmerk op elke item moet bly</translation>
 <translation id="2166369534954157698">abcde fghij klmno pqrst uvwxyz</translation>
 <translation id="2169062631698640254">Meld in elk geval aan</translation>
@@ -2581,6 +2584,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3592260987370335752">Kom meer te wete</translation>
 <translation id="3593152357631900254">Aktiveer Fuzzy-Pinyin-modus</translation>
 <translation id="3593965109698325041">Sertifikaatnaam-beperkings</translation>
+<translation id="3596012367874587041">Programinstellings</translation>
 <translation id="3596414637720633074">Blokkeer derdepartywebkoekies in Incognito</translation>
 <translation id="3599221874935822507">Opgehewe</translation>
 <translation id="3599863153486145794">Vee geskiedenis op alle aangemelde toestelle uit. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5703,6 +5707,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Instaanbedienerinstellings …</translation>
 <translation id="6860427144121307915">Maak in 'n oortjie oop</translation>
+<translation id="6863496016067551393">Alle uitbreidings word toegelaat</translation>
 <translation id="686366188661646310">Vee wagwoord uit?</translation>
 <translation id="6865313869410766144">Vul vormdata outomaties in</translation>
 <translation id="6865598234501509159">Bladsy is nie in <ph name="LANGUAGE" /> nie</translation>
@@ -5732,6 +5737,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6900532703269623216">Verbeterde beskerming</translation>
 <translation id="6900651018461749106">Meld weer aan om <ph name="USER_EMAIL" /> op te dateer</translation>
 <translation id="6900654715912436255">Is jy seker jy wil hierdie soekenjin uitvee?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Stem om vooraf te beskou</translation>
 <translation id="6902336033320348843">Afdeling word nie gesteun nie: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Koppel toestel aan domein</translation>
@@ -7383,6 +7389,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8610103157987623234">Verkeerde formaat; probeer asseblief weer</translation>
 <translation id="8611682088849615761">Hou aan om hierdie werf toe te laat om volle beheer oor MIDI-toestelle te hê</translation>
 <translation id="8613164732773110792">Net kleinletters, syfers, onderstrepe en aandagstrepe</translation>
+<translation id="8613645710357126807">Mag nie uitbreidings gebruik nie</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> is te groot vir 'n sekuriteitkontrole. Jy kan lêers van tot 50 MB oopmaak.</translation>
 <translation id="8615618338313291042">Incognito-program: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Voeg <ph name="CONTACT_NAME" /> by jou kontakte</translation>

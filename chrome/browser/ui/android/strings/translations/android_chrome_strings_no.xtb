@@ -290,6 +290,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}other{# lydfiler}}</translation>
 <translation id="265156376773362237">Standard forhåndslasting</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
+<translation id="2689830683995595741">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Merknaden om personvern for Google-kontoer som administreres via Family Link<ph name="END_LINK3" />, gjelder også.</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2707726405694321444">Last inn siden på nytt</translation>
@@ -625,6 +626,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}other{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}}</translation>
 <translation id="4696983787092045100">Send tekst til enhetene dine</translation>
 <translation id="4699172675775169585">Bufrede bilder og filer</translation>
+<translation id="471759387343966120">Ved å fortsette godtar du <ph name="BEGIN_TOS_LINK" />vilkårene for bruk<ph name="END_TOS_LINK" /> og <ph name="BEGIN_PRIVACY_LINK" />personvernreglene<ph name="END_PRIVACY_LINK" />.\nFor å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tilby å oversette</translation>
 <translation id="4720023427747327413">Åpne i <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Hjelp til med å forbedre Chrome. <ph name="BEGIN_LINK" />Delta i undersøkelsen<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
 <translation id="6277722725779679269">Kunne ikke oppdatere Spor pris</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Du kan sende faner mellom enheter som er logget på med samme Google-konto</translation>
 <translation id="6297765934698848803">Organisasjonen som administrerer enheten din, har slått av kameraet.</translation>
 <translation id="6301525844455696527">Kom à jour med leselisten din</translation>
@@ -1171,6 +1174,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7663313374500954251">Denne nettleseren administreres av <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Legg til konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
+<translation id="768232549260819724">GIF-en er kopiert</translation>
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
 <translation id="768618399695552958">Noen av sidene du besøker, er forhåndslastede. Sider kan bli forhåndslastet via Googles tjenere når de er linket på Google-nettsteder.</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
@@ -1349,6 +1353,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8570677896027847510">Filen kan ikke lastes ned sikkert</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8572344201470131220">Bildet ble kopiert</translation>
+<translation id="8580884231102452214">Kopier GIF</translation>
 <translation id="8583805026567836021">Fjerner kontodata …</translation>
 <translation id="859046281437143747">Spor prisen med Flere alternativer-knappen</translation>
 <translation id="860043288473659153">Kortinnehavers navn</translation>

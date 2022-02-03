@@ -209,6 +209,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}few{Samod
 Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}other{Samodejno boste odjavljeni čez # sekund.
 Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</translation>
 <translation id="1193927020065025187">To spletno mesto vas bo morda poskušalo zavesti, da omogočite vsiljiva obvestila</translation>
+<translation id="1195210374336998651">V nastavitve aplikacije</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1195558154361252544">Obvestila so samodejno blokirana za vsa spletna mesta, razen za tista z vašim dovoljenjem</translation>
 <translation id="1197088940767939838">Oranžna</translation>
@@ -389,6 +390,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1396259464226642517">Je bil ta rezultat nepričakovan? <ph name="BEGIN_LINK" />Pošljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Vneseno uporabniško ime in geslo se ne ujemata</translation>
 <translation id="1397500194120344683">Ni ustreznih naprav. <ph name="LINK_BEGIN" />Preberite več o tem.<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">V teh napravah ste prijavljeni v Chrome, torej jih lahko uporabljate kot varnostne ključe.</translation>
 <translation id="1398853756734560583">Povečaj</translation>
 <translation id="139911022479327130">Odklenite telefon in potrdite, da ste to res vi.</translation>
 <translation id="1401308693935339022">Uporaba lokacije. Aplikacijam in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije te naprave. Google morda redno pridobiva podatke o lokaciji in te podatke anonimno uporablja za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije.</translation>
@@ -1183,6 +1185,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2163470535490402084">Če se želite prijaviti v napravo <ph name="DEVICE_TYPE" />, vzpostavite povezavo z internetom.</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še 1 stikalo</translation>
+<translation id="2165102982098084499">Te naprave ste povezali z optičnim branjem kode QR.</translation>
 <translation id="2165177462441582039">Izberite, kako dolgo naj posamezen element ostane označen</translation>
 <translation id="2166369534954157698">Hitra rjava lisica preskoči lenega psa</translation>
 <translation id="2169062631698640254">Kljub temu se želim prijaviti</translation>
@@ -1959,6 +1962,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2915873080513663243">Samodejno iskanje</translation>
 <translation id="2916073183900451334">S pritiskom tabulatorke na spletni strani označite povezavo in tudi polja obrazcev</translation>
 <translation id="2916745397441987255">Iskanje razširitev</translation>
+<translation id="2918484639460781603">Pojdi v nastavitve</translation>
 <translation id="2918484644467055090">Te naprave ni mogoče včlaniti v organizacijo, ki ji pripada vaš račun, ker je naprava označena za upravljanje v drugi organizaciji.</translation>
 <translation id="2920852127376356161">Ni dovoljena obravnava protokolov.</translation>
 <translation id="2921081876747860777">Ustvarite geslo za zaščito lokalnih podatkov.</translation>
@@ -2583,6 +2587,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3592260987370335752">Več o tem</translation>
 <translation id="3593152357631900254">Omogoči način enakozvočnega pinjina</translation>
 <translation id="3593965109698325041">Omejitve imena potrdila</translation>
+<translation id="3596012367874587041">Nastavitve aplikacije</translation>
 <translation id="3596414637720633074">Blokiranje piškotkov drugih mest v anonimnem načinu</translation>
 <translation id="3599221874935822507">Dvignjeno</translation>
 <translation id="3599863153486145794">Izbriše zgodovino iz vseh naprav, v katerih ste prijavljeni. V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5706,6 +5711,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Nastavitve proxyja ...</translation>
 <translation id="6860427144121307915">Odpri na zavihku</translation>
+<translation id="6863496016067551393">Vse razširitve so odobrene</translation>
 <translation id="686366188661646310">Želite izbrisati geslo?</translation>
 <translation id="6865313869410766144">Podatki za samodejno izpolnjevanje obrazcev</translation>
 <translation id="6865598234501509159">Stran ni v jeziku <ph name="LANGUAGE" /></translation>
@@ -5735,6 +5741,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6900532703269623216">Izboljšana zaščita</translation>
 <translation id="6900651018461749106">Znova se prijavite, če želite posodobiti račun <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Ali ste prepričani, da želite izbrisati ta iskalnik?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Predhodno poslušanje glasu</translation>
 <translation id="6902336033320348843">Razdelek ni podprt: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Pridružite napravo v domeno</translation>
@@ -7386,6 +7393,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8610103157987623234">Nepravilna oblika, poskusite znova</translation>
 <translation id="8611682088849615761">Še naprej omogoči temu spletnemu mestu popoln nadzor nad napravami MIDI</translation>
 <translation id="8613164732773110792">Samo majhni znaki, števke, podčrtaji ali pomišljaji</translation>
+<translation id="8613645710357126807">Uporaba razširitev ni dovoljena</translation>
 <translation id="8613786722548417558">Datoteka <ph name="FILE_NAME" /> je prevelika za varnostni pregled. Odpreti je mogoče datoteke do 50 MB.</translation>
 <translation id="8615618338313291042">Anonimna aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Dodaj osebo <ph name="CONTACT_NAME" /> med stike</translation>

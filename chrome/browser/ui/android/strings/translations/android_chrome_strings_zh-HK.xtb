@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 個音訊檔案}other{# 個音訊檔案}}</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2656405586795711023">網絡應用程式</translation>
+<translation id="2689830683995595741">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />透過 Family Link 管理的 Google 帳戶私隱聲明<ph name="END_LINK3" />》約束。</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2707726405694321444">重新整理網頁</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4696983787092045100">將文字傳送至您的裝置</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
+<translation id="471759387343966120">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》和《<ph name="BEGIN_PRIVACY_LINK" />私隱權政策<ph name="END_PRIVACY_LINK" />》。\nChrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720023427747327413">用 <ph name="PRODUCT_NAME" /> 開啟</translation>
 <translation id="4720982865791209136">協助改善 Chrome。<ph name="BEGIN_LINK" />請填寫我們的問卷調查<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6277722725779679269">無法更新追蹤價格</translation>
 <translation id="6278428485366576908">主題背景</translation>
+<translation id="6292420053234093573">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
 <translation id="6294610283659775533">您可在已登入同一個 Google 帳戶的裝置之間傳送分頁</translation>
 <translation id="6297765934698848803">管理您裝置的機構已關閉攝錄機。</translation>
 <translation id="6301525844455696527">追上您的閱讀清單</translation>
@@ -1171,6 +1174,7 @@
 <translation id="7663313374500954251">此瀏覽器由 <ph name="PARENT_NAME" /> 管理。</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
+<translation id="768232549260819724">已複製 GIF</translation>
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
 <translation id="768618399695552958">系統會預先載入您瀏覽的部分網頁。當您從 Google 網站連至這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中建立電郵</translation>
@@ -1349,6 +1353,7 @@
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8572344201470131220">已複製圖片</translation>
+<translation id="8580884231102452214">複製 GIF</translation>
 <translation id="8583805026567836021">正在清除帳戶數據</translation>
 <translation id="859046281437143747">使用「更多選項」按鈕追蹤價格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>

@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.}other{Systém vás automaticky odhlási o # sekúnd.
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.}}</translation>
 <translation id="1193927020065025187">Tento web sa vás môže pokúsiť naviesť, aby ste povolili obťažujúce upozornenia</translation>
+<translation id="1195210374336998651">Prejsť do nastavení aplikácie</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
 <translation id="1195558154361252544">Upozornenia sú automaticky blokované pre všetky weby okrem tých, ktoré povolíte</translation>
 <translation id="1197088940767939838">Oranžová</translation>
@@ -1946,6 +1947,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2915873080513663243">Automatické prehľadávanie</translation>
 <translation id="2916073183900451334">Zvýrazňovať odkazy a polia formulárov na webovej stránke po stlačení klávesu Tab</translation>
 <translation id="2916745397441987255">Hľadať rozšírenia</translation>
+<translation id="2918484639460781603">Prejsť na nastavenia</translation>
 <translation id="2918484644467055090">Toto zariadenie nemôže byť zaregistrované do organizácie vášho účtu, pretože je označené ako spravované inou organizáciou.</translation>
 <translation id="2920852127376356161">Nie je povolené obsluhovať protokoly</translation>
 <translation id="2921081876747860777">Vytvorte si heslo na ochranu miestnych dát.</translation>
@@ -2570,6 +2572,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3592260987370335752">&amp;Viac informácií</translation>
 <translation id="3593152357631900254">Povoliť režim nepresného vstupu pinyin</translation>
 <translation id="3593965109698325041">Obmedzenia názvu certifikátu</translation>
+<translation id="3596012367874587041">Nastavenia aplikácie</translation>
 <translation id="3596414637720633074">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="3599221874935822507">Reliéf</translation>
 <translation id="3599863153486145794">Vymaže históriu zo všetkých prihlásených zariadení. Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

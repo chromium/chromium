@@ -70,7 +70,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1186201132766001848">Patikrinti slaptažodžius</translation>
-<translation id="1195210374336998651">Eiti į programos nustatymus</translation>
 <translation id="1195558154361252544">Pranešimai automatiškai blokuojami visose svetainėse, išskyrus svetaines, kuriose leidote rodyti</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
 <translation id="1201402288615127009">Kitas</translation>
@@ -844,7 +843,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3587738293690942763">Vidurys</translation>
 <translation id="3592413004129370115">„Italian“ (vokas)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}=1{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}one{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dieną.}few{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienas.}many{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienos.}other{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienų.}}</translation>
-<translation id="3596012367874587041">Programos nustatymai</translation>
 <translation id="3600246354004376029">„<ph name="TITLE" />“, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Programą užblokavo administratorius</translation>
 <translation id="3608932978122581043">Pateikti orientaciją</translation>

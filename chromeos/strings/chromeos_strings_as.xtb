@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> খনৰ ভিতৰত <ph name="PRINTED_PAGES" /> নম্বৰৰ পৃষ্ঠাখন প্ৰিণ্ট কৰা হৈছে।</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে। <ph name="PERCENTAGE_VALUE" />% সম্পূৰ্ণ হ’ল।</translation>
 <translation id="3459509316159669723">প্ৰিণ্টিং</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
 <translation id="3565064564551103223">অনুমতিপ্ৰাপ্ত আইপি</translation>
+<translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="357889014807611375">নিৰিখ-নিৰ্দিষ্ট ৱাই-ফাই</translation>
 <translation id="3583278742022654445">ছিগনেলৰ ক্ষমতা দুৰ্বল। ৱাই-ফাইৰ ছিগনেলৰ উৎসটোৰ ওচৰলৈ গৈ চাওক।</translation>
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
-<translation id="7240035910874241640">আটাইবোৰ পৰিধীয় আহিলা আপ টু ডে’ট হৈ আছে</translation>
 <translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ৱালপেপাৰৰ সংগ্ৰহ</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">ট্ৰেফিক কাউণ্টাৰ</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8503836310948963452">আৰু মাত্ৰ কেইমিনিটমান বাকী…</translation>
-<translation id="8520963233738002436">আপোনাৰ <ph name="DEVICE_NAME" />টো আপ টু ডে’ট হৈ আছে</translation>
 <translation id="8521021929829989041">এটা ব্যক্তিগত ডিভাইচ ব্যৱহাৰ কৰক</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">আপোনাৰ বাহকৰ নেটৱৰ্কৰ সৈতে সংযুক্ত হ’বলৈ সেইটোক এই বিকল্পটোৰ আৱশ্যক হ’ব পাৰে। সবিশেষৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্কেন কৰক}=1{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}one{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}other{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}}</translation>
-<translation id="8994273342647807496">ইনষ্টল কৰি থকা হৈছে - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">ডিভাইচটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>
 <translation id="9039663905644212491">PEAP</translation>

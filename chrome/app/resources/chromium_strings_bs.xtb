@@ -226,6 +226,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
+<translation id="7342713658732509484">Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati na ovaj račun. Ako ne želite da web lokacije ili aplikacije pristupaju informacijama o vašem računu, koristite Način rada za gosta u pregledniku Chromium. Također možete upravljati Google računima u <ph name="LINK_2_BEGIN" />Postavkama<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Vaš web, oznake i ostali sadržaji s Chromiuma se nalaze ovdje.</translation>
 <translation id="7349591376906416160">Administrator sistema je konfigurirao Chromium da otvori preglednik <ph name="ALTERNATIVE_BROWSER_NAME" /> radi pristupa web lokaciji <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">S Chromium profilima možete odvojiti sve svoje Chromium stvari. Tako ćete lakše razdvojiti posao i zabavu.</translation>

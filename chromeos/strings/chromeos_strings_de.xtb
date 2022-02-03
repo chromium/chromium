@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
 <translation id="345898999683440380">Seite <ph name="PAGE_NUM" /> wird gescannt. <ph name="PERCENTAGE_VALUE" /> % sind abgeschlossen.</translation>
 <translation id="3459509316159669723">Drucken</translation>
-<translation id="3462187165860821523">Das Gerät „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Sie können dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und Ihr externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
+<translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal.</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3583278742022654445">Schwaches Signal. Gehen Sie näher an die Quelle des WLAN-Signals heran.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
@@ -462,7 +462,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
-<translation id="7240035910874241640">Alle Peripheriegeräte sind auf dem neuesten Stand</translation>
 <translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuchen Sie es später noch einmal.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Hintergrundsammlungen</translation>
@@ -563,7 +562,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8498220429738806196">Traffic-Zähler</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
-<translation id="8520963233738002436">Ihr Gerät „<ph name="DEVICE_NAME" />“ ist auf dem neuesten Stand</translation>
 <translation id="8521021929829989041">Als privates Gerät verwenden</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Ihr Mobilfunkanbieter verlangt möglicherweise diese Option, damit Sie sich mit seinem Netzwerk verbinden können. Weitere Informationen erhalten Sie bei Ihrem Mobilfunkanbieter.</translation>
@@ -607,7 +605,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Seite {NUMBER_OF_PAGES} scannen}other{Seite {NUMBER_OF_PAGES} scannen}}</translation>
-<translation id="8994273342647807496">Installation läuft – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="8997710128084572139">Der Akkustand des Geräts liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frequenz</translation>
 <translation id="9039663905644212491">PEAP</translation>

@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Αρχείο ήχου}other{# Αρχεία ήχου}}</translation>
 <translation id="265156376773362237">Βασική προφόρτωση</translation>
 <translation id="2656405586795711023">Εφαρμογές ιστού</translation>
+<translation id="2689830683995595741">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους<ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Ισχύει επίσης η <ph name="BEGIN_LINK3" />Σημείωση απορρήτου για Λογαριασμούς Google που διαχειρίζονται από το Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
 <translation id="2704606927547763573">Αντιγράφ.</translation>
 <translation id="2707726405694321444">Ανανέωση σελίδας</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="4696983787092045100">Αποστολή μηνύματος κειμένου στις συσκευές σας</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
+<translation id="471759387343966120">Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" /> και την <ph name="BEGIN_PRIVACY_LINK" />Πολιτική\u00A0απορρήτου<ph name="END_PRIVACY_LINK" />.\nΓια να συμβάλλει στη βελτίωση της εφαρμογής, το Chrome στέλνει δεδομένα χρήσης και σφαλμάτων στην Google. <ph name="BEGIN_UMA_LINK" />Διαχείριση<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Πρόταση για μετάφραση</translation>
 <translation id="4720023427747327413">Άνοιγμα σε <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Συμβάλλετε στη βελτίωση του Chrome. <ph name="BEGIN_LINK" />Λάβετε μέρος στην έρευνα<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">Παρουσιάστηκε ένα πρόβλημα κατά την εκτύπωση της σελίδας. Δοκιμάστε ξανά.</translation>
 <translation id="6277722725779679269">Δεν ήταν δυνατή η ενημέρωση της Παρακολούθησης τιμής</translation>
 <translation id="6278428485366576908">Θέμα</translation>
+<translation id="6292420053234093573">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους<ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Μπορείτε να στέλνετε καρτέλες μεταξύ συσκευών οι οποίες έχουν συνδεθεί με τον ίδιο Λογαριασμό Google.</translation>
 <translation id="6297765934698848803">Ο οργανισμός που διαχειρίζεται τη συσκευή σας απενεργοποίησε την κάμερά σας.</translation>
 <translation id="6301525844455696527">Μη αναγνωσμένο περιεχόμενο στη λίστα ανάγνωσης</translation>

@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">S'està escanejant la pàgina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completat.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
-<translation id="3462187165860821523">S'està actualitzant <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Mentre el microprogramari s'actualitza, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquesta actualització pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
 <translation id="3565064564551103223">IP permeses</translation>
+<translation id="3577473026931028326">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
 <translation id="3583278742022654445">Intensitat del senyal fluixa. Prova d'apropar-te a la font de senyal de la Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
@@ -462,7 +462,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
-<translation id="7240035910874241640">Tots els perifèrics estan actualitzats</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Col·leccions de fons de pantalla</translation>
@@ -563,7 +562,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8498220429738806196">Comptadors de trànsit</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
-<translation id="8520963233738002436">El dispositiu <ph name="DEVICE_NAME" /> està actualitzat</translation>
 <translation id="8521021929829989041">Utilitza com a dispositiu personal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
@@ -607,7 +605,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escaneja}=1{Escaneja {NUMBER_OF_PAGES} pàgina}other{Escaneja {NUMBER_OF_PAGES} pàgines}}</translation>
-<translation id="8994273342647807496">S'està instal·lant (<ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="8997710128084572139">El dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="9003704114456258138">Freqüència</translation>
 <translation id="9039663905644212491">PEAP</translation>

@@ -816,6 +816,30 @@ Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van ap
 
       Dit bedrijfsbeleid is standaard niet toegepast.</translation>
 <translation id="1949584741547056205">Snelle antwoorden</translation>
+<translation id="1951288262199783797">Pas dit beleid toe om een woordenboek met bestandsextensies te maken met een bijbehorende lijst van domeinen die worden vrijgesteld van op bestandsextensies gebaseerde downloadwaarschuwingen. Hierdoor kunnen zakelijke beheerders op bestandsextensies gebaseerde downloadwaarschuwingen blokkeren voor bestanden die aan een domein in de lijst zijn gekoppeld. Als de extensie jnlp bijvoorbeeld is gekoppeld aan website1.com, zien gebruikers geen waarschuwing als ze jnlp-bestanden downloaden van website1.com, maar zien ze wel een downloadwaarschuwing als ze jnlp-bestanden downloaden van website2.com.
+
+      Bestanden met bestandsextensies die zijn opgegeven voor domeinen die door dit beleid worden geïdentificeerd, vallen nog steeds onder beveiligingswaarschuwingen die niet op bestandsextensies zijn gebaseerd, zoals downloadwaarschuwingen voor gemengde content en Safe Browsing-waarschuwingen.
+
+      Als je dit beleid niet toepast of niet instelt, krijgt de gebruiker waarschuwingen te zien voor bestandstypen die op extensies gebaseerde downloadwaarschuwingen activeren.
+
+      Als je dit beleid toepast, geldt het volgende:
+
+* Het URL-patroon moet worden opgemaakt volgens https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+      * De opgegeven bestandsextensie moet in kleine ASCII-letters zijn. Het voorafgaande scheidingsteken mag niet worden opgenomen als je de bestandsextensie vermeldt. Vermeld dus jnlp in plaats van .jnlp.
+
+      Voorbeeld:
+
+De volgende voorbeeldwaarde voorkomt op bestandsextensies gebaseerde downloadwaarschuwingen voor swf-, exe- en jnlp-extensies voor *.example.com-domeinen. De gebruiker krijgt een op bestandsextensies gebaseerde downloadwaarschuwing te zien op elk ander domein voor exe- en jnlp-bestanden, maar niet voor swf-bestanden.
+
+      [
+        { "file_extension": "jnlp", "domains": ["example.com"] },
+        { "file_extension": "exe", "domains": ["example.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+Hoewel het voorgaande voorbeeld de onderdrukking van op bestandsextensies gebaseerde downloadwaarschuwingen voor swf-bestanden voor alle domeinen laat zien, wordt uit veiligheidsoverwegingen het toepassen van onderdrukking van dergelijke waarschuwingen voor alle domeinen niet aanbevolen voor gevaarlijke bestandsextensies. Dit wordt alleen in het voorbeeld getoond om te laten zien dat het mogelijk is.
+
+Als dit beleid wordt toegepast in combinatie met <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> en DownloadRestrictions is ingesteld om gevaarlijke bestandstypen te blokkeren, hebben downloadblokkeringen bepaald door DownloadRestrictions voorrang. Als dit beleid bijvoorbeeld is ingesteld om downloads van exe-bestanden van website1.com aan te zetten en DownloadRestrictions is ingesteld om schadelijke downloads en gevaarlijke bestandstypen te blokkeren, worden downloads van exe-bestanden alsnog geblokkeerd voor alle domeinen. Als DownloadRestrictions niet is ingesteld om gevaarlijke bestandstypen te blokkeren, worden bestandstypen die in dit beleid zijn gespecificeerd, vrijgesteld van op bestandsextensies gebaseerde downloadwaarschuwingen in de opgegeven domeinen. Lees meer over DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).</translation>
 <translation id="1960416154405676350">Regio doorzoeken aanzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Het beleid is alleen van toepassing op beheerde gastsessies.
       Als je het beleid instelt, geef je een lijst met extensie-ID's op die zijn vrijgesteld van de opschoonprocedure voor beperkte beheerde gastsessies (zie <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
@@ -1722,6 +1746,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
       Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
 <translation id="2964373560810620158">Niet toestaan dat gebruikers de <ph name="LACROS_NAME" />-browser gebruiken</translation>
 <translation id="2968177167006045252">Toestaan dat sites SharedArrayBuffers gebruiken</translation>
+<translation id="2969568582351417848">Op bestandsextensies gebaseerde downloadwaarschuwingen uitzetten voor gespecificeerde bestandstypen in domeinen</translation>
 <translation id="2969797921412053304">Met dit beleid wordt ingesteld welke URL's toegang krijgen tot attesten van apparaatidentiteit op afstand tijdens het SAML-proces op het inlogscherm.
 
       Als een URL overeenkomt met een van de patronen die zijn opgegeven via dit beleid, kan de URL een HTTP-header ontvangen met een reactie op een externe attestuitdaging voor een attest van apparaatidentiteit en apparaatstatus.
@@ -2367,13 +2392,6 @@ Hiermee wordt de functie Automatisch aanvullen van <ph name="PRODUCT_NAME" /> ge
 Als je deze instelling uitzet, kunnen gebruikers de functie Automatisch aanvullen niet gebruiken.
 
 Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opties voor Automatisch aanvullen zelf beheren. Zo kunnen ze profielen voor Automatisch aanvullen instellen en de functie naar wens aan- of uitzetten.</translation>
-<translation id="3731968520685217674">Als je dit beleid instelt, kun je opgeven hoe het systeem moet reageren als de browser wordt opgestart. Als je deze instelling uitzet, heeft dit hetzelfde effect als wanneer je het beleid niet instelt, omdat het opstartgedrag van <ph name="PRODUCT_NAME" /> moet zijn opgegeven.
-
-      Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers dit wijzigen.
-
-      Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, worden sommige instellingen uitgezet die afhankelijk zijn van sessies of waarmee bij het afsluiten bepaalde acties worden uitgevoerd (zoals browsegegevens wissen bij afsluiten of sessiecookies).
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3733014427925403568">Dag van de week voor het interval.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' aanzetten in gebruikersbeheer</translation>
 <translation id="3749259744154402564">Niet ondersteund</translation>
@@ -2527,6 +2545,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Hiermee vermeld je extensies die automatisch worden geïnstalleerd voor de demogebruiker, voor apparaten in de commerciële modus. Deze extensies worden opgeslagen op het apparaat en kunnen worden geïnstalleerd in de offline modus, na de installatie.
 
       Elke lijstvermelding bevat een woordenboek dat de extensie-ID moet bevatten in het veld 'Extensie-ID' en de update-URL in het veld 'Update-URL'.</translation>
+<translation id="3869180930654347954">First-Party Sets uitzetten voor alle betrokken gebruikers</translation>
 <translation id="3870059789954671543">Zet de toegankelijkheidsfunctie voor markeren via toetsenbordfocus aan op het inlogscherm.
 
           Met deze functie wordt het object gemarkeerd dat door het toetsenbord is gefocust.
@@ -2720,6 +2739,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je dit beleid niet toepast of niet instelt, stuurt de service gebruikers naar https://myaccount.google.com om hun wachtwoord te wijzigen.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="4115501011761259824">First-Party Sets aanzetten voor alle betrokken gebruikers</translation>
 <translation id="4121350739760194865">Voorkomen dat app-promoties worden weergegeven op de pagina 'Nieuw tabblad'</translation>
 <translation id="4122473079291425973">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is, maar gebruikers mogen deze instelling wijzigen</translation>
 <translation id="4122565688998751716">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />.
@@ -2859,6 +2879,14 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
       Dit beleid wordt genegeerd en de melding wordt altijd getoond als het apparaat onbeheerd is of er slechts één gebruiker is.
 
       Als er meerdere gebruikersaccounts zijn op een beheerd apparaat, wordt de melding alleen getoond als dit beleid is toegepast.</translation>
+<translation id="4293593564662654474">Dit beleid wordt aangeboden als een manier om je af te melden voor de functie First-Party Sets.
+
+                  Als je dit beleid niet instelt of aanzet, staat de functie First-Party Sets aan.
+
+                  Als je dit beleid uitzet, staat de functie First-Party Sets uit.
+
+                  De status van de functie First-Party Sets bepaalt of Chrome de lijst met First-Party Sets ophaalt.
+                  Het beleid bepaalt ook of Chrome aan First-Party Sets gerelateerde functies ondersteunt (bijvoorbeeld het SameParty-cookiekenmerk).</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Toegewezen MAC-adres van dock van apparaat</translation>
 <translation id="4314538398999793073">CNAME-lookup tijdens Kerberos-verificatie uitzetten</translation>
@@ -2988,6 +3016,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="449423975179525290">Aan <ph name="PLUGIN_VM_NAME" /> gerelateerd beleid configureren.</translation>
 <translation id="449784980858429908">Automatisch rechten aan sites geven om verbinding te maken met alle seriële poorten.</translation>
 <translation id="450080746522343150">Alle downloads blokkeren.</translation>
+<translation id="4508728400492074981">Beheert het beleid voor de functie First-Party Sets.</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
 <translation id="4512407512989846472">Staat toe dat het kopiëren naar het klembord voor gespecificeerde URL's wordt geblokkeerd</translation>
 <translation id="4513691822411041977">Het gebruik van SafeSearch op Google Zoeken of de beperkte modus van YouTube niet afdwingen</translation>
@@ -3103,6 +3132,16 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4617338332148204752">De metatagcontrole in <ph name="PRODUCT_FRAME_NAME" /> overslaan</translation>
 <translation id="4624417808625504735">Voorkomen dat JavaScript op deze sites JIT kan gebruiken</translation>
 <translation id="4625915093043961294">Witte lijst voor het installeren van extensies configureren</translation>
+<translation id="4631165564645497047">Als je deze instelling aanzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
+      Als je deze instelling uitzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
+      Als je deze instelling niet instelt, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_OS_NAME" /> versie 81, als de support voor de verouderde certificaatverificatie in <ph name="PRODUCT_OS_NAME" /> ook wordt verwijderd.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor Linux-versie 83, als de support voor de verouderde certificaatverificatie in Linux ook wordt verwijderd.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor Mac OS X-versie 104, als de support voor de verouderde certificaatverificatie in Mac OS X ook wordt verwijderd.
+      </translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
 <translation id="4632566332417930481">Gebruik van hulpprogramma's voor ontwikkelaars uitzetten voor extensies die zijn geïnstalleerd op basis van het bedrijfsbeleid, maar toestaan in andere contexten</translation>
 <translation id="4635284822166984665">Tijd wanneer het apparaat begint met opladen, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
@@ -3416,6 +3455,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="5075190314377370852">Als je het beleid instelt op 'True', voert <ph name="PRODUCT_NAME" /> altijd een intrekkingscontrole uit voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten. Als <ph name="PRODUCT_NAME" /> geen informatie over de intrekkingsstatus kan verkrijgen, beschouwt <ph name="PRODUCT_NAME" /> deze certificaten als ingetrokken ('hard-fail').
 
       Als je het beleid instelt op 'False' of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de bestaande instellingen voor online intrekkingscontrole.</translation>
+<translation id="5076953589932162038">Instellingen voor First-Party Sets</translation>
 <translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
 <translation id="5081204761483900654">Beperkte beheerde gastsessies</translation>
 <translation id="5082296146261894974">Staat toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
@@ -4447,6 +4487,16 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
         Als dit beleid is ingesteld op False of niet is ingesteld, kan de gebruiker blijven werken terwijl de verificatie ongeldig is.</translation>
 <translation id="631183702829488873">Als deze functie aanstaat, wordt een knop getoond op het inlog- en vergrendelscherm waarmee het wachtwoord kan worden getoond.
           De knop wordt getoond als een oog in het tekstveld voor het wachtwoord. De knop is afwezig als de functie uitstaat.</translation>
+<translation id="6313108604615108577">Dit beleid bepaalt of de hoofdversie van de tekenreeks voor User-agent moet worden vastgezet op 99.
+
+      Met de verzoekheader voor user-agent kunnen websites de app, het besturingssysteem, de leverancier en/of de versie van de aanvragende user-agent identificeren.
+      Sommige websites doen aannames over de verwachte opmaak van deze kop en kunnen problemen krijgen met versiereeksen die 3 cijfers in de hoofdpositie bevatten (bijv. 100.0.0.0).
+
+      Als je het beleid instelt op Default of niet instelt, worden de standaard browserinstellingen gebruikt voor de hoofdversie van de tekenreeks voor User-agent.
+      Als je dit instelt op ForceDisabled, wordt de hoofdversie niet vastgezet door de tekenreeks voor User-agent.
+      Als je dit instelt op ForceEnabled, meldt de tekenreeks voor User-agent altijd de hoofdversie als 99 en wordt de hoofdversie van de browser opgenomen in de secundaire positie. Browserversie 101.0.0.0 zou bijvoorbeeld een verzoekheader voor User-agent sturen die versie 99.101.0.0 meldt.
+
+      Dit beleid is tijdelijk en wordt in de toekomst beëindigd. Houd er rekening mee dat als dit beleid en <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> aanstaan, de tekenreeks voor de User-agent-versie altijd 99.0.0.0 is.</translation>
 <translation id="6313170479290171718">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Als je het beleid instelt op True, staat het schermtoetsenbord aan bij het inloggen. Als je het beleid instelt op False, staat het schermtoetsenbord uit bij het inloggen.
@@ -4887,6 +4937,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
 <translation id="6794083666143216172">Toestaan dat de herkomst query's voor apparaatkenmerken kan uitvoeren</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
+<translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
 <translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
@@ -5205,6 +5256,7 @@ Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de table
 <translation id="7070525176564511548">Het wachtwoord moet elke week (168 uur) worden opgegeven</translation>
 <translation id="7072208053150563108">Wijzigingsfrequentie van computerwachtwoord</translation>
 <translation id="7072567600438630966">Toestaan dat Phone Hub wordt aangezet.</translation>
+<translation id="7074437930865599190">Hoofdversie van tekenreeks voor User-agent vastzetten op 99</translation>
 <translation id="7079519252486108041">Pop-ups blokkeren op deze sites</translation>
 <translation id="707988220162760379">Pdf-bestanden altijd openen met een externe pdf-viewer</translation>
 <translation id="7081784525008938771">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er video wordt afgespeeld. Hiermee wordt voorkomen dat de vertraging voor het dimmen, uitzetten en vergrendelen van het scherm wordt bereikt en dat de bijbehorende acties worden uitgevoerd.
@@ -5911,6 +5963,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Een extensie of Android-app kan standaard geen sleutel gebruiken die is bedoeld voor zakelijk gebruik. Dit staat gelijk aan het instellen van allowCorporateKeyUsage op False voor die extensie of Android-app. Alleen als allowCorporateKeyUsage voor een extensie of Android-app is ingesteld op True kan deze elke platformsleutel gebruiken die is gemarkeerd voor zakelijk gebruik om willekeurige gegevens te ondertekenen. Geef deze toestemming alleen als je er zeker van bent dat de extensie of de Android-app de toegang tot de sleutel voldoende beveiligt tegen aanvallers.</translation>
 <translation id="7933141401888114454">Aanmaak van bewaakte gebruikers aanzetten</translation>
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
+<translation id="7936302526928951356">De tekenreeks voor User-agent zet de hoofdversie niet vast.</translation>
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
 <translation id="7946350455013548764">Als je het beleid instelt op 3, kunnen websites toegang vragen tot HID-apparaten. Als je het beleid instelt op 2, wordt toegang tot HID-apparaten geweigerd.
@@ -6059,6 +6112,7 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
 <translation id="8133152694354699657">Als je het beleid instelt op True of niet instelt, wordt 'Tikken om te zoeken' beschikbaar voor gebruikers. Ze kunnen de functie aan- of uitzetten.
 
       Als je het beleid instelt op False, wordt 'Tikken om te zoeken' volledig uitgezet.</translation>
+<translation id="8136345780578030573">First-Party Sets aanzetten</translation>
 <translation id="8136906469922284163">Als je het beleid instelt op True, kunnen pagina's pop-ups laten zien terwijl het laden van de pagina's ongedaan wordt gemaakt.
 
       Als je het beleid instelt op False of niet instelt, kunnen pagina's geen pop-ups laten zien terwijl het laden van de pagina's ongedaan wordt gemaakt.
@@ -6466,9 +6520,6 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8525526490824335042">Linux-container</translation>
 <translation id="8528951285051082869">Geen web-apps toestemming geven voor toegang tot bestandstypen via de File Handling API</translation>
 <translation id="8533145294731270627">Schadelijke downloads en gevaarlijke bestandstypen blokkeren.</translation>
-<translation id="8537051350735478658">Als je het beleid instelt op True, worden de zoeksuggesties in de adresbalk van <ph name="PRODUCT_NAME" /> aangezet. Als je het beleid instelt op False, worden deze zoeksuggesties uitgezet.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staan de zoeksuggesties in eerste instantie aan, maar kunnen gebruikers deze op elk moment uitzetten.</translation>
 <translation id="8543103455510904459">Hiermee kun je een lijst met URL-patronen opgeven van sites die JavaScript niet mogen uitvoeren met de JIT-compiler (Just In Time) aangezet.
 
           Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> er langer over doen om webcontent te laten zien en kunnen ook delen van JavaScript (waaronder WebAssembly) worden uitgezet. Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> webcontent laten zien in een meer beveiligde configuratie.
@@ -6721,6 +6772,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest ( https://developer.chrome.com/extensions/autoupdate ). Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
 
        Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
+<translation id="8827275450034266143">De tekenreeks voor User-agent zet de hoofdversie vast op 99 en neemt de hoofdversie van de browser op in de secundaire positie.</translation>
 <translation id="8827366480126575426">Het protocol voor de protocolhandler.</translation>
 <translation id="8827417642396462482">Aanvullende DNS-zoekopdrachttypen toestaan</translation>
 <translation id="8831911834413504983">Als je het beleid instelt, kun je een lijst met URL-patronen instellen om op te geven welke sites JavaScript mogen uitvoeren.

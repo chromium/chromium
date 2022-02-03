@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> में से <ph name="PRINTED_PAGES" /> पेज प्रिंट किए गए.</translation>
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> को स्कैन किया जा रहा है. <ph name="PERCENTAGE_VALUE" />% पूरा हो गया.</translation>
 <translation id="3459509316159669723">प्रिंट करना</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट हो रहा है</translation>
 <translation id="3484914941826596830">फ़र्मवेयर के अपडेट होने तक, इस बाहरी डिवाइस को डिसकनेक्ट न करें या अपने कंप्यूटर को शट डाउन न करें. इस विंडो को छोटा किया जा सकता है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं. हो सकता है कि इस दौरान आपका बाहरी डिवाइस काम न करे.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
 <translation id="3565064564551103223">जिन आईपी को अनुमति दी गई है</translation>
+<translation id="3577473026931028326">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3583278742022654445">कमज़ोर सिग्नल. वाई-फ़ाई सिग्नल सोर्स के नज़दीक जाकर देखें.</translation>
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
-<translation id="7240035910874241640">सभी सहायक डिवाइस- जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह अप-टू-डेट हैं</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">ट्रैफ़िक काउंटर</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
-<translation id="8520963233738002436">आपका <ph name="DEVICE_NAME" /> अप टू डेट है</translation>
 <translation id="8521021929829989041">निजी डिवाइस की तरह इस्तेमाल करें</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">फिर से चलाएं</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्कैन करें}=1{{NUMBER_OF_PAGES} स्कैन करें}one{{NUMBER_OF_PAGES} स्कैन करें}other{{NUMBER_OF_PAGES} स्कैन करें}}</translation>
-<translation id="8994273342647807496">इंस्टॉल हो रहा है - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">डिवाइस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>
 <translation id="9039663905644212491">PEAP</translation>

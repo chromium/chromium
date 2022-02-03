@@ -65,6 +65,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ya accedió a este perfil de Chrome. Para mantener separados los datos de navegación, Chrome puede crear un perfil individual para ti.</translation>
 <translation id="2580411288591421699">No se puede instalar la misma versión de Google Chrome que se está ejecutando actualmente. Cierra Google Chrome e intenta nuevamente.</translation>
 <translation id="2586406160782125153">Esta acción borrará tus datos de navegación de este dispositivo. Si más adelante deseas recuperarlos, accede a tu cuenta en Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios web o apps accedan a la información de la cuenta, usa el Modo de Invitado en el navegador Chrome. También puedes administrar tus Cuentas de Google en <ph name="LINK_2_BEGIN" />Configuración<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome no puede buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="2644798301485385923">Sistema operativo Chrome</translation>
 <translation id="2652691236519827073">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>

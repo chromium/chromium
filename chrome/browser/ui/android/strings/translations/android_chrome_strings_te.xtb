@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ఆడియో ఫైల్}other{# ఆడియో ఫైళ్లు}}</translation>
 <translation id="265156376773362237">స్టాండర్డ్ ప్రీ - లోడింగ్</translation>
 <translation id="2656405586795711023">వెబ్ యాప్‌లు</translation>
+<translation id="2689830683995595741">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />Family Linkతో మేనేజ్ చేస్తున్న Google ఖాతాల కోసం గోప్యతా ప్రకటన<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="2702516483241149200">కొత్తది: ఈ టెక్స్ట్‌కు స్క్రోల్ చేసే లింక్‌ను షేర్ చేయండి</translation>
 <translation id="2704606927547763573">కాపీ చేయబడింది</translation>
 <translation id="2707726405694321444">పేజీని రిఫ్రెష్ చేయండి</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">వచనాన్ని మీ పరికరాలకు పంపండి</translation>
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
+<translation id="471759387343966120">కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_PRIVACY_LINK" />గోప్యతా\u00A0పాలసీ<ph name="END_PRIVACY_LINK" />కి అంగీకరిస్తున్నారు.\nయాప్‌ను మెరుగుపరచుకోవడంలో సహాయపడటానికి Chrome, వినియోగ, క్రాష్ డేటాను Googleకు పంపుతుంది. <ph name="BEGIN_UMA_LINK" />మేనేజ్ చేయండి<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">అనువదించమని ఆఫర్ చేయి</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />లో తెరువు</translation>
 <translation id="4720982865791209136">Chromeను మెరుగుపరచడంలో సహాయపడండి. <ph name="BEGIN_LINK" />సర్వేలో పాల్గొనండి<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">పేజీని ముద్రిస్తున్నప్పుడు సమస్య ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="6277722725779679269">'ధరను ట్రాక్ చేయడం'ను అప్‌డేట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="6278428485366576908">థీమ్</translation>
+<translation id="6292420053234093573">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు.</translation>
 <translation id="6294610283659775533">ఒకే Google ఖాతాతో సైన్ ఇన్ చేయబడి ఉన్న పరికరాల మధ్య మీరు ట్యాబ్‌లను పంపవచ్చు</translation>
 <translation id="6297765934698848803">మీ పరికరాన్ని మేనేజ్ చేసే సంస్థ మీ కెమెరాను ఆఫ్ చేసింది.</translation>
 <translation id="6301525844455696527">మీ చదవాల్సిన లిస్ట్‌ను మిస్ కాకుండా చూడండి</translation>

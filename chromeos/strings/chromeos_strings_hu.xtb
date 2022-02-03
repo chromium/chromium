@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> oldal kinyomtatva (összesen ennyiből: <ph name="TOTAL_PAGES" />).</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. oldal beolvasása… <ph name="PERCENTAGE_VALUE" />% kész.</translation>
 <translation id="3459509316159669723">Nyomtatás</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> frissítése…</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3488065109653206955">Részben aktiválva</translation>
 <translation id="3527036260304016759">Sikertelen – Ismeretlen hiba</translation>
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>
 <translation id="3565064564551103223">Engedélyezett IP-címek</translation>
+<translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="357889014807611375">mért adatforgalmú Wi-Fi</translation>
 <translation id="3583278742022654445">Gyenge jelerősség. Próbáljon közelebb helyezkedni a Wi-Fi-jelforráshoz.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
@@ -462,7 +462,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7177485034254901881">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
-<translation id="7240035910874241640">Minden periféria naprakész</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>
@@ -563,7 +562,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8498220429738806196">Forgalomszámlálók</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="8503836310948963452">Már csak néhány perc…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> eszköze naprakész</translation>
 <translation id="8521021929829989041">Személyes eszközként való használat</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Szolgáltatója előírhatja ennek a beállításnak a használatát a hálózathoz való csatlakozás érdekében. További információért forduljon a szolgáltatójához.</translation>
@@ -607,7 +605,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Keresés}=1{Keresés {NUMBER_OF_PAGES} oldalon}other{Keresés {NUMBER_OF_PAGES} oldalon}}</translation>
-<translation id="8994273342647807496">Telepítés – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Az eszköz akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9039663905644212491">PEAP</translation>

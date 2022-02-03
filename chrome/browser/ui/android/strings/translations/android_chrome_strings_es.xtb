@@ -290,6 +290,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# archivo de audio}other{# archivos de audio}}</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
 <translation id="2656405586795711023">Aplicaciones web</translation>
+<translation id="2689830683995595741">Al utilizar Chrome, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />. El uso de Chrome también está sujeto al <ph name="BEGIN_LINK3" />Aviso de Privacidad para Cuentas de Google Gestionadas con Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Nuevo: Comparte un enlace que vaya directamente a este texto</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2707726405694321444">Actualizar página</translation>
@@ -625,6 +626,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
 <translation id="4696983787092045100">Enviar mensaje de texto a tus dispositivos</translation>
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
+<translation id="471759387343966120">Si continúas, aceptas los <ph name="BEGIN_TOS_LINK" />Términos del Servicio<ph name="END_TOS_LINK" /> y la <ph name="BEGIN_PRIVACY_LINK" />Política\u00A0de Privacidad<ph name="END_PRIVACY_LINK" />.\nPara ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_UMA_LINK" />Gestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
 <translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136"><ph name="BEGIN_LINK" />Realiza la encuesta<ph name="END_LINK" /> para ayudar a mejorar Chrome</translation>
@@ -907,6 +909,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6277522088822131679">Se ha producido un problema al imprimir la página. Vuelve a intentarlo.</translation>
 <translation id="6277722725779679269">No se ha podido actualizar Seguir precio</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">Al utilizar Chrome, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Puedes enviar pestañas entre dispositivos en los que se haya iniciado sesión con la misma cuenta de Google</translation>
 <translation id="6297765934698848803">La organización que administra tu dispositivo ha desactivado la cámara.</translation>
 <translation id="6301525844455696527">Ponte al día con tu lista de lectura</translation>

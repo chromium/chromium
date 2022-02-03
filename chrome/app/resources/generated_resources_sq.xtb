@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.}other{Do të dalësh automatikisht pas # sekondash.
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.}}</translation>
 <translation id="1193927020065025187">Ky sajt mund të jetë duke u përpjekur të të mashtrojë që të lejosh njoftime të bezdisshme</translation>
+<translation id="1195210374336998651">Shko te cilësimet e aplikacionit</translation>
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
 <translation id="1195558154361252544">Njoftimet janë bllokuar automatikisht për të gjitha sajtet përveçse për ato që lejon ti</translation>
 <translation id="1197088940767939838">Portokalli</translation>
@@ -765,6 +766,7 @@
 <translation id="176587472219019965">&amp;Dritare e re</translation>
 <translation id="1766575458646819543">Dole nga ekrani i plotë</translation>
 <translation id="1766957085594317166">Ruaji fjalëkalimet në mënyrë të sigurt në "Llogarinë tënde të Google" dhe nuk do të duhet t'i shkruash më përsëri</translation>
+<translation id="1767043563165955993">Përdore me aplikacione për Android</translation>
 <translation id="1768212860412467516">Dërgo komente për <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Kishte një problem gjatë kontaktimit të serverit të identifikimit. Kontrollo lidhjen me rrjetin dhe emrin e domenit, më pas provo sërish.</translation>
 <translation id="1769104665586091481">Hape lidhjen në dritare &amp;të re</translation>
@@ -1100,6 +1102,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2113479184312716848">Hap &amp;skedarin...</translation>
 <translation id="2113921862428609753">Qasja tek informacionet e autoritetit</translation>
 <translation id="2114326799768592691">Ringarko &amp;kornizën</translation>
+<translation id="2114413269775311385">Përdor këtë llogari me aplikacionet për Android. Lejet për aplikacionet për Android mund t'i kontrollosh te <ph name="LINK_BEGIN" />Cilësimet e aplikacioneve<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Fotografia nga <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nuk është futur një kartë SIM</translation>
 <translation id="2116619964159595185">Sajtet lidhen zakonisht me pajisjet me Bluetooth për veçoritë si konfigurimi ose sinkronizimi i një sinjalizuesi me nivel të ulët energjie, një monitoruesi shëndeti ose fitnesi ose një llambe inteligjente</translation>
@@ -1889,6 +1892,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="287205682142673348">Transferimi i portës</translation>
 <translation id="287286579981869940">Shto <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
+<translation id="2873995907777332853">Shfaq detajet për bllokimin e të gjitha kukive</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
 <translation id="2875698561019555027">(Faqet e gabimit të Chrome)</translation>
 <translation id="2876336351874743617">Gishti 2</translation>
@@ -2192,6 +2196,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3189187154924005138">Kursori i madh</translation>
 <translation id="3190558889382726167">Fjalëkalimi u ruajt</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
+<translation id="3194786596445804250">Shfaq detajet për bllokimin e kukive të palëve të treta</translation>
 <translation id="3197453258332670132">Me një klikim me butonin djathtas ose një shtypje të gjatë, shfaq informacione përkatëse për zgjedhjen e tekstit</translation>
 <translation id="3199127022143353223">Serverët</translation>
 <translation id="3200061262156232574">Në grumbullin tënd të artikujve të blerjes</translation>
@@ -2559,6 +2564,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3592260987370335752">&amp;Mëso më shumë</translation>
 <translation id="3593152357631900254">Aktivizo modalitetin Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">Kufizimet e emrit të certifikatës</translation>
+<translation id="3596012367874587041">Cilësimet e aplikacionit</translation>
 <translation id="3596414637720633074">Blloko kukit e palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="3599221874935822507">I ngritur</translation>
 <translation id="3599863153486145794">Pastron historikun nga të gjitha pajisjet ku je identifikuar. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2936,6 +2942,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3943582379552582368">&amp;Prapa</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3945513714196326460">Provo një emër më të shkurtër</translation>
+<translation id="3947643756376959257">Fut kodin e qasjes që shfaqet në Chromecast ose në televizor.</translation>
 <translation id="3948027458879361203">Ndrysho emrin e pritësit</translation>
 <translation id="3948116654032448504">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për imazhin</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> mund t'i modifikojnë skedarët në dosjet e mëposhtme</translation>
@@ -3177,12 +3184,14 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4210048056321123003">Pajisja virtuale po shkarkohet</translation>
 <translation id="421182450098841253">Shfaq shiritin e faqeshënuesve</translation>
 <translation id="4211851069413100178">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Zotëruesi mund të zgjedhë të dërgojë te Google të dhënat e diagnostikimit dhe të përdorimit për këtë pajisje. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google". <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Ndalo përdorimin me aplikacione për Android</translation>
 <translation id="42126664696688958">Eksporto</translation>
 <translation id="42137655013211669">Qasja te ky burim është e ndaluar nga serveri.</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4219558185499589032">Boks</translation>
 <translation id="4220648711404560261">Ndodhi një gabim gjatë aktivizimit.</translation>
 <translation id="4225397296022057997">Në të gjitha sajtet</translation>
+<translation id="4227605727325220318">Shto një telefon të ri Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk lejohet}other{Disa shtesa nuk lejohen}}</translation>
 <translation id="4231095370974836764">Instalo aplikacione dhe lojëra nga Google Play në <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfiguro Kerberos</translation>
@@ -4713,6 +4722,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5862109781435984885">Shfaq veglat e stilolapsit në raft</translation>
 <translation id="5862319196656206789">Konfiguro pajisjet e lidhura</translation>
 <translation id="5863445608433396414">Aktivizo funksionet e korrigjimit</translation>
+<translation id="5864147196375746035">Transmeto te një pajisje e menaxhuar</translation>
 <translation id="5864195618110239517">Përdor lidhjen me matje</translation>
 <translation id="5864754048328252126">Veprimi i gjendjes joaktive gjatë karikimit</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> do të vendoset në pauzë së shpejti</translation>
@@ -5282,6 +5292,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6455264371803474013">Në sajte të caktuara</translation>
 <translation id="6455894534188563617">&amp;Dosje e re</translation>
 <translation id="645705751491738698">Vazhdo bllokimin e JavaScript</translation>
+<translation id="6458347417133445570">Shfaq detajet për lejimin e të gjitha kukive</translation>
 <translation id="6458701200018867744">Ngarkimi dështoi (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Përdor përzgjedhjen për të gjetur</translation>
 <translation id="6459799433792303855">Dritarja aktive u zhvendos në një ekran tjetër.</translation>
@@ -5892,6 +5903,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7086672505018440886">Përfshi skedarët e evidencave të Chrome në arkiv.</translation>
 <translation id="7088434364990739311">Kontrolli i përditësimit dështoi të niset (kodi i gabimit: <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Kjo pajisje është vendosur në gjendje jashtë shërbimi nga administratori. Për ta aktivizuar për regjistrim, kërkoji administratorit të vendosë pajisjen në gjendje pritjeje.</translation>
+<translation id="7090160970140261931">Mund të shtosh llogari shtesë te <ph name="DEVICE_TYPE" /> për t'i përdorur me sajtet e uebit dhe aplikacionet për Android. Gjithashtu, mund të kontrollosh se cilat llogari përdoren me aplikacionet për Android.</translation>
 <translation id="7093220653036489319">Përgjigjet e shpejta</translation>
 <translation id="7093416310351037609">Për sigurinë e të dhënave, organizat jote kërkon që të gjitha shkarkimet e përshtatshme të ruhen në llogarinë <ph name="WEB_DRIVE" /> e organizatës sate.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6710,6 +6722,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> mund ta shikojë skedarin <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Shto fjalët që dëshiron të kapërcejë kontrolli drejtshkrimor</translation>
+<translation id="7922935920104868876">Shfaq detajet për bllokimin e kukive të palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="7924358170328001543">Gabim në transferimin e portës</translation>
 <translation id="7925108652071887026">Plotëso automatikisht të dhënat</translation>
 <translation id="792514962475806987">Niveli i zmadhimit të stacionimit:</translation>
@@ -6873,6 +6886,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8076835018653442223">Qasja në skedarët lokalë në pajisjen tënde është e çaktivizuar nga administratori yt</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Llogaritë që ofrohen për t'u përdorur me aplikacionet për Android</translation>
 <translation id="8081989000209387414">Të çaktivizohet korrigjimi i ADB-së?</translation>
 <translation id="8082106343289440791">Të çiftohet me "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Çaktivizimi i korrigjimit të ADB-së do ta rivendosë këtë pajisje <ph name="DEVICE_TYPE" /> në cilësimet e fabrikës. Të gjitha llogaritë e përdoruesit dhe të dhënat lokale do të spastrohen.</translation>
@@ -6947,6 +6961,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8147900440966275470">U gjet <ph name="NUM" /> skedë</translation>
 <translation id="8148760431881541277">Kufizo identifikimin</translation>
 <translation id="8149564499626272569">Verifikoje përmes telefonit me një kabllo USB</translation>
+<translation id="815114315010033526">Përdor kodin QR më mirë</translation>
 <translation id="8151638057146502721">Konfiguro</translation>
 <translation id="8154790740888707867">Asnjë skedar</translation>
 <translation id="8154912474061769055">Veçoritë në shumë sajte mund të mos funksionojnë</translation>
@@ -6972,6 +6987,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8176332201990304395">Rozë dhe e bardhë</translation>
 <translation id="8177196903785554304">Detajet e rrjetit</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
+<translation id="8179188928355984576">Nuk përdoret me aplikacione për Android</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" mund të lexojë dhe fshijë imazhe, video dhe skedarë audio në vendndodhjet e verifikuara.</translation>
 <translation id="8181215761849004992">Nuk mund t'i bashkohet domenit. Kontrollo llogarinë për të parë nëse ke privilegje të mjaftueshme për të shtuar pajisje.</translation>
@@ -7131,6 +7147,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8342861492835240085">Zgjidh një koleksion</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="834785183489258869">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
+<translation id="8349499562373871073">Mund të zgjedhësh të përdorësh një llogari ekzistuese me aplikacionet Android ose mund të shtosh një "Llogari të re të Google". Pasi të identifikohesh në një aplikacion për Android, llogaria jote mund të përdoret në aplikacione të tjera për Android. Qasjen e aplikacioneve për Android mund ta ndryshosh te <ph name="LINK_BEGIN" />Cilësimet &gt; Llogaritë<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Veglat e stilolapsit në stacion</translation>
 <translation id="8351316842353540018">Shfaq gjithmonë opsionet e qashmërisë</translation>
 <translation id="8351419472474436977">Kjo shtesë ka marrë nën kontroll cilësimet e përfaqësuesit tënd, që do të thotë se mund të ndryshojë, shkelë ose përgjojë çdo gjë që ti bën në internet. Nëse s'je i sigurt se pse ndodhi ky ndryshim, ndoshta nuk e do.</translation>

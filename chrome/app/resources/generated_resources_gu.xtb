@@ -205,6 +205,7 @@
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}other{તમે ઑટોમૅટિક રીતે # સેકન્ડમાં સાઇન આઉટ થશો.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}}</translation>
 <translation id="1193927020065025187">આ સાઇટ તમારી પાસેથી ઘૂસણખોરીવાળાં નોટિફિકેશન માટે મંજૂરી મેળવવાનો છળપૂર્વક પ્રયાસ કરતી હોઈ શકે છે</translation>
+<translation id="1195210374336998651">ઍપ સેટિંગ પર જાઓ</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
 <translation id="1195558154361252544">તમે જેના માટે મંજૂરી આપી હોય તે સિવાયની બધી સાઇટ માટે નોટિફિકેશનને ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવે છે</translation>
 <translation id="1197088940767939838">નારંગી</translation>
@@ -385,6 +386,7 @@
 <translation id="1396259464226642517">શું આ પરિણામ અનપેક્ષિત હતું? <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">તમે દાખલ કરેલ વપરાશકર્તાનામ અને પાસવર્ડ મેળ ખાતા નથી</translation>
 <translation id="1397500194120344683">કોઈ પાત્ર ડિવાઇસ નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">તમે આ ડિવાઇસ પર Chromeમાં સાઇન ઇન કરેલું છે, આથી તમે તેમનો સિક્યુરિટી કી તરીકે ઉપયોગ કરી શકો છો.</translation>
 <translation id="1398853756734560583">મોટું કરો</translation>
 <translation id="139911022479327130">તમારા ફોનને અનલૉક કરો અને કન્ફર્મ કરો કે તે તમે જ છો</translation>
 <translation id="1401308693935339022">સ્થાનનો ઉપયોગ કરો. સ્થાનની પરવાનગી ધરાવતી ઍપ અને સેવાઓને આ ડિવાઇસના સ્થાનનો ઉપયોગ કરવાની મંજૂરી આપો. Google સ્થાનનો ડેટા સમયાંતરે એકત્રિત કરી શકે છે અને અનામી રીતે સ્થાન સચોટતા અને સ્થાન-આધારિત સેવાઓને બહેતર બનાવવા માટે તેનો ઉપયોગ કરી શકે છે.</translation>
@@ -1165,6 +1167,7 @@
 <translation id="2163470535490402084">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> માં સાઇન ઇન કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
+<translation id="2165102982098084499">તમે QR કોડ સ્કૅન કરીને આ ડિવાઇસ લિંક કર્યા છે.</translation>
 <translation id="2165177462441582039">દરેક આઇટમ પર હાઇલાઇટ કેટલીવાર સુધી રહેશે તે પસંદ કરો</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">કોઈપણ રીતે સાઇન ઇન કરો</translation>
@@ -1940,6 +1943,7 @@
 <translation id="2915873080513663243">ઑટો સ્કેન</translation>
 <translation id="2916073183900451334">વેબપેજ પર ટૅબને દબાવવાથી લિંકની સાથે ફોર્મ ફીલ્ડ હાઇલાઇટ થાય છે</translation>
 <translation id="2916745397441987255">એક્સ્ટેન્શન શોધો</translation>
+<translation id="2918484639460781603">સેટિંગ્સ પર જાઓ </translation>
 <translation id="2918484644467055090">તમારું એકાઉન્ટ જે સંસ્થા સાથે સંબંધિત છે, તેમાં આ ડિવાઇસની નોંધણી કરી શકાતી નથી, કારણ કે ડિવાઇસને કોઈ બીજી સંસ્થા દ્વારા મેનેજ કરવા માટે માર્ક કરાયેલું છે.</translation>
 <translation id="2920852127376356161">પ્રોટોકૉલ હૅન્ડલ કરવાની મંજૂરી નથી</translation>
 <translation id="2921081876747860777">તમારો સ્થાનિક ડેટા સુરક્ષિત કરવા માટે કૃપા કરીને એક પાસવર્ડ બનાવો.</translation>
@@ -2564,6 +2568,7 @@
 <translation id="3592260987370335752">&amp;વધુ જાણો</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin મોડને સક્ષમ કરો </translation>
 <translation id="3593965109698325041">પ્રમાણપત્રના નામની મર્યાદાઓ</translation>
+<translation id="3596012367874587041">ઍપ સેટિંગ</translation>
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="3599221874935822507">ઉપસેલા</translation>
 <translation id="3599863153486145794">બધા સાઇન ઇન કરેલ ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
@@ -5686,6 +5691,7 @@ USB ડિવાઇસ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="6860097299815761905">પ્રૉક્સી સેટિંગ...</translation>
 <translation id="6860427144121307915">એક ટેબમાં ખોલો</translation>
+<translation id="6863496016067551393">બધા એક્સ્ટેન્શનને મંજૂરી છે</translation>
 <translation id="686366188661646310">પાસવર્ડ ડિલીટ કરીએ?</translation>
 <translation id="6865313869410766144">સ્વતઃભરણ ફોર્મ ડેટા</translation>
 <translation id="6865598234501509159">પેજ <ph name="LANGUAGE" />માં નથી</translation>
@@ -5715,6 +5721,7 @@ USB ડિવાઇસ</translation>
 <translation id="6900532703269623216">વધારેલું સંરક્ષણ</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />ને અપડેટ કરવા માટે ફરીથી સાઇન ઇન કરો</translation>
 <translation id="6900654715912436255">શું તમે ખરેખર આ શોધ એન્જિન ડિલીટ કરવા માગો છો?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">ટેક્સ્ટ ટૂ સ્પીચના વૉઇસ પ્રીવ્યૂ માટે</translation>
 <translation id="6902336033320348843">વિભાગની સુવિધા નથી: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">ઉપકરણને ડોમેન સાથે જોડો</translation>
@@ -7361,6 +7368,7 @@ USB ડિવાઇસ</translation>
 <translation id="8610103157987623234">ખોટું ફૉર્મેટ. કૃપા કરીને ફરી પ્રયાસ કરો</translation>
 <translation id="8611682088849615761">આ સાઇટને MIDI ડિવાઇસનું સંપૂર્ણ નિયંત્રણ રાખવાની મંજૂરી આપવાનું ચાલુ રાખો</translation>
 <translation id="8613164732773110792">માત્ર લોઅરકેસ અક્ષરો, અંકો, અન્ડરસ્કોર અથવા ડૅશ</translation>
+<translation id="8613645710357126807">એક્સ્ટેન્શનનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" />નું કદ બહુ મોટું હોવાથી સુરક્ષા તપાસ કરી નહીં શકાય. તમે 50 MB સુધીના કદવાળી ફાઇલો ખોલી શકશો.</translation>
 <translation id="8615618338313291042">છૂપી ઍપ્લિકેશન: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />ને તમારા સંપર્કોમાં ઉમેરો</translation>

@@ -297,7 +297,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
 <translation id="3609785682760573515">Sinhroniziranje…</translation>
 <translation id="3631443864840848029">Vodite računa da pohranite trenutnu lozinku za ovu web lokaciju.</translation>
-<translation id="3638472932233958418">Unapr. učit. web str.</translation>
+<translation id="3638472932233958418">Predučitaj web stranice</translation>
 <translation id="3661160521073045932">Dostupan je profil konfiguracije</translation>
 <translation id="3670030362669914947">Broj</translation>
 <translation id="3691593122358196899">Oznaka je pohranjena u folderu <ph name="FOLDER_TITLE" /></translation>
@@ -452,6 +452,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5186185447130319458">Privatno</translation>
 <translation id="5188482106078495165">Postavka kolačića se primjenjuje na sve kartice. Da primijenite novu postavku na otvorenu karticu, ponovo učitajte karticu.</translation>
 <translation id="5190835502935405962">Traka oznaka</translation>
+<translation id="519530786644929958">Preuzimanje nije uspjelo i ne može se ponoviti.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Zatvorite karticu.</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>

@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> zahteva da pametna kartica ostane umetnuta.}other{Automatski ćete biti odjavljeni za # sekundi.
 <ph name="DOMAIN" /> zahteva da pametna kartica ostane umetnuta.}}</translation>
 <translation id="1193927020065025187">Ovaj sajt možda pokušava da vas prevari da dozvolite ometajuća obaveštenja</translation>
+<translation id="1195210374336998651">Otvori podešavanja aplikacije</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1195558154361252544">Obaveštenja su automatski blokirana za sve sajtove osim za one koje omogućite</translation>
 <translation id="1197088940767939838">Narandžasta</translation>
@@ -1943,6 +1944,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2915873080513663243">Automatsko skeniranje sadržaja</translation>
 <translation id="2916073183900451334">Pritiskom na Tab na veb stranici biće istaknute veze, kao i polja u obrascu</translation>
 <translation id="2916745397441987255">Pretražite dodatke</translation>
+<translation id="2918484639460781603">Idi na podešavanja</translation>
 <translation id="2918484644467055090">Ovaj uređaj ne može da se registruje u organizaciji kojoj pripada vaš nalog jer je označen kao uređaj kojim upravlja druga organizacija.</translation>
 <translation id="2920852127376356161">Nije im dozvoljeno upravljanje protokolima</translation>
 <translation id="2921081876747860777">Napravite lozinku da biste zaštitili lokalne podatke.</translation>
@@ -2567,6 +2569,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3592260987370335752">&amp;Saznajte više</translation>
 <translation id="3593152357631900254">Omogući Fuzzy-Pinyin režim</translation>
 <translation id="3593965109698325041">Ograničenja naziva sertifikata </translation>
+<translation id="3596012367874587041">Podešavanja aplikacije</translation>
 <translation id="3596414637720633074">Blokira kolačiće trećih strana u režimu bez arhiviranja</translation>
 <translation id="3599221874935822507">Ispupčeno</translation>
 <translation id="3599863153486145794">Briše istoriju sa svih uređaja na kojima ste prijavljeni. Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

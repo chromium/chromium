@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> න් මුද්‍රණය කළ පිටුව <ph name="PRINTED_PAGES" /></translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> පිටුව ස්කෑන් කරමින්. <ph name="PERCENTAGE_VALUE" />% සම්පූර්ණයි.</translation>
 <translation id="3459509316159669723">මුද්‍රණය කරමින්</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> යාවත්කාලීන කරමින්</translation>
 <translation id="3484914941826596830">නිත්‍ය මෘදුකාංග යාවත්කාලීන වන අතරතුර, මෙම බාහිර උපාංගය විසන්ධි කිරීම හෝ ඔබගේ පරිගණකය වැසීම නොකරන්න. ඔබට මෙම කවුළුව කුඩා කළ හැකිය. මෙම යාවත්කාලීන කිරීමට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම කාලය තුළ ඔබගේ බාහිර උපාංගය ක්‍රියා නොකළ හැකිය.</translation>
 <translation id="3486220673238053218">නිර්වචනය</translation>
 <translation id="3488065109653206955">අර්ධව සක්‍රිය කළ</translation>
 <translation id="3527036260304016759">අසාර්ථක විය - නොදන්නා දෝෂයකි</translation>
 <translation id="3532980081107202182">මිනිත්තු <ph name="MIN_REMAINING" />ක් පමණ ඉතිරිය</translation>
 <translation id="3565064564551103223">ඉඩ දෙන IP</translation>
+<translation id="3577473026931028326">යම් දෙයක් වැරදිණි. නැවත උත්සාහ කරන්න.</translation>
 <translation id="357889014807611375">මනුගත Wi-Fi</translation>
 <translation id="3583278742022654445">දුර්වල සංඥා ප්‍රබලතාව. Wi-Fi සංඥා මූලාශ්‍රය වෙත වඩාත් සමීප වීමට උත්සාහ කරන්න.</translation>
 <translation id="3595596368722241419">බැටරිය ආරෝපිතයි</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි. පරිපාලකයින්ට උපාංගය දුරස්ථව වින්‍යාස කිරීමට හැකිය.</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
-<translation id="7240035910874241640">සියලු උපාංග යාවත්කාලීනයි</translation>
 <translation id="7271040990581020067">ස්කෑනරය දැනට භාවිතයේ ඇත. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">වෝල්පේපර එකතු</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">තදබදය ගණනය කිරීම්</translation>
 <translation id="8503813439785031346">පරිශීලක නාමය</translation>
 <translation id="8503836310948963452">හුදෙක් තව මිනිත්තු කීපයකි...</translation>
-<translation id="8520963233738002436">ඔබගේ <ph name="DEVICE_NAME" /> යාවත්කාලීනයි</translation>
 <translation id="8521021929829989041">පුද්ගලික උපාංගයක් භාවිත කරන්න</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ඔබගේ වාහකයට ඔවුන්ගේ ජාලයට සම්බන්ධ වීමට මෙම විකල්පය අවශ්‍ය විය හැකිය. විස්තර සඳහා ඔබගේ වාහකය අමතන්න.</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">නැවත ධාවනය කරන්න</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ස්කෑන් කරන්න}=1{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}one{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}other{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}}</translation>
-<translation id="8994273342647807496">ස්ථාපනය කරමින් - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">උපාංගයට බැටරිය <ph name="BATTERY_PERCENTAGE" />% ක් ඇත.</translation>
 <translation id="9003704114456258138">සංඛ්‍යාතය</translation>
 <translation id="9039663905644212491">PEAP</translation>

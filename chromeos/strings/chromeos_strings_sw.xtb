@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Imechapisha ukurasa wa <ph name="PRINTED_PAGES" /> kati ya <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Inachanganua ukurasa wa <ph name="PAGE_NUM" />. Asilimia <ph name="PERCENTAGE_VALUE" /> imekamilika.</translation>
 <translation id="3459509316159669723">Kuchapisha</translation>
-<translation id="3462187165860821523">Inasasisha <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Usichomoe kifaa hiki cha nje wala usizime kompyuta yako programu dhibiti ikisasishwa. Unaweza kupunguza kidirisha hiki. Sasisho hili linaweza kuchukua dakika chache na kifaa chako cha nje huenda kisifanye kazi kwa wakati huu.</translation>
 <translation id="3486220673238053218">ufafanuzi</translation>
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
 <translation id="3532980081107202182">Zimesalia takriban dakika <ph name="MIN_REMAINING" /></translation>
 <translation id="3565064564551103223">IP zilizoruhusiwa</translation>
+<translation id="3577473026931028326">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="357889014807611375">Wi-Fi inayopima data</translation>
 <translation id="3583278742022654445">Muunganisho wa mtandao ni dhaifu. Jaribu kusogea karibu na chanzo cha mawimbi ya Wi-Fi.</translation>
 <translation id="3595596368722241419">Betri imejaa</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> hii inadhibitiwa na <ph name="MANAGER" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
 <translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
-<translation id="7240035910874241640">Vifaa vyote vilivyounganishwa kwenye kompyuta vimesasishwa</translation>
 <translation id="7271040990581020067">Kichanganuzi kinatumika kwa sasa. Jaribu tena baadaye.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Mikusanyiko ya Mandhari</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">Hesabu za Trafiki</translation>
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
 <translation id="8503836310948963452">Dakika chache tu...</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> imesasishwa</translation>
 <translation id="8521021929829989041">Tumia kama kifaa chako binafsi</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Huenda mtoa huduma wako akahitaji chaguo hili ili uweze kuunganisha kwenye mtandao wake. Wasiliana na mtoa huduma wako ili upate maelezo.</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">Endesha tena</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Changanua}=1{Changanua ukurasa {NUMBER_OF_PAGES}}other{Changanua kurasa {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Inasakinisha - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Kiwango cha chaji ya betri kwenye kifaa ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="9003704114456258138">Masafa</translation>
 <translation id="9039663905644212491">PEAP</translation>

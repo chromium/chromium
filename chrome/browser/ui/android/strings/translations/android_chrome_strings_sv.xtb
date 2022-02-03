@@ -290,6 +290,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ljudfil}other{# ljudfiler}}</translation>
 <translation id="265156376773362237">Standardförinläsning</translation>
 <translation id="2656405586795711023">Webbappar</translation>
+<translation id="2689830683995595741">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Integritetsmeddelandet för Google-konton som hanteras med Family Link<ph name="END_LINK3" /> gäller också.</translation>
 <translation id="2702516483241149200">Nyhet: dela en länk som scrollar fram till den här texten</translation>
 <translation id="2704606927547763573">Kopierat</translation>
 <translation id="2707726405694321444">Uppdatera sidan</translation>
@@ -626,6 +627,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}}</translation>
 <translation id="4696983787092045100">Skicka texten till dina enheter</translation>
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
+<translation id="471759387343966120">Genom att fortsätta godkänner du <ph name="BEGIN_TOS_LINK" />användarvillkoren<ph name="END_TOS_LINK" /> och <ph name="BEGIN_PRIVACY_LINK" />integritetspolicyn<ph name="END_PRIVACY_LINK" />.\nChrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_UMA_LINK" />Hantera<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Erbjud översättning</translation>
 <translation id="4720023427747327413">Öppna i <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Hjälp till att förbättra Chrome. <ph name="BEGIN_LINK" />Fyll i enkäten<ph name="END_LINK" />.</translation>
@@ -908,6 +910,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6277722725779679269">Det gick inte att uppdatera Bevaka pris</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Du kan skicka flikar mellan enheter som är inloggade på samma Google-konto</translation>
 <translation id="6297765934698848803">Organisationen som hanterar din enhet har inaktiverat kameran.</translation>
 <translation id="6301525844455696527">Läs ikapp i läslistan</translation>

@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Page imprimée : <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" />… Numérisation terminée à <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
-<translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" />…</translation>
 <translation id="3484914941826596830">Vous ne devez pas débrancher cet appareil externe ni éteindre votre ordinateur pendant la mise à jour du micrologiciel. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil externe est compromis.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec – Erreur inconnue</translation>
 <translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
 <translation id="3565064564551103223">IP autorisées</translation>
+<translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="357889014807611375">Wi-Fi facturé à l'usage</translation>
 <translation id="3583278742022654445">Signal faible. Rapprochez-vous de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
@@ -462,7 +462,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
-<translation id="7240035910874241640">Tous les périphériques sont à jour</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
@@ -563,7 +562,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
-<translation id="8520963233738002436">Votre <ph name="DEVICE_NAME" /> est à jour</translation>
 <translation id="8521021929829989041">Utiliser en tant qu'appareil personnel</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Votre opérateur peut exiger ce réglage pour la connexion à son réseau. Contactez-le pour en savoir plus.</translation>
@@ -607,7 +605,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8970109610781093811">Exécuter à nouveau</translation>
 <translation id="8983038754672563810">3G+</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanner}=1{Scanner la page {NUMBER_OF_PAGES}}one{Scanner la page {NUMBER_OF_PAGES}}other{Scanner les pages {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Installation - <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="8997710128084572139">L'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9039663905644212491">PEAP</translation>

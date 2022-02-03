@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ਆਡੀਓ ਫ਼ਾਈਲ}one{# ਆਡੀਓ ਫ਼ਾਈਲ}other{# ਆਡੀਓ ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="265156376773362237">ਮਿਆਰੀ ਪ੍ਰੀਲੋਡਿੰਗ</translation>
 <translation id="2656405586795711023">ਵੈੱਬ ਐਪਾਂ</translation>
+<translation id="2689830683995595741">Chrome ਨੂੰ ਵਰਤ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google Chrome ਅਤੇ Chrome OS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ। <ph name="BEGIN_LINK3" />Family Link ਨਾਲ ਪ੍ਰਤੀਬੰਧਿਤ ਕੀਤੇ ਜਾਂਦੇ Google ਖਾਤਿਆਂ ਲਈ ਪਰਦੇਦਾਰੀ ਨੋਟਿਸ<ph name="END_LINK3" /> ਵੀ ਲਾਗੂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="2702516483241149200">ਨਵਾਂ: ਇਸ ਲਿਖਤ ਤੱਕ ਸਕ੍ਰੋਲ ਕਰਨ ਵਾਲਾ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2704606927547763573">ਕਾਪੀ ਕੀਤਾ</translation>
 <translation id="2707726405694321444">ਪੰਨੇ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}}</translation>
 <translation id="4696983787092045100">ਲਿਖਤ ਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="4699172675775169585">ਕੈਚ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਫਾਈਲਾਂ</translation>
+<translation id="471759387343966120">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਅਤੇ <ph name="BEGIN_PRIVACY_LINK" />ਪਰਦੇਦਾਰੀ\u00A0ਨੀਤੀ<ph name="END_PRIVACY_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।\nਐਪ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, Chrome ਵਰਤੋਂ ਅਤੇ ਕ੍ਰੈਸ਼ ਡਾਟਾ Google ਨੂੰ ਭੇਜਦਾ ਹੈ। <ph name="BEGIN_UMA_LINK" />ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">ਅਨੁਵਾਦ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4720982865791209136">Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ। <ph name="BEGIN_LINK" />ਸਰਵੇਖਣ ਪੂਰਾ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">ਸਫ਼ਾ ਪ੍ਰਿੰਟ ਕਰਨ ਵਿੱਚ ਇੱਕ ਸਮੱਸਿਆ ਹੋਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6277722725779679269">'ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ' ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6278428485366576908">ਥੀਮ</translation>
+<translation id="6292420053234093573">Chrome ਨੂੰ ਵਰਤ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google Chrome ਅਤੇ Chrome OS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="6294610283659775533">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਟੈਬਾਂ ਭੇਜ ਸਕਦੇ ਹੋ ਜੋ ਇੱਕੋ Google ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਹੋਏ ਹਨ</translation>
 <translation id="6297765934698848803">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਵਾਲੀ ਸੰਸਥਾ ਨੇ ਤੁਹਾਡਾ ਕੈਮਰਾ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="6301525844455696527">ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਦੇਖੋ</translation>

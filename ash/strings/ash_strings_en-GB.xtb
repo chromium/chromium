@@ -146,6 +146,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1836215606488044471">Assistant (loading...)</translation>
 <translation id="1838895407229022812">Night Light is off.</translation>
 <translation id="1864454756846565995">USB-C device (rear port)</translation>
+<translation id="1879018240766558464">Incognito windows aren’t currently supported. Other apps will be saved.</translation>
 <translation id="1882814835921407042">No mobile network</translation>
 <translation id="1882897271359938046">Mirroring to <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Unlock with fingerprint</translation>
@@ -947,6 +948,7 @@ New install</translation>
 <translation id="7366890467478514168">Connect <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Record window</translation>
 <translation id="7377169924702866686">Caps Lock is on.</translation>
+<translation id="7377481913241237033">Connect with a code</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
 <translation id="7378594059915113390">Media controls</translation>
 <translation id="7378889811480108604">Battery saver mode is off</translation>
@@ -974,6 +976,7 @@ New install</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux apps and incognito windows aren’t currently supported. Other apps will be saved.</translation>
 <translation id="7544300628205093162">Keyboard backlight is on</translation>
 <translation id="7548434653388805669">Time for bed</translation>
 <translation id="7551643184018910560">Pin to shelf</translation>

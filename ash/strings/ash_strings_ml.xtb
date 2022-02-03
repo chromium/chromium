@@ -113,6 +113,7 @@
 <translation id="1555130319947370107">നീല</translation>
 <translation id="1570871743947603115">Bluetooth മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
+<translation id="1610778689852195798">"പഴയപടിയാക്കുക"</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'സ്വിച്ച് ആക്‌സസ്' പ്രവർത്തനരഹിതമാക്കാം.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങൾ</translation>
@@ -247,6 +248,7 @@
 <translation id="2596078834055697711">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="2607678425161541573">ഓൺലൈനായി സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="2621713457727696555">സുരക്ഷിതമാക്കി</translation>
+<translation id="263399434338050016">"എല്ലാം തിരഞ്ഞെടുക്കുക"</translation>
 <translation id="2653019840645008922">വിൻഡോ ക്യാപ്‌ചർ</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
 <translation id="2658778018866295321">ക്ലിക്ക് ചെയ്‌ത് വലിച്ചിടുക</translation>
@@ -263,6 +265,7 @@
 <translation id="2727175239389218057">മറുപടി നൽകുക</translation>
 <translation id="2727977024730340865">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജ്ജറിലേക്ക് പ്ലഗ് ചെയ്‌തിരിക്കുന്നു. ബാറ്ററി ചാർജുചെയ്യൽ വിശ്വസനീയമാകണമെന്നില്ല.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"ഇല്ലാതാക്കുക"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
 <translation id="2782591952652094792">ക്യാപ്‌ചർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
@@ -306,6 +309,7 @@
 <translation id="3038571455154067151">സൈൻ ഇൻ ചെയ്യാൻ, നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="3039939407102840004">സ്റ്റൈലസ് ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനത്തിലാണ്.</translation>
 <translation id="3045488863354895414">ഗുഡ് ആഫ്‌റ്റർനൂൺ,</translation>
+<translation id="3047761520276763270">ഇങ്ങനെ പറഞ്ഞ് നോക്കൂ:</translation>
 <translation id="3051189971848907985">പ്രൊഫൈലിന്റെ പേര് മാറ്റുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="3055162170959710888">നിങ്ങൾ ഇന്ന് <ph name="USED_TIME" />, ഈ ഉപകരണം ഉപയോഗിച്ചു</translation>
 <translation id="3068711042108640621">സ്‌ക്രീനിൻ്റെ ഇടതുഭാഗത്താണ് ഷെൽഫ്</translation>
@@ -551,6 +555,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
 <translation id="4570957409596482333">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക ബട്ടൺ</translation>
+<translation id="4573176682887762361">"ടൈപ്പ് ചെയ്യുക [വാക്ക് / ശൈലി]"</translation>
 <translation id="4577274620589681794"><ph name="LABEL" /> · സമയം കഴിഞ്ഞു</translation>
 <translation id="4577990005084629481">പ്രിവ്യുകൾ കാണിക്കുക</translation>
 <translation id="4578196883126898996">നിങ്ങളുടെ മൈക്രോഫോൺ ഓഫാണ്. ഉപകരണത്തിന്റെ മൈക്രോഫോൺ ബട്ടൺ ഓണാക്കുക.</translation>
@@ -1165,6 +1170,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> എന്നതിലേക്ക് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">ഫോൾഡർ <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"സഹായം"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
 <translation id="8818320199597151042">പ്രൊഫൈല്‍ നീക്കം ചെയ്യുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>

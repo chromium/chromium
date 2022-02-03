@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> पृष्ठहरू प्रिन्ट गरिए</translation>
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> स्क्यान गरिँदै छ। <ph name="PERCENTAGE_VALUE" />% पूरा भयो।</translation>
 <translation id="3459509316159669723">प्रिन्टिङ</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट गरिँदै छ</translation>
 <translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
 <translation id="3527036260304016759">प्रिन्ट गर्न सकिएन - अज्ञात त्रुटि भयो</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> मिनेट जति बाँकी छ</translation>
 <translation id="3565064564551103223">अनुमति दिइएका IP</translation>
+<translation id="3577473026931028326">केही चिज गडबड भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="3583278742022654445">सिग्नल कमजोर छ। Wi-Fi सिग्नलको स्रोतको नजिक गई हेर्नुहोस्।</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो डिभाइस कन्फिगर गर्न सक्छन्।</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
-<translation id="7240035910874241640">सबै सहायक डिभाइस अप टु डेट छन्</translation>
 <translation id="7271040990581020067">स्क्यानर हाल प्रयोग भइरहेको छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वालपेपरका सङ्ग्रहहरू</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">ट्राफिक काउन्टर</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
-<translation id="8520963233738002436">तपाईंको <ph name="DEVICE_NAME" /> अप टु डेट छ</translation>
 <translation id="8521021929829989041">व्यक्तिगत डिभाइसका रूपमा चलाउनुहोस्</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका खातिर तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}}</translation>
-<translation id="8994273342647807496">इन्स्टल गरिँदै छ - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
 <translation id="9039663905644212491">PEAP</translation>

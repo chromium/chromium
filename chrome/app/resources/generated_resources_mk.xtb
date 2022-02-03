@@ -207,6 +207,7 @@
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.}other{Автоматски ќе ве одјавиме по # секунди.
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.}}</translation>
 <translation id="1193927020065025187">Сајтов можеби се обидува да ве измами да дозволите нападни известувања</translation>
+<translation id="1195210374336998651">Одете во постаките за апликацијата</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1195558154361252544">Известувањата се автоматски блокирани за сите сајтови, освен за оние за коишто сте ги дозволиле</translation>
 <translation id="1197088940767939838">Портокалова</translation>
@@ -387,6 +388,7 @@
 <translation id="1396259464226642517">Дали резултатов беше неочекуван? <ph name="BEGIN_LINK" />Испратете повратни информации<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Корисничкото име и лозинката што ги внесовте не се совпаѓаат</translation>
 <translation id="1397500194120344683">Нема уреди што ги исполнуваат условите. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Најавени сте на Chrome на уредиве, па така можете да ги користите како безбедносни клучеви.</translation>
 <translation id="1398853756734560583">Максимизирај</translation>
 <translation id="139911022479327130">Отклучете го телефонот и потврдете дека сте вие</translation>
 <translation id="1401308693935339022">Користење на локацијата. Дозволете апликациите и услугите со дозвола за локација да ја користат локацијата на уредов. Google може повремено да прибира податоци за локацијата и анонимно да ги користи податоциве за да ги подобри прецизноста на локацијата и услугите според локација.</translation>
@@ -1181,6 +1183,7 @@
 <translation id="2163470535490402084">Поврзете се на интернет за да се најавите на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и уште 1 копче</translation>
+<translation id="2165102982098084499">Ги поврзавте уредиве со скенирање QR-код.</translation>
 <translation id="2165177462441582039">Изберете колку долго да стои нагласувањето на секоја ставка</translation>
 <translation id="2166369534954157698">Ѓакон Гоце и Љутфи Хоџа ноќе ѕвезди бројат. Постоиш ли боже? Молчење.</translation>
 <translation id="2169062631698640254">Сепак, најави се</translation>
@@ -2582,6 +2585,7 @@
 <translation id="3592260987370335752">&amp;Дознај повеќе</translation>
 <translation id="3593152357631900254">Овозможи режим за нејасен Пин Јин</translation>
 <translation id="3593965109698325041">Ограничувања на име на сертификат</translation>
+<translation id="3596012367874587041">Поставки за апликацијата</translation>
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
 <translation id="3599221874935822507">Со подигнат раб</translation>
 <translation id="3599863153486145794">Ја чисти историјата од сите најавени уреди. Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5703,6 +5707,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="6860097299815761905">Поставки на прокси…</translation>
 <translation id="6860427144121307915">Отвори во картичка</translation>
+<translation id="6863496016067551393">Сите екстензии се дозволени</translation>
 <translation id="686366188661646310">Да се избрише лозинката?</translation>
 <translation id="6865313869410766144">Автоматско пополнување податоци во формулар</translation>
 <translation id="6865598234501509159">Страницата не е на <ph name="LANGUAGE" /></translation>
@@ -5732,6 +5737,7 @@
 <translation id="6900532703269623216">Подобрена заштита</translation>
 <translation id="6900651018461749106">Најавете се повторно за да ја ажурирате <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Дали сигурно сакате да го избришете овој пребарувач?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Глас за преглед</translation>
 <translation id="6902336033320348843">Делот не е поддржан: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Приклучете го уредот на домен</translation>
@@ -7386,6 +7392,7 @@
 <translation id="8610103157987623234">Погрешен формат. Обидете се повторно</translation>
 <translation id="8611682088849615761">Продолжи да дозволуваш сајтов да има целосна контрола врз MIDI-уредите</translation>
 <translation id="8613164732773110792">Само мали букви, цифри, долни црти и црти</translation>
+<translation id="8613645710357126807">Не е дозволено да се користат екстензии</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> е преголема за безбедносна проверка. Може да отворате датотеки до 50 MB.</translation>
 <translation id="8615618338313291042">Инкогнито апликација: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Додај го/ја <ph name="CONTACT_NAME" /> во контактите</translation>

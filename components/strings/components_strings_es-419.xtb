@@ -70,7 +70,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1178581264944972037">Detener</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1186201132766001848">Revisar contraseñas</translation>
-<translation id="1195210374336998651">Ir a la configuración de la app</translation>
 <translation id="1195558154361252544">Se bloquearon automáticamente las notificaciones para todos los sitios, excepto en los sitios en que las permites</translation>
 <translation id="1197088940767939838">Naranja</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -840,7 +839,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puedes restablecer tu grupo en cualquier momento. Te llevará aproximadamente un día unirte a un grupo nuevo.}=1{Puedes restablecer tu grupo en cualquier momento. Te llevará aproximadamente un día unirte a un grupo nuevo.}other{Puedes restablecer tu grupo en cualquier momento. Te llevará {NUM_DAYS} días unirte a un grupo nuevo.}}</translation>
-<translation id="3596012367874587041">Configuración de la app</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">El administrador bloqueó la aplicación</translation>
 <translation id="3608932978122581043">Orientación de la entrada</translation>
@@ -1969,6 +1967,7 @@ Detalles adicionales:
 <translation id="7334320624316649418">&amp;Rehacer Reorganizar</translation>
 <translation id="7335157162773372339">Puede solicitar permiso para usar la cámara</translation>
 <translation id="7337248890521463931">Mostrar más líneas</translation>
+<translation id="7337418456231055214">¿No se completó el número de la tarjeta virtual? Haz clic en los detalles de la tarjeta para copiarlos. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">No está disponible para tu plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
 <translation id="734600844861828519">11x15</translation>

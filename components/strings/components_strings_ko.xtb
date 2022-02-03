@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1186201132766001848">비밀번호 확인</translation>
-<translation id="1195210374336998651">앱 설정으로 이동</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
 <translation id="1197088940767939838">오렌지색</translation>
 <translation id="1201402288615127009">다음</translation>
@@ -839,7 +838,6 @@
 <translation id="3587738293690942763">보통</translation>
 <translation id="3592413004129370115">Italian(봉투)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}=1{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}other{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 {NUM_DAYS}일이 소요됩니다.}}</translation>
-<translation id="3596012367874587041">앱 설정</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">관리자가 차단한 애플리케이션</translation>
 <translation id="3608932978122581043">종이 공급 방향</translation>
@@ -1968,6 +1966,7 @@
 <translation id="7334320624316649418">재정렬 다시 실행(&amp;R)</translation>
 <translation id="7335157162773372339">카메라 사용을 요청할 수 있음</translation>
 <translation id="7337248890521463931">자막 펼치기</translation>
+<translation id="7337418456231055214">가상 카드 번호가 자동 완성되지 않았나요? 복사할 카드 세부정보를 클릭하세요. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">사용 중인 플랫폼에서는 제공되지 않습니다.</translation>
 <translation id="733923710415886693">서버 인증서가 인증서 투명성 정책을 사용하여 공개되지 않았습니다.</translation>
 <translation id="734600844861828519">11x15</translation>

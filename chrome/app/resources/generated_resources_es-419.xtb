@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}other{Saldrás automáticamente en # segundos.
 <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}}</translation>
 <translation id="1193927020065025187">Es posible que este sitio esté intentando engañarte para que permitas notificaciones intrusivas</translation>
+<translation id="1195210374336998651">Ir a la configuración de la app</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1195558154361252544">Se bloquearon automáticamente las notificaciones para todos los sitios, excepto en los sitios en que las permites</translation>
 <translation id="1197088940767939838">Naranja</translation>
@@ -765,6 +766,7 @@
 <translation id="176587472219019965">&amp;Nueva ventana</translation>
 <translation id="1766575458646819543">Saliste de la pantalla completa</translation>
 <translation id="1766957085594317166">Guarda las contraseñas de forma segura en tu Cuenta de Google para no tener que volver a escribirlas</translation>
+<translation id="1767043563165955993">Usar en las apps para Android</translation>
 <translation id="1768212860412467516">Envía comentarios sobre <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Se produjo un error al contactar el servidor de acceso. Comprueba la conexión de tu red y el nombre del dominio; luego, vuelve a intentarlo.</translation>
 <translation id="1769104665586091481">Abrir vínculo en una ventana &amp;nueva</translation>
@@ -1100,6 +1102,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2113479184312716848">Abrir &amp;archivo...</translation>
 <translation id="2113921862428609753">Acceso a la información de la autoridad</translation>
 <translation id="2114326799768592691">Volver a cargar &amp;marco</translation>
+<translation id="2114413269775311385">Usar esta cuenta en las apps para Android Puedes controlar los permisos de las apps para Android en <ph name="LINK_BEGIN" />Configuración de apps<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No se insertó ninguna tarjeta SIM</translation>
 <translation id="2116619964159595185">Por lo general, los sitios se conectan a dispositivos Bluetooth para usarlos en funciones, como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una lámpara inteligente.</translation>
@@ -1889,6 +1892,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="287205682142673348">Redirección de puertos</translation>
 <translation id="287286579981869940">Agregar <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Apagar</translation>
+<translation id="2873995907777332853">Mostrar detalles sobre cómo bloquear todas las cookies</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875698561019555027">(Páginas de error de Chrome)</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
@@ -1936,6 +1940,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2915873080513663243">Búsqueda automática</translation>
 <translation id="2916073183900451334">Si presionas el tabulador en una página web, se resaltan los vínculos y los campos de formularios</translation>
 <translation id="2916745397441987255">Buscar extensiones</translation>
+<translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2918484644467055090">No se puede inscribir este dispositivo en la organización al que pertenece tu cuenta porque ya lo administra otra organización.</translation>
 <translation id="2920852127376356161">No pueden procesar protocolos</translation>
 <translation id="2921081876747860777">Crea una contraseña para proteger tus datos locales.</translation>
@@ -2192,6 +2197,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Se guardó la contraseña</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
+<translation id="3194786596445804250">Mostrar detalles sobre cómo bloquear cookies de terceros</translation>
 <translation id="3197453258332670132">Para ver información relacionada sobre la selección de texto, haz clic con el botón derecho en ella o mantenla presionada.</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">En tu carrito de compras</translation>
@@ -2559,6 +2565,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3592260987370335752">&amp;Más información</translation>
 <translation id="3593152357631900254">Habilitar modo Pinyin aproximado</translation>
 <translation id="3593965109698325041">Restricciones para el nombre del certificado</translation>
+<translation id="3596012367874587041">Configuración de la app</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="3599221874935822507">Elevada</translation>
 <translation id="3599863153486145794">Borra el historial de todos los dispositivos en los que accediste. Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2936,6 +2943,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto.</translation>
+<translation id="3947643756376959257">Ingresa el código de acceso que se muestra en el Chromecast o TV.</translation>
 <translation id="3948027458879361203">Cambiar el nombre de host</translation>
 <translation id="3948116654032448504">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos en las siguientes carpetas</translation>
@@ -3177,12 +3185,14 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4210048056321123003">Se está descargando la máquina virtual</translation>
 <translation id="421182450098841253">Mo&amp;strar la barra de favoritos</translation>
 <translation id="4211851069413100178">Envía datos de uso y diagnóstico. Para ayudar a mejorar tu experiencia de Android, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la "Actividad de web y de aplicaciones adicional", es posible que se almacenen estos datos en tu Cuenta de Google. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Dejar de usar en las apps para Android</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="42137655013211669">El servidor prohibió el acceso a este recurso.</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Se produjo un error durante la activación.</translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
+<translation id="4227605727325220318">Agregar un teléfono Android nuevo</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{No se permite esta extensión}other{No se permiten algunas extensiones}}</translation>
 <translation id="4231095370974836764">Instala apps y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
@@ -4713,6 +4723,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5862109781435984885">Mostrar herramientas de la pluma stylus en la biblioteca</translation>
 <translation id="5862319196656206789">Configurar los dispositivos conectados</translation>
 <translation id="5863445608433396414">Habilitar funciones de depuración</translation>
+<translation id="5864147196375746035">Transmitir a un dispositivo administrado</translation>
 <translation id="5864195618110239517">Usar la conexión de uso medido</translation>
 <translation id="5864754048328252126">Acción de inactividad durante la carga</translation>
 <translation id="5865508026715185451">Pronto se pausará <ph name="APP_NAME" /></translation>
@@ -5282,6 +5293,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
 <translation id="645705751491738698">Continuar con el bloqueo de JavaScript</translation>
+<translation id="6458347417133445570">Mostrar detalles sobre cómo permitir todas las cookies</translation>
 <translation id="6458701200018867744">No se pudo realizar la descarga (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Usar la selección para buscar</translation>
 <translation id="6459799433792303855">La ventana activa se movió a otra pantalla.</translation>
@@ -5892,6 +5904,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7086672505018440886">Incluye los archivos de registro de Chrome en el archivo.</translation>
 <translation id="7088434364990739311">Error al iniciar la verificación de actualizaciones (código de error <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">El administrador estableció el estado de desaprovisionamiento para este dispositivo. Para poder utilizarlo en el registro, el administrador debe actualizar el estado del dispositivo a pendiente.</translation>
+<translation id="7090160970140261931">Puedes agregar una cuenta adicional a tu <ph name="DEVICE_TYPE" /> para usarlas en sitios web y apps para Android. También puedes controlar qué cuentas se usan en las apps para Android.</translation>
 <translation id="7093220653036489319">Respuestas rápidas</translation>
 <translation id="7093416310351037609">Con el fin de preservar la seguridad de los datos, tu organización requiere que todas las descargas aptas se guarden en la cuenta de <ph name="WEB_DRIVE" /> de tu organización.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6712,6 +6725,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> puede ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Agrega las palabras que quieras que el corrector ortográfico omita</translation>
+<translation id="7922935920104868876">Mostrar detalles sobre cómo bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="7924358170328001543">Se produjo un error al reenviar el puerto</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="792514962475806987">Nivel de zoom en vista acoplada:</translation>
@@ -6876,6 +6890,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8076835018653442223">El administrador inhabilitó el acceso a los archivos locales de tu dispositivo</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Cuentas disponibles para usar en apps para Android</translation>
 <translation id="8081989000209387414">¿Quieres inhabilitar la depuración de adb?</translation>
 <translation id="8082106343289440791">¿Deseas vincular "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Si inhabilitas la depuración de adb, se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> a la configuración de fábrica. Se borrarán todas las cuentas de usuario y los datos locales.</translation>
@@ -6950,6 +6965,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8147900440966275470">Se encontró <ph name="NUM" /> pestaña</translation>
 <translation id="8148760431881541277">Limitar el acceso</translation>
 <translation id="8149564499626272569">Verificar por teléfono con un cable USB</translation>
+<translation id="815114315010033526">Usar un código QR en su lugar</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Sin archivos</translation>
 <translation id="8154912474061769055">Es posible que algunas funciones no puedan utilizarse en muchos sitios.</translation>
@@ -6975,6 +6991,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8176332201990304395">Rosa y blanco</translation>
 <translation id="8177196903785554304">Detalles de la red</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Mover la pestaña a una ventana nueva}other{Mover las pestañas a una ventana nueva}}</translation>
+<translation id="8179188928355984576">No se usa en las apps para Android</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" puede leer y eliminar imágenes, videos y archivos de sonido en las ubicaciones marcadas.</translation>
 <translation id="8181215761849004992">No se puede unir al dominio. Verifica que tu cuenta tenga privilegios suficientes para agregar dispositivos.</translation>
@@ -7134,6 +7151,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="834785183489258869">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
+<translation id="8349499562373871073">Puedes seleccionar una cuenta existente para usar en las apps para Android, o bien, agregar una Cuenta de Google nueva. Una vez que accedas a una app para Android, podrás usar tu cuenta en otras apps para Android. Puedes cambiar el acceso de las apps para Android en <ph name="LINK_BEGIN" />Configuración &gt; Cuentas<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Herramientas de la pluma stylus en el panel</translation>
 <translation id="8351316842353540018">Mostrar siempre las opciones de accesibilidad</translation>
 <translation id="8351419472474436977">Esta extensión tomó control de tu configuración de proxy, lo que significa que puede cambiar, dañar o espiar cualquier actividad que realices en línea. Si sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>

@@ -205,6 +205,7 @@
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}other{A sua sessão será terminada automaticamente dentro de # segundos.
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}}</translation>
 <translation id="1193927020065025187">Este site pode estar a tentar enganar o utilizador para que permita notificações intrusivas.</translation>
+<translation id="1195210374336998651">Aceda às definições da app</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto os que autorizar</translation>
 <translation id="1197088940767939838">Laranja</translation>
@@ -1897,6 +1898,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="287205682142673348">Encaminhamento de porta</translation>
 <translation id="287286579981869940">Adicionar <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Encerrar</translation>
+<translation id="2873995907777332853">Mostrar detalhes sobre como bloquear todos os cookies</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2875698561019555027">(Páginas de erro do Chrome)</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
@@ -1944,6 +1946,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2915873080513663243">Análise automática</translation>
 <translation id="2916073183900451334">Premir Separador numa página Web realça links e campos de formulários</translation>
 <translation id="2916745397441987255">Pesquisar extensões</translation>
+<translation id="2918484639460781603">Ir para definições</translation>
 <translation id="2918484644467055090">Não é possível inscrever este dispositivo na entidade a que pertence a sua conta, porque está marcado para gestão por uma entidade diferente.</translation>
 <translation id="2920852127376356161">Sem autorização para processar protocolos</translation>
 <translation id="2921081876747860777">Crie uma palavra-passe para proteger os seus dados locais.</translation>
@@ -2201,6 +2204,7 @@ Pretende pará-lo?</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Palavra-passe guardada</translation>
 <translation id="3192947282887913208">Ficheiros de áudio</translation>
+<translation id="3194786596445804250">Mostrar detalhes sobre como bloquear cookies de terceiros</translation>
 <translation id="3197453258332670132">Ao clicar com o botão direito do rato ou ao manter o botão premido, apresenta informações para a sua seleção de texto</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">No seu carrinho de compras</translation>
@@ -2568,6 +2572,7 @@ Pretende pará-lo?</translation>
 <translation id="3592260987370335752">&amp;Saiba mais</translation>
 <translation id="3593152357631900254">Ativar modo Pinyin semelhante</translation>
 <translation id="3593965109698325041">Restrições de nome do certificado</translation>
+<translation id="3596012367874587041">Definições da app</translation>
 <translation id="3596414637720633074">Bloqueie cookies de terceiros na Navegação anónima.</translation>
 <translation id="3599221874935822507">Elevada</translation>
 <translation id="3599863153486145794">Limpa o histórico de todos os dispositivos com sessão iniciada. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5296,6 +5301,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
 <translation id="645705751491738698">Continuar a bloquear JavaScript</translation>
+<translation id="6458347417133445570">Mostrar detalhes sobre como permitir todos os cookies</translation>
 <translation id="6458701200018867744">O carregamento falhou (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Utilizar selecção para localizar</translation>
 <translation id="6459799433792303855">Janela ativa movida para outro ecrã.</translation>
@@ -6729,6 +6735,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Adicione palavras que pretende que a verificação ortográfica ignore.</translation>
+<translation id="7922935920104868876">Mostrar detalhes sobre como bloquear cookies de terceiros na Navegação anónima</translation>
 <translation id="7924358170328001543">Ocorreu um erro no encaminhamento de porta.</translation>
 <translation id="7925108652071887026">Dados de preenchimento automático</translation>
 <translation id="792514962475806987">Nível de zoom da lupa ancorada:</translation>
@@ -6893,6 +6900,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8076835018653442223">O acesso a ficheiros locais no seu dispositivo foi desativado pelo seu administrador.</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Contas disponíveis para utilizar com apps Android</translation>
 <translation id="8081989000209387414">Pretende desativar a depuração do adb?</translation>
 <translation id="8082106343289440791">Sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">A desativação da depuração do adb vai repor as definições de fábrica deste <ph name="DEVICE_TYPE" />. Todos os dados locais e contas de utilizador serão apagados.</translation>
@@ -7153,6 +7161,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8342861492835240085">Selecionar uma coleção</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
 <translation id="834785183489258869">Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
+<translation id="8349499562373871073">Pode selecionar uma conta existente para utilizar com apps Android ou adicionar uma nova Conta Google. Quando iniciar sessão numa app Android, a sua conta pode ser utilizada com outras apps Android. Pode alterar o acesso das apps Android em <ph name="LINK_BEGIN" />Definições &gt; Contas<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Ferramentas da caneta stylus na estação de ancoragem</translation>
 <translation id="8351316842353540018">Mostrar sempre opções de a11y</translation>
 <translation id="8351419472474436977">Esta extensão apoderou-se das suas definições de proxy, o que significa que pode alterar, interromper ou intercetar qualquer coisa que esteja a fazer online. Se não tem a certeza do motivo pelo qual aconteceu esta alteração, é provável que não a queira.</translation>

@@ -290,6 +290,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# tệp âm thanh}other{# tệp âm thanh}}</translation>
 <translation id="265156376773362237">Tải trước tiêu chuẩn</translation>
 <translation id="2656405586795711023">Ứng dụng web</translation>
+<translation id="2689830683995595741">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />. Bạn sẽ phải tuân thủ cả <ph name="BEGIN_LINK3" />Thông báo về quyền riêng tư cho Tài khoản Google được quản lý bằng Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Mới: chia sẻ một đường liên kết dẫn tới văn bản này</translation>
 <translation id="2704606927547763573">Đã sao chép</translation>
 <translation id="2707726405694321444">Làm mới trang</translation>
@@ -625,6 +626,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}}</translation>
 <translation id="4696983787092045100">Gửi văn bản đến các thiết bị của bạn</translation>
 <translation id="4699172675775169585">Tệp và hình ảnh được lưu trong bộ nhớ đệm</translation>
+<translation id="471759387343966120">Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ<ph name="END_TOS_LINK" /> và <ph name="BEGIN_PRIVACY_LINK" />Chính sách\u00A0quyền riêng tư<ph name="END_PRIVACY_LINK" />.\nĐể giúp cải thiện ứng dụng, Chrome sẽ gửi cho Google dữ liệu sử dụng và dữ liệu sự cố. <ph name="BEGIN_UMA_LINK" />Quản lý<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Đề xuất dịch</translation>
 <translation id="4720023427747327413">Mở trong <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Hãy giúp cải tiến Chrome. <ph name="BEGIN_LINK" />Tham gia khảo sát<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6277722725779679269">Không thể cập nhật tính năng Theo dõi giá</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
+<translation id="6292420053234093573">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Bạn có thể gửi thẻ giữa các thiết bị được đăng nhập bằng cùng một Tài khoản Google</translation>
 <translation id="6297765934698848803">Tổ chức giữ quyền quản lý thiết bị của bạn đã tắt máy ảnh của bạn.</translation>
 <translation id="6301525844455696527">Hãy hoàn thành danh sách đọc của bạn</translation>

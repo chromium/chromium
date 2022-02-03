@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> ກຳນົດໃຫ້ທ່ານສຽບບັດອັດສະລິຍະຄາໄວ້.}other{ທ່ານຈະຖືກນຳອອກຈາກລະບົບໂດຍອັດຕະໂນມັດໃນ # ວິນາທີ.
 <ph name="DOMAIN" /> ກຳນົດໃຫ້ທ່ານສຽບບັດອັດສະລິຍະຄາໄວ້.}}</translation>
 <translation id="1193927020065025187">ເວັບໄຊນີ້ອາດຈະກຳລັງພະຍາຍາມຫຼອກໃຫ້ທ່ານອະນຸຍາດການແຈ້ງເຕືອນທີ່ລ່ວງລໍ້າ</translation>
+<translation id="1195210374336998651">ໄປຫາການຕັ້ງຄ່າແອັບ</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1195558154361252544">ການແຈ້ງເຕືອນຖືກບລັອກໄວ້ໂດຍອັດຕະໂນມັດສຳລັບເວັບໄຊທັງໝົດ ຍົກເວັ້ນເວັບໄຊທີ່ທ່ານອະນຸຍາດ</translation>
 <translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
@@ -386,6 +387,7 @@
 <translation id="1396259464226642517">ຜົນຮັບນີ້ຕ່າງຈາກທີ່ຄາດໄວ້ບໍ? <ph name="BEGIN_LINK" />ສົ່ງຄຳຕິຊົມ<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານທີ່ທ່ານປ້ອນເຂົ້າບໍ່ກົງກັນ</translation>
 <translation id="1397500194120344683">ບໍ່ມີອຸປະກອນທີ່ມີສິດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">ທ່ານໄດ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ອຸປະກອນເຫຼົ່ານີ້ແລ້ວ, ດັ່ງນັ້ນຈຶ່ງທ່ານສາມາດໃຊ້ພວກມັນເປັນກະແຈຄວາມປອດໄພໄດ້.</translation>
 <translation id="1398853756734560583">ຂະຫຍາຍໃຫຍ່</translation>
 <translation id="139911022479327130">ປົດລັອກໂທລະສັບຂອງທ່ານ ແລະ ຢືນຢັນວ່າແມ່ນທ່ານ</translation>
 <translation id="1401308693935339022">ໃຊ້ສະຖານທີ່. ອະນຸຍາດໃຫ້ແອັບ ແລະ ການບໍລິການທີ່ມີການອະນຸຍາດສະຖານທີ່ໃຊ້ສະຖານທີ່ຂອງອຸປະກອນນີ້. Google ອາດຈະເກັບເອົາຂໍ້ມູນສະຖານທີ່ເປັນຊ່ວງໄລຍະ ແລະ ໃຊ້ຂໍ້ມູນນີ້ແບບບໍ່ເປີດເຜີຍຊື່ ເພື່ອປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ການບໍລິການທີ່ອີງໃສ່ສະຖານທີ່.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="2163470535490402084">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດ ເພື່ອ​ລົງຊື່ເຂົ້າໃຊ້​ຫາ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ແລະ ອີກ 1 ປຸ່ມ</translation>
+<translation id="2165102982098084499">ທ່ານລິ້ງອຸປະກອນເຫຼົ່ານີ້ແລ້ວໂດຍການສະແກນລະຫັດ QR.</translation>
 <translation id="2165177462441582039">ເລືອກວ່າຈະໃຫ້ໄຮໄລ້ຢູ່ດົນປານໃດໃນແຕ່ລະລາຍການ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">ແນວໃດກໍ່ລົງຊື່ເຂົ້າໃຊ້</translation>
@@ -2578,6 +2581,7 @@
 <translation id="3592260987370335752">​ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ</translation>
 <translation id="3593152357631900254">ເປີດໃຊ້ງານໂໝດຄີບອດ Fuzzy​-Pinyin</translation>
 <translation id="3593965109698325041">ຂໍ້ຈໍາກັດ​ຊື່ໃບຢັ້ງຢືນ</translation>
+<translation id="3596012367874587041">ການຕັ້ງຄ່າແອັບ</translation>
 <translation id="3596414637720633074">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3599221874935822507">ຍົກຂຶ້ນ</translation>
 <translation id="3599863153486145794">ລຶບລ້າງປະຫວັດຈາກທຸກອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບແລ້ວ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີຮູບແບບອື່ນຂອງປະຫວັດການທ່ອງເວັບຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5698,6 +5702,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> ວິ</translation>
 <translation id="6860097299815761905">ການຕັ້ງຄ່າພຣັອກຊີ...</translation>
 <translation id="6860427144121307915">ເປີດ​​ຢູ່​ໃນ​ແຖບ​</translation>
+<translation id="6863496016067551393">ອະນຸຍາດສ່ວນຂະຫຍາຍທັງໝົດ</translation>
 <translation id="686366188661646310">ລຶບລະຫັດຜ່ານບໍ?</translation>
 <translation id="6865313869410766144">ຕື່ມຂໍ້ມູນແບບຟອມອັດຕະໂນມັດ</translation>
 <translation id="6865598234501509159">ໜ້ານີ້ບໍ່ແມ່ນພາສາ <ph name="LANGUAGE" /></translation>
@@ -5727,6 +5732,7 @@
 <translation id="6900532703269623216">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນ</translation>
 <translation id="6900651018461749106">ເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອອັບເດດ <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບໂປຣແກຣມຊອກຫານີ້?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">ສຽງທີ່ຈະສະແດງຕົວຢ່າງ</translation>
 <translation id="6902336033320348843">ສ່ວນທີ່ບໍ່ຮອງຮັບ: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">ເຊື່ອມຕໍ່ອຸປະກອນເຂົ້າກັບໂດເມນ</translation>
@@ -7377,6 +7383,7 @@
 <translation id="8610103157987623234">ຮູບແບບບໍ່ຖືກຕ້ອງ, ກະລຸນາລອງອີກຄັ້ງ</translation>
 <translation id="8611682088849615761">ສືບຕໍ່ອະນຸຍາດໃຫ້ເວັບໄຊນີ້ມີການຄວບຄຸມອຸປະກອນ MIDI ແບບເຕັມ</translation>
 <translation id="8613164732773110792">ຕົວອັກສອນຕົວພິມນ້ອຍ, ຕົວເລກ, ຂີດກ້ອງ ຫຼື ຂີດຕໍ່ເທົ່ານັ້ນ</translation>
+<translation id="8613645710357126807">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ສ່ວນຂະຫຍາຍ</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> ໃຫຍ່ເກີນໄປສຳລັບການກວດສອບຄວາມປອດໄພ. ທ່ານສາມາດເປີດໄຟລ໌ໄດ້ບໍ່ເກີນ 50 MB.</translation>
 <translation id="8615618338313291042">ແອັບບໍ່ເປີດເຜີຍຕົນຕົວ: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">ເພີ່ມ <ph name="CONTACT_NAME" /> ໃສ່ລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ</translation>

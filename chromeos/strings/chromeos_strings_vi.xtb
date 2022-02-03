@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Đang quét trang <ph name="PAGE_NUM" />. Ðã quét được <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">In</translation>
-<translation id="3462187165860821523">Đang cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="3532980081107202182">Còn khoảng <ph name="MIN_REMAINING" /> phút nữa</translation>
 <translation id="3565064564551103223">IP được phép</translation>
+<translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="3583278742022654445">Cường độ tín hiệu yếu. Hãy thử di chuyển đến gần nguồn tín hiệu Wi-Fi hơn.</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
@@ -462,7 +462,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
-<translation id="7240035910874241640">Tất cả thiết bị ngoại vi đã được cập nhật</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Bộ sưu tập hình nền</translation>
@@ -563,7 +562,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8498220429738806196">Bộ đếm lưu lượng truy cập</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8503836310948963452">Còn một vài phút nữa thôi…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> của bạn đã được cập nhật</translation>
 <translation id="8521021929829989041">Sử dụng làm thiết bị cá nhân</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Nhà mạng của bạn có thể yêu cầu bạn bật tùy chọn này để kết nối với mạng của họ. Hãy liên hệ với nhà mạng để biết thông tin chi tiết.</translation>
@@ -607,7 +605,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Quét}=1{Quét trang {NUMBER_OF_PAGES}}other{Quét trang {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Đang cài đặt – <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Thiết bị còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="9003704114456258138">Tần số</translation>
 <translation id="9039663905644212491">PEAP</translation>

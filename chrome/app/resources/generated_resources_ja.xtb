@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}other{# 秒後に自動的にログアウトします。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
 <translation id="1193927020065025187">このサイトは、ユーザーをだまして煩わしい通知を許可させようとする可能性があります</translation>
+<translation id="1195210374336998651">アプリの設定に移動</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1195558154361252544">許可したサイトを除くすべてのサイトで通知を自動的にブロックします</translation>
 <translation id="1197088940767939838">オレンジ</translation>
@@ -384,6 +385,7 @@
 <translation id="1396259464226642517">この処理が想定と異なる場合は<ph name="BEGIN_LINK" />フィードバックをお送りください<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">入力したユーザー名とパスワードが一致しません</translation>
 <translation id="1397500194120344683">対象となるデバイスはありません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">以下のデバイスで Chrome にログインしており、セキュリティ キーとして使用できます。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="139911022479327130">スマートフォンのロックを解除して本人確認を行う</translation>
 <translation id="1401308693935339022">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがこのデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報に基づくサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
@@ -1167,6 +1169,7 @@
 <translation id="2163470535490402084">お使いの <ph name="DEVICE_TYPE" /> にログインするにはインターネットに接続してください。</translation>
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 1 個のスイッチ</translation>
+<translation id="2165102982098084499">次のデバイスを QR コードのスキャンによりリンクしました。</translation>
 <translation id="2165177462441582039">各項目のハイライト表示の長さを選択します</translation>
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
 <translation id="2169062631698640254">このままログインする</translation>
@@ -1939,6 +1942,7 @@
 <translation id="2915873080513663243">自動スキャン</translation>
 <translation id="2916073183900451334">ウェブページで Tab キーを押すと、リンクやフォーム欄がハイライト表示されます</translation>
 <translation id="2916745397441987255">拡張機能を検索</translation>
+<translation id="2918484639460781603">設定に移動</translation>
 <translation id="2918484644467055090">このデバイスは、別の組織の管理対象として指定されているため、現在のアカウントの所属先組織に登録することはできません。</translation>
 <translation id="2920852127376356161">プロトコルの処理を許可しないサイト</translation>
 <translation id="2921081876747860777">ローカルデータを保護するパスワードを作成してください。</translation>
@@ -2563,6 +2567,7 @@
 <translation id="3592260987370335752">詳細(&amp;L)</translation>
 <translation id="3593152357631900254">ファジーピンイン モードを有効にする</translation>
 <translation id="3593965109698325041">証明書名の制約</translation>
+<translation id="3596012367874587041">アプリの設定</translation>
 <translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3599221874935822507">浮き彫り</translation>
 <translation id="3599863153486145794">ログインしているすべてのデバイスの履歴を削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
@@ -5670,6 +5675,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">プロキシの設定...</translation>
 <translation id="6860427144121307915">タブで開く</translation>
+<translation id="6863496016067551393">すべての拡張機能を許可するサイト</translation>
 <translation id="686366188661646310">パスワードを削除しますか？</translation>
 <translation id="6865313869410766144">自動入力フォームのデータ</translation>
 <translation id="6865598234501509159"><ph name="LANGUAGE" />のページではない場合</translation>
@@ -5699,6 +5705,7 @@
 <translation id="6900532703269623216">保護強化機能</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> を更新するにはもう一度ログインしてください</translation>
 <translation id="6900654715912436255">この検索エンジンを削除してもよろしいですか？</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">プレビューする音声</translation>
 <translation id="6902336033320348843">セクションがサポートされていません: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">デバイスをドメインに追加しましょう</translation>
@@ -7348,6 +7355,7 @@
 <translation id="8610103157987623234">無効な形式です。もう一度お試しください</translation>
 <translation id="8611682088849615761">このサイトによる MIDI デバイスのフル コントロールを引き続き許可する</translation>
 <translation id="8613164732773110792">英小文字、数字、アンダースコア、ダッシュのみ</translation>
+<translation id="8613645710357126807">拡張機能の使用を許可しないサイト</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> はセキュリティ チェックには大きすぎます。開けるファイルは 50 MB までです。</translation>
 <translation id="8615618338313291042">シークレット モード アプリ: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">連絡先に <ph name="CONTACT_NAME" /> さんを追加する</translation>

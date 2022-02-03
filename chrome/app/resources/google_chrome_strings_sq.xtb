@@ -68,6 +68,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chrome. Për ta mbajtur shfletimin tënd të ndarë, Chrome mund të krijojë profilin tënd personal për ty.</translation>
 <translation id="2580411288591421699">Nuk mund të instalohet i njëjti version i Google Chrome që po ekzekutohet aktualisht. Mbylle Google Chrome dhe provo përsëri.</translation>
 <translation id="2586406160782125153">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. Nëse nuk dëshiron që sajtet e uebit ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, përdor modalitetin "Vizitor" në shfletuesin e Chrome. "Llogaritë e tua të Google" mund t'i menaxhosh edhe te <ph name="LINK_2_BEGIN" />Cilësimet<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome nuk mund të kontrollojë për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2644798301485385923">Sistemi i Chrome OS</translation>
 <translation id="2652691236519827073">Hape lidhjen në një &amp;skedë të re të Chrome</translation>

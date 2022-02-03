@@ -65,6 +65,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> telah login ke profil Chrome ini. Agar penjelajahan Anda tetap terpisah, Chrome dapat membuat profil tersendiri untuk Anda.</translation>
 <translation id="2580411288591421699">Tak dapat memasang Google Chrome dengan versi yang sama dengan yang sedang aktif. Tutup dulu, baru coba lagi.</translation>
 <translation id="2586406160782125153">Tindakan ini akan menghapus data browsing dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini. Jika Anda tidak ingin situs atau aplikasi mengakses info akun Anda, gunakan mode Tamu di browser Chrome. Anda juga dapat mengelola Akun Google Anda di <ph name="LINK_2_BEGIN" />Setelan<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
 <translation id="2644798301485385923">Sistem Chrome OS</translation>
 <translation id="2652691236519827073">Buka Link di &amp;tab Chrome Baru</translation>

@@ -146,6 +146,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1836215606488044471">Asystent (ładuję…)</translation>
 <translation id="1838895407229022812">Podświetlenie nocne jest wyłączone.</translation>
 <translation id="1864454756846565995">Urządzenie USB-C (tylny port)</translation>
+<translation id="1879018240766558464">Okna incognito nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
 <translation id="1882814835921407042">Brak sieci komórkowej</translation>
 <translation id="1882897271359938046">Kopia na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odblokuj odciskiem palca</translation>
@@ -926,6 +927,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Odśwież</translation>
+<translation id="718361511487535372">Otwórz w Kalendarzu Google</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
@@ -945,6 +947,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7366890467478514168">Połącz z urządzeniem <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Nagraj okno</translation>
 <translation id="7377169924702866686">Caps Lock jest włączony.</translation>
+<translation id="7377481913241237033">Połącz przy użyciu kodu</translation>
 <translation id="7378203170292176219">Przeciągnij, by wybrać obszar, który chcesz nagrać</translation>
 <translation id="7378594059915113390">Sterowanie multimediami</translation>
 <translation id="7378889811480108604">Oszczędzanie baterii jest wyłączone.</translation>
@@ -972,6 +975,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7526573455193969409">Sieć może być monitorowana</translation>
 <translation id="7536035074519304529">Adres IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Aplikacje na Linuksa ani okna incognito nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
 <translation id="7544300628205093162">Podświetlenie klawiatury jest włączone</translation>
 <translation id="7548434653388805669">Czas iść spać</translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>

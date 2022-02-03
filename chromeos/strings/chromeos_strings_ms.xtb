@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
-<translation id="3462187165860821523">Mengemas kini <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Semasa perisian tegar sedang dikemas kini, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Kemaskinian ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="3486220673238053218">takrif</translation>
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
 <translation id="3565064564551103223">IP dibenarkan</translation>
+<translation id="3577473026931028326">Kesilapan telah berlaku. Cuba lagi.</translation>
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
 <translation id="3583278742022654445">Kekuatan isyarat lemah. Cuba bergerak lebih rapat ke sumber isyarat Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
@@ -462,7 +462,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
-<translation id="7240035910874241640">Semua persisian adalah terkini</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
@@ -563,7 +562,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8498220429738806196">Pembilang Trafik</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> anda adalah yang terkini</translation>
 <translation id="8521021929829989041">Gunakan sebagai peranti peribadi</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>
@@ -607,7 +605,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8970109610781093811">Jalankan sekali lagi</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Imbas}=1{Imbas halaman {NUMBER_OF_PAGES}}other{Imbas halaman {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Pemasangan - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9039663905644212491">PEAP</translation>

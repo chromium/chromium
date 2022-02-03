@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">Օգնական (բեռնում...)</translation>
 <translation id="1838895407229022812">Գիշերային ռեժիմն անջատված է</translation>
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
+<translation id="1879018240766558464">Ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
 <translation id="1882814835921407042">Բջջային կապ չկա</translation>
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
 <translation id="1885785240814121742">Ապակողպում մատնահետքով</translation>
@@ -927,6 +928,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Վերադարձ նախորդ լուծաչափին <ph name="TIMEOUT_SECONDS" /> վայրկյանից</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
+<translation id="718361511487535372">Բացել Google Օրացույցում</translation>
 <translation id="7188494361780961876">Ընտրացանկը տեղափոխվեց էկրանի վերևի ձախ անկյուն։</translation>
 <translation id="7189412385142492784">Որքան հեռու է Վեներան</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />։ Այս Chromebook-ը պետք է վերագործարկվի՝ թարմացումը կիրառելու համար։ Դա կարող է տևել մինչև 1 րոպե։</translation>
@@ -946,6 +948,7 @@
 <translation id="7366890467478514168">Զուգակցել <ph name="NAME" /> սարքը</translation>
 <translation id="7371404428569700291">Տեսագրել պատուհանը</translation>
 <translation id="7377169924702866686">Caps Lock-ը միացված է:</translation>
+<translation id="7377481913241237033">Միացում կոդով</translation>
 <translation id="7378203170292176219">Քաշեք՝ տեսագրման հատվածն ընտրելու համար</translation>
 <translation id="7378594059915113390">Մեդիա կարգավորումներ</translation>
 <translation id="7378889811480108604">Մարտկոցի տնտեսման ռեժիմն անջատված է</translation>
@@ -973,6 +976,7 @@
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Լինուքսի հավելվածներն ու ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
 <translation id="7544300628205093162">Ստեղնաշարի հետնալույսը միացված է</translation>
 <translation id="7548434653388805669">Քնելու ժամն է</translation>
 <translation id="7551643184018910560">Ամրացնել դարակում</translation>

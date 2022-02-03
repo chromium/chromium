@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ഓഡിയോ ഫയൽ}other{# ഓഡിയോ ഫയലുകള്‍}}</translation>
 <translation id="265156376773362237">സാധാരണ മുൻകൂട്ടി ലോഡ് ചെയ്യൽ</translation>
 <translation id="2656405586795711023">വെബ് ആപ്പുകൾ</translation>
+<translation id="2689830683995595741">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്ന Google അക്കൗണ്ടുകൾക്കുള്ള സ്വകാര്യതാ അറിയിപ്പും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="2702516483241149200">പുതിയത്: ഈ ടെക്സ്റ്റിലേക്ക് സ്ക്രോൾ ചെയ്യുന്ന ഒരു ലിങ്ക് പങ്കിടുക</translation>
 <translation id="2704606927547763573">പകർത്തി</translation>
 <translation id="2707726405694321444">പേജ് റീഫ്രഷ് ചെയ്യുക</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="4696983787092045100">ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കൂ</translation>
 <translation id="4699172675775169585">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
+<translation id="471759387343966120">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />സേവന നിബന്ധനകളും<ph name="END_TOS_LINK" /> <ph name="BEGIN_PRIVACY_LINK" />സ്വകാര്യതാ നയവും<ph name="END_PRIVACY_LINK" /> അംഗീകരിക്കുന്നു.\nആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന്, Google-ന് ഉപയോഗ ഡാറ്റയും ക്രാഷ് ഡാറ്റയും Chrome അയയ്ക്കുന്നു. <ph name="BEGIN_UMA_LINK" />മാനേജ് ചെയ്യുക<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="4720982865791209136">Chrome മെച്ചപ്പെടുത്താൻ സഹായിക്കുക. <ph name="BEGIN_LINK" />സർവേയിൽ പങ്കെടുക്കുക.<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">പേജ് പ്രിന്റുചെയ്യുന്നതിൽ ഒരു പ്രശ്‌നമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6277722725779679269">നിരക്ക് ട്രാക്ക് ചെയ്യൽ അപ്ഡേറ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="6278428485366576908">തീം</translation>
+<translation id="6292420053234093573">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="6294610283659775533">ഒരേ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾ തമ്മിൽ നിങ്ങൾക്ക് ടാബുകൾ അയയ്ക്കാനാകും</translation>
 <translation id="6297765934698848803">നിങ്ങളുടെ ഉപകരണം മാനേജ് ചെയ്യുന്ന ഓർഗനൈസേഷൻ നിങ്ങളുടെ ക്യാമറ ഓഫാക്കി.</translation>
 <translation id="6301525844455696527">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് കാണൂ</translation>

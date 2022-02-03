@@ -290,6 +290,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# oudiolêer}other{# oudiolêers}}</translation>
 <translation id="265156376773362237">Standaardvooraflaai</translation>
 <translation id="2656405586795711023">Webprogramme</translation>
+<translation id="2689830683995595741">As jy Chrome gebruik, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />. Die <ph name="BEGIN_LINK3" />Privaatheidskennisgewing vir Google-rekeninge wat met Family Link bestuur word<ph name="END_LINK3" /> is ook van toepassing.</translation>
 <translation id="2702516483241149200">Nuut: Deel 'n skakel wat na hierdie teks toe rollees</translation>
 <translation id="2704606927547763573">Gekopieer</translation>
 <translation id="2707726405694321444">Herlaai bladsy</translation>
@@ -625,6 +626,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Stuur teks na jou toestelle toe</translation>
 <translation id="4699172675775169585">Gekaste prente en lêers</translation>
+<translation id="471759387343966120">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_TOS_LINK" />diensbepalings<ph name="END_TOS_LINK" /> en <ph name="BEGIN_PRIVACY_LINK" />privaatheidsbeleid<ph name="END_PRIVACY_LINK" />.\nChrome stuur gebruik- en omvaldata na Google toe om te help om die program beter te maak. <ph name="BEGIN_UMA_LINK" />Bestuur<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Aanbieding om te vertaal</translation>
 <translation id="4720023427747327413">Maak in <ph name="PRODUCT_NAME" /> oop</translation>
 <translation id="4720982865791209136">Help om Chrome te verbeter. <ph name="BEGIN_LINK" />Neem aan die opname deel<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6277522088822131679">Kon nie die bladsy uitdruk nie. Probeer asseblief weer.</translation>
 <translation id="6277722725779679269">Kon nie prysnasporing opdateer nie</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6292420053234093573">As jy Chrome gebruik, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Jy kan oortjies stuur tussen toestelle wat met dieselfde Google-rekening aangemeld is</translation>
 <translation id="6297765934698848803">Die organisasie wat jou toestel bestuur, het jou kamera afgeskakel.</translation>
 <translation id="6301525844455696527">Haal in met jou leeslys</translation>
@@ -1171,6 +1174,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7663313374500954251">Hierdie blaaier word bestuur deur <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Voeg rekening by</translation>
 <translation id="766587987807204883">Artikels verskyn hier, wat jy kan lees selfs wanneer jy vanlyn is</translation>
+<translation id="768232549260819724">GIF is gekopieer</translation>
 <translation id="7682724950699840886">Probeer die volgende wenke: maak seker dat daar genoeg spasie op jou toestel is; probeer om weer uit te voer.</translation>
 <translation id="768618399695552958">Sommige van die bladsye wat jy besoek, word vooraf gelaai. Bladsye kan vooraf deur Google-bedieners gelaai word wanneer hulle van 'n Google-werf af geskakel word.</translation>
 <translation id="7698359219371678927">Skep e-pos in <ph name="APP_NAME" /></translation>
@@ -1349,6 +1353,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8570677896027847510">Lêer kan nie veilig afgelaai word nie</translation>
 <translation id="8571213806525832805">Afgelope vier weke</translation>
 <translation id="8572344201470131220">Prent is gekopieer</translation>
+<translation id="8580884231102452214">Kopieer GIF</translation>
 <translation id="8583805026567836021">Vee tans rekeningdata uit</translation>
 <translation id="859046281437143747">Spoor pryse deur die Meer Opsies-knoppie na</translation>
 <translation id="860043288473659153">Kaarthouernaam</translation>

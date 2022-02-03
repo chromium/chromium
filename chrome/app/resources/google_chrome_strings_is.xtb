@@ -68,6 +68,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chrome prófíl. Chrome getur búið til sérstakan prófíl fyrir þig svo að þú getir haldið þinni vefskoðun aðskilinni.</translation>
 <translation id="2580411288591421699">Ekki er hægt að setja upp sömu útgáfu Google Chrome og er nú þegar í gangi. Lokaðu Google Chrome og reyndu aftur.</translation>
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
+<translation id="260478105521939126">Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á þessum reikningi. Ef þú vilt ekki að vefsvæði eða forrit fái aðgang að upplýsingunum þínum skaltu nota gestastillingu í Chrome vafra. Þú getur einnig haft umsjón með Google reikningunum þínum í <ph name="LINK_2_BEGIN" />Stillingum<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome getur ekki athugað með uppfærslur. Athugaðu nettenginguna þína.</translation>
 <translation id="2644798301485385923">Chrome OS kerfi</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>

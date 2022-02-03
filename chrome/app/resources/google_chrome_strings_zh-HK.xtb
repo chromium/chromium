@@ -68,7 +68,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> 已登入此 Chrome 設定檔。Chrome 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
-<translation id="260478105521939126">你授予網站和應用程式的權限可能會套用到這個帳戶。如果不想讓網站或應用程式存取你的帳戶資訊，請使用 Chrome 瀏覽器的訪客模式。你也可以前往「<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />」管理 Google 帳戶。</translation>
+<translation id="260478105521939126">您已向網站和應用程式授予的權限，可能會套用到此帳戶。如果您不想網站或應用程式存取您的帳戶資料，請使用 Chrome 瀏覽器的訪客模式。您亦可在「<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />」中管理 Google 帳戶。</translation>
 <translation id="2622559029861875898">Chrome 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2644798301485385923">Chrome 作業系統</translation>
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>

@@ -205,6 +205,7 @@
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Vous serez automatiquement déconnecté dans # secondes.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}}</translation>
 <translation id="1193927020065025187">Ce site essaie peut-être de vous inciter à autoriser les notifications intrusives</translation>
+<translation id="1195210374336998651">Accédez aux paramètres de l'application</translation>
 <translation id="1195447618553298278">Erreur inconnue.</translation>
 <translation id="1195558154361252544">Les notifications sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -2564,6 +2565,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3592260987370335752">&amp;En savoir plus</translation>
 <translation id="3593152357631900254">Activer le mode pinyin flou</translation>
 <translation id="3593965109698325041">Contraintes de nom de certificat</translation>
+<translation id="3596012367874587041">Paramètres de l'application</translation>
 <translation id="3596414637720633074">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="3599221874935822507">Surélevé</translation>
 <translation id="3599863153486145794">Efface l'historique de tous les appareils connectés. D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

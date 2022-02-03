@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Skrev ut side <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % fullført.</translation>
 <translation id="3459509316159669723">Utskrift</translation>
-<translation id="3462187165860821523">Oppdaterer <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens fastvaren oppdateres. Du kan minimere dette vinduet. Denne oppdateringen kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
 <translation id="3486220673238053218">definisjon</translation>
 <translation id="3488065109653206955">Delvis aktivert</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
 <translation id="3565064564551103223">Tillatte IP-adresser</translation>
+<translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="357889014807611375">Wi-Fi med datamåling</translation>
 <translation id="3583278742022654445">Svakt signal. Prøv å flytte deg nærmere Wi-Fi-signalkilden.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
@@ -462,7 +462,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
-<translation id="7240035910874241640">Alle eksterne enheter er oppdaterte</translation>
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv igjen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlinger av bakgrunnsbilder</translation>
@@ -563,7 +562,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8498220429738806196">Trafikktellere</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> er oppdatert</translation>
 <translation id="8521021929829989041">Bruk som personlig enhet</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
@@ -607,7 +605,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skann}=1{Skann side {NUMBER_OF_PAGES}}other{Skann side {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Installerer – <ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="8997710128084572139">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri.</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9039663905644212491">PEAP</translation>

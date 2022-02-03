@@ -290,6 +290,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# hljóðskrá}one{# hljóðskrá}other{# hljóðskrár}}</translation>
 <translation id="265156376773362237">Hefðbundin forhleðsla</translation>
 <translation id="2656405586795711023">Vefforrit</translation>
+<translation id="2689830683995595741">Með því að nota Chrome samþykkir þú <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" />og <ph name="BEGIN_LINK2" />viðbótarskilmála Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Persónuvernd fyrir Google reikninga sem stjórnað er með Family Link<ph name="END_LINK3" /> gildir einnig.</translation>
 <translation id="2702516483241149200">Nýtt: Deildu tengli sem flettir að þessum texta</translation>
 <translation id="2704606927547763573">Afritað</translation>
 <translation id="2707726405694321444">Endurnýja síðu</translation>
@@ -625,6 +626,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}}</translation>
 <translation id="4696983787092045100">Senda texta í tækin þín</translation>
 <translation id="4699172675775169585">Myndir og skrár í skyndiminni</translation>
+<translation id="471759387343966120">Með því að halda áfram samþykkirðu <ph name="BEGIN_TOS_LINK" />þjónustuskilmálana<ph name="END_TOS_LINK" /> og <ph name="BEGIN_PRIVACY_LINK" />persónuverndarstefnuna<ph name="END_PRIVACY_LINK" />.\nChrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_UMA_LINK" />Stjórna<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Boð um þýðingu</translation>
 <translation id="4720023427747327413">Opna í <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Hjálpaðu til við að bæta Chrome. <ph name="BEGIN_LINK" />Svara könnun<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6277522088822131679">Vandamál kom upp við að prenta síðuna. Reyndu aftur.</translation>
 <translation id="6277722725779679269">Ekki tókst að uppfæra „Vakta verð“</translation>
 <translation id="6278428485366576908">Þema</translation>
+<translation id="6292420053234093573">Með því að nota Chrome samþykkir þú <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" />og <ph name="BEGIN_LINK2" />viðbótarskilmála Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Þú getur sent flipa á milli tækja sem eru skráð inn á sama Google reikninginn</translation>
 <translation id="6297765934698848803">Fyrirtækið sem hefur umsjón með tækinu þínu hefur slökkt á myndavélinni.</translation>
 <translation id="6301525844455696527">Styttu leslistann</translation>

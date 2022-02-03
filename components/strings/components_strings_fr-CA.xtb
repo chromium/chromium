@@ -63,7 +63,6 @@
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1186201132766001848">Vérifier les mots de passe</translation>
-<translation id="1195210374336998651">Accédez aux paramètres de l'application</translation>
 <translation id="1195558154361252544">Les notifications sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -817,7 +816,6 @@
 <translation id="3587738293690942763">Centre</translation>
 <translation id="3592413004129370115">Enveloppe italienne</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ un jour pour vous joindre à un nouveau groupe.}=1{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ un jour pour vous joindre à un nouveau groupe.}one{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ {NUM_DAYS} jour pour vous joindre à un nouveau groupe.}other{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ {NUM_DAYS} jours pour vous joindre à un nouveau groupe.}}</translation>
-<translation id="3596012367874587041">Paramètres de l'application</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Application bloquée par votre administrateur</translation>
 <translation id="3608932978122581043">Orientation de l'alimentation</translation>

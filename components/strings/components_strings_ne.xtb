@@ -70,7 +70,6 @@
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1186201132766001848">पासवर्डहरूको जाँच गर्नुहोस्</translation>
-<translation id="1195210374336998651">एपका सेटिङमा जानुहोस्</translation>
 <translation id="1195558154361252544">तपाईंले अनुमति दिएका साइटबाहेक अन्य सबै साइटका सूचनाहरूलाई स्वतः रोक लगाइएको छ</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
 <translation id="1201402288615127009">अर्को</translation>
@@ -840,7 +839,6 @@
 <translation id="3587738293690942763">मध्य भाग</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{तपाईं जुनसुकै बेला आफ्नो समूह रिसेट गर्न सक्नुहुन्छ। नयाँ समूहमा सामेल हुन झन्डै एक दिन लाग्छ।}=1{तपाईं जुनसुकै बेला आफ्नो समूह रिसेट गर्न सक्नुहुन्छ। नयाँ समूहमा सामेल हुन झन्डै एक दिन लाग्छ।}other{तपाईं जुनसुकै बेला आफ्नो समूह रिसेट गर्न सक्नुहुन्छ। नयाँ समूहमा सामेल हुन झन्डै {NUM_DAYS} दिन लाग्छ।}}</translation>
-<translation id="3596012367874587041">एपका सेटिङ</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">तपाईंका प्रशासकले रोक लगाउनुभएको एप</translation>
 <translation id="3608932978122581043">अभिमुखीकरण फिड गर्नुहोस्</translation>

@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}other{Bạn sẽ tự động đăng xuất sau # giây.
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}}</translation>
 <translation id="1193927020065025187">Trang web này có thể đang tìm cách lừa bạn để bạn cho phép thông báo xâm nhập</translation>
+<translation id="1195210374336998651">Chuyển đến trang cài đặt ứng dụng</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1195558154361252544">Đã tự động chặn thông báo đối với mọi trang web, ngoại trừ những trang web bạn cho phép</translation>
 <translation id="1197088940767939838">Màu cam</translation>
@@ -779,6 +780,7 @@
 <translation id="176587472219019965">Cửa sổ &amp;Mới</translation>
 <translation id="1766575458646819543">Đã thoát chế độ toàn màn hình</translation>
 <translation id="1766957085594317166">Lưu mật khẩu vào Tài khoản Google của bạn một cách an toàn để bạn không phải nhập lại mật khẩu nữa</translation>
+<translation id="1767043563165955993">Dùng trong ứng dụng Android</translation>
 <translation id="1768212860412467516">Gửi ý kiến phản hồi về <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Rất tiếc! Đã xảy ra lỗi khi liên hệ với máy chủ đăng nhập. Vui lòng kiểm tra kết nối mạng của bạn và tên miền, sau đó thử lại.</translation>
 <translation id="1769104665586091481">Mở Liên kết bằng Cửa sổ &amp;Mới</translation>
@@ -1115,6 +1117,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2113479184312716848">Mở &amp;tệp...</translation>
 <translation id="2113921862428609753">Quyền Truy cập Thông tin Tổ chức Cấp Chứng chỉ</translation>
 <translation id="2114326799768592691">Tải lại &amp;khung</translation>
+<translation id="2114413269775311385">Dùng tài khoản này trong ứng dụng Android. Bạn có thể kiểm soát các quyền cho ứng dụng Android trong phần <ph name="LINK_BEGIN" />Cài đặt ứng dụng<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Ảnh của <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Chưa lắp thẻ SIM</translation>
 <translation id="2116619964159595185">Các trang web thường kết nối với thiết bị Bluetooth cho những tính năng như thiết lập hoặc đồng bộ hóa beacon năng lượng thấp, trình theo dõi sức khỏe/hoạt động tập thể dục hoặc bóng đèn thông minh</translation>
@@ -1906,6 +1909,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="287205682142673348">Chuyển tiếp cổng</translation>
 <translation id="287286579981869940">Thêm <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Tắt</translation>
+<translation id="2873995907777332853">Hiện thông tin chi tiết về việc chặn mọi cookie</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
 <translation id="2875698561019555027">(Các trang lỗi của Chrome)</translation>
 <translation id="2876336351874743617">Ngón tay số 2</translation>
@@ -1953,6 +1957,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2915873080513663243">Tự động quét</translation>
 <translation id="2916073183900451334">Bấm Thẻ trên liên kết đánh dấu của trang web, cũng như các trường biểu mẫu</translation>
 <translation id="2916745397441987255">Tìm kiếm trong tiện ích</translation>
+<translation id="2918484639460781603">Đi tới cài đặt</translation>
 <translation id="2918484644467055090">Bạn không thể đăng ký thiết bị này với tổ chức sở hữu tài khoản của bạn vì nhiệm vụ quản lý thiết bị này đã được chỉ định cho một tổ chức khác.</translation>
 <translation id="2920852127376356161">Không được phép xử lý các giao thức</translation>
 <translation id="2921081876747860777">Vui lòng tạo mật khẩu để bảo vệ dữ liệu cục bộ của bạn.</translation>
@@ -2209,6 +2214,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3189187154924005138">Con trỏ lớn</translation>
 <translation id="3190558889382726167">Đã lưu mật khẩu</translation>
 <translation id="3192947282887913208">Tệp âm thanh</translation>
+<translation id="3194786596445804250">Hiện thông tin chi tiết về việc chặn cookie bên thứ ba</translation>
 <translation id="3197453258332670132">Khi bạn nhấp chuột phải hoặc nhấn và giữ, thông tin liên quan của văn bản bạn chọn sẽ xuất hiện</translation>
 <translation id="3199127022143353223">Máy chủ</translation>
 <translation id="3200061262156232574">Trong giỏ hàng của bạn</translation>
@@ -2576,6 +2582,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3592260987370335752">&amp;Tìm hiểu thêm</translation>
 <translation id="3593152357631900254">Bật chế độ Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">Ràng buộc Tên của Chứng chỉ</translation>
+<translation id="3596012367874587041">Cài đặt ứng dụng</translation>
 <translation id="3596414637720633074">Chặn các cookie của bên thứ ba trong chế độ Ẩn danh</translation>
 <translation id="3599221874935822507">Nhô lên</translation>
 <translation id="3599863153486145794">Xóa lịch sử khỏi tất cả các thiết bị đã đăng nhập. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2953,6 +2960,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3943582379552582368">&amp;Quay lại</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3945513714196326460">Hãy thử nhập một tên ngắn hơn</translation>
+<translation id="3947643756376959257">Nhập mã truy cập xuất hiện trên Chromecast hoặc TV.</translation>
 <translation id="3948027458879361203">Thay đổi tên máy chủ</translation>
 <translation id="3948116654032448504">&amp;Tìm kiếm hình ảnh trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong các thư mục sau đây</translation>
@@ -3194,12 +3202,14 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4210048056321123003">Đang tải máy ảo xuống</translation>
 <translation id="421182450098841253">&amp;Hiển thị thanh dấu trang</translation>
 <translation id="4211851069413100178">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Giúp cải thiện trải nghiệm Android của bạn bằng cách tự động gửi dữ liệu chẩn đoán cũng như dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Mục <ph name="BEGIN_LINK1" />cài đặt<ph name="END_LINK1" /> này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng của thiết bị này cho Google. Nếu bạn bật mục cài đặt bổ sung Hoạt động trên web và ứng dụng thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. <ph name="BEGIN_LINK2" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Không dùng trong ứng dụng Android nữa</translation>
 <translation id="42126664696688958">Xuất</translation>
 <translation id="42137655013211669">Máy chủ cấm truy cập vào tài nguyên này.</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Đã xảy ra lỗi trong quá trình kích hoạt.</translation>
 <translation id="4225397296022057997">Trên tất cả các trang web</translation>
+<translation id="4227605727325220318">Thêm một điện thoại Android mới</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Không được phép dùng tiện ích này}other{Không được phép dùng một số tiện ích}}</translation>
 <translation id="4231095370974836764">Cài đặt ứng dụng và trò chơi từ Google Play trên <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Định cấu hình Kerberos</translation>
@@ -4731,6 +4741,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5862109781435984885">Hiển thị công cụ bút cảm ứng trên kệ</translation>
 <translation id="5862319196656206789">Thiết lập các thiết bị đã kết nối</translation>
 <translation id="5863445608433396414">Bật tính năng gỡ lỗi</translation>
+<translation id="5864147196375746035">Truyền đến một thiết bị được quản lý</translation>
 <translation id="5864195618110239517">Sử dụng đường kết nối có đo lượng dữ liệu</translation>
 <translation id="5864754048328252126">Trạng thái không hoạt động trong khi sạc</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sắp tạm dừng</translation>
@@ -5300,6 +5311,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6455264371803474013">Trên các trang web cụ thể</translation>
 <translation id="6455894534188563617">&amp;Thư mục mới</translation>
 <translation id="645705751491738698">Tiếp tục chặn JavaScript</translation>
+<translation id="6458347417133445570">Hiện thông tin chi tiết về việc chấp nhận mọi cookie</translation>
 <translation id="6458701200018867744">Không tải lên được (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Sử dụng Phần lựa chọn cho Tìm kiếm</translation>
 <translation id="6459799433792303855">Cửa sổ đang hoạt động được di chuyển sang màn hình khác.</translation>
@@ -5910,6 +5922,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7086672505018440886">Thêm các tệp nhật ký của Chrome vào mục lưu trữ.</translation>
 <translation id="7088434364990739311">Không thể bắt đầu kiểm tra cập nhật (mã lỗi <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Thiết bị này đã được quản trị viên đặt sang trạng thái hủy cấp phép. Để cho phép đăng ký thiết bị, quản trị viên phải đặt thiết bị về trạng thái đang chờ xử lý.</translation>
+<translation id="7090160970140261931">Bạn có thể thêm tài khoản bổ sung vào <ph name="DEVICE_TYPE" /> của bạn để dùng trên trang web và ứng dụng Android. Bạn cũng có thể kiểm soát những tài khoản nào được dùng trong ứng dụng Android.</translation>
 <translation id="7093220653036489319">Thông tin nhanh</translation>
 <translation id="7093416310351037609">Để đảm bảo sự an toàn và tính bảo mật cho dữ liệu, tổ chức của bạn yêu cầu lưu tất cả tệp tải xuống đủ điều kiện vào tài khoản <ph name="WEB_DRIVE" /> của tổ chức bạn.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6730,6 +6743,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> giây</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> có thể xem <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Thêm các từ mà bạn muốn tính năng kiểm tra lỗi chính tả bỏ qua</translation>
+<translation id="7922935920104868876">Hiện thông tin chi tiết về việc chặn cookie bên thứ ba trong chế độ Ẩn danh</translation>
 <translation id="7924358170328001543">Lỗi khi chuyển tiếp cổng</translation>
 <translation id="7925108652071887026">Tự động điền dữ liệu</translation>
 <translation id="792514962475806987">Mức thu phóng ở vị trí cố định:</translation>
@@ -6894,6 +6908,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8076835018653442223">Quản trị viên đã vô hiệu hóa quyền truy cập vào tệp cục bộ trên thiết bị của bạn</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Có tài khoản để dùng trên ứng dụng Android</translation>
 <translation id="8081989000209387414">Tắt tùy chọn gỡ lỗi ADB?</translation>
 <translation id="8082106343289440791">Ghép nối với "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Thao tác tắt tùy chọn gỡ lỗi ADB sẽ đặt lại <ph name="DEVICE_TYPE" /> này về trạng thái ban đầu. Tất cả tài khoản người dùng và dữ liệu trên máy đều sẽ bị xóa.</translation>
@@ -6968,6 +6983,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8147900440966275470">Đã tìm thấy <ph name="NUM" /> thẻ</translation>
 <translation id="8148760431881541277">Giới hạn khả năng đăng nhập</translation>
 <translation id="8149564499626272569">Xác minh qua điện thoại có cáp USB</translation>
+<translation id="815114315010033526">Chuyển sang dùng mã QR</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
 <translation id="8154790740888707867">Không có tệp nào</translation>
 <translation id="8154912474061769055">Các tính năng trên nhiều trang web có thể không hoạt động</translation>
@@ -6993,6 +7009,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8176332201990304395">Hồng và trắng</translation>
 <translation id="8177196903785554304">Chi tiết mạng</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Di chuyển thẻ sang cửa sổ mới}other{Di chuyển các thẻ sang cửa sổ mới}}</translation>
+<translation id="8179188928355984576">Không dùng trong ứng dụng Android</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" có thể đọc và xóa các tệp hình ảnh, video và âm thanh trong vị trí đã chọn.</translation>
 <translation id="8181215761849004992">Không thể kết hợp miền. Hãy kiểm tra tài khoản của bạn để xem bạn có đủ đặc quyền thêm thiết bị hay không.</translation>
@@ -7152,6 +7169,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8342861492835240085">Chọn một bộ sưu tập</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="834785183489258869">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để điều chỉnh quảng cáo cho phù hợp với bạn. Các tính năng trên một số trang web có thể không hoạt động.</translation>
+<translation id="8349499562373871073">Bạn có thể chọn một tài khoản hiện có để dùng trên ứng dụng Android hoặc thêm một Tài khoản Google mới. Sau khi bạn đăng nhập vào một ứng dụng Android, tài khoản của bạn có thể dùng được trên các ứng dụng Android khác. Bạn có thể thay đổi quyền truy cập vào ứng dụng Android trong phần <ph name="LINK_BEGIN" />Cài đặt &gt; Tài khoản<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Công cụ bút cảm ứng trong thanh gắn</translation>
 <translation id="8351316842353540018">Luôn hiển thị các tùy chọn a11y</translation>
 <translation id="8351419472474436977">Tiện ích này đã chiếm quyền kiểm soát cài đặt proxy của bạn, điều đó có nghĩa là tiện ích này có thể thay đổi, làm gián đoạn hoặc nghe trộm bất kỳ điều gì bạn thực hiện trực tuyến. Nếu bạn không chắc chắn về lý do thay đổi này diễn ra, bạn có thể không cần tiện ích này.</translation>

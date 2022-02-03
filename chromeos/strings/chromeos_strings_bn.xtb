@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
 <translation id="345898999683440380">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUM" />। <ph name="PERCENTAGE_VALUE" />% হয়ে গেছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> আপডেট করা হচ্ছে</translation>
 <translation id="3484914941826596830">ফার্মওয়্যার আপডেট করার সময়, এই এক্সটার্নাল ডিভাইসটি আনপ্লাগ করবেন না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। এই আপডেটে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
 <translation id="3532980081107202182">প্রায় <ph name="MIN_REMAINING" /> মিনিট সময় লাগবে</translation>
 <translation id="3565064564551103223">অনুমোদিত IP অ্যাড্রেসগুলি</translation>
+<translation id="3577473026931028326">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="357889014807611375">মিটার্ড ওয়াই-ফাই</translation>
 <translation id="3583278742022654445">দুর্বল সিগন্যাল। ওয়াই-ফাই সিগন্যাল সোর্সের কাছাকাছি যাওয়ার চেষ্টা করুন।</translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
@@ -461,7 +461,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />-এর মাধ্যমে এই <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়। অ্যাডমিনিস্ট্রেটর অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
-<translation id="7240035910874241640">সব পেরিফেরাল আপ-টু-ডেট আছে</translation>
 <translation id="7271040990581020067">স্ক্যানার বর্তমানে ব্যবহার করা হচ্ছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ওয়ালপেপারের সংগ্রহ</translation>
@@ -562,7 +561,6 @@
 <translation id="8498220429738806196">ট্রাফিক কাউন্টার্স</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8503836310948963452">আর মাত্র কয়েক মিনিট...</translation>
-<translation id="8520963233738002436">আপনার <ph name="DEVICE_NAME" /> আপ-টু-ডেট আছে</translation>
 <translation id="8521021929829989041">ব্যক্তিগত ডিভাইস হিসেবে ব্যবহার করুন</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">নেটওয়ার্কে কানেক্ট করার জন্য আপনার পরিষেবা প্রদানকারীর এই বিকল্পের প্রয়োজন হতে পারে। বিশদ বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
@@ -606,7 +604,6 @@
 <translation id="8970109610781093811">আবার চালান</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্ক্যান করুন}=1{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}one{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}other{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}}</translation>
-<translation id="8994273342647807496">ইনস্টল করা হচ্ছে - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">ডিভাইসে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="9003704114456258138">ফ্রিকোয়েন্সি</translation>
 <translation id="9039663905644212491">PEAP</translation>

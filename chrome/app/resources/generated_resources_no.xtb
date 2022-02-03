@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.}other{Du blir logget av automatisk om # sekunder.
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.}}</translation>
 <translation id="1193927020065025187">Det kan hende at dette nettstedet prøver å lure deg til å tillate påtrengende varsler</translation>
+<translation id="1195210374336998651">Gå til appinnstillinger</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1195558154361252544">Varsler blokkeres automatisk for alle nettsteder unntatt dem du tillater</translation>
 <translation id="1197088940767939838">Oransje</translation>
@@ -386,6 +387,7 @@
 <translation id="1396259464226642517">Var dette resultatet uventet? <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Brukernavnet og passordet du skrev inn, stemmer ikke overens</translation>
 <translation id="1397500194120344683">Ingen kompatible enheter. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Du er logget på Chrome på disse enhetene, så du kan bruke dem som sikkerhetsnøkler.</translation>
 <translation id="1398853756734560583">Maksimer</translation>
 <translation id="139911022479327130">Lås opp telefonen, og bekreft at det er deg</translation>
 <translation id="1401308693935339022">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene på en anonym måte til å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre.</translation>
@@ -1174,6 +1176,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2163470535490402084">Koble til Internett for å logge på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 bryter til</translation>
+<translation id="2165102982098084499">Du tilknyttet disse enhetene ved å skanne en QR-kode.</translation>
 <translation id="2165177462441582039">Velg hvor lenge hvert element skal fremheves</translation>
 <translation id="2166369534954157698">Høvdingens kjære squaw får litt pizza i Mexico by</translation>
 <translation id="2169062631698640254">Logg på likevel</translation>
@@ -1951,6 +1954,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2915873080513663243">Automatisk skanning</translation>
 <translation id="2916073183900451334">Trykk på Tab på en nettside for å utheve linker og skjemafelter</translation>
 <translation id="2916745397441987255">Søk i utvidelser</translation>
+<translation id="2918484639460781603">Gå til Innstillinger</translation>
 <translation id="2918484644467055090">Denne enheten kan ikke registreres i organisasjonen som kontoen din tilhører. Enheten er merket for administrering av en annen organisasjon.</translation>
 <translation id="2920852127376356161">Nettsteder som ikke har lov til å behandle protokoller</translation>
 <translation id="2921081876747860777">Opprett et passord for å beskytte de lokale dataene dine.</translation>
@@ -2575,6 +2579,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3592260987370335752">&amp;Les mer</translation>
 <translation id="3593152357631900254">Aktiver modusen Fuzzy pinyin</translation>
 <translation id="3593965109698325041">Begrensninger for sertifikatnavn</translation>
+<translation id="3596012367874587041">Appinnstillinger</translation>
 <translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="3599221874935822507">Hevet</translation>
 <translation id="3599863153486145794">Tømmer loggen på alle påloggede enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5692,6 +5697,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Innstillinger for proxy-tjener</translation>
 <translation id="6860427144121307915">Åpne i en fane</translation>
+<translation id="6863496016067551393">Nettsteder der alle utvidelser er tillatt</translation>
 <translation id="686366188661646310">Vil du slette passordet?</translation>
 <translation id="6865313869410766144">Skjemadata lagret med autofyll</translation>
 <translation id="6865598234501509159">Siden er ikke på <ph name="LANGUAGE" /></translation>
@@ -5721,6 +5727,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6900532703269623216">Økt beskyttelse</translation>
 <translation id="6900651018461749106">Logg på igjen for å oppdatere <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Er du sikker på at du vil slette denne søkemotoren?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Forhåndsutdrag av tekst til tale</translation>
 <translation id="6902336033320348843">Seksjonen støttes ikke: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Knytt enhet til domene</translation>
@@ -7372,6 +7379,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8610103157987623234">Feil format. Prøv på nytt</translation>
 <translation id="8611682088849615761">Fortsett å la dette nettstedet ha full kontroll over MIDI-enheter</translation>
 <translation id="8613164732773110792">Kun små bokstaver, tall, understrek og bindestrek</translation>
+<translation id="8613645710357126807">Nettsteder som ikke har lov til å bruke utvidelser</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> er for stor til at en sikkerhetssjekk kan utføres. Du kan åpne filer på opptil 50 MB.</translation>
 <translation id="8615618338313291042">Inkognitoprogram: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Legg til <ph name="CONTACT_NAME" /> i kontaktene dine</translation>

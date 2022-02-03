@@ -203,6 +203,7 @@
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。}other{系統將在 # 秒後自動將你登出。
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。}}</translation>
 <translation id="1193927020065025187">這個網站可能會企圖誘使你允許干擾性通知</translation>
+<translation id="1195210374336998651">前往應用程式設定</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1195558154361252544">除了你允許的網站之外，自動封鎖所有網站的通知</translation>
 <translation id="1197088940767939838">橘色</translation>
@@ -383,6 +384,7 @@
 <translation id="1396259464226642517">這並非預期結果嗎？<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">你輸入的使用者名稱和密碼不相符</translation>
 <translation id="1397500194120344683">沒有適用裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">你已在這些裝置上登入 Chrome，因此可以將這些裝置當做安全金鑰使用。</translation>
 <translation id="1398853756734560583">放到最大</translation>
 <translation id="139911022479327130">將手機解鎖並確認這是你本人</translation>
 <translation id="1401308693935339022">使用定位服務。允許具有位置存取權的應用程式和服務使用這部裝置的位置資訊。Google 可能會定期收集位置資料，並以匿名方式使用這項資料，藉此提高定位精確度及改善適地性服務。</translation>
@@ -1167,6 +1169,7 @@
 <translation id="2163470535490402084">請連線至網際網路，以登入您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2163937499206714165">開啟深色模式</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />，以及另外 1 個按鍵</translation>
+<translation id="2165102982098084499">透過掃描 QR 圖碼的方式連結了這些裝置。</translation>
 <translation id="2165177462441582039">選擇醒目顯示範圍停留在每個項目上的時間長度</translation>
 <translation id="2166369534954157698">狐狗大戰</translation>
 <translation id="2169062631698640254">繼續登入</translation>
@@ -1941,6 +1944,7 @@
 <translation id="2915873080513663243">自動掃描</translation>
 <translation id="2916073183900451334">在網頁上按 Tab 鍵可反白顯示連結和表單欄位</translation>
 <translation id="2916745397441987255">搜尋擴充功能</translation>
+<translation id="2918484639460781603">前往設定</translation>
 <translation id="2918484644467055090">無法在你的帳戶所屬機構內註冊這部裝置，原因是裝置已標示管理者為其他機構。</translation>
 <translation id="2920852127376356161">不得處理通訊協定</translation>
 <translation id="2921081876747860777">請設定密碼，保護你的本機資料。</translation>
@@ -2565,6 +2569,7 @@
 <translation id="3592260987370335752">瞭解詳情(&amp;L)</translation>
 <translation id="3593152357631900254">啟用模糊拼音模式</translation>
 <translation id="3593965109698325041">憑證名稱限制</translation>
+<translation id="3596012367874587041">應用程式設定</translation>
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3599221874935822507">外凸</translation>
 <translation id="3599863153486145794">將歷史記錄從所有登入帳戶的裝置上清除。你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
@@ -5682,6 +5687,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">Proxy 設定...</translation>
 <translation id="6860427144121307915">在分頁中開啟</translation>
+<translation id="6863496016067551393">允許執行所有擴充功能</translation>
 <translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6865313869410766144">自動填入表單資料</translation>
 <translation id="6865598234501509159">網頁原文不是<ph name="LANGUAGE" /></translation>
@@ -5711,6 +5717,7 @@
 <translation id="6900532703269623216">強化防護</translation>
 <translation id="6900651018461749106">請再次登入並更新 <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">確定要刪除這個搜尋引擎嗎？</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">要預覽的語音</translation>
 <translation id="6902336033320348843">不支援的區段：<ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">將裝置加入網域</translation>
@@ -7363,6 +7370,7 @@
 <translation id="8610103157987623234">格式不正確，請再試一次</translation>
 <translation id="8611682088849615761">繼續允許這個網站取得 MIDI 裝置的完整控制權限</translation>
 <translation id="8613164732773110792">僅限小寫字元、數字、底線或破折號</translation>
+<translation id="8613645710357126807">不允許執行擴充功能</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 大小過大，無法進行安全性檢查。可開啟的檔案大小上限為 50 MB。</translation>
 <translation id="8615618338313291042">無痕模式應用程式：<ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">將「<ph name="CONTACT_NAME" />」加為聯絡人</translation>

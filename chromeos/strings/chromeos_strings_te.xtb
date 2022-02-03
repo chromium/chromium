@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> పేజీలలో <ph name="PRINTED_PAGES" />వ పేజీ ప్రింట్ చేయబడింది.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />వ పేజీని స్కాన్ చేస్తోంది. <ph name="PERCENTAGE_VALUE" />% పూర్తయింది.</translation>
 <translation id="3459509316159669723">ప్రింటింగ్</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> అప్‌డేట్ అవుతోంది</translation>
 <translation id="3484914941826596830">ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఈ అప్‌డేట్‌కు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చెయ్యబడింది</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
 <translation id="3565064564551103223">అనుమతించబడిన IPలు</translation>
+<translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="357889014807611375">డేటా నియంత్రణ Wi-Fi</translation>
 <translation id="3583278742022654445">సిగ్నల్ సామర్థ్యం బలహీనంగా ఉంది. Wi-Fi సిగ్నల్ సోర్స్‌కు కొద్దిగా దగ్గరగా వెళ్ళడానికి ట్రై చేయండి.</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
@@ -352,6 +352,7 @@
 <translation id="5691511426247308406">కుటుంబం</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" /></translation>
+<translation id="5733298426544876109"><ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5760715441271661976">పోర్టల్ స్థితి</translation>
 <translation id="5784136236926853061">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించు</translation>
@@ -461,7 +462,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
-<translation id="7240035910874241640">పెరిఫెరల్స్ అన్నీ అప్‌డేట్ అయ్యి ఉన్నాయి</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">వాల్‌పేపర్ కలెక్షన్‌లు</translation>
@@ -562,7 +562,6 @@
 <translation id="8498220429738806196">ట్రాఫిక్ కౌంటర్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
-<translation id="8520963233738002436">మీ <ph name="DEVICE_NAME" /> అప్‌డేట్ అయ్యి ఉంది</translation>
 <translation id="8521021929829989041">వ్యక్తిగత పరికరంగా ఉపయోగించండి</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
@@ -606,7 +605,6 @@
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
-<translation id="8994273342647807496">ఇన్‌స్టాల్ అవుతోంది - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది.</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9039663905644212491">PEAP</translation>

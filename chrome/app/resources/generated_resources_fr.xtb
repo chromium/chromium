@@ -205,6 +205,7 @@
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Vous serez automatiquement déconnecté dans # secondes.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}}</translation>
 <translation id="1193927020065025187">Ce site essaie peut-être de vous inciter à autoriser les notifications intrusives</translation>
+<translation id="1195210374336998651">Accéder aux paramètres de l'appli</translation>
 <translation id="1195447618553298278">Erreur inconnue</translation>
 <translation id="1195558154361252544">Les notifications sont bloquées automatiquement pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -769,6 +770,7 @@
 <translation id="176587472219019965">&amp;Nouvelle fenêtre</translation>
 <translation id="1766575458646819543">Mode plein écran désactivé</translation>
 <translation id="1766957085594317166">Enregistrez les mots de passe en toute sécurité dans votre compte Google pour ne plus jamais avoir à les saisir</translation>
+<translation id="1767043563165955993">Utiliser avec les applis Android</translation>
 <translation id="1768212860412467516">Envoyez des commentaires sur <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Petit problème… Impossible de contacter le serveur d'ouverture de session. Vérifiez votre connexion réseau et le nom de domaine, puis réessayez.</translation>
 <translation id="1769104665586091481">Ouvrir le lien dans une nouvelle &amp;fenêtre</translation>
@@ -1104,6 +1106,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2113479184312716848">&amp;Ouvrir un fichier...</translation>
 <translation id="2113921862428609753">Accès aux informations de l'autorité</translation>
 <translation id="2114326799768592691">Actualiser le &amp;cadre</translation>
+<translation id="2114413269775311385">Utiliser ce compte avec les applis Android. Vous pouvez contrôler les autorisations pour les applis Android dans <ph name="LINK_BEGIN" />Paramètres des applications<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Photo : <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Aucune carte SIM insérée</translation>
 <translation id="2116619964159595185">Les sites se connectent généralement aux appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un moniteur de santé ou d'activité physique, ou d'une ampoule connectée</translation>
@@ -1893,6 +1896,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="287205682142673348">Transfert de port</translation>
 <translation id="287286579981869940">Ajouter <ph name="PROVIDER_NAME" />…</translation>
 <translation id="2872961005593481000">Éteindre</translation>
+<translation id="2873995907777332853">Afficher les détails sur le blocage de tous les cookies</translation>
 <translation id="2874939134665556319">Piste précédente</translation>
 <translation id="2875698561019555027">(pages d'erreur Chrome)</translation>
 <translation id="2876336351874743617">Doigt 2</translation>
@@ -1940,6 +1944,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2915873080513663243">Exploration automatique</translation>
 <translation id="2916073183900451334">La touche TAB permet de sélectionner des liens et d'accéder à des champs de formulaire sur une page Web.</translation>
 <translation id="2916745397441987255">Rechercher dans les extensions</translation>
+<translation id="2918484639460781603">Accéder aux paramètres</translation>
 <translation id="2918484644467055090">Impossible d'enregistrer cet appareil auprès de l'organisation propriétaire de votre compte, car la gestion de l'appareil est attribuée à une autre organisation.</translation>
 <translation id="2920852127376356161">Non autorisés à gérer les protocoles</translation>
 <translation id="2921081876747860777">Veuillez créer un mot de passe pour protéger vos données locales</translation>
@@ -2196,6 +2201,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
 <translation id="3190558889382726167">Mot de passe enregistré</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
+<translation id="3194786596445804250">Afficher les détails sur le blocage des cookies tiers</translation>
 <translation id="3197453258332670132">Affichez des infos liées au texte sélectionné avec un clic droit ou un appui de manière prolongée</translation>
 <translation id="3199127022143353223">Serveurs</translation>
 <translation id="3200061262156232574">Dans votre panier</translation>
@@ -2563,6 +2569,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3592260987370335752">&amp;En savoir plus</translation>
 <translation id="3593152357631900254">Activer le mode Pinyin fuzzy</translation>
 <translation id="3593965109698325041">Contraintes de nom du certificat</translation>
+<translation id="3596012367874587041">Paramètres de l'appli</translation>
 <translation id="3596414637720633074">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3599221874935822507">Bord en relief</translation>
 <translation id="3599863153486145794">Efface l'historique de tous les appareils sur lesquels vous êtes connecté à votre compte Google. Ce dernier peut conserver d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2940,6 +2947,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3943582379552582368">R&amp;etour</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3945513714196326460">Saisissez un nom plus court</translation>
+<translation id="3947643756376959257">Saisissez le code d'accès affiché sur le Chromecast ou la télévision.</translation>
 <translation id="3948027458879361203">Modifier le nom d'hôte</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Le site <ph name="ORIGIN" /> peut modifier les fichiers des dossiers suivants</translation>
@@ -3181,12 +3189,14 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4210048056321123003">Téléchargement de la machine virtuelle…</translation>
 <translation id="421182450098841253">&amp;Afficher la barre de favoris</translation>
 <translation id="4211851069413100178">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de votre expérience sur Android en envoyant automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ce processus permettra d'améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Le propriétaire de cet appareil peut choisir d'envoyer à Google des données de diagnostic et d'utilisation. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Ne plus utiliser avec les applis Android</translation>
 <translation id="42126664696688958">Exporter</translation>
 <translation id="42137655013211669">L'accès à cette ressource est interdit sur ce serveur.</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Une erreur s'est produite lors de l'activation.</translation>
 <translation id="4225397296022057997">Sur tous les sites</translation>
+<translation id="4227605727325220318">Ajouter un nouveau téléphone Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Cette extension n'est pas autorisée}one{Cette extension n'est pas autorisée}other{Certaines extensions ne sont pas autorisées}}</translation>
 <translation id="4231095370974836764">Installez des applications et des jeux Google Play sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
@@ -4718,6 +4728,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5862109781435984885">Afficher les outils de stylet sur l'étagère</translation>
 <translation id="5862319196656206789">Configurer les appareils connectés</translation>
 <translation id="5863445608433396414">Activer les fonctionnalités de débogage</translation>
+<translation id="5864147196375746035">Caster sur un appareil géré</translation>
 <translation id="5864195618110239517">Utiliser une connexion facturée à l'usage</translation>
 <translation id="5864754048328252126">Lorsque l'appareil est inactif et en charge</translation>
 <translation id="5865508026715185451">L'application <ph name="APP_NAME" /> sera bientôt suspendue</translation>
@@ -5287,6 +5298,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6455264371803474013">Sur des sites spécifiques</translation>
 <translation id="6455894534188563617">&amp;Nouveau dossier</translation>
 <translation id="645705751491738698">Continuer à bloquer JavaScript</translation>
+<translation id="6458347417133445570">Afficher les détails sur l'autorisation de tous les cookies</translation>
 <translation id="6458701200018867744">Échec de l'importation (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Rechercher la sélection</translation>
 <translation id="6459799433792303855">Fenêtre active transférée vers un autre écran.</translation>
@@ -5897,6 +5909,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7086672505018440886">Ajouter des fichiers journaux Chrome dans l'archive.</translation>
 <translation id="7088434364990739311">Échec du lancement de la vérification des mises à jour (code d'erreur <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">L'administrateur a associé l'état "Non géré" à cet appareil. Pour activer son inscription, veuillez demander à l'administrateur d'activer l'état "En attente" pour cet appareil.</translation>
+<translation id="7090160970140261931">Pour accéder à des sites Web et des applis Android avec votre <ph name="DEVICE_TYPE" />, ajoutez-y des comptes supplémentaires. Vous pouvez aussi contrôler les comptes qui sont utilisés avec les applis Android.</translation>
 <translation id="7093220653036489319">Réponses rapides</translation>
 <translation id="7093416310351037609">Pour la protection et la sécurité des données, votre organisation exige que tous les téléchargements éligibles soient enregistrés sur le compte <ph name="WEB_DRIVE" /> de votre organisation.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6717,6 +6730,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> peut accéder à <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Ajoutez les termes que le correcteur orthographique doit ignorer</translation>
+<translation id="7922935920104868876">Afficher les détails sur le blocage des cookies tiers en navigation privée</translation>
 <translation id="7924358170328001543">Erreur lors du transfert du port.</translation>
 <translation id="7925108652071887026">Données de saisie automatique</translation>
 <translation id="792514962475806987">Niveau de zoom ancré :</translation>
@@ -6881,6 +6895,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8076835018653442223">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre appareil</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Comptes utilisables avec les applis Android</translation>
 <translation id="8081989000209387414">Désactiver le débogage ADB ?</translation>
 <translation id="8082106343289440791">Associer à "<ph name="DEVICE_NAME" />" ?</translation>
 <translation id="8082390128630131497">La désactivation du débogage ADB rétablira la configuration d'usine de <ph name="DEVICE_TYPE" />. Tous les comptes utilisateur et toutes les données locales seront supprimés.</translation>
@@ -6955,6 +6970,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8147900440966275470"><ph name="NUM" /> onglet trouvé</translation>
 <translation id="8148760431881541277">Limiter les connexions</translation>
 <translation id="8149564499626272569">Valider via votre téléphone avec un câble USB</translation>
+<translation id="815114315010033526">Utiliser un code QR à la place</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
 <translation id="8154912474061769055">Les fonctionnalités de nombreux sites peuvent ne pas fonctionner</translation>
@@ -6980,6 +6996,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8176332201990304395">Rose et blanc</translation>
 <translation id="8177196903785554304">Détails du réseau</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
+<translation id="8179188928355984576">Non utilisé avec les applis Android</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" dispose d'un droit d'accès en lecture/écriture sur les images, les vidéos et les fichiers audio figurant aux emplacements indiqués.</translation>
 <translation id="8181215761849004992">Impossible d'effectuer l'association au domaine. Vérifiez dans votre compte si vous disposez de droits suffisants pour ajouter des appareils.</translation>
@@ -7139,6 +7156,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8342861492835240085">Sélectionner une collection</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="834785183489258869">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>
+<translation id="8349499562373871073">Vous pouvez sélectionner un compte existant à utiliser avec les applis Android ou ajouter un nouveau compte Google. Une fois connecté à une appli Android, vous pouvez utiliser votre compte avec d'autres applis Android. Vous pouvez modifier leur accès dans <ph name="LINK_BEGIN" />Paramètres &gt; Comptes<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Outils de stylet dans le panneau d'ancrage</translation>
 <translation id="8351316842353540018">Toujours afficher les options d'accessibilité</translation>
 <translation id="8351419472474436977">Cette extension a pris le contrôle de vos paramètres de proxy, ce qui signifie que toutes vos activités en ligne peuvent être modifiées, interrompues ou espionnées. Si vous ne savez pas pourquoi cette modification s'est produite, c'est qu'elle est probablement indésirable.</translation>

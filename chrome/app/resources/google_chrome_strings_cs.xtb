@@ -69,6 +69,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2574930892358684005">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chrome přihlášen. Chcete-li své procházení oddělit, Chrome vám může vytvořit vlastní profil.</translation>
 <translation id="2580411288591421699">Nelze nainstalovat verzi aplikace Google Chrome, která je právě spuštěná. Ukončete aplikaci Google Chrome a opakujte akci.</translation>
 <translation id="2586406160782125153">Ze zařízení budou smazány vaše údaje o prohlížení. Budete-li chtít své údaje později načíst, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
+<translation id="260478105521939126">Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Pokud nechcete, aby weby nebo aplikace měly přístup k informacím o vašem účtu, použijte v Chromu režim hosta. Své účty Google můžete také spravovat v <ph name="LINK_2_BEGIN" />Nastavení<ph name="LINK_2_END" />.</translation>
 <translation id="2622559029861875898">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2644798301485385923">Systém Chrome OS</translation>
 <translation id="2652691236519827073">Otevřít odkaz na nové kar&amp;tě Chrome</translation>

@@ -206,6 +206,7 @@
 <ph name="DOMAIN" /> menghendaki anda memastikan kad pintar anda tidak dikeluarkan.}other{Anda akan dilog keluar secara automatik dalam masa # saat.
 <ph name="DOMAIN" /> menghendaki anda memastikan kad pintar anda tidak dikeluarkan.}}</translation>
 <translation id="1193927020065025187">Tapak ini mungkin cuba memperdaya anda agar membenarkan pemberitahuan yang mengganggu</translation>
+<translation id="1195210374336998651">Pergi ke tetapan apl</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
 <translation id="1195558154361252544">Pemberitahuan disekat secara automatik untuk semua tapak kecuali tapak yang anda benarkan</translation>
 <translation id="1197088940767939838">Oren</translation>
@@ -1909,6 +1910,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="287205682142673348">Kiriman semula port</translation>
 <translation id="287286579981869940">Tambahkan <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Mematikan</translation>
+<translation id="2873995907777332853">Tunjukkan butiran tentang menyekat semua kuki</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2875698561019555027">(Halaman ralat Chrome)</translation>
 <translation id="2876336351874743617">Jari 2</translation>
@@ -1956,6 +1958,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2915873080513663243">Autoimbas</translation>
 <translation id="2916073183900451334">Menekan Tab pada pautan serlahan halaman web, dan juga medan borang</translation>
 <translation id="2916745397441987255">Cari sambungan</translation>
+<translation id="2918484639460781603">Pergi ke tetapan</translation>
 <translation id="2918484644467055090">Peranti ini tidak boleh didaftarkan pada organisasi yang memiliki akaun anda kerana peranti ini telah ditandai untuk pengurusan oleh organisasi lain.</translation>
 <translation id="2920852127376356161">Tidak dibenarkan untuk mengendalikan protokol</translation>
 <translation id="2921081876747860777">Sila buat kata laluan untuk melindungi data setempat anda.</translation>
@@ -2212,6 +2215,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3189187154924005138">Kursor besar</translation>
 <translation id="3190558889382726167">Kata laluan yang disimpan</translation>
 <translation id="3192947282887913208">Fail Audio</translation>
+<translation id="3194786596445804250">Tunjukkan butiran tentang menyekat kuki pihak ketiga</translation>
 <translation id="3197453258332670132">Dengan klik kanan atau tekan lama, paparkan maklumat yang berkaitan untuk pilihan teks anda</translation>
 <translation id="3199127022143353223">Pelayan</translation>
 <translation id="3200061262156232574">Dalam troli beli-belah anda</translation>
@@ -2579,6 +2583,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3592260987370335752">&amp;Ketahui lebih lanjut</translation>
 <translation id="3593152357631900254">Dayakan mod Pinyin Kabur</translation>
 <translation id="3593965109698325041">Kekangan Nama Sijil</translation>
+<translation id="3596012367874587041">Tetapan apl</translation>
 <translation id="3596414637720633074">Sekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="3599221874935822507">Ditinggikan</translation>
 <translation id="3599863153486145794">Mengosongkan sejarah daripada semua peranti yang dilog masuk. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -5307,6 +5312,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6455264371803474013">Di laman web tertentu</translation>
 <translation id="6455894534188563617">&amp;Folder Baharu</translation>
 <translation id="645705751491738698">Terus menyekat JavaScript</translation>
+<translation id="6458347417133445570">Tunjukkan butiran tentang membenarkan semua kuki</translation>
 <translation id="6458701200018867744">Muat naik gagal (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Tetingkap aktif dialihkan ke paparan lain.</translation>
@@ -6738,6 +6744,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> boleh melihat <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Tambah perkataan yang perlu dilangkau oleh semak ejaan</translation>
+<translation id="7922935920104868876">Tunjukkan butiran tentang menyekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="7924358170328001543">Ralat semasa mengirim semula port</translation>
 <translation id="7925108652071887026">Autolengkap data</translation>
 <translation id="792514962475806987">Tahap zum dok:</translation>
@@ -6902,6 +6909,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8076835018653442223">Akses kepada fail setempat pada peranti anda dilumpuhkan oleh pentadbir anda</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Akaun tersedia untuk digunakan dengan apl Android</translation>
 <translation id="8081989000209387414">Lumpuhkan penyahpepijatan ADB?</translation>
 <translation id="8082106343289440791">Jadikan berpasangan dengan "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Tindakan melumpuhkan penyahpepijatan ADB akan menetapkan semula <ph name="DEVICE_TYPE" /> ini kepada tetapan kilang. Semua akaun pengguna dan data setempat akan dipadam.</translation>
@@ -7162,6 +7170,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8342861492835240085">Pilih koleksi</translation>
 <translation id="8347227221149377169">Tugas cetak</translation>
 <translation id="834785183489258869">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman yang berlainan, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin tidak berfungsi.</translation>
+<translation id="8349499562373871073">Anda boleh memilih akaun yang sedia ada untuk digunakan dengan apl Android atau menambah Google Account yang baharu. Sebaik sahaja anda log masuk ke apl Android, akaun anda boleh digunakan dengan apl Android lain. Anda boleh menukar akses apl Android dalam <ph name="LINK_BEGIN" />Tetapan &gt; Akaun<ph name="LINK_END" />.</translation>
 <translation id="8350789879725387295">Alatan stilus dalam dok</translation>
 <translation id="8351316842353540018">Sentiasa paparkan pilihan a11y</translation>
 <translation id="8351419472474436977">Pelanjutan telah mengambil alih kawalan tetapan proksi anda, yang bermakna pelanjutan ini boleh mengubah, menghentikan atau mendengar secara senyap terhadap apa sahaja yang anda lakukan dalam talian. Jika anda tidak pasti mengapa 

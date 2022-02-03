@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
 <translation id="345898999683440380">درحال اسکن کردن صفحه <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />٪ انجام شده است.</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
-<translation id="3462187165860821523">درحال به‌روزرسانی <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">وقتی سفت‌افزار درحال به‌روزرسانی است، این دستگاه خارجی را جدا نکنید و رایانه را خاموش نکنید. می‌توانید این پنجره را کمینه کنید. این به‌روزرسانی ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
 <translation id="3486220673238053218">معنی</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
 <translation id="3565064564551103223">‏IPهای مجاز</translation>
+<translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3583278742022654445">‏سیگنال ضعیف است. به منبع سیگنال Wi-Fi نزدیک‌تر شوید.</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7180611975245234373">بازخوانی</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
-<translation id="7240035910874241640">همه لوازم جانبی به‌روز هستند</translation>
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">مجموعه کاغذدیواری</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">شمارش‌گرهای ترافیک</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> شما به‌روز است.</translation>
 <translation id="8521021929829989041">استفاده به‌عنوان دستگاه شخصی</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ممکن است شرکت مخابراتی‌تان برای اتصال به شبکه خود به این گزینه نیاز داشته باشد. برای اطلاع از جزئیات با شرکت مخابراتی تماس بگیرید.</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">اجرای دوباره</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکن}=1{اسکن کردن صفحه {NUMBER_OF_PAGES}}one{اسکن کردن صفحه {NUMBER_OF_PAGES}}other{اسکن کردن صفحه {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">درحال نصب - <ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="8997710128084572139">باتری دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="9003704114456258138">فرکانس</translation>
 <translation id="9039663905644212491">PEAP</translation>

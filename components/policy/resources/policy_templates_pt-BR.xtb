@@ -204,6 +204,9 @@
       Essa política não se aplica a usuários de quiosque.
 
       Cuidado: Wipe e MinimalMigrate removem dados locais.</translation>
+<translation id="1250597158212586309">Se a política for definida como "Enabled" (ativada) ou deixada sem definição, o usuário tem a opção de dispensar/restaurar alertas de senha comprometida.
+
+      Se você desativar esta configuração, os usuários não vão poder dispensar alertas de senha comprometida. Se ela estiver ativada, os usuários vão poder dispensar alertas sobre senhas comprometidas.</translation>
 <translation id="1252536192437793850">Permitir que os sites peçam ao usuário para conceder acesso a uma porta serial</translation>
 <translation id="1255159327956066463">Ativar o recurso de janelas fantasmas</translation>
 <translation id="125655429495551011">Se a política for definida como uma string, a string será aplicada como nome do host do dispositivo durante a solicitação de DHCP. A string pode ter as variáveis <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> e <ph name="LOCATION_PLACEHOLDER" />, que serão substituídas por valores no dispositivo antes de serem usadas como nome do host. A substituição resultante precisa ser um nome de host válido, conforme o RFC 1035, seção 3.1.
@@ -841,6 +844,30 @@ Web e PWAs. No momento, com suporte apenas no
 
       Esta política comercial fica desativada por padrão.</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
+<translation id="1951288262199783797">Você pode ativar esta política para criar um dicionário de extensões de tipos de arquivo com uma lista de domínios correspondentes que estão isentos dos avisos de download com base na extensão do tipo de arquivo. Isso permite que os administradores corporativos bloqueiem avisos de download com base na extensão de tipo para arquivos associados a um domínio listado. Por exemplo, se a extensão "jnlp" estiver associada ao "site1.com", os usuários não vão receber um aviso ao fazer o download de arquivos "jnlp" do "site1.com", mas vão receber um aviso ao fazer o download de arquivos "jnlp" do "site2.com".
+
+      Arquivos com extensões especificadas para domínios identificados por esta política, ainda vão estar sujeitos a avisos de segurança não baseados na extensão do tipo do arquivo, como avisos de download de conteúdo misto e do Navegação segura.
+
+      Se a política for desativada ou não estiver configurada, os tipos de arquivo que acionam avisos de download com base na extensão vão mostrar avisos ao usuário.
+
+      Se você ativar a política:
+
+      * O padrão de URL precisa ser formatado de acordo com https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+      * A extensão do tipo de arquivo inserida precisa estar em letras minúsculas de acordo com o ASCII. O separador à esquerda não pode ser incluído ao listar as extensões do tipo de arquivo. Então, use "jnlp" em vez de ".jnlp".
+
+      Exemplo:
+
+      O valor de exemplo abaixo evitaria avisos de download baseados na extensão do tipo de arquivo em extensões swf, exe e jnlp para domínios *.example.com. O usuário recebe um aviso de download com base na extensão do tipo de arquivo em qualquer outro domínio para arquivos exe e jnlp, mas não para arquivos swf.
+
+      [
+        { "file_extension": "jnlp", "domains": ["example.com"] },
+        { "file_extension": "exe", "domains": ["example.com"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+      Observe que, embora o exemplo anterior mostre a supressão de avisos de download com base na extensão do tipo de arquivo para arquivos "swf" em todos os domínios, a aplicação da supressão desse tipo de aviso em todos os domínios para extensões de tipos de arquivos perigosas não é recomendada devido a questões de segurança. A supressão é mostrada no exemplo apenas para demonstrar que pode ser feita.
+
+      Se esta política estiver ativada em conjunto com <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> e a política DownloadRestrictions estiver definida para bloquear tipos de arquivos perigosos, os blocos de download determinados por DownloadRestrictions têm precedência. Por exemplo, se esta política estiver definida para autorizar downloads de extensão "exe" do "site1.com" e a política DownloadRestrictions estiver definida para bloquear downloads maliciosos e tipos de arquivos perigosos, os downloads de extensão "exe" ainda vão ser bloqueados em todos os domínios. Se a DownloadRestrictions não estiver definida para bloquear tipos de arquivo perigosos, os tipos de arquivo especificados nesta política não vão enviar avisos de download com base na extensão nos domínios especificados. Leia mais sobre a política DownloadRestrictions em https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1960416154405676350">Ativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Esta política se aplica apenas a sessões de visitante gerenciadas.
       Se ela for definida, uma lista de IDs de extensão isentos do processo de limpeza da sessão de visitante gerenciada restrita será especificada. Consulte <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />.
@@ -895,6 +922,7 @@ Web e PWAs. No momento, com suporte apenas no
       Impressoras conectadas ao <ph name="CLOUD_PRINT_NAME" /> são consideradas <ph name="PRINTER_TYPE_CLOUD" />, e as restantes são classificadas como <ph name="PRINTER_TYPE_LOCAL" />.
 
       Observação: a omissão de um campo significa que todos os valores correspondem. Por exemplo, a não especificação da conectividade faz com que a visualização da impressão inicie a detecção de todos os tipos de impressoras, <ph name="PRINTER_TYPE_LOCAL" /> e <ph name="PRINTER_TYPE_CLOUD" />. Os padrões de expressão regular precisam seguir a sintaxe RegExp do JavaScript. As correspondências diferenciam maiúsculas de minúsculas.</translation>
+<translation id="2004382785802837840">Desativar a opção de dispensar alertas de senha comprometida</translation>
 <translation id="2005506794355327448">Ação a ser tomada quando a tampa for fechada.</translation>
 <translation id="2006530844219044261">Gerenciamento de energia</translation>
 <translation id="2008514891623783266">A política de processamento de IPs do WebRTC</translation>
@@ -1327,6 +1355,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2435232509335686514">Política de configuração do gerenciamento de arquivos transferidos por download pelo <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2436302465999055995">Tornar o <ph name="LACROS_NAME" /> o único navegador disponível (ainda não implementado)</translation>
 <translation id="2439187682308339104">Não permitir que nenhum site solicite acesso a dispositivos HID pela API WebHID</translation>
+<translation id="2439733504887695659">Ativar a opção de dispensar alertas de senha comprometida para as credenciais inseridas</translation>
 <translation id="2448315169529769573">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> informará métricas de uso e dados de diagnóstico, incluindo relatórios de erros, para o Google. Se a política for definida como "Desativada", as informações de métrica e dados de diagnóstico serão desativados.
 
        Se a política não for definida, as informações de métrica e dados de diagnóstico ficarão desativados nos dispositivos não gerenciados e ativados nos dispositivos gerenciados.</translation>
@@ -1764,6 +1793,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> ficará indisponível. Caso contrário, quando a política for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível se, e apenas se, nenhuma outra política ou configuração a desativar.</translation>
 <translation id="2964373560810620158">Impedir que os usuários usem o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Permitir que os sites usem o SharedArrayBuffers</translation>
+<translation id="2969568582351417848">Desativar avisos de download com base na extensão do tipo de arquivo para os tipos especificados nos domínios</translation>
 <translation id="2969797921412053304">Esta política configura quais URLs terão acesso para usar o atestado remoto da identidade do dispositivo durante o fluxo SAML na tela de login.
 
       Especificamente, se um URL corresponder a um dos padrões fornecidos por esta política, ele poderá receber um cabeçalho HTTP com uma resposta para um desafio de atestado remoto, confirmando a identidade e o estado do dispositivo.
@@ -2410,13 +2440,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se você desativar essa configuração, os usuários não poderão usar o preenchimento automático.
 
       Se você ativar essa configuração ou não definir um valor, o preenchimento automático será controlado pelo usuário, ou seja, ele poderá configurar perfis de preenchimento automático e ativar ou desativar o recurso quando quiser.</translation>
-<translation id="3731968520685217674">A definição desta política permite especificar o comportamento do sistema na inicialização. Desativar essa configuração é o mesmo que não defini-la, já que o <ph name="PRODUCT_NAME" /> precisa ter um comportamento de inicialização especificado.
-
-      Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se não defini-la, eles poderão mudá-la.
-
-      A definição desta política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> desativa algumas configurações que dependem de sessões ou que realizam ações ao sair, como a limpeza dos dados de navegação ao sair ou os cookies de sessão.
-
-      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="3733014427925403568">Dia da semana para o intervalo.</translation>
 <translation id="3736879847913515635">Ativar adição de uma pessoa no gerenciador de usuários</translation>
 <translation id="3749259744154402564">Incompatível</translation>
@@ -3149,6 +3172,16 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4624417808625504735">Bloquear o uso de JIT pelo JavaScript nestes sites</translation>
 <translation id="4625915093043961294">Configurar a lista branca de instalação de extensão</translation>
+<translation id="4631165564645497047">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> verifica os certificados do servidor usando o verificador integrado de certificados.
+      Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> verifica os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
+      Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado podem ser usados.
+
+      Esta política vai ser removida na versão 81 do <ph name="PRODUCT_OS_NAME" />, quando o suporte ao verificador de certificados legado no <ph name="PRODUCT_OS_NAME" /> também vai ser removido.
+
+      Esta política vai ser removida do <ph name="PRODUCT_NAME" /> na versão 83 do Linux, quando o suporte ao verificador de certificados legado nesse SO também vai ser removido.
+
+      Esta política vai ser removida do <ph name="PRODUCT_NAME" /> na versão 104 do Mac OS X, quando o suporte ao verificador de certificados legado nesse SO também vai ser removido.
+      </translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4632566332417930481">Não permite o uso das Ferramentas para Desenvolvedores em extensões instaladas por uma política corporativa; permite o uso das Ferramentas para desenvolvedores em outros contextos</translation>
 <translation id="4635284822166984665">Horário em que o carregamento do dispositivo será iniciado, interpretado no fuso horário local do dispositivo.</translation>
@@ -3187,6 +3220,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
           Para ver exemplos de padrões, consulte http://www.chromium.org/developers/how-tos/chrome-frame-getting-started (link em inglês).</translation>
 <translation id="467449052039111439">Abrir uma lista de URLs</translation>
+<translation id="4674542060943819878">Ativar a opção de dispensar alertas de senha comprometida</translation>
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
 <translation id="4680961954980851756">Ativar Preenchimento automático</translation>
 <translation id="4685721728282448265">CECPQ2 de acordo de chave pós-quântico ativado para TLS</translation>
@@ -6527,9 +6561,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8525526490824335042">Contêiner Linux</translation>
 <translation id="8528951285051082869">Não permitir que nenhum app da Web acesse tipos de arquivo pela API File Handling</translation>
 <translation id="8533145294731270627">Bloquear downloads maliciosos e tipos de arquivo perigosos.</translation>
-<translation id="8537051350735478658">Se a política for definida como verdadeira, as sugestões de pesquisa na barra de endereço do <ph name="PRODUCT_NAME" /> serão ativadas. Se ela for definida como falsa, essas sugestões serão desativadas.
-
-      Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, as sugestões de pesquisa ficarão inicialmente ativadas, mas os usuários poderão desativá-las quando quiserem.</translation>
 <translation id="8543103455510904459">Permite definir uma lista de padrões de URL que especificam sites sem permissão para executar o JavaScript com o compilador JIT (Just In Time) ativado.
 
           Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web mais lentamente, e partes do próprio JavaScript poderão ser desativadas, incluindo o WebAssembly. Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web com uma configuração mais segura.

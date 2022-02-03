@@ -170,13 +170,13 @@
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> dari <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Memindai halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Pencetakan</translation>
-<translation id="3462187165860821523">Mengupdate <ph name="DEVICE_NAME" /></translation>
 <translation id="3484914941826596830">Saat firmware sedang diupdate, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Update ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama update.</translation>
 <translation id="3486220673238053218">definisi</translation>
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
 <translation id="3565064564551103223">IP yang diizinkan</translation>
+<translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
 <translation id="3583278742022654445">Kekuatan sinyal lemah. Coba mendekat ke sumber sinyal Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
@@ -462,7 +462,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
-<translation id="7240035910874241640">Semua periferal sudah diupdate</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>
@@ -563,7 +562,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8498220429738806196">Penghitung Traffic</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
-<translation id="8520963233738002436"><ph name="DEVICE_NAME" /> Anda sudah diupdate</translation>
 <translation id="8521021929829989041">Gunakan sebagai perangkat pribadi</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>
@@ -607,7 +605,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Pindai}=1{Pindai halaman {NUMBER_OF_PAGES}}other{Pindai halaman {NUMBER_OF_PAGES}}}</translation>
-<translation id="8994273342647807496">Menginstal - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai.</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9039663905644212491">PEAP</translation>

@@ -204,6 +204,7 @@
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}other{Du wirst automatisch in # Sekunden abgemeldet.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}}</translation>
 <translation id="1193927020065025187">Diese Website verleitet Sie möglicherweise dazu, aufdringliche Benachrichtigungen zuzulassen</translation>
+<translation id="1195210374336998651">App-Einstellungen öffnen</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1195558154361252544">Benachrichtigungen werden automatisch für alle Websites blockiert, außer für diejenigen, die Sie zulassen</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -384,6 +385,7 @@
 <translation id="1396259464226642517">War dieses Ergebnis unerwartet? <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Der eingegebene Nutzername und das Passwort stimmen nicht überein</translation>
 <translation id="1397500194120344683">Keine geeigneten Geräte vorhanden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Sie sind auf diesen Geräten in Chrome angemeldet und können sie als Sicherheitsschlüssel verwenden.</translation>
 <translation id="1398853756734560583">Maximieren</translation>
 <translation id="139911022479327130">Entsperren Sie Ihr Smartphone, um Ihre Identität zu bestätigen</translation>
 <translation id="1401308693935339022">Standort verwenden. Apps und Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erfassen und diese Daten auf anonyme Weise verwenden, um die Standortgenauigkeit und standortbezogene Dienste zu verbessern.</translation>
@@ -1165,6 +1167,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2163470535490402084">Stellen Sie eine Internetverbindung her, um sich auf Ihrem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und ein weiterer Schalter</translation>
+<translation id="2165102982098084499">Sie haben einen QR-Code gescannt, um diese Geräte zu verknüpfen.</translation>
 <translation id="2165177462441582039">Sie können festlegen, wie lange ein Element markiert bleiben soll</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
@@ -1891,6 +1894,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="287205682142673348">Portweiterleitung</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> hinzufügen...</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
+<translation id="2873995907777332853">Informationen zum Blockieren aller Cookies aufrufen</translation>
 <translation id="2874939134665556319">Vorheriger Titel</translation>
 <translation id="2875698561019555027">(Chrome-Fehlerseiten)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
@@ -1938,6 +1942,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2915873080513663243">Automatischer Scan</translation>
 <translation id="2916073183900451334">Links und Formularfelder auf Webseiten durch Drücken der Tab-Taste auswählen</translation>
 <translation id="2916745397441987255">In Erweiterungen suchen</translation>
+<translation id="2918484639460781603">Zu den Einstellungen wechseln</translation>
 <translation id="2918484644467055090">Dieses Gerät kann nicht in der Organisation registriert werden, zu der Ihr Konto gehört, weil die Geräteverwaltung einer anderen Organisation zugewiesen wurde.</translation>
 <translation id="2920852127376356161">Dürfen keine Protokolle verarbeiten</translation>
 <translation id="2921081876747860777">Erstellen Sie ein Passwort, um Ihre lokalen Daten zu schützen.</translation>
@@ -2194,6 +2199,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
 <translation id="3190558889382726167">Passwort gespeichert</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
+<translation id="3194786596445804250">Informationen zum Blockieren von Drittanbieter-Cookies aufrufen</translation>
 <translation id="3197453258332670132">Wenn Sie rechts klicken oder lange drücken, werden verknüpfte Informationen zum ausgewählten Text angezeigt</translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3200061262156232574">In meinem Einkaufswagen</translation>
@@ -2561,6 +2567,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3592260987370335752">&amp;Weitere Informationen</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin-Modus aktivieren</translation>
 <translation id="3593965109698325041">Beschränkungen für Zertifikatsnamen</translation>
+<translation id="3596012367874587041">App-Einstellungen</translation>
 <translation id="3596414637720633074">Cookies von Drittanbietern im Inkognitomodus blockieren</translation>
 <translation id="3599221874935822507">Erhöht</translation>
 <translation id="3599863153486145794">Löscht den Verlauf auf allen angemeldeten Geräten. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für Ihr Google-Konto gespeichert.</translation>
@@ -5286,6 +5293,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6455264371803474013">Auf bestimmten Websites</translation>
 <translation id="6455894534188563617">&amp;Neuer Ordner</translation>
 <translation id="645705751491738698">JavaScript weiterhin blockieren</translation>
+<translation id="6458347417133445570">Informationen zum Zulassen aller Cookies aufrufen</translation>
 <translation id="6458701200018867744">Upload fehlgeschlagen (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Auswahl für Suche übernehmen</translation>
 <translation id="6459799433792303855">Aktives Fenster auf anderen Bildschirm verschoben.</translation>
@@ -5678,6 +5686,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
 <translation id="6860097299815761905">Proxy-Einstellungen...</translation>
 <translation id="6860427144121307915">In Tab öffnen</translation>
+<translation id="6863496016067551393">Alle Erweiterungen zulässig</translation>
 <translation id="686366188661646310">Passwort löschen?</translation>
 <translation id="6865313869410766144">Formulardaten für automatisches Ausfüllen</translation>
 <translation id="6865598234501509159">Diese Seite ist nicht auf <ph name="LANGUAGE" /></translation>
@@ -5707,6 +5716,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>
 <translation id="6900651018461749106">Zum Aktualisieren von <ph name="USER_EMAIL" /> noch einmal anmelden</translation>
 <translation id="6900654715912436255">Möchten Sie diese Suchmaschine wirklich löschen?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Stimme zum Anhören</translation>
 <translation id="6902336033320348843">Abschnitt nicht unterstützt: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Gerät bei Domain registrieren</translation>
@@ -6716,6 +6726,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> darf <ph name="FILENAME" /> aufrufen</translation>
 <translation id="7920482456679570420">Hier fügen Sie Wörter hinzu, die bei der Rechtschreibprüfung übersprungen werden sollen</translation>
+<translation id="7922935920104868876">Informationen zum Blockieren von Drittanbieter-Cookies im Inkognitomodus aufrufen</translation>
 <translation id="7924358170328001543">Fehler bei der Portweiterleitung</translation>
 <translation id="7925108652071887026">AutoFill-Daten</translation>
 <translation id="792514962475806987">Zoomstufe für angedockte Lupe:</translation>
@@ -6880,6 +6891,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8076835018653442223">Der Zugriff auf lokale Dateien auf Ihrem Gerät wurde von Ihrem Administrator deaktiviert</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081243065355858508">Konten, die mit Android-Apps verwendet werden können</translation>
 <translation id="8081989000209387414">ADB-Fehlerbehebung deaktivieren?</translation>
 <translation id="8082106343289440791">Mit "<ph name="DEVICE_NAME" />" koppeln?</translation>
 <translation id="8082390128630131497">Wenn Sie die ADB-Fehlerbehebung deaktivieren, wird dieses <ph name="DEVICE_TYPE" /> auf die Werkseinstellungen zurückgesetzt. Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
@@ -7140,6 +7152,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8342861492835240085">Sammlung auswählen</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="834785183489258869">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um Ihre Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
+<translation id="8349499562373871073">Sie können ein bestehendes Konto für die Verwendung mit Android-Apps auswählen oder ein neues Google-Konto hinzufügen. Sobald Sie sich in einer Android-App angemeldet haben, kann Ihr Konto in anderen Android-Apps verwendet werden. Entsprechende Änderungen können Sie unter <ph name="LINK_BEGIN" />„Einstellungen“ &gt; „Konten“<ph name="LINK_END" /> vornehmen.</translation>
 <translation id="8350789879725387295">Eingabestift-Tools in Leiste</translation>
 <translation id="8351316842353540018">Optionen für Bedienungshilfen immer anzeigen</translation>
 <translation id="8351419472474436977">Diese Erweiterung hat die Kontrolle über Ihre Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn Sie nicht sicher sind, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
@@ -7355,6 +7368,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8610103157987623234">Fehlerhaftes Format. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="8611682088849615761">Weiterhin zulassen, dass diese Website vollständige Kontrolle über MIDI-Geräte hat</translation>
 <translation id="8613164732773110792">Nur Kleinbuchstaben, Zahlen, Unterstriche und Bindestriche</translation>
+<translation id="8613645710357126807">Keine Erweiterungen zulässig</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> ist zu groß für eine Sicherheitsprüfung. Sie können Dateien mit einer Größe von bis zu 50 MB öffnen.</translation>
 <translation id="8615618338313291042">Anonyme App: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" /> zu meinen Kontakten hinzufügen</translation>

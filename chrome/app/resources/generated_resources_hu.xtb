@@ -206,6 +206,7 @@
 A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens kártyát.}other{A rendszer # másodperc múlva automatikusan kijelentkezteti.
 A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens kártyát.}}</translation>
 <translation id="1193927020065025187">Előfordulhat, hogy ez a webhely arra próbálja megtévesztő módon rávenni Önt, hogy engedélyezze a tolakodó értesítéseket.</translation>
+<translation id="1195210374336998651">Ugrás az alkalmazás beállításaihoz</translation>
 <translation id="1195447618553298278">Ismeretlen hiba.</translation>
 <translation id="1195558154361252544">Az Ön által engedélyezett webhelyek kivételével a böngésző automatikusan letiltja az értesítéseket</translation>
 <translation id="1197088940767939838">Narancssárga</translation>
@@ -1957,6 +1958,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2915873080513663243">Automatikus keresés</translation>
 <translation id="2916073183900451334">A Tab billentyű megnyomása a weboldalakon kiemeli a linkeket és a beviteli mezőket</translation>
 <translation id="2916745397441987255">Bővítmények keresése</translation>
+<translation id="2918484639460781603">Ugrás a beállításokhoz</translation>
 <translation id="2918484644467055090">Ez az eszköz nem regisztrálható annál a szervezetnél, amelyhez fiókja tartozik, mert az eszköz felügyeletére egy másik szervezet van kijelölve.</translation>
 <translation id="2920852127376356161">Nem kezelhetnek protokollokat</translation>
 <translation id="2921081876747860777">Hozzon létre jelszót a helyi adatok védelme érdekében.</translation>
@@ -2581,6 +2583,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3592260987370335752">&amp;További információ</translation>
 <translation id="3593152357631900254">Részleges pinjin mód engedélyezése</translation>
 <translation id="3593965109698325041">Tanúsítvány nevének megkötései</translation>
+<translation id="3596012367874587041">Alkalmazásbeállítások</translation>
 <translation id="3596414637720633074">Harmadik felektől származó cookie-k letiltása Inkognitó módban</translation>
 <translation id="3599221874935822507">Megemelt</translation>
 <translation id="3599863153486145794">Törli az előzményeket valamennyi bejelentkezett eszközről. Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen.</translation>

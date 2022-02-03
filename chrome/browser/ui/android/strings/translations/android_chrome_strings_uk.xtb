@@ -290,6 +290,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудіофайл}one{# аудіофайл}few{# аудіофайли}many{# аудіофайлів}other{# аудіофайлу}}</translation>
 <translation id="265156376773362237">Звичайне попереднє завантаження</translation>
 <translation id="2656405586795711023">Веб-додатки</translation>
+<translation id="2689830683995595741">Використовуючи Chrome, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Примітка про конфіденційність для облікових записів Google, керованих у Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Новинка! Діліться посиланням, яке прокручує сторінку до цього тексту</translation>
 <translation id="2704606927547763573">Скопійов.</translation>
 <translation id="2707726405694321444">Оновити сторінку</translation>
@@ -625,6 +626,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Надіслати SMS на пристрої</translation>
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
+<translation id="471759387343966120">Продовжуючи, ви приймаєте <ph name="BEGIN_TOS_LINK" />Умови використання<ph name="END_TOS_LINK" /> та <ph name="BEGIN_PRIVACY_LINK" />Політику конфіденційності<ph name="END_PRIVACY_LINK" />.\nЩоб покращити додаток, Chrome надсилає дані про використання та збої в Google. <ph name="BEGIN_UMA_LINK" />Керувати<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720023427747327413">Відкрити в <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Допоможіть покращити Chrome. <ph name="BEGIN_LINK" />Візьміть участь в опитуванні<ph name="END_LINK" /></translation>
@@ -907,6 +909,7 @@
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
 <translation id="6277722725779679269">Не вдалось оновити відстеження ціни</translation>
 <translation id="6278428485366576908">Тема</translation>
+<translation id="6292420053234093573">Використовуючи Chrome, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Ви можете надсилати вкладки між пристроями, на яких увійшли в той самий обліковий запис Google</translation>
 <translation id="6297765934698848803">Організація, що керує вашим пристроєм, вимкнула камеру.</translation>
 <translation id="6301525844455696527">Не забувайте про свій список читання</translation>

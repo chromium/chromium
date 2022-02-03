@@ -170,13 +170,13 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> የታተመ ገጽ ከ <ph name="TOTAL_PAGES" /> ዉስጥ።</translation>
 <translation id="345898999683440380">ገጽ <ph name="PAGE_NUM" />ን በመቃኘት ላይ። <ph name="PERCENTAGE_VALUE" />% ተጠናቅቋል።</translation>
 <translation id="3459509316159669723">ማተም</translation>
-<translation id="3462187165860821523"><ph name="DEVICE_NAME" />ን በማዘመን ላይ</translation>
 <translation id="3484914941826596830">ፊርምዌር በማዘመን ላይ ሳለ ይህን ውጫዊ መሣሪያ አይንቀሉት ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ዝማኔ ጥቂት ደቂቃዎች ሊወስድ ይችላል፣ እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
 <translation id="3486220673238053218">ብየና</translation>
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
 <translation id="3565064564551103223">የተፈቀዱ አይፒዎች</translation>
+<translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="3583278742022654445">ደካማ የሲግናል ጥንካሬ። ወደ Wi-Fi ሲግናል ምንጭ ለመቅረብ ይሞክሩ።</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
@@ -462,7 +462,6 @@
 <translation id="7177485034254901881">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
-<translation id="7240035910874241640">ሁሉም ተቀጥላዎች የተዘመኑ ናቸው</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>
@@ -563,7 +562,6 @@
 <translation id="8498220429738806196">የትራፊክ ቆጣሪዎች</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
-<translation id="8520963233738002436">የእርስዎ <ph name="DEVICE_NAME" /> የተዘመነ ነው</translation>
 <translation id="8521021929829989041">እንደ የግል መሣሪያ ይጠቀሙ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">አገልግሎት አቅራቢዎ ከአውታረ መረቡ ጋር ለመገናኘት ይህን አማራጭ ሊፈልግ ይችላል። ለዝርዝሮች አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
@@ -607,7 +605,6 @@
 <translation id="8970109610781093811">እንደገና ያሂዱ</translation>
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ቃኝ}=1{ገጽ {NUMBER_OF_PAGES} ቃኝ}one{ገጽ {NUMBER_OF_PAGES} ቃኝ}other{ገጽ {NUMBER_OF_PAGES} ቃኝ}}</translation>
-<translation id="8994273342647807496">በመጫን ላይ - <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="8997710128084572139">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% ባትሪ አለው።</translation>
 <translation id="9003704114456258138">ተደጋጋሚነት</translation>
 <translation id="9039663905644212491">PEAP</translation>

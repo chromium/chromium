@@ -70,7 +70,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1186201132766001848">Parollarni tekshiring</translation>
-<translation id="1195210374336998651">Ilova sozlamalarini ochish</translation>
 <translation id="1195558154361252544">Bildirishnoamalar siz ruxsat bergan saytlardan tashqari barcha saytlar uchun taqiqlanadi</translation>
 <translation id="1197088940767939838">Apelsinrang</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
@@ -839,7 +838,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3587738293690942763">Oʻrtacha</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish bir kun vaqt oladi.}=1{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish bir kun vaqt oladi.}other{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish {NUM_DAYS} kun vaqt oladi.}}</translation>
-<translation id="3596012367874587041">Ilova sozlamalari</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Ilova administrator tomonidan bloklangan</translation>
 <translation id="3608932978122581043">Holatini belgilash</translation>

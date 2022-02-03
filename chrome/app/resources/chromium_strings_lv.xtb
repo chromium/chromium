@@ -221,6 +221,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7318036098707714271">Jūsu preferenču fails ir bojāts vai nederīgs. Chromium nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
+<translation id="7342713658732509484">Uz šo kontu var attiekties atļaujas, ko jau esat piešķīris vietnēm un lietotnēm. Ja nevēlaties atļaut vietnēm vai lietotnēm piekļūt jūsu konta informācijai, pārlūkā Chromium izmantojiet viesa režīmu. Varat arī pārvaldīt savus Google kontus <ph name="LINK_2_BEGIN" />iestatījumu sadaļā<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Šeit atrodas jūsu tīmekļa saturs, grāmatzīmes un cits Chromium saturs.</translation>
 <translation id="7349591376906416160">Jūsu sistēmas administrators ir konfigurējis Chromium atvērt <ph name="ALTERNATIVE_BROWSER_NAME" />, lai piekļūtu <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">Izmantojot Chromium profilus, varat nodalīt visu savu Chromium saturu. Tādējādi tiek atvieglota darba un izklaides satura nodalīšana.</translation>
