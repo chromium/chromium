@@ -6,27 +6,28 @@
 
 import 'chrome://extensions/extensions.js';
 
+import {ExtensionsLoadErrorElement} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestService} from './test_service.js';
 import {isElementVisible} from './test_util.js';
 
-window.extension_load_error_tests = {};
-extension_load_error_tests.suiteName = 'ExtensionLoadErrorTests';
-/** @enum {string} */
-extension_load_error_tests.TestNames = {
-  RetryError: 'RetryError',
-  RetrySuccess: 'RetrySuccess',
-  CodeSection: 'Code Section',
+const extension_load_error_tests = {
+  suiteName: 'ExtensionLoadErrorTests',
+  TestNames: {
+    RetryError: 'RetryError',
+    RetrySuccess: 'RetrySuccess',
+    CodeSection: 'Code Section',
+  },
 };
+Object.assign(window, {extension_load_error_tests});
 
 suite(extension_load_error_tests.suiteName, function() {
-  /** @type {ExtensionsLoadErrorElement} */
-  let loadError;
+  let loadError: ExtensionsLoadErrorElement;
 
-  /** @type {MockDelegate} */
-  let mockDelegate;
+  let mockDelegate: TestService;
 
-  const fakeGuid = 'uniqueId';
+  const fakeGuid: string = 'uniqueId';
 
   const stubLoadError = {
     error: 'error',
@@ -45,41 +46,43 @@ suite(extension_load_error_tests.suiteName, function() {
 
   test(assert(extension_load_error_tests.TestNames.RetryError), function() {
     const dialogElement =
-        loadError.shadowRoot.querySelector('cr-dialog').getNative();
-    expectFalse(isElementVisible(dialogElement));
+        loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
+    assertFalse(isElementVisible(dialogElement));
     loadError.show();
-    expectTrue(isElementVisible(dialogElement));
+    assertTrue(isElementVisible(dialogElement));
 
     mockDelegate.setRetryLoadUnpackedError(stubLoadError);
-    loadError.shadowRoot.querySelector('.action-button').click();
+    loadError.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
     return mockDelegate.whenCalled('retryLoadUnpacked').then(arg => {
-      expectEquals(fakeGuid, arg);
-      expectTrue(isElementVisible(dialogElement));
-      loadError.shadowRoot.querySelector('.cancel-button').click();
-      expectFalse(isElementVisible(dialogElement));
+      assertEquals(fakeGuid, arg);
+      assertTrue(isElementVisible(dialogElement));
+      loadError.shadowRoot!.querySelector<HTMLElement>(
+                               '.cancel-button')!.click();
+      assertFalse(isElementVisible(dialogElement));
     });
   });
 
   test(assert(extension_load_error_tests.TestNames.RetrySuccess), function() {
     const dialogElement =
-        loadError.shadowRoot.querySelector('cr-dialog').getNative();
-    expectFalse(isElementVisible(dialogElement));
+        loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
+    assertFalse(isElementVisible(dialogElement));
     loadError.show();
-    expectTrue(isElementVisible(dialogElement));
+    assertTrue(isElementVisible(dialogElement));
 
-    loadError.shadowRoot.querySelector('.action-button').click();
+    loadError.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
     return mockDelegate.whenCalled('retryLoadUnpacked').then(arg => {
-      expectEquals(fakeGuid, arg);
-      expectFalse(isElementVisible(dialogElement));
+      assertEquals(fakeGuid, arg);
+      assertFalse(isElementVisible(dialogElement));
     });
   });
 
   test(assert(extension_load_error_tests.TestNames.CodeSection), function() {
-    expectTrue(
-        loadError.$.code.shadowRoot.querySelector('#scroll-container').hidden);
+    assertTrue(loadError.$.code.shadowRoot!
+                   .querySelector<HTMLElement>('#scroll-container')!.hidden);
     const loadErrorWithSource = {
       error: 'Some error',
       path: '/some/path',
+      retryGuid: '',
       source: {
         beforeHighlight: 'before',
         highlight: 'highlight',
@@ -88,7 +91,7 @@ suite(extension_load_error_tests.suiteName, function() {
     };
 
     loadError.loadError = loadErrorWithSource;
-    expectFalse(
-        loadError.$.code.shadowRoot.querySelector('#scroll-container').hidden);
+    assertFalse(loadError.$.code.shadowRoot!
+                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
   });
 });

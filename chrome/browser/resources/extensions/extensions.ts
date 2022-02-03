@@ -19,9 +19,12 @@ export {ExtensionsHostPermissionsToggleListElement} from './host_permissions_tog
 export {ExtensionsItemElement, ItemDelegate} from './item.js';
 export {ExtensionsItemListElement} from './item_list.js';
 export {UserAction} from './item_util.js';
+export {ExtensionsKeyboardShortcutsElement} from './keyboard_shortcuts.js';
 // <if expr="chromeos">
-export {KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl, KioskSettings} from './kiosk_browser_proxy.js';
+export {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl, KioskSettings} from './kiosk_browser_proxy.js';
+export {ExtensionsKioskDialogElement} from './kiosk_dialog.js';
 // </if>
+export {ExtensionsLoadErrorElement} from './load_error.js';
 export {ExtensionsManagerElement} from './manager.js';
 export {Dialog, navigation, NavigationHelper, Page, PageState} from './navigation_helper.js';
 export {OptionsDialogMaxHeight, OptionsDialogMinWidth} from './options_dialog.js';

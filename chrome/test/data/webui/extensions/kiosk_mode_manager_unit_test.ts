@@ -8,30 +8,29 @@
  * chrome.developerPrivate API.
  */
 
-import {KioskBrowserProxyImpl, Service} from 'chrome://extensions/extensions.js';
+import {ExtensionsManagerElement, KioskBrowserProxyImpl, Service} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestKioskBrowserProxy} from './test_kiosk_browser_proxy.js';
 import {TestService} from './test_service.js';
 
-window.extension_manager_unit_tests = {};
-extension_manager_unit_tests.suiteName = 'ExtensionManagerUnitTest';
-
-/** @enum {string} */
-extension_manager_unit_tests.TestNames = {
-  KioskMode: 'kiosk mode',
+const extension_manager_unit_tests = {
+  suiteName: 'ExtensionManagerUnitTest',
+  TestNames: {
+    KioskMode: 'kiosk mode',
+  },
 };
 
+Object.assign(window, {extension_manager_unit_tests});
+
 suite(extension_manager_unit_tests.suiteName, function() {
-  /** @type {Manager} */
-  let manager;
+  let manager: ExtensionsManagerElement;
 
-  /** @type {TestService} */
-  let service;
+  let service: TestService;
 
-  /** @type {KioskBrowserProxy} */
-  let browserProxy;
+  let browserProxy: TestKioskBrowserProxy;
 
   setup(function() {
     browserProxy = new TestKioskBrowserProxy();
@@ -54,16 +53,16 @@ suite(extension_manager_unit_tests.suiteName, function() {
   });
 
   test(assert(extension_manager_unit_tests.TestNames.KioskMode), function() {
-    expectFalse(!!manager.shadowRoot.querySelector('extensions-kiosk-dialog'));
+    assertFalse(!!manager.shadowRoot!.querySelector('extensions-kiosk-dialog'));
 
     return browserProxy.whenCalled('initializeKioskAppSettings').then(() => {
-      expectTrue(
-          manager.shadowRoot.querySelector('extensions-toolbar').kioskEnabled);
-      manager.shadowRoot.querySelector('extensions-toolbar')
-          .dispatchEvent(
-              new CustomEvent('kiosk-tap', {bubbles: true, composed: true}));
+      assertTrue(manager.shadowRoot!.querySelector(
+                                        'extensions-toolbar')!.kioskEnabled);
+      manager.shadowRoot!.querySelector('extensions-toolbar')!.dispatchEvent(
+          new CustomEvent('kiosk-tap', {bubbles: true, composed: true}));
       flush();
-      expectTrue(!!manager.shadowRoot.querySelector('extensions-kiosk-dialog'));
+      assertTrue(
+          !!manager.shadowRoot!.querySelector('extensions-kiosk-dialog'));
     });
   });
 });

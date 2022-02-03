@@ -29,8 +29,8 @@ non_preprocessed_files = [
   "host_permissions_toggle_list_test.ts",
   "item_list_test.ts",
   "item_test.ts",
-  "keyboard_shortcuts_test.js",
-  "load_error_test.js",
+  "keyboard_shortcuts_test.ts",
+  "load_error_test.ts",
   "manager_test.ts",
   "manager_test_with_activity_log_flag.ts",
   "manager_test_with_id_query_param.ts",
@@ -51,8 +51,8 @@ non_preprocessed_files = [
 
 if (is_chromeos_ash) {
   non_preprocessed_files += [
-    "kiosk_mode_manager_unit_test.js",
-    "kiosk_mode_test.js",
+    "kiosk_mode_manager_unit_test.ts",
+    "kiosk_mode_test.ts",
     "test_kiosk_browser_proxy.ts",
   ]
 }

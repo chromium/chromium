@@ -38,7 +38,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'inspectItemView',
       'installDroppedFile',
       'loadUnpacked',
-      'loadUnpacked',
+      'loadUnpackedFromDrag',
       'notifyDragInstallInProgress',
       'openUrl',
       'packExtension',

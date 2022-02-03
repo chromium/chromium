@@ -22,14 +22,14 @@ export interface LoadErrorDelegate {
   retryLoadUnpacked(retryGuid: string): Promise<boolean>;
 }
 
-interface ExtensionsLoadErrorElement {
+export interface ExtensionsLoadErrorElement {
   $: {
     code: ExtensionsCodeSectionElement,
     dialog: CrDialogElement,
   };
 }
 
-class ExtensionsLoadErrorElement extends PolymerElement {
+export class ExtensionsLoadErrorElement extends PolymerElement {
   static get is() {
     return 'extensions-load-error';
   }

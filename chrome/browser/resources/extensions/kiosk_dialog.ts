@@ -10,25 +10,30 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 
-interface ExtensionsKioskDialogElement {
+export interface ExtensionsKioskDialogElement {
   $: {
+    addButton: CrButtonElement,
+    addInput: CrInputElement,
     bailout: CrCheckboxElement,
-    'confirm-dialog': CrDialogElement,
+    confirmDialog: CrDialogElement,
     dialog: CrDialogElement,
   };
 }
 
 const ExtensionsKioskDialogElementBase = WebUIListenerMixin(PolymerElement);
 
-class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
+export class ExtensionsKioskDialogElement extends
+    ExtensionsKioskDialogElementBase {
   static get is() {
     return 'extensions-kiosk-dialog';
   }
@@ -123,21 +128,21 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
   private onBailoutChanged_(event: Event) {
     event.preventDefault();
     if (this.$.bailout.checked) {
-      this.$['confirm-dialog'].showModal();
+      this.$.confirmDialog.showModal();
     } else {
       this.kioskBrowserProxy_.setDisableBailoutShortcut(false);
-      this.$['confirm-dialog'].close();
+      this.$.confirmDialog.close();
     }
   }
 
   private onBailoutDialogCancelTap_() {
     this.$.bailout.checked = false;
-    this.$['confirm-dialog'].cancel();
+    this.$.confirmDialog.cancel();
   }
 
   private onBailoutDialogConfirmTap_() {
     this.kioskBrowserProxy_.setDisableBailoutShortcut(true);
-    this.$['confirm-dialog'].close();
+    this.$.confirmDialog.close();
   }
 
   private onDoneTap_() {
@@ -157,6 +162,13 @@ class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
     e.stopPropagation();
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-kiosk-dialog': ExtensionsKioskDialogElement;
+  }
+}
+
 
 customElements.define(
     ExtensionsKioskDialogElement.is, ExtensionsKioskDialogElement);
