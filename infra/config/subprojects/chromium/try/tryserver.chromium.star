@@ -22,7 +22,10 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = [
+        branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+        branches.FUCHSIA_LTS_MILESTONE,
+    ],
 )
 
 try_.builder(
@@ -32,7 +35,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-official",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
 )
 
 try_.builder(
