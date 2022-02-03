@@ -100,6 +100,20 @@
             "description": "The <a href=\"https://www.w3.org/TR/css3-cascade/#cascading-origins\">origin</a> of the CSS to remove. Defaults to <code>\"author\"</code>."
           }
         }
+      },
+      {
+        "id": "FrameType",
+        "type": "string",
+        "nodoc": true,
+        "enum": ["outermost_frame", "fenced_frame", "sub_frame"],
+        "description": "The type of frame."
+      },
+      {
+        "id": "DocumentLifecycle",
+        "type": "string",
+        "nodoc": true,
+        "enum": ["prerender", "active", "cached", "pending_deletion"],
+        "description": "The document lifecycle of the frame."
       }
     ]
   }

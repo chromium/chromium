@@ -59,7 +59,10 @@ class ExtensionNavigationUIData {
       int frame_id,
       int parent_frame_id,
       content::GlobalRenderFrameHostId parent_routing_id,
-      const ExtensionApiFrameIdMap::DocumentId& document_id);
+      const ExtensionApiFrameIdMap::DocumentId& document_id,
+      const ExtensionApiFrameIdMap::DocumentId& parent_document_id,
+      api::extension_types::FrameType frame_type,
+      api::extension_types::DocumentLifecycle document_lifecycle);
 
   ExtensionApiFrameIdMap::FrameData frame_data_;
   bool is_web_view_;

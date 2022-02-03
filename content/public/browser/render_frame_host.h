@@ -712,6 +712,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // new RenderFrameHosts when they reach the kPendingCommit state.
   virtual LifecycleState GetLifecycleState() = 0;
 
+  // Returns true if and only if the `lifecycle_state` matches
+  // `GetLifecycleState`. This is helpful for determining if a RenderFrameHost
+  // is in a specific state since GetLifecycleState can crash on speculative
+  // frames. TODO(crbug.com/1183639): Remove this method once
+  // GetLifecycleState() can be used for speculative.
+  virtual bool IsInLifecycleState(LifecycleState lifecycle_state) = 0;
+
   // Returns true if the document hosted in this RenderFrameHost is committed
   // and lives inside a page presented to the user for the WebContents it is in
   // (e.g., not a prerendered or back-forward cached page). Only active RFHs

@@ -8833,6 +8833,12 @@ RenderFrameHost::LifecycleState RenderFrameHostImpl::GetLifecycleState() {
   return GetLifecycleStateFromImpl(lifecycle_state());
 }
 
+bool RenderFrameHostImpl::IsInLifecycleState(LifecycleState state) {
+  if (lifecycle_state() == LifecycleStateImpl::kSpeculative)
+    return false;
+  return state == GetLifecycleState();
+}
+
 RenderFrameHost::LifecycleState RenderFrameHostImpl::GetLifecycleStateFromImpl(
     LifecycleStateImpl state) {
   switch (state) {

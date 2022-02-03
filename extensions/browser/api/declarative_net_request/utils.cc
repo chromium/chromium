@@ -237,9 +237,19 @@ dnr_api::RequestDetails CreateRequestDetails(const WebRequestInfo& request) {
 
   details.method = request.method;
   details.frame_id = request.frame_data.frame_id;
+  if (request.frame_data.document_id) {
+    details.document_id = std::make_unique<std::string>(
+        request.frame_data.document_id.ToString());
+  }
   details.parent_frame_id = request.frame_data.parent_frame_id;
+  if (request.frame_data.parent_document_id) {
+    details.parent_document_id = std::make_unique<std::string>(
+        request.frame_data.parent_document_id.ToString());
+  }
   details.tab_id = request.frame_data.tab_id;
   details.type = GetDNRResourceType(request.web_request_type);
+  details.frame_type = request.frame_data.frame_type;
+  details.document_lifecycle = request.frame_data.document_lifecycle;
   return details;
 }
 

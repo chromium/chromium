@@ -388,6 +388,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsRenderFrameCreated() override;
   bool IsRenderFrameLive() override;
   LifecycleState GetLifecycleState() override;
+  bool IsInLifecycleState(LifecycleState lifecycle_state) override;
   bool IsActive() override;
   bool IsInactiveAndDisallowActivation(uint64_t reason) override;
   size_t GetProxyCount() override;

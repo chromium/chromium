@@ -12,7 +12,9 @@
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_routing_id.h"
+#include "extensions/common/api/extension_types.h"
 
 namespace content {
 class NavigationHandle;
@@ -52,7 +54,10 @@ class ExtensionApiFrameIdMap {
               int parent_frame_id,
               int tab_id,
               int window_id,
-              const DocumentId& document_id);
+              const DocumentId& document_id,
+              const DocumentId& parent_document_id,
+              api::extension_types::FrameType frame_type,
+              api::extension_types::DocumentLifecycle document_lifecycle);
     ~FrameData();
 
     FrameData(const FrameData&);
@@ -74,6 +79,17 @@ class ExtensionApiFrameIdMap {
 
     // The extennsion API document ID of the document in the frame.
     DocumentId document_id;
+
+    // The extension API document ID of the parent document of the frame.
+    DocumentId parent_document_id;
+
+    // The type that this frame represents.
+    api::extension_types::FrameType frame_type =
+        api::extension_types::FRAME_TYPE_NONE;
+
+    // The lifecycle state the frame is currently in.
+    api::extension_types::DocumentLifecycle document_lifecycle =
+        api::extension_types::DOCUMENT_LIFECYCLE_NONE;
   };
 
   // An invalid extension API frame ID.
@@ -104,6 +120,23 @@ class ExtensionApiFrameIdMap {
 
   // Get the extension API document ID for the document of |navigation_handle|.
   static DocumentId GetDocumentId(content::NavigationHandle* navigation_handle);
+
+  // Get the extension API frame type for the current document of |rfh|.
+  static api::extension_types::FrameType GetFrameType(
+      content::RenderFrameHost* rfh);
+
+  // Get the extension API frame type for the frame of |navigation_handle|.
+  static api::extension_types::FrameType GetFrameType(
+      content::NavigationHandle* navigation_handle);
+
+  // Get the extension API document lifecycle for the current document of |rfh|.
+  static api::extension_types::DocumentLifecycle GetDocumentLifecycle(
+      content::RenderFrameHost* rfh);
+
+  // Get the extension API document lifecycle for the frame of
+  // |navigation_handle|.
+  static api::extension_types::DocumentLifecycle GetDocumentLifecycle(
+      content::NavigationHandle* navigation_handle);
 
   // Find the current RenderFrameHost for a given WebContents and extension
   // frame ID.

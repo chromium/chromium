@@ -37,6 +37,8 @@ function verifyExpectedRuleInfo(expectedRuleInfo) {
   // The request ID may not be known but should be populated.
   chrome.test.assertTrue(matchedRule.request.hasOwnProperty('requestId'));
   delete matchedRule.request.requestId;
+  chrome.test.assertTrue(matchedRule.request.hasOwnProperty('documentId'));
+  delete matchedRule.request.documentId;
 
   chrome.test.assertEq(expectedRuleInfo, matchedRule);
 }
@@ -73,6 +75,8 @@ var tests = [
               request: {
                 initiator: `chrome-extension://${chrome.runtime.id}`,
                 method: 'GET',
+                documentLifecycle: 'active',
+                frameType: 'outermost_frame',
                 frameId: 0,
                 parentFrameId: -1,
                 tabId: tab.id,
@@ -99,6 +103,8 @@ var tests = [
         request: {
           initiator: `chrome-extension://${chrome.runtime.id}`,
           method: 'GET',
+          documentLifecycle: 'active',
+          frameType: 'outermost_frame',
           frameId: 0,
           parentFrameId: -1,
           tabId: tab.id,

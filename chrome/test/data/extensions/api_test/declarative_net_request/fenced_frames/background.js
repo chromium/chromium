@@ -12,6 +12,9 @@ function navigateTab(url, callback) {
 }
 
 var matchedRules = [];
+var documentIds = [];
+var nextDocumentId = 1;
+
 var onRuleMatchedDebugCallback = (rule) => {
   matchedRules.push(rule);
   expectedCallback(tab);
@@ -35,6 +38,24 @@ function verifyExpectedRuleInfo(expectedRuleInfo) {
   // The request ID may not be known but should be populated.
   chrome.test.assertTrue(matchedRule.request.hasOwnProperty('requestId'));
   delete matchedRule.request.requestId;
+
+  // Since the documentId/parentDocumentId is a unique random identifier it is
+  // not useful to tests. Normalize them so that test cases can assert
+  // against a fixed number.
+  if ('parentDocumentId' in matchedRule.request) {
+    if (documentIds[matchedRule.request.parentDocumentId] === undefined) {
+      documentIds[matchedRule.request.parentDocumentId] = nextDocumentId++;
+    }
+    matchedRule.request.parentDocumentId =
+      documentIds[matchedRule.request.parentDocumentId];
+  }
+  if ('documentId' in matchedRule.request) {
+    if (documentIds[matchedRule.request.documentId] === undefined) {
+      documentIds[matchedRule.request.documentId] = nextDocumentId++;
+    }
+    matchedRule.request.documentId =
+      documentIds[matchedRule.request.documentId];
+  }
 
   chrome.test.assertEq(expectedRuleInfo, matchedRule);
 }
@@ -65,7 +86,11 @@ var tests = [
         request: {
           initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.com'),
           method: 'GET',
+          documentId: 2,
           frameId: mparchEnabled ? 5 : 4,
+          documentLifecycle: 'active',
+          frameType: 'fenced_frame',
+          parentDocumentId: 1,
           parentFrameId: 0,
           type: 'sub_frame',
           tabId: tab.id,
@@ -93,7 +118,11 @@ var tests = [
         request: {
           initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.com'),
           method: 'GET',
+          documentId: 4,
           frameId: mparchEnabled ? 7 : 5,
+          documentLifecycle: 'active',
+          frameType: 'fenced_frame',
+          parentDocumentId: 3,
           parentFrameId: 0,
           type: 'sub_frame',
           tabId: tab.id,
@@ -119,7 +148,11 @@ var tests = [
         request: {
           initiator: getServerURL('a.com'),
           method: 'GET',
+          documentId: 6,
           frameId: mparchEnabled ? 9 : 6,
+          documentLifecycle: 'active',
+          frameType: 'fenced_frame',
+          parentDocumentId: 5,
           parentFrameId: 0,
           type: 'image',
           tabId: tab.id,
@@ -145,7 +178,11 @@ var tests = [
         request: {
           initiator: getServerURL('a.com'),
           method: 'GET',
+          documentId: 8,
           frameId: mparchEnabled ? 11 : 7,
+          documentLifecycle: 'active',
+          frameType: 'fenced_frame',
+          parentDocumentId: 7,
           parentFrameId: 0,
           type: 'image',
           tabId: tab.id,
