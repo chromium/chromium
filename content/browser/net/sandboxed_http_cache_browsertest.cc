@@ -39,9 +39,15 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         enabled_features,
         /*disabled_features=*/{features::kNetworkServiceInProcess});
+  }
 
-    DCHECK(IsOutOfProcessNetworkService());
-    DCHECK(sandbox::policy::features::IsNetworkSandboxEnabled());
+  void SetUp() override {
+    // These assertions need to precede ContentBrowserTest::SetUp to prevent the
+    // test body from running when one of the assertions fails.
+    ASSERT_TRUE(IsOutOfProcessNetworkService());
+    ASSERT_TRUE(sandbox::policy::features::IsNetworkSandboxEnabled());
+
+    ContentBrowserTest::SetUp();
   }
 
  private:

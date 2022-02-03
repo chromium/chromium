@@ -273,7 +273,7 @@ BrowserTestBase::BrowserTestBase() {
 }
 
 BrowserTestBase::~BrowserTestBase() {
-  CHECK(set_up_called_ || IsSkipped())
+  CHECK(set_up_called_ || IsSkipped() || HasFatalFailure())
       << "SetUp was not called. This probably means that the "
          "developer has overridden the method and not called "
          "the superclass version. In this case, the test "
