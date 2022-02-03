@@ -292,6 +292,7 @@ struct SameSizeAsDocumentLoader
   bool loading_main_document_from_mhtml_archive;
   bool loading_srcdoc;
   bool loading_url_as_empty_document;
+  bool is_static_data;
   CommitReason commit_reason;
   uint64_t main_resource_identifier;
   scoped_refptr<ResourceTimingInfo> navigation_timing_info;
@@ -316,6 +317,8 @@ struct SameSizeAsDocumentLoader
   HashSet<KURL> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
   bool anonymous;
+  bool waiting_for_document_loader;
+  bool waiting_for_code_cache;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
