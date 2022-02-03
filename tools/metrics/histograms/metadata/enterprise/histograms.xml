@@ -1771,9 +1771,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.ExtensionPermissions"
-    enum="ExtensionPermission3" expires_after="2022-03-01">
-  <owner>anqing@chromium.org</owner>
-  <owner>apotapchuk@chromium.org</owner>
+    enum="ExtensionPermission3" expires_after="2023-03-01">
+  <owner>bfranz@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
     Extensions (and apps) are quite restricted in public sessions for security
     and privacy concerns - some permissions are blocked which means the
