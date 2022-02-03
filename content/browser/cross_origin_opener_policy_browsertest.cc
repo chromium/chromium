@@ -147,7 +147,6 @@ class CrossOriginOpenerPolicyBrowserTest
     return web_contents()->GetMainFrame();
   }
 
- private:
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
@@ -166,6 +165,7 @@ class CrossOriginOpenerPolicyBrowserTest
     ASSERT_TRUE(https_server()->Start());
   }
 
+ private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     mock_cert_verifier_.SetUpCommandLine(command_line);
@@ -219,6 +219,59 @@ class SameOriginAllowPopupsPlusCoepBrowserTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Certain features are only active when SiteIsolation is off or restricted.
+// This is the case for example for Default SiteInstances that are used on
+// Android to limit the number of processes. Testing these particularities of
+// the process model and their interaction with cross-origin isolation requires
+// to disable SiteIsolation.
+class NoSiteIsolationCrossOriginIsolationBrowserTest
+    : public CrossOriginOpenerPolicyBrowserTest {
+ public:
+  NoSiteIsolationCrossOriginIsolationBrowserTest() {
+    // Disable the heuristic to isolate COOP pages from the default
+    // SiteInstance. This is otherwise on by default on Android.
+    feature_list_.InitWithFeatures(
+        {}, {features::kSiteIsolationForCrossOriginOpenerPolicy});
+  }
+
+  void SetUpOnMainThread() override {
+    CrossOriginOpenerPolicyBrowserTest::SetUpOnMainThread();
+    original_client_ = SetBrowserClientForTesting(&browser_client_);
+
+    // The custom ContentBrowserClient above typically ensures that this test
+    // runs without strict site isolation, but it's still possible to
+    // inadvertently override this when running with --site-per-process on the
+    // command line. This might happen on try bots, so these tests take this
+    // into account to prevent failures, but this is not an intended
+    // configuration for these tests.
+    if (AreAllSitesIsolatedForTesting()) {
+      LOG(WARNING) << "This test should be run without --site-per-process, "
+                   << "as it's designed to exercise code paths when strict "
+                   << "site isolation is turned off.";
+    }
+  }
+
+  void TearDownOnMainThread() override {
+    CrossOriginOpenerPolicyBrowserTest::TearDownOnMainThread();
+    SetBrowserClientForTesting(original_client_);
+  }
+
+  // A custom ContentBrowserClient to turn off strict site isolation, since
+  // process model differences exist in environments like Android. Note that
+  // kSitePerProcess is a higher-layer feature, so we can't just disable it
+  // here.
+  class NoSiteIsolationContentBrowserClient : public ContentBrowserClient {
+   public:
+    bool ShouldEnableStrictSiteIsolation() override { return false; }
+  };
+
+ private:
+  NoSiteIsolationContentBrowserClient browser_client_;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -3359,6 +3412,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          SameOriginAllowPopupsPlusCoepBrowserTest,
                          kTestParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         NoSiteIsolationCrossOriginIsolationBrowserTest,
+                         kTestParams);
 
 IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault, BaseCase) {
   GURL url = https_server()->GetURL("a.test", "/empty.html");
@@ -4241,6 +4297,57 @@ IN_PROC_BROWSER_TEST_P(SameOriginAllowPopupsPlusCoepBrowserTest,
   EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
             CoopSameOriginAllowPopupsPlusCoep());
   EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsCrossOriginIsolated());
+}
+
+IN_PROC_BROWSER_TEST_P(NoSiteIsolationCrossOriginIsolationBrowserTest,
+                       COICanLiveInDefaultSI) {
+  GURL isolated_page(
+      https_server()->GetURL("a.test",
+                             "/set-header"
+                             "?cross-origin-opener-policy: same-origin"
+                             "&cross-origin-embedder-policy: require-corp"));
+  GURL non_isolated_page(https_server()->GetURL("a.test", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* main_frame_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(main_frame_si->IsCrossOriginIsolated());
+  EXPECT_TRUE(main_frame_si->IsDefaultSiteInstance());
+
+  {
+    // Open a popup to a page with similar isolation. Pages that have compatible
+    // cross origin isolation should be put in the same default SiteInstance.
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(current_frame_host(),
+                       JsReplace("window.open($1);", isolated_page)));
+    WebContentsImpl* popup = static_cast<WebContentsImpl*>(
+        shell_observer.GetShell()->web_contents());
+    EXPECT_TRUE(WaitForLoadStop(popup));
+
+    SiteInstanceImpl* popup_si = popup->GetMainFrame()->GetSiteInstance();
+    EXPECT_TRUE(popup_si->IsCrossOriginIsolated());
+    EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
+    EXPECT_EQ(popup_si, main_frame_si);
+
+    popup->Close();
+  }
+
+  {
+    // Open a popup to a same origin non-isolated page. This page should live in
+    // a different BrowsingInstance in the default non-isolated SiteInstance.
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(current_frame_host(),
+                       JsReplace("window.open($1);", non_isolated_page)));
+    WebContentsImpl* popup = static_cast<WebContentsImpl*>(
+        shell_observer.GetShell()->web_contents());
+    EXPECT_TRUE(WaitForLoadStop(popup));
+
+    SiteInstanceImpl* popup_si = popup->GetMainFrame()->GetSiteInstance();
+    EXPECT_FALSE(popup_si->IsCrossOriginIsolated());
+    EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
+    EXPECT_NE(popup_si, main_frame_si);
+
+    popup->Close();
+  }
 }
 
 }  // namespace content

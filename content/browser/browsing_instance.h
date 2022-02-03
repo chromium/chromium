@@ -241,6 +241,10 @@ class CONTENT_EXPORT BrowsingInstance final
   // should only be set if kProcessSharingWithStrictSiteInstances is not
   // enabled. This is a raw pointer to avoid a reference cycle between the
   // BrowsingInstance and the SiteInstanceImpl.
+  // Note: This can hold cross-origin isolated SiteInstances. It will however
+  // only do so under certain specific circumstances (for example on a low
+  // memory device), which don't use the COOP isolation heuristic that normally
+  // prevents the use of default SiteInstances for cross-origin isolated pages.
   raw_ptr<SiteInstanceImpl> default_site_instance_;
 
   // The cross-origin isolation status of the BrowsingInstance. This indicates
