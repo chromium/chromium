@@ -197,6 +197,8 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 Snackbar.make(content, this, Snackbar.TYPE_ACTION,
                                 isAllTabs ? Snackbar.UMA_TAB_CLOSE_ALL_UNDO
                                           : Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
+                        .setDuration(isAllTabs ? SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS
+                                               : SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS)
                         .setTemplateText(mContext.getString(R.string.undo_bar_close_all_message))
                         .setAction(mContext.getString(R.string.undo), closedTabs)
                         .setActionAccessibilityAnnouncement(
