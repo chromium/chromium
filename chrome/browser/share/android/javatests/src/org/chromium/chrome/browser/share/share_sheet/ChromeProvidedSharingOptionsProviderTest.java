@@ -36,7 +36,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -136,7 +135,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "http://crbug/1285362")
     @Features.EnableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
     public void getPropertyModels_lightweightReactionsEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
@@ -147,18 +145,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
-        assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(
-                        mActivity.getResources().getString(R.string.sharing_webnotes_create_card),
-                        mActivity.getResources().getString(R.string.sharing_screenshot),
-                        mActivity.getResources().getString(R.string.sharing_long_screenshot),
-                        mActivity.getResources().getString(R.string.sharing_lightweight_reactions),
-                        mActivity.getResources().getString(R.string.sharing_copy_image),
-                        mActivity.getResources().getString(R.string.sharing_copy),
-                        mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
-                        mActivity.getResources().getString(R.string.sharing_save_image)));
+        assertTrue("Property models should contain Lightweight Reactions.",
+                propertyModelsContain(propertyModels, R.string.sharing_lightweight_reactions));
     }
 
     @Test
