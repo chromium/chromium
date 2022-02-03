@@ -115,6 +115,17 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
+    expires_after="2023-02-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether a navigation is to a product details page and then whether
+    the information we retrieved about the page contains a product cluster ID.
+  </summary>
+</histogram>
+
 <histogram
     name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent"
     enum="ShoppingDataProviderFallback" expires_after="2022-07-17">

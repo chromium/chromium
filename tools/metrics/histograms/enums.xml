@@ -80937,6 +80937,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Price"/>
 </enum>
 
+<enum name="ShoppingPDPState">
+  <summary>
+    The different states a page can be in as a product description page.
+  </summary>
+  <int value="0" label="Not PDP"/>
+  <int value="1" label="PDP without cluster ID"/>
+  <int value="2" label="PDP with cluster ID"/>
+</enum>
+
 <enum name="ShortcutsCreationResult">
   <summary>Result of creating shortcuts for PWA.</summary>
   <int value="0" label="Success"/>
