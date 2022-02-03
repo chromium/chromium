@@ -1956,6 +1956,15 @@ TEST_P(WaylandBufferManagerTest,
 
   Sync();
 
+  // The surface must has the buffer detached and all the buffers are destroyed.
+  // Release the fence as there is no further need to hold that as the client
+  // no longer expects that. Moreover, its next attach may result in a DCHECK,
+  // as the next buffer resource can be allocated on the same memory address
+  // resulting in a DCHECK when set_linux_buffer_release is called. The reason
+  // is that wl_resource_create calls internally calls malloc, which may reuse
+  // that memory.
+  mock_surface->ClearBufferReleases();
+
   auto interface_ptr = manager_host_->BindInterface();
   buffer_manager_gpu_->Initialize(
       std::move(interface_ptr), {}, false, true, false,
@@ -1985,6 +1994,126 @@ TEST_P(WaylandBufferManagerTest,
   Sync();
 
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+}
+
+// Tests that destroying a channel results in attaching null buffers to the root
+// surface, and hiding primary subsurface and overlay surfaces. This is required
+// to make it possible for a GPU service to switch from hw acceleration to sw
+// compositing. Otherwise, there will be frozen graphics represented by a
+// primary subsurface as sw compositing uses the root surface to draw new
+// frames. Verifies the fix for https://crbug.com/1201314
+TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+  constexpr uint32_t kBufferId3 = 3;
+
+  const gfx::Rect bounds = window_->GetBounds();
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(3);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId2);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId3);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(3u /* expected size */,
+                                               false /* fail */);
+
+  // Prepare a frame with one background buffer, one primary plane and one
+  // additional overlay plane. This will simulate hw accelerated compositing.
+  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+  buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                      std::move(overlay_configs));
+  Sync();
+
+  // 3 surfaces must exist - root surface, the primary subsurface and one
+  // additional overlay surface. All of them must have buffers attached.
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  EXPECT_TRUE(mock_surface->attached_buffer());
+
+  auto* mock_surface_primary_subsurface = server_.GetObject<wl::MockSurface>(
+      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+  EXPECT_TRUE(mock_surface_primary_subsurface->attached_buffer());
+
+  EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
+  auto* mock_surface_overlay_subsurface =
+      server_.GetObject<wl::MockSurface>(window_->wayland_subsurfaces()
+                                             .begin()
+                                             ->get()
+                                             ->wayland_surface()
+                                             ->GetSurfaceId());
+  EXPECT_TRUE(mock_surface_overlay_subsurface->attached_buffer());
+
+  Sync();
+
+  // Pretend that the channel gets destroyed because of some internal reason.
+  manager_host_->OnChannelDestroyed();
+  manager_host_ = connection_->buffer_manager_host();
+
+  Sync();
+
+  // The root surface should not have the buffer detached.
+  EXPECT_FALSE(mock_surface->attached_buffer());
+
+  // The primary and secondary subsurfaces must be hidden.
+  EXPECT_FALSE(window_->primary_subsurface()->IsVisible());
+  EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
+  EXPECT_FALSE(window_->wayland_subsurfaces().begin()->get()->IsVisible());
+
+  mock_surface->ClearBufferReleases();
+
+  auto interface_ptr = manager_host_->BindInterface();
+  buffer_manager_gpu_->Initialize(
+      std::move(interface_ptr), {}, false, true, false,
+      /*supports_non_backed_solid_color_buffers*/ false, false);
+
+  // Now, create only one buffer and attach that to the root surface. The
+  // primary subsurface and secondary subsurface must remain invisible.
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs2;
+  overlay_configs2.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+  buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                      std::move(overlay_configs2));
+
+  Sync();
+
+  mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  EXPECT_TRUE(mock_surface->attached_buffer());
+
+  // The root surface should have the buffer detached.
+  EXPECT_TRUE(mock_surface->attached_buffer());
+
+  // The primary and secondary subsurfaces must remain hidden.
+  EXPECT_FALSE(window_->primary_subsurface()->IsVisible());
+  EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
+  EXPECT_FALSE(window_->wayland_subsurfaces().begin()->get()->IsVisible());
 }
 
 TEST_P(WaylandBufferManagerTest,

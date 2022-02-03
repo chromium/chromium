@@ -244,7 +244,10 @@ void WaylandWindow::OnChannelDestroyed() {
   base::circular_deque<
       std::pair<WaylandSubsurface*, ui::ozone::mojom::WaylandOverlayConfigPtr>>
       subsurfaces_to_overlays;
-  subsurfaces_to_overlays.reserve(wayland_subsurfaces_.size() + 1);
+  subsurfaces_to_overlays.reserve(wayland_subsurfaces_.size() +
+                                  (primary_subsurface() ? 1 : 0));
+  if (primary_subsurface())
+    subsurfaces_to_overlays.emplace_back(primary_subsurface(), nullptr);
   for (auto& subsurface : wayland_subsurfaces_)
     subsurfaces_to_overlays.emplace_back(subsurface.get(), nullptr);
 

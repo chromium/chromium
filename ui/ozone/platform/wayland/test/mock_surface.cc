@@ -137,6 +137,10 @@ MockSurface* MockSurface::FromResource(wl_resource* resource) {
   return GetUserDataAs<MockSurface>(resource);
 }
 
+void MockSurface::ClearBufferReleases() {
+  linux_buffer_releases_.clear();
+}
+
 void MockSurface::SetOpaqueRegionImpl(wl_resource* region) {
   if (!region) {
     opaque_region_ = gfx::Rect(-1, -1, 0, 0);
