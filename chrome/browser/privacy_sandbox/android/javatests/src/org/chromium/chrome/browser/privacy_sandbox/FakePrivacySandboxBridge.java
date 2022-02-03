@@ -107,4 +107,14 @@ class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
             mBlockedTopics.add(topic);
         }
     }
+
+    @Override
+    public int getRequiredDialogType() {
+        return DialogType.NONE;
+    }
+
+    @Override
+    public void dialogActionOccurred(int action) {
+        return;
+    }
 }

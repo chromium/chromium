@@ -44,10 +44,17 @@ class PrivacySandboxService : public KeyedService,
                               public signin::IdentityManager::Observer {
  public:
   // Possible types of Privacy Sandbox dialogs that may be shown to the user.
-  enum class DialogType { kNone, kNotice, kConsent };
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  enum class DialogType {
+    kNone = 0,
+    kNotice = 1,
+    kConsent = 2,
+    kMaxValue = kConsent,
+  };
 
   // An exhaustive list of actions related to showing & interacting with the
   // dialog. Includes actions which do not impact consent / notice state.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class DialogAction {
     // Notice Interactions:
     kNoticeShown = 0,
@@ -68,6 +75,8 @@ class PrivacySandboxService : public KeyedService,
 
     // As above, but for the consent.
     kConsentClosedNoInteraction = 10,
+
+    kMaxValue = kConsentClosedNoInteraction,
   };
 
   PrivacySandboxService(PrivacySandboxSettings* privacy_sandbox_settings,

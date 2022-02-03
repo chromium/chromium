@@ -44,6 +44,7 @@ android_library("java") {
     "//ui/android:ui_full_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":privacy_sandbox_enums" ]
   resources_package = "org.chromium.chrome.browser.privacy_sandbox"
 }
 
@@ -102,4 +103,8 @@ android_resources("java_resources") {
     "//components/browser_ui/widget/android:java_resources",
     "//third_party/android_deps:material_design_java",
   ]
+}
+
+java_cpp_enum("privacy_sandbox_enums") {
+  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h" ]
 }

@@ -71,6 +71,14 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setTopicAllowed(topic, allowed);
     }
 
+    public static @DialogType int getRequiredDialogType() {
+        return PrivacySandboxBridgeJni.get().getRequiredDialogType();
+    }
+
+    public static void dialogActionOccurred(@DialogAction int action) {
+        PrivacySandboxBridgeJni.get().dialogActionOccurred(action);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isPrivacySandboxEnabled();
@@ -88,5 +96,7 @@ public class PrivacySandboxBridge {
         String[] getCurrentTopTopics();
         String[] getBlockedTopics();
         void setTopicAllowed(String topic, boolean allowed);
+        int getRequiredDialogType();
+        void dialogActionOccurred(int action);
     }
 }

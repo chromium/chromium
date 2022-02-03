@@ -144,3 +144,17 @@ static void JNI_PrivacySandboxBridge_SetTopicAllowed(
     GetBlockedTopics()->insert(topic);
   }
 }
+
+static jint JNI_PrivacySandboxBridge_GetRequiredDialogType(JNIEnv* env) {
+  return static_cast<int>(PrivacySandboxServiceFactory::GetForProfile(
+                              ProfileManager::GetActiveUserProfile())
+                              ->GetRequiredDialogType());
+}
+
+static void JNI_PrivacySandboxBridge_DialogActionOccurred(JNIEnv* env,
+                                                          jint action) {
+  PrivacySandboxServiceFactory::GetForProfile(
+      ProfileManager::GetActiveUserProfile())
+      ->DialogActionOccurred(
+          static_cast<PrivacySandboxService::DialogAction>(action));
+}
