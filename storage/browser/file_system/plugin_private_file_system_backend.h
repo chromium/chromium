@@ -127,9 +127,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
                                              FileSystemType type) override;
   std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override;
-  std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
-      FileSystemType type,
-      const std::string& host) override;
   int64_t GetStorageKeyUsageOnFileTaskRunner(
       FileSystemContext* context,
       const blink::StorageKey& storage_key,

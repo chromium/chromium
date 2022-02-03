@@ -43,9 +43,6 @@ class CONTENT_EXPORT CacheStorageQuotaClient
                           GetStorageKeyUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void GetStorageKeysForHost(blink::mojom::StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             DeleteStorageKeyDataCallback callback) override;

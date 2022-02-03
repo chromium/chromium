@@ -5,7 +5,6 @@
 #include "storage/browser/test/test_file_system_backend.h"
 
 #include <set>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -91,13 +90,6 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
 
   std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override {
-    NOTREACHED();
-    return std::vector<blink::StorageKey>();
-  }
-
-  std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
-      FileSystemType type,
-      const std::string& host) override {
     NOTREACHED();
     return std::vector<blink::StorageKey>();
   }

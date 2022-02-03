@@ -78,21 +78,6 @@ class NativeIOManagerSync {
     return storage_keys;
   }
 
-  std::vector<StorageKey> GetStorageKeysForHost(blink::mojom::StorageType type,
-                                                const std::string& host) {
-    std::vector<StorageKey> storage_keys;
-    base::RunLoop run_loop;
-    io_manager_->GetStorageKeysForHost(
-        type, host,
-        base::BindLambdaForTesting(
-            [&](const std::vector<StorageKey>& returned_storage_keys) {
-              storage_keys = returned_storage_keys;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return storage_keys;
-  }
-
   int64_t GetStorageKeyUsage(const StorageKey& storage_key,
                              blink::mojom::StorageType type) {
     int64_t usage;
@@ -864,68 +849,6 @@ TEST_P(NativeIOManagerTest, GetStorageKeysByType_ReturnsActiveStorageKeys) {
   example_file_host.Close();
 }
 
-TEST_P(NativeIOManagerTest, GetStorageKeysByHost_ReturnsActiveStorageKeys) {
-  mojo::Remote<blink::mojom::NativeIOFileHost> example_file_host_remote;
-  base::File example_file =
-      example_host_
-          ->OpenFile("test_file",
-                     example_file_host_remote.BindNewPipeAndPassReceiver())
-          .file;
-
-  mojo::Remote<blink::mojom::NativeIOHost> example_with_port_host_remote;
-  std::string example_with_port_storage_key =
-      std::string(kExampleStorageKey).append(":1");
-  manager_->BindReceiver(
-      StorageKey::CreateFromStringForTesting(example_with_port_storage_key),
-      example_with_port_host_remote.BindNewPipeAndPassReceiver(),
-      GetBadMessageCallback());
-  NativeIOHostSync example_with_port_host(example_with_port_host_remote.get());
-  mojo::Remote<blink::mojom::NativeIOFileHost>
-      example_with_port_file_host_remote;
-  base::File example_with_port_file =
-      example_with_port_host
-          .OpenFile(
-              "test_file",
-              example_with_port_file_host_remote.BindNewPipeAndPassReceiver())
-          .file;
-
-  mojo::Remote<blink::mojom::NativeIOFileHost> google_file_host_remote;
-  base::File google_file =
-      google_host_
-          ->OpenFile("test_file",
-                     google_file_host_remote.BindNewPipeAndPassReceiver())
-          .file;
-
-  example_file.Close();
-  NativeIOFileHostSync example_file_host(example_file_host_remote.get());
-  example_file_host.Close();
-  example_with_port_file.Close();
-  NativeIOFileHostSync example_with_port_file_host(
-      example_with_port_file_host_remote.get());
-  example_with_port_file_host.Close();
-  google_file.Close();
-  NativeIOFileHostSync google_file_host(google_file_host_remote.get());
-  google_file_host.Close();
-
-  std::vector<StorageKey> example_storage_keys =
-      sync_manager_->GetStorageKeysForHost(
-          blink::mojom::StorageType::kTemporary, "example.com");
-  EXPECT_EQ(2u, example_storage_keys.size());
-  EXPECT_THAT(example_storage_keys,
-              testing::Contains(StorageKey::CreateFromStringForTesting(
-                  example_with_port_storage_key)));
-  EXPECT_THAT(example_storage_keys,
-              testing::Contains(
-                  StorageKey::CreateFromStringForTesting(kExampleStorageKey)));
-
-  std::vector<StorageKey> google_storage_keys =
-      sync_manager_->GetStorageKeysForHost(
-          blink::mojom::StorageType::kTemporary, "google.com");
-  EXPECT_EQ(1u, google_storage_keys.size());
-  EXPECT_EQ(StorageKey::CreateFromStringForTesting(kGoogleStorageKey),
-            google_storage_keys[0]);
-}
-
 TEST_P(NativeIOManagerTest, GetStorageKeyUsage_ActiveStorageKeyUsage) {
   mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
   base::File example_file =
@@ -973,9 +896,6 @@ TEST_P(NativeIOManagerTest, IncognitoQuota) {
 
   EXPECT_THAT(sync_manager->GetStorageKeysForType(
                   blink::mojom::StorageType::kTemporary),
-              testing::SizeIs(0));
-  EXPECT_THAT(sync_manager->GetStorageKeysForHost(
-                  blink::mojom::StorageType::kTemporary, "example.com"),
               testing::SizeIs(0));
   EXPECT_EQ(0, sync_manager->GetStorageKeyUsage(
                    StorageKey::CreateFromStringForTesting(kExampleStorageKey),

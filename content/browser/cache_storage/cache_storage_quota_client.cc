@@ -46,16 +46,6 @@ void CacheStorageQuotaClient::GetStorageKeysForType(
   cache_manager_->GetStorageKeys(owner_, std::move(callback));
 }
 
-void CacheStorageQuotaClient::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
-
-  cache_manager_->GetStorageKeysForHost(host, owner_, std::move(callback));
-}
-
 void CacheStorageQuotaClient::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,

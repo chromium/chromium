@@ -181,23 +181,6 @@ class DatabaseQuotaClientTest : public testing::Test {
     return result;
   }
 
-  static std::vector<blink::StorageKey> GetStorageKeysForHost(
-      mojom::QuotaClient& client,
-      blink::mojom::StorageType type,
-      const std::string& host) {
-    std::vector<blink::StorageKey> result;
-    base::RunLoop loop;
-    client.GetStorageKeysForHost(
-        type, host,
-        base::BindLambdaForTesting(
-            [&](const std::vector<blink::StorageKey>& storage_keys) {
-              result = storage_keys;
-              loop.Quit();
-            }));
-    loop.Run();
-    return result;
-  }
-
   static blink::mojom::QuotaStatusCode DeleteStorageKeyData(
       mojom::QuotaClient& client,
       blink::mojom::StorageType type,
@@ -229,34 +212,6 @@ TEST_F(DatabaseQuotaClientTest, GetStorageKeyUsage) {
   EXPECT_EQ(1000, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
 
   EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
-}
-
-TEST_F(DatabaseQuotaClientTest, GetStorageKeysForHost) {
-  DatabaseQuotaClient client(*mock_tracker_);
-
-  EXPECT_EQ(kStorageKeyA.origin().host(), kStorageKeyB.origin().host());
-  EXPECT_NE(kStorageKeyA.origin().host(), kStorageKeyOther.origin().host());
-
-  std::vector<blink::StorageKey> storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_TRUE(storage_keys.empty());
-
-  mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
-  storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_EQ(storage_keys.size(), 1ul);
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
-
-  mock_tracker_->AddMockDatabase(kStorageKeyB.origin(), "barDB", 1000);
-  storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_EQ(storage_keys.size(), 2ul);
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyB));
-
-  EXPECT_TRUE(
-      GetStorageKeysForHost(client, kTemp, kStorageKeyOther.origin().host())
-          .empty());
 }
 
 TEST_F(DatabaseQuotaClientTest, GetStorageKeysForType) {

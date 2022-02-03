@@ -62,9 +62,6 @@ class MockQuotaClient : public mojom::QuotaClient {
                           GetStorageKeyUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void GetStorageKeysForHost(blink::mojom::StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             DeleteStorageKeyDataCallback callback) override;
@@ -76,9 +73,6 @@ class MockQuotaClient : public mojom::QuotaClient {
                              blink::mojom::StorageType type,
                              GetStorageKeyUsageCallback callback);
   void RunGetStorageKeysForType(blink::mojom::StorageType type,
-                                GetStorageKeysForTypeCallback callback);
-  void RunGetStorageKeysForHost(blink::mojom::StorageType type,
-                                const std::string& host,
                                 GetStorageKeysForTypeCallback callback);
   void RunDeleteStorageKeyData(const blink::StorageKey& storage_key,
                                blink::mojom::StorageType type,

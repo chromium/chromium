@@ -5,9 +5,6 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_QUOTA_CLIENT_H_
 
-#include <set>
-#include <string>
-
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -40,9 +37,6 @@ class IndexedDBQuotaClient : public storage::mojom::QuotaClient {
                           GetStorageKeyUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void GetStorageKeysForHost(blink::mojom::StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             DeleteStorageKeyDataCallback callback) override;

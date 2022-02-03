@@ -300,44 +300,6 @@ void NativeIOManager::GetStorageKeysForType(
       base::BindOnce(&DoGetStorageKeys, root_path_), std::move(callback));
 }
 
-void NativeIOManager::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
-  DCHECK(callback);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {
-          // Needed for file I/O.
-          base::MayBlock(),
-
-          // Reasonable compromise, given that the sitedata UI depends on this
-          // functionality.
-          base::TaskPriority::USER_VISIBLE,
-
-          // BLOCK_SHUTDOWN is definitely not appropriate. We might be able to
-          // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
-          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-      },
-      base::BindOnce(&DoGetStorageKeys, root_path_),
-      base::BindOnce(
-          [](const std::string& host,
-             storage::mojom::QuotaClient::GetStorageKeysForTypeCallback
-                 callback,
-             std::vector<blink::StorageKey> storage_keys) {
-            std::vector<blink::StorageKey> host_storage_keys;
-            for (blink::StorageKey& storage_key : storage_keys) {
-              if (host == storage_key.origin().host())
-                host_storage_keys.push_back(std::move(storage_key));
-            }
-            std::move(callback).Run(std::move(host_storage_keys));
-          },
-          host, std::move(callback)));
-}
-
 void NativeIOManager::GetStorageKeyUsage(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,

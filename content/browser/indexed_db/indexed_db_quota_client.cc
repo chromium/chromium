@@ -59,25 +59,6 @@ void IndexedDBQuotaClient::GetStorageKeysForType(
   std::move(callback).Run(std::move(storage_keys));
 }
 
-void IndexedDBQuotaClient::GetStorageKeysForHost(
-    StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
-
-  std::vector<StorageKey> host_storage_keys;
-  // In the vast majority of cases, this vector will end up with exactly one
-  // storage key. The storage key will be https://host or http://host.
-  host_storage_keys.reserve(1);
-
-  for (auto& storage_key : indexed_db_context_.GetAllStorageKeys()) {
-    if (host == storage_key.origin().host())
-      host_storage_keys.push_back(std::move(storage_key));
-  }
-  std::move(callback).Run(std::move(host_storage_keys));
-}
-
 void IndexedDBQuotaClient::DeleteStorageKeyData(
     const StorageKey& storage_key,
     StorageType type,

@@ -2393,16 +2393,6 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
     return callback_storage_keys_.size();
   }
 
-  size_t QuotaGetStorageKeysForHost(const std::string& host) {
-    base::RunLoop loop;
-    quota_client_->GetStorageKeysForHost(
-        StorageType::kTemporary, host,
-        base::BindOnce(&CacheStorageQuotaClientTest::StorageKeysCallback,
-                       base::Unretained(this), base::Unretained(&loop)));
-    loop.Run();
-    return callback_storage_keys_.size();
-  }
-
   bool QuotaDeleteStorageKeyData(const blink::StorageKey& storage_key) {
     base::RunLoop loop;
     quota_client_->DeleteStorageKeyData(
@@ -2456,28 +2446,6 @@ TEST_P(CacheStorageQuotaClientTestP,
   EXPECT_TRUE(Open(storage_key2_, "bar",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_EQ(1u, QuotaGetStorageKeysForType());
-}
-
-TEST_P(CacheStorageQuotaClientTestP, QuotaGetStorageKeysForHost) {
-  EXPECT_EQ(0u, QuotaGetStorageKeysForHost("example.com"));
-  EXPECT_TRUE(Open(
-      blink::StorageKey(url::Origin::Create(GURL("http://example.com:8080"))),
-      "foo"));
-  EXPECT_TRUE(Open(
-      blink::StorageKey(url::Origin::Create(GURL("http://example.com:9000"))),
-      "foo"));
-  EXPECT_TRUE(
-      Open(blink::StorageKey(url::Origin::Create(GURL("ftp://example.com"))),
-           "foo"));
-  EXPECT_TRUE(
-      Open(blink::StorageKey(url::Origin::Create(GURL("http://example2.com"))),
-           "foo"));
-  EXPECT_EQ(3u, QuotaGetStorageKeysForHost("example.com"));
-  EXPECT_EQ(1u, QuotaGetStorageKeysForHost("example2.com"));
-  EXPECT_THAT(callback_storage_keys_,
-              testing::Contains(blink::StorageKey::CreateFromStringForTesting(
-                  "http://example2.com")));
-  EXPECT_EQ(0u, QuotaGetStorageKeysForHost("unknown.com"));
 }
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteStorageKeyData) {

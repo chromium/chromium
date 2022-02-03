@@ -92,16 +92,6 @@ std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
   return quota_util->GetStorageKeysForTypeOnFileTaskRunner(type);
 }
 
-std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
-    FileSystemContext* context,
-    FileSystemType type,
-    const std::string& host) {
-  FileSystemQuotaUtil* quota_util = context->GetQuotaUtil(type);
-  if (!quota_util)
-    return {};
-  return quota_util->GetStorageKeysForHostOnFileTaskRunner(type, host);
-}
-
 blink::mojom::QuotaStatusCode DeleteStorageKeyOnFileTaskRunner(
     FileSystemContext* context,
     const blink::StorageKey& storage_key,
@@ -193,32 +183,6 @@ void FileSystemQuotaClient::GetStorageKeysForType(
         FROM_HERE,
         base::BindOnce(&GetStorageKeysForTypeOnFileTaskRunner,
                        base::RetainedRef(file_system_context_.get()), type),
-        barrier);
-  }
-}
-
-void FileSystemQuotaClient::GetStorageKeysForHost(
-    blink::mojom::StorageType storage_type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback.is_null());
-
-  base::span<const FileSystemType> types =
-      QuotaStorageTypeToFileSystemTypes(storage_type);
-
-  base::RepeatingCallback<void(std::vector<blink::StorageKey>)> barrier =
-      base::BarrierCallback<std::vector<blink::StorageKey>>(
-          types.size(),
-          base::BindOnce(&MergeWithoutDuplicates<blink::StorageKey>)
-              .Then(std::move(callback)));
-
-  for (auto type : types) {
-    file_task_runner()->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetStorageKeysForHostOnFileTaskRunner,
-                       base::RetainedRef(file_system_context_.get()), type,
-                       host),
         barrier);
   }
 }

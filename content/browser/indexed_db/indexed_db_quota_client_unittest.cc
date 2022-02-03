@@ -42,14 +42,11 @@ class IndexedDBQuotaClientTest : public testing::Test {
  public:
   const StorageKey kStorageKeyA;
   const StorageKey kStorageKeyB;
-  const StorageKey kStorageKeyOther;
 
   IndexedDBQuotaClientTest()
       : kStorageKeyA(StorageKey::CreateFromStringForTesting("http://host")),
         kStorageKeyB(
-            StorageKey::CreateFromStringForTesting("http://host:8000")),
-        kStorageKeyOther(
-            StorageKey::CreateFromStringForTesting("http://other")) {
+            StorageKey::CreateFromStringForTesting("http://host:8000")) {
     CreateTempDir();
     auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
         /*in_memory=*/false, temp_dir_.GetPath(),
@@ -107,23 +104,6 @@ class IndexedDBQuotaClientTest : public testing::Test {
                     result = storage_keys;
                     loop.Quit();
                   }));
-    loop.Run();
-    return result;
-  }
-
-  static std::vector<StorageKey> GetStorageKeysForHost(
-      storage::mojom::QuotaClient& client,
-      StorageType type,
-      const std::string& host) {
-    std::vector<StorageKey> result;
-    base::RunLoop loop;
-    client.GetStorageKeysForHost(
-        type, host,
-        base::BindLambdaForTesting(
-            [&](const std::vector<StorageKey>& storage_keys) {
-              result = storage_keys;
-              loop.Quit();
-            }));
     loop.Run();
     return result;
   }
@@ -199,34 +179,6 @@ TEST_F(IndexedDBQuotaClientTest, GetStorageKeyUsage) {
   EXPECT_EQ(3, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 }
 
-TEST_F(IndexedDBQuotaClientTest, GetStorageKeysForHost) {
-  IndexedDBQuotaClient client(*idb_context());
-
-  EXPECT_EQ(kStorageKeyA.origin().host(), kStorageKeyB.origin().host());
-  EXPECT_NE(kStorageKeyA.origin().host(), kStorageKeyOther.origin().host());
-
-  std::vector<StorageKey> storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_TRUE(storage_keys.empty());
-
-  AddFakeIndexedDB(kStorageKeyA, 1000);
-  storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_EQ(storage_keys.size(), 1ul);
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
-
-  AddFakeIndexedDB(kStorageKeyB, 1000);
-  storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_EQ(storage_keys.size(), 2ul);
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyB));
-
-  EXPECT_TRUE(
-      GetStorageKeysForHost(client, kTemp, kStorageKeyOther.origin().host())
-          .empty());
-}
-
 TEST_F(IndexedDBQuotaClientTest, GetStorageKeysForType) {
   IndexedDBQuotaClient client(*idb_context());
 
@@ -270,8 +222,6 @@ TEST_F(IndexedDBQuotaClientTest, IncognitoQuota) {
 
   // No FakeIndexDB is added.
   EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
-  EXPECT_TRUE(GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host())
-                  .empty());
   EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
 }
 

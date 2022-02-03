@@ -64,20 +64,6 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
         base::BindOnce(std::move(callback), std::move(storage_keys)));
   }
 
-  void GetStorageKeysForHost(StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, type);
-    std::vector<StorageKey> storage_keys;
-    for (const auto& storage_key_usage_pair : storage_key_usage_map_) {
-      if (storage_key_usage_pair.first.origin().host() == host)
-        storage_keys.push_back(storage_key_usage_pair.first);
-    }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(storage_keys)));
-  }
-
   void DeleteStorageKeyData(const StorageKey& storage_key,
                             StorageType type,
                             DeleteStorageKeyDataCallback callback) override {

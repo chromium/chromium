@@ -35,11 +35,6 @@ interface QuotaClient {
   GetStorageKeysForType(blink.mojom.StorageType type)
       => (array<blink.mojom.StorageKey> storage_keys);
 
-  // Returns a list of storage keys that match the `host` and have data in the
-  // `type` storage.
-  GetStorageKeysForHost(blink.mojom.StorageType type, string host)
-      => (array<blink.mojom.StorageKey> storage_keys);
-
   // Returns after all data belonging to `storage_key` in the `type` storage
   // has been deleted.
   DeleteStorageKeyData(blink.mojom.StorageKey storage_key,

@@ -110,19 +110,6 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
     return storage_keys_;
   }
 
-  const std::vector<StorageKey>& GetStorageKeysForHost(
-      storage::mojom::QuotaClient& quota_client,
-      StorageType type,
-      const std::string& host) {
-    storage_keys_.clear();
-    quota_client.GetStorageKeysForHost(
-        type, host,
-        base::BindOnce(&FileSystemQuotaClientTest::OnGetStorageKeys,
-                       weak_factory_.GetWeakPtr()));
-    base::RunLoop().RunUntilIdle();
-    return storage_keys_;
-  }
-
   void RunAdditionalStorageKeyUsageTask(
       storage::mojom::QuotaClient& quota_client,
       const std::string& origin_url,
@@ -478,38 +465,6 @@ TEST_P(FileSystemQuotaClientTest, GetStorageKeysForType) {
                 testing::UnorderedElementsAre(
                     StorageKey::CreateFromStringForTesting(kDummyURL1),
                     StorageKey::CreateFromStringForTesting(kDummyURL2)));
-  }
-}
-
-TEST_P(FileSystemQuotaClientTest, GetStorageKeysForHost) {
-  FileSystemQuotaClient quota_client(GetFileSystemContext());
-  const char* kURL1 = "http://foo.com/";
-  const char* kURL2 = "https://foo.com/";
-  const char* kURL3 = "http://foo.com:1/";
-  const char* kURL4 = "http://foo2.com/";
-  const char* kURL5 = "http://foo.com:2/";
-  InitializeOriginFiles(quota_client,
-                        {
-                            {true, "", 0, kURL1, kFileSystemTypeTemporary},
-                            {true, "", 0, kURL2, kFileSystemTypeTemporary},
-                            {true, "", 0, kURL3, kFileSystemTypeTemporary},
-                            {true, "", 0, kURL4, kFileSystemTypeTemporary},
-                            {true, "", 0, kURL5, kFileSystemTypePersistent},
-                        });
-
-  if (persistent_quota_is_temporary_quota()) {
-    EXPECT_THAT(GetStorageKeysForHost(quota_client, kTemporary, "foo.com"),
-                testing::UnorderedElementsAre(
-                    StorageKey::CreateFromStringForTesting(kURL1),
-                    StorageKey::CreateFromStringForTesting(kURL2),
-                    StorageKey::CreateFromStringForTesting(kURL3),
-                    StorageKey::CreateFromStringForTesting(kURL5)));
-  } else {
-    EXPECT_THAT(GetStorageKeysForHost(quota_client, kTemporary, "foo.com"),
-                testing::UnorderedElementsAre(
-                    StorageKey::CreateFromStringForTesting(kURL1),
-                    StorageKey::CreateFromStringForTesting(kURL2),
-                    StorageKey::CreateFromStringForTesting(kURL3)));
   }
 }
 

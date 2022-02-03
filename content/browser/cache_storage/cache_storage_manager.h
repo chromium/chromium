@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_MANAGER_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_MANAGER_H_
 
-#include <string>
-
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
@@ -43,10 +41,6 @@ class CONTENT_EXPORT CacheStorageManager
   virtual void GetStorageKeys(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback) = 0;
-  virtual void GetStorageKeysForHost(
-      const std::string& host,
-      storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback) = 0;
   virtual void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,

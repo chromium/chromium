@@ -47,18 +47,6 @@ void QuotaClientCallbackWrapper::GetStorageKeysForType(
                 std::move(callback), std::vector<blink::StorageKey>()));
 }
 
-void QuotaClientCallbackWrapper::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  wrapped_client_->GetStorageKeysForHost(
-      type, host,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback), std::vector<blink::StorageKey>()));
-}
-
 void QuotaClientCallbackWrapper::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,

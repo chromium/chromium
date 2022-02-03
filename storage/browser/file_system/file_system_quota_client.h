@@ -5,8 +5,6 @@
 #ifndef STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_QUOTA_CLIENT_H_
 #define STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_QUOTA_CLIENT_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -47,9 +45,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
                           GetStorageKeyUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void GetStorageKeysForHost(blink::mojom::StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             DeleteStorageKeyDataCallback callback) override;

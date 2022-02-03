@@ -79,12 +79,6 @@ class CONTENT_EXPORT NativeIOManager {
       blink::mojom::StorageType type,
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback);
 
-  // Computes all storage keys with data for a given hostname.
-  void GetStorageKeysForHost(
-      blink::mojom::StorageType type,
-      const std::string& host,
-      storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback);
-
   // Computes the amount of bytes for the given storage key.
   //
   // This method walks the storage key's entire directory and is therefore not

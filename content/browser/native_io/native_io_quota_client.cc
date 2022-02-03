@@ -38,16 +38,6 @@ void NativeIOQuotaClient::GetStorageKeysForType(
   manager_->GetStorageKeysForType(type, std::move(callback));
 }
 
-void NativeIOQuotaClient::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
-
-  manager_->GetStorageKeysForHost(type, std::move(host), std::move(callback));
-}
-
 void NativeIOQuotaClient::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,

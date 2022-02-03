@@ -77,30 +77,6 @@ void DatabaseQuotaClient::GetStorageKeysForType(
   std::move(callback).Run(all_storage_keys);
 }
 
-void DatabaseQuotaClient::GetStorageKeysForHost(
-    StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback.is_null());
-  DCHECK_EQ(type, StorageType::kTemporary);
-
-  std::vector<StorageKey> host_storage_keys;
-  // In the vast majority of cases, this vector will end up with exactly one
-  // storage key. The storage key will be https://host or http://host.
-  host_storage_keys.reserve(1);
-
-  std::vector<std::string> origin_identifiers;
-  if (db_tracker_.GetAllOriginIdentifiers(&origin_identifiers)) {
-    for (const auto& identifier : origin_identifiers) {
-      StorageKey storage_key = StorageKey(GetOriginFromIdentifier(identifier));
-      if (host == storage_key.origin().host())
-        host_storage_keys.push_back(std::move(storage_key));
-    }
-  }
-  std::move(callback).Run(host_storage_keys);
-}
-
 void DatabaseQuotaClient::DeleteStorageKeyData(
     const StorageKey& storage_key,
     StorageType type,

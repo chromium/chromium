@@ -83,11 +83,6 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   void GetStorageKeys(storage::mojom::CacheStorageOwner owner,
                       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback
                           callback) override;
-  void GetStorageKeysForHost(
-      const std::string& host,
-      storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback)
-      override;
   void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,

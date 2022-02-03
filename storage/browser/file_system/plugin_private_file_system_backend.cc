@@ -274,23 +274,6 @@ PluginPrivateFileSystemBackend::GetStorageKeysForTypeOnFileTaskRunner(
   return storage_keys;
 }
 
-std::vector<blink::StorageKey>
-PluginPrivateFileSystemBackend::GetStorageKeysForHostOnFileTaskRunner(
-    FileSystemType type,
-    const std::string& host) {
-  if (!CanHandleType(type))
-    return std::vector<blink::StorageKey>();
-  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enumerator(
-      obfuscated_file_util()->CreateStorageKeyEnumerator());
-  std::vector<blink::StorageKey> storage_keys;
-  absl::optional<blink::StorageKey> storage_key;
-  while ((storage_key = enumerator->Next()).has_value()) {
-    if (host == storage_key->origin().host())
-      storage_keys.push_back(std::move(storage_key).value());
-  }
-  return storage_keys;
-}
-
 int64_t PluginPrivateFileSystemBackend::GetStorageKeyUsageOnFileTaskRunner(
     FileSystemContext* context,
     const blink::StorageKey& storage_key,

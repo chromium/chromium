@@ -384,23 +384,6 @@ SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
   return storage_keys;
 }
 
-std::vector<blink::StorageKey>
-SandboxFileSystemBackendDelegate::GetStorageKeysForHostOnFileTaskRunner(
-    FileSystemType type,
-    const std::string& host) {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  std::vector<blink::StorageKey> storage_keys;
-  std::unique_ptr<StorageKeyEnumerator> enumerator(
-      CreateStorageKeyEnumerator());
-  absl::optional<blink::StorageKey> storage_key;
-  while ((storage_key = enumerator->Next()).has_value()) {
-    if (host == storage_key->origin().host() &&
-        enumerator->HasFileSystemType(type))
-      storage_keys.push_back(std::move(storage_key).value());
-  }
-  return storage_keys;
-}
-
 int64_t SandboxFileSystemBackendDelegate::GetStorageKeyUsageOnFileTaskRunner(
     FileSystemContext* file_system_context,
     const blink::StorageKey& storage_key,

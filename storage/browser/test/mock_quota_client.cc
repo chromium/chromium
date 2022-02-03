@@ -87,16 +87,6 @@ void MockQuotaClient::GetStorageKeysForType(
                      weak_factory_.GetWeakPtr(), type, std::move(callback)));
 }
 
-void MockQuotaClient::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MockQuotaClient::RunGetStorageKeysForHost,
-                                weak_factory_.GetWeakPtr(), type, host,
-                                std::move(callback)));
-}
-
 void MockQuotaClient::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
@@ -132,20 +122,6 @@ void MockQuotaClient::RunGetStorageKeysForType(
   for (const auto& storage_key_type_usage : storage_key_data_) {
     if (type == storage_key_type_usage.first.second)
       storage_keys.push_back(storage_key_type_usage.first.first);
-  }
-  std::move(callback).Run(std::move(storage_keys));
-}
-
-void MockQuotaClient::RunGetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  std::vector<blink::StorageKey> storage_keys;
-  for (const auto& storage_key_type_usage : storage_key_data_) {
-    if (type == storage_key_type_usage.first.second &&
-        host == storage_key_type_usage.first.first.origin().host()) {
-      storage_keys.push_back(storage_key_type_usage.first.first);
-    }
   }
   std::move(callback).Run(std::move(storage_keys));
 }

@@ -65,26 +65,6 @@ void ServiceWorkerQuotaClient::GetStorageKeysForType(
   context_->registry()->GetRegisteredStorageKeys(std::move(callback));
 }
 
-void ServiceWorkerQuotaClient::GetStorageKeysForHost(
-    StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
-  context_->registry()->GetRegisteredStorageKeys(base::BindOnce(
-      [](const std::string& host, GetStorageKeysForTypeCallback callback,
-         const std::vector<blink::StorageKey>& all_storage_keys) {
-        std::vector<blink::StorageKey> host_storage_keys;
-        for (auto& storage_key : all_storage_keys) {
-          if (host != storage_key.origin().host())
-            continue;
-          host_storage_keys.push_back(storage_key);
-        }
-        std::move(callback).Run(host_storage_keys);
-      },
-      host, std::move(callback)));
-}
-
 void ServiceWorkerQuotaClient::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     StorageType type,
