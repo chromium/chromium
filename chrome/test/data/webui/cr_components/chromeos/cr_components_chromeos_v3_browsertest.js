@@ -14,6 +14,10 @@ GEN('#include "content/public/test/browser_test.h"');
 [
   ['BasePage', 'bluetooth/bluetooth_base_page_test.js'],
   ['BluetoothIcon', 'bluetooth/bluetooth_icon_test.js'],
+  [
+    'BatteryIconPercentage',
+    'bluetooth/bluetooth_battery_icon_percentage_tests.js'
+  ],
   ['DeviceBatteryInfo', 'bluetooth/bluetooth_device_battery_info_tests.js'],
   [
     'DeviceSelectionPage',

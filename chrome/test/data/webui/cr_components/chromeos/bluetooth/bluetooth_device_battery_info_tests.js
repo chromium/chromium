@@ -64,252 +64,75 @@ suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
     return flushAsync();
   }
 
-  /**
-   * @param {number} batteryPercentage
-   * @param {boolean} isLowBattery
-   * @param {string} batteryIconRange
-   */
-  function assertDefaultBatteryUIState(
-      batteryPercentage, isLowBattery, batteryIconRange) {
+  function assertDefaultBatteryUIState() {
     assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#defaultBatteryPercentage'));
+        '#defaultBattery'));
     assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#leftBudBatteryPercentage'));
+        '#leftBudBattery'));
+    assertFalse(
+        !!bluetoothDeviceBatteryInfo.shadowRoot.querySelector('#caseBattery'));
     assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#caseBatteryPercentage'));
-    assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#rightBudBatteryPercentage'));
-    assertEquals(
-        bluetoothDeviceBatteryInfo.i18n(
-            'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage),
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#defaultBatteryPercentage')
-            .innerText.trim());
-    assertEquals(
-        isLowBattery, bluetoothDeviceBatteryInfo.getIsLowBatteryForTest());
-    assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#defaultBatteryIcon'));
-    assertEquals(
-        'bluetooth:battery-' + batteryIconRange,
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#defaultBatteryIcon')
-            .icon);
+        '#rightBudBattery'));
   }
 
-  /**
-   * @param {number} batteryPercentage
-   * @param {boolean} isLowBattery
-   * @param {string} batteryIconRange
-   */
-  function assertMultipleBatteryUIState(
-      batteryPercentage, isLowBattery, batteryIconRange) {
+  function assertMultipleBatteryUIState() {
     assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#defaultBatteryPercentage'));
+        '#defaultBattery'));
     assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#leftBudBatteryPercentage'));
-    assertEquals(
-        bluetoothDeviceBatteryInfo.i18n(
-            'bluetoothPairedDeviceItemLeftBudTrueWirelessBatteryPercentage',
-            batteryPercentage),
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#leftBudBatteryPercentage')
-            .innerText.trim());
-    assertEquals(
-        isLowBattery,
-        bluetoothDeviceBatteryInfo.getIsLeftBudLowBatteryForTest());
+        '#leftBudBattery'));
+    assertTrue(
+        !!bluetoothDeviceBatteryInfo.shadowRoot.querySelector('#caseBattery'));
     assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#leftBudBatteryIcon'));
-    assertEquals(
-        'bluetooth:battery-' + batteryIconRange,
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#leftBudBatteryIcon')
-            .icon);
-
-    assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#caseBatteryPercentage'));
-    assertEquals(
-        bluetoothDeviceBatteryInfo.i18n(
-            'bluetoothPairedDeviceItemCaseTrueWirelessBatteryPercentage',
-            batteryPercentage),
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#caseBatteryPercentage')
-            .innerText.trim());
-    assertEquals(
-        isLowBattery, bluetoothDeviceBatteryInfo.getIsCaseLowBatteryForTest());
-    assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#caseBatteryIcon'));
-    assertEquals(
-        'bluetooth:battery-' + batteryIconRange,
-        bluetoothDeviceBatteryInfo.shadowRoot.querySelector('#caseBatteryIcon')
-            .icon);
-
-    assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#rightBudBatteryPercentage'));
-    assertEquals(
-        bluetoothDeviceBatteryInfo.i18n(
-            'bluetoothPairedDeviceItemRightBudTrueWirelessBatteryPercentage',
-            batteryPercentage),
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#rightBudBatteryPercentage')
-            .innerText.trim());
-    assertEquals(
-        isLowBattery,
-        bluetoothDeviceBatteryInfo.getIsRightBudLowBatteryForTest());
-    assertTrue(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#rightBudBatteryIcon'));
-    assertEquals(
-        'bluetooth:battery-' + batteryIconRange,
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#rightBudBatteryIcon')
-            .icon);
+        '#rightBudBattery'));
   }
 
-  test('Battery text, icon and color', async function() {
+  test('Default battery state', async function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
     bluetoothDeviceBatteryInfo.device = device.deviceProperties;
 
-    // Lower bound edge case.
     let batteryPercentage = 0;
     await setDefaultBatteryPercentage(batteryPercentage);
-    assertDefaultBatteryUIState(
-        batteryPercentage, /*isLowBattery=*/ true, /*batteryIconRange=*/ '0-7');
+    assertDefaultBatteryUIState();
 
-    batteryPercentage = 3;
-    await setDefaultBatteryPercentage(batteryPercentage);
-    assertDefaultBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ true,
-        /*batteryIconRange=*/ '0-7');
-
-    // Maximum 'low battery' percentage.
-    batteryPercentage = 24;
-    await setDefaultBatteryPercentage(batteryPercentage);
-    assertDefaultBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ true,
-        /*batteryIconRange=*/ '22-28');
-
-    // Minimum non-'low battery' percentage.
-    batteryPercentage = 25;
-    await setDefaultBatteryPercentage(batteryPercentage);
-    assertDefaultBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '22-28');
-
-    batteryPercentage = 94;
-    await setDefaultBatteryPercentage(batteryPercentage);
-    assertDefaultBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '93-100');
-
-    // Upper bound edge case.
     batteryPercentage = 100;
     await setDefaultBatteryPercentage(batteryPercentage);
-    assertDefaultBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '93-100');
+    assertDefaultBatteryUIState();
 
-    // Broken cases where the battery doesn't show.
-    batteryPercentage = 110;
+    // We don't handle illegal battery percentages in this component.
+    batteryPercentage = 105;
     await setDefaultBatteryPercentage(batteryPercentage);
-    assertEquals(
-        '',
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#defaultBatteryPercentage')
-            .innerText.trim());
-    assertEquals(
-        '',
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#defaultBatteryIcon')
-            .icon);
-    batteryPercentage = -5;
+    assertDefaultBatteryUIState();
+
+    batteryPercentage = -1;
     await setDefaultBatteryPercentage(batteryPercentage);
-    assertEquals(
-        '',
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#defaultBatteryPercentage')
-            .innerText.trim());
-    assertEquals(
-        '',
-        bluetoothDeviceBatteryInfo.shadowRoot
-            .querySelector('#defaultBatteryIcon')
-            .icon);
+    assertDefaultBatteryUIState();
   });
 
-  test('Battery text, icon and color multiple batteries', async function() {
+  test('Multiple battery state', async function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
     bluetoothDeviceBatteryInfo.device = device.deviceProperties;
 
-    // Lower bound edge case.
     let batteryPercentage = 0;
     await setMultipleBatteryPercentage(batteryPercentage);
-    assertMultipleBatteryUIState(
-        batteryPercentage, /*isLowBattery=*/ true, /*batteryIconRange=*/ '0-7');
+    assertMultipleBatteryUIState();
 
-    batteryPercentage = 3;
-    await setMultipleBatteryPercentage(batteryPercentage);
-    assertMultipleBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ true,
-        /*batteryIconRange=*/ '0-7');
-
-    // Maximum 'low battery' percentage.
-    batteryPercentage = 24;
-    await setMultipleBatteryPercentage(batteryPercentage);
-    assertMultipleBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ true,
-        /*batteryIconRange=*/ '22-28');
-
-    // Minimum non-'low battery' percentage.
-    batteryPercentage = 25;
-    await setMultipleBatteryPercentage(batteryPercentage);
-    assertMultipleBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '22-28');
-
-    batteryPercentage = 94;
-    await setMultipleBatteryPercentage(batteryPercentage);
-    assertMultipleBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '93-100');
-
-    // Upper bound edge case.
     batteryPercentage = 100;
     await setMultipleBatteryPercentage(batteryPercentage);
-    assertMultipleBatteryUIState(
-        batteryPercentage,
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '93-100');
+    assertMultipleBatteryUIState();
 
-    // Broken cases where the battery doesn't show.
-    batteryPercentage = 110;
+    // Revert to default UI in case of illegal battery percentage.
+    batteryPercentage = 105;
     await setMultipleBatteryPercentage(batteryPercentage);
-    assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#leftBudBatteryPercentage'));
-    assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#caseBatteryPercentage'));
-    assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#rightBudBatteryPercentage'));
+    assertDefaultBatteryUIState();
 
-    batteryPercentage = -5;
+    batteryPercentage = -1;
     await setMultipleBatteryPercentage(batteryPercentage);
-    assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#leftBudBatteryPercentage'));
-    assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#caseBatteryPercentage'));
-    assertFalse(!!bluetoothDeviceBatteryInfo.shadowRoot.querySelector(
-        '#rightBudBatteryPercentage'));
+    assertDefaultBatteryUIState();
   });
 });

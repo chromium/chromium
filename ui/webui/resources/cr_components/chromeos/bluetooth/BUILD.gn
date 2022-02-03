@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":bluetooth_base_page",
+    ":bluetooth_battery_icon_percentage",
     ":bluetooth_device_battery_info",
     ":bluetooth_dialog",
     ":bluetooth_icon",
@@ -137,6 +138,14 @@ js_library("bluetooth_base_page") {
   ]
 }
 
+js_library("bluetooth_battery_icon_percentage") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 js_library("bluetooth_device_battery_info") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -170,6 +179,7 @@ html_to_js("polymer3_elements") {
     "bluetooth_pairing_device_item.js",
     "bluetooth_pairing_ui.js",
     "bluetooth_base_page.js",
+    "bluetooth_battery_icon_percentage.js",
     "bluetooth_device_battery_info.js",
     "bluetooth_spinner_page.js",
   ]
