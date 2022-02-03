@@ -41,6 +41,8 @@ class PaymentAppService : public KeyedService {
   // KeyedService implementation:
   void Shutdown() override;
 
+  void AddFactoryForTesting(std::unique_ptr<PaymentAppFactory> factory);
+
  private:
   std::vector<std::unique_ptr<PaymentAppFactory>> factories_;
 };
