@@ -342,6 +342,8 @@ class EventRouter : public KeyedService,
       UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
                            ExtensionUpdatedEventOnPermissionsChange);
+  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
+                           OnUserSiteSettingsChanged);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiAllowlistUnitTest,
                            ExtensionUpdatedEventOnAllowlistWarningChange);
   FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest, StorageAreaOnChanged);

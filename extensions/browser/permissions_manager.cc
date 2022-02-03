@@ -175,18 +175,16 @@ void PermissionsManager::AddUserRestrictedSite(const url::Origin& origin) {
     return;
 
   // Origin cannot be both restricted and permitted.
-  RemoveUserPermittedSite(origin);
+  RemovePermittedSiteAndUpdatePrefs(origin);
 
   user_permissions_.restricted_sites.insert(origin);
   AddSiteToPrefs(extension_prefs_, kRestrictedSites, origin);
+  SignalUserPermissionsSettingsChanged();
 }
 
 void PermissionsManager::RemoveUserRestrictedSite(const url::Origin& origin) {
-  if (!base::Contains(user_permissions_.restricted_sites, origin))
-    return;
-
-  user_permissions_.restricted_sites.erase(origin);
-  RemoveSiteFromPrefs(extension_prefs_, kRestrictedSites, origin);
+  if (RemoveRestrictedSiteAndUpdatePrefs(origin))
+    SignalUserPermissionsSettingsChanged();
 }
 
 void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
@@ -194,23 +192,52 @@ void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
     return;
 
   // Origin cannot be both restricted and permitted.
-  RemoveUserRestrictedSite(origin);
+  RemoveRestrictedSiteAndUpdatePrefs(origin);
 
   user_permissions_.permitted_sites.insert(origin);
   AddSiteToPrefs(extension_prefs_, kPermittedSites, origin);
+  SignalUserPermissionsSettingsChanged();
 }
 
 void PermissionsManager::RemoveUserPermittedSite(const url::Origin& origin) {
-  if (!base::Contains(user_permissions_.permitted_sites, origin))
-    return;
-
-  user_permissions_.permitted_sites.erase(origin);
-  RemoveSiteFromPrefs(extension_prefs_, kPermittedSites, origin);
+  if (RemovePermittedSiteAndUpdatePrefs(origin))
+    SignalUserPermissionsSettingsChanged();
 }
 
 const PermissionsManager::UserPermissionsSettings&
-PermissionsManager::GetUserPermissionsSettings() {
+PermissionsManager::GetUserPermissionsSettings() const {
   return user_permissions_;
+}
+
+void PermissionsManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PermissionsManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void PermissionsManager::SignalUserPermissionsSettingsChanged() const {
+  for (auto& observer : observers_)
+    observer.UserPermissionsSettingsChanged(GetUserPermissionsSettings());
+}
+
+bool PermissionsManager::RemovePermittedSiteAndUpdatePrefs(
+    const url::Origin& origin) {
+  bool removed_site = user_permissions_.permitted_sites.erase(origin);
+  if (removed_site)
+    RemoveSiteFromPrefs(extension_prefs_, kPermittedSites, origin);
+
+  return removed_site;
+}
+
+bool PermissionsManager::RemoveRestrictedSiteAndUpdatePrefs(
+    const url::Origin& origin) {
+  bool removed_site = user_permissions_.restricted_sites.erase(origin);
+  if (removed_site)
+    RemoveSiteFromPrefs(extension_prefs_, kRestrictedSites, origin);
+
+  return removed_site;
 }
 
 }  // namespace extensions

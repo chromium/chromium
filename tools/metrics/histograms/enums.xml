@@ -29770,6 +29770,7 @@ Called by update_extension_histograms.py.-->
   <int value="486" label="WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST"/>
   <int value="487" label="WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED"/>
   <int value="488" label="WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST"/>
+  <int value="489" label="DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

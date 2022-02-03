@@ -770,6 +770,9 @@ namespace developerPrivate {
 
     // Fired when the profile's state has changed.
     static void onProfileStateChanged(ProfileInfo info);
+
+    // Fired when the lists of sites in the user's site settings have changed.
+    static void onUserSiteSettingsChanged(UserSiteSettings settings);
   };
 
 };

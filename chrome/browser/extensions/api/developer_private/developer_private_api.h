@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/warning_service.h"
@@ -71,7 +72,8 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                     public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
                                     public WarningService::Observer,
-                                    public content::NotificationObserver {
+                                    public content::NotificationObserver,
+                                    public PermissionsManager::Observer {
  public:
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
@@ -145,6 +147,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
+  // PermissionsManager::Observer:
+  void UserPermissionsSettingsChanged(
+      const PermissionsManager::UserPermissionsSettings& settings) override;
+
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
@@ -175,6 +181,8 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
       command_service_observation_{this};
   base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
       extension_allowlist_observer_{this};
+  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   raw_ptr<Profile> profile_;
 

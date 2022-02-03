@@ -868,3 +868,9 @@ chrome.developerPrivate.onItemStateChanged;
  * @type {!ChromeEvent}
  */
 chrome.developerPrivate.onProfileStateChanged;
+
+/**
+ * Fired when the lists of sites in the user's site settings have changed.
+ * @type {!ChromeEvent}
+ */
+chrome.developerPrivate.onUserSiteSettingsChanged;
