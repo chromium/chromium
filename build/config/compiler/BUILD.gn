@@ -790,9 +790,7 @@ config("compiler") {
   # This flag enforces that member pointer base types are complete. It helps
   # prevent us from running into problems in the Microsoft C++ ABI (see
   # https://crbug.com/847724).
-  # TODO(crbug/1052397): Remove is_chromeos_lacros once lacros-chrome switches
-  # to target_os="chromeos".
-  if (is_clang && !is_nacl && target_os != "chromeos" && !is_chromeos_lacros &&
+  if (is_clang && !is_nacl && target_os != "chromeos" &&
       (is_win || use_custom_libcxx)) {
     cflags += [ "-fcomplete-member-pointers" ]
   }
