@@ -5618,6 +5618,7 @@ static_library("browser") {
       "chrome_browser_application_mac.mm",
       "chrome_browser_main_mac.h",
       "chrome_browser_main_mac.mm",
+      "component_updater/recovery_improved_component_installer_mac.cc",
       "component_updater/updater_state_mac.mm",
       "download/download_status_updater_mac.mm",
       "download/drag_download_item_mac.mm",
