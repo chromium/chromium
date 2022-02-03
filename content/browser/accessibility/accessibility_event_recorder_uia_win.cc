@@ -244,7 +244,7 @@ void AccessibilityEventRecorderUia::Thread::EventHandler::CleanUp() {
   root_.Reset();
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP
+STDMETHODIMP
 AccessibilityEventRecorderUia::Thread::EventHandler::HandleFocusChangedEvent(
     IUIAutomationElement* sender) {
   if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
@@ -294,7 +294,7 @@ AccessibilityEventRecorderUia::Thread::EventHandler::HandleFocusChangedEvent(
   return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP
+STDMETHODIMP
 AccessibilityEventRecorderUia::Thread::EventHandler::HandlePropertyChangedEvent(
     IUIAutomationElement* sender,
     PROPERTYID property_id,
@@ -314,10 +314,10 @@ AccessibilityEventRecorderUia::Thread::EventHandler::HandlePropertyChangedEvent(
   return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP AccessibilityEventRecorderUia::Thread::
-    EventHandler::HandleStructureChangedEvent(IUIAutomationElement* sender,
-                                              StructureChangeType change_type,
-                                              SAFEARRAY* runtime_id) {
+STDMETHODIMP AccessibilityEventRecorderUia::Thread::EventHandler::
+    HandleStructureChangedEvent(IUIAutomationElement* sender,
+                                StructureChangeType change_type,
+                                SAFEARRAY* runtime_id) {
   if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
     return S_OK;
 
@@ -350,7 +350,7 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP AccessibilityEventRecorderUia::Thread::
   return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP
+STDMETHODIMP
 AccessibilityEventRecorderUia::Thread::EventHandler::HandleAutomationEvent(
     IUIAutomationElement* sender,
     EVENTID event_id) {

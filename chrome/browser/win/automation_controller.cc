@@ -198,7 +198,7 @@ void AutomationController::Context::EventHandler::Initialize(
   ref_counted_delegate_ = std::move(ref_counted_delegate);
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP
+STDMETHODIMP
 AutomationController::Context::EventHandler::HandleAutomationEvent(
     IUIAutomationElement* sender,
     EVENTID event_id) {
@@ -222,7 +222,7 @@ AutomationController::Context::EventHandler::HandleAutomationEvent(
   return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP
+STDMETHODIMP
 AutomationController::Context::EventHandler::HandleFocusChangedEvent(
     IUIAutomationElement* sender) {
   DVLOG(1)
