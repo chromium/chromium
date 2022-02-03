@@ -125,9 +125,6 @@ class PendingExtensionManager {
   // See https://crbug.com/958794#c22 for details.
   void RecordPolicyReinstallReason(PolicyReinstallReason reason_for_uma);
 
-  void RecordExtensionReinstallManifestLocation(
-      mojom::ManifestLocation manifest_location_for_uma);
-
   // Notifies the manager that we are reinstalling the policy force-installed
   // extension with |id| because we detected corruption in the current copy.
   // |reason_for_uma| indicates origin and details of the requires, and is used

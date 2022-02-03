@@ -115,12 +115,6 @@ void PendingExtensionManager::RecordPolicyReinstallReason(
                                 reason_for_uma);
 }
 
-void PendingExtensionManager::RecordExtensionReinstallManifestLocation(
-    mojom::ManifestLocation manifest_location_for_uma) {
-  base::UmaHistogramEnumeration("Extensions.CorruptedExtensionLocation",
-                                manifest_location_for_uma);
-}
-
 void PendingExtensionManager::ExpectReinstallForCorruption(
     const ExtensionId& id,
     absl::optional<PolicyReinstallReason> reason_for_uma,
@@ -130,7 +124,6 @@ void PendingExtensionManager::ExpectReinstallForCorruption(
   expected_reinstalls_[id] = base::TimeTicks::Now();
   if (reason_for_uma)
     RecordPolicyReinstallReason(*reason_for_uma);
-  RecordExtensionReinstallManifestLocation(manifest_location_for_uma);
 }
 
 bool PendingExtensionManager::IsReinstallForCorruptionExpected(

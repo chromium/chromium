@@ -455,6 +455,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.CorruptedExtensionLocation"
     enum="ExtensionLocation" expires_after="2022-01-01">
+  <obsolete>
+    Obsolete in M100.
+  </obsolete>
   <owner>ydago@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
