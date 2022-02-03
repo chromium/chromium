@@ -2304,7 +2304,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
         WindowOpenDisposition::CURRENT_TAB);
     ASSERT_EQ(1, browser()->tab_strip_model()->count());
     ASSERT_TRUE(tab_contents);
-    ASSERT_EQ(GetTestURL(), tab_contents->GetURL());
+    ASSERT_EQ(GetTestURL(), tab_contents->GetLastCommittedURL());
 
     session_restore_paint_waiter.WaitForForegroundTabs(1);
     ExpectFirstPaintMetricsTotalCount(1);
@@ -2319,7 +2319,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
     ASSERT_EQ(2, browser()->tab_strip_model()->count());
     ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
     ASSERT_TRUE(tab_contents);
-    ASSERT_EQ(GetTestURL(), tab_contents->GetURL());
+    ASSERT_EQ(GetTestURL(), tab_contents->GetLastCommittedURL());
 
     session_restore_paint_waiter.WaitForForegroundTabs(1);
     ExpectFirstPaintMetricsTotalCount(2);
@@ -2333,7 +2333,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
     ASSERT_EQ(3, browser()->tab_strip_model()->count());
     ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
     ASSERT_TRUE(tab_contents);
-    ASSERT_EQ(GetTestURL(), tab_contents->GetURL());
+    ASSERT_EQ(GetTestURL(), tab_contents->GetLastCommittedURL());
     ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(browser()));
 
     // Do not record timings of initially background tabs.

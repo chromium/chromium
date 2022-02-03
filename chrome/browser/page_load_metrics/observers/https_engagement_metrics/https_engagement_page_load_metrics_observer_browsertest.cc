@@ -96,8 +96,9 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     // Make sure the correct tab is in the foreground.
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     EXPECT_EQ(2, tab_strip_model->count());
-    EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(0)->GetURL());
-    EXPECT_NE(url, tab_strip_model->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
+    EXPECT_NE(url,
+              tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
 
     content::WebContentsDestroyedWatcher destroyed_watcher(
         tab_strip_model->GetWebContentsAt(0));
@@ -119,8 +120,9 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     // Make sure the correct tab is in the foreground.
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     EXPECT_EQ(2, tab_strip_model->count());
-    EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(1)->GetURL());
-    EXPECT_NE(url, tab_strip_model->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
+    EXPECT_NE(url,
+              tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
 
     content::WebContentsDestroyedWatcher destroyed_watcher(
         tab_strip_model->GetWebContentsAt(1));
@@ -141,8 +143,9 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     // Make sure the correct tab is in the foreground.
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     EXPECT_EQ(2, tab_strip_model->count());
-    EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(1)->GetURL());
-    EXPECT_NE(url, tab_strip_model->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
+    EXPECT_NE(url,
+              tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
 
     // Close the foreground tab.
     base::TimeTicks start = base::TimeTicks::Now();
@@ -153,7 +156,8 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
     // Now the background tab should have moved to the foreground.
     EXPECT_EQ(1, tab_strip_model->count());
-    EXPECT_EQ(url, tab_strip_model->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(url,
+              tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
 
     content::WebContentsDestroyedWatcher second_watcher(
         tab_strip_model->GetActiveWebContents());
