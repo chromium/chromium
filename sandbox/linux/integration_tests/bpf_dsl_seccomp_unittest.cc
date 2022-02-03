@@ -182,7 +182,12 @@ bool IsSyscallForTestHarness(int sysno) {
   // ASan and MSan don't need any of these for normal operation, but they
   // require at least mmap & munmap to print a report if an error is detected.
   // ASan requires sigaltstack.
-  if (sysno == kMMapNr || sysno == __NR_munmap || sysno == __NR_pipe ||
+  if (sysno == kMMapNr || sysno == __NR_munmap ||
+#if !defined(__aarch64__)
+      sysno == __NR_pipe ||
+#else
+      sysno == __NR_pipe2 ||
+#endif
       sysno == __NR_sigaltstack) {
     return true;
   }
