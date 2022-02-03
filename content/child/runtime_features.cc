@@ -415,6 +415,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kClientHintThirdPartyDelegation},
           {"UserAgentReduction", blink::features::kReduceUserAgent},
           {"UserAgentFull", blink::features::kFullUserAgent},
+          {"ClientHintPartitiondCookies",
+           blink::features::kClientHintsPartitionedCookies},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

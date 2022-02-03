@@ -1214,5 +1214,9 @@ const base::Feature kNoForcedFrameUpdatesForWebTests{
 // another class called ElementSuperRareData to improve memory usage.
 const base::Feature kElementSuperRareData{"ElementSuperRareData",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kClientHintsPartitionedCookies{
+    "ClientHintsPartitionedCookies", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

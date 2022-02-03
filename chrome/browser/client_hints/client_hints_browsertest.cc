@@ -923,6 +923,13 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
         continue;
       }
 
+      // Skip over the `Sec-CH-Partitioned-Cookies' client hint because it is
+      // only added in the presence of a valid "PartitionedCookies" Origin
+      // Trial token.
+      if (header == "sec-ch-partitioned-cookies") {
+        continue;
+      }
+
       EXPECT_EQ(expect_client_hints, base::Contains(request.headers, header));
     }
   }

@@ -3478,6 +3478,7 @@ enum WebFeature {
   kV8UDPSocket_RemotePort_AttributeGetter = 4157,
   kV8UDPSocket_Writable_AttributeGetter = 4158,
   kAbortSignalTimeout = 4159,
+  kClientHintsPartitionedCookies = 4160,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

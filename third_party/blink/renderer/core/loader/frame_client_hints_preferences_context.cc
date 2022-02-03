@@ -72,6 +72,8 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
        WebFeature::kClientHintsUAFull},
       {network::mojom::WebClientHintsType::kUAWoW64,
        WebFeature::kClientHintsUAWoW64},
+      {network::mojom::WebClientHintsType::kPartitionedCookies,
+       WebFeature::kClientHintsPartitionedCookies},
   };
 }
 

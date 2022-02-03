@@ -37007,6 +37007,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4157" label="V8UDPSocket_RemotePort_AttributeGetter"/>
   <int value="4158" label="V8UDPSocket_Writable_AttributeGetter"/>
   <int value="4159" label="AbortSignalTimeout"/>
+  <int value="4160" label="ClientHintsPartitionedCookies"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -37122,6 +37123,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="93" label="ClientHintUAFullVersionList"/>
   <int value="94" label="ClientHintUAFull"/>
   <int value="95" label="ClientHintUAWoW64"/>
+  <int value="96" label="ClientHintPartitionedCookies"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">
