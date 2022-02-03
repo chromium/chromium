@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -81,7 +82,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
   std::string policy_proxy_mode;
   if (policy_service->GetProxyMode(nullptr, &policy_proxy_mode) &&
       policy_proxy_mode.compare(kProxyModeSystem) != 0) {
-    DVLOG(3) << "Using policy proxy " << policy_proxy_mode;
+    VLOG(2) << "Using policy proxy " << policy_proxy_mode;
     bool auto_detect = false;
     std::wstring pac_url;
     std::wstring proxy_url;
@@ -124,7 +125,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
 
   ScopedImpersonation impersonate_user;
   if (IsLocalSystemUser()) {
-    DVLOG(3) << "Running as SYSTEM, impersonate the current user.";
+    VLOG(2) << "Running as SYSTEM, impersonate the current user.";
     base::win::ScopedHandle user_token = GetUserTokenFromCurrentSessionId();
     if (user_token.IsValid()) {
       impersonate_user.Impersonate(user_token.Get());
@@ -137,7 +138,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
         ie_proxy_config.auto_detect(), ie_proxy_config.auto_config_url(),
         ie_proxy_config.proxy(), ie_proxy_config.proxy_bypass()});
   } else {
-    DPLOG(ERROR) << "Failed to get proxy for current user";
+    PLOG(ERROR) << "Failed to get proxy for current user";
   }
 
   return base::MakeRefCounted<winhttp::ProxyConfiguration>();
@@ -166,6 +167,7 @@ void NetworkFetcher::PostRequest(
     ProgressCallback progress_callback,
     PostRequestCompleteCallback post_request_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
   post_request_complete_callback_ = std::move(post_request_complete_callback);
   winhttp_network_fetcher_->PostRequest(
       url, post_data, content_type, post_additional_headers,
@@ -181,6 +183,7 @@ void NetworkFetcher::DownloadToFile(
     ProgressCallback progress_callback,
     DownloadToFileCompleteCallback download_to_file_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
   download_to_file_complete_callback_ =
       std::move(download_to_file_complete_callback);
   winhttp_network_fetcher_->DownloadToFile(
@@ -192,6 +195,7 @@ void NetworkFetcher::DownloadToFile(
 
 void NetworkFetcher::PostRequestComplete(int /*response_code*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
 
   // Attempt to get some response headers.  Not all headers may be present so
   // this is best effort only.
@@ -217,6 +221,7 @@ void NetworkFetcher::PostRequestComplete(int /*response_code*/) {
 
 void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
   std::move(download_to_file_complete_callback_)
       .Run(winhttp_network_fetcher_->GetNetError(),
            winhttp_network_fetcher_->GetContentSize());
