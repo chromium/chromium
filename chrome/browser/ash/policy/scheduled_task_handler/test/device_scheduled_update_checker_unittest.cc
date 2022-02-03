@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/scheduled_task_test_util.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -988,6 +990,36 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckUpdateCheckHardTimeout) {
   expected_update_check_requests = 2;
   task_environment_.FastForwardBy(
       base::Days(1) -
+      update_checker_internal::kOsAndPoliciesUpdateCheckHardTimeout);
+  EXPECT_TRUE(CheckStats(expected_update_checks, expected_update_check_requests,
+                         expected_update_check_completions));
+}
+
+// Check that the facility is disabled when the RTC wake support feature is
+// disabled.
+TEST_F(DeviceScheduledUpdateCheckerTest, DisabledFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kSupportsRtcWakeOver24Hours);
+
+  base::TimeDelta delay_from_now = base::Hours(1);
+  auto policy_and_next_update_check_time =
+      scheduled_task_test_util::CreatePolicy(
+          scheduled_task_executor_->GetTimeZone(),
+          scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+          ScheduledTaskExecutor::Frequency::kDaily, kTaskTimeFieldName);
+
+  cros_settings_.device_settings()->Set(
+      ash::kDeviceScheduledUpdateCheck,
+      std::move(policy_and_next_update_check_time.first));
+  task_environment_.FastForwardBy(delay_from_now);
+
+  // No check should happen when kSupportsRtcWakeOver24Hours is off.
+  int expected_update_checks = 0;
+  int expected_update_check_requests = 0;
+  int expected_update_check_completions = 0;
+
+  task_environment_.FastForwardBy(
       update_checker_internal::kOsAndPoliciesUpdateCheckHardTimeout);
   EXPECT_TRUE(CheckStats(expected_update_checks, expected_update_check_requests,
                          expected_update_check_completions));

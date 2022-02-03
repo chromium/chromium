@@ -826,6 +826,11 @@ extern const base::Feature kSupportSearchSuggestionForPrerender2;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kOmniboxTriggerForNoStatePrefetch;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSupportsRtcWakeOver24Hours;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 bool PrefServiceEnabled();
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in

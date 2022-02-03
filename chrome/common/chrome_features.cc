@@ -1202,4 +1202,12 @@ const base::Feature kSupportSearchSuggestionForPrerender2{
 const base::Feature kOmniboxTriggerForNoStatePrefetch{
     "OmniboxTriggerForNoStatePrefetch", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// A feature to indicate whether setting wake time >24hours away is supported by
+// the platform's RTC.
+// TODO(b/187516317): Remove when the issue is resolved in FW.
+const base::Feature kSupportsRtcWakeOver24Hours{
+    "SupportsRtcWakeOver24Hours", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace features
