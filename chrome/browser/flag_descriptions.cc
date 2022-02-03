@@ -4787,6 +4787,11 @@ const char kFilesTrashName[] = "Enable Files Trash.";
 const char kFilesTrashDescription[] =
     "Enable trash for My files volume in Files App.";
 
+const char kFilesWebDriveOfficeName[] =
+    "Enable Files App Web Drive Office support.";
+const char kFilesWebDriveOfficeDescription[] =
+    "Enable opening Office files located in Files app Drive in Web Drive.";
+
 const char kForceSpectreVariant2MitigationName[] =
     "Force Spectre variant 2 mitigagtion";
 const char kForceSpectreVariant2MitigationDescription[] =

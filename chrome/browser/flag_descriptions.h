@@ -2744,6 +2744,9 @@ extern const char kFilesSWADescription[];
 extern const char kFilesTrashName[];
 extern const char kFilesTrashDescription[];
 
+extern const char kFilesWebDriveOfficeName[];
+extern const char kFilesWebDriveOfficeDescription[];
+
 extern const char kFiltersInRecentsName[];
 extern const char kFiltersInRecentsDescription[];
 
