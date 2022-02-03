@@ -111,9 +111,10 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
       CredentialsCleanerRunnerFactory::GetForBrowserState(context), store,
       ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
       base::Seconds(60), base::NullCallback());
-
-  DelayReportingPasswordStoreMetrics(
-      ChromeBrowserState::FromBrowserState(context));
+  if (!context->IsOffTheRecord()) {
+    DelayReportingPasswordStoreMetrics(
+        ChromeBrowserState::FromBrowserState(context));
+  }
   return store;
 }
 
