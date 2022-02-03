@@ -1065,10 +1065,10 @@ class CookiesEnabled : public HeadlessAsyncDevTooledBrowserTest,
   }
 
   void OnResult(std::unique_ptr<runtime::EvaluateResult> result) {
-    std::string value;
     EXPECT_TRUE(result->GetResult()->HasValue());
-    EXPECT_TRUE(result->GetResult()->GetValue()->GetAsString(&value));
-    EXPECT_EQ("0", value);
+    const base::Value* value = result->GetResult()->GetValue();
+    EXPECT_TRUE(value->is_string());
+    EXPECT_EQ("0", value->GetString());
     FinishAsynchronousTest();
   }
 };
