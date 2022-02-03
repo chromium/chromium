@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
@@ -39,6 +40,7 @@ namespace content {
 
 namespace {
 
+using ::base::test::TestFuture;
 using ::blink::mojom::WebBluetoothCharacteristicClient;
 using ::blink::mojom::WebBluetoothGATTQueryQuantity;
 using ::blink::mojom::WebBluetoothRemoteGATTCharacteristicPtr;
@@ -496,11 +498,16 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     service_ =
         contents()->GetMainFrame()->CreateWebBluetoothServiceForTesting();
 
-    // GetAvailability connects the Web Bluetooth service to the adapter.
-    base::RunLoop run_loop;
-    service_->GetAvailability(base::BindLambdaForTesting(
-        [&run_loop](bool success) { run_loop.Quit(); }));
-    run_loop.Run();
+    // GetAvailability connects the Web Bluetooth service to the adapter. Call
+    // it twice in parallel to exercise what happens when multiple requests to
+    // acquire the BluetoothAdapter are in flight.
+    TestFuture<bool> future_1;
+    TestFuture<bool> future_2;
+    service_->GetAvailability(future_1.GetCallback());
+    service_->GetAvailability(future_2.GetCallback());
+    // Use Wait() instead of Get() because we don't care about the result.
+    EXPECT_TRUE(future_1.Wait());
+    EXPECT_TRUE(future_2.Wait());
   }
 
   void TearDown() override {
