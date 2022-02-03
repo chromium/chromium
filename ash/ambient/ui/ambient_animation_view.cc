@@ -11,6 +11,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
+#include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "base/check.h"
@@ -53,6 +54,7 @@ void AmbientAnimationView::Init() {
       cc::SkottieColorMap(), &animation_photo_provider_);
   animation->SetAnimationObserver(this);
   animated_image_view_->SetAnimatedImage(std::move(animation));
+  animated_image_view_observer_.Observe(animated_image_view_);
 }
 
 void AmbientAnimationView::AnimationWillStartPlaying(
@@ -65,10 +67,11 @@ void AmbientAnimationView::AnimationCycleEnded(
   event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
 }
 
-void AmbientAnimationView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  DVLOG(4) << __func__ << " from " << previous_bounds.ToString() << " to "
-           << bounds().ToString();
-  if (size().IsEmpty())
+void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
+  DCHECK_EQ(observed_view, static_cast<View*>(animated_image_view_));
+  DVLOG(4) << __func__ << " to "
+           << animated_image_view_->GetContentsBounds().ToString();
+  if (animated_image_view_->GetContentsBounds().IsEmpty())
     return;
 
   // By default, the |animated_image_view_| will render the animation with the
@@ -76,8 +79,13 @@ void AmbientAnimationView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // at the view's full bounds, wait for the view's initial layout to happen
   // so that its proper bounds become available (they are 0x0 initially) before
   // starting the animation playback.
-  DVLOG(4) << "View bounds available. Beginning rendering...";
-  animated_image_view_->SetImageSize(size());
+  gfx::Rect previous_animation_bounds = animated_image_view_->GetImageBounds();
+  AmbientAnimationResizer::Resize(*animated_image_view_);
+  DVLOG(4)
+      << "View bounds available. Resized animation with native size "
+      << animated_image_view_->animated_image()->GetOriginalSize().ToString()
+      << " from " << previous_animation_bounds.ToString() << " to "
+      << animated_image_view_->GetImageBounds().ToString();
   animated_image_view_->Play();
 }
 

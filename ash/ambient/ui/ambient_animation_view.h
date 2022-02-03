@@ -9,8 +9,10 @@
 
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
 #include "ash/ash_export.h"
+#include "base/scoped_observation.h"
 #include "ui/lottie/animation_observer.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class AnimatedImageView;
@@ -23,7 +25,8 @@ class AmbientBackendModel;
 class AmbientViewEventHandler;
 
 class ASH_EXPORT AmbientAnimationView : public views::View,
-                                        public lottie::AnimationObserver {
+                                        public lottie::AnimationObserver,
+                                        public views::ViewObserver {
  public:
   METADATA_HEADER(AmbientAnimationView);
 
@@ -41,7 +44,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   void AnimationWillStartPlaying(const lottie::Animation* animation) override;
   void AnimationCycleEnded(const lottie::Animation* animation) override;
 
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnViewBoundsChanged(View* observed_view) override;
 
   AmbientViewEventHandler* const event_handler_;
 
@@ -50,6 +53,8 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   AmbientAnimationPhotoProvider animation_photo_provider_;
 
   views::AnimatedImageView* animated_image_view_ = nullptr;
+  base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{
+      this};
 };
 
 }  // namespace ash

@@ -64,6 +64,9 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   // Stops any animation and resets it to the start frame.
   void Stop();
 
+  // May return null if SetAnimatedImage() has not been called.
+  lottie::Animation* animated_image() { return animated_image_.get(); }
+
  private:
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
