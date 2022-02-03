@@ -5722,7 +5722,7 @@
 
   <!-- Strings for Release Notes notification -->
   <message name="IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE" desc="Text for the notification title informing the user that the device has been updated and patch notes are available. Will specify the user's Chrome OS device. [CHAR_LIMIT=40]">
-    See what's new on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    Explore what's new on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_RELEASE_NOTES_NOTIFICATION_MESSAGE" desc="Text for the notification message informing the user that the device has been updated and patch notes are available.">
     Get highlights from the latest update
