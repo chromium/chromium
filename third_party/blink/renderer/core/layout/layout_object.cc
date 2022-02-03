@@ -457,7 +457,7 @@ void LayoutObject::AssertFragmentTree(bool display_locked) const {
       for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments()) {
         DCHECK_EQ(box, fragment.OwnerLayoutBox());
         fragment.AssertFragmentTreeChildren(
-            /* allow_destroyed */ display_locked);
+            /* allow_destroyed_or_moved */ display_locked);
       }
     }
     layout_object = layout_object->NextInPreOrder(this);

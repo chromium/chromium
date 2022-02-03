@@ -400,7 +400,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 #if DCHECK_IS_ON()
   void InvalidateInkOverflow();
   void AssertFragmentTreeSelf() const;
-  void AssertFragmentTreeChildren(bool allow_destroyed = false) const;
+  void AssertFragmentTreeChildren(bool allow_destroyed_or_moved = false) const;
 #endif
 
  private:
