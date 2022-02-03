@@ -18,7 +18,7 @@ import {I18nMixin} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
 import {Doodle, DoodleImageType, DoodleShareChannel, ImageDoodle, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {$$} from './utils_ts.js';
+import {$$} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 const SHARE_BUTTON_SIZE_PX: number = 26;

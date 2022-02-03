@@ -16,11 +16,12 @@ import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_util
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundManager} from './background_manager.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
-import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {I18nMixin, loadTimeData} from './i18n_setup.js';
+import {IframeElement} from './iframe.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {BackgroundImage, PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
@@ -30,50 +31,37 @@ import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.j
 import {WindowProxy} from './window_proxy.js';
 
 
-/**
- * TODO(crbug.com/1273590): Temporary interface to satisfy Closure Compiler,
- * remove when app.js is migrated to TypeScript.
- * @interface
- */
-class ModuleRegistryTemp {
-  /**
-   * @param {number} timeout
-   * @return {Promise<*>}
-   */
-  initializeModules(timeout) {}
-}
+type ExecutePromoBrowserCommandData = {
+  commandId: Command,
+  clickInfo: ClickInfo,
+};
 
-/**
- * @typedef {{
- *   commandId: Command<number>,
- *   clickInfo: ClickInfo
- * }}
- */
-let CommandData;
+type CanShowPromoWithBrowserCommandData = {
+  frameType: string,
+  messageType: string,
+  commandId: Command,
+};
 
 /**
  * Elements on the NTP. This enum must match the numbering for NTPElement in
  * enums.xml. These values are persisted to logs. Entries should not be
  * renumbered, removed or reused.
- * @enum {number}
  */
-export const NtpElement = {
-  kOther: 0,
-  kBackground: 1,
-  kOneGoogleBar: 2,
-  kLogo: 3,
-  kRealbox: 4,
-  kMostVisited: 5,
-  kMiddleSlotPromo: 6,
-  kModule: 7,
-  kCustomize: 8,
-};
+export enum NtpElement {
+  kOther = 0,
+  kBackground = 1,
+  kOneGoogleBar = 2,
+  kLogo = 3,
+  kRealbox = 4,
+  kMostVisited = 5,
+  kMiddleSlotPromo = 6,
+  kModule = 7,
+  kCustomize = 8,
+}
 
-/** @const {string} */
-const CUSTOMIZE_URL_PARAM = 'customize';
+const CUSTOMIZE_URL_PARAM: string = 'customize';
 
-/** @param {NtpElement} element */
-function recordClick(element) {
+function recordClick(element: NtpElement) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.Click', element, Object.keys(NtpElement).length);
 }
@@ -86,23 +74,20 @@ function ensureLazyLoaded() {
   document.body.appendChild(script);
 }
 
-/**
- * @polymer
- * @extends {PolymerElement}
- */
-class AppElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+interface AppElement {
+  $: {
+    oneGoogleBarClipPath: HTMLElement,
+  };
+}
+
+class AppElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-app';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @private */
       oneGoogleBarIframePath_: {
         type: String,
         value: () => {
@@ -114,13 +99,11 @@ class AppElement extends mixinBehaviors
         },
       },
 
-      /** @private */
       oneGoogleBarLoaded_: {
         type: Boolean,
         observer: 'notifyOneGoogleBarDarkThemeEnabledChange_',
       },
 
-      /** @private */
       oneGoogleBarDarkThemeEnabled_: {
         type: Boolean,
         computed: `computeOneGoogleBarDarkThemeEnabled_(oneGoogleBarLoaded_,
@@ -128,30 +111,25 @@ class AppElement extends mixinBehaviors
         observer: 'notifyOneGoogleBarDarkThemeEnabledChange_',
       },
 
-      /** @private {!Theme} */
       theme_: {
         observer: 'onThemeChange_',
         type: Object,
       },
 
-      /** @private */
       showCustomizeDialog_: {
         type: Boolean,
         value: () =>
             WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
       },
 
-      /** @private {?string} */
       selectedCustomizeDialogPage_: {
         type: String,
         value: () =>
             WindowProxy.getInstance().url.searchParams.get(CUSTOMIZE_URL_PARAM),
       },
 
-      /** @private */
       showVoiceSearchOverlay_: Boolean,
 
-      /** @private */
       showBackgroundImage_: {
         computed: 'computeShowBackgroundImage_(theme_)',
         observer: 'onShowBackgroundImageChange_',
@@ -159,99 +137,83 @@ class AppElement extends mixinBehaviors
         type: Boolean,
       },
 
-      /** @private */
       backgroundImageAttribution1_: {
         type: String,
         computed: `computeBackgroundImageAttribution1_(theme_)`,
       },
 
-      /** @private */
       backgroundImageAttribution2_: {
         type: String,
         computed: `computeBackgroundImageAttribution2_(theme_)`,
       },
 
-      /** @private */
       backgroundImageAttributionUrl_: {
         type: String,
         computed: `computeBackgroundImageAttributionUrl_(theme_)`,
       },
 
-      /** @private {SkColor} */
       backgroundColor_: {
         computed: 'computeBackgroundColor_(showBackgroundImage_, theme_)',
         type: Object,
       },
 
-      /** @private */
       logoColor_: {
         type: String,
         computed: 'computeLogoColor_(theme_)',
       },
 
-      /** @private */
       singleColoredLogo_: {
         computed: 'computeSingleColoredLogo_(theme_)',
         type: Boolean,
       },
 
-      /** @private */
       realboxShown_: {
         type: Boolean,
         computed: 'computeRealboxShown_(theme_)',
       },
 
-      /** @private */
       logoEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('logoEnabled'),
       },
 
-      /** @private */
       oneGoogleBarEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('oneGoogleBarEnabled'),
       },
 
-      /** @private */
       shortcutsEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('shortcutsEnabled'),
       },
 
-      /** @private */
       modulesRedesignedLayoutEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesRedesignedLayoutEnabled'),
         reflectToAttribute: true,
       },
 
-      /** @private */
       middleSlotPromoEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('middleSlotPromoEnabled'),
       },
 
-      /** @private */
       modulesEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesEnabled'),
       },
 
-      /** @private */
       modulesRedesignedEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
         reflectToAttribute: true,
       },
 
-      /** @private */
       middleSlotPromoLoaded_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       modulesLoaded_: {
         type: Boolean,
         value: false,
@@ -261,7 +223,6 @@ class AppElement extends mixinBehaviors
        * In order to avoid flicker, the promo and modules are hidden until both
        * are loaded. If modules are disabled, the promo is shown as soon as it
        * is loaded.
-       * @private
        */
       promoAndModulesLoaded_: {
         type: Boolean,
@@ -273,36 +234,64 @@ class AppElement extends mixinBehaviors
       /**
        * If true, renders additional elements that were not deemed crucial to
        * to show up immediately on load.
-       * @private
        */
       lazyRender_: Boolean,
     };
   }
 
+  private oneGoogleBarIframePath_: string;
+  private oneGoogleBarLoaded_: boolean;
+  private oneGoogleBarDarkThemeEnabled_: boolean;
+  private theme_: Theme;
+  private showCustomizeDialog_: boolean;
+  private selectedCustomizeDialogPage_: string|null;
+  private showVoiceSearchOverlay_: boolean;
+  private showBackgroundImage_: boolean;
+  private backgroundImageAttribution1_: string;
+  private backgroundImageAttribution2_: string;
+  private backgroundImageAttributionUrl_: string;
+  private backgroundColor_: SkColor;
+  private logoColor_: string;
+  private singleColoredLogo_: boolean;
+  private realboxShown_: boolean;
+  private logoEnabled_: boolean;
+  private oneGoogleBarEnabled_: boolean;
+  private shortcutsEnabled_: boolean;
+  private modulesRedesignedLayoutEnabled_: boolean;
+  private middleSlotPromoEnabled_: boolean;
+  private modulesEnabled_: boolean;
+  private modulesRedesignedEnabled_: boolean;
+  private middleSlotPromoLoaded_: boolean;
+  private modulesLoaded_: boolean;
+  private promoAndModulesLoaded_: boolean;
+  private lazyRender_: boolean;
+
+  private callbackRouter_: PageCallbackRouter;
+  private pageHandler_: PageHandlerRemote;
+  private backgroundManager_: BackgroundManager;
+  private setThemeListenerId_: number|null = null;
+  private eventTracker_: EventTracker = new EventTracker();
+  private shouldPrintPerformance_: boolean;
+  private backgroundImageLoadStartEpoch_: number;
+  private backgroundImageLoadStart_: number = 0;
+
+  // Suppress TypeScript's error TS2376 to intentionally allow calling
+  // performance.mark() before calling super().
+  // @ts-ignore:next-line
   constructor() {
     performance.mark('app-creation-start');
     super();
-    /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = NewTabPageProxy.getInstance().callbackRouter;
-    /** @private {!PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
-    /** @private {!BackgroundManager} */
     this.backgroundManager_ = BackgroundManager.getInstance();
-    /** @private {?number} */
-    this.setThemeListenerId_ = null;
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
-    /** @private {boolean} */
     this.shouldPrintPerformance_ =
         new URLSearchParams(location.search).has('print_perf');
+
     /**
      * Initialized with the start of the performance timeline in case the
      * background image load is not triggered by JS.
-     * @private {number}
      */
     this.backgroundImageLoadStartEpoch_ = performance.timeOrigin;
-    /** @private {number} */
-    this.backgroundImageLoadStart_ = 0;
 
     chrome.metricsPrivate.recordValue(
         {
@@ -315,16 +304,14 @@ class AppElement extends mixinBehaviors
         Math.floor(document.documentElement.clientHeight));
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        this.callbackRouter_.setTheme.addListener(theme => {
+        this.callbackRouter_.setTheme.addListener((theme: Theme) => {
           performance.measure('theme-set');
           this.theme_ = theme;
         });
-    this.eventTracker_.add(window, 'message', (event) => {
-      /** @type {!Object} */
+    this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
       const data = event.data;
       // Something in OneGoogleBar is sending a message that is received here.
       // Need to ignore it.
@@ -335,9 +322,9 @@ class AppElement extends mixinBehaviors
         this.handleOneGoogleBarMessage_(event);
       }
     });
-    this.eventTracker_.add(window, 'keydown', e => this.onWindowKeydown_(e));
+    this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
     this.eventTracker_.add(
-        window, 'click', e => this.onWindowClick_(e), /*capture=*/ true);
+        window, 'click', this.onWindowClick_.bind(this), /*capture=*/ true);
     if (this.shouldPrintPerformance_) {
       // It is possible that the background image has already loaded by now.
       // If it has, we request it to re-send the load time so that we can
@@ -359,14 +346,12 @@ class AppElement extends mixinBehaviors
     FocusOutlineManager.forDocument(document);
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.callbackRouter_.removeListener(assert(this.setThemeListenerId_));
+    this.callbackRouter_.removeListener(this.setThemeListenerId_!);
     this.eventTracker_.removeAll();
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.pageHandler_.onAppRendered(WindowProxy.getInstance().now());
@@ -379,128 +364,87 @@ class AppElement extends mixinBehaviors
     performance.measure('app-creation', 'app-creation-start');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeOneGoogleBarDarkThemeEnabled_() {
+  private computeOneGoogleBarDarkThemeEnabled_(): boolean {
     return this.theme_ && this.theme_.isDark;
   }
 
-  /** @private */
-  notifyOneGoogleBarDarkThemeEnabledChange_() {
+  private notifyOneGoogleBarDarkThemeEnabledChange_() {
     if (this.oneGoogleBarLoaded_) {
-      $$(this, '#oneGoogleBar').postMessage({
+      $$<IframeElement>(this, '#oneGoogleBar')!.postMessage({
         type: 'enableDarkTheme',
         enabled: this.oneGoogleBarDarkThemeEnabled_,
       });
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeBackgroundImageAttribution1_() {
+  private computeBackgroundImageAttribution1_(): string {
     return this.theme_ && this.theme_.backgroundImageAttribution1 || '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeBackgroundImageAttribution2_() {
+  private computeBackgroundImageAttribution2_(): string {
     return this.theme_ && this.theme_.backgroundImageAttribution2 || '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeBackgroundImageAttributionUrl_() {
+  private computeBackgroundImageAttributionUrl_(): string {
     return this.theme_ && this.theme_.backgroundImageAttributionUrl ?
         this.theme_.backgroundImageAttributionUrl.url :
         '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeRealboxShown_() {
+  private computeRealboxShown_(): boolean {
     // If realbox is to match the Omnibox's theme, keep it hidden until the
     // theme arrives. Otherwise mismatching colors will cause flicker.
     return !loadTimeData.getBoolean('realboxMatchOmniboxTheme') ||
         !!this.theme_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computePromoAndModulesLoaded_() {
+  private computePromoAndModulesLoaded_(): boolean {
     return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
             this.middleSlotPromoLoaded_) &&
         (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
   }
 
-  /** @private */
-  async onLazyRendered_() {
+  private async onLazyRendered_() {
     // Integration tests use this attribute to determine when lazy load has
     // completed.
-    document.documentElement.setAttribute('lazy-loaded', true);
+    document.documentElement.setAttribute('lazy-loaded', String(true));
     // Instantiate modules even if |modulesEnabled| is false to counterfactually
     // trigger a HaTS survey in a potential control group.
     if (!loadTimeData.getBoolean('modulesLoadEnabled') ||
         loadTimeData.getBoolean('modulesEnabled')) {
       return;
     }
-    const modules =
-        await /** @type {ModuleRegistryTemp} */ (ModuleRegistry.getInstance())
-            .initializeModules(loadTimeData.getInteger('modulesLoadTimeout'));
+    const modules = await ModuleRegistry.getInstance().initializeModules(
+        loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
       this.pageHandler_.onModulesLoadedWithData();
     }
   }
 
-  /**
-   * TODO(crbug.com/1273590): Remove suppression when app.js is converted to
-   * TypeScript.
-   * @suppress {checkTypes}
-   * @private
-   */
-  onOpenVoiceSearch_() {
+  private onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
     recordVoiceAction(VoiceAction.kActivateSearchBox);
   }
 
-  /** @private */
-  onCustomizeClick_() {
+  private onCustomizeClick_() {
     this.showCustomizeDialog_ = true;
   }
 
-  /** @private */
-  onCustomizeDialogClose_() {
+  private onCustomizeDialogClose_() {
     this.showCustomizeDialog_ = false;
     // Let customize dialog decide what page to show on next open.
     this.selectedCustomizeDialogPage_ = null;
   }
 
-  /** @private */
-  onVoiceSearchOverlayClose_() {
+  private onVoiceSearchOverlayClose_() {
     this.showVoiceSearchOverlay_ = false;
   }
 
   /**
    * Handles <CTRL> + <SHIFT> + <.> (also <CMD> + <SHIFT> + <.> on mac) to open
    * voice search.
-   * @param {KeyboardEvent} e
-   * @private
-   * TODO(crbug.com/1273590): Remove suppression when app.js is converted to
-   * TypeScript.
-   * @suppress {checkTypes}
    */
-  onWindowKeydown_(e) {
+  private onWindowKeydown_(e: KeyboardEvent) {
     let ctrlKeyPressed = e.ctrlKey;
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
@@ -511,38 +455,26 @@ class AppElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {SkColor} skColor
-   * @return {string}
-   * @private
-   */
-  rgbaOrInherit_(skColor) {
+  private rgbaOrInherit_(skColor: SkColor|null): string {
     return skColor ? skColorToRgba(skColor) : 'inherit';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowBackgroundImage_() {
+  private computeShowBackgroundImage_(): boolean {
     return !!this.theme_ && !!this.theme_.backgroundImage;
   }
 
-  /** @private */
-  onShowBackgroundImageChange_() {
+  private onShowBackgroundImageChange_() {
     this.backgroundManager_.setShowBackgroundImage(this.showBackgroundImage_);
   }
 
-  /** @private */
-  onThemeChange_() {
+  private onThemeChange_() {
     if (this.theme_) {
       this.backgroundManager_.setBackgroundColor(this.theme_.backgroundColor);
     }
     this.updateBackgroundImagePath_();
   }
 
-  /** @private */
-  onPromoAndModulesLoadedChange_() {
+  private onPromoAndModulesLoadedChange_() {
     if (this.promoAndModulesLoaded_ &&
         loadTimeData.getBoolean('modulesEnabled')) {
       recordLoadDuration(
@@ -557,10 +489,8 @@ class AppElement extends mixinBehaviors
    * The ntp-untrusted-iframe |path| is set directly. When using a data binding
    * instead, the quick updates to the |path| result in iframe loading an error
    * page.
-   * @private
    */
-  updateBackgroundImagePath_() {
-    /** @type {BackgroundImage|undefined} */
+  private updateBackgroundImagePath_() {
     const backgroundImage = this.theme_ && this.theme_.backgroundImage;
 
     if (backgroundImage) {
@@ -568,32 +498,20 @@ class AppElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @return {SkColor}
-   * @private
-   */
-  computeBackgroundColor_() {
+  private computeBackgroundColor_(): SkColor|null {
     if (this.showBackgroundImage_) {
       return null;
     }
     return this.theme_ && this.theme_.backgroundColor;
   }
 
-  /**
-   * @return {SkColor}
-   * @private
-   */
-  computeLogoColor_() {
+  private computeLogoColor_(): SkColor|null {
     return this.theme_ &&
         (this.theme_.logoColor ||
          (this.theme_.isDark ? hexColorToSkColor('#ffffff') : null));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeSingleColoredLogo_() {
+  private computeSingleColoredLogo_(): boolean {
     return this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
   }
 
@@ -603,12 +521,13 @@ class AppElement extends mixinBehaviors
    * command can be shown back to the source promo frame. |commandSource| and
    * |commandOrigin| are used only to send the response back to the source promo
    * frame and should not be used for anything else.
-   * @param {Object} messageData Data received from the source promo frame.
-   * @param {Window} commandSource Source promo frame.
-   * @param {string} commandOrigin Origin of the source promo frame.
-   * @private
+   * @param  messageData Data received from the source promo frame.
+   * @param commandSource Source promo frame.
+   * @param commandOrigin Origin of the source promo frame.
    */
-  canShowPromoWithBrowserCommand_(messageData, commandSource, commandOrigin) {
+  private canShowPromoWithBrowserCommand_(
+      messageData: CanShowPromoWithBrowserCommandData, commandSource: Window,
+      commandOrigin: string) {
     // Make sure we don't send unsupported commands to the browser.
     /** @type {!Command} */
     const commandId = Object.values(Command).includes(messageData.commandId) ?
@@ -617,8 +536,10 @@ class AppElement extends mixinBehaviors
 
     BrowserCommandProxy.getInstance().handler.canExecuteCommand(commandId).then(
         ({canExecute}) => {
-          const response = {messageType: messageData.messageType};
-          response[messageData.commandId] = canExecute;
+          const response = {
+            messageType: messageData.messageType,
+            [messageData.commandId]: canExecute,
+          };
           commandSource.postMessage(response, commandOrigin);
         });
   }
@@ -629,23 +550,20 @@ class AppElement extends mixinBehaviors
    * status response back to the source promo frame. |commandSource| and
    * |commandOrigin| are used only to send the execution status response back to
    * the source promo frame and should not be used for anything else.
-   * @param {!CommandData} commandData Command and mouse click info.
-   * @param {Window} commandSource Source promo frame.
-   * @param {string} commandOrigin Origin of the source promo frame.
-   * @private
+   * @param commandData Command and mouse click info.
+   * @param commandSource Source promo frame.
+   * @param commandOrigin Origin of the source promo frame.
    */
-  executePromoBrowserCommand_(commandData, commandSource, commandOrigin) {
+  private executePromoBrowserCommand_(
+      commandData: ExecutePromoBrowserCommandData, commandSource: Window,
+      commandOrigin: string) {
     // Make sure we don't send unsupported commands to the browser.
-    /** @type {!Command} */
     const commandId = Object.values(Command).includes(commandData.commandId) ?
         commandData.commandId :
         Command.kUnknownCommand;
 
     BrowserCommandProxy.getInstance()
-        .handler
-        .executeCommand(
-            commandId,
-            /** @type {!ClickInfo} */ (commandData.clickInfo))
+        .handler.executeCommand(commandId, commandData.clickInfo)
         .then(({commandExecuted}) => {
           commandSource.postMessage(commandExecuted, commandOrigin);
         });
@@ -657,14 +575,11 @@ class AppElement extends mixinBehaviors
    *
    * 'overlaysUpdated' message includes the updated array of overlay rects that
    * are shown.
-   * @param {!MessageEvent} event
-   * @private
    */
-  handleOneGoogleBarMessage_(event) {
-    /** @type {!Object} */
+  private handleOneGoogleBarMessage_(event: MessageEvent) {
     const data = event.data;
     if (data.messageType === 'loaded') {
-      const oneGoogleBar = $$(this, '#oneGoogleBar');
+      const oneGoogleBar = $$<IframeElement>(this, '#oneGoogleBar')!;
       oneGoogleBar.style.clipPath = 'url(#oneGoogleBarClipPath)';
       oneGoogleBar.style.zIndex = '1000';
       this.oneGoogleBarLoaded_ = true;
@@ -673,45 +588,43 @@ class AppElement extends mixinBehaviors
       this.$.oneGoogleBarClipPath.querySelectorAll('rect').forEach(el => {
         el.remove();
       });
-      const overlayRects = /** @type {!Array<!DOMRect>} */ (data.data);
+      const overlayRects = data.data as DOMRect[];
       overlayRects.forEach(({x, y, width, height}) => {
         const rectElement =
             document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         // Add 8px around every rect to ensure shadows are not cutoff.
-        rectElement.setAttribute('x', x - 8);
-        rectElement.setAttribute('y', y - 8);
-        rectElement.setAttribute('width', width + 16);
-        rectElement.setAttribute('height', height + 16);
+        rectElement.setAttribute('x', `${x - 8}`);
+        rectElement.setAttribute('y', `${y - 8}`);
+        rectElement.setAttribute('width', `${width + 16}`);
+        rectElement.setAttribute('height', `${height + 16}`);
         this.$.oneGoogleBarClipPath.appendChild(rectElement);
       });
     } else if (data.messageType === 'can-show-promo-with-browser-command') {
-      this.canShowPromoWithBrowserCommand_(data, event.source, event.origin);
+      this.canShowPromoWithBrowserCommand_(
+          data, event.source as Window, event.origin);
     } else if (data.messageType === 'execute-browser-command') {
       this.executePromoBrowserCommand_(
-          /** @type {!CommandData} */ (data.data), event.source, event.origin);
+          data.data, event.source as Window, event.origin);
     } else if (data.messageType === 'click') {
       recordClick(NtpElement.kOneGoogleBar);
     }
   }
 
-  /** @private */
-  onMiddleSlotPromoLoaded_() {
+  private onMiddleSlotPromoLoaded_() {
     this.middleSlotPromoLoaded_ = true;
   }
 
-  /** @private */
-  onModulesLoaded_() {
+  private onModulesLoaded_() {
     this.modulesLoaded_ = true;
   }
 
-  /** @private */
-  onCustomizeModule_() {
+  private onCustomizeModule_() {
     this.showCustomizeDialog_ = true;
     this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
   }
 
-  /** @private */
-  printPerformanceDatum_(name, time, auxTime = 0) {
+  private printPerformanceDatum_(
+      name: string, time: number, auxTime: number = 0) {
     if (!this.shouldPrintPerformance_) {
       return;
     }
@@ -725,14 +638,13 @@ class AppElement extends mixinBehaviors
   /**
    * Prints performance measurements to the console. Also, installs  performance
    * observer to continuously print performance measurements after.
-   * @private
    */
-  printPerformance_() {
+  private printPerformance_() {
     if (!this.shouldPrintPerformance_) {
       return;
     }
     const entryTypes = ['paint', 'measure'];
-    const log = (entry) => {
+    const log = (entry: PerformanceEntry) => {
       this.printPerformanceDatum_(
           entry.name, entry.duration ? entry.duration : entry.startTime,
           entry.duration && entry.startTime ? entry.startTime : 0);
@@ -751,11 +663,7 @@ class AppElement extends mixinBehaviors
     });
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onWindowClick_(e) {
+  private onWindowClick_(e: Event) {
     if (e.composedPath() && e.composedPath()[0] === $$(this, '#content')) {
       recordClick(NtpElement.kBackground);
       return;
@@ -784,6 +692,10 @@ class AppElement extends mixinBehaviors
       }
     }
     recordClick(NtpElement.kOther);
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

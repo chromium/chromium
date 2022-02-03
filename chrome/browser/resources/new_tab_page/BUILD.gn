@@ -4,7 +4,6 @@
 
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
@@ -12,120 +11,9 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/foo",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/cart",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/task_module",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/realbox",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page",
-                            root_build_dir),
-
-                    # TODO(crbug.com/1286395): Remove |hide_warnings_for| when the bug is fixed.
-                    "hide_warnings_for=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/most_visited",
-                            root_build_dir),
-                  ]
-
-  deps = [
-    ":app",
-    ":lazy_load",
-    ":new_tab_page",
-    ":new_tab_page_proxy",
-    ":utils",
-    ":window_proxy",
-  ]
-}
-
-js_library("new_tab_page") {
-  deps = [
-    ":app",
-    ":background_manager",
-    ":utils",
-    ":window_proxy",
-    "//ui/webui/resources/js/browser_command:browser_command_proxy",
-  ]
-}
-
-js_library("lazy_load") {
-}
-
-js_library("window_proxy") {
-}
-
-js_library("new_tab_page_proxy") {
-  deps = [ "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js" ]
-}
-
-js_library("app") {
-  deps = [
-    ":background_manager",
-    ":customize_dialog_types",
-    ":i18n_setup",
-    ":metrics_utils",
-    ":new_tab_page_proxy",
-    ":window_proxy",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js",
-    "//skia/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js/browser_command:browser_command_proxy",
-    "//ui/webui/resources/js/browser_command:mojo_bindings_webui_js",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-}
-
-js_library("customize_dialog_types") {
-}
-
-js_library("utils") {
-}
-
-js_library("metrics_utils") {
-  deps = [ ":i18n_setup" ]
-  externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
-}
-
-js_library("background_manager") {
-  deps = [
-    ":utils",
-    ":window_proxy",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js",
-    "//skia/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
-}
-
-js_library("i18n_setup") {
-  deps = [
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
 html_to_js("web_components_local") {
   js_files = [
-    "app.js",
+    "app.ts",
     "customize_backgrounds.ts",
     "customize_dialog.ts",
     "customize_shortcuts.ts",
@@ -159,16 +47,15 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "background_manager.js",
-    "window_proxy.js",
-    "new_tab_page_proxy.js",
-    "lazy_load.js",
-    "customize_dialog_types.js",
-    "new_tab_page.js",
-    "utils.js",
-    "utils_ts.ts",
-    "metrics_utils.js",
-    "i18n_setup.js",
+    "background_manager.ts",
+    "window_proxy.ts",
+    "new_tab_page_proxy.ts",
+    "lazy_load.ts",
+    "customize_dialog_types.ts",
+    "new_tab_page.ts",
+    "utils.ts",
+    "metrics_utils.ts",
+    "i18n_setup.ts",
   ]
 }
 
@@ -178,7 +65,7 @@ preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "app.js",
+    "app.ts",
     "middle_slot_promo.ts",
     "customize_dialog.ts",
     "voice_search_overlay.ts",
@@ -360,19 +247,19 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-               "app.js",
-               "background_manager.js",
+               "app.ts",
+               "background_manager.ts",
                "customize_backgrounds.ts",
                "customize_dialog.ts",
-               "customize_dialog_types.js",
+               "customize_dialog_types.ts",
                "customize_modules.ts",
                "customize_shortcuts.ts",
                "doodle_share_dialog.ts",
-               "i18n_setup.js",
+               "i18n_setup.ts",
                "iframe.ts",
-               "lazy_load.js",
+               "lazy_load.ts",
                "logo.ts",
-               "metrics_utils.js",
+               "metrics_utils.ts",
                "middle_slot_promo.ts",
                "mini_page.ts",
                "modules/cart/chrome_cart_proxy.ts",
@@ -393,18 +280,17 @@ ts_library("build_ts") {
                "modules/recipes_v2/module.ts",
                "modules/task_module/module.ts",
                "modules/task_module/task_module_handler_proxy.ts",
-               "new_tab_page.js",
-               "new_tab_page_proxy.js",
+               "new_tab_page.ts",
+               "new_tab_page_proxy.ts",
                "realbox/realbox_action.ts",
                "realbox/realbox_browser_proxy.ts",
                "realbox/realbox_dropdown.ts",
                "realbox/realbox_icon.ts",
                "realbox/realbox.ts",
                "realbox/realbox_match.ts",
-               "utils.js",
-               "utils_ts.ts",
+               "utils.ts",
                "voice_search_overlay.ts",
-               "window_proxy.js",
+               "window_proxy.ts",
              ] + mojo_js_files
 
   if (!is_official_build) {

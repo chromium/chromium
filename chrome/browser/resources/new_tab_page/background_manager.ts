@@ -26,13 +26,11 @@ import {WindowProxy} from './window_proxy.js';
  * |PromiseResolver| that resolves to the captured load time.
  */
 class LoadTimeResolver {
-  /** @param {string} url */
-  constructor(url) {
-    /** @private {!PromiseResolver<number>} */
-    this.resolver_ = new PromiseResolver();
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
-    this.eventTracker_.add(window, 'message', ({data}) => {
+  private resolver_: PromiseResolver<number> = new PromiseResolver();
+  private eventTracker_: EventTracker = new EventTracker();
+
+  constructor(url: string) {
+    this.eventTracker_.add(window, 'message', ({data}: MessageEvent) => {
       if (data.frameType === 'background-image' &&
           data.messageType === 'loaded' && url === data.url) {
         this.resolve_(data.time);
@@ -40,8 +38,7 @@ class LoadTimeResolver {
     });
   }
 
-  /** @return {!Promise<number>} */
-  get promise() {
+  get promise(): Promise<number> {
     return this.resolver_.promise;
   }
 
@@ -50,58 +47,48 @@ class LoadTimeResolver {
     this.eventTracker_.removeAll();
   }
 
-  /** @param {number} loadTime */
-  resolve_(loadTime) {
+  private resolve_(loadTime: number) {
     this.resolver_.resolve(loadTime);
     this.eventTracker_.removeAll();
   }
 }
 
-/** @type {BackgroundManager} */
-let instance = null;
+let instance: BackgroundManager|null = null;
 
 export class BackgroundManager {
-  /** @return {!BackgroundManager} */
-  static getInstance() {
+  static getInstance(): BackgroundManager {
     return instance || (instance = new BackgroundManager());
   }
 
-  /** @param {BackgroundManager} newInstance */
-  static setInstance(newInstance) {
+  static setInstance(newInstance: BackgroundManager) {
     instance = newInstance;
   }
 
+  private backgroundImage_: HTMLIFrameElement;
+  private loadTimeResolver_: LoadTimeResolver|null = null;
+  private url_: string;
+
   constructor() {
-    /** @private {!HTMLIFrameElement} */
     this.backgroundImage_ =
         strictQuery(document.body, '#backgroundImage', HTMLIFrameElement);
-    /** @private {LoadTimeResolver} */
-    this.loadTimeResolver_ = null;
-    /** @private {string} */
     this.url_ = this.backgroundImage_.src;
   }
 
   /**
    * Sets whether the background image should be shown.
-   * @param {boolean} show True, if the background image should be shown.
+   * @param show True, if the background image should be shown.
    */
-  setShowBackgroundImage(show) {
+  setShowBackgroundImage(show: boolean) {
     document.body.toggleAttribute('show-background-image', show);
   }
 
-  /**
-   * Sets the background color.
-   * @param {SkColor} color The background color.
-   */
-  setBackgroundColor(color) {
+  /** Sets the background color. */
+  setBackgroundColor(color: SkColor) {
     document.body.style.backgroundColor = skColorToRgba(color);
   }
 
-  /**
-   * Sets the background image.
-   * @param {!BackgroundImage} image The background image.
-   */
-  setBackgroundImage(image) {
+  /** Sets the background image. */
+  setBackgroundImage(image: BackgroundImage) {
     const url =
         new URL('chrome-untrusted://new-tab-page/custom_background_image');
     url.searchParams.append('url', image.url.url);
@@ -132,7 +119,7 @@ export class BackgroundManager {
     }
     // We use |contentWindow.location.replace| because reloading the iframe by
     // setting its |src| adds a history entry.
-    this.backgroundImage_.contentWindow.location.replace(url.href);
+    this.backgroundImage_.contentWindow!.location.replace(url.href);
     // We track the URL separately because |contentWindow.location.replace| does
     // not update the iframe's src attribute.
     this.url_ = url.href;
@@ -148,9 +135,8 @@ export class BackgroundManager {
    * setup we ensure that the load time is (re)sent _after_ both the NTP top
    * frame and the background image iframe have installed the required message
    * listeners.
-   * @return {!Promise<number>}
    */
-  getBackgroundImageLoadTime() {
+  getBackgroundImageLoadTime(): Promise<number> {
     if (!this.loadTimeResolver_) {
       this.loadTimeResolver_ = new LoadTimeResolver(this.backgroundImage_.src);
       WindowProxy.getInstance().postMessage(

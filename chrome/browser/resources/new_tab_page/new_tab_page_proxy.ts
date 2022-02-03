@@ -4,13 +4,11 @@
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 
-/** @type {?NewTabPageProxy} */
-let instance = null;
+let instance: NewTabPageProxy|null = null;
 
 /** Holds Mojo interfaces for communication with the browser process. */
 export class NewTabPageProxy {
-  /** @return {!NewTabPageProxy} */
-  static getInstance() {
+  static getInstance(): NewTabPageProxy {
     if (!instance) {
       const handler = new PageHandlerRemote();
       const callbackRouter = new PageCallbackRouter();
@@ -22,20 +20,16 @@ export class NewTabPageProxy {
     return instance;
   }
 
-  /**
-   * @param {!PageHandlerRemote} handler
-   * @param {!PageCallbackRouter} callbackRouter
-   */
-  static setInstance(handler, callbackRouter) {
+  static setInstance(
+      handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
     instance = new NewTabPageProxy(handler, callbackRouter);
   }
 
-  /**
-   * @param {!PageHandlerRemote} handler
-   * @param {!PageCallbackRouter} callbackRouter
-   * @private
-   */
-  constructor(handler, callbackRouter) {
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
+
+  private constructor(
+      handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
     this.handler = handler;
     this.callbackRouter = callbackRouter;
   }

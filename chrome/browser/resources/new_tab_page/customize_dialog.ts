@@ -152,7 +152,8 @@ class CustomizeDialogElement extends I18nMixin
     }
     e.preventDefault();
     e.stopPropagation();
-    this.selectedPage = (e.target as HTMLElement).getAttribute('page-name')!;
+    this.selectedPage = (e.target as HTMLElement).getAttribute('page-name') as
+        CustomizeDialogPage;
   }
 
   private onSelectedPageChange_() {

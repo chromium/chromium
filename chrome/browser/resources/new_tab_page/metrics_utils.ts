@@ -4,12 +4,8 @@
 
 import {loadTimeData} from './i18n_setup.js';
 
-/**
- * Records |durationMs| in the |metricName| histogram.
- * @param {string} metricName
- * @param {number} durationMs
- */
-export function recordDuration(metricName, durationMs) {
+/** Records |durationMs| in the |metricName| histogram. */
+export function recordDuration(metricName: string, durationMs: number) {
   chrome.metricsPrivate.recordValue(
       {
         metricName,
@@ -24,23 +20,17 @@ export function recordDuration(metricName, durationMs) {
 /**
  * Records the duration between navigation start and |msSinceEpoch| in the
  * |metricName| histogram.
- * @param {string} metricName
- * @param {number} msSinceEpoch
  */
-export function recordLoadDuration(metricName, msSinceEpoch) {
+export function recordLoadDuration(metricName: string, msSinceEpoch: number) {
   recordDuration(
-      metricName,
-      msSinceEpoch - /** @type {number} */
-          (loadTimeData.getValue('navigationStartTime')));
+      metricName, msSinceEpoch - loadTimeData.getValue('navigationStartTime'));
 }
 
 /**
  * Records |value| (expected to be between 0 and 10) into the ten-bucket
  * |metricName| histogram.
- * @param {string} metricName
- * @param {number} value
  */
-export function recordPerdecage(metricName, value) {
+export function recordPerdecage(metricName: string, value: number) {
   chrome.metricsPrivate.recordValue(
       {
         metricName,
@@ -55,9 +45,8 @@ export function recordPerdecage(metricName, value) {
 /**
  * Records that an event has happened rather than a value in the |metricName|
  * histogram.
- * @param {string} metricName
  */
-export function recordOccurence(metricName) {
+export function recordOccurence(metricName: string) {
   chrome.metricsPrivate.recordValue(
       {
         metricName,
