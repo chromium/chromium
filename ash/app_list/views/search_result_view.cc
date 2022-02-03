@@ -76,6 +76,7 @@ constexpr int kImageIconCornerRadius = 4;
 constexpr int kSearchRatingStarPadding = 4;
 constexpr int kSearchRatingStarSize = 16;
 constexpr gfx::Insets kAnswerCardBorder(12, 12, 12, 12);
+constexpr gfx::Insets kBigTitleBorder(0, 14, 0, 12);
 
 views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
   views::ImageView* image_view =
@@ -88,7 +89,8 @@ views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
 
 views::Label* SetupChildLabelView(
     views::FlexLayoutView* parent,
-    SearchResultView::SearchResultViewType view_type) {
+    SearchResultView::SearchResultViewType view_type,
+    SearchResultView::LabelType label_type) {
   // Create and setup label.
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -100,7 +102,9 @@ views::Label* SetupChildLabelView(
                                views::MaximumFlexSizeRule::kScaleToMaximum));
 
   // Apply label text styling.
-  label->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+  label->SetTextContext(label_type == SearchResultView::LabelType::kBigTitle
+                            ? CONTEXT_SEARCH_RESULT_BIG_TITLE
+                            : CONTEXT_SEARCH_RESULT_VIEW);
   switch (view_type) {
     case SearchResultView::SearchResultViewType::kClassic:
       label->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
@@ -173,13 +177,7 @@ class SearchResultView::LabelAndTag {
 
   LabelAndTag(const LabelAndTag& other) = default;
 
-  LabelAndTag& operator=(const LabelAndTag& other) {
-    if (this == &other)
-      return *this;
-    label_ = other.label_;
-    tags_ = other.tags_;
-    return *this;
-  }
+  LabelAndTag& operator=(const LabelAndTag& other) = default;
 
   ~LabelAndTag() = default;
 
@@ -225,33 +223,46 @@ SearchResultView::SearchResultView(
 
   SetNotifyEnterExitOnChild(true);
 
-  // TODO(crbug/1316079): Add BigTitle support for weather answer card.
-
   text_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   text_container_->GetViewAccessibility().OverrideIsIgnored(true);
   text_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  text_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  big_title_container_ =
+      text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  big_title_container_->GetViewAccessibility().OverrideIsIgnored(true);
+  big_title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  big_title_container_->SetBorder(views::CreateEmptyBorder(kBigTitleBorder));
+
+  title_and_details_container_ =
+      text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  title_and_details_container_->GetViewAccessibility().OverrideIsIgnored(true);
+  title_and_details_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kStretch);
 
   SetSearchResultViewType(view_type_);
 
-  title_container_ =
-      text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  title_container_ = title_and_details_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
   title_container_->GetViewAccessibility().OverrideIsIgnored(true);
   title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   title_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  separator_label_ = SetupChildLabelView(text_container_, view_type_);
+  separator_label_ = SetupChildLabelView(title_and_details_container_,
+                                         view_type_, LabelType::kDetails);
   separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
 
-  details_container_ =
-      text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  details_container_ = title_and_details_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
   details_container_->GetViewAccessibility().OverrideIsIgnored(true);
   details_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   details_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  rating_ = SetupChildLabelView(text_container_, view_type_);
+  rating_ = SetupChildLabelView(title_and_details_container_, view_type_,
+                                LabelType::kDetails);
 
-  rating_star_ = SetupChildImageView(text_container_);
+  rating_star_ = SetupChildImageView(title_and_details_container_);
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
@@ -275,6 +286,8 @@ void SearchResultView::OnResultChanging(SearchResult* new_result) {
 void SearchResultView::OnResultChanged() {
   OnMetadataChanged();
   // Update tile, separator, and details text visibility.
+  if (view_type_ == SearchResultViewType::kAnswerCard)
+    UpdateBigTitleText();
   UpdateTitleText();
   UpdateDetailsText();
   UpdateRating();
@@ -287,22 +300,33 @@ void SearchResultView::SetSearchResultViewType(SearchResultViewType type) {
 
   switch (view_type_) {
     case SearchResultViewType::kDefault:
-      text_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+      title_and_details_container_->SetOrientation(
+          views::LayoutOrientation::kHorizontal);
       SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+      big_title_container_->RemoveAllChildViews();
+      big_title_label_tags_.clear();
+      big_title_container_->SetVisible(false);
+
       break;
     case SearchResultViewType::kClassic:
-      text_container_->SetOrientation(views::LayoutOrientation::kVertical);
+      title_and_details_container_->SetOrientation(
+          views::LayoutOrientation::kVertical);
       SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+      big_title_container_->RemoveAllChildViews();
+      big_title_label_tags_.clear();
+      big_title_container_->SetVisible(false);
+
       break;
     case SearchResultViewType::kAnswerCard:
-      text_container_->SetOrientation(views::LayoutOrientation::kVertical);
+      title_and_details_container_->SetOrientation(
+          views::LayoutOrientation::kVertical);
       SetBorder(views::CreateEmptyBorder(kAnswerCardBorder));
       break;
   }
 }
 
-views::LayoutOrientation SearchResultView::GetLayoutOrientationForTest() {
-  return text_container_->GetOrientation();
+views::LayoutOrientation SearchResultView::TitleAndDetailsOrientationForTest() {
+  return title_and_details_container_->GetOrientation();
 }
 
 int SearchResultView::PreferredHeight() const {
@@ -333,17 +357,24 @@ int SearchResultView::SecondaryTextHeight() const {
   }
 }
 
+bool SearchResultView::GetAndResetResultChanged() {
+  bool result_changed = result_changed_;
+  result_changed_ = false;
+  return result_changed;
+}
+
 std::vector<SearchResultView::LabelAndTag>
 SearchResultView::SetupContainerViewForTextVector(
     views::FlexLayoutView* parent,
     const std::vector<SearchResult::TextItem>& text_vector,
-    bool details_label) {
+    LabelType label_type) {
   std::vector<LabelAndTag> label_tags;
   for (auto& span : text_vector) {
     switch (span.GetType()) {
       case SearchResultTextItemType::kString: {
-        views::Label* label = SetupChildLabelView(parent, view_type_);
-        if (details_label) {
+        views::Label* label =
+            SetupChildLabelView(parent, view_type_, label_type);
+        if (label_type == LabelType::kDetails) {
           // We should only show a separator label when the details container
           // has valid contents.
           should_show_separator_label_ =
@@ -362,28 +393,40 @@ SearchResultView::SetupContainerViewForTextVector(
   return label_tags;
 }
 
+void SearchResultView::UpdateBigTitleText() {
+  DCHECK_EQ(view_type_, SearchResultViewType::kAnswerCard);
+  // Big title is only shown for answer card views.
+  big_title_container_->RemoveAllChildViews();
+  big_title_label_tags_.clear();
+  if (!result() || result()->big_title_text_vector().empty()) {
+    big_title_container_->SetVisible(false);
+  } else {
+    // Create title labels from text vector metadata.
+    big_title_label_tags_ = SetupContainerViewForTextVector(
+        big_title_container_, result()->big_title_text_vector(),
+        LabelType::kBigTitle);
+    StyleBigTitleLabel();
+    big_title_container_->SetVisible(true);
+  }
+}
+
 void SearchResultView::UpdateTitleText() {
   title_container_->RemoveAllChildViews();
   title_label_tags_.clear();
   if (!result() || result()->title_text_vector().empty()) {
     // The entire text container should be hidden when there is no title.
     text_container_->SetVisible(false);
+    title_and_details_container_->SetVisible(false);
     title_container_->SetVisible(false);
   } else {
     // Create title labels from text vector metadata.
     title_label_tags_ = SetupContainerViewForTextVector(
-        title_container_, result()->title_text_vector(),
-        false /*details_label*/);
-  }
+        title_container_, result()->title_text_vector(), LabelType::kTitle);
     StyleTitleLabel();
     text_container_->SetVisible(true);
+    title_and_details_container_->SetVisible(true);
     title_container_->SetVisible(true);
-}
-
-bool SearchResultView::GetAndResetResultChanged() {
-  bool result_changed = result_changed_;
-  result_changed_ = false;
-  return result_changed;
+  }
 }
 
 void SearchResultView::UpdateDetailsText() {
@@ -397,7 +440,7 @@ void SearchResultView::UpdateDetailsText() {
     // Create details labels from text vector metadata.
     details_label_tags_ = SetupContainerViewForTextVector(
         details_container_, result()->details_text_vector(),
-        true /*details_label*/);
+        LabelType::kDetails);
     StyleDetailsLabel();
     details_container_->SetVisible(true);
     switch (view_type_) {
@@ -477,6 +520,12 @@ void SearchResultView::StyleLabel(views::Label* label,
       label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorAlert));
       break;
+  }
+}
+
+void SearchResultView::StyleBigTitleLabel() {
+  for (auto& span : big_title_label_tags_) {
+    StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
   }
 }
 
@@ -723,6 +772,8 @@ void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void SearchResultView::OnMetadataChanged() {
+  if (view_type_ == SearchResultViewType::kAnswerCard)
+    UpdateBigTitleText();
   UpdateTitleText();
   UpdateDetailsText();
   // Updates |icon_|.

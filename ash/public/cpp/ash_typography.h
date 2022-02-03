@@ -50,6 +50,9 @@ enum AshTextContext {
   // Title and details text label used in search result view. Usually 14 pt.
   CONTEXT_SEARCH_RESULT_VIEW,
 
+  // Big title text label used in search result view. Usually 36 pt.
+  CONTEXT_SEARCH_RESULT_BIG_TITLE,
+
   // Details text label used for inline answer search result view. Usually 12pt.
   // Used when productivity launcher is enabled.
   CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS,

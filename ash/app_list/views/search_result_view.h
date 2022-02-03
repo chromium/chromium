@@ -49,6 +49,12 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     kAnswerCard,
   };
 
+  enum class LabelType {
+    kBigTitle,
+    kTitle,
+    kDetails,
+  };
+
   // Internal class name.
   static const char kViewClassName[];
 
@@ -69,7 +75,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void SetSearchResultViewType(SearchResultViewType type);
   SearchResultViewType view_type() { return view_type_; }
 
-  views::LayoutOrientation GetLayoutOrientationForTest();
+  views::LayoutOrientation TitleAndDetailsOrientationForTest();
 
   // Returns whether the result has changed since this method was last called.
   // Used to determine whether the result should be animated when the result
@@ -87,7 +93,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   std::vector<LabelAndTag> SetupContainerViewForTextVector(
       views::FlexLayoutView* parent,
       const std::vector<SearchResult::TextItem>& text_vector,
-      bool details_label);
+      LabelType label_type);
+  void UpdateBigTitleText();
   void UpdateTitleText();
   void UpdateDetailsText();
   void UpdateRating();
@@ -95,6 +102,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void StyleLabel(views::Label* label,
                   bool is_title_label,
                   const SearchResult::Tags& tags);
+  void StyleBigTitleLabel();
   void StyleTitleLabel();
   void StyleDetailsLabel();
 
@@ -140,10 +148,15 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   views::ImageView* badge_icon_ = nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* text_container_ =
       nullptr;  // Owned by views hierarchy.
+  views::FlexLayoutView* big_title_container_ =
+      nullptr;  // Owned by views hierarchy.
+  views::FlexLayoutView* title_and_details_container_ =
+      nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* title_container_ =
       nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* details_container_ =
       nullptr;  // Owned by views hierarchy.
+  std::vector<LabelAndTag> big_title_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag> title_label_tags_;    // Owned by views hierarchy.
   std::vector<LabelAndTag> details_label_tags_;  // Owned by views hierarchy.
   views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.

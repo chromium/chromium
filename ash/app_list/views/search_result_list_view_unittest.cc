@@ -270,15 +270,15 @@ TEST_P(SearchResultListViewTest, SearchResultViewLayout) {
 
   EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
             GetUnifiedResultViewAt(0)->size());
-  EXPECT_EQ(GetUnifiedResultViewAt(0)->GetLayoutOrientationForTest(),
+  EXPECT_EQ(GetUnifiedResultViewAt(0)->TitleAndDetailsOrientationForTest(),
             views::LayoutOrientation::kVertical);
   EXPECT_EQ(gfx::Size(kPreferredWidth, kInlineAnswerViewHeight),
             GetUnifiedResultViewAt(1)->size());
-  EXPECT_EQ(GetUnifiedResultViewAt(1)->GetLayoutOrientationForTest(),
+  EXPECT_EQ(GetUnifiedResultViewAt(1)->TitleAndDetailsOrientationForTest(),
             views::LayoutOrientation::kVertical);
   EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
             GetUnifiedResultViewAt(2)->size());
-  EXPECT_EQ(GetUnifiedResultViewAt(2)->GetLayoutOrientationForTest(),
+  EXPECT_EQ(GetUnifiedResultViewAt(2)->TitleAndDetailsOrientationForTest(),
             views::LayoutOrientation::kHorizontal);
 }
 
