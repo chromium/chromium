@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -77,7 +78,7 @@ std::u16string GetTimeStr(base::Time timestamp) {
   // Returns empty if `timestamp` is out of relative date range, which is
   // yesterday and today as of now. Please see `ui/base/l10n/time_format.h` for
   // more details.
-  date = ui::TimeFormat::RelativeDate(timestamp, NULL);
+  date = ui::TimeFormat::RelativeDate(timestamp, nullptr);
   if (date.empty()) {
     // Syntax `yMMMdjmm` is used by the File App if it's not a relative date.
     // Please note, this might be slightly different for different locales.
@@ -188,6 +189,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
       base::BindRepeating(&DesksTemplatesItemView::OnDeleteButtonPressed,
                           weak_ptr_factory_.GetWeakPtr()),
       CloseButton::Type::kMedium));
+  delete_button_->SetVectorIcon(kDeleteIcon);
 
   name_view_->set_controller(this);
   name_view_observation_.Observe(name_view_);
@@ -599,7 +601,7 @@ views::View* DesksTemplatesItemView::GetView() {
 }
 
 void DesksTemplatesItemView::MaybeActivateHighlightedView() {
-  MaybeLaunchTemplate(/*delay=*/false);
+  MaybeLaunchTemplate(/*should_delay=*/false);
 }
 
 void DesksTemplatesItemView::MaybeCloseHighlightedView() {
