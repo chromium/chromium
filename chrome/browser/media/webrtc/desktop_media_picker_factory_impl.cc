@@ -101,8 +101,14 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
             content::desktop_capture::CreateWindowCapturer();
         if (!capturer)
           continue;
+        // If the capturer is not going to enumerate current process windows
+        // (to avoid a deadlock on Windows), then we have to find and add those
+        // windows ourselves.
+        bool add_current_process_windows =
+            !content::desktop_capture::ShouldEnumerateCurrentProcessWindows();
         window_list = std::make_unique<NativeDesktopMediaList>(
-            DesktopMediaList::Type::kWindow, std::move(capturer));
+            DesktopMediaList::Type::kWindow, std::move(capturer),
+            add_current_process_windows);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
         have_window_list = true;
         source_lists.push_back(std::move(window_list));

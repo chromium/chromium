@@ -26,6 +26,10 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   NativeDesktopMediaList(DesktopMediaList::Type type,
                          std::unique_ptr<webrtc::DesktopCapturer> capturer);
 
+  NativeDesktopMediaList(DesktopMediaList::Type type,
+                         std::unique_ptr<webrtc::DesktopCapturer> capturer,
+                         bool add_current_process_windows);
+
   NativeDesktopMediaList(const NativeDesktopMediaList&) = delete;
   NativeDesktopMediaList& operator=(const NativeDesktopMediaList&) = delete;
 
@@ -53,6 +57,10 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
 
   base::Thread thread_;
   std::unique_ptr<Worker> worker_;
+
+  // Whether we need to find and add the windows owned by the current process.
+  // If false, the capturer will do this for us.
+  bool add_current_process_windows_;
 
 #if defined(USE_AURA)
   // previous_aura_thumbnail_hashes_ holds thumbanil hash values of aura windows

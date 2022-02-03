@@ -25,6 +25,9 @@ CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer();
 // 3) Chromium has features::kWebRtcPipeWireCapturer enabled
 CONTENT_EXPORT bool CanUsePipeWire();
 
+// Whether the capturer should find windows owned by the current process.
+CONTENT_EXPORT bool ShouldEnumerateCurrentProcessWindows();
+
 }  // namespace desktop_capture
 }  // namespace content
 

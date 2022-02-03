@@ -30,6 +30,8 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   } else {
     options.set_allow_use_magnification_api(true);
   }
+  options.set_enumerate_current_process_windows(
+      ShouldEnumerateCurrentProcessWindows());
 #elif BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kIOSurfaceCapturer)) {
     options.set_allow_iosurface(true);
@@ -71,6 +73,14 @@ bool CanUsePipeWire() {
          base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer);
 #else
   return false;
+#endif
+}
+
+bool ShouldEnumerateCurrentProcessWindows() {
+#if BUILDFLAG(IS_WIN)
+  return false;
+#else
+  return true;
 #endif
 }
 

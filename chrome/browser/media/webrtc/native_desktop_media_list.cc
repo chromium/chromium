@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -38,6 +39,11 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "components/remote_cocoa/browser/scoped_cg_window_id.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #endif
 
 using content::DesktopMediaID;
@@ -94,6 +100,32 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
 }
 
+#if BUILDFLAG(IS_WIN)
+BOOL CALLBACK TopLevelCurrentProcessHwndCollector(HWND hwnd, LPARAM param) {
+  DWORD process_id;
+  ::GetWindowThreadProcessId(hwnd, &process_id);
+  if (process_id != ::GetCurrentProcessId())
+    return TRUE;
+
+  // Skip windows which are not presented in the taskbar, e.g. the "Restore
+  // pages?" window.
+  HWND owner = ::GetWindow(hwnd, GW_OWNER);
+  LONG exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+  if (owner && !(exstyle & WS_EX_APPWINDOW))
+    return TRUE;
+
+  auto* current_process_windows = reinterpret_cast<std::vector<HWND>*>(param);
+  current_process_windows->push_back(hwnd);
+  return TRUE;
+}
+
+BOOL CALLBACK AllHwndCollector(HWND hwnd, LPARAM param) {
+  auto* hwnds = reinterpret_cast<std::vector<HWND>*>(param);
+  hwnds->push_back(hwnd);
+  return TRUE;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_MAC)
 const base::Feature kWindowCaptureMacV2{"WindowCaptureMacV2",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -107,7 +139,8 @@ class NativeDesktopMediaList::Worker
   Worker(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
          base::WeakPtr<NativeDesktopMediaList> media_list,
          DesktopMediaList::Type type,
-         std::unique_ptr<webrtc::DesktopCapturer> capturer);
+         std::unique_ptr<webrtc::DesktopCapturer> capturer,
+         bool add_current_process_windows);
 
   Worker(const Worker&) = delete;
   Worker& operator=(const Worker&) = delete;
@@ -131,6 +164,21 @@ class NativeDesktopMediaList::Worker
     size_t next_source_index = 0;
   };
 
+  // These must be members because |SourceDescription| is a protected type from
+  // |DesktopMediaListBase|.
+  static std::vector<SourceDescription> FormatSources(
+      const webrtc::DesktopCapturer::SourceList& sources,
+      const DesktopMediaID::Id& view_dialog_id,
+      const DesktopMediaList::Type& list_type);
+
+#if BUILDFLAG(IS_WIN)
+  static std::vector<SourceDescription> GetCurrentProcessWindows();
+
+  static std::vector<SourceDescription> MergeAndSortWindowSources(
+      std::vector<SourceDescription> sources_a,
+      std::vector<SourceDescription> sources_b);
+#endif  // BUILDFLAG(IS_WIN)
+
   void RefreshNextThumbnail();
 
   // webrtc::DesktopCapturer::Callback interface.
@@ -144,6 +192,7 @@ class NativeDesktopMediaList::Worker
 
   DesktopMediaList::Type type_;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
+  const bool add_current_process_windows_;
 
   // Stores hashes of snapshots previously captured.
   ImageHashesMap image_hashes_;
@@ -158,12 +207,17 @@ NativeDesktopMediaList::Worker::Worker(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<NativeDesktopMediaList> media_list,
     DesktopMediaList::Type type,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer)
+    std::unique_ptr<webrtc::DesktopCapturer> capturer,
+    bool add_current_process_windows)
     : task_runner_(task_runner),
       media_list_(media_list),
       type_(type),
-      capturer_(std::move(capturer)) {
+      capturer_(std::move(capturer)),
+      add_current_process_windows_(add_current_process_windows) {
   DCHECK(capturer_);
+
+  DCHECK(type_ == DesktopMediaList::Type::kWindow ||
+         !add_current_process_windows_);
 }
 
 NativeDesktopMediaList::Worker::~Worker() {
@@ -179,49 +233,33 @@ void NativeDesktopMediaList::Worker::Refresh(
     const DesktopMediaID::Id& view_dialog_id,
     bool update_thumnails) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  std::vector<SourceDescription> result;
-
   webrtc::DesktopCapturer::SourceList sources;
   if (!capturer_->GetSourceList(&sources)) {
     // Will pass empty results list to RefreshForVizFrameSinkWindows().
     sources.clear();
   }
 
-  bool mutiple_sources = sources.size() > 1;
-  std::u16string title;
-  for (size_t i = 0; i < sources.size(); ++i) {
-    DesktopMediaID::Type type = DesktopMediaID::Type::TYPE_NONE;
-    switch (type_) {
-      case DesktopMediaList::Type::kScreen:
-        type = DesktopMediaID::Type::TYPE_SCREEN;
-        // Just in case 'Screen' is inflected depending on the screen number,
-        // use plural formatter.
-        title = mutiple_sources
-                    ? l10n_util::GetPluralStringFUTF16(
-                          IDS_DESKTOP_MEDIA_PICKER_MULTIPLE_SCREEN_NAME,
-                          static_cast<int>(i + 1))
-                    : l10n_util::GetStringUTF16(
-                          IDS_DESKTOP_MEDIA_PICKER_SINGLE_SCREEN_NAME);
-        break;
+  std::vector<SourceDescription> source_descriptions =
+      FormatSources(sources, view_dialog_id, type_);
 
-      case DesktopMediaList::Type::kWindow:
-        type = DesktopMediaID::Type::TYPE_WINDOW;
-        // Skip the picker dialog window.
-        if (sources[i].id == view_dialog_id)
-          continue;
-        title = base::UTF8ToUTF16(sources[i].title);
-        break;
-
-      default:
-        NOTREACHED();
-    }
-    result.emplace_back(DesktopMediaID(type, sources[i].id), title);
+#if BUILDFLAG(IS_WIN)
+  // If |add_current_process_windows_| is set to false, |capturer_| will
+  // find the windows owned by the current process for us. Otherwise, we must do
+  // this.
+  if (add_current_process_windows_) {
+    DCHECK_EQ(type_, DesktopMediaList::Type::kWindow);
+    // WebRTC returns the windows in order of highest z-order to lowest, but
+    // these additional windows will be out of order if we just append them. So
+    // we sort the list according to the z-order of the windows.
+    source_descriptions = MergeAndSortWindowSources(
+        std::move(source_descriptions), GetCurrentProcessWindows());
   }
+#endif  // BUILDFLAG(IS_WIN)
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeDesktopMediaList::RefreshForVizFrameSinkWindows,
-                     media_list_, result, update_thumnails));
+                     media_list_, source_descriptions, update_thumnails));
 }
 
 void NativeDesktopMediaList::Worker::RefreshThumbnails(
@@ -252,6 +290,109 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
   refresh_thumbnails_state_->thumbnail_size = thumbnail_size;
   RefreshNextThumbnail();
 }
+
+// static
+std::vector<DesktopMediaListBase::SourceDescription>
+NativeDesktopMediaList::Worker::FormatSources(
+    const webrtc::DesktopCapturer::SourceList& sources,
+    const DesktopMediaID::Id& view_dialog_id,
+    const DesktopMediaList::Type& list_type) {
+  std::vector<SourceDescription> source_descriptions;
+  std::u16string title;
+  for (size_t i = 0; i < sources.size(); ++i) {
+    DesktopMediaID::Type source_type = DesktopMediaID::Type::TYPE_NONE;
+    switch (list_type) {
+      case DesktopMediaList::Type::kScreen:
+        source_type = DesktopMediaID::Type::TYPE_SCREEN;
+        // Just in case 'Screen' is inflected depending on the screen number,
+        // use plural formatter.
+        title = sources.size() > 1
+                    ? l10n_util::GetPluralStringFUTF16(
+                          IDS_DESKTOP_MEDIA_PICKER_MULTIPLE_SCREEN_NAME,
+                          static_cast<int>(i + 1))
+                    : l10n_util::GetStringUTF16(
+                          IDS_DESKTOP_MEDIA_PICKER_SINGLE_SCREEN_NAME);
+        break;
+
+      case DesktopMediaList::Type::kWindow:
+        source_type = DesktopMediaID::Type::TYPE_WINDOW;
+        // Skip the picker dialog window.
+        if (sources[i].id == view_dialog_id)
+          continue;
+        title = base::UTF8ToUTF16(sources[i].title);
+        break;
+
+      default:
+        NOTREACHED();
+    }
+    source_descriptions.emplace_back(DesktopMediaID(source_type, sources[i].id),
+                                     title);
+  }
+
+  return source_descriptions;
+}
+
+#if BUILDFLAG(IS_WIN)
+// static
+std::vector<DesktopMediaListBase::SourceDescription>
+NativeDesktopMediaList::Worker::GetCurrentProcessWindows() {
+  std::vector<HWND> current_process_windows;
+  if (!::EnumWindows(TopLevelCurrentProcessHwndCollector,
+                     reinterpret_cast<LPARAM>(&current_process_windows))) {
+    return std::vector<SourceDescription>();
+  }
+
+  std::vector<SourceDescription> current_process_sources;
+  for (HWND hwnd : current_process_windows) {
+    // Leave these sources untitled, we must get their title from the UI thread.
+    current_process_sources.emplace_back(
+        DesktopMediaID(
+            DesktopMediaID::Type::TYPE_WINDOW,
+            reinterpret_cast<webrtc::DesktopCapturer::SourceId>(hwnd)),
+        u"");
+  }
+
+  return current_process_sources;
+}
+
+// static
+std::vector<DesktopMediaListBase::SourceDescription>
+NativeDesktopMediaList::Worker::MergeAndSortWindowSources(
+    std::vector<SourceDescription> sources_a,
+    std::vector<SourceDescription> sources_b) {
+  // |EnumWindows| enumerates top level windows in z-order, we use this as a
+  // reference for sorting.
+  std::vector<HWND> z_ordered_windows;
+  if (!::EnumWindows(AllHwndCollector,
+                     reinterpret_cast<LPARAM>(&z_ordered_windows))) {
+    // Since we can't get the z-order for the windows, we can't sort them. So,
+    // let's just concatenate.
+    sources_a.insert(sources_a.end(),
+                     std::make_move_iterator(sources_b.begin()),
+                     std::make_move_iterator(sources_b.end()));
+    return sources_a;
+  }
+
+  std::vector<const std::vector<SourceDescription>*> source_containers = {
+      &sources_a, &sources_b};
+  std::vector<SourceDescription> sorted_sources;
+  auto id_hwnd_projection = [](const SourceDescription& source) {
+    return reinterpret_cast<const HWND>(source.id.id);
+  };
+  for (HWND window : z_ordered_windows) {
+    for (const auto* source_container : source_containers) {
+      auto source_it =
+          base::ranges::find(*source_container, window, id_hwnd_projection);
+      if (source_it != source_container->end()) {
+        sorted_sources.push_back(*source_it);
+        break;
+      }
+    }
+  }
+
+  return sorted_sources;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void NativeDesktopMediaList::Worker::RefreshNextThumbnail() {
   DCHECK(refresh_thumbnails_state_);
@@ -311,10 +452,22 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
     std::unique_ptr<webrtc::DesktopCapturer> capturer)
+    : NativeDesktopMediaList(type,
+                             std::move(capturer),
+                             /*add_current_process_windows=*/false) {}
+
+NativeDesktopMediaList::NativeDesktopMediaList(
+    DesktopMediaList::Type type,
+    std::unique_ptr<webrtc::DesktopCapturer> capturer,
+    bool add_current_process_windows)
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultNativeDesktopMediaListUpdatePeriod)),
-      thread_("DesktopMediaListCaptureThread") {
+      thread_("DesktopMediaListCaptureThread"),
+      add_current_process_windows_(add_current_process_windows) {
   type_ = type;
+
+  DCHECK(type_ == DesktopMediaList::Type::kWindow ||
+         !add_current_process_windows_);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // On Windows/OSX the thread must be a UI thread.
@@ -324,9 +477,9 @@ NativeDesktopMediaList::NativeDesktopMediaList(
 #endif
   thread_.StartWithOptions(base::Thread::Options(thread_type, 0));
 
-  worker_ = std::make_unique<Worker>(thread_.task_runner(),
-                                     weak_factory_.GetWeakPtr(), type,
-                                     std::move(capturer));
+  worker_ = std::make_unique<Worker>(
+      thread_.task_runner(), weak_factory_.GetWeakPtr(), type,
+      std::move(capturer), add_current_process_windows_);
 
   thread_.task_runner()->PostTask(
       FROM_HERE,
@@ -358,37 +511,77 @@ void NativeDesktopMediaList::Refresh(bool update_thumnails) {
 void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
     std::vector<SourceDescription> sources,
     bool update_thumnails) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(can_refresh());
 
-  // Assign |source.id.window_id| if |source.id.id| corresponds to a
-  // viz::FrameSinkId.
-  for (auto& source : sources) {
-    if (source.id.type != DesktopMediaID::TYPE_WINDOW)
+  auto source_it = sources.begin();
+  while (source_it != sources.end()) {
+    if (source_it->id.type != DesktopMediaID::TYPE_WINDOW) {
+      ++source_it;
       continue;
+    }
 
-// TODO(https://crbug.com/1270801): The capturer id to aura::Window mapping on
-// lacros is currently broken because they both separately use monotonically
-// increasing ints as ids. This causes collisions where we mistakenly try to
-// capture non-aura windows as aura windows. While the preview matches what is
-// ultimately captured, it does not match the title of the window in the preview
-// and is both unexpected for the user and means that the collided non-aura
-// window cannot be captured.
+#if BUILDFLAG(IS_WIN)
+    // The worker thread can't safely get titles for windows owned by the
+    // current process, so we do it here, on the UI thread, where we can call
+    // |GetWindowText| without risking a deadlock.
+    const HWND hwnd = reinterpret_cast<HWND>(source_it->id.id);
+    DWORD hwnd_process;
+    ::GetWindowThreadProcessId(hwnd, &hwnd_process);
+    if (hwnd_process == ::GetCurrentProcessId()) {
+      int title_length = ::GetWindowTextLength(hwnd);
+
+      // Remove untitled windows.
+      if (title_length <= 0) {
+        source_it = sources.erase(source_it);
+        continue;
+      }
+
+      source_it->name.resize(title_length + 1);
+      // The title may have changed since the call to |GetWindowTextLength|, so
+      // we update |title_length| to be the number of characters written into
+      // our string.
+      title_length = ::GetWindowText(
+          hwnd, base::as_writable_wcstr(source_it->name), title_length + 1);
+      if (title_length <= 0) {
+        source_it = sources.erase(source_it);
+        continue;
+      }
+
+      // Resize the string (in the case the title has shortened), and remove the
+      // trailing null character.
+      source_it->name.resize(title_length);
+    }
+#endif  // BUILDFLAG(IS_WIN)
+
+    // Assign |source_it->id.window_id| if |source_it->id.id| corresponds to a
+    // viz::FrameSinkId.
+    //
+    // TODO(https://crbug.com/1270801): The capturer id to aura::Window mapping
+    // on lacros is currently broken because they both separately use
+    // monotonically increasing ints as ids. This causes collisions where we
+    // mistakenly try to capture non-aura windows as aura windows. While the
+    // preview matches what is ultimately captured, it does not match the title
+    // of the window in the preview and is both unexpected for the user and
+    // means that the collided non-aura window cannot be captured.
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     aura::WindowTreeHost* const host =
         aura::WindowTreeHost::GetForAcceleratedWidget(
-            *reinterpret_cast<gfx::AcceleratedWidget*>(&source.id.id));
+            *reinterpret_cast<gfx::AcceleratedWidget*>(&source_it->id.id));
     aura::Window* const aura_window = host ? host->window() : nullptr;
     if (aura_window) {
       DesktopMediaID aura_id = DesktopMediaID::RegisterNativeWindow(
           DesktopMediaID::TYPE_WINDOW, aura_window);
-      source.id.window_id = aura_id.window_id;
+      source_it->id.window_id = aura_id.window_id;
     }
 #elif BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
-      if (remote_cocoa::ScopedCGWindowID::Get(source.id.id))
-        source.id.window_id = source.id.id;
+      if (remote_cocoa::ScopedCGWindowID::Get(source_it->id.id))
+        source_it->id.window_id = source_it->id.id;
     }
 #endif
+
+    ++source_it;
   }
 
   UpdateSourcesList(sources);
