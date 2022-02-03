@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.password_check.PasswordCheckReferrer;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.ui.base.WindowAndroid;
 

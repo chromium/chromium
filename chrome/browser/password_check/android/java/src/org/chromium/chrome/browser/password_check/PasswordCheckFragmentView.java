@@ -9,9 +9,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 
 /**
  * This class is responsible for rendering the check passwords view in the settings menu.

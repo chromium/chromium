@@ -171,6 +171,7 @@ android_library("settings_interface_java") {
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckReferrer.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessor.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactory.java",
   ]

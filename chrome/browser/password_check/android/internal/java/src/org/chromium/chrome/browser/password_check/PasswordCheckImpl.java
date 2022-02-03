@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.password_check.PasswordCheckBridge.PasswordCheckObserver;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
