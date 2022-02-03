@@ -10,11 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
@@ -24,7 +19,6 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,21 +28,12 @@ import java.util.concurrent.TimeUnit;
  * The class that manages Chrome-managed price drop subscriptions.
  */
 public class ImplicitPriceDropSubscriptionsManager {
-    @VisibleForTesting
-    public static final String CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP =
-            ChromePreferenceKeys.COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP;
-
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
-    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
     private final SubscriptionsManagerImpl mSubscriptionManager;
-    private final SharedPreferencesManager mSharedPreferencesManager;
-    private final PriceDropNotificationManager mPriceDropNotificationManager;
 
-    public ImplicitPriceDropSubscriptionsManager(TabModelSelector tabModelSelector,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            SubscriptionsManagerImpl subscriptionsManager) {
+    public ImplicitPriceDropSubscriptionsManager(
+            TabModelSelector tabModelSelector, SubscriptionsManagerImpl subscriptionsManager) {
         mSubscriptionManager = subscriptionsManager;
         mTabModelSelector = tabModelSelector;
         mTabModelObserver = new TabModelObserver() {
@@ -70,20 +55,6 @@ public class ImplicitPriceDropSubscriptionsManager {
             }
         };
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
-        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mPauseResumeWithNativeObserver = new PauseResumeWithNativeObserver() {
-            @Override
-            public void onResumeWithNative() {
-                initializeSubscriptions();
-            }
-
-            @Override
-            public void onPauseWithNative() {}
-        };
-
-        mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
-        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
-        mPriceDropNotificationManager = new PriceDropNotificationManager();
     }
 
     private boolean isUniqueTab(Tab tab) {
@@ -103,13 +74,7 @@ public class ImplicitPriceDropSubscriptionsManager {
     /**
      * Initialize the chrome-managed subscriptions.
      */
-    @VisibleForTesting
     void initializeSubscriptions() {
-        if (!shouldInitializeSubscriptions()) return;
-        // TODO(crbug.com/1271234): Cleanup the usage of PriceDropNotificationManager. When user
-        // turns off price notification, we still subscribe for tabs. Now we call this method only
-        // to record notification opt-in metrics.
-        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
         // Store previously eligible urls to avoid duplicate subscriptions.
         Set<String> urlSet = new HashSet<>();
         TabModel normalTabModel = mTabModelSelector.getModel(false);
@@ -171,25 +136,10 @@ public class ImplicitPriceDropSubscriptionsManager {
                            CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds());
     }
 
-    private boolean shouldInitializeSubscriptions() {
-        if ((!PriceTrackingUtilities.isPriceDropNotificationEligible())
-                || (System.currentTimeMillis()
-                                - mSharedPreferencesManager.readLong(
-                                        CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
-                        < TimeUnit.SECONDS.toMillis(CommerceSubscriptionsServiceConfig
-                                                            .getStaleTabLowerBoundSeconds()))) {
-            return false;
-        }
-        mSharedPreferencesManager.writeLong(
-                CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
-        return true;
-    }
-
     /**
      * Destroy any members that need clean up.
      */
     public void destroy() {
         mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
-        mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
     }
 }
