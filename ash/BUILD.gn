@@ -166,6 +166,7 @@ component("ash") {
     "ambient/model/ambient_photo_config.h",
     "ambient/model/ambient_slideshow_photo_config.cc",
     "ambient/model/ambient_slideshow_photo_config.h",
+    "ambient/resources/ambient_animation_resource_constants.h",
     "ambient/resources/ambient_animation_static_resources.h",
     "ambient/ui/ambient_animation_resizer.cc",
     "ambient/ui/ambient_animation_resizer.h",

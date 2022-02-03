@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/ambient/resources/grit/ash_ambient_lottie_resources.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -38,7 +39,7 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
           AmbientAnimationTheme::kFeelTheBreeze,
           {
               // Assets
-              {"tree_shadow.png",
+              {ambient::resources::kTreeShadowAssetId,
                IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_TREE_SHADOW_PNG}
               // End Assets
           }

@@ -2,12 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
 declare_args() {
-  # Temporary build flag to include resources for the animated screensaver in
-  # ash builds. The resources are still under development and there are plans to
-  # reduce their size since a few are pretty big. This flag prevents the main
-  # resource pak at HEAD from being impacted until the size issues are
-  # addressed, while still allowing developers to test this feature by
-  # overriding this flag to true.
-  include_ash_ambient_animation_resources = false
+  # Build flag to include resources for the animated screensaver in ash builds.
+  #
+  # Currently, these resources are included by default for internal ChromeOS
+  # builds as both conditions below are prerequisites for downloading Lottie
+  # ambient mode resources from CIPD in the DEPS file.
+  #
+  # May be overridden locally to false for testing purposes if desired.
+  include_ash_ambient_animation_resources = is_chromeos_ash && is_chrome_branded
 }

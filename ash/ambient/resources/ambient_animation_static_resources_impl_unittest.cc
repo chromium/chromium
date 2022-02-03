@@ -4,6 +4,7 @@
 
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 
+#include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/public/cpp/ambient/ambient_animation_theme.h"
 #include "base/json/json_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,17 +35,14 @@ TEST(AmbientAnimationStaticResourcesTest, LoadsStaticAssets) {
   auto resources = AmbientAnimationStaticResources::Create(
       AmbientAnimationTheme::kFeelTheBreeze);
   ASSERT_THAT(resources, NotNull());
-  gfx::ImageSkia clips_bottom_original =
-      resources->GetStaticImageAsset("clips_bottom.png");
-  ASSERT_FALSE(clips_bottom_original.isNull());
-  gfx::ImageSkia clips_bottom_reloaded =
-      resources->GetStaticImageAsset("clips_bottom.png");
-  ASSERT_FALSE(clips_bottom_reloaded.isNull());
-  EXPECT_TRUE(
-      clips_bottom_reloaded.BackedBySameObjectAs(clips_bottom_original));
-
-  gfx::ImageSkia clips_top = resources->GetStaticImageAsset("clips_top.png");
-  EXPECT_FALSE(clips_top.isNull());
+  for (base::StringPiece asset_id :
+       ambient::resources::kAllFeelTheBreeezeStaticAssets) {
+    gfx::ImageSkia image_original = resources->GetStaticImageAsset(asset_id);
+    ASSERT_FALSE(image_original.isNull());
+    gfx::ImageSkia image_reloaded = resources->GetStaticImageAsset(asset_id);
+    ASSERT_FALSE(image_reloaded.isNull());
+    EXPECT_TRUE(image_reloaded.BackedBySameObjectAs(image_original));
+  }
 }
 
 TEST(AmbientAnimationStaticResourcesTest, FailsForSlideshowTheme) {
