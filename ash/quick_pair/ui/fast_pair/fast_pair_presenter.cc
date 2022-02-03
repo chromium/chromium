@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
@@ -27,6 +28,15 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+
+const char kDiscoveryLearnMoreLink[] =
+    "https://support.google.com/chromebook?p=fast_pair_m101";
+const char kAssociateAccountLearnMoreLink[] =
+    "https://support.google.com/chromebook?p=bluetooth_pairing_m101";
+
+}  // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -93,7 +103,8 @@ void FastPairPresenter::OnDiscoveryDismissed(DiscoveryCallback callback,
 
 void FastPairPresenter::OnDiscoveryLearnMoreClicked(
     DiscoveryCallback callback) {
-  // TODO (b/207589697): Implement support for "Learn More" Buttons.
+  NewWindowDelegate::GetPrimary()->OpenUrl(GURL(kDiscoveryLearnMoreLink),
+                                           /*from_user_interaction=*/true);
   callback.Run(DiscoveryAction::kLearnMore);
 }
 
@@ -218,8 +229,8 @@ void FastPairPresenter::OnAssociateAccountActionClicked(
 
 void FastPairPresenter::OnAssociateAccountLearnMoreClicked(
     AssociateAccountCallback callback) {
-  // TODO (b/207589697): Implement support for "Learn More" Button in Show
-  // Associate Account Notification
+  NewWindowDelegate::GetPrimary()->OpenUrl(GURL(kAssociateAccountLearnMoreLink),
+                                           /*from_user_interaction=*/true);
   callback.Run(AssociateAccountAction::kLearnMore);
 }
 
