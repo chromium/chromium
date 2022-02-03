@@ -122,7 +122,7 @@ BrowserState* WebFrameImpl::GetBrowserState() {
 }
 
 const std::string WebFrameImpl::EncryptPayload(
-    base::DictionaryValue payload,
+    base::Value payload,
     const std::string& additiona_data) {
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
   aead.Init(&frame_key_->key());
@@ -144,7 +144,7 @@ const std::string WebFrameImpl::EncryptPayload(
   base::Base64Encode(payload_ciphertext, &encoded_payload);
 
   std::string payload_string;
-  base::DictionaryValue payload_dict;
+  base::Value payload_dict(base::Value::Type::DICTIONARY);
   payload_dict.SetKey("payload", base::Value(encoded_payload));
   payload_dict.SetKey("iv", base::Value(encoded_payload_iv));
   base::JSONWriter::Write(payload_dict, &payload_string);
@@ -177,13 +177,13 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
                                      reply_with_result);
   }
 
-  base::DictionaryValue message_payload;
+  base::Value message_payload(base::Value::Type::DICTIONARY);
   message_payload.SetKey("messageId", base::Value(message_id));
   message_payload.SetKey("replyWithResult", base::Value(reply_with_result));
   const std::string& encrypted_message_json =
       EncryptPayload(std::move(message_payload), std::string());
 
-  base::DictionaryValue function_payload;
+  base::Value function_payload(base::Value::Type::DICTIONARY);
   function_payload.SetKey("functionName", base::Value(name));
   base::ListValue parameters_value(parameters);
   function_payload.SetKey("parameters", std::move(parameters_value));
