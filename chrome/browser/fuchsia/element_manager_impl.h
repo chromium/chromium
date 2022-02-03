@@ -19,7 +19,8 @@ namespace sys {
 class OutgoingDirectory;
 }  // namespace sys
 
-class ElementManagerImpl : public fuchsia::element::Manager {
+class ElementManagerImpl final : public fuchsia::element::Manager,
+                                 public fuchsia::element::Controller {
  public:
   // Implement this callback to handle notifications to start a new element. The
   // callback will receive the command line needed to start the new window(s).
@@ -42,9 +43,17 @@ class ElementManagerImpl : public fuchsia::element::Manager {
       fidl::InterfaceRequest<fuchsia::element::Controller> element_controller,
       ProposeElementCallback callback) override;
 
+  // fuchsia::element::Controller implementation
+  void UpdateAnnotations(
+      std::vector<fuchsia::element::Annotation> annotations_to_set,
+      std::vector<fuchsia::element::AnnotationKey> annotations_to_delete,
+      UpdateAnnotationsCallback callback) override;
+  void GetAnnotations(GetAnnotationsCallback callback) override;
+
  private:
   base::ScopedServiceBinding<fuchsia::element::Manager> binding_;
-  NewProposalCallback callback_;
+  const NewProposalCallback callback_;
+  fidl::BindingSet<fuchsia::element::Controller> controller_bindings_;
 };
 
 #endif  // CHROME_BROWSER_FUCHSIA_ELEMENT_MANAGER_IMPL_H_

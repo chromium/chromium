@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "chrome/browser/chrome_browser_main.h"
 
 ElementManagerImpl::ElementManagerImpl(
@@ -21,20 +22,36 @@ void ElementManagerImpl::ProposeElement(
     fuchsia::element::Spec spec,
     fidl::InterfaceRequest<fuchsia::element::Controller> element_controller,
     ProposeElementCallback callback) {
-  fuchsia::element::Manager_ProposeElement_Result result;
-
   if (spec.component_url() !=
       "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm") {
-    result.set_err(fuchsia::element::ProposeElementError::INVALID_ARGS);
-    callback(std::move(result));
+    callback(fuchsia::element::Manager_ProposeElement_Result::WithErr(
+        fuchsia::element::ProposeElementError::INVALID_ARGS));
     return;
   }
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  if (callback_.Run(command_line)) {
-    result.set_response({});
-  } else {
-    result.set_err(fuchsia::element::ProposeElementError::INVALID_ARGS);
+  if (!callback_.Run(command_line)) {
+    callback(fuchsia::element::Manager_ProposeElement_Result::WithErr(
+        fuchsia::element::ProposeElementError::INVALID_ARGS));
   }
-  callback(std::move(result));
+
+  if (element_controller) {
+    controller_bindings_.AddBinding(this, std::move(element_controller));
+  }
+  callback(fuchsia::element::Manager_ProposeElement_Result::WithResponse({}));
+}
+
+void ElementManagerImpl::UpdateAnnotations(
+    std::vector<fuchsia::element::Annotation> annotations_to_set,
+    std::vector<fuchsia::element::AnnotationKey> annotations_to_delete,
+    UpdateAnnotationsCallback callback) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  callback(fuchsia::element::AnnotationController_UpdateAnnotations_Result::
+               WithResponse({}));
+}
+
+void ElementManagerImpl::GetAnnotations(GetAnnotationsCallback callback) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  callback(fuchsia::element::AnnotationController_GetAnnotations_Result::
+               WithResponse({}));
 }

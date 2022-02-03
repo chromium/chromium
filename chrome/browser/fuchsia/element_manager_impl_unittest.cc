@@ -79,4 +79,27 @@ TEST_F(TestElementManagerImpl, TestIncorrectSpec) {
   EXPECT_FALSE(received_command_line_);
 }
 
+TEST_F(TestElementManagerImpl, TestController) {
+  auto element_manager = GetElementManagerPtr();
+
+  fuchsia::element::ControllerPtr controller;
+  fuchsia::element::Spec valid_spec;
+  valid_spec.set_component_url(
+      "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+
+  element_manager->ProposeElement(std::move(valid_spec),
+                                  controller.NewRequest(), [&](auto result) {});
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(controller.is_bound());
+
+  fuchsia::element::Spec invalid_spec;
+  invalid_spec.set_component_url("foobar");
+
+  controller = fuchsia::element::ControllerPtr();
+  element_manager->ProposeElement(std::move(invalid_spec),
+                                  controller.NewRequest(), [&](auto result) {});
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(controller.is_bound());
+}
+
 }  // namespace
