@@ -57,12 +57,36 @@ CROS_LTS_BRANCHES = _branch_selector("CROS_LTS_BRANCHES")
 
 _BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES, CROS_LTS_BRANCHES)
 
-def _matches(branch_selector):
-    """Returns whether `branch_selector` matches the project settings."""
+def _normalize_branch_selector(branch_selector):
+    """Convert provided branch selector to a set of basic selectors.
+    """
+
+    # A single basic selector was provided, return a set containing just it
     if type(branch_selector) == type(struct()):
-        branch_selectors = [branch_selector]
-    else:
-        branch_selectors = branch_selector
+        return set([branch_selector])
+
+    # The provided selector is either:
+    # * a compound selector, which are tuples of basic selectors
+    # * an iterable of arbitrary selectors
+    # Iterate over the selector, extracting the basic selectors from each
+    branch_selectors = set()
+    for s in branch_selector:
+        if type(s) == type(struct()):
+            s = [s]
+        branch_selectors = branch_selectors.union(s)
+    return branch_selectors
+
+def _matches(branch_selector):
+    """Returns whether `branch_selector` matches the project settings.
+
+    Args:
+      branch_selector: A single branch selector value or a list of branch
+        selector values.
+
+    Returns:
+      True if any of the specified branch selectors matches, False otherwise.
+    """
+    branch_selectors = _normalize_branch_selector(branch_selector)
     for b in branch_selectors:
         if b == MAIN:
             if settings.is_main:
