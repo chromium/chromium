@@ -251,7 +251,6 @@ void ClickExpandedStateTemplatesButton() {
       ash::GetExpandedStateDesksTemplatesButton();
   ASSERT_TRUE(expanded_state_templates_button);
   ClickButton(expanded_state_templates_button);
-  ash::WaitForDesksTemplatesUI();
 }
 
 void ClickFirstTemplateItem() {

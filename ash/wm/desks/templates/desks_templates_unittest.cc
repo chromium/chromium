@@ -1567,20 +1567,14 @@ TEST_F(DesksTemplatesTest, ShowTemplatesInAlphabeticalOrder) {
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
   ASSERT_TRUE(templates_grid_view);
 
-  // The grid has three items and one feedback button.
-  views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(4ul, grid_views.size());
+  const std::vector<DesksTemplatesItemView*> grid_items =
+      templates_grid_view->grid_items();
+  ASSERT_EQ(3ul, grid_items.size());
 
   // Tests that templates are sorted in alphabetical order.
-  EXPECT_EQ(
-      u"1_template",
-      static_cast<DesksTemplatesItemView*>(grid_views[0])->GetAccessibleName());
-  EXPECT_EQ(
-      u"A_template",
-      static_cast<DesksTemplatesItemView*>(grid_views[1])->GetAccessibleName());
-  EXPECT_EQ(
-      u"B_template",
-      static_cast<DesksTemplatesItemView*>(grid_views[2])->GetAccessibleName());
+  EXPECT_EQ(u"1_template", grid_items[0]->GetAccessibleName());
+  EXPECT_EQ(u"A_template", grid_items[1]->GetAccessibleName());
+  EXPECT_EQ(u"B_template", grid_items[2]->GetAccessibleName());
 }
 
 // Tests that the color of the desks templates button border is as expected.
@@ -1937,15 +1931,15 @@ TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {
   const auto* templates_grid_view =
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
 
-  // The grid has four items and one feedback button.
-  views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(5ul, grid_views.size());
+  const std::vector<DesksTemplatesItemView*> grid_items =
+      templates_grid_view->grid_items();
+  ASSERT_EQ(4ul, grid_items.size());
 
   // We expect the first three items to be laid out in one row.
-  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
-  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
+  EXPECT_EQ(grid_items[0]->bounds().y(), grid_items[1]->bounds().y());
+  EXPECT_EQ(grid_items[0]->bounds().y(), grid_items[2]->bounds().y());
   // The fourth item goes in the second row.
-  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[3]->bounds().y());
+  EXPECT_NE(grid_items[0]->bounds().y(), grid_items[3]->bounds().y());
 }
 
 TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
@@ -1965,15 +1959,15 @@ TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
   const auto* templates_grid_view =
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
 
-  // The grid has four items and one feedback button.
-  views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(5ul, grid_views.size());
+  const std::vector<DesksTemplatesItemView*> grid_items =
+      templates_grid_view->grid_items();
+  ASSERT_EQ(4ul, grid_items.size());
 
   // We expect the first two items to be laid out in one row.
-  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
+  EXPECT_EQ(grid_items[0]->bounds().y(), grid_items[1]->bounds().y());
   // And the last two items on the next row.
-  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
-  EXPECT_EQ(grid_views[2]->bounds().y(), grid_views[3]->bounds().y());
+  EXPECT_NE(grid_items[0]->bounds().y(), grid_items[2]->bounds().y());
+  EXPECT_EQ(grid_items[2]->bounds().y(), grid_items[3]->bounds().y());
 }
 
 // Tests that there is no overlap with the shelf on our smallest supported

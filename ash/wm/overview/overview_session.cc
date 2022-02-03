@@ -1007,6 +1007,9 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 }
 
 void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state) {
+  if (IsShowingDesksTemplatesGrid())
+    return;
+
   for (auto& grid : grid_list_)
     grid->ShowDesksTemplatesGrid(was_zero_state);
   desks_templates_presenter_->GetAllEntries();
