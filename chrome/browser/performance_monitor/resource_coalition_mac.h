@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "components/power_metrics/energy_impact_mac.h"
+#include "components/power_metrics/resource_coalition_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Forward declaration of the structure used internally to track resource usage.
@@ -34,19 +35,6 @@ namespace performance_monitor {
 // data retrieved by this class is experimental only.
 class ResourceCoalition {
  public:
-  // The different QoSLevels, the value of each level has to match the thread
-  // QoS values defined in osfmk/mach/thread_policy.h
-  enum class QoSLevels : int {
-    kDefault = 0,
-    kMaintenance = 1,
-    kBackground = 2,
-    kUtility = 3,
-    kLegacy = 4,
-    kUserInitiated = 5,
-    kUserInteractive = 6,
-    kMaxValue = kUserInteractive,
-  };
-
   // The data tracked by the coalition.
   // TODO(sebmarchand): This is only a subset of the available data, we should
   // probably record more data.
@@ -67,7 +55,7 @@ class ResourceCoalition {
     // Only available on M1 macs as of September 2021.
     double power_nw;
 
-    double qos_time_per_second[static_cast<int>(QoSLevels::kMaxValue) + 1];
+    double qos_time_per_second[COALITION_NUM_THREAD_QOS_TYPES];
   };
 
   // Note: The constructor will record whether or not coalition data are

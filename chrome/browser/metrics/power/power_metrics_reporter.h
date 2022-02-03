@@ -99,6 +99,13 @@ class PowerMetricsReporter
       const performance_monitor::ProcessMonitor::Metrics& metrics,
       const std::vector<const char*>& suffixes);
 
+#if BUILDFLAG(IS_MAC)
+  // Report resource coalition metrics to histograms with |suffixes|.
+  static void ReportResourceCoalitionHistograms(
+      const performance_monitor::ProcessMonitor::Metrics& metrics,
+      const std::vector<const char*>& suffixes);
+#endif  // BUILDFLAG(IS_MAC)
+
  private:
   // performance_monitor::ProcessMonitor::Observer:
   void OnAggregatedMetricsSampled(

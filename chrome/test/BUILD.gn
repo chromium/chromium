@@ -4698,7 +4698,6 @@ test("unit_tests") {
     "../browser/performance_manager/policies/working_set_trimmer_policy_unittest.cc",
     "../browser/performance_manager/test_support/page_aggregator.cc",
     "../browser/performance_manager/test_support/page_aggregator.h",
-    "../browser/performance_monitor/process_metrics_recorder_util_unittest.cc",
     "../browser/performance_monitor/system_monitor_unittest.cc",
     "../browser/permissions/abusive_origin_permission_revocation_request_unittests.cc",
     "../browser/permissions/adaptive_quiet_notification_permission_ui_enabler_unittest.cc",

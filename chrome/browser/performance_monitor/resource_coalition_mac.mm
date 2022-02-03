@@ -16,45 +16,9 @@
 #include "base/time/time.h"
 #include "components/power_metrics/energy_impact_mac.h"
 #include "components/power_metrics/mach_time_mac.h"
-#include "components/power_metrics/resource_coalition_mac.h"
 
 namespace performance_monitor {
 namespace {
-
-static_assert(
-    THREAD_QOS_DEFAULT ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kDefault),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_MAINTENANCE ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kMaintenance),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_BACKGROUND ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kBackground),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_UTILITY ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kUtility),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_LEGACY ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kLegacy),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_USER_INITIATED ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kUserInitiated),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(THREAD_QOS_USER_INTERACTIVE ==
-                  static_cast<int>(performance_monitor::ResourceCoalition::
-                                       QoSLevels::kUserInteractive),
-              "QoSLevels indexes should match the OS defined ones.");
 
 const char kCoalitionAvailabilityHistogram[] =
     "PerformanceMonitor.ResourceCoalition.Availability";

@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_METRICS_RECORDER_UTIL_H_
 #define CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_METRICS_RECORDER_UTIL_H_
 
-#include <vector>
-
-#include "build/build_config.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 
 namespace performance_monitor {
@@ -16,11 +13,6 @@ namespace performance_monitor {
 // suffixed with |histogram_suffix|.
 void RecordProcessHistograms(const char* histogram_suffix,
                              const ProcessMonitor::Metrics& metrics);
-
-#if BUILDFLAG(IS_MAC)
-void RecordCoalitionData(const ProcessMonitor::Metrics& metrics,
-                         const std::vector<const char*>& suffixes);
-#endif
 
 }  // namespace performance_monitor
 
