@@ -192,7 +192,7 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   }
 
   manifest_debug_info_ = mojom::blink::ManifestDebugInfo::New();
-  manifest_debug_info_->raw_manifest = data;
+  manifest_debug_info_->raw_manifest = data.IsNull() ? "" : data;
   parser.TakeErrors(&manifest_debug_info_->errors);
 
   for (const auto& error : manifest_debug_info_->errors) {
