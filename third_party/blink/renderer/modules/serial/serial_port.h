@@ -120,6 +120,9 @@ class SerialPort final : public EventTargetWithInlineData,
   // reopened on demand.
   bool closing_ = false;
 
+  // The port was opened with { flowControl: "hardware" }.
+  bool hardware_flow_control_ = false;
+
   // Resolver for the Promise returned by open().
   Member<ScriptPromiseResolver> open_resolver_;
   // Resolvers for the Promises returned by getSignals() and setSignals() to
