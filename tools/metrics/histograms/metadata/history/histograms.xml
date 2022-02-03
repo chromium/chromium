@@ -655,6 +655,7 @@ chromium-metrics-reviews@google.com.
     The value represents the 0-indexed index of the cluster.
   </summary>
   <token key="ClusterAction">
+    <variant name="Clicked" summary="clicks a visit"/>
     <variant name="Deleted" summary="deletes a history cluster"/>
     <variant name="OpenedInTabGroup"
         summary="opens the visit urls in a history cluster in a new tab group"/>
@@ -662,7 +663,6 @@ chromium-metrics-reviews@google.com.
         summary="clicks a related search suggestion"/>
     <variant name="RelatedVisitsVisibilityToggled"
         summary="toggles visibility of the default-hidden related visits"/>
-    <variant name="VisitClicked" summary="clicks a visit"/>
   </token>
 </histogram>
 
