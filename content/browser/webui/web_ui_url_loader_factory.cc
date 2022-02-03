@@ -180,7 +180,7 @@ void DataAvailable(
   // as Mojo requires a SequencedTaskRunnerHandle in scope.
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
       ->PostTask(FROM_HERE,
                  base::BindOnce(ReadData, std::move(headers), replacements,
                                 replace_in_js, source, std::move(client_remote),

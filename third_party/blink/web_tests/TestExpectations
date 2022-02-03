@@ -7577,6 +7577,9 @@ crbug.com/1287563 [ Linux ] external/wpt/webrtc/RTCPeerConnection-perfect-negoti
 # Now flaky due to a timing issue.
 crbug.com/1292296 http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js [ Failure Pass ]
 
+# Flaky due to timing issue.
+crbug.com/1293515 wpt_internal/resource-timing/initiator-type-early-hints-preload.h2.window.html [ Pass Failure ]
+
 # Sheriff 2022-02-01
 # Flaky test on Mac
 crbug.com/1292843 [ Mac ] external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
