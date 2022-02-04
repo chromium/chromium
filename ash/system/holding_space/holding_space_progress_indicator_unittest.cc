@@ -4,8 +4,10 @@
 
 #include "ash/system/holding_space/holding_space_progress_indicator.h"
 
+#include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 
 namespace ash {
 namespace {
@@ -34,6 +36,79 @@ class TestHoldingSpaceProgressIndicator : public HoldingSpaceProgressIndicator {
 // HoldingSpaceProgressIndicatorTest -------------------------------------------
 
 using HoldingSpaceProgressIndicatorTest = AshTestBase;
+
+// Verifies that `HoldingSpaceProgressIndicator::CreateDefaultInstance()` works
+// as intended. It should delegate progress calculation to a constructor
+// provided callback and manage progress animations as needed.
+TEST_F(HoldingSpaceProgressIndicatorTest, CreateDefaultInstance) {
+  absl::optional<float> progress;
+
+  // Create a default instance of `HoldingSpaceProgressIndicator` that paints
+  // `progress` whenever visual state is updated.
+  auto progress_indicator =
+      HoldingSpaceProgressIndicator::CreateDefaultInstance(
+          base::BindLambdaForTesting([&]() { return progress; }));
+
+  // Cache `layer_delegate` associate with `progress_indicator` to manually
+  // trigger update of visual state.
+  auto* layer_delegate =
+      static_cast<ui::LayerDelegate*>(progress_indicator.get());
+
+  // Cache animation `key` and `registry` associated with `progress_indicator`.
+  auto* key = progress_indicator.get();
+  auto* registry = progress_indicator->animation_registry();
+
+  // Verify initial progress and animation states.
+  EXPECT_EQ(progress_indicator->progress(), progress);
+  EXPECT_FALSE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
+
+  // Update `progress` to 0%. Verify progress and animation states.
+  progress = 0.f;
+  layer_delegate->UpdateVisualState();
+  EXPECT_EQ(progress_indicator->progress(), progress);
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
+
+  // Update `progress` to 50%. Verify progress and animation states.
+  progress = 0.5f;
+  layer_delegate->UpdateVisualState();
+  EXPECT_EQ(progress_indicator->progress(), progress);
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
+
+  // Update `progress` to indeterminate. Verify progress and animation states.
+  progress = absl::nullopt;
+  layer_delegate->UpdateVisualState();
+  EXPECT_EQ(progress_indicator->progress(), progress);
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  ASSERT_TRUE(registry->GetProgressRingAnimationForKey(key));
+  EXPECT_EQ(registry->GetProgressRingAnimationForKey(key)->type(),
+            HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
+
+  // Update `progress` to 75%. Verify progress and animation states.
+  progress = 0.75f;
+  layer_delegate->UpdateVisualState();
+  EXPECT_EQ(progress_indicator->progress(), progress);
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
+
+  // Update `progress` to 100%. Verify progress an animation states.
+  progress = HoldingSpaceProgressIndicator::kProgressComplete;
+  layer_delegate->UpdateVisualState();
+  EXPECT_EQ(progress_indicator->progress(), progress);
+  EXPECT_FALSE(registry->GetProgressIconAnimationForKey(key));
+  ASSERT_TRUE(registry->GetProgressRingAnimationForKey(key));
+  EXPECT_EQ(registry->GetProgressRingAnimationForKey(key)->type(),
+            HoldingSpaceProgressRingAnimation::Type::kPulse);
+
+  // The pulse animation that runs on progress completion should be removed
+  // automatically on animation completion.
+  base::test::RepeatingTestFuture<HoldingSpaceProgressRingAnimation*> future;
+  auto subscription = registry->AddProgressRingAnimationChangedCallbackForKey(
+      key, future.GetCallback());
+  EXPECT_EQ(future.Take(), nullptr);
+}
 
 // Verifies that `HoldingSpaceProgressIndicator::AddProgressChangedCallback()`
 // works as intended.

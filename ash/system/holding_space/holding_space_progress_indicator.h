@@ -35,6 +35,12 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
       const HoldingSpaceProgressIndicator&) = delete;
   ~HoldingSpaceProgressIndicator() override;
 
+  // Returns an instance which paints indication of progress returned by the
+  // specified `progress_callback`. NOTE: This instance comes pre-wired with an
+  // `animation_registry_` that will manage progress animations as needed.
+  static std::unique_ptr<HoldingSpaceProgressIndicator> CreateDefaultInstance(
+      base::RepeatingCallback<absl::optional<float>()> progress_callback);
+
   // Returns an instance which paints indication of progress for all holding
   // space items in the model attached to the specified `controller`.
   static std::unique_ptr<HoldingSpaceProgressIndicator> CreateForController(
@@ -67,6 +73,12 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // regardless of the value of `visible` provided.
   void SetInnerIconVisible(bool visible);
   bool inner_icon_visible() const { return inner_icon_visible_; }
+
+  // Returns the underlying `animation_registry_` in which to look up animations
+  // for the associated `animation_key_`. NOTE: This may return `nullptr`.
+  ProgressIndicatorAnimationRegistry* animation_registry() {
+    return animation_registry_;
+  }
 
   // Returns the underlying `progress_` for which to paint indication.
   // NOTE: If absent, progress is indeterminate.

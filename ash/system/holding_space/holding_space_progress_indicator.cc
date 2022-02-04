@@ -146,6 +146,172 @@ cc::PaintFlags::Cap GetStrokeCap() {
              : cc::PaintFlags::Cap::kRound_Cap;
 }
 
+// DefaultProgressIndicatorAnimationRegistry -----------------------------------
+
+// A default implementation of `ProgressIndicatorAnimationRegistry` which is
+// associated with a single `HoldingSpaceProgressIndicator` and manage progress
+// animations as needed.
+class DefaultProgressIndicatorAnimationRegistry
+    : public ProgressIndicatorAnimationRegistry {
+ public:
+  DefaultProgressIndicatorAnimationRegistry() = default;
+  DefaultProgressIndicatorAnimationRegistry(
+      const DefaultProgressIndicatorAnimationRegistry&) = delete;
+  DefaultProgressIndicatorAnimationRegistry& operator=(
+      const DefaultProgressIndicatorAnimationRegistry&) = delete;
+  ~DefaultProgressIndicatorAnimationRegistry() = default;
+
+  // Sets the `progress_indicator` for which this registry manages animations.
+  // NOTE: This method may be called only once.
+  void SetProgressIndicator(HoldingSpaceProgressIndicator* progress_indicator) {
+    DCHECK(progress_indicator);
+    DCHECK(!progress_indicator_);
+    progress_indicator_ = progress_indicator;
+    progress_changed_subscription_ =
+        progress_indicator_->AddProgressChangedCallback(base::BindRepeating(
+            &DefaultProgressIndicatorAnimationRegistry::OnProgressChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+ private:
+  // Invoked on changes to `progress_indicator_` progress.
+  void OnProgressChanged() {
+    const absl::optional<float>& progress = progress_indicator_->progress();
+    if (!progress.has_value()) {
+      // Progress is indeterminate.
+      EnsureProgressIconAnimation();
+      EnsureProgressRingAnimationOfType(
+          HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
+    } else if (progress != HoldingSpaceProgressIndicator::kProgressComplete) {
+      // Progress is determinate.
+      EnsureProgressIconAnimation();
+      EraseProgressRingAnimation();
+    } else if (previous_progress_ !=
+               HoldingSpaceProgressIndicator::kProgressComplete) {
+      // Progress is complete.
+      EraseProgressIconAnimation();
+      EnsureProgressRingAnimationOfType(
+          HoldingSpaceProgressRingAnimation::Type::kPulse);
+    }
+    previous_progress_ = progress;
+  }
+
+  // Invoked on update of the specified `animation`.
+  void OnProgressRingAnimationUpdated(
+      HoldingSpaceProgressRingAnimation* animation) {
+    if (animation->IsAnimating())
+      return;
+
+    // On completion, `animation` can be removed from the registry. This cannot
+    // be done directly from `animation`'s subscription callback, so post a task
+    // to delete `animation` as soon as possible.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const base::WeakPtr<DefaultProgressIndicatorAnimationRegistry>&
+                   registry,
+               HoldingSpaceProgressRingAnimation* animation) {
+              if (!registry)
+                return;
+              auto* key = registry->progress_indicator_;
+              if (registry->GetProgressRingAnimationForKey(key) == animation)
+                registry->SetProgressRingAnimationForKey(key, nullptr);
+            },
+            weak_ptr_factory_.GetWeakPtr(), animation));
+  }
+
+  // Ensures that a progress icon animation exists and is started. NOTE: This
+  // method no-ops if in-progress animation v2 is disabled since in such cases
+  // there is no progress icon to animate.
+  void EnsureProgressIconAnimation() {
+    if (!features::IsHoldingSpaceInProgressAnimationV2Enabled())
+      return;
+
+    if (!GetProgressIconAnimationForKey(progress_indicator_)) {
+      SetProgressIconAnimationForKey(
+          progress_indicator_,
+          std::make_unique<HoldingSpaceProgressIconAnimation>())
+          ->Start();
+    }
+  }
+
+  // Ensures that a progress ring animation of the specified `type` exists and
+  // is started.
+  void EnsureProgressRingAnimationOfType(
+      HoldingSpaceProgressRingAnimation::Type type) {
+    auto* ring_animation = GetProgressRingAnimationForKey(progress_indicator_);
+    if (ring_animation && ring_animation->type() == type)
+      return;
+
+    auto animation = HoldingSpaceProgressRingAnimation::CreateOfType(type);
+
+    // NOTE: `animation` is owned by `this` so it is safe to use a raw pointer
+    // and subscription-less callback.
+    animation->AddUnsafeAnimationUpdatedCallback(
+        base::BindRepeating(&DefaultProgressIndicatorAnimationRegistry::
+                                OnProgressRingAnimationUpdated,
+                            base::Unretained(this), animation.get()));
+
+    SetProgressRingAnimationForKey(progress_indicator_, std::move(animation))
+        ->Start();
+  }
+
+  // Erases any existing progress icon animation.
+  void EraseProgressIconAnimation() {
+    SetProgressIconAnimationForKey(progress_indicator_, nullptr);
+  }
+
+  // Erases any existing progress ring animation.
+  void EraseProgressRingAnimation() {
+    SetProgressRingAnimationForKey(progress_indicator_, nullptr);
+  }
+
+  // The progress indicator for which to manage animations and a subscription
+  // to receive notification of progress change events.
+  HoldingSpaceProgressIndicator* progress_indicator_ = nullptr;
+  base::CallbackListSubscription progress_changed_subscription_;
+
+  // Instantiate `previous_progress_` to completion to avoid starting a pulse
+  // animation on first progress update.
+  absl::optional<float> previous_progress_ =
+      HoldingSpaceProgressIndicator::kProgressComplete;
+
+  base::WeakPtrFactory<DefaultProgressIndicatorAnimationRegistry>
+      weak_ptr_factory_{this};
+};
+
+// DefaultProgressIndicator ----------------------------------------------------
+
+// A default implementation of `HoldingSpaceProgressIndicator` which paints
+// indication of progress returned by the specified `progress_callback_`.
+// NOTE: This instance comes pre-wired with an animation `registry_` that will
+// manage progress animations as needed.
+class DefaultProgressIndicator : public HoldingSpaceProgressIndicator {
+ public:
+  DefaultProgressIndicator(
+      std::unique_ptr<DefaultProgressIndicatorAnimationRegistry> registry,
+      base::RepeatingCallback<absl::optional<float>()> progress_callback)
+      : HoldingSpaceProgressIndicator(/*registry=*/registry.get(),
+                                      /*animation_key=*/this),
+        registry_(std::move(registry)),
+        progress_callback_(std::move(progress_callback)) {
+    registry_->SetProgressIndicator(this);
+  }
+
+  DefaultProgressIndicator(const DefaultProgressIndicator&) = delete;
+  DefaultProgressIndicator& operator=(const DefaultProgressIndicator&) = delete;
+  ~DefaultProgressIndicator() override = default;
+
+ private:
+  // HoldingSpaceProgressIndicator:
+  absl::optional<float> CalculateProgress() const override {
+    return progress_callback_.Run();
+  }
+
+  std::unique_ptr<DefaultProgressIndicatorAnimationRegistry> registry_;
+  base::RepeatingCallback<absl::optional<float>()> progress_callback_;
+};
+
 // HoldingSpaceControllerProgressIndicator -------------------------------------
 
 // A class owning a `ui::Layer` which paints indication of progress for all
@@ -349,6 +515,15 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
 }
 
 HoldingSpaceProgressIndicator::~HoldingSpaceProgressIndicator() = default;
+
+// static
+std::unique_ptr<HoldingSpaceProgressIndicator>
+HoldingSpaceProgressIndicator::CreateDefaultInstance(
+    base::RepeatingCallback<absl::optional<float>()> progress_callback) {
+  return std::make_unique<DefaultProgressIndicator>(
+      std::make_unique<DefaultProgressIndicatorAnimationRegistry>(),
+      std::move(progress_callback));
+}
 
 // static
 std::unique_ptr<HoldingSpaceProgressIndicator>
