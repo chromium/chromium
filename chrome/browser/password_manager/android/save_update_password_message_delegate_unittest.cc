@@ -321,26 +321,30 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
                  /*update_password=*/false);
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
-            GetMessageWrapper()->GetTitle());
-  EXPECT_NE(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kUsername));
-  EXPECT_EQ(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kPassword));
-  EXPECT_EQ(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kAccountEmail16));
-
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
             GetMessageWrapper()->GetSecondaryButtonMenuText());
 
   if (IsParamFeatureEnabled()) {
+    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION),
+        GetMessageWrapper()->GetDescription());
     EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
                   IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
               GetMessageWrapper()->GetIconResourceId());
 
   } else {
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
+              GetMessageWrapper()->GetTitle());
+    EXPECT_NE(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kUsername));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kPassword));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kAccountEmail16));
     EXPECT_EQ(
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
         GetMessageWrapper()->GetIconResourceId());
@@ -365,6 +369,14 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_PASSWORD),
             GetMessageWrapper()->GetTitle());
 
+  if (IsParamFeatureEnabled()) {
+    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION),
+        GetMessageWrapper()->GetDescription());
+  }
+
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UPDATE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(std::u16string(),
@@ -383,13 +395,21 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/false);
 
-  EXPECT_EQ(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kUsername));
-  EXPECT_EQ(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kPassword));
-  EXPECT_NE(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kAccountEmail16));
-
+  if (IsParamFeatureEnabled()) {
+    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
+    EXPECT_EQ(
+        l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
+            kAccountEmail16),
+        GetMessageWrapper()->GetDescription());
+  } else {
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kUsername));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kPassword));
+    EXPECT_NE(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kAccountEmail16));
+  }
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
@@ -403,13 +423,21 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
 
-  EXPECT_EQ(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kUsername));
-  EXPECT_EQ(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kPassword));
-  EXPECT_NE(std::u16string::npos,
-            GetMessageWrapper()->GetDescription().find(kAccountEmail16));
-
+  if (IsParamFeatureEnabled()) {
+    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
+    EXPECT_EQ(
+        l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
+            kAccountEmail16),
+        GetMessageWrapper()->GetDescription());
+  } else {
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kUsername));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kPassword));
+    EXPECT_NE(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kAccountEmail16));
+  }
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 

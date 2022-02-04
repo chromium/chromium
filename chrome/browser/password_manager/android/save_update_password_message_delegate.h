@@ -65,9 +65,16 @@ class SaveUpdatePasswordMessageDelegate {
       bool update_password);
   void CreateMessage(bool update_password);
 
-  // Returns string id for message primary button. Takes into account whether
-  // this is save or update password scenario and whether update message will
-  // be followed by username confirmation dialog.
+  // Returns the message description depending on whether the password is being
+  // saved or updated and if unified password manager is enabled.
+  std::u16string GetMessageDescription(
+      const password_manager::PasswordForm& pending_credentials,
+      bool update_password,
+      bool unified_password_manager);
+
+  // Returns string id for the message primary button. Takes into account
+  // whether this is save or update password scenario and whether the update
+  // message will be followed by a username confirmation dialog.
   int GetPrimaryButtonTextId(bool update_password,
                              bool use_followup_button_text);
 
