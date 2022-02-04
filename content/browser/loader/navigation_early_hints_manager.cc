@@ -273,13 +273,13 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   }
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
                          mojo::ScopedDataPipeConsumerHandle body) override {
-    if (head->network_accessed || !head->was_fetched_via_cache)
+    if (!head->network_accessed && head->was_fetched_via_cache) {
+      // Cancel the client since the response is already stored in the cache.
+      result_.was_canceled = true;
+      MaybeCompletePreload();
       return;
-    result_.was_canceled = true;
-    auto weak_this = weak_ptr_factory_.GetWeakPtr();
-    MaybeCompletePreload();
-    if (!weak_this)
-      return;
+    }
+
     if (body)
       OnStartLoadingResponseBody(std::move(body));
   }
@@ -346,8 +346,6 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
   PreloadedResource result_;
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
-
-  base::WeakPtrFactory<PreloadURLLoaderClient> weak_ptr_factory_{this};
 };
 
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
