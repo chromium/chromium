@@ -10,29 +10,10 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+import("./new_tab_page.gni")
 
-html_to_js("web_components_local") {
-  js_files = [
-    "app.ts",
-    "customize_backgrounds.ts",
-    "customize_dialog.ts",
-    "customize_shortcuts.ts",
-    "doodle_share_dialog.ts",
-    "logo.ts",
-    "middle_slot_promo.ts",
-    "mini_page.ts",
-    "iframe.ts",
-    "voice_search_overlay.ts",
-    "customize_modules.ts",
-  ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "modules:web_components",
-    "realbox:web_components",
-  ]
+html_to_js("web_components") {
+  js_files = web_component_files
 }
 
 grd_prefix = "new_tab_page"
@@ -44,19 +25,9 @@ if (optimize_webui) {
 
 preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "background_manager.ts",
-    "window_proxy.ts",
-    "new_tab_page_proxy.ts",
-    "lazy_load.ts",
-    "customize_dialog_types.ts",
-    "new_tab_page.ts",
-    "utils.ts",
-    "metrics_utils.ts",
-    "i18n_setup.ts",
-  ]
+  in_files = non_web_component_files
 }
 
 preprocess_if_expr("preprocess_gen") {
@@ -64,19 +35,7 @@ preprocess_if_expr("preprocess_gen") {
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "app.ts",
-    "middle_slot_promo.ts",
-    "customize_dialog.ts",
-    "voice_search_overlay.ts",
-    "customize_backgrounds.ts",
-    "customize_modules.ts",
-    "customize_shortcuts.ts",
-    "iframe.ts",
-    "mini_page.ts",
-    "logo.ts",
-    "doodle_share_dialog.ts",
-  ]
+  in_files = web_component_files
 }
 
 # Copy all Mojom generated JS files used by the NTP to a common location so that
@@ -107,19 +66,6 @@ copy("copy_mojom") {
   }
 
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
-
-mojo_js_files = [
-  "chrome_cart.mojom-webui.js",
-  "drive.mojom-webui.js",
-  "new_tab_page.mojom-webui.js",
-  "photos.mojom-webui.js",
-  "realbox.mojom-webui.js",
-  "task_module.mojom-webui.js",
-]
-
-if (!is_official_build) {
-  mojo_js_files += [ "foo.mojom-webui.js" ]
 }
 
 if (optimize_webui) {
@@ -246,59 +192,7 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-               "app.ts",
-               "background_manager.ts",
-               "customize_backgrounds.ts",
-               "customize_dialog.ts",
-               "customize_dialog_types.ts",
-               "customize_modules.ts",
-               "customize_shortcuts.ts",
-               "doodle_share_dialog.ts",
-               "i18n_setup.ts",
-               "iframe.ts",
-               "lazy_load.ts",
-               "logo.ts",
-               "metrics_utils.ts",
-               "middle_slot_promo.ts",
-               "mini_page.ts",
-               "modules/cart/chrome_cart_proxy.ts",
-               "modules/cart/module.ts",
-               "modules/cart_v2/module.ts",
-               "modules/drive/drive_module_proxy.ts",
-               "modules/drive/module.ts",
-               "modules/drive_v2/module.ts",
-               "modules/info_dialog.ts",
-               "modules/module_descriptor.ts",
-               "modules/module_descriptors.ts",
-               "modules/module_header.ts",
-               "modules/module_registry.ts",
-               "modules/modules.ts",
-               "modules/module_wrapper.ts",
-               "modules/photos/module.ts",
-               "modules/photos/photos_module_proxy.ts",
-               "modules/recipes_v2/module.ts",
-               "modules/task_module/module.ts",
-               "modules/task_module/task_module_handler_proxy.ts",
-               "new_tab_page.ts",
-               "new_tab_page_proxy.ts",
-               "realbox/realbox_action.ts",
-               "realbox/realbox_browser_proxy.ts",
-               "realbox/realbox_dropdown.ts",
-               "realbox/realbox_icon.ts",
-               "realbox/realbox.ts",
-               "realbox/realbox_match.ts",
-               "utils.ts",
-               "voice_search_overlay.ts",
-               "window_proxy.ts",
-             ] + mojo_js_files
-
-  if (!is_official_build) {
-    in_files += [
-      "modules/dummy_v2/foo_proxy.ts",
-      "modules/dummy_v2/module.ts",
-    ]
-  }
+  in_files = web_component_files + non_web_component_files + mojo_js_files
 
   deps = [
     "//third_party/polymer/v3_0:library",
@@ -313,9 +207,5 @@ ts_library("build_ts") {
     ":copy_mojom",
     ":preprocess",
     ":preprocess_gen",
-    "modules:preprocess",
-    "modules:preprocess_gen",
-    "realbox:preprocess",
-    "realbox:preprocess_gen",
   ]
 }
