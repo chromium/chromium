@@ -5,6 +5,7 @@
 #include "components/reporting/util/disconnectable_client.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/containers/fixed_flat_map.h"
@@ -34,16 +35,13 @@ void DisconnectableClient::MaybeMakeCall(std::unique_ptr<Delegate> delegate) {
         Status(reporting::error::UNAVAILABLE, "Service is unavailable"));
     return;
   }
-  // Save raw pointer to the |delegate|. |delegate| cannot be released until
-  // we leave this method (we must get on |task_runner_| again first).
-  auto* const raw_delegate_ptr = delegate.get();
   // Add the delegate to the map.
   const auto id = base::RandUint64();
   auto res = outstanding_delegates_.emplace(id, std::move(delegate));
   DCHECK(res.second) << "Duplicate call id " << id;
   // Make a call, resume on CallResponded, when response is received.
-  raw_delegate_ptr->DoCall(base::BindOnce(&DisconnectableClient::CallResponded,
-                                          weak_ptr_factory_.GetWeakPtr(), id));
+  res.first->second->DoCall(base::BindOnce(&DisconnectableClient::CallResponded,
+                                           weak_ptr_factory_.GetWeakPtr(), id));
 }
 
 void DisconnectableClient::CallResponded(uint64_t id) {
@@ -67,11 +65,11 @@ void DisconnectableClient::SetAvailability(bool is_available) {
                << "available";
   if (!is_available_) {
     // Cancel all pending calls.
-    auto delegates = std::move(outstanding_delegates_);
-    for (auto& p : delegates) {
+    for (auto& p : outstanding_delegates_) {
       std::move(p.second)->Respond(
           Status(reporting::error::UNAVAILABLE, "Service is unavailable"));
     }
+    outstanding_delegates_.clear();
   }
 }
 

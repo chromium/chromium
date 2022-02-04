@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -48,6 +49,7 @@ class MissiveClientImpl : public MissiveClient {
   }
 
   void Init(dbus::Bus* const bus) {
+    DCHECK(bus);
     origin_task_runner_ = bus->GetOriginTaskRunner();
 
     DCHECK(!missive_service_proxy_);
@@ -112,7 +114,7 @@ class MissiveClientImpl : public MissiveClient {
     ~DBusDelegate() override = default;
 
     // Writes request into dBus message writer.
-    virtual void WriteRequest(dbus::MessageWriter* writer) = 0;
+    virtual bool WriteRequest(dbus::MessageWriter* writer) = 0;
 
     // Parses response, retrieves status information from it and returns it.
     // Optional - returns OK if absent.
@@ -136,7 +138,14 @@ class MissiveClientImpl : public MissiveClient {
       dbus::MethodCall method_call(missive::kMissiveServiceInterface,
                                    dbus_method_);
       dbus::MessageWriter writer(&method_call);
-      WriteRequest(&writer);
+      if (!WriteRequest(&writer)) {
+        reporting::Status status(
+            reporting::error::UNKNOWN,
+            "MessageWriter was unable to append the request.");
+        LOG(ERROR) << status;
+        std::move(completion_callback_).Run(status);
+        return;
+      }
 
       // Make a dBus call.
       owner_->missive_service_proxy_->CallMethod(
@@ -166,6 +175,7 @@ class MissiveClientImpl : public MissiveClient {
         dbus::MessageReader reader(response_);
         status = ParseResponse(&reader);
       }
+      DCHECK(completion_callback_);
       std::move(completion_callback_).Run(status);
     }
 
@@ -192,13 +202,16 @@ class MissiveClientImpl : public MissiveClient {
       request_.set_priority(priority);
     }
 
-    void WriteRequest(dbus::MessageWriter* writer) override {
-      writer->AppendProtoAsArrayOfBytes(request_);
+    bool WriteRequest(dbus::MessageWriter* writer) override {
+      return writer->AppendProtoAsArrayOfBytes(request_);
     }
 
     reporting::Status ParseResponse(dbus::MessageReader* reader) override {
       reporting::EnqueueRecordResponse response_body;
-      reader->PopArrayOfBytesAsProto(&response_body);
+      if (!reader->PopArrayOfBytesAsProto(&response_body)) {
+        return reporting::Status(reporting::error::INTERNAL,
+                                 "Response was not parsable.");
+      }
       reporting::Status status;
       status.RestoreFrom(response_body.status());
       return status;
@@ -220,13 +233,16 @@ class MissiveClientImpl : public MissiveClient {
       request_.set_priority(priority);
     }
 
-    void WriteRequest(dbus::MessageWriter* writer) override {
-      writer->AppendProtoAsArrayOfBytes(request_);
+    bool WriteRequest(dbus::MessageWriter* writer) override {
+      return writer->AppendProtoAsArrayOfBytes(request_);
     }
 
     reporting::Status ParseResponse(dbus::MessageReader* reader) override {
       reporting::FlushPriorityResponse response_body;
-      reader->PopArrayOfBytesAsProto(&response_body);
+      if (!reader->PopArrayOfBytesAsProto(&response_body)) {
+        return reporting::Status(reporting::error::INTERNAL,
+                                 "Response was not parsable.");
+      }
       reporting::Status status;
       status.RestoreFrom(response_body.status());
       return status;
@@ -247,8 +263,8 @@ class MissiveClientImpl : public MissiveClient {
       *request_.mutable_signed_encryption_info() = encryption_info;
     }
 
-    void WriteRequest(dbus::MessageWriter* writer) override {
-      writer->AppendProtoAsArrayOfBytes(request_);
+    bool WriteRequest(dbus::MessageWriter* writer) override {
+      return writer->AppendProtoAsArrayOfBytes(request_);
     }
 
    private:
@@ -264,13 +280,12 @@ class MissiveClientImpl : public MissiveClient {
         : DBusDelegate(missive::kConfirmRecordUpload,
                        owner,
                        base::DoNothing()) {
-      *request_.mutable_sequence_information() =
-          std::move(sequence_information);
+      *request_.mutable_sequence_information() = sequence_information;
       request_.set_force_confirm(force_confirm);
     }
 
-    void WriteRequest(dbus::MessageWriter* writer) override {
-      writer->AppendProtoAsArrayOfBytes(request_);
+    bool WriteRequest(dbus::MessageWriter* writer) override {
+      return writer->AppendProtoAsArrayOfBytes(request_);
     }
 
    private:

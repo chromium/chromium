@@ -5,6 +5,7 @@
 #include "components/reporting/util/disconnectable_client.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
