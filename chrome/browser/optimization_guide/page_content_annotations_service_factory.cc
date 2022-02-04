@@ -48,8 +48,12 @@ PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
 
 KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!optimization_guide::features::IsPageContentAnnotationEnabled())
+  // Allow for the validation experiment to enable the PCAService without need
+  // to enable both features.
+  if (!optimization_guide::features::IsPageContentAnnotationEnabled() &&
+      !optimization_guide::features::BatchAnnotationsValidationEnabled()) {
     return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context);
 

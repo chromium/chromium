@@ -142,6 +142,25 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceDisabledBrowserTest,
                          browser()->profile()));
 }
 
+class PageContentAnnotationsServiceValidationBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  PageContentAnnotationsServiceValidationBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kOptimizationHints, features::kBatchAnnotationsValidation},
+        {features::kPageContentAnnotations});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceValidationBrowserTest,
+                       ValidationEnablesService) {
+  EXPECT_NE(nullptr, PageContentAnnotationsServiceFactory::GetForProfile(
+                         browser()->profile()));
+}
+
 class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  public:
   PageContentAnnotationsServiceBrowserTest() {
@@ -609,7 +628,7 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-  
+
 // TODO(crbug/1291486): Disabled due to flakiness on Mac and Windows.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_QueueFullAndVisitBatchActive DISABLED_QueueFullAndVisitBatchActive
