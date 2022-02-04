@@ -160,7 +160,7 @@ public class PiiEliderTest {
     @Test
     public void testDoesNotElideMethodNameInStacktrace() {
         String original = "java.lang.NullPointerException: Attempt to invoke virtual method 'int "
-                + "androidx.fragment.app.FragmentManager.getBackStackEntryCount()' on a null "
+                + "org.robolectric.internal.AndroidSandbox.getBackStackEntryCount()' on a null "
                 + "object reference";
         assertEquals(original, PiiElider.sanitizeStacktrace(original));
     }
