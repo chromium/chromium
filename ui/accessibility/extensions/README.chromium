@@ -23,11 +23,15 @@ You can build all extension tests by doing:
 
 ninja -C out/Release ui/accessibility/extensions:extension_tests
 
-This currently only produces tests for ChromeVox Classic
+This currently produces tests for ChromeVox Classic, Color Enhancer,
+and Caret Browsing.
 
 out/Release/chromevox_tests
+out/Release/colorenhancer_tests
+out/Release/caretbrowsing_tests
 
-This target is not run on a bot, so run it manually before release!
+These targets are not run on a bot, so run the relevant tests manually
+before release!
 
 #
 # Instructions for publishing to the web store (new as of August 2019):
