@@ -25,6 +25,7 @@
  */
 
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 
 #include <algorithm>
 #include <memory>
@@ -146,6 +147,7 @@
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -884,6 +886,8 @@ void LocalFrameView::UpdateLayout() {
   probe::UpdateLayout probe(GetFrame().GetDocument());
   HeapVector<LayoutObjectWithDepth> layout_roots;
 
+  ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(), &GetFrame(),
+                       BlinkState::LAYOUT);
   TRACE_EVENT_BEGIN0("blink,benchmark", "LocalFrameView::layout");
   if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) {
     rcs_scope.emplace(
@@ -2447,15 +2451,15 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 bool LocalFrameView::RunScrollTimelineSteps() {
   DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean);
   bool re_run_lifecycles = false;
-  ForAllNonThrottledLocalFrameViews(
-      [&re_run_lifecycles](LocalFrameView& frame_view) {
-        frame_view.GetFrame()
-            .GetDocument()
-            ->GetDocumentAnimations()
-            .ValidateTimelines();
-        re_run_lifecycles |= (frame_view.Lifecycle().GetState() <
-                              DocumentLifecycle::kPrePaintClean);
-      });
+  ForAllNonThrottledLocalFrameViews([&re_run_lifecycles](
+                                        LocalFrameView& frame_view) {
+    frame_view.GetFrame()
+        .GetDocument()
+        ->GetDocumentAnimations()
+        .ValidateTimelines();
+    re_run_lifecycles |=
+        (frame_view.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean);
+  });
   return re_run_lifecycles;
 }
 
