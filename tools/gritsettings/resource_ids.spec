@@ -827,10 +827,6 @@
     "messages": [4380],
   },
 
-  "headless/lib/resources/headless_lib_resources.grd": {
-    "includes": [4400],
-  },
-
   "mojo/public/js/mojo_bindings_resources.grd": {
     "includes": [4420],
   },

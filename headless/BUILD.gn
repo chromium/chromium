@@ -50,7 +50,6 @@ repack("resource_pack_data") {
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
-    "$root_gen_dir/headless/headless_lib_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
@@ -60,7 +59,6 @@ repack("resource_pack_data") {
   ]
 
   deps = [
-    ":resources",
     "//components/resources:components_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
@@ -160,14 +158,6 @@ action("embedded_resource_pack_strings") {
   ]
 
   deps = [ ":resource_pack_strings" ]
-}
-
-grit("resources") {
-  source = "lib/resources/headless_lib_resources.grd"
-  outputs = [
-    "grit/headless_lib_resources.h",
-    "$root_gen_dir/headless/headless_lib_resources.pak",
-  ]
 }
 
 devtools_domains = [

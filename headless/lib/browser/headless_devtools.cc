@@ -16,7 +16,6 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/browser/navigation_entry.h"
-#include "headless/grit/headless_lib_resources.h"
 #include "headless/public/headless_browser.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
