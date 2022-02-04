@@ -1615,7 +1615,9 @@ GetPedalImplementations(bool incognito, bool testing) {
 
 #if BUILDFLAG(IS_ANDROID)
   if (testing || OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled()) {
-    add(new OmniboxPedalClearBrowsingData(incognito));
+    if (!incognito) {
+      add(new OmniboxPedalClearBrowsingData(incognito));
+    }
     add(new OmniboxPedalManagePasswords());
     add(new OmniboxPedalUpdateCreditCard());
     add(new OmniboxPedalLaunchIncognito());

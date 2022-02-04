@@ -21,6 +21,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -40,7 +43,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -53,20 +56,37 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Tests of the Omnibox Pedals feature.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class OmniboxPedalsTest {
+    @ParameterAnnotations.ClassParameter
+    private static List<ParameterSet> sClassParams =
+            Arrays.asList(new ParameterSet().value(false).name("RegularTab"),
+                    new ParameterSet().value(true).name("IncognitoTab"));
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private OmniboxTestUtils mOmniboxUtils;
+    private boolean mIncognito;
+
+    public OmniboxPedalsTest(boolean incognito) {
+        mIncognito = incognito;
+    }
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
+        if (mIncognito) {
+            mActivityTestRule.newIncognitoTabFromMenu();
+        }
         mOmniboxUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
     }
 
@@ -121,17 +141,19 @@ public class OmniboxPedalsTest {
     }
 
     /**
-     * Ensure the |pedalType| pedal suggestion was shown.
+     * Check whether the |pedalType| pedal suggestion was shown.
      *
      * @param locationBarLayout The layout which omnibox suggestions will show in.
      * @param pedalType The Omnibox pedal type to be found.
+     * @param expectShown expect pedal is shown or not.
      */
-    private void ensurePedalWasShown(
-            LocationBarLayout locationBarLayout, @OmniboxPedalType int pedalType) {
+    private void checkPedalWasShown(LocationBarLayout locationBarLayout,
+            @OmniboxPedalType int pedalType, boolean expectShown) {
         CriteriaHelper.pollUiThread(() -> {
             AutocompleteMatch matchSuggestion =
                     findOmniboxPedalSuggestion(locationBarLayout, pedalType);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Criteria.checkThat(
+                    matchSuggestion, expectShown ? Matchers.notNullValue() : Matchers.nullValue());
         });
     }
 
@@ -158,7 +180,13 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Clear data");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.CLEAR_BROWSING_DATA);
+        checkPedalWasShown(locationBarLayout, OmniboxPedalType.CLEAR_BROWSING_DATA,
+                /*expectShown=*/!mIncognito);
+
+        if (mIncognito) {
+            // In incognito mode, no pedal shows, so the test can stop here.
+            return;
+        }
 
         SettingsActivity settingsActivity = clickOnPedalToSettings(
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.CLEAR_BROWSING_DATA);
@@ -183,7 +211,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Manage passwords");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_PASSWORDS);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.MANAGE_PASSWORDS, /*expectShown=*/true);
 
         SettingsActivity settingsActivity = clickOnPedalToSettings(
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_PASSWORDS);
@@ -208,7 +237,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Manage payment methods");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.UPDATE_CREDIT_CARD);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.UPDATE_CREDIT_CARD, /*expectShown=*/true);
 
         SettingsActivity settingsActivity = clickOnPedalToSettings(
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.UPDATE_CREDIT_CARD);
@@ -233,7 +263,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Open Incognito");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.LAUNCH_INCOGNITO);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.LAUNCH_INCOGNITO, /*expectShown=*/true);
 
         clickOnPedal(locationBarLayout, OmniboxPedalType.LAUNCH_INCOGNITO);
 
@@ -253,7 +284,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Run safety check");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK, /*expectShown=*/true);
 
         SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class,
                 locationBarLayout, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
@@ -278,7 +310,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Change site permissions");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_SITE_SETTINGS);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.MANAGE_SITE_SETTINGS, /*expectShown=*/true);
 
         SettingsActivity settingsActivity = clickOnPedalToSettings(
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_SITE_SETTINGS);
@@ -303,7 +336,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "manage settings");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.MANAGE_CHROME_SETTINGS, /*expectShown=*/true);
 
         SettingsActivity settingsActivity = clickOnPedalToSettings(
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_CHROME_SETTINGS);
@@ -329,7 +363,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "view chrome history");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.VIEW_CHROME_HISTORY);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.VIEW_CHROME_HISTORY, /*expectShown=*/true);
 
         HistoryActivity historyActivity = clickOnPedalToSettings(
                 HistoryActivity.class, locationBarLayout, OmniboxPedalType.VIEW_CHROME_HISTORY);
@@ -350,7 +385,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Chrome accessibility");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+        checkPedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY,
+                /*expectShown=*/true);
 
         SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class,
                 locationBarLayout, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
@@ -375,7 +411,8 @@ public class OmniboxPedalsTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Dino game");
 
-        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.PLAY_CHROME_DINO_GAME);
+        checkPedalWasShown(
+                locationBarLayout, OmniboxPedalType.PLAY_CHROME_DINO_GAME, /*expectShown=*/true);
 
         // Click the pedal.
         clickOnPedal(locationBarLayout, OmniboxPedalType.PLAY_CHROME_DINO_GAME);
