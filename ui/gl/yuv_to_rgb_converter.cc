@@ -283,14 +283,14 @@ void YUVToRGBConverter::CopyYUV420ToRGB(unsigned target,
     GLint current_height = 0;
     glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &current_height);
 
-    if (current_internal_format == GL_RGB &&
+    if (current_internal_format == GL_RGBA &&
         static_cast<unsigned>(current_type) == rgb_texture_type &&
         current_width == size.width() && current_height == size.height()) {
       needs_texture_init = false;
     }
   }
   if (needs_texture_init) {
-    glTexImage2D(target, 0, GL_RGB, size.width(), size.height(), 0, GL_RGB,
+    glTexImage2D(target, 0, GL_RGBA, size.width(), size.height(), 0, GL_RGBA,
                  rgb_texture_type, nullptr);
     if (has_robust_resource_init_) {
       // We're about to overwrite the whole texture with a draw, notify the
