@@ -342,11 +342,9 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
   using MainThreadSchedulerImpl::V8TaskQueue;
   using MainThreadSchedulerImpl::VirtualTimeControlTaskQueue;
 
-  MainThreadSchedulerImplForTest(
-      std::unique_ptr<base::sequence_manager::SequenceManager> manager,
-      absl::optional<base::Time> initial_virtual_time)
-      : MainThreadSchedulerImpl(std::move(manager), initial_virtual_time),
-        update_policy_count_(0) {}
+  explicit MainThreadSchedulerImplForTest(
+      std::unique_ptr<base::sequence_manager::SequenceManager> manager)
+      : MainThreadSchedulerImpl(std::move(manager)), update_policy_count_(0) {}
 
   void UpdatePolicyLocked(UpdateType update_type) override {
     update_policy_count_++;
@@ -422,8 +420,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
             nullptr, test_task_runner_, test_task_runner_->GetMockTickClock(),
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetRandomisedSamplingEnabled(true)
-                .Build()),
-        absl::nullopt));
+                .Build())));
     if (initially_ensure_usecase_none_)
       EnsureUseCaseNone();
   }
@@ -3393,13 +3390,20 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
  public:
   void SetUp() override {
     CreateTestTaskRunner();
-    Initialize(std::make_unique<MainThreadSchedulerImplForTest>(
-        base::sequence_manager::SequenceManagerForTest::Create(
-            nullptr, test_task_runner_, test_task_runner_->GetMockTickClock(),
-            base::sequence_manager::SequenceManager::Settings::Builder()
-                .SetRandomisedSamplingEnabled(true)
-                .Build()),
-        base::Time::FromJsTime(1000000.0)));
+    auto main_thread_scheduler =
+        std::make_unique<MainThreadSchedulerImplForTest>(
+            base::sequence_manager::SequenceManagerForTest::Create(
+                nullptr, test_task_runner_,
+                test_task_runner_->GetMockTickClock(),
+                base::sequence_manager::SequenceManager::Settings::Builder()
+                    .SetRandomisedSamplingEnabled(true)
+                    .Build()));
+    main_thread_scheduler->SetInitialVirtualTime(
+        base::Time::FromJsTime(1000000.0));
+    main_thread_scheduler->EnableVirtualTime();
+    main_thread_scheduler->SetVirtualTimePolicy(
+        PageScheduler::VirtualTimePolicy::kPause);
+    Initialize(std::move(main_thread_scheduler));
   }
 };
 

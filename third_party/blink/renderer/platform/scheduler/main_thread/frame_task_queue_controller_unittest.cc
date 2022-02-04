@@ -48,8 +48,7 @@ class FrameTaskQueueControllerTest : public testing::Test,
     scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMockTickClock()),
-        absl::nullopt);
+            task_environment_.GetMockTickClock()));
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_ =
         agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(

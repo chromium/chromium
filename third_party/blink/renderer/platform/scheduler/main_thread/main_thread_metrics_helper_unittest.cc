@@ -27,19 +27,6 @@ using base::sequence_manager::FakeTaskTiming;
 namespace blink {
 namespace scheduler {
 
-namespace {
-class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
- public:
-  MainThreadSchedulerImplForTest(
-      std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
-      absl::optional<base::Time> initial_virtual_time)
-      : MainThreadSchedulerImpl(std::move(sequence_manager),
-                                initial_virtual_time) {}
-
-  using MainThreadSchedulerImpl::SetCurrentUseCaseForTest;
-};
-}  // namespace
-
 using QueueType = MainThreadTaskQueue::QueueType;
 using base::Bucket;
 using testing::ElementsAre;
@@ -63,11 +50,10 @@ class MainThreadMetricsHelperTest : public testing::Test {
         {features::
              kPurgeRendererMemoryWhenBackgrounded} /* disabled_features */);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    scheduler_ = std::make_unique<MainThreadSchedulerImplForTest>(
+    scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMockTickClock()),
-        absl::nullopt);
+            task_environment_.GetMockTickClock()));
     metrics_helper_ = &scheduler_->main_thread_only().metrics_helper;
   }
 
@@ -236,7 +222,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MainThreadSchedulerImplForTest> scheduler_;
+  std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   MainThreadMetricsHelper* metrics_helper_;  // NOT OWNED
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<FakePageScheduler> playing_view_ =

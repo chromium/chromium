@@ -38,8 +38,7 @@ WebThreadScheduler::CreateMainThreadScheduler(
                     std::move(message_pump), std::move(settings))
           : base::sequence_manager::CreateSequenceManagerOnCurrentThread(
                 std::move(settings));
-  return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager),
-                                                   absl::nullopt);
+  return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager));
 }
 
 // static

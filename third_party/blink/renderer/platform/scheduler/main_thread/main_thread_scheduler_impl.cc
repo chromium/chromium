@@ -205,8 +205,7 @@ bool IsBlockingEvent(const blink::WebInputEvent& web_input_event) {
 }  // namespace
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
-    std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
-    absl::optional<base::Time> initial_virtual_time)
+    std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager)
     : sequence_manager_(std::move(sequence_manager)),
       helper_(sequence_manager_.get(), this),
       idle_helper_queue_(helper_.NewTaskQueue(
@@ -300,16 +299,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   internal::ProcessState::Get()->is_process_backgrounded =
       main_thread_only().renderer_backgrounded.get();
-
-  if (initial_virtual_time) {
-    main_thread_only().initial_virtual_time = *initial_virtual_time;
-    // The real uptime of the machine is irrelevant if we're using virtual time
-    // we choose an arbitrary initial offset.
-    main_thread_only().initial_virtual_time_ticks =
-        base::TimeTicks() + base::Seconds(10);
-    EnableVirtualTime();
-    SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-  }
 
   main_thread_only().current_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();

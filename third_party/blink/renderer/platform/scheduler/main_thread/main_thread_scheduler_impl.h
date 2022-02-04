@@ -152,12 +152,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   static const char* VirtualTimePolicyToString(
       PageScheduler::VirtualTimePolicy);
 
-  // If |initial_virtual_time| is specified then the scheduler will be created
-  // with virtual time enabled and paused with base::Time will be overridden to
-  // start at |initial_virtual_time|.
-  MainThreadSchedulerImpl(
-      std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
-      absl::optional<base::Time> initial_virtual_time);
+  explicit MainThreadSchedulerImpl(
+      std::unique_ptr<base::sequence_manager::SequenceManager>
+          sequence_manager);
   MainThreadSchedulerImpl(const MainThreadSchedulerImpl&) = delete;
   MainThreadSchedulerImpl& operator=(const MainThreadSchedulerImpl&) = delete;
 
