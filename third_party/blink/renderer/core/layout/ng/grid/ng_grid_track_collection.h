@@ -125,8 +125,8 @@ class CORE_EXPORT NGGridBlockTrackCollection
       : track_direction_(track_direction) {}
 
   // Sets the specified, implicit tracks, along with a given auto repeat value.
-  void SetSpecifiedTracks(const NGGridTrackList* explicit_tracks,
-                          const NGGridTrackList* implicit_tracks,
+  void SetSpecifiedTracks(const NGGridTrackList& explicit_tracks,
+                          const NGGridTrackList& implicit_tracks,
                           const wtf_size_t start_offset,
                           const wtf_size_t auto_repetitions,
                           const wtf_size_t named_grid_area_track_count);

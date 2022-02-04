@@ -35,11 +35,7 @@ AutoPlacementType AutoPlacement(
 }  // namespace
 
 NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
-                                 const wtf_size_t column_auto_repetitions,
-                                 const wtf_size_t row_auto_repetitions,
-                                 const wtf_size_t column_start_offset,
-                                 const wtf_size_t row_start_offset,
-                                 const bool has_grid_parent)
+                                 const NGGridPlacementData& placement_data)
     : grid_style_(grid_style),
       packing_behavior_(grid_style.IsGridAutoFlowAlgorithmSparse()
                             ? PackingBehavior::kSparse
@@ -52,48 +48,40 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
                                                                : kForRows),
       column_auto_repeat_track_count_(
           grid_style.GridTemplateColumns().NGTrackList().AutoRepeatSize() *
-          column_auto_repetitions),
+          placement_data.column_auto_repetitions),
       row_auto_repeat_track_count_(
           grid_style.GridTemplateRows().NGTrackList().AutoRepeatSize() *
-          row_auto_repetitions),
-      column_auto_repetitions_(column_auto_repetitions),
-      row_auto_repetitions_(row_auto_repetitions),
-      has_grid_parent_(has_grid_parent),
-      column_start_offset_(column_start_offset),
-      row_start_offset_(row_start_offset) {}
-
-void NGGridPlacement::SetPlacementData(
-    const NGGridPlacementData& placement_data) {
-  column_start_offset_ = placement_data.column_start_offset;
-  row_start_offset_ = placement_data.row_start_offset;
-}
-
-NGGridPlacementData NGGridPlacement::BundlePlacementData(
-    Vector<GridArea>&& resolved_positions) const {
-  NGGridPlacementData placement_data(std::move(resolved_positions));
-
-  placement_data.column_auto_repetitions = column_auto_repetitions_;
-  placement_data.row_auto_repetitions = row_auto_repetitions_;
-  placement_data.column_start_offset = column_start_offset_;
-  placement_data.row_start_offset = row_start_offset_;
-  return placement_data;
-}
+          placement_data.row_auto_repetitions),
+      column_auto_repetitions_(placement_data.column_auto_repetitions),
+      row_auto_repetitions_(placement_data.row_auto_repetitions),
+      is_parent_grid_container_(placement_data.is_parent_grid_container),
+      column_start_offset_(placement_data.column_start_offset),
+      row_start_offset_(placement_data.row_start_offset) {}
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
 NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
     const GridItems& grid_items) {
+  NGGridPlacementData placement_data(is_parent_grid_container_,
+                                     column_auto_repetitions_,
+                                     row_auto_repetitions_);
+
   // Step 1. Position anything that’s not auto-placed; if no items need
   // auto-placement, then we are done.
   PlacedGridItemsList placed_items;
-  Vector<GridArea> resolved_positions;
   PositionVector positions_locked_to_major_axis;
   PositionVector positions_not_locked_to_major_axis;
 
-  if (!PlaceNonAutoGridItems(
-          grid_items, &resolved_positions, &positions_locked_to_major_axis,
-          &positions_not_locked_to_major_axis, &placed_items)) {
-    return BundlePlacementData(std::move(resolved_positions));
-  }
+  const bool has_auto_placed_grid_item =
+      PlaceNonAutoGridItems(grid_items, &placement_data.grid_item_positions,
+                            &positions_locked_to_major_axis,
+                            &positions_not_locked_to_major_axis, &placed_items);
+
+  placement_data.column_start_offset = column_start_offset_;
+  placement_data.row_start_offset = row_start_offset_;
+
+  if (!has_auto_placed_grid_item)
+    return placement_data;
+
   placed_items.AppendCurrentItemsToOrderedList();
 
   // Step 2. Process the items locked to the major axis.
@@ -126,7 +114,7 @@ NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
       placement_cursor = AutoPlacementCursor(placed_items.FirstPlacedItem());
     }
   }
-  return BundlePlacementData(std::move(resolved_positions));
+  return placement_data;
 }
 
 bool NGGridPlacement::PlaceNonAutoGridItems(
@@ -148,12 +136,12 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     GridArea position;
     position.columns = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForColumns, column_auto_repeat_track_count_,
-        has_grid_parent_);
+        is_parent_grid_container_);
     DCHECK(!position.columns.IsTranslatedDefinite());
 
     position.rows = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForRows, row_auto_repeat_track_count_,
-        has_grid_parent_);
+        is_parent_grid_container_);
     DCHECK(!position.rows.IsTranslatedDefinite());
 
     // When we have negative indices that go beyond the start of the explicit
@@ -637,7 +625,7 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
   const GridTrackSizingDirection track_direction = track_collection.Direction();
   GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
       grid_style_, out_of_flow_item_style, track_direction,
-      AutoRepeatTrackCount(track_direction));
+      AutoRepeatTrackCount(track_direction), is_parent_grid_container_);
 
   if (span.IsIndefinite()) {
     *start_line = kNotFound;

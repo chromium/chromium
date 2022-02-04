@@ -199,7 +199,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollection) {
       CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kAutoFill));
   ASSERT_EQ(2u, explicit_tracks.RepeaterCount());
   NGGridBlockTrackCollection block_collection;
-  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+  block_collection.SetSpecifiedTracks(explicit_tracks, implicit_tracks,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 3,
                                       /* named_grid_area_track_count */ 0);
@@ -225,7 +225,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionCollapsed) {
       CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kInteger, 7));
   ASSERT_EQ(3u, explicit_tracks.RepeaterCount());
   NGGridBlockTrackCollection block_collection;
-  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+  block_collection.SetSpecifiedTracks(explicit_tracks, implicit_tracks,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 3,
                                       /* named_grid_area_track_count */ 0);
@@ -259,7 +259,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionImplicit) {
       CreateTrackSizes(8), NGGridTrackRepeater::RepeatType::kInteger, 2));
 
   NGGridBlockTrackCollection block_collection;
-  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+  block_collection.SetSpecifiedTracks(explicit_tracks, implicit_tracks,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 3,
                                       /* named_grid_area_track_count */ 0);
@@ -368,7 +368,7 @@ TEST_F(NGGridTrackCollectionTest,
   ASSERT_EQ(set_counts.size(), explicit_tracks.RepeaterCount());
 
   NGGridBlockTrackCollection block_collection;
-  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+  block_collection.SetSpecifiedTracks(explicit_tracks, implicit_tracks,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 0,
                                       /* named_grid_area_track_count */ 0);
@@ -425,7 +425,7 @@ TEST_F(NGGridTrackCollectionTest,
   ASSERT_EQ(2u, explicit_tracks.RepeaterCount());
 
   NGGridBlockTrackCollection block_collection;
-  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+  block_collection.SetSpecifiedTracks(explicit_tracks, implicit_tracks,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 5,
                                       /* named_grid_area_track_count */ 0);
@@ -563,7 +563,7 @@ TEST_F(NGGridTrackCollectionTest,
   ASSERT_EQ(1u, implicit_tracks.RepeaterCount());
 
   NGGridBlockTrackCollection block_collection;
-  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+  block_collection.SetSpecifiedTracks(explicit_tracks, implicit_tracks,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 0,
                                       /* named_grid_area_track_count */ 0);
@@ -649,7 +649,7 @@ TEST_F(NGGridTrackCollectionTest,
   ASSERT_EQ(1u, explicit_tracks.RepeaterCount());
 
   NGGridBlockTrackCollection block_collection;
-  block_collection.SetSpecifiedTracks(&explicit_tracks, &implicit_tracks,
+  block_collection.SetSpecifiedTracks(explicit_tracks, implicit_tracks,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 0,
                                       /* named_grid_area_track_count */ 0);

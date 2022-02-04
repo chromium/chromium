@@ -13,11 +13,24 @@
 namespace blink {
 
 struct CORE_EXPORT NGGridPlacementData {
+  USING_FAST_MALLOC(NGGridPlacementData);
+
+ public:
+  NGGridPlacementData(const bool is_parent_grid_container,
+                      const wtf_size_t column_auto_repetitions,
+                      const wtf_size_t row_auto_repetitions)
+      : is_parent_grid_container(is_parent_grid_container),
+        column_auto_repetitions(column_auto_repetitions),
+        row_auto_repetitions(row_auto_repetitions),
+        column_start_offset(0),
+        row_start_offset(0) {}
+
   explicit NGGridPlacementData(Vector<GridArea>&& grid_item_positions)
       : grid_item_positions(grid_item_positions) {}
 
   bool operator==(const NGGridPlacementData& other) const {
     return grid_item_positions == other.grid_item_positions &&
+           is_parent_grid_container == other.is_parent_grid_container &&
            column_auto_repetitions == other.column_auto_repetitions &&
            row_auto_repetitions == other.row_auto_repetitions &&
            column_start_offset == other.column_start_offset &&
@@ -25,6 +38,8 @@ struct CORE_EXPORT NGGridPlacementData {
   }
 
   Vector<GridArea> grid_item_positions;
+
+  bool is_parent_grid_container : 1;
 
   wtf_size_t column_auto_repetitions;
   wtf_size_t row_auto_repetitions;

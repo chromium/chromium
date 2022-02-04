@@ -10,7 +10,6 @@
 
 namespace blink {
 
-class NGGridPlacement;
 struct GridItems;
 
 // Grid specific extensions to NGBlockNode.
@@ -20,12 +19,9 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
     DCHECK(box && box->IsLayoutNGGrid());
   }
 
-  absl::optional<const wtf_size_t> CachedGridItemCount() const;
   const NGGridPlacementData& CachedPlacementData() const;
 
-  const Vector<GridArea>& ResolveGridItemPositions(
-      const GridItems& grid_items,
-      NGGridPlacement* grid_placement) const;
+  GridItems ConstructGridItems(NGGridPlacementData* placement_data) const;
 };
 
 template <>

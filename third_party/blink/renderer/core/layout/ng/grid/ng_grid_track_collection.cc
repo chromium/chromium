@@ -151,19 +151,17 @@ void NGGridBlockTrackCollection::Range::SetIsCollapsed() {
 }
 
 void NGGridBlockTrackCollection::SetSpecifiedTracks(
-    const NGGridTrackList* explicit_tracks,
-    const NGGridTrackList* implicit_tracks,
+    const NGGridTrackList& explicit_tracks,
+    const NGGridTrackList& implicit_tracks,
     const wtf_size_t start_offset,
     const wtf_size_t auto_repetitions,
     const wtf_size_t named_grid_area_track_count) {
-  DCHECK(explicit_tracks && implicit_tracks);
-
   // The implicit track list should have only one repeater, if any.
-  DCHECK_LE(implicit_tracks->RepeaterCount(), 1u);
+  DCHECK_LE(implicit_tracks.RepeaterCount(), 1u);
   DCHECK_NE(kInvalidRangeIndex, auto_repetitions);
 
-  explicit_tracks_ = explicit_tracks;
-  implicit_tracks_ = implicit_tracks;
+  explicit_tracks_ = &explicit_tracks;
+  implicit_tracks_ = &implicit_tracks;
   auto_repetitions_ = auto_repetitions;
 
   const wtf_size_t repeater_count = explicit_tracks_->RepeaterCount();

@@ -23,21 +23,8 @@ class CORE_EXPORT NGGridPlacement {
   enum class PackingBehavior { kSparse, kDense };
 
   NGGridPlacement(const ComputedStyle& grid_style,
-                  const wtf_size_t column_auto_repetitions,
-                  const wtf_size_t row_auto_repetitions,
-                  const wtf_size_t column_start_offset = 0,
-                  const wtf_size_t row_start_offset = 0,
-                  const bool has_grid_parent = false);
+                  const NGGridPlacementData& placement_data);
 
-  NGGridPlacement(const ComputedStyle& grid_style,
-                  const NGGridPlacementData& placement_data)
-      : NGGridPlacement(grid_style,
-                        placement_data.column_auto_repetitions,
-                        placement_data.row_auto_repetitions,
-                        placement_data.column_start_offset,
-                        placement_data.row_start_offset) {}
-
-  void SetPlacementData(const NGGridPlacementData& placement_data);
   NGGridPlacementData RunAutoPlacementAlgorithm(const GridItems& grid_items);
 
   // Helper function to resolve start and end lines of out of flow items.
@@ -47,8 +34,6 @@ class CORE_EXPORT NGGridPlacement {
       wtf_size_t* start_line,
       wtf_size_t* end_line) const;
 
-  wtf_size_t AutoRepeatTrackCount(
-      const GridTrackSizingDirection track_direction) const;
   wtf_size_t AutoRepetitions(
       const GridTrackSizingDirection track_direction) const;
   wtf_size_t StartOffset(const GridTrackSizingDirection track_direction) const;
@@ -143,9 +128,6 @@ class CORE_EXPORT NGGridPlacement {
 
   using PositionVector = Vector<GridArea*, 16>;
 
-  NGGridPlacementData BundlePlacementData(
-      Vector<GridArea>&& resolved_positions) const;
-
   // Place non auto-positioned elements from |grid_items|; returns true if any
   // item needs to resolve an automatic position. Otherwise, false.
   bool PlaceNonAutoGridItems(const GridItems& grid_items,
@@ -174,6 +156,8 @@ class CORE_EXPORT NGGridPlacement {
                              AutoPlacementCursor* placement_cursor) const;
 
   bool HasSparsePacking() const;
+  wtf_size_t AutoRepeatTrackCount(
+      const GridTrackSizingDirection track_direction) const;
 
   // Used to resolve positions using |GridPositionsResolver|.
   const ComputedStyle& grid_style_;
@@ -185,7 +169,7 @@ class CORE_EXPORT NGGridPlacement {
   const wtf_size_t row_auto_repeat_track_count_;
   const wtf_size_t column_auto_repetitions_;
   const wtf_size_t row_auto_repetitions_;
-  const bool has_grid_parent_;
+  const bool is_parent_grid_container_ : 1;
 
   wtf_size_t minor_max_end_line_;
   wtf_size_t column_start_offset_;

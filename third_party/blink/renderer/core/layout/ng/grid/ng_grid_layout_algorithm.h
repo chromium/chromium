@@ -90,11 +90,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   wtf_size_t ComputeAutomaticRepetitions(
       const GridTrackSizingDirection track_direction) const;
 
-  void ConstructAndAppendGridItems(GridItems* grid_items,
-                                   NGGridPlacement* grid_placement) const;
-
   void BuildBlockTrackCollections(
-      const NGGridPlacement& grid_placement,
+      const NGGridPlacementData& placement_data,
       GridItems* grid_items,
       NGGridBlockTrackCollection* column_track_collection,
       NGGridBlockTrackCollection* row_track_collection) const;
