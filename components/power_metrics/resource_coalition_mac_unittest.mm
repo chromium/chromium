@@ -4,6 +4,7 @@
 
 #include "components/power_metrics/resource_coalition_mac.h"
 
+#include "base/rand_util.h"
 #include "components/power_metrics/energy_impact_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,7 +70,36 @@ coalition_resource_usage GetTestCoalitionResourceUsage(uint32_t increment) {
   return ret;
 }
 
+void BurnCPU() {
+  base::TimeTicks begin = base::TimeTicks::Now();
+  constexpr base::TimeDelta busy_time = base::Seconds(1);
+  [[maybe_unused]] volatile double number = 1;
+  while (base::TimeTicks::Now() < (begin + busy_time)) {
+    for (int i = 0; i < 10000; ++i)
+      number *= base::RandDouble();
+  }
+}
+
 }  // namespace
+
+TEST(ResourceCoalitionMacTest, Busy) {
+  absl::optional<uint64_t> coalition_id =
+      GetProcessCoalitionId(base::GetCurrentProcId());
+  ASSERT_TRUE(coalition_id.has_value());
+
+  std::unique_ptr<coalition_resource_usage> begin =
+      GetCoalitionResourceUsage(coalition_id.value());
+  BurnCPU();
+  std::unique_ptr<coalition_resource_usage> end =
+      GetCoalitionResourceUsage(coalition_id.value());
+
+  ASSERT_TRUE(begin);
+  ASSERT_TRUE(end);
+
+  EXPECT_GT(end->cpu_instructions, begin->cpu_instructions);
+  EXPECT_GT(end->cpu_cycles, begin->cpu_cycles);
+  EXPECT_GT(end->cpu_time, begin->cpu_time);
+}
 
 TEST(ResourceCoalitionMacTest, Difference) {
   coalition_resource_usage left =
