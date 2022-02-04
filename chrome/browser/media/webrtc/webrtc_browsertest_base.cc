@@ -117,9 +117,7 @@ std::vector<std::string> JsonArrayToVectorOfStrings(
     base::Value* item;
     EXPECT_TRUE(list->Get(i, &item));
     EXPECT_TRUE(item->is_string());
-    std::string item_str;
-    EXPECT_TRUE(item->GetAsString(&item_str));
-    vector.push_back(std::move(item_str));
+    vector.push_back(std::move(item->GetString()));
   }
   return vector;
 }
