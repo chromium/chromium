@@ -5,8 +5,8 @@
 #include "ash/webui/personalization_app/untrusted_personalization_app_ui_config.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_personalization_app_resources.h"
-#include "ash/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/grit/ash_personalization_app_resources.h"
+#include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/strings/string_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

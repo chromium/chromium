@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "ash/grit/ash_shortcut_customization_app_resources.h"
-#include "ash/grit/ash_shortcut_customization_app_resources_map.h"
+#include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
+#include "ash/webui/grit/ash_shortcut_customization_app_resources_map.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"

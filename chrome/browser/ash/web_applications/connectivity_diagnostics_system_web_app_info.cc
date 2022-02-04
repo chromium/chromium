@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "ash/grit/connectivity_diagnostics_resources.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
+#include "ash/webui/grit/connectivity_diagnostics_resources.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "ash/grit/ash_sample_system_web_app_resources.h"
-#include "ash/grit/ash_sample_system_web_app_resources_map.h"
+#include "ash/webui/grit/ash_sample_system_web_app_resources.h"
+#include "ash/webui/grit/ash_sample_system_web_app_resources_map.h"
 #include "ash/webui/sample_system_web_app_ui/sample_page_handler.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "base/memory/ptr_util.h"

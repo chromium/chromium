@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/grit/ash_diagnostics_app_resources.h",
   "+chromeos/login/login_state",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+components",

@@ -8,8 +8,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_diagnostics_app_resources.h"
-#include "ash/grit/ash_diagnostics_app_resources_map.h"
 #include "ash/webui/common/backend/plural_string_handler.h"
 #include "ash/webui/diagnostics_ui/backend/diagnostics_manager.h"
 #include "ash/webui/diagnostics_ui/backend/histogram_util.h"
@@ -23,6 +21,8 @@
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
+#include "ash/webui/grit/ash_diagnostics_app_resources.h"
+#include "ash/webui/grit/ash_diagnostics_app_resources_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"

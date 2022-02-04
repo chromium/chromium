@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/grit/ash_os_feedback_resources.h"
-#include "ash/grit/ash_os_feedback_untrusted_resources.h"
-#include "ash/grit/ash_os_feedback_untrusted_resources_map.h"
+#include "ash/webui/grit/ash_os_feedback_resources.h"
+#include "ash/webui/grit/ash_os_feedback_untrusted_resources.h"
+#include "ash/webui/grit/ash_os_feedback_untrusted_resources_map.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
