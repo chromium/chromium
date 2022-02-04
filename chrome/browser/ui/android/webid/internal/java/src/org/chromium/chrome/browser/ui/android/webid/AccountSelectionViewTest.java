@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -18,8 +16,6 @@ import static java.util.Arrays.asList;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -279,21 +275,6 @@ public class AccountSelectionViewTest {
         TextView continueButton = mContentView.findViewById(R.id.account_selection_continue_btn);
 
         assertEquals(expectedTextColor, continueButton.getTextColors().getDefaultColor());
-
-        Drawable[] compoundDrawables = continueButton.getCompoundDrawables();
-        assertEquals(4, compoundDrawables.length);
-
-        assertTrue(compoundDrawables[0] instanceof BitmapDrawable);
-        Bitmap actualBrandIconBitmap = ((BitmapDrawable) compoundDrawables[0]).getBitmap();
-        // AccountSelectionViewBinder crops the brand icon in a circle. Test a pixel in the middle
-        // of the icon which is unaffected by the cropping.
-        int centerX = actualBrandIconBitmap.getWidth() / 2;
-        int centerY = actualBrandIconBitmap.getHeight() / 2;
-        assertEquals(expectedIconColor, actualBrandIconBitmap.getPixel(centerX, centerY));
-
-        assertNull(compoundDrawables[1]);
-        assertNull(compoundDrawables[2]);
-        assertNull(compoundDrawables[3]);
     }
 
     private RecyclerView getAccounts() {
