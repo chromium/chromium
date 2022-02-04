@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://test/mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {$$, shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TaskModuleHandlerRemote, TaskModuleType} from 'chrome://new-tab-page/task_module.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
-import {installMock} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesTaskModuleTest', () => {
   /** @type {!TestBrowserProxy} */

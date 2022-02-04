@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://test/mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {installMock} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+
+import {installMock} from './test_support.js';
 
 suite('NewTabPageCustomizeDialogTest', () => {
   /** @type {!CustomizeDialogElement} */

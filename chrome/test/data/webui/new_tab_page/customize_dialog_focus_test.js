@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://test/mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {keydown} from 'chrome://test/new_tab_page/test_support.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {keydown} from './test_support.js';
 
 suite('NewTabPageCustomizeDialogFocusTest', () => {
   /** @type {!CustomizeDialogElement} */

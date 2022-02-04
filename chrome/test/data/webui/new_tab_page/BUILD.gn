@@ -1,0 +1,55 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("./modules/modules.gni")
+import("./realbox/realbox.gni")
+
+# Test files that do not require preprocessing.
+non_preprocessed_files = [
+                           "app_test.js",
+                           "background_manager_test.js",
+                           "customize_backgrounds_test.js",
+                           "customize_dialog_focus_test.js",
+                           "customize_dialog_test.js",
+                           "customize_modules_test.js",
+                           "customize_shortcuts_test.js",
+                           "doodle_share_dialog_focus_test.js",
+                           "doodle_share_dialog_test.js",
+                           "logo_test.js",
+                           "metrics_test_support.js",
+                           "metrics_utils_test.js",
+                           "middle_slot_promo_test.js",
+                           "test_support.js",
+                           "utils_test.js",
+                           "voice_search_overlay_test.js",
+                         ] + modules_test_files + realbox_test_files
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_new_tab_page"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "new_tab_page"
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://new_tab_page/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = non_preprocessed_files
+
+  deps = [ "//chrome/browser/resources/new_tab_page:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
+}

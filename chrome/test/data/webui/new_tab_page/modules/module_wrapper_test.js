@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://test/mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {$$, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleWrapperElement, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertDeepEquals, assertEquals, assertThrows} from 'chrome://test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {createElement, initNullModule, installMock} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {assertDeepEquals, assertEquals, assertThrows} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
+import {createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModuleWrapperTest', () => {
   /** @type {!ModuleWrapperElement} */
