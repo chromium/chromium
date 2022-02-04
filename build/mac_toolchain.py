@@ -42,7 +42,7 @@ def LoadPList(path):
 # (12.1 21C46). To build these packages, see comments in
 # build/xcode_binaries.yaml
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'RjxjMYUafAY9zS1WiVcmo5UxdBefEPD3nseTvX--oRoC'
+MAC_BINARIES_TAG = 'fE3bk9-nINNxwK4pUcZYcJlGZ-9KSirXzoQuzuvoHV8C'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
 # is the major version number for macOS 10.15. Xcode 13.2 13C90 only runs on
