@@ -6,11 +6,15 @@
 
 #include <memory>
 
+#include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -55,6 +59,12 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
 
     ambient_provider_->BindInterface(
         ambient_provider_remote_.BindNewPipeAndPassReceiver());
+
+    SetEnabledPref(true);
+    fake_backend_controller_ =
+        std::make_unique<ash::FakeAmbientBackendControllerImpl>();
+    ambient_ash_test_helper_ = std::make_unique<ash::AmbientAshTestHelper>();
+    ambient_ash_test_helper_->ambient_client().SetAutomaticalyIssueToken(true);
   }
 
   TestingProfile* profile() { return profile_; }
@@ -64,8 +74,74 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
     return ambient_provider_remote_;
   }
 
+  content::TestWebUI* web_ui() { return &web_ui_; }
+
+  absl::optional<ash::AmbientSettings>& settings() {
+    return ambient_provider_->settings_;
+  }
+
+  void SetEnabledPref(bool enabled) {
+    profile()->GetPrefs()->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled,
+                                      enabled);
+  }
+
+  void FetchSettings() { ambient_provider_->FetchSettingsAndAlbums(); }
+
+  void UpdateSettings() {
+    if (!ambient_provider_->settings_)
+      ambient_provider_->settings_ = ash::AmbientSettings();
+
+    ambient_provider_->UpdateSettings();
+  }
+
+  bool HasPendingFetchRequestAtProvider() const {
+    return ambient_provider_->has_pending_fetch_request_;
+  }
+
+  bool IsUpdateSettingsPendingAtProvider() const {
+    return ambient_provider_->is_updating_backend_;
+  }
+
+  bool HasPendingUpdatesAtProvider() const {
+    return ambient_provider_->has_pending_updates_for_backend_;
+  }
+
+  base::TimeDelta GetFetchSettingsDelay() {
+    return ambient_provider_->fetch_settings_retry_backoff_
+        .GetTimeUntilRelease();
+  }
+
+  base::TimeDelta GetUpdateSettingsDelay() {
+    return ambient_provider_->update_settings_retry_backoff_
+        .GetTimeUntilRelease();
+  }
+
+  void FastForwardBy(base::TimeDelta time) {
+    task_environment_.FastForwardBy(time);
+  }
+
+  bool IsFetchSettingsPendingAtBackend() const {
+    return fake_backend_controller_->IsFetchSettingsAndAlbumsPending();
+  }
+
+  void ReplyFetchSettingsAndAlbums(
+      bool success,
+      absl::optional<ash::AmbientSettings> settings = absl::nullopt) {
+    fake_backend_controller_->ReplyFetchSettingsAndAlbums(success,
+                                                          std::move(settings));
+  }
+
+  bool IsUpdateSettingsPendingAtBackend() const {
+    return fake_backend_controller_->IsUpdateSettingsPending();
+  }
+
+  void ReplyUpdateSettings(bool success) {
+    fake_backend_controller_->ReplyUpdateSettings(success);
+  }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -74,6 +150,10 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
       ambient_provider_remote_;
   std::unique_ptr<PersonalizationAppAmbientProviderImpl> ambient_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<ash::AmbientAshTestHelper> ambient_ash_test_helper_;
+  std::unique_ptr<ash::FakeAmbientBackendControllerImpl>
+      fake_backend_controller_;
 };
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, IsAmbientModeEnabled) {
@@ -115,4 +195,251 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetAmbientModeEnabled) {
   ambient_provider_remote().FlushForTesting();
   EXPECT_FALSE(
       pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, TestFetchSettings) {
+  FetchSettings();
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestFetchSettingsFailedWillRetry) {
+  FetchSettings();
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/false);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  FastForwardBy(GetFetchSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestFetchSettingsSecondRetryWillBackoff) {
+  FetchSettings();
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/false);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  base::TimeDelta delay1 = GetFetchSettingsDelay();
+  FastForwardBy(delay1 * 1.5);
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/false);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  base::TimeDelta delay2 = GetFetchSettingsDelay();
+  EXPECT_GT(delay2, delay1);
+
+  FastForwardBy(delay2 * 1.5);
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestFetchSettingsWillNotRetryMoreThanThreeTimes) {
+  FetchSettings();
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/false);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  // 1st retry.
+  FastForwardBy(GetFetchSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/false);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  // 2nd retry.
+  FastForwardBy(GetFetchSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/false);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  // 3rd retry.
+  FastForwardBy(GetFetchSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/false);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  // Will not retry.
+  FastForwardBy(GetFetchSettingsDelay() * 1.5);
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, TestUpdateSettings) {
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/true);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, TestUpdateSettingsTwice) {
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_TRUE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/true);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_TRUE(HasPendingUpdatesAtProvider());
+
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestUpdateSettingsFailedWillRetry) {
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestUpdateSettingsSecondRetryWillBackoff) {
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  base::TimeDelta delay1 = GetUpdateSettingsDelay();
+  FastForwardBy(delay1 * 1.5);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  base::TimeDelta delay2 = GetUpdateSettingsDelay();
+  EXPECT_GT(delay2, delay1);
+
+  FastForwardBy(delay2 * 1.5);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestUpdateSettingsWillNotRetryMoreThanThreeTimes) {
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  // 1st retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  // 2nd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  // 3rd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  ReplyUpdateSettings(/*success=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+
+  // Will not retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestNoFetchRequestWhenUpdatingSettings) {
+  EXPECT_FALSE(HasPendingFetchRequestAtProvider());
+  UpdateSettings();
+  EXPECT_FALSE(HasPendingFetchRequestAtProvider());
+
+  FetchSettings();
+  EXPECT_TRUE(HasPendingFetchRequestAtProvider());
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestWeatherFalseTriggersUpdateSettings) {
+  ash::AmbientSettings weather_off_settings;
+  weather_off_settings.show_weather = false;
+
+  // Simulate initial page request with weather settings false. Because Ambient
+  // mode pref is enabled and |settings.show_weather| is false, this should
+  // trigger a call to |UpdateSettings| that sets |settings.show_weather| to
+  // true.
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true, weather_off_settings);
+
+  // A call to |UpdateSettings| should have happened.
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+
+  ReplyUpdateSettings(/*success=*/true);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  // |settings.show_weather| should now be true after the successful settings
+  // update.
+  EXPECT_TRUE(settings()->show_weather);
 }
