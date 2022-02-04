@@ -42,6 +42,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.DoNotInline;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForO;
@@ -996,9 +997,24 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             return;
         }
         final Intent intent = new Intent();
-        intent.setClassName(WebViewFactory.getLoadedPackageInfo().packageName,
+        intent.setClassName(getWebViewFactoryPackageName(),
                 EmbeddedComponentLoader.AW_COMPONENTS_PROVIDER_SERVICE);
         new EmbeddedComponentLoader(Arrays.asList(componentPolicies)).connect(intent);
+    }
+
+    /**
+     * WebViewFactory is not a public android API so R8 is unable to compute its
+     * API level. This causes R8 to not be able to inline WebLayerImplJni#get
+     * into WebLayerImpl#loadComponents.
+
+     * References to WebViewFactory are in a separate method to avoid this issue
+     * and allow WebLayerImplJni#get to be inlined into WebLayerImpl#loadComponents.
+     * @DoNotInline is to avoid any similar inlining issues whenever this method
+     * is referenced.
+     */
+    @DoNotInline
+    private static String getWebViewFactoryPackageName() {
+        return WebViewFactory.getLoadedPackageInfo().packageName;
     }
 
     @NativeMethods
