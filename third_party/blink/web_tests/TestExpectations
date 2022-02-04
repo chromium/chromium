@@ -7246,3 +7246,7 @@ crbug.com/1263354 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-t
 
 # Sheriff 2021-11-26
 crbug.com/1271485 http/tests/inspector-protocol/network/load-network-resource-different-frame-cookie.js [ Pass Failure Timeout ]
+
+# Sheriff 2022-02-03
+crbug.com/1280469 [ Win10.20h2 ] virtual/text-antialias/fallback-traits-fixup.html [ Failure ]
+
