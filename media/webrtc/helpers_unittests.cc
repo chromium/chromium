@@ -44,7 +44,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-  EXPECT_FALSE(config.voice_detection.enabled);
   EXPECT_FALSE(config.residual_echo_detector.enabled);
 
 #if BUILDFLAG(IS_ANDROID)
