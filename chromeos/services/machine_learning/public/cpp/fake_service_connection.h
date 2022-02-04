@@ -93,13 +93,6 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojom::MachineLearningService::LoadHandwritingModelCallback
           result_callback) override;
 
-  // Will be deprecated and removed soon.
-  void LoadHandwritingModelWithSpec(
-      mojom::HandwritingRecognizerSpecPtr spec,
-      mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-      mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
-          result_callback) override;
-
   // Dedicated HWR API for Web Platform.
   void LoadWebPlatformHandwritingModel(
       web_platform::mojom::HandwritingModelConstraintPtr constraint,
@@ -133,6 +126,12 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   // mojom::Model:
   void REMOVED_0(mojo::PendingReceiver<mojom::GraphExecutor> receiver,
                  mojom::Model::REMOVED_0Callback callback) override;
+
+  void REMOVED_4(mojom::HandwritingRecognizerSpecPtr spec,
+                 mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
+                 mojom::MachineLearningService::REMOVED_4Callback
+                     result_callback) override;
+
   void CreateGraphExecutor(
       mojom::GraphExecutorOptionsPtr options,
       mojo::PendingReceiver<mojom::GraphExecutor> receiver,
@@ -304,10 +303,6 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojo::PendingReceiver<web_platform::mojom::HandwritingRecognizer>
           receiver,
       mojom::MachineLearningService::LoadHandwritingModelCallback callback);
-  void HandleLoadHandwritingModelWithSpecCall(
-      mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-      mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
-          callback);
   void HandleRecognizeCall(
       mojom::HandwritingRecognitionQueryPtr query,
       mojom::HandwritingRecognizer::RecognizeCallback callback);

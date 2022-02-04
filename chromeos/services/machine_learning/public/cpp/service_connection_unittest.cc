@@ -130,26 +130,26 @@ TEST_F(ServiceConnectionTest, LoadTextClassifier) {
                           base::BindOnce([](mojom::LoadModelResult result) {}));
 }
 
-// Tests that LoadHandwritingModelWithSpec runs OK (no crash) in a basic Mojo
+// Tests that LoadHandwritingModel runs OK (no crash) in a basic Mojo
 // environment.
-TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
+TEST_F(ServiceConnectionTest, LoadHandwritingModel) {
   mojo::Remote<mojom::MachineLearningService> ml_service;
   ServiceConnection::GetInstance()->BindMachineLearningService(
       ml_service.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::HandwritingRecognizer> handwriting_recognizer;
-  ml_service->LoadHandwritingModelWithSpec(
+  ml_service->LoadHandwritingModel(
       mojom::HandwritingRecognizerSpec::New("en"),
       handwriting_recognizer.BindNewPipeAndPassReceiver(),
-      base::BindOnce([](mojom::LoadModelResult result) {}));
+      base::BindOnce([](mojom::LoadHandwritingModelResult result) {}));
 
   handwriting_recognizer.reset();
   ServiceConnection::GetInstance()
       ->GetMachineLearningService()
-      .LoadHandwritingModelWithSpec(
+      .LoadHandwritingModel(
           mojom::HandwritingRecognizerSpec::New("en"),
           handwriting_recognizer.BindNewPipeAndPassReceiver(),
-          base::BindOnce([](mojom::LoadModelResult result) {}));
+          base::BindOnce([](mojom::LoadHandwritingModelResult result) {}));
 }
 
 // Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.
@@ -568,65 +568,6 @@ TEST_F(ServiceConnectionTest, FakeHandWritingRecognizer) {
               [](bool* callback_done,
                  mojom::LoadHandwritingModelResult result) {
                 EXPECT_EQ(result, mojom::LoadHandwritingModelResult::OK);
-                *callback_done = true;
-              },
-              &callback_done)
-              .Then(run_loop->QuitClosure()));
-  run_loop->Run();
-  ASSERT_TRUE(callback_done);
-  ASSERT_TRUE(recognizer.is_bound());
-
-  // Construct fake output.
-  mojom::HandwritingRecognizerResultPtr result =
-      mojom::HandwritingRecognizerResult::New();
-  result->status = mojom::HandwritingRecognizerResult::Status::OK;
-  mojom::HandwritingRecognizerCandidatePtr candidate =
-      mojom::HandwritingRecognizerCandidate::New();
-  candidate->text = "cat";
-  candidate->score = 0.5f;
-  result->candidates.emplace_back(std::move(candidate));
-  fake_service_connection.SetOutputHandwritingRecognizerResult(result);
-
-  auto query = mojom::HandwritingRecognitionQuery::New();
-  bool infer_callback_done = false;
-  run_loop.reset(new base::RunLoop);
-  recognizer->Recognize(
-      std::move(query),
-      base::BindOnce(
-          [](bool* infer_callback_done,
-             mojom::HandwritingRecognizerResultPtr result) {
-            *infer_callback_done = true;
-            // Check if the annotation is correct.
-            ASSERT_EQ(result->status,
-                      mojom::HandwritingRecognizerResult::Status::OK);
-            EXPECT_EQ(result->candidates.at(0)->text, "cat");
-            EXPECT_EQ(result->candidates.at(0)->score, 0.5f);
-          },
-          &infer_callback_done)
-          .Then(run_loop->QuitClosure()));
-  run_loop->Run();
-  ASSERT_TRUE(infer_callback_done);
-}
-
-// Tests the deprecated fake ML service for handwriting.
-// Deprecated API.
-TEST_F(ServiceConnectionTest, FakeHandWritingRecognizerWithSpec) {
-  mojo::Remote<mojom::HandwritingRecognizer> recognizer;
-  bool callback_done = false;
-  FakeServiceConnectionImpl fake_service_connection;
-  ServiceConnection::UseFakeServiceConnectionForTesting(
-      &fake_service_connection);
-  ServiceConnection::GetInstance()->Initialize();
-
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  ServiceConnection::GetInstance()
-      ->GetMachineLearningService()
-      .LoadHandwritingModelWithSpec(
-          mojom::HandwritingRecognizerSpec::New("en"),
-          recognizer.BindNewPipeAndPassReceiver(),
-          base::BindOnce(
-              [](bool* callback_done, mojom::LoadModelResult result) {
-                EXPECT_EQ(result, mojom::LoadModelResult::OK);
                 *callback_done = true;
               },
               &callback_done)
