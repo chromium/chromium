@@ -76,5 +76,21 @@
       height: 32px;
       width: 32px;
     }
+
+    .component-grid {
+      display: inline-grid;
+      grid-column-gap: 16px;
+      grid-row-gap: 16px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .component-grid.repair {
+      grid-template-columns: auto auto;
+    }
+
+    .component-grid.calibration {
+      grid-template-columns: auto;
+    }
   </style>
 </template>

@@ -9,7 +9,6 @@
   }
 
   #componentButton {
-    align-items: normal;
     border-radius: 4px;
     box-shadow: var(--cr-card-shadow);
     color: var(--shimless-component-text-color);
@@ -18,17 +17,17 @@
     font-weight: var(--shimless-medium-font-weight);
     height: 70px;
     line-height: var(--shimless-component-line-height);
-    margin-bottom: 20px;
-    margin-inline-end: 10px;
-    width: 190px;
+    width: 100%;
   }
 
   #labelDiv {
     color: grey;
     flex-basis: 155px;
+    inset-inline-start: 0;
     margin-bottom: auto;
     margin-top: auto;
     padding-inline-start: 20px;
+    position: absolute;
   }
 
   :host([checked]) #labelDiv {
