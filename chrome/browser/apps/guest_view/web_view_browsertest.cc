@@ -5307,3 +5307,70 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
   EXPECT_EQ(first_instance->GetProcess()->GetStoragePartition(),
             second_instance->GetProcess()->GetStoragePartition());
 }
+
+// Test that both webview-initiated and embedder-initiated navigations to
+// about:blank behave sanely.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, NavigateToAboutBlank) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+  scoped_refptr<content::SiteInstance> first_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(first_instance->IsGuest());
+  EXPECT_TRUE(first_instance->GetProcess()->IsForGuestsOnly());
+
+  // Ask <webview> to navigate itself to about:blank.  This should stay in the
+  // same SiteInstance.
+  const GURL blank_url(url::kAboutBlankURL);
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(guest, blank_url));
+  scoped_refptr<content::SiteInstance> second_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_EQ(first_instance, second_instance);
+
+  // Navigate <webview> away to another page.  This should swap
+  // BrowsingInstances as it's a cross-site browser-initiated navigation.
+  const GURL second_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(guest, second_url));
+  scoped_refptr<content::SiteInstance> third_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(third_instance->IsGuest());
+  EXPECT_TRUE(third_instance->GetProcess()->IsForGuestsOnly());
+  EXPECT_NE(first_instance, third_instance);
+  EXPECT_FALSE(first_instance->IsRelatedSiteInstance(third_instance.get()));
+  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
+            third_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(first_instance->GetProcess()->GetStoragePartition(),
+            third_instance->GetProcess()->GetStoragePartition());
+
+  // Ask embedder to navigate the webview back to about:blank.  This should
+  // stay in the same SiteInstance.
+  content::WebContents* embedder = GetEmbedderWebContents();
+  {
+    content::TestNavigationObserver load_observer(guest);
+    EXPECT_TRUE(ExecuteScript(
+        embedder,
+        "document.querySelector('webview').src = '" + blank_url.spec() + "';"));
+    load_observer.Wait();
+  }
+  scoped_refptr<content::SiteInstance> fourth_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_EQ(fourth_instance, third_instance);
+}
+
+// Test that site-isolated <webview> doesn't crash when its initial navigation
+// is to an about:blank URL.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, Shim_BlankWebview) {
+  TestHelper("testBlankWebview", "web_view/shim", NO_TEST_SERVER);
+
+  content::WebContents* guest =
+      GetGuestViewManager()->WaitForSingleGuestCreated();
+  ASSERT_TRUE(guest);
+  scoped_refptr<content::SiteInstance> site_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(site_instance->IsGuest());
+  EXPECT_TRUE(site_instance->GetProcess()->IsForGuestsOnly());
+}
