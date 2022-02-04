@@ -377,23 +377,23 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // cache footprint).
   // Set NOINLINE on the "basic" top-level functions to mitigate that for
   // "vanilla" callers.
-  NOINLINE MALLOC_FN void* Alloc(size_t requested_size,
-                                 const char* type_name) MALLOC_ALIGNED;
-  ALWAYS_INLINE MALLOC_FN void* AllocFlags(int flags,
-                                           size_t requested_size,
-                                           const char* type_name)
-      MALLOC_ALIGNED;
+  NOINLINE PA_MALLOC_FN void* Alloc(size_t requested_size,
+                                    const char* type_name) PA_MALLOC_ALIGNED;
+  ALWAYS_INLINE PA_MALLOC_FN void* AllocFlags(int flags,
+                                              size_t requested_size,
+                                              const char* type_name)
+      PA_MALLOC_ALIGNED;
   // Same as |AllocFlags()|, but allows specifying |slot_span_alignment|. It has
   // to be a multiple of partition page size, greater than 0 and no greater than
   // kMaxSupportedAlignment. If it equals exactly 1 partition page, no special
   // action is taken as PartitoinAlloc naturally guarantees this alignment,
   // otherwise a sub-optimial allocation strategy is used to guarantee the
   // higher-order alignment.
-  ALWAYS_INLINE MALLOC_FN void* AllocFlagsInternal(int flags,
-                                                   size_t requested_size,
-                                                   size_t slot_span_alignment,
-                                                   const char* type_name)
-      MALLOC_ALIGNED;
+  ALWAYS_INLINE PA_MALLOC_FN void* AllocFlagsInternal(
+      int flags,
+      size_t requested_size,
+      size_t slot_span_alignment,
+      const char* type_name) PA_MALLOC_ALIGNED;
   // Same as |AllocFlags()|, but bypasses the allocator hooks.
   //
   // This is separate from AllocFlags() because other callers of AllocFlags()
@@ -403,23 +403,23 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // taking the extra branch in the non-malloc() case doesn't hurt. In addition,
   // for the malloc() case, the compiler correctly removes the branch, since
   // this is marked |ALWAYS_INLINE|.
-  ALWAYS_INLINE MALLOC_FN void* AllocFlagsNoHooks(int flags,
-                                                  size_t requested_size,
-                                                  size_t slot_span_alignment)
-      MALLOC_ALIGNED;
+  ALWAYS_INLINE PA_MALLOC_FN void* AllocFlagsNoHooks(int flags,
+                                                     size_t requested_size,
+                                                     size_t slot_span_alignment)
+      PA_MALLOC_ALIGNED;
 
   NOINLINE void* Realloc(void* ptr,
                          size_t newize,
-                         const char* type_name) MALLOC_ALIGNED;
+                         const char* type_name) PA_MALLOC_ALIGNED;
   // Overload that may return nullptr if reallocation isn't possible. In this
   // case, |ptr| remains valid.
   NOINLINE void* TryRealloc(void* ptr,
                             size_t new_size,
-                            const char* type_name) MALLOC_ALIGNED;
+                            const char* type_name) PA_MALLOC_ALIGNED;
   NOINLINE void* ReallocFlags(int flags,
                               void* ptr,
                               size_t new_size,
-                              const char* type_name) MALLOC_ALIGNED;
+                              const char* type_name) PA_MALLOC_ALIGNED;
   NOINLINE static void Free(void* object);
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* object);

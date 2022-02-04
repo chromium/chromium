@@ -418,7 +418,7 @@ class PartitionAllocTest : public testing::Test {
 
   void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);
 
-  NOINLINE MALLOC_FN void* Alloc(size_t size) {
+  NOINLINE PA_MALLOC_FN void* Alloc(size_t size) {
     return allocator.root()->Alloc(size, "");
   }
 
@@ -2125,7 +2125,7 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
   } else {
     char previous_value = array[alloc_size];
     // volatile is required to prevent the compiler from getting too clever and
-    // eliding the out-of-bounds write. The root cause is that the MALLOC_FN
+    // eliding the out-of-bounds write. The root cause is that the PA_MALLOC_FN
     // annotation tells the compiler (among other things) that the returned
     // value cannot alias anything.
     *const_cast<volatile char*>(&array[alloc_size]) = 'A';

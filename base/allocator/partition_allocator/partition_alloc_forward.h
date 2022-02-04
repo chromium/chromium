@@ -100,25 +100,25 @@ using ::base::internal::CheckThatSlotOffsetIsZero;
 #if defined(__has_attribute)
 
 #if __has_attribute(malloc)
-#define MALLOC_FN __attribute__((malloc))
+#define PA_MALLOC_FN __attribute__((malloc))
 #endif
 
 // Allows the compiler to assume that the return value is aligned on a
 // kAlignment boundary. This is useful for e.g. using aligned vector
 // instructions in the constructor for zeroing.
 #if __has_attribute(assume_aligned)
-#define MALLOC_ALIGNED \
+#define PA_MALLOC_ALIGNED \
   __attribute__((assume_aligned(::partition_alloc::internal::kAlignment)))
 #endif
 
 #endif  // defined(__has_attribute)
 
-#if !defined(MALLOC_FN)
-#define MALLOC_FN
+#if !defined(PA_MALLOC_FN)
+#define PA_MALLOC_FN
 #endif
 
-#if !defined(MALLOC_ALIGNED)
-#define MALLOC_ALIGNED
+#if !defined(PA_MALLOC_ALIGNED)
+#define PA_MALLOC_ALIGNED
 #endif
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FORWARD_H_
