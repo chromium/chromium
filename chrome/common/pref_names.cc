@@ -1683,6 +1683,19 @@ const char kManagedSerialAllowAllPortsForUrls[] =
 // Used to store the value of the SerialAllowUsbDevicesForUrls policy.
 const char kManagedSerialAllowUsbDevicesForUrls[] =
     "managed.serial_allow_usb_devices_for_urls";
+
+// Used to store the value of the WebHidAllowAllDevicesForUrls policy.
+const char kManagedWebHidAllowAllDevicesForUrls[] =
+    "managed.web_hid_allow_all_devices_for_urls";
+
+// Used to store the value of the WebHidAllowDevicesForUrls policy.
+const char kManagedWebHidAllowDevicesForUrls[] =
+    "managed.web_hid_allow_devices_for_urls";
+
+// Used to store the value of the WebHidAllowAllDevicesWithHidUsagesForUrls
+// policy.
+const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[] =
+    "managed.web_hid_allow_devices_with_hid_usages_for_urls";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Directory of the last profile used.

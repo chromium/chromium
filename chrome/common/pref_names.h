@@ -549,6 +549,9 @@ extern const char kHadThreeConsecutiveNotificationPermissionDenies[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kManagedSerialAllowAllPortsForUrls[];
 extern const char kManagedSerialAllowUsbDevicesForUrls[];
+extern const char kManagedWebHidAllowAllDevicesForUrls[];
+extern const char kManagedWebHidAllowDevicesForUrls[];
+extern const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kProfileLastUsed[];

@@ -601,6 +601,9 @@
         'SerialAllowUsbDevicesForUrls',
         'WebHidAskForUrls',
         'WebHidBlockedForUrls',
+        'WebHidAllowAllDevicesForUrls',
+        'WebHidAllowDevicesForUrls',
+        'WebHidAllowDevicesWithHidUsagesForUrls',
       ],
     },
     {
@@ -7409,6 +7412,139 @@
       URL patterns can't conflict with <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME">WebHidAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
       For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
+    },
+    {
+      'name': 'WebHidAllowAllDevicesForUrls',
+      'owners': ['mattreynolds@chromium.org', 'file://third_party/blink/renderer/modules/hid/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': ['https://google.com', 'https://chromium.org'],
+      'id': 953,
+      'caption': '''Automatically grant permission to sites to connect to any HID device.''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy allows you to list sites which are automatically granted permission to access all available devices.
+
+      The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
+
+      On Chrome OS, this policy only applies to affiliated users.
+
+      This policy overrides <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph>, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME">WebHidAskForUrls</ph>, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph> and the user's preferences.''',
+    },
+    {
+      'name': 'WebHidAllowDevicesForUrls',
+      'owners': ['mattreynolds@chromium.org', 'file://third_party/blink/renderer/modules/hid/OWNERS'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'devices': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'vendor_id': {
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 65535
+                  },
+                  'product_id': {
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 65535
+                  }
+                },
+                'required': ['vendor_id']
+              }
+            },
+            'urls': {
+              'type': 'array',
+              'items': { 'type': 'string' }
+            }
+          },
+          'required': ['devices', 'urls']
+        }
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': [{
+        'devices': [{'vendor_id': 1234, 'product_id': 5678}],
+        'urls': ['https://google.com', 'https://chromium.org'],
+      }],
+      'id': 954,
+      'caption': '''Automatically grant permission to these sites to connect to HID devices with the given vendor and product IDs.''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy lets you list the URLs that specify which sites are automatically granted permission to access a HID device with the given vendor and product IDs. Each item in the list requires both <ph name="DEVICES_FIELD_NAME">devices</ph> and <ph name="URLS_FIELD_NAME">urls</ph> fields for the item to be valid, otherwise the item is ignored. Each item in the <ph name="DEVICES_FIELD_NAME">devices</ph> field must have a <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> and may have a <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field. Omitting the <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field will create a policy matching any device with the specified vendor ID. An item which has a <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field without a <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field is invalid and is ignored.
+
+      Leaving the policy unset means <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph> applies, if it's set. If not, the user's personal setting applies.
+
+      URLs in this policy shouldn't conflict with those configured through <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph>. If they do, this policy takes precedence over <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph>.''',
+    },
+    {
+      'name': 'WebHidAllowDevicesWithHidUsagesForUrls',
+      'owners': ['mattreynolds@chromium.org', 'file://third_party/blink/renderer/modules/hid/OWNERS'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'usages': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'usage_page': {
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 65535
+                  },
+                  'usage': {
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 65535
+                  }
+                },
+                'required': ['usage_page']
+              }
+            },
+            'urls': {
+              'type': 'array',
+              'items': { 'type': 'string' }
+            }
+          },
+          'required': ['usages', 'urls']
+        }
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': [{
+        'usages': [{'usage_page': 1234, 'usage': 5678}],
+        'urls': ['https://google.com', 'https://chromium.org'],
+      }],
+      'id': 955,
+      'caption': '''Automatically grant permission to these sites to connect to HID devices containing top-level collections with the given HID usage.''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy lets you list the URLs that specify which sites are automatically granted permission to access a HID device containing a top-level collection with the given HID usage. Each item in the list requires both <ph name="USAGES_FIELD_NAME">usages</ph> and <ph name="URLS_FIELD_NAME">urls</ph> fields for the policy to be valid. Each item in the <ph name="USAGES_FIELD_NAME">usages</ph> field must have a <ph name="USAGE_PAGE_FIELD_NAME">usage_page</ph> and may have a <ph name="USAGE_FIELD_NAME">usage</ph> field. Omitting the <ph name="USAGE_FIELD_NAME">usage</ph> field will create a policy matching any device containing a top-level collection with a usage from the specified usage page. An item which has a <ph name="USAGE_FIELD_NAME">usage</ph> field without a <ph name="USAGE_PAGE_FIELD_NAME">usage_page</ph> field is invalid and is ignored.
+
+      Leaving the policy unset means <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph> applies, if it's set. If not, the user's personal setting applies.
+
+      URLs in this policy shouldn't conflict with those configured through <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph>. If they do, this policy takes precedence over <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph>.''',
     },
     {
       'name': 'DefaultFileHandlingGuardSetting',
@@ -30798,6 +30934,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 952,
+  'highest_id_currently_used': 955,
   'highest_atomic_group_id_currently_used': 41
 }

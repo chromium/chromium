@@ -5259,6 +5259,173 @@
       }
     ]
   },
+  "WebHidAllowAllDevicesForUrls": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebHidAllowAllDevicesForUrls": [
+            "https://www.google.com"
+          ]
+        },
+        "prefs": {
+          "managed.web_hid_allow_all_devices_for_urls": {
+            "location": "local_state",
+            "value": [
+              "https://www.google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "managed.web_hid_allow_all_devices_for_urls": {
+            "location": "local_state",
+            "default_value": []
+          }
+        }
+      }
+    ]
+  },
+  "WebHidAllowDevicesForUrls": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebHidAllowDevicesForUrls": [
+            {
+              "devices": [
+                {
+                  "vendor_id": 6353,
+                  "product_id": 37888
+                }
+              ],
+              "urls": [
+                "https://stadia.google.com"
+              ]
+            },
+            {
+              "devices": [
+                {
+                  "vendor_id": 6353
+                }
+              ],
+              "urls": [
+                "https://www.google.com"
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "managed.web_hid_allow_devices_for_urls": {
+            "location": "local_state",
+            "value": [
+              {
+                "devices": [
+                  {
+                    "vendor_id": 6353,
+                    "product_id": 37888
+                  }
+                ],
+                "urls": [
+                  "https://stadia.google.com"
+                ]
+              },
+              {
+                "devices": [
+                  {
+                    "vendor_id": 6353
+                  }
+                ],
+                "urls": [
+                  "https://www.google.com"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "WebHidAllowDevicesWithHidUsagesForUrls": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebHidAllowDevicesWithHidUsagesForUrls": [
+            {
+              "usages": [
+                {
+                  "usage_page": 1,
+                  "usage": 5
+                }
+              ],
+              "urls": [
+                "https://stadia.google.com"
+              ]
+            },
+            {
+              "usages": [
+                {
+                  "usage_page": 11
+                }
+              ],
+              "urls": [
+                "https://meet.google.com"
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "managed.web_hid_allow_devices_with_hid_usages_for_urls": {
+            "location": "local_state",
+            "value": [
+              {
+                "usages": [
+                  {
+                    "usage_page": 1,
+                    "usage": 5
+                  }
+                ],
+                "urls": [
+                  "https://stadia.google.com"
+                ]
+              },
+              {
+                "usages": [
+                  {
+                    "usage_page": 11
+                  }
+                ],
+                "urls": [
+                  "https://meet.google.com"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
   "AutoSelectCertificateForUrls": {
     "os": [
       "win",
