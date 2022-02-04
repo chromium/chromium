@@ -174,7 +174,7 @@ void StreamFactory::BindMuter(
   if (it == muters_.end()) {
     auto muter_ptr = std::make_unique<LocalMuter>(&coordinator_, group_id);
     muter = muter_ptr.get();
-    muter->SetAllBindingsLostCallback(base::BindOnce(
+    muter->SetAllBindingsLostCallback(base::BindRepeating(
         &StreamFactory::DestroyMuter, base::Unretained(this), muter));
     muters_.emplace_back(std::move(muter_ptr));
   } else {
@@ -265,7 +265,12 @@ void StreamFactory::DestroyMuter(LocalMuter* muter) {
           std::find_if(weak_this->muters_.begin(), weak_this->muters_.end(),
                        base::MatchesUniquePtr(muter));
       DCHECK(it != weak_this->muters_.end());
-      weak_this->muters_.erase(it);
+
+      // The LocalMuter can still have receivers if a receiver was bound after
+      // DestroyMuter is called but before the do_destroy task is run.
+      if (!muter->HasReceivers()) {
+        weak_this->muters_.erase(it);
+      }
     }
   };
 
