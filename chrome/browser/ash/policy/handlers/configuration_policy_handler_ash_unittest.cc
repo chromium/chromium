@@ -299,8 +299,8 @@ TEST(NetworkConfigurationPolicyHandlerTest, Sanitization) {
   const base::Value* sanitized =
       policy_map.GetValue(key::kOpenNetworkConfiguration);
   ASSERT_TRUE(sanitized);
-  std::string sanitized_onc;
-  EXPECT_TRUE(sanitized->GetAsString(&sanitized_onc));
+  ASSERT_TRUE(sanitized->is_string());
+  const std::string& sanitized_onc = sanitized->GetString();
   EXPECT_FALSE(sanitized_onc.empty());
   EXPECT_EQ(std::string::npos, sanitized_onc.find("pass"));
 }
