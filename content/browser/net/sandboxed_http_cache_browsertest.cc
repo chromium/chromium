@@ -43,6 +43,14 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
   }
 
   void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported()) {
+      // On *some* Windows, sandboxing cannot be enabled. We skip all the tests
+      // on such platforms.
+      GTEST_SKIP();
+    }
+#endif
+
     // These assertions need to precede ContentBrowserTest::SetUp to prevent the
     // test body from running when one of the assertions fails.
     ASSERT_TRUE(IsOutOfProcessNetworkService());
@@ -55,14 +63,7 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// crbug.com/1293674
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OpeningFileIsProhibited DISABLED_OpeningFileIsProhibited
-#else
-#define MAYBE_OpeningFileIsProhibited OpeningFileIsProhibited
-#endif
-IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
-                       MAYBE_OpeningFileIsProhibited) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   content::GetNetworkService()->BindTestInterface(
