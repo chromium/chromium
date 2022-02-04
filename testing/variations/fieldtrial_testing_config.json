@@ -6630,7 +6630,7 @@
             ]
         }
     ],
-    "V8ConcurrentSparkplug-Android": [
+    "V8ConcurrentSparkplugAndroid": [
         {
             "platforms": [
                 "android",
