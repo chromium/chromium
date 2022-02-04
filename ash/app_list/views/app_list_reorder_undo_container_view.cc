@@ -11,7 +11,8 @@
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "base/strings/strcat.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -19,21 +20,6 @@
 namespace ash {
 
 namespace {
-
-// TODO(https://crbug.com/1269386): Raw strings are used for now. It should be
-// replaced by an i18n string after the ui design is finalized.
-
-// The toast text's fixed part that is independent of the sorting order.
-constexpr char16_t kToastTextFixedPart[] = u"Apps are now reordered ";
-
-// The toast texts that depend on the sorting order.
-constexpr char16_t kToastAlphabeticalOrderText[] = u"alphabetically";
-constexpr char16_t kToastReverseAlphabeticalOrderText[] =
-    u"reverse-alphabetically";
-constexpr char16_t kToastColorOrderText[] = u"by color";
-
-// The text shown on the toast dismiss button.
-constexpr char16_t kToastDismissText[] = u"Undo";
 
 const gfx::VectorIcon* GetToastIconForOrder(AppListSortOrder order) {
   switch (order) {
@@ -70,7 +56,7 @@ AppListReorderUndoContainerView::~AppListReorderUndoContainerView() {
 void AppListReorderUndoContainerView::OnTemporarySortOrderChanged(
     const absl::optional<AppListSortOrder>& new_order) {
   // Remove `toast_view_` when the temporary sorting order is cleared.
-  if (!new_order) {
+  if (!new_order || *new_order == AppListSortOrder::kCustom) {
     RemoveChildView(toast_view_);
     delete toast_view_;
     toast_view_ = nullptr;
@@ -85,13 +71,13 @@ void AppListReorderUndoContainerView::OnTemporarySortOrderChanged(
     return;
   }
 
-  // TODO(crbug.com/1277001): Add icon to the toast.
   toast_view_ = AddChildView(
       AppListToastView::Builder(toast_text)
           .SetStyleForTabletMode(tablet_mode_)
           .SetIcon(toast_icon)
           .SetButton(
-              kToastDismissText,
+              l10n_util::GetStringUTF16(
+                  IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_ACTION_BUTTON),
               base::BindRepeating(
                   &AppListReorderUndoContainerView::OnReorderUndoButtonClicked,
                   base::Unretained(this)))
@@ -109,27 +95,18 @@ void AppListReorderUndoContainerView::OnReorderUndoButtonClicked() {
 
 std::u16string AppListReorderUndoContainerView::CalculateToastTextFromOrder(
     AppListSortOrder order) const {
-  base::StringPiece16 toast_text_variable_part;
-
   switch (order) {
     case AppListSortOrder::kNameAlphabetical:
-      toast_text_variable_part =
-          base::StringPiece16(kToastAlphabeticalOrderText);
-      break;
     case AppListSortOrder::kNameReverseAlphabetical:
-      toast_text_variable_part =
-          base::StringPiece16(kToastReverseAlphabeticalOrderText);
-      break;
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_FOR_NAME_SORT);
     case AppListSortOrder::kColor:
-      toast_text_variable_part = base::StringPiece16(kToastColorOrderText);
-      break;
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_FOR_COLOR_SORT);
     case AppListSortOrder::kCustom:
       NOTREACHED();
-      break;
+      return u"";
   }
-
-  return base::StrCat(
-      {base::StringPiece16(kToastTextFixedPart), toast_text_variable_part});
 }
 
 }  // namespace ash

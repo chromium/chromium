@@ -149,7 +149,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     // Get the last menu item index where the reorder submenu is.
     views::MenuItemView* reorder_item_view =
         root_menu->GetSubmenu()->GetLastItem();
-    DCHECK_EQ(reorder_item_view->title(), u"Reorder by");
+    DCHECK_EQ(reorder_item_view->title(), u"Sort by");
     return reorder_item_view;
   }
 
