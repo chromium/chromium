@@ -12,6 +12,7 @@ blink_extensions_chromeos_sources("hid") {
 
   deps = [
     "//third_party/blink/renderer/bindings:generate_bindings_all",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
     "//v8",
   ]

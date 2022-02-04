@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -28,10 +29,10 @@ class Navigator;
 class ScriptPromiseResolver;
 class ScriptState;
 
-class HID : public EventTargetWithInlineData,
-            public ExecutionContextLifecycleObserver,
-            public Supplement<Navigator>,
-            public device::mojom::blink::HidManagerClient {
+class MODULES_EXPORT HID : public EventTargetWithInlineData,
+                           public ExecutionContextLifecycleObserver,
+                           public Supplement<Navigator>,
+                           public device::mojom::blink::HidManagerClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
