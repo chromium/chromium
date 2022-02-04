@@ -153,6 +153,9 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
 // Check if all types of |sources| are uninstallable by the user.
 bool CanUserUninstallWebApp(WebAppSources sources);
 
+// Extracts app_id from chrome://app-settings/<app-id> URL path.
+AppId GetAppIdFromAppSettingsUrl(const GURL& url);
+
 // Check if |url|'s path is an installed web app.
 bool HasAppSettingsPage(Profile* profile, const GURL& url);
 

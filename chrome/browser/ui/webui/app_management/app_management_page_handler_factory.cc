@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,8 +25,9 @@
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 AppManagementPageHandlerFactory::AppManagementPageHandlerFactory(
-    Profile* profile)
-    : profile_(profile) {}
+    Profile* profile,
+    std::unique_ptr<AppManagementPageHandler::Delegate> delegate)
+    : profile_(profile), delegate_(std::move(delegate)) {}
 
 AppManagementPageHandlerFactory::~AppManagementPageHandlerFactory() = default;
 
@@ -44,5 +44,5 @@ void AppManagementPageHandlerFactory::CreatePageHandler(
   DCHECK(page);
 
   page_handler_ = std::make_unique<AppManagementPageHandler>(
-      std::move(receiver), std::move(page), profile_);
+      std::move(receiver), std::move(page), profile_, *delegate_);
 }

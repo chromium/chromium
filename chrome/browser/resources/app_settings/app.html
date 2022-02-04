@@ -21,6 +21,11 @@
     margin-inline-start: 2px;
     width: 36px;
   }
+
+  #uninstall-button {
+    /* Push the button to the right in flex layout. */
+    margin-inline-start: auto;
+  }
 </style>
 <cr-toolbar page-name="$i18n{title}" show-search="[[showSearch_]]">
 </cr-toolbar>
@@ -28,6 +33,11 @@
   <div class="cr-row first" id="headerLine">
     <img id="title-icon" src="[[iconUrl_]]" aria-hidden="true">
     <h1 class="cr-title-text">[[app_.title]]</h1>
+    <app-management-uninstall-button id="uninstall-button"
+        app="[[app_]]"
+        uninstall-label="$i18n{appManagementUninstallLabel}"
+        policy-label="$i18n{appManagementAppInstalledByPolicyLabel}">
+    </app-management-uninstall-button>
   </div>
   <div class="permission-list">
     <app-management-run-on-os-login-item
@@ -41,7 +51,7 @@
       app="[[app_]]">
     </app-management-window-mode>
     <app-management-permission-item
-        class="permission-card-row separated-row header-text"
+        class="permission-card-row separated-row"
         app="[[app_]]"
         permission-label="$i18n{appManagementNotificationsLabel}"
         permission-type="kNotifications">

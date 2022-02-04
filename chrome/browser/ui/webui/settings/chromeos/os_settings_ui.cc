@@ -35,6 +35,21 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/gfx/native_widget_types.h"
+
+namespace {
+
+class AppManagementDelegate : public AppManagementPageHandler::Delegate {
+ public:
+  AppManagementDelegate() = default;
+  ~AppManagementDelegate() override = default;
+
+  gfx::NativeWindow GetUninstallAnchorWindow() const override {
+    return nullptr;
+  }
+};
+
+}  // namespace
 
 namespace chromeos {
 namespace settings {
@@ -127,9 +142,10 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<app_management::mojom::PageHandlerFactory> receiver) {
   if (!app_management_page_handler_factory_) {
+    auto delegate = std::make_unique<AppManagementDelegate>();
     app_management_page_handler_factory_ =
         std::make_unique<AppManagementPageHandlerFactory>(
-            Profile::FromWebUI(web_ui()));
+            Profile::FromWebUI(web_ui()), std::move(delegate));
   }
   app_management_page_handler_factory_->Bind(std::move(receiver));
 }

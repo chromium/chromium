@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
@@ -811,9 +812,11 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
 #else
   mojo::PendingReceiver<app_management::mojom::Page> page;
   mojo::Remote<app_management::mojom::PageHandler> handler;
+  auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
   AppManagementPageHandler app_management_page_handler(
       handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile());
+      profile(), *delegate);
   app_management_page_handler.SetWindowMode(app_id,
                                             apps::mojom::WindowMode::kBrowser);
 #endif
@@ -836,9 +839,11 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(
 #else
   mojo::PendingReceiver<app_management::mojom::Page> page;
   mojo::Remote<app_management::mojom::PageHandler> handler;
+  auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
   AppManagementPageHandler app_management_page_handler(
       handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile());
+      profile(), *delegate);
   app_management_page_handler.SetWindowMode(app_id,
                                             apps::mojom::WindowMode::kWindow);
 #endif
@@ -1705,9 +1710,11 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
       << "No app installed for site: " << site_mode;
   mojo::PendingReceiver<app_management::mojom::Page> page;
   mojo::Remote<app_management::mojom::PageHandler> handler;
+  auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
   AppManagementPageHandler app_management_page_handler(
       handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile());
+      profile(), *delegate);
   app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
 #endif
 }

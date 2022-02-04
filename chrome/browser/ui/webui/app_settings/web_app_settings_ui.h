@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_SETTINGS_WEB_APP_SETTINGS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_SETTINGS_WEB_APP_SETTINGS_UI_H_
 
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_factory.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
 // The WebUI for chrome://app-settings
-class WebAppSettingsUI : public ui::MojoWebUIController {
+class WebAppSettingsUI : public ui::MojoWebUIController,
+                         public web_app::AppRegistrarObserver {
  public:
   explicit WebAppSettingsUI(content::WebUI* web_ui);
 
@@ -19,15 +25,25 @@ class WebAppSettingsUI : public ui::MojoWebUIController {
 
   ~WebAppSettingsUI() override;
 
+  static std::unique_ptr<AppManagementPageHandler::Delegate>
+  CreateAppManagementPageHandlerDelegate(Profile* profile);
+
   // Instantiates implementor of the mojom::PageHandlerFactory mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<app_management::mojom::PageHandlerFactory>
           receiver);
 
+  // AppRegistrarObserver:
+  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+
  private:
   std::unique_ptr<AppManagementPageHandlerFactory>
       app_management_page_handler_factory_;
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
+      registrar_observation_{this};
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

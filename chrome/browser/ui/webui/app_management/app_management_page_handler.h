@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
 class Profile;
@@ -24,10 +25,23 @@ class AppManagementPageHandler
       public apps::AppRegistryCache::Observer,
       public apps::PreferredAppsListHandle::Observer {
  public:
+  //  Handles platform specific tasks.
+  class Delegate {
+   public:
+    Delegate() = default;
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual ~Delegate() = default;
+
+    virtual gfx::NativeWindow GetUninstallAnchorWindow() const = 0;
+  };
+
   AppManagementPageHandler(
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
       mojo::PendingRemote<app_management::mojom::Page> page,
-      Profile* profile);
+      Profile* profile,
+      Delegate& delegate);
 
   AppManagementPageHandler(const AppManagementPageHandler&) = delete;
   AppManagementPageHandler& operator=(const AppManagementPageHandler&) = delete;
@@ -79,6 +93,8 @@ class AppManagementPageHandler
   mojo::Remote<app_management::mojom::Page> page_;
 
   raw_ptr<Profile> profile_;
+
+  Delegate& delegate_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AppManagementShelfDelegate shelf_delegate_;
