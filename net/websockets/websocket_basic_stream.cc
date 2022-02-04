@@ -209,6 +209,8 @@ int WebSocketBasicStream::WriteFrames(
   char* dest = combined_buffer->data();
   int remaining_size = total_size;
   for (const auto& frame : *frames) {
+    net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_SENT_FRAME_HEADER,
+                      [&] { return NetLogFrameHeaderParam(&frame->header); });
     WebSocketMaskingKey mask = generate_websocket_masking_key_();
     int result =
         WriteWebSocketFrameHeader(frame->header, &mask, dest, remaining_size);

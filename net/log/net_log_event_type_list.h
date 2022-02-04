@@ -4136,3 +4136,16 @@ EVENT_TYPE(WEBSOCKET_READ_BUFFER_SIZE_CHANGED)
 //    "payload_length": <Payload length in the frame header>,
 // }
 EVENT_TYPE(WEBSOCKET_RECV_FRAME_HEADER)
+
+// This event is logged to show the sent frame header information. It
+// contains the following parameters:
+// {
+//    "final": <Whether it is the last fragment in a message>,
+//    "reserved1": <Whether any extension is defined>,
+//    "reserved2": <Whether any extension is defined>,
+//    "reserved3": <Whether any extension is defined>,
+//    "opcode": <Opcode in the frame header>,
+//    "masked": <Whether the message is encoded>,
+//    "payload_length": <Payload length in the frame header>,
+// }
+EVENT_TYPE(WEBSOCKET_SENT_FRAME_HEADER)
