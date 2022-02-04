@@ -55,3 +55,4 @@ build_script_outputs = [ "common.rs", "dynamic.rs" ]
 # This allows them built in a configuration that can be used from Chromium
 # tests, but not used from production.
 [dev-dependencies]
+rstest = "0.12"
