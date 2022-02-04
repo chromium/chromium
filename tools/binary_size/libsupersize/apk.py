@@ -10,6 +10,7 @@ import re
 import zipfile
 
 import archive_util
+import file_format
 import models
 import zip_util
 
@@ -89,7 +90,7 @@ class _ResourceSourceMapper:
 
 
 def CreateApkOtherSymbols(*, metadata, apk_spec, native_spec):
-  """Creates a Container (with sections sizes) and symbols for a SizeInfo.
+  """Creates symbols for resources / assets within the apk.
 
   Args:
     metadata: Metadata dict from CreateMetadata().
@@ -160,4 +161,5 @@ def CreateApkOtherSymbols(*, metadata, apk_spec, native_spec):
   section_ranges = {}
   archive_util.ExtendSectionRange(section_ranges, models.SECTION_OTHER,
                                   sum(s.size for s in raw_symbols))
+  file_format.SortSymbols(raw_symbols)
   return section_ranges, raw_symbols

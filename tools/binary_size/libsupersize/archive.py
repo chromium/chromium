@@ -289,52 +289,6 @@ def _CreatePakSymbols(*, pak_spec, pak_id_map, apk_spec, output_directory):
   return section_ranges, raw_symbols
 
 
-def _CreateDexSymbols(*, apk_spec, apk_infolist, apk_analyzer_result):
-  """Create dex symbols for the given apk_spec.
-
-  Returns:
-    A tuple of (section_ranges, raw_symbols).
-  """
-  logging.info('Analyzing classes.dex for %s', apk_spec.split_name
-               or apk_spec.apk_path)
-
-  dex_total_size = sum(i.file_size for i in apk_infolist
-                       if i.filename.endswith('.dex'))
-  raw_symbols = apkanalyzer.CreateDexSymbols(apk_analyzer_result,
-                                             dex_total_size,
-                                             apk_spec.size_info_prefix)
-
-  sizes = collections.Counter()
-  for s in raw_symbols:
-    sizes[s.section_name] += s.pss
-  assert len(sizes) <= 2, 'Unexpected: ' + str(sizes)
-  dex_method_size = round(sizes[models.SECTION_DEX_METHOD])
-  dex_other_size = round(sizes[models.SECTION_DEX])
-
-  unattributed_dex = dex_total_size - dex_method_size - dex_other_size
-  # Compare against -5 instead of 0 to guard against round-off errors.
-  assert unattributed_dex >= -5, (
-      'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
-          dex_method_size + dex_other_size, dex_total_size))
-
-  if unattributed_dex > 0:
-    raw_symbols.append(
-        models.Symbol(
-            models.SECTION_DEX,
-            unattributed_dex,
-            full_name='** .dex (unattributed - includes string literals)'))
-
-  # We can't meaningfully track section size of dex methods vs other, so
-  # just fake the size of dex methods as the sum of symbols, and make
-  # "dex other" responsible for any unattributed bytes.
-  section_ranges = {
-      models.SECTION_DEX_METHOD: (0, dex_method_size),
-      models.SECTION_DEX: (0, dex_total_size - dex_method_size),
-  }
-
-  return section_ranges, raw_symbols
-
-
 def _CreateContainerSymbols(container_spec, apk_file_manager,
                             apk_analyzer_results, pak_id_map):
   container_name = container_spec.container_name
@@ -403,18 +357,21 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
              component=native_spec.component,
              paths_already_normalized=True)
 
+  if apk_spec and apk_spec.analyze_dex:
+    logging.info('Analyzing DEX')
+    apk_infolist = apk_file_manager.InfoList(apk_spec.apk_path)
+    dex_total_size = sum(i.file_size for i in apk_infolist
+                         if i.filename.endswith('.dex'))
+    add_syms(*apkanalyzer.CreateDexSymbols(apk_analyzer_results[container_name],
+                                           dex_total_size,
+                                           apk_spec.size_info_prefix))
+
   if pak_spec:
     add_syms(*_CreatePakSymbols(pak_spec=pak_spec,
                                 pak_id_map=pak_id_map,
                                 apk_spec=apk_spec,
                                 output_directory=output_directory))
   if apk_spec:
-    if apk_spec.analyze_dex:
-      apk_infolist = apk_file_manager.InfoList(apk_spec.apk_path)
-      apk_analyzer_result = apk_analyzer_results[container_name].get()
-      add_syms(*_CreateDexSymbols(apk_spec=apk_spec,
-                                  apk_infolist=apk_infolist,
-                                  apk_analyzer_result=apk_analyzer_result))
     add_syms(*apk.CreateApkOtherSymbols(
         metadata=metadata, apk_spec=apk_spec, native_spec=native_spec))
 
@@ -424,7 +381,8 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
   for symbol in raw_symbols:
     symbol.container = container
 
-  file_format.SortSymbols(raw_symbols, check_already_mostly_sorted=True)
+  if file_format.LogUnsortedSymbols(raw_symbols) > 0:
+    file_format.SortSymbols(raw_symbols)
   return raw_symbols
 
 

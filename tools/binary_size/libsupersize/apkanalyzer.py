@@ -34,6 +34,15 @@ def _ParseJarInfoFile(file_name):
 
 
 def RunApkAnalyzerAsync(apk_path, mapping_path):
+  """Starts an apkanalyzer job for the given apk.
+
+  Args:
+    apk_path: Path to the apk to run on.
+    mapping_path: Path to the proguard mapping file.
+
+  Returns:
+    An object to pass to CreateDexSymbols().
+  """
   args = [path_util.GetApkAnalyzerPath(), 'dex', 'packages', apk_path]
   if mapping_path and os.path.exists(mapping_path):
     args.extend(['--proguard-mappings', mapping_path])
@@ -278,7 +287,35 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
                        source_path=source_path)
 
 
-def CreateDexSymbols(apk_analyzer_result, dex_total_size, size_info_prefix):
+def _SymbolsFromNodes(nodes, source_map):
+  # Use (DEX_METHODS, DEX) buckets to speed up sorting.
+  symbol_buckets = ([], [])
+  lambda_normalizer = LambdaNormalizer()
+  for _, name, node_size in nodes:
+    symbol = CreateDexSymbol(name, node_size, source_map, lambda_normalizer)
+    if symbol:
+      bucket_index = int(symbol.section_name is models.SECTION_DEX)
+      symbol_buckets[bucket_index].append(symbol)
+  for symbols_bucket in symbol_buckets:
+    symbols_bucket.sort(key=lambda s: s.full_name)
+  return symbol_buckets
+
+
+def CreateDexSymbols(apk_analyzer_async_result, dex_total_size,
+                     size_info_prefix):
+  """Creates DEX symbols given apk_analyzer output.
+
+  Args:
+    apk_analyzer_async_result: Return value from RunApkAnalyzerAsync().
+    dex_total_size: Sum of the sizes of all .dex files in the apk.
+    size_info_prefix: Path such as: out/Release/size-info/BaseName.
+
+  Returns:
+    A tuple of (section_ranges, raw_symbols).
+  """
+  logging.debug('Waiting for apkanalyzer to finish')
+  apk_analyzer_result = apk_analyzer_async_result.get()
+  logging.debug('Analyzing DEX - processing results')
   source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
 
   nodes = _ParseApkAnalyzerOutput(apk_analyzer_result.stdout,
@@ -293,15 +330,32 @@ def CreateDexSymbols(apk_analyzer_result, dex_total_size, size_info_prefix):
     logging.error(
         'Node size too large, check for node processing errors. '
         'dex_total_size=%d total_node_size=%d', dex_total_size, total_node_size)
-  # Use (DEX_METHODS, DEX) buckets to speed up sorting.
-  symbols = ([], [])
-  lambda_normalizer = LambdaNormalizer()
-  for _, name, node_size in nodes:
-    symbol = CreateDexSymbol(name, node_size, source_map, lambda_normalizer)
-    if symbol:
-      symbols[int(symbol.section_name is models.SECTION_DEX)].append(symbol)
 
-  symbols[0].sort(key=lambda s: s.full_name)
-  symbols[1].sort(key=lambda s: s.full_name)
-  symbols[0].extend(symbols[1])
-  return symbols[0]
+  dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
+
+  dex_method_size = round(sum(s.pss for s in dex_method_symbols))
+  dex_other_size = round(sum(s.pss for s in dex_other_symbols))
+
+  unattributed_dex = dex_total_size - dex_method_size - dex_other_size
+  # Compare against -5 instead of 0 to guard against round-off errors.
+  assert unattributed_dex >= -5, (
+      'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
+          dex_method_size + dex_other_size, dex_total_size))
+
+  if unattributed_dex > 0:
+    dex_other_symbols.append(
+        models.Symbol(
+            models.SECTION_DEX,
+            unattributed_dex,
+            full_name='** .dex (unattributed - includes string literals)'))
+
+  # We can't meaningfully track section size of dex methods vs other, so
+  # just fake the size of dex methods as the sum of symbols, and make
+  # "dex other" responsible for any unattributed bytes.
+  section_ranges = {
+      models.SECTION_DEX_METHOD: (0, dex_method_size),
+      models.SECTION_DEX: (0, dex_total_size - dex_method_size),
+  }
+
+  dex_other_symbols.extend(dex_method_symbols)
+  return section_ranges, dex_other_symbols

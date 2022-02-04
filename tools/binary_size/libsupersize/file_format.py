@@ -83,7 +83,62 @@ class _Writer:
     logging.debug('File size with %s: %d' % (desc, size))
 
 
-def SortSymbols(raw_symbols, check_already_mostly_sorted=True):
+def _SortKey(s):
+  # size_without_padding so that "** symbol gap" sorts before other symbols
+  # with same address (necessary for correctness within CalculatePadding()).
+  return (
+      _SECTION_SORT_ORDER[s.section_name],
+      s.IsOverhead(),
+      s.address,
+      # Only use size_without_padding for native symbols (that have
+      # addresses) since padding-only symbols must come first for
+      # correctness.
+      # DEX also has 0-size symbols (for nested classes, not sure why)
+      # and we don't want to sort them differently since they don't have
+      # any padding either.
+      s.address and s.size_without_padding > 0,
+      s.full_name.startswith('**'),
+      s.full_name,
+      s.object_path)
+
+
+def _DescribeSymbolSortOrder(syms):
+  return ''.join('%r: %r\n' % (_SortKey(s), s) for s in syms)
+
+
+def LogUnsortedSymbols(raw_symbols):
+  """Logs the number of symbols that are not sorted.
+
+  Also logs the first few such symbols and their sort keys.
+
+  Returns:
+    The number of unsorted symbols.
+  """
+  logging.debug('Looking for out-of-order symbols (num_symbols=%d)',
+                len(raw_symbols))
+  sort_keys = [_SortKey(s) for s in raw_symbols]
+  count = sum(
+      int(sort_keys[i] > sort_keys[i + 1]) for i in range(len(raw_symbols) - 1))
+  logging.info('Out of %d symbols, %d were out-of-order.', len(raw_symbols),
+               count)
+
+  # Log them if > 1% are out-of-order and it's not a tiny sample.
+  if len(raw_symbols) > 1000 and count / len(raw_symbols) > .01:
+    NUM_TO_LOG = 10
+    logging.warning('Showing the first %d out-of-order symbols.', NUM_TO_LOG)
+    num_reported = 0
+    for i in range(len(raw_symbols) - 1):
+      if sort_keys[i] > sort_keys[i + 1]:
+        num_reported += 1
+        logging.warning('\n%d) %s\n%d) %s\n', i,
+                        _DescribeSymbolSortOrder(raw_symbols[i:i + 1]), i + 1,
+                        _DescribeSymbolSortOrder(raw_symbols[i + 1:i + 2]))
+        if num_reported == NUM_TO_LOG:
+          break
+  return count
+
+
+def SortSymbols(raw_symbols):
   """Sorts the given symbols in the order that they should be archived in.
 
   The sort order is chosen such that:
@@ -94,32 +149,7 @@ def SortSymbols(raw_symbols, check_already_mostly_sorted=True):
 
   Args:
     raw_symbols: List of symbols to sort.
-    check_already_mostly_sorted: Whether to assert that there are a low number
-        of out-of-order elements in raw_symbols. Older .size files are not
-        properly sorted, this check makes sense only for "supersize archive".
   """
-
-  def sort_key(s):
-    # size_without_padding so that "** symbol gap" sorts before other symbols
-    # with same address (necessary for correctness within CalculatePadding()).
-    return (
-        _SECTION_SORT_ORDER[s.section_name],
-        s.IsOverhead(),
-        s.address,
-        # Only use size_without_padding for native symbols (that have
-        # addresses) since padding-only symbols must come first for
-        # correctness.
-        # DEX also has 0-size symbols (for nested classes, not sure why)
-        # and we don't want to sort them differently since they don't have
-        # any padding either.
-        s.address and s.size_without_padding > 0,
-        s.full_name.startswith('**'),
-        s.full_name,
-        s.object_path)
-
-  def describe(syms):
-    return ''.join('%r: %r\n' % (s, sort_key(s)) for s in syms)
-
   logging.debug('Sorting %d symbols', len(raw_symbols))
 
   # Sort aliases first to make raw_symbols quicker to sort.
@@ -133,32 +163,17 @@ def SortSymbols(raw_symbols, check_already_mostly_sorted=True):
     if s.aliases:
       expected = raw_symbols[i:i + num_aliases]
       assert s.aliases == expected, 'Aliases out of order:\n{}\n{}'.format(
-          describe(s.aliases), describe(expected))
+          _DescribeSymbolSortOrder(s.aliases),
+          _DescribeSymbolSortOrder(expected))
 
-      s.aliases.sort(key=sort_key)
+      s.aliases.sort(key=_SortKey)
       raw_symbols[i:i + num_aliases] = s.aliases
       i += num_aliases
     else:
       i += 1
 
-  if check_already_mostly_sorted:
-    count = sum(
-        int(sort_key(raw_symbols[i]) > sort_key(raw_symbols[i + 1]))
-        for i in range(len(raw_symbols) - 1))
-    logging.debug('Number of out-of-order symbols: %d', count)
-    if count > 20:
-      logging.error('Number of out-of-order symbols: %d', count)
-      logging.error('Showing first 10')
-      num_reported = 0
-      for i in range(len(raw_symbols) - 1):
-        if sort_key(raw_symbols[i]) > sort_key(raw_symbols[i + 1]):
-          num_reported += 1
-          logging.error('\n%s', describe(raw_symbols[i:i + 2]))
-          if num_reported == 10:
-            break
-
   # Python's sort() is faster when the input list is already mostly sorted.
-  raw_symbols.sort(key=sort_key)
+  raw_symbols.sort(key=_SortKey)
 
 
 def CalculatePadding(raw_symbols):

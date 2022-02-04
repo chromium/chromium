@@ -12,6 +12,7 @@ import zipfile
 import zlib
 
 import archive_util
+import file_format
 import models
 import path_util
 
@@ -136,8 +137,7 @@ def _FinalizeSymbols(symbols_by_id, pak_id_map):
       raw_symbols.append(new_sym)
 
   # Pre-sort to make final sort faster.
-  # Note: _SECTION_SORT_ORDER[] for pak symbols matches section_name ordering.
-  raw_symbols.sort(key=lambda s: (s.section_name, s.address, s.object_path))
+  file_format.SortSymbols(raw_symbols)
   return raw_symbols
 
 
