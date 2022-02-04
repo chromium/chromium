@@ -230,11 +230,7 @@ bool SharedImageBackingRawDraw::CreateBackendTextureAndFlushPaintOps() {
     paint_op_buffer_->Playback(surface->getCanvas(), playback_params);
   }
 
-  // Insert resolveMSAA in surface's command stream, so if the surface,
-  // otherwise gr_context->flush() call will not resolve to the wrapped
-  // backend_texture_.
-  surface->resolveMSAA();
-
+  surface->flush();
   return true;
 }
 
