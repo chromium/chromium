@@ -126,7 +126,9 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgress) {
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .55);
 }
 
-TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressFastPlayback) {
+// Flaky on multiple platforms. crbug.com/1293864
+TEST_F(MAYBE_MediaControlsProgressViewTest,
+       DISABLED_UpdateProgressFastPlayback) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/2, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(300), /*end_of_media=*/false);
