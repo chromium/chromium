@@ -181,13 +181,25 @@ class DestructiveScriptTest : public ExecuteScriptApiTestBase,
   }
 };
 
+// Flaky on ASAN. crbug.com/1293865
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_SynchronousRemoval DISABLED_SynchronousRemoval
+#else
+#define MAYBE_SynchronousRemoval SynchronousRemoval
+#endif
 // Removes the frame as soon as the content script is executed.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, SynchronousRemoval) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, MAYBE_SynchronousRemoval) {
   ASSERT_TRUE(RunSubtest("synchronous")) << message_;
 }
 
+// Flaky on ASAN. crbug.com/1293865
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_MicrotaskRemoval DISABLED_MicrotaskRemoval
+#else
+#define MAYBE_MicrotaskRemoval MicrotaskRemoval
+#endif
 // Removes the frame at the frame's first scheduled microtask.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, MicrotaskRemoval) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, MAYBE_MicrotaskRemoval) {
   ASSERT_TRUE(RunSubtest("microtask")) << message_;
 }
 
