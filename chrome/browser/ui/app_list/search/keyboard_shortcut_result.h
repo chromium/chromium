@@ -7,17 +7,31 @@
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_data.h"
+#include "chromeos/components/string_matching/tokenized_string.h"
 
 namespace app_list {
 
-// TODO(crbug.com/1290682): Implement.
+// TODO(crbug.com/1290682): Finish implementation.
 class KeyboardShortcutResult : public ChromeSearchResult {
  public:
-  explicit KeyboardShortcutResult(const KeyboardShortcutData& data);
+  explicit KeyboardShortcutResult(const KeyboardShortcutData& data,
+                                  double relevance);
   KeyboardShortcutResult(const KeyboardShortcutResult&) = delete;
   KeyboardShortcutResult& operator=(const KeyboardShortcutResult&) = delete;
 
   ~KeyboardShortcutResult() override;
+
+  // ChromeSearchResult:
+  void Open(int event_flags) override;
+
+  // Calculates the shortcut's relevance score. Will return a default score if
+  // the query is missing or the target is empty.
+  static double CalculateRelevance(
+      const chromeos::string_matching::TokenizedString& query_tokenized,
+      const std::u16string& target);
+
+  // The description of the shortcut action e.g. "Dock a window on the right".
+  std::u16string description_;
 };
 
 }  // namespace app_list
