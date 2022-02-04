@@ -2,8 +2,8 @@
 
 SuperSize is comprised of two parts:
 
-1. A command-line tool for creating and inspecting `.size` files,
-2. A web app for visualizing `.size` files.
+1. A command-line tool for creating and inspecting `.size` and `.sizediff` files,
+2. A web app for visualizing `.size` and `.sizediff` files.
 
 For more details, see [//tools/binary_size/libsupersize/docs].
 
@@ -47,7 +47,7 @@ for list of GN args to build a release binary (or just use the tool with --singl
 
 Example Usage:
 
-``` bash
+```bash
 # Android:
 autoninja -C out/Release apks/ChromePublic.apk
 tools/binary_size/supersize archive chrome.size -f out/Release/apks/ChromePublic.apk -v
@@ -74,7 +74,7 @@ tools/binary_size/supersize console chrome.size
 
 Example Session:
 
-``` python
+```python
 >>> ShowExamples()  # Get some inspiration.
 ...
 >>> sorted = size_info.symbols.WhereInSection('t').Sorted()
@@ -94,6 +94,17 @@ Example Session:
 >>> Print((t[1] for t in ReadStringLiterals(syms)), to_file='strings.txt')
 ```
 
+### supersize save_diff
+
+Creates a `.sizediff` file given two `.size` files. A `.sizediff` file contains
+two `.size` files, with all unchanged symbols removed.
+
+Example Usage:
+
+```bash
+tools/binary_size/supersize size_diff before.size after.size out.sizediff
+```
+
 ### supersize diff
 
 A convenience command equivalent to:
@@ -101,6 +112,6 @@ A convenience command equivalent to:
 
 Example Usage:
 
-``` bash
+```bash
 tools/binary_size/supersize diff before.size after.size --all
 ```
