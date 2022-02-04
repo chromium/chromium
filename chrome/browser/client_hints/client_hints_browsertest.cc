@@ -1172,8 +1172,7 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, ClientHintsHttps_MetaName) {
   }
 }
 
-// http://crbug.com/1294159
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DISABLED_ClientHintsAlps) {
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, ClientHintsAlps) {
   base::HistogramTester histogram_tester;
   SetClientHintExpectationsOnMainFrame(true);
   ASSERT_TRUE(
@@ -1183,9 +1182,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DISABLED_ClientHintsAlps) {
       content::AcceptCHFrameRestart::kNavigationRestarted, 1);
 }
 
-// http://crbug.com/1294159
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
-                       DISABLED_ClientHintsAlpsNavigationPreload) {
+                       ClientHintsAlpsNavigationPreload) {
   SetClientHintExpectationsOnMainFrame(true);
   const GURL kCreateServiceWorker =
       GetHttp2Url("/service_worker/create_service_worker.html");
