@@ -173,7 +173,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     return image_views_[index];
   }
 
-  const size_t GetImageViewCount() { return image_views_.size(); }
+  size_t GetImageViewCount() { return image_views_.size(); }
 
   void SetBackgroundColorForIndex(const int index, const SkColor& color) {
     auto alpha_color =
