@@ -1684,7 +1684,7 @@ enum HistogramValue {
   PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL = 1621,
   WEB_AUTHENTICATION_PROXY_COMPLETE_GET_REQUEST = 1622,
   // Last entry: Add new entries above, then run:
-  // python tools/metrics/histograms/update_extension_histograms.py
+  // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
 };
 

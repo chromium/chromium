@@ -510,7 +510,7 @@ enum HistogramValue {
   WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST = 488,
   DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED = 489,
   // Last entry: Add new entries above, then run:
-  // python tools/metrics/histograms/update_extension_histograms.py
+  // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
 };
 
