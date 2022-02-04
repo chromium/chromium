@@ -254,6 +254,9 @@
             "experiments": [
                 {
                     "name": "Enabled_10000_2022-02-01",
+                    "params": {
+                        "save_password_message_dismiss_duration_ms": "10000"
+                    },
                     "enable_features": [
                         "MessagesForAndroidPasswords",
                         "MessagesForAndroidUpdatePassword"
