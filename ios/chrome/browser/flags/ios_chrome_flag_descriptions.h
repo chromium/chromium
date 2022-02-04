@@ -293,6 +293,11 @@ extern const char kIOSSharedHighlightingV2Description[];
 extern const char kLazilyCreateWebStateOnRestorationName[];
 extern const char kLazilyCreateWebStateOnRestorationDescription[];
 
+// Title and description for the flag to enable leak detection for signed out
+// users.
+extern const char kLeakDetectionUnauthenticatedName[];
+extern const char kLeakDetectionUnauthenticatedDescription[];
+
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];

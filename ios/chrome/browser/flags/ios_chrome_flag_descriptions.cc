@@ -325,6 +325,11 @@ const char kLazilyCreateWebStateOnRestorationName[] = "Unrealized WebStates";
 const char kLazilyCreateWebStateOnRestorationDescription[] =
     "Create WebState in unrealized state upon session restoration.";
 
+const char kLeakDetectionUnauthenticatedName[] =
+    "Leak detection for signed out users";
+const char kLeakDetectionUnauthenticatedDescription[] =
+    "Enables leak detection feature for signed out users";
+
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "

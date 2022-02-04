@@ -793,6 +793,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContentSuggestionsHeaderMigrationName,
      flag_descriptions::kContentSuggestionsHeaderMigrationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContentSuggestionsHeaderMigration)},
+    {"leak-detection-unauthenticated",
+     flag_descriptions::kLeakDetectionUnauthenticatedName,
+     flag_descriptions::kLeakDetectionUnauthenticatedDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kLeakDetectionUnauthenticated)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
