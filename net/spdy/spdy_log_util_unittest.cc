@@ -13,9 +13,11 @@ std::string ElideGoAwayDebugDataForNetLogAsString(
     NetLogCaptureMode capture_mode,
     base::StringPiece debug_data) {
   auto value = ElideGoAwayDebugDataForNetLog(capture_mode, debug_data);
-  std::string str;
-  EXPECT_TRUE(value.GetAsString(&str));
-  return str;
+  if (!value.is_string()) {
+    ADD_FAILURE() << "'value' should be string.";
+    return std::string();
+  }
+  return value.GetString();
 }
 
 TEST(SpdyLogUtilTest, ElideGoAwayDebugDataForNetLog) {

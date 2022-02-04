@@ -35,9 +35,10 @@ bool AppendArgumentFromJSONValue(const std::string& key,
       break;
     }
     case base::Value::Type::STRING: {
-      std::string value;
-      bool result = value_node.GetAsString(&value);
-      if (!result || value.empty())
+      if (!value_node.is_string())
+        return false;
+      const std::string value = value_node.GetString();
+      if (value.empty())
         return false;
       command_line->AppendArg(argument_name + "=" + value);
       break;
