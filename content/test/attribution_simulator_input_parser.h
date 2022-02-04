@@ -7,7 +7,10 @@
 
 #include <vector>
 
-#include "content/test/attribution_simulator_impl.h"
+#include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/storable_source.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class Value;
@@ -15,8 +18,17 @@ class Value;
 
 namespace content {
 
+struct AttributionTriggerAndTime {
+  AttributionTrigger trigger;
+  base::Time time;
+};
+
+using AttributionSimulationEvent =
+    absl::variant<StorableSource, AttributionTriggerAndTime>;
+
 std::vector<AttributionSimulationEvent> ParseAttributionSimulationInputOrExit(
-    const base::Value& input);
+    const base::Value& input,
+    base::Time offset_time);
 
 }  // namespace content
 

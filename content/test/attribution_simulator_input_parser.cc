@@ -38,11 +38,13 @@ url::Origin FindOriginKeyOrExit(const base::Value& dict, const char* key) {
   return origin;
 }
 
-base::Time FindTimeKeyOrExit(const base::Value& dict, const char* key) {
+base::Time FindTimeKeyOrExit(const base::Value& dict,
+                             const char* key,
+                             base::Time offset_time) {
   absl::optional<int> v = dict.FindIntKey(key);
   LOG_IF(FATAL, !v) << "key not found: " << key;
   LOG_IF(FATAL, *v < 0) << "negative time not allowed: " << *v;
-  return base::Time::Now() + base::Seconds(*v);
+  return offset_time + base::Seconds(*v);
 }
 
 uint64_t ParseUint64OrExit(const std::string& s) {
@@ -110,10 +112,10 @@ const base::Value& FindValueOrExit(const base::Value& dict, const char* key) {
   return *v;
 }
 
-StorableSource ParseSource(const base::Value& dict) {
+StorableSource ParseSource(const base::Value& dict, base::Time offset_time) {
   const base::Value& cfg = FindValueOrExit(dict, "registration_config");
 
-  base::Time source_time = FindTimeKeyOrExit(dict, "source_time");
+  base::Time source_time = FindTimeKeyOrExit(dict, "source_time", offset_time);
 
   base::TimeDelta expiry = base::Days(30);
   if (absl::optional<int64_t> v = FindInt64KeyOrNull(cfg, "expiry")) {
@@ -133,7 +135,8 @@ StorableSource ParseSource(const base::Value& dict) {
       FindInt64KeyOrDefault(cfg, "priority", 0)));
 }
 
-AttributionTriggerAndTime ParseTrigger(const base::Value& dict) {
+AttributionTriggerAndTime ParseTrigger(const base::Value& dict,
+                                       base::Time offset_time) {
   const base::Value& cfg = FindValueOrExit(dict, "registration_config");
 
   return AttributionTriggerAndTime{
@@ -147,24 +150,27 @@ AttributionTriggerAndTime ParseTrigger(const base::Value& dict) {
               CommonSourceInfo::SourceType::kEvent),
           FindInt64KeyOrDefault(cfg, "priority", 0),
           FindInt64KeyOrNull(cfg, "dedup_key")),
-      .time = FindTimeKeyOrExit(dict, "trigger_time"),
+      .time = FindTimeKeyOrExit(dict, "trigger_time", offset_time),
   };
 }
 
 }  // namespace
 
 std::vector<AttributionSimulationEvent> ParseAttributionSimulationInputOrExit(
-    const base::Value& input) {
+    const base::Value& input,
+    base::Time offset_time) {
   std::vector<AttributionSimulationEvent> events;
 
   if (const base::Value* items = input.FindListKey("sources")) {
-    base::ranges::transform(items->GetList(), std::back_inserter(events),
-                            &ParseSource);
+    for (const base::Value& item : items->GetList()) {
+      events.push_back(ParseSource(item, offset_time));
+    }
   }
 
   if (const base::Value* items = input.FindListKey("triggers")) {
-    base::ranges::transform(items->GetList(), std::back_inserter(events),
-                            &ParseTrigger);
+    for (const base::Value& item : items->GetList()) {
+      events.push_back(ParseTrigger(item, offset_time));
+    }
   }
 
   return events;

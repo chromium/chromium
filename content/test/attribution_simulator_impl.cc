@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/test/attribution_simulator_impl.h"
+#include "content/public/test/attribution_simulator.h"
 
 #include <memory>
 #include <utility>
@@ -20,9 +20,10 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/test/attribution_simulator.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/test/attribution_simulator_input_parser.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -99,15 +100,17 @@ struct EventHandler {
 
 }  // namespace
 
-base::Value RunAttributionSimulation(
-    std::vector<AttributionSimulationEvent> events,
+base::Value RunAttributionSimulationOrExit(
+    const base::Value& input,
     const AttributionSimulationOptions& options) {
-  base::ranges::stable_sort(events, /*comp=*/{}, &GetEventTime);
-
   // Prerequisites for using an environment with mock time.
   TestTimeouts::Initialize();
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  std::vector<AttributionSimulationEvent> events =
+      ParseAttributionSimulationInputOrExit(input, base::Time::Now());
+  base::ranges::stable_sort(events, /*comp=*/{}, &GetEventTime);
 
   // Avoid creating an on-disk sqlite DB.
   content::AttributionManagerImpl::RunInMemoryForTesting();
