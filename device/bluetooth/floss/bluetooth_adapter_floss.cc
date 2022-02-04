@@ -427,7 +427,9 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
     FlossDBusManager::Get()->SwitchAdapter(FlossDBusManager::kInvalidAdapter);
   }
 
-  PopulateInitialDevices();
+  if (enabled)
+    PopulateInitialDevices();
+
   NotifyAdapterPoweredChanged(enabled);
 }
 
