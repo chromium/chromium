@@ -33,7 +33,6 @@ using WebSocketExtraHeaders = std::vector<std::pair<std::string, std::string>>;
 
 class MockClientSocketFactory;
 class WebSocketBasicHandshakeStream;
-class ProxyResolutionService;
 class SequencedSocketData;
 class IPEndPoint;
 struct SSLSocketDataProvider;
@@ -140,7 +139,7 @@ class WebSocketMockClientSocketFactoryMaker {
 };
 
 // This class encapsulates the details of creating a
-// TestURLRequestContext that returns mock ClientSocketHandles that do what is
+// URLRequestContext that returns mock ClientSocketHandles that do what is
 // required by the tests.
 struct WebSocketTestURLRequestContextHost {
  public:
@@ -172,18 +171,20 @@ struct WebSocketTestURLRequestContextHost {
 
   // Call after calling one of SetExpections() or AddRawExpectations(). The
   // returned pointer remains owned by this object.
-  TestURLRequestContext* GetURLRequestContext();
+  URLRequestContext* GetURLRequestContext();
 
   const TestNetworkDelegate& network_delegate() const {
-    return network_delegate_;
+    // This is safe because we set a TestNetworkDelegate on
+    // `url_request_context_` creation.
+    return *static_cast<TestNetworkDelegate*>(
+        url_request_context_->network_delegate());
   }
 
  private:
   WebSocketMockClientSocketFactoryMaker maker_;
-  TestURLRequestContext url_request_context_;
+  std::unique_ptr<URLRequestContextBuilder> url_request_context_builder_;
+  std::unique_ptr<URLRequestContext> url_request_context_;
   TestNetworkDelegate network_delegate_;
-  std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
-  bool url_request_context_initialized_;
 };
 
 // WebSocketStream::ConnectDelegate implementation that does nothing.

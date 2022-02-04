@@ -59,6 +59,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/websockets/websocket_channel.h"
 #include "net/websockets/websocket_event_interface.h"
@@ -294,24 +295,22 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
   WebSocketEndToEndTest()
       : event_interface_(),
         proxy_delegate_(std::make_unique<TestProxyDelegateWithProxyInfo>()),
-        context_(true),
-        channel_(),
-        initialised_context_(false) {}
+        context_builder_(CreateTestURLRequestContextBuilder()) {}
 
   // Initialise the URLRequestContext. Normally done automatically by
   // ConnectAndWait(). This method is for the use of tests that need the
   // URLRequestContext initialised before calling ConnectAndWait().
   void InitialiseContext() {
-    context_.Init();
-    context_.proxy_resolution_service()->SetProxyDelegate(
+    DCHECK(!context_);
+    context_ = context_builder_->Build();
+    context_->proxy_resolution_service()->SetProxyDelegate(
         proxy_delegate_.get());
-    initialised_context_ = true;
   }
 
   // Send the connect request to |socket_url| and wait for a response. Returns
   // true if the handshake succeeded.
   bool ConnectAndWait(const GURL& socket_url) {
-    if (!initialised_context_) {
+    if (!context_) {
       InitialiseContext();
     }
     url::Origin origin = url::Origin::Create(GURL("http://localhost"));
@@ -322,7 +321,7 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
                               origin, SiteForCookies::FromOrigin(origin));
     event_interface_ = new ConnectTestingEventInterface();
     channel_ = std::make_unique<WebSocketChannel>(
-        base::WrapUnique(event_interface_.get()), &context_);
+        base::WrapUnique(event_interface_.get()), context_.get());
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
         isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -332,10 +331,10 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
 
   raw_ptr<ConnectTestingEventInterface> event_interface_;  // owned by channel_
   std::unique_ptr<TestProxyDelegateWithProxyInfo> proxy_delegate_;
-  TestURLRequestContext context_;
+  std::unique_ptr<URLRequestContextBuilder> context_builder_;
+  std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<WebSocketChannel> channel_;
   std::vector<std::string> sub_protocols_;
-  bool initialised_context_;
 };
 
 // Basic test of connectivity. If this test fails, nothing else can be expected
@@ -365,7 +364,8 @@ TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
       ConfiguredProxyResolutionService::CreateFixed(
           proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS));
   ASSERT_TRUE(proxy_resolution_service);
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   EXPECT_FALSE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
@@ -400,7 +400,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsWssProxyUnauthedFails) {
       ConfiguredProxyResolutionService::CreateFixed(ProxyConfigWithAnnotation(
           proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)));
   ASSERT_TRUE(proxy_resolution_service);
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   EXPECT_FALSE(ConnectAndWait(wss_server.GetURL(kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
@@ -426,7 +427,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUsed) {
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service(
       ConfiguredProxyResolutionService::CreateFixed(ProxyConfigWithAnnotation(
           proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)));
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   InitialiseContext();
 
   GURL ws_url = ws_server.GetURL(kEchoServer);
@@ -494,7 +496,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_ProxyPacUsed) {
           std::move(proxy_config_service), NetLog::Get(),
           /*quick_check_enabled=*/true));
   ASSERT_EQ(ws_server.host_port_pair().host(), "127.0.0.1");
-  context_.set_proxy_resolution_service(proxy_resolution_service.get());
+  context_builder_->set_proxy_resolution_service(
+      std::move(proxy_resolution_service));
   InitialiseContext();
 
   // Use a name other than localhost, since localhost implicitly bypasses the
@@ -542,7 +545,7 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
   // Set HSTS via https:
   TestDelegate delegate;
   GURL https_page = https_server.GetURL("/hsts-headers.html");
-  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+  std::unique_ptr<URLRequest> request(context_->CreateRequest(
       https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   delegate.RunUntilComplete();
@@ -575,7 +578,7 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
   TestDelegate delegate;
   GURL http_page =
       ReplaceUrlScheme(https_server.GetURL("/simple.html"), "http");
-  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+  std::unique_ptr<URLRequest> request(context_->CreateRequest(
       http_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   delegate.RunUntilComplete();
@@ -651,15 +654,16 @@ TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
 
   // Note that due to socket pool behavior, HostResolver will see the ws/wss
   // requests as http/https.
-  MockHostResolver host_resolver;
+  auto host_resolver = std::make_unique<MockHostResolver>();
   MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
   unencrypted_resolve_key.scheme = url::kHttpScheme;
-  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
-                                 ERR_DNS_NAME_HTTPS_ONLY);
+  host_resolver->rules()->AddRule(std::move(unencrypted_resolve_key),
+                                  ERR_DNS_NAME_HTTPS_ONLY);
   MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
   encrypted_resolve_key.scheme = url::kHttpsScheme;
-  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key), "127.0.0.1");
-  context_.set_host_resolver(&host_resolver);
+  host_resolver->rules()->AddRule(std::move(encrypted_resolve_key),
+                                  "127.0.0.1");
+  context_builder_->set_host_resolver(std::move(host_resolver));
 
   EXPECT_TRUE(ConnectAndWait(ws_url));
 
