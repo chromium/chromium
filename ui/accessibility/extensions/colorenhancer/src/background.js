@@ -21,7 +21,7 @@ class Background {
     chrome.windows.getAll({'populate': true}, windows => {
       for (const w of windows) {
         for (const tab of w.tabs) {
-          if (isDisallowedUrl(tab.url)) {
+          if (Common.isDisallowedUrl(tab.url)) {
             continue;
           }
           tabCallback(tab);
@@ -49,14 +49,15 @@ class Background {
   updateTabs_() {
     this.forEachTab_(async (tab) => {
       const msg = {
-        'delta': await this.storage_.getSiteDelta(siteFromUrl(tab.url)),
+        'delta': await this.storage_.getSiteDelta(Common.siteFromUrl(tab.url)),
         'severity': await this.storage_.getDefaultSeverity(),
         'type': await this.storage_.getDefaultType(),
         'simulate': await this.storage_.getDefaultSimulate(),
         'enable': await this.storage_.getDefaultEnable()
       };
-      debugPrint('updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
-          siteFromUrl(tab.url));
+      Common.debugPrint(
+          'updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
+          Common.siteFromUrl(tab.url));
       chrome.tabs.sendMessage(tab.id, msg);
     });
   }
@@ -65,7 +66,8 @@ class Background {
   async onInitReceived_(sender) {
     let delta;
     if (sender.tab) {
-      delta = await this.storage_.getSiteDelta(siteFromUrl(sender.tab.url));
+      delta =
+          await this.storage_.getSiteDelta(Common.siteFromUrl(sender.tab.url));
     } else {
       delta = await this.storage_.getDefaultDelta();
     }

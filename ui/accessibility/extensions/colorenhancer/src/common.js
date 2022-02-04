@@ -12,45 +12,38 @@ const CvdType = {
   TRITANOMALY: "TRITANOMALY",
 };
 
-/**
- * TODO(wnwen): Remove this and use actual web API.
- */
-function $(id) {
-  return document.getElementById(id);
-}
+class Common {
+  /**
+   * TODO(wnwen): Remove this and use actual web API.
+   */
+  static $(id) {
+    return document.getElementById(id);
+  }
 
+  static siteFromUrl(url) {
+    return new URL(url).hostname;
+  }
 
-/**
- * TODO(wnwen): Remove this, it's terrible.
- */
-function siteFromUrl(url) {
-  return new URL(url).hostname;
-}
+  /**
+   * The filter should not apply to these URLs.
+   * @param {string} url The URL to check.
+   */
+  static isDisallowedUrl(url) {
+    return url.startsWith('chrome') || url.startsWith('about');
+  }
 
+  /**
+   * Whether extension is loaded unpacked or from Chrome Webstore.
+   * @const {boolean}
+   */
+  static IS_DEV_MODE = !('update_url' in chrome.runtime.getManifest());
 
-/**
- * The filter should not apply to these URLs.
- *
- * @param {string} url The URL to check.
- */
-function isDisallowedUrl(url) {
-  return url.startsWith('chrome') || url.startsWith('about');
-}
-
-
-/**
- * Whether extension is loaded unpacked or from Chrome Webstore.
- * @const {boolean}
- */
-const IS_DEV_MODE = !('update_url' in chrome.runtime.getManifest());
-
-
-/**
- * Easily turn on/off console logs.
- *
- * @param {*} message The message to potentially pass to {@code console.log}.
- */
-function debugPrint(str) {
-  if (IS_DEV_MODE)
-    console.log(str);
+  /**
+   * Easily turn on/off console logs.
+   * @param {*} logArgs The message to potentially pass to {@code console.log}.
+   */
+  static debugPrint(logArgs) {
+    if (Common.IS_DEV_MODE)
+      console.log.apply(console, arguments);
+  }
 }

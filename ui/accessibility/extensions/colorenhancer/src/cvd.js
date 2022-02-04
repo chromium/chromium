@@ -237,7 +237,7 @@ html[cvd="1"] {
     this.addElements_();
     const next = 1 - this.curFilter;
 
-    debugPrint('update: matrix#' + next + '=' + matrix.toString());
+    Common.debugPrint('update: matrix#' + next + '=' + matrix.toString());
 
     const matrixElem = document.getElementById('cvd_matrix_' + next);
     matrixElem.setAttribute('values', matrix.toSvgString());
@@ -279,7 +279,7 @@ html[cvd="1"] {
    * @private
    */
   onExtensionMessage_(message) {
-    debugPrint('onExtensionMessage: ' + JSON.stringify(message));
+    Common.debugPrint('onExtensionMessage: ' + JSON.stringify(message));
     let changed = false;
 
     if (!message) {

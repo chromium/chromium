@@ -60,7 +60,7 @@ class Popup {
    */
   getCvdTypeSelection() {
     for (const cvdType of Object.values(CvdType)) {
-      if ($('select-' + cvdType).checked) {
+      if (Common.$('select-' + cvdType).checked) {
         return cvdType;
       }
     }
@@ -72,10 +72,10 @@ class Popup {
    *     DEUTERANOMALY or TRITANOMALY.
    */
   setCvdTypeSelection(cvdType) {
-    const highlight = $('row-highlight');
+    const highlight = Common.$('row-highlight');
     highlight.hidden = true;
     Object.values(CvdType).forEach((str) => {
-      const checkbox = $('select-' + str);
+      const checkbox = Common.$('select-' + str);
       if (cvdType == str) {
         checkbox.checked = true;
         const top = checkbox.parentElement.offsetTop - Popup.HIGHLIGHT_OFFSET;
@@ -91,32 +91,32 @@ class Popup {
    * Styles controls based on stage of setup.
    */
   updateControls() {
-    if ($('setup-panel').classList.contains('collapsed')) {
+    if (Common.$('setup-panel').classList.contains('collapsed')) {
       // Not performing setup.  Ensure main controls are enabled.
-      $('enable').disabled = false;
-      $('delta').disabled = false;
-      $('setup').disabled = false;
+      Common.$('enable').disabled = false;
+      Common.$('delta').disabled = false;
+      Common.$('setup').disabled = false;
     } else {
       // Disable main controls during setup phase.
-      $('enable').disabled = true;
-      $('delta').disabled = true;
-      $('setup').disabled = true;
+      Common.$('enable').disabled = true;
+      Common.$('delta').disabled = true;
+      Common.$('setup').disabled = true;
 
       if (!this.getCvdTypeSelection()) {
         // Have not selected a CVD type. Mark Step 1 as active.
-        $('step-1').classList.add('active');
-        $('step-2').classList.remove('active');
+        Common.$('step-1').classList.add('active');
+        Common.$('step-2').classList.remove('active');
         // Disable "step 2" controls.
-        $('severity').disabled = true;
-        $('reset').disabled = true;
+        Common.$('severity').disabled = true;
+        Common.$('reset').disabled = true;
       } else {
-        $('step-1').classList.remove('active');
-        $('step-2').classList.add('active');
+        Common.$('step-1').classList.remove('active');
+        Common.$('step-2').classList.add('active');
         // Enable "step 2" controls.
-        $('severity').disabled = false;
-        $('reset').disabled = false;
+        Common.$('severity').disabled = false;
+        Common.$('reset').disabled = false;
         // Force filter update.
-        this.onSeverityChange(parseFloat($('severity').value));
+        this.onSeverityChange(parseFloat(Common.$('severity').value));
       }
     }
   }
@@ -139,22 +139,22 @@ class Popup {
       return false;
 
     if (this.site) {
-      $('delta').value = await storage.getSiteDelta(this.site);
+      Common.$('delta').value = await storage.getSiteDelta(this.site);
     } else {
-      $('delta').value = await storage.getDefaultDelta();
+      Common.$('delta').value = await storage.getDefaultDelta();
     }
 
-    $('severity').value = await storage.getDefaultSeverity();
+    Common.$('severity').value = await storage.getDefaultSeverity();
 
-    if (!$('setup-panel').classList.contains('collapsed'))
+    if (!Common.$('setup-panel').classList.contains('collapsed'))
       this.setCvdTypeSelection(await storage.getDefaultType());
-    $('enable').checked = await storage.getDefaultEnable();
+    Common.$('enable').checked = await storage.getDefaultEnable();
 
-    debugPrint(
+    Common.debugPrint(
         'update: ' +
-        ' del=' + $('delta').value + ' sev=' + $('severity').value +
-        ' typ=' + await storage.getDefaultType() +
-        ' enb=' + $('enable').checked + ' for ' + this.site);
+        ' del=' + Common.$('delta').value + ' sev=' +
+        Common.$('severity').value + ' typ=' + await storage.getDefaultType() +
+        ' enb=' + Common.$('enable').checked + ' for ' + this.site);
     chrome.runtime.sendMessage('updateTabs');
     return true;
   }
@@ -165,7 +165,7 @@ class Popup {
    * @param {number} value Parsed value of slider element.
    */
   onDeltaChange(value) {
-    debugPrint('onDeltaChange: ' + value + ' for ' + this.site);
+    Common.debugPrint('onDeltaChange: ' + value + ' for ' + this.site);
     if (this.site) {
       storage.setSiteDelta(this.site, value).then(this.update.bind(this));
     }
@@ -178,7 +178,7 @@ class Popup {
    * @param {number} value Parsed value of slider element.
    */
   onSeverityChange(value) {
-    debugPrint('onSeverityChange: ' + value + ' for ' + this.site);
+    Common.debugPrint('onSeverityChange: ' + value + ' for ' + this.site);
     storage.setDefaultSeverity(value).then(() => {
       this.update();
       // Apply filter to popup swatches.
@@ -196,10 +196,10 @@ class Popup {
    * @param {string} value Value of dropdown element.
    */
   onTypeChange(value) {
-    debugPrint('onTypeChange: ' + value + ' for ' + this.site);
+    Common.debugPrint('onTypeChange: ' + value + ' for ' + this.site);
     storage.setDefaultType(value).then(() => {
       this.update();
-      $('severity').value = 0;
+      Common.$('severity').value = 0;
       this.updateControls();
     });
   }
@@ -210,11 +210,11 @@ class Popup {
    * @param {boolean} value Value of checkbox element.
   */
   onEnableChange(value) {
-    debugPrint('onEnableChange: ' + value + ' for ' + this.site);
+    Common.debugPrint('onEnableChange: ' + value + ' for ' + this.site);
     storage.setDefaultEnable(value).then(() => {
       if (!this.update()) {
         // Settings are not valid for a reconfiguration.
-        $('setup').onclick();
+        Common.$('setup').onclick();
       }
     });
   }
@@ -231,8 +231,8 @@ class Popup {
       elem.textContent = chrome.i18n.getMessage(msg);
     }
 
-    $('setup').onclick = async () => {
-      $('setup-panel').classList.remove('collapsed');
+    Common.$('setup').onclick = async () => {
+      Common.$('setup-panel').classList.remove('collapsed');
       // Store current settings in the event of a canceled setup.
       this.restoreSettings = {
         type: await storage.getDefaultType(),
@@ -240,45 +240,45 @@ class Popup {
       };
       // Initialize controls based on current settings.
       this.setCvdTypeSelection(this.restoreSettings.type);
-      $('severity').value = this.restoreSettings.severity;
+      Common.$('severity').value = this.restoreSettings.severity;
       this.updateControls();
     };
 
-    $('delta').addEventListener('input', function() {
+    Common.$('delta').addEventListener('input', function() {
       window.popup.onDeltaChange(parseFloat(this.value));
     });
-    $('severity').addEventListener('input', function() {
+    Common.$('severity').addEventListener('input', function() {
       window.popup.onSeverityChange(parseFloat(this.value));
     });
-    $('enable').addEventListener('change', function() {
+    Common.$('enable').addEventListener('change', function() {
       window.popup.onEnableChange(this.checked);
     });
 
-    $('reset').onclick = () => {
+    Common.$('reset').onclick = () => {
       storage.setDefaultSeverity(0);
       storage.setDefaultType('');
       storage.setDefaultEnable(false);
-      $('severity').value = 0;
-      $('enable').checked = false;
+      Common.$('severity').value = 0;
+      Common.$('enable').checked = false;
       this.setCvdTypeSelection('');
       this.updateControls();
       cvd.clearColorEnhancementFilter();
     };
-    $('reset').hidden = !IS_DEV_MODE;
+    Common.$('reset').hidden = !Common.IS_DEV_MODE;
 
     const closeSetup = () => {
-      $('setup-panel').classList.add('collapsed');
+      Common.$('setup-panel').classList.add('collapsed');
       this.updateControls();
     };
 
-    $('ok').onclick = () => {
+    Common.$('ok').onclick = () => {
       closeSetup();
     };
 
-    $('cancel').onclick = () => {
+    Common.$('cancel').onclick = () => {
       closeSetup();
       if (this.restoreSettings) {
-        debugPrint(
+        Common.debugPrint(
             'restore previous settings: ' +
             'type = ' + this.restoreSettings.type +
             ', severity = ' + this.restoreSettings.severity);
@@ -287,7 +287,7 @@ class Popup {
       }
     };
 
-    const swatches = $('swatches');
+    const swatches = Common.$('swatches');
     Object.values(CvdType).forEach((cvdType) => {
       swatches.appendChild(this.createTestRow(cvdType));
     });
@@ -296,8 +296,8 @@ class Popup {
       for (let i = 0; i < w.tabs.length; i++) {
         const tab = w.tabs[i];
         if (tab.active) {
-          this.site = siteFromUrl(tab.url);
-          debugPrint('init: active tab update for ' + this.site);
+          this.site = Common.siteFromUrl(tab.url);
+          Common.debugPrint('init: active tab update for ' + this.site);
           this.update();
           return;
         }
