@@ -854,6 +854,24 @@ gfx::SizeF LayoutView::ViewportSizeForViewportUnits() const {
                         : gfx::SizeF();
 }
 
+gfx::SizeF LayoutView::SmallViewportSizeForViewportUnits() const {
+  NOT_DESTROYED();
+  return GetFrameView() ? GetFrameView()->SmallViewportSizeForViewportUnits()
+                        : gfx::SizeF();
+}
+
+gfx::SizeF LayoutView::LargeViewportSizeForViewportUnits() const {
+  NOT_DESTROYED();
+  return GetFrameView() ? GetFrameView()->LargeViewportSizeForViewportUnits()
+                        : gfx::SizeF();
+}
+
+gfx::SizeF LayoutView::DynamicViewportSizeForViewportUnits() const {
+  NOT_DESTROYED();
+  return GetFrameView() ? GetFrameView()->DynamicViewportSizeForViewportUnits()
+                        : gfx::SizeF();
+}
+
 void LayoutView::WillBeDestroyed() {
   NOT_DESTROYED();
   // TODO(wangxianzhu): This is a workaround of crbug.com/570706.

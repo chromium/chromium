@@ -1225,7 +1225,12 @@ void WebViewImpl::ResizeViewWhileAnchored(
     const gfx::Size& visible_viewport_size) {
   DCHECK(MainFrameImpl());
 
+  bool old_viewport_shrink = GetBrowserControls().ShrinkViewport();
+
   GetBrowserControls().SetParams(params);
+
+  if (old_viewport_shrink != GetBrowserControls().ShrinkViewport())
+    MainFrameImpl()->GetFrameView()->DynamicViewportUnitsChanged();
 
   {
     // Avoids unnecessary invalidations while various bits of state in

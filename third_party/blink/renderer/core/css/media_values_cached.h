@@ -29,6 +29,12 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     // thread
     double viewport_width = 0;
     double viewport_height = 0;
+    double small_viewport_width = 0;
+    double small_viewport_height = 0;
+    double large_viewport_width = 0;
+    double large_viewport_height = 0;
+    double dynamic_viewport_width = 0;
+    double dynamic_viewport_height = 0;
     int device_width = 0;
     int device_height = 0;
     float device_pixel_ratio = 1.0;
@@ -144,6 +150,12 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
  protected:
   double ViewportWidth() const override;
   double ViewportHeight() const override;
+  double SmallViewportWidth() const override;
+  double SmallViewportHeight() const override;
+  double LargeViewportWidth() const override;
+  double LargeViewportHeight() const override;
+  double DynamicViewportWidth() const override;
+  double DynamicViewportHeight() const override;
   float EmSize() const override;
   float RemSize() const override;
   float ExSize() const override;

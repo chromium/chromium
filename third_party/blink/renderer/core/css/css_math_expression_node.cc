@@ -66,6 +66,28 @@ static CalculationCategory UnitCategory(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kViewportMin:
     case CSSPrimitiveValue::UnitType::kViewportMax:
       return kCalcLength;
+    case CSSPrimitiveValue::UnitType::kViewportInlineSize:
+    case CSSPrimitiveValue::UnitType::kViewportBlockSize:
+    case CSSPrimitiveValue::UnitType::kSmallViewportWidth:
+    case CSSPrimitiveValue::UnitType::kSmallViewportHeight:
+    case CSSPrimitiveValue::UnitType::kSmallViewportInlineSize:
+    case CSSPrimitiveValue::UnitType::kSmallViewportBlockSize:
+    case CSSPrimitiveValue::UnitType::kSmallViewportMin:
+    case CSSPrimitiveValue::UnitType::kSmallViewportMax:
+    case CSSPrimitiveValue::UnitType::kLargeViewportWidth:
+    case CSSPrimitiveValue::UnitType::kLargeViewportHeight:
+    case CSSPrimitiveValue::UnitType::kLargeViewportInlineSize:
+    case CSSPrimitiveValue::UnitType::kLargeViewportBlockSize:
+    case CSSPrimitiveValue::UnitType::kLargeViewportMin:
+    case CSSPrimitiveValue::UnitType::kLargeViewportMax:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportWidth:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportHeight:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
+      return RuntimeEnabledFeatures::CSSViewportUnits4Enabled() ? kCalcLength
+                                                                : kCalcOther;
     case CSSPrimitiveValue::UnitType::kContainerWidth:
     case CSSPrimitiveValue::UnitType::kContainerHeight:
     case CSSPrimitiveValue::UnitType::kContainerInlineSize:

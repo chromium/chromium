@@ -286,6 +286,7 @@ class CORE_EXPORT LocalFrameView final
   void ViewportSizeChanged(bool width_changed, bool height_changed);
   void MarkViewportConstrainedObjectsForLayout(bool width_changed,
                                                bool height_changed);
+  void DynamicViewportUnitsChanged();
 
   AtomicString MediaType() const;
   void SetMediaType(const AtomicString&);
@@ -620,6 +621,12 @@ class CORE_EXPORT LocalFrameView final
   // May include the size of browser controls. See implementation for further
   // documentation.
   gfx::SizeF ViewportSizeForViewportUnits() const;
+  // https://drafts.csswg.org/css-values-4/#small-viewport-size
+  gfx::SizeF SmallViewportSizeForViewportUnits() const;
+  // https://drafts.csswg.org/css-values-4/#large-viewport-size
+  gfx::SizeF LargeViewportSizeForViewportUnits() const;
+  // https://drafts.csswg.org/css-values-4/#dynamic-viewport-size
+  gfx::SizeF DynamicViewportSizeForViewportUnits() const;
 
   // Initial containing block size for evaluating viewport-dependent media
   // queries.

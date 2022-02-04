@@ -1486,6 +1486,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetHasViewportUnits() { has_viewport_units_ = true; }
   bool HasViewportUnits() const { return has_viewport_units_; }
   void LayoutViewportWasResized();
+  // dv*
+  void DynamicViewportUnitsChanged();
 
   void InvalidateStyleAndLayoutForFontUpdates();
 

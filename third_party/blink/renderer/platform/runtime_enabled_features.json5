@@ -824,6 +824,13 @@
       status: "experimental"
     },
     {
+      // Support for viewport units added by css-values-4.
+      //
+      // https://drafts.csswg.org/css-values-4/#viewport-relative-units
+      name: "CSSViewportUnits4",
+      status: "experimental",
+    },
+    {
       name: "CustomElementDefaultStyle",
       status: "experimental",
     },

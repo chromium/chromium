@@ -57,6 +57,30 @@ double MediaValuesDynamic::ViewportHeight() const {
   return CalculateViewportHeight(frame_);
 }
 
+double MediaValuesDynamic::SmallViewportWidth() const {
+  return CalculateSmallViewportWidth(frame_);
+}
+
+double MediaValuesDynamic::SmallViewportHeight() const {
+  return CalculateSmallViewportHeight(frame_);
+}
+
+double MediaValuesDynamic::LargeViewportWidth() const {
+  return CalculateLargeViewportWidth(frame_);
+}
+
+double MediaValuesDynamic::LargeViewportHeight() const {
+  return CalculateLargeViewportHeight(frame_);
+}
+
+double MediaValuesDynamic::DynamicViewportWidth() const {
+  return CalculateDynamicViewportWidth(frame_);
+}
+
+double MediaValuesDynamic::DynamicViewportHeight() const {
+  return CalculateDynamicViewportHeight(frame_);
+}
+
 float MediaValuesDynamic::EmSize() const {
   return CalculateEmSize(frame_);
 }

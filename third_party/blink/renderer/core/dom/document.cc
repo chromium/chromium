@@ -4580,6 +4580,21 @@ void Document::LayoutViewportWasResized() {
   SetNeedsStyleRecalcForViewportUnits();
 }
 
+void Document::DynamicViewportUnitsChanged() {
+  if (!RuntimeEnabledFeatures::CSSViewportUnits4Enabled())
+    return;
+  // TODO(crbug.com/1093055): Avoid invalidating media queries if dv* is not
+  // used.
+  MediaQueryAffectingValueChanged(MediaValueChange::kSize);
+  if (media_query_matcher_)
+    media_query_matcher_->ViewportChanged();
+  // TODO(crbug.com/1093055): Target dv* specifically.
+  if (!HasViewportUnits())
+    return;
+  GetStyleResolver().SetResizedForViewportUnits();
+  SetNeedsStyleRecalcForViewportUnits();
+}
+
 void Document::SetHoverElement(Element* new_hover_element) {
   hover_element_ = new_hover_element;
 }

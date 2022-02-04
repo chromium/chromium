@@ -49,6 +49,116 @@ class CSSUnitValues {
                                 CSSPrimitiveValue::UnitType::kViewportHeight);
   }
 
+  static CSSUnitValue* vi(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kViewportInlineSize);
+  }
+
+  static CSSUnitValue* vb(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kViewportBlockSize);
+  }
+
+  static CSSUnitValue* vmin(double value) {
+    return CSSUnitValue::Create(value,
+                                CSSPrimitiveValue::UnitType::kViewportMin);
+  }
+
+  static CSSUnitValue* vmax(double value) {
+    return CSSUnitValue::Create(value,
+                                CSSPrimitiveValue::UnitType::kViewportMax);
+  }
+
+  static CSSUnitValue* svw(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kSmallViewportWidth);
+  }
+
+  static CSSUnitValue* svh(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kSmallViewportHeight);
+  }
+
+  static CSSUnitValue* svi(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kSmallViewportInlineSize);
+  }
+
+  static CSSUnitValue* svb(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kSmallViewportBlockSize);
+  }
+
+  static CSSUnitValue* svmin(double value) {
+    return CSSUnitValue::Create(value,
+                                CSSPrimitiveValue::UnitType::kSmallViewportMin);
+  }
+
+  static CSSUnitValue* svmax(double value) {
+    return CSSUnitValue::Create(value,
+                                CSSPrimitiveValue::UnitType::kSmallViewportMax);
+  }
+
+  static CSSUnitValue* lvw(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kLargeViewportWidth);
+  }
+
+  static CSSUnitValue* lvh(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kLargeViewportHeight);
+  }
+
+  static CSSUnitValue* lvi(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kLargeViewportInlineSize);
+  }
+
+  static CSSUnitValue* lvb(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kLargeViewportBlockSize);
+  }
+
+  static CSSUnitValue* lvmin(double value) {
+    return CSSUnitValue::Create(value,
+                                CSSPrimitiveValue::UnitType::kLargeViewportMin);
+  }
+
+  static CSSUnitValue* lvmax(double value) {
+    return CSSUnitValue::Create(value,
+                                CSSPrimitiveValue::UnitType::kLargeViewportMax);
+  }
+
+  static CSSUnitValue* dvw(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kDynamicViewportWidth);
+  }
+
+  static CSSUnitValue* dvh(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kDynamicViewportHeight);
+  }
+
+  static CSSUnitValue* dvi(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize);
+  }
+
+  static CSSUnitValue* dvb(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize);
+  }
+
+  static CSSUnitValue* dvmin(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kDynamicViewportMin);
+  }
+
+  static CSSUnitValue* dvmax(double value) {
+    return CSSUnitValue::Create(
+        value, CSSPrimitiveValue::UnitType::kDynamicViewportMax);
+  }
+
   static CSSUnitValue* qw(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kContainerWidth);
@@ -77,16 +187,6 @@ class CSSUnitValues {
   static CSSUnitValue* qmax(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kContainerMax);
-  }
-
-  static CSSUnitValue* vmin(double value) {
-    return CSSUnitValue::Create(value,
-                                CSSPrimitiveValue::UnitType::kViewportMin);
-  }
-
-  static CSSUnitValue* vmax(double value) {
-    return CSSUnitValue::Create(value,
-                                CSSPrimitiveValue::UnitType::kViewportMax);
   }
 
   static CSSUnitValue* cm(double value) {

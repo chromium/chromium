@@ -86,14 +86,35 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
  protected:
   virtual double ViewportWidth() const = 0;
   virtual double ViewportHeight() const = 0;
+  virtual double SmallViewportWidth() const = 0;
+  virtual double SmallViewportHeight() const = 0;
+  virtual double LargeViewportWidth() const = 0;
+  virtual double LargeViewportHeight() const = 0;
+  virtual double DynamicViewportWidth() const = 0;
+  virtual double DynamicViewportHeight() const = 0;
   virtual float EmSize() const = 0;
   virtual float RemSize() const = 0;
   virtual float ExSize() const = 0;
   virtual float ChSize() const = 0;
   virtual WritingMode GetWritingMode() const = 0;
 
+  double ViewportInlineSize() const;
+  double ViewportBlockSize() const;
+  double SmallViewportInlineSize() const;
+  double SmallViewportBlockSize() const;
+  double LargeViewportInlineSize() const;
+  double LargeViewportBlockSize() const;
+  double DynamicViewportInlineSize() const;
+  double DynamicViewportBlockSize() const;
+
   static double CalculateViewportWidth(LocalFrame*);
   static double CalculateViewportHeight(LocalFrame*);
+  static double CalculateSmallViewportWidth(LocalFrame*);
+  static double CalculateSmallViewportHeight(LocalFrame*);
+  static double CalculateLargeViewportWidth(LocalFrame*);
+  static double CalculateLargeViewportHeight(LocalFrame*);
+  static double CalculateDynamicViewportWidth(LocalFrame*);
+  static double CalculateDynamicViewportHeight(LocalFrame*);
   static float CalculateEmSize(LocalFrame*);
   static float CalculateExSize(LocalFrame*);
   static float CalculateChSize(LocalFrame*);

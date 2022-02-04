@@ -29,8 +29,28 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
     case UnitType::kUserUnits:
     case UnitType::kViewportWidth:
     case UnitType::kViewportHeight:
+    case UnitType::kViewportInlineSize:
+    case UnitType::kViewportBlockSize:
     case UnitType::kViewportMin:
     case UnitType::kViewportMax:
+    case UnitType::kSmallViewportWidth:
+    case UnitType::kSmallViewportHeight:
+    case UnitType::kSmallViewportInlineSize:
+    case UnitType::kSmallViewportBlockSize:
+    case UnitType::kSmallViewportMin:
+    case UnitType::kSmallViewportMax:
+    case UnitType::kLargeViewportWidth:
+    case UnitType::kLargeViewportHeight:
+    case UnitType::kLargeViewportInlineSize:
+    case UnitType::kLargeViewportBlockSize:
+    case UnitType::kLargeViewportMin:
+    case UnitType::kLargeViewportMax:
+    case UnitType::kDynamicViewportWidth:
+    case UnitType::kDynamicViewportHeight:
+    case UnitType::kDynamicViewportInlineSize:
+    case UnitType::kDynamicViewportBlockSize:
+    case UnitType::kDynamicViewportMin:
+    case UnitType::kDynamicViewportMax:
     case UnitType::kContainerWidth:
     case UnitType::kContainerHeight:
     case UnitType::kContainerInlineSize:

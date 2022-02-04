@@ -3963,6 +3963,35 @@ TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
   }
 }
 
+TEST_F(StyleEngineTest, CSSViewportUnits4RuntimeFlag) {
+  Vector<String> units = {"vi",  "vb",    "svi",   "svb",   "svw",
+                          "svh", "svmin", "svmax", "lvi",   "lvb",
+                          "lvw", "lvh",   "lvmin", "lvmax", "dvi",
+                          "dvb", "dvw",   "dvh",   "dvmin", "dvmax"};
+
+  for (const String& unit : units) {
+    String css = "top: 1" + unit;
+    SCOPED_TRACE(testing::Message() << unit);
+
+    {
+      ScopedCSSViewportUnits4ForTest flag(false);
+      const CSSPropertyValueSet* set =
+          css_test_helpers::ParseDeclarationBlock(css);
+      ASSERT_TRUE(set);
+      EXPECT_EQ(0u, set->PropertyCount());
+    }
+
+    {
+      ScopedCSSViewportUnits4ForTest flag(true);
+      const CSSPropertyValueSet* set =
+          css_test_helpers::ParseDeclarationBlock(css);
+      ASSERT_TRUE(set);
+      EXPECT_EQ(1u, set->PropertyCount());
+      EXPECT_TRUE(set->HasProperty(CSSPropertyID::kTop));
+    }
+  }
+}
+
 TEST_F(StyleEngineTest, ContainerPropertiesRuntimeFlag) {
   Vector<String> declarations = {"container-type:inline-size",
                                  "container-name:foo", "container:inline-size"};

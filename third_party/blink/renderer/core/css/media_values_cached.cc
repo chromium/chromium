@@ -28,6 +28,13 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     // MediaValuesCachedData values.
     viewport_width = MediaValues::CalculateViewportWidth(frame);
     viewport_height = MediaValues::CalculateViewportHeight(frame);
+    small_viewport_width = MediaValues::CalculateSmallViewportWidth(frame);
+    small_viewport_height = MediaValues::CalculateSmallViewportHeight(frame);
+    large_viewport_width = MediaValues::CalculateLargeViewportWidth(frame);
+    large_viewport_height = MediaValues::CalculateLargeViewportHeight(frame);
+    dynamic_viewport_width = MediaValues::CalculateDynamicViewportWidth(frame);
+    dynamic_viewport_height =
+        MediaValues::CalculateDynamicViewportHeight(frame);
     device_width = MediaValues::CalculateDeviceWidth(frame);
     device_height = MediaValues::CalculateDeviceHeight(frame);
     device_pixel_ratio = MediaValues::CalculateDevicePixelRatio(frame);
@@ -89,6 +96,30 @@ double MediaValuesCached::ViewportWidth() const {
 
 double MediaValuesCached::ViewportHeight() const {
   return data_.viewport_height;
+}
+
+double MediaValuesCached::SmallViewportWidth() const {
+  return data_.small_viewport_width;
+}
+
+double MediaValuesCached::SmallViewportHeight() const {
+  return data_.small_viewport_height;
+}
+
+double MediaValuesCached::LargeViewportWidth() const {
+  return data_.large_viewport_width;
+}
+
+double MediaValuesCached::LargeViewportHeight() const {
+  return data_.large_viewport_height;
+}
+
+double MediaValuesCached::DynamicViewportWidth() const {
+  return data_.dynamic_viewport_width;
+}
+
+double MediaValuesCached::DynamicViewportHeight() const {
+  return data_.dynamic_viewport_height;
 }
 
 float MediaValuesCached::EmSize() const {

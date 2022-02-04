@@ -112,9 +112,18 @@ float CSSToLengthConversionData::FontSizes::Zoom() const {
 CSSToLengthConversionData::ViewportSize::ViewportSize(
     const LayoutView* layout_view) {
   if (layout_view) {
-    gfx::SizeF size = layout_view->ViewportSizeForViewportUnits();
-    width_ = size.width();
-    height_ = size.height();
+    gfx::SizeF large_size = layout_view->LargeViewportSizeForViewportUnits();
+    large_width_ = large_size.width();
+    large_height_ = large_size.height();
+
+    gfx::SizeF small_size = layout_view->SmallViewportSizeForViewportUnits();
+    small_width_ = small_size.width();
+    small_height_ = small_size.height();
+
+    gfx::SizeF dynamic_size =
+        layout_view->DynamicViewportSizeForViewportUnits();
+    dynamic_width_ = dynamic_size.width();
+    dynamic_height_ = dynamic_size.height();
   }
 }
 
@@ -179,6 +188,20 @@ double CSSToLengthConversionData::ViewportHeightPercent() const {
     const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
   return viewport_size_.Height() / 100;
 }
+double CSSToLengthConversionData::ViewportInlineSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.Width()
+                                    : viewport_size_.Height()) /
+         100;
+}
+double CSSToLengthConversionData::ViewportBlockSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.Height()
+                                    : viewport_size_.Width()) /
+         100;
+}
 double CSSToLengthConversionData::ViewportMinPercent() const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
@@ -188,6 +211,134 @@ double CSSToLengthConversionData::ViewportMaxPercent() const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
   return std::max(viewport_size_.Width(), viewport_size_.Height()) / 100;
+}
+
+double CSSToLengthConversionData::SmallViewportWidthPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return viewport_size_.SmallWidth() / 100;
+}
+
+double CSSToLengthConversionData::SmallViewportHeightPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return viewport_size_.SmallHeight() / 100;
+}
+
+double CSSToLengthConversionData::SmallViewportInlineSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.SmallWidth()
+                                    : viewport_size_.SmallHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::SmallViewportBlockSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.SmallHeight()
+                                    : viewport_size_.SmallWidth()) /
+         100;
+}
+
+double CSSToLengthConversionData::SmallViewportMinPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return std::min(viewport_size_.SmallWidth(), viewport_size_.SmallHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::SmallViewportMaxPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return std::max(viewport_size_.SmallWidth(), viewport_size_.SmallHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::LargeViewportWidthPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return viewport_size_.LargeWidth() / 100;
+}
+
+double CSSToLengthConversionData::LargeViewportHeightPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return viewport_size_.LargeHeight() / 100;
+}
+
+double CSSToLengthConversionData::LargeViewportInlineSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.LargeWidth()
+                                    : viewport_size_.LargeHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::LargeViewportBlockSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.LargeHeight()
+                                    : viewport_size_.LargeWidth()) /
+         100;
+}
+
+double CSSToLengthConversionData::LargeViewportMinPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return std::min(viewport_size_.LargeWidth(), viewport_size_.LargeHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::LargeViewportMaxPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return std::max(viewport_size_.LargeWidth(), viewport_size_.LargeHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::DynamicViewportWidthPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return viewport_size_.DynamicWidth() / 100;
+}
+
+double CSSToLengthConversionData::DynamicViewportHeightPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return viewport_size_.DynamicHeight() / 100;
+}
+
+double CSSToLengthConversionData::DynamicViewportInlineSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.DynamicWidth()
+                                    : viewport_size_.DynamicHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::DynamicViewportBlockSizePercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return (IsHorizontalWritingMode() ? viewport_size_.DynamicHeight()
+                                    : viewport_size_.DynamicWidth()) /
+         100;
+}
+
+double CSSToLengthConversionData::DynamicViewportMinPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return std::min(viewport_size_.DynamicWidth(),
+                  viewport_size_.DynamicHeight()) /
+         100;
+}
+
+double CSSToLengthConversionData::DynamicViewportMaxPercent() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+  return std::max(viewport_size_.DynamicWidth(),
+                  viewport_size_.DynamicHeight()) /
+         100;
 }
 
 double CSSToLengthConversionData::ContainerWidthPercent() const {
@@ -286,11 +437,71 @@ double CSSToLengthConversionData::ZoomedComputedPixels(
     case CSSPrimitiveValue::UnitType::kViewportHeight:
       return value * ViewportHeightPercent() * Zoom();
 
+    case CSSPrimitiveValue::UnitType::kViewportInlineSize:
+      return value * ViewportInlineSizePercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kViewportBlockSize:
+      return value * ViewportBlockSizePercent() * Zoom();
+
     case CSSPrimitiveValue::UnitType::kViewportMin:
       return value * ViewportMinPercent() * Zoom();
 
     case CSSPrimitiveValue::UnitType::kViewportMax:
       return value * ViewportMaxPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kSmallViewportWidth:
+      return value * SmallViewportWidthPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kSmallViewportHeight:
+      return value * SmallViewportHeightPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kSmallViewportInlineSize:
+      return value * SmallViewportInlineSizePercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kSmallViewportBlockSize:
+      return value * SmallViewportBlockSizePercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kSmallViewportMin:
+      return value * SmallViewportMinPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kSmallViewportMax:
+      return value * SmallViewportMaxPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kLargeViewportWidth:
+      return value * LargeViewportWidthPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kLargeViewportHeight:
+      return value * LargeViewportHeightPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kLargeViewportInlineSize:
+      return value * LargeViewportInlineSizePercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kLargeViewportBlockSize:
+      return value * LargeViewportBlockSizePercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kLargeViewportMin:
+      return value * LargeViewportMinPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kLargeViewportMax:
+      return value * LargeViewportMaxPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kDynamicViewportWidth:
+      return value * DynamicViewportWidthPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kDynamicViewportHeight:
+      return value * DynamicViewportHeightPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize:
+      return value * DynamicViewportInlineSizePercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
+      return value * DynamicViewportBlockSizePercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
+      return value * DynamicViewportMinPercent() * Zoom();
+
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
+      return value * DynamicViewportMaxPercent() * Zoom();
 
     case CSSPrimitiveValue::UnitType::kContainerWidth:
       return value * ContainerWidthPercent() * Zoom();

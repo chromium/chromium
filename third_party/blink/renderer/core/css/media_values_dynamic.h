@@ -55,6 +55,12 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
  protected:
   double ViewportWidth() const override;
   double ViewportHeight() const override;
+  double SmallViewportWidth() const override;
+  double SmallViewportHeight() const override;
+  double LargeViewportWidth() const override;
+  double LargeViewportHeight() const override;
+  double DynamicViewportWidth() const override;
+  double DynamicViewportHeight() const override;
   float EmSize() const override;
   float RemSize() const override;
   float ExSize() const override;

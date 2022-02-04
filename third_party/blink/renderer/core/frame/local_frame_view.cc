@@ -955,6 +955,10 @@ void LocalFrameView::SetNeedsPaintPropertyUpdate() {
 }
 
 gfx::SizeF LocalFrameView::ViewportSizeForViewportUnits() const {
+  return LargeViewportSizeForViewportUnits();
+}
+
+gfx::SizeF LocalFrameView::SmallViewportSizeForViewportUnits() const {
   float zoom = 1;
   if (!frame_->GetDocument() || !frame_->GetDocument()->Printing())
     zoom = GetFrame().PageZoomFactor();
@@ -967,6 +971,16 @@ gfx::SizeF LocalFrameView::ViewportSizeForViewportUnits() const {
   layout_size.set_width(layout_view->ViewWidth(kIncludeScrollbars) / zoom);
   layout_size.set_height(layout_view->ViewHeight(kIncludeScrollbars) / zoom);
 
+  return layout_size;
+}
+
+gfx::SizeF LocalFrameView::LargeViewportSizeForViewportUnits() const {
+  auto* layout_view = GetLayoutView();
+  if (!layout_view)
+    return gfx::SizeF();
+
+  gfx::SizeF layout_size = SmallViewportSizeForViewportUnits();
+
   BrowserControls& browser_controls = frame_->GetPage()->GetBrowserControls();
   if (browser_controls.PermittedState() != cc::BrowserControlsState::kHidden) {
     // We use the layoutSize rather than frameRect to calculate viewport units
@@ -978,9 +992,6 @@ gfx::SizeF LocalFrameView::ViewportSizeForViewportUnits() const {
     // use the viewport with browser controls hidden for vh (to match Safari).
     int viewport_width = frame_->GetPage()->GetVisualViewport().Size().width();
     if (frame_->IsMainFrame() && layout_size.width() && viewport_width) {
-      // TODO(bokan/eirage): BrowserControl height may need to account for the
-      // zoom factor when use-zoom-for-dsf is enabled on Android. Confirm this
-      // works correctly when that's turned on. https://crbug.com/737777.
       float page_scale_at_layout_width = viewport_width / layout_size.width();
       layout_size.Enlarge(0, (browser_controls.TotalHeight() -
                               browser_controls.TotalMinHeight()) /
@@ -996,6 +1007,13 @@ gfx::SizeF LocalFrameView::ViewportSizeForMediaQueries() const {
   if (!frame_->GetDocument() || !frame_->GetDocument()->Printing())
     viewport_size.Scale(1 / GetFrame().PageZoomFactor());
   return viewport_size;
+}
+
+gfx::SizeF LocalFrameView::DynamicViewportSizeForViewportUnits() const {
+  BrowserControls& browser_controls = frame_->GetPage()->GetBrowserControls();
+  return browser_controls.ShrinkViewport()
+             ? SmallViewportSizeForViewportUnits()
+             : LargeViewportSizeForViewportUnits();
 }
 
 DocumentLifecycle& LocalFrameView::Lifecycle() const {
@@ -1297,6 +1315,11 @@ void LocalFrameView::MarkViewportConstrainedObjectsForLayout(
       }
     }
   }
+}
+
+void LocalFrameView::DynamicViewportUnitsChanged() {
+  if (GetFrame().GetDocument())
+    GetFrame().GetDocument()->DynamicViewportUnitsChanged();
 }
 
 bool LocalFrameView::ShouldSetCursor() const {

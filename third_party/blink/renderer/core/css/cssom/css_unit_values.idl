@@ -17,8 +17,31 @@
   [NewObject] CSSUnitValue rem(double value);
   [NewObject] CSSUnitValue vw(double value);
   [NewObject] CSSUnitValue vh(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue vi(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue vb(double value);
   [NewObject] CSSUnitValue vmin(double value);
   [NewObject] CSSUnitValue vmax(double value);
+
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svw(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svh(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svi(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svb(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svmin(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svmax(double value);
+
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvw(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvh(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvi(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvb(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvmin(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvmax(double value);
+
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvw(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvh(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvi(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvb(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmin(double value);
+  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmax(double value);
 
   [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue qw(double value);
   [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue qh(double value);
@@ -38,8 +61,6 @@
   // [NewObject] CSSUnitValue ic(double value);
   // [NewObject] CSSUnitValue lh(double value);
   // [NewObject] CSSUnitValue rlh(double value);
-  // [NewObject] CSSUnitValue vi(double value);
-  // [NewObject] CSSUnitValue vb(double value);
 
   // <angle>
   [NewObject] CSSUnitValue deg(double value);
