@@ -500,6 +500,16 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
 
+  // When a redirect is received, we should not expect the IP address space of
+  // the target server to stay the same. The new target server's IP address
+  // space will be recomputed and Private Network Access checks will apply anew.
+  //
+  // This only affects redirects where a new request is initiated at this layer
+  // instead of being handled in `network::URLLoader`.
+  //
+  // See also: https://crbug.com/1293891
+  request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
+
   // If `CORS flag` is set and a CORS check for `request` and `response` returns
   // failure, then return a network error.
   if (fetch_cors_flag_ && IsCorsEnabledRequestMode(request_.mode)) {
