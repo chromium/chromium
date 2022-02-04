@@ -2904,7 +2904,7 @@ TEST_F(CookieMonsterTest, CheckOrderOfCookieTaskQueueWhenLoadingCompletes) {
       base::BindOnce(&CookieStore::SetCanonicalCookieAsync,
                      base::Unretained(cm.get()), std::move(cookie), kUrl,
                      CookieOptions::MakeAllInclusive(),
-                     set_cookie_callback.MakeCallback())));
+                     set_cookie_callback.MakeCallback(), nullptr)));
 
   // Get cookie task. Queued before the delete task is executed, so should not
   // see the set cookie.

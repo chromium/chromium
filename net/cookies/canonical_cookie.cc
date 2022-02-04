@@ -1100,8 +1100,13 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     const GURL& source_url,
     const CookieOptions& options,
     const CookieAccessParams& params,
-    const std::vector<std::string>& cookieable_schemes) const {
+    const std::vector<std::string>& cookieable_schemes,
+    const CookieAccessResult* cookie_access_result) const {
   CookieAccessResult access_result;
+  if (cookie_access_result) {
+    access_result = *cookie_access_result;
+  }
+
   if (!base::Contains(cookieable_schemes, source_url.scheme())) {
     access_result.status.AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME);

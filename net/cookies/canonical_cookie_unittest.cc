@@ -4337,6 +4337,29 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
                              CookieSamePartyStatus::kNoSamePartyEnforcement),
           kCookieableSchemes),
       MatchesCookieAccessResult(IsInclude(), _, _, true));
+
+  // Test IsSetPermittedInContext successfully chains warnings by passing
+  // in a CookieAccessResult and expecting the result to have a
+  // WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE
+  CookieInclusionStatus status;
+  std::string long_path(ParsedCookie::kMaxCookieAttributeValueSize, 'a');
+
+  std::unique_ptr<CanonicalCookie> cookie_with_long_path =
+      CanonicalCookie::Create(url, "A=B; Path=/" + long_path, current_time,
+                              absl::nullopt, absl::nullopt, &status);
+  CookieAccessResult cookie_access_result(status);
+  CookieOptions cookie_with_long_path_options;
+  EXPECT_THAT(
+      cookie_with_long_path->IsSetPermittedInContext(
+          url, cookie_with_long_path_options,
+          CookieAccessParams(CookieAccessSemantics::UNKNOWN,
+                             false /* delegate_treats_url_as_trustworthy */,
+                             CookieSamePartyStatus::kNoSamePartyEnforcement),
+          kCookieableSchemes, &cookie_access_result),
+      MatchesCookieAccessResult(
+          HasWarningReason(
+              CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE),
+          _, _, _));
 }
 
 TEST(CanonicalCookieTest, IsSetPermittedEffectiveSameSite) {

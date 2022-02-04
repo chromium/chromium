@@ -96,12 +96,14 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
     std::unique_ptr<CanonicalCookie> cookie,
     const GURL& source_url,
     const CookieOptions& options,
-    SetCookiesCallback callback) {
+    SetCookiesCallback callback,
+    const CookieAccessResult* cookie_access_result) {
   did_run_ = false;
   cookie_monster_->SetCanonicalCookieAsync(
       std::move(cookie), source_url, options,
       base::BindOnce(&DelayedCookieMonster::SetCookiesInternalCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      cookie_access_result);
   DCHECK_EQ(did_run_, true);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

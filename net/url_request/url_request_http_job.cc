@@ -915,12 +915,13 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
                         CookieAccessResult(returned_status));
       continue;
     }
-
+    CookieAccessResult cookie_access_result(returned_status);
     cookie_store->SetCanonicalCookieAsync(
         std::move(cookie), request_->url(), options,
         base::BindOnce(&URLRequestHttpJob::OnSetCookieResult,
                        weak_factory_.GetWeakPtr(), options, cookie_to_return,
-                       cookie_string));
+                       cookie_string),
+        &cookie_access_result);
   }
   // Removing the 1 that |num_cookie_lines_left| started with, signifing that
   // loop has been exited.
