@@ -1442,6 +1442,12 @@ source_set("views_interactive_ui_tests") {
       "//ui/platform_window",
       "//ui/platform_window/wm",
     ]
+
+    if (enable_desktop_aura) {
+      sources += [
+        "widget/desktop_aura/desktop_native_widget_aura_interactive_uitest.cc",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {

@@ -415,6 +415,15 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
       wm::GetActivationClient(host_->window());
   if (!activation_client)
     return;
+
+  // Update `should_activate_` with the new activation state of this widget
+  // while handling this change. We do this to ensure that the activation client
+  // sees the correct activation state for this widget when handling the
+  // activation change event. This is needed since the activation client may
+  // check whether this widget can receive activation when deciding which window
+  // should receive activation next.
+  base::AutoReset<bool> resetter(&should_activate_, active);
+
   if (active) {
     // TODO(nektar): We need to harmonize the firing of accessibility
     // events between platforms.
@@ -1256,7 +1265,7 @@ base::StringPiece DesktopNativeWidgetAura::GetLogContext() const {
 // DesktopNativeWidgetAura, wm::ActivationDelegate implementation:
 
 bool DesktopNativeWidgetAura::ShouldActivate() const {
-  return native_widget_delegate_->CanActivate();
+  return should_activate_ && native_widget_delegate_->CanActivate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1281,9 +1290,27 @@ void DesktopNativeWidgetAura::OnWindowActivated(
     GetWidget()->GetFocusManager()->StoreFocusedView(false);
   }
 
+  // This widget is considered active when both its window tree host and its
+  // content window are active. When the window tree host gains and looses
+  // activation, the window tree host calls into HandleActivationChanged() which
+  // notifies delegates of the activation change.
+  // However the widget's content window can still be deactivated while the
+  // window tree host remains active. This is the case if a chid widget is
+  // spawned (e.g. a bubble) and the child's content window is activated. This
+  // is a valid state since the window tree host should remain active while
+  // the child is active.
+  // In this case this widget would no longer be considered active but since the
+  // window tree host has not deactivated delegates are not notified in
+  // HandleActivationChanged(). To ensure activation updates are propagated
+  // correctly we must notify delegates here.
+  const bool content_window_activated = content_window_ == gained_active;
+  if (desktop_window_tree_host_->IsActive() && !content_window_activated) {
+    native_widget_delegate_->OnNativeWidgetActivationChanged(
+        content_window_activated);
+  }
+
   // Give the native widget a chance to handle any specific changes it needs.
-  desktop_window_tree_host_->OnActiveWindowChanged(content_window_ ==
-                                                   gained_active);
+  desktop_window_tree_host_->OnActiveWindowChanged(content_window_activated);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

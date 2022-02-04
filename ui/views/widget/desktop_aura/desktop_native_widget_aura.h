@@ -316,6 +316,13 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   bool restore_focus_on_activate_;
 
+  // This flag is used to ensure that the activation client correctly sees
+  // whether this widget should receive activation when handling an activation
+  // change event in `HandleActivationChanged()`.This is needed as the widget
+  // may not have propagated its new activation state to its delegate before the
+  // activation client decides which window to activate next.
+  bool should_activate_ = true;
+
   gfx::NativeCursor cursor_;
   // We must manually reference count the number of users of |cursor_manager_|
   // because the cursors created by |cursor_manager_| are shared among the
