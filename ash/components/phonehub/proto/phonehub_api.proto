@@ -128,12 +128,21 @@ enum ScreenLockState {
 // device
 message CameraRollAccessState {
   // Whether the camera roll feature is enabled
-  // DEPRECATED: this is now checked during CryptAuth enrollment on the Android
-  // device and no longer checked by the Phone Hub CrOS code.
+  // DEPRECATED: whether the Camera Roll feature can be enabled is now solely
+  // controlled by the storage_permission_granted bit.
   bool feature_enabled = 1 [deprecated = true];
   // Whether necessary storage permissions have been granted to access camera
   // roll items
   bool storage_permission_granted = 2;
+}
+
+// Information about the phone's support for cross-device feature setup.
+message FeatureSetupConfig {
+  // Whether the phone supports setting up multiple features at the same time
+  // using the FeatureSetupRequest. When this is false, the notification
+  // feature will be set up using the legacy
+  // ShowNotificationAccessSetupRequest.
+  bool feature_setup_request_supported = 1;
 }
 
 message PhoneProperties {
@@ -166,6 +175,10 @@ message PhoneProperties {
   // Note: This is whether the phone uses a lock screen(and not whether the
   // phone is currently locked).
   ScreenLockState screen_lock_state = 16;
+
+  FeatureSetupConfig feature_setup_config = 18;
+
+  // Next ID: 19
 }
 
 message App {
@@ -282,6 +295,13 @@ message NotificationInlineReplyResponse {}
 message ShowNotificationAccessSetupRequest {}
 
 message ShowNotificationAccessSetupResponse {}
+
+message FeatureSetupRequest {
+  bool notification_setup_requested = 1;
+  bool camera_roll_setup_requested = 2;
+}
+
+message FeatureSetupResponse {}
 
 // When adding new fields to this message, update CameraRollItem#operator==
 // Located in ash/components/phonehub/camera_roll_item.cc.
