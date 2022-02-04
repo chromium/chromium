@@ -341,8 +341,6 @@ static_library("browser") {
     "component_updater/subresource_filter_component_installer.h",
     "component_updater/trust_token_key_commitments_component_installer.cc",
     "component_updater/trust_token_key_commitments_component_installer.h",
-    "component_updater/updater_state.cc",
-    "component_updater/updater_state.h",
     "consent_auditor/consent_auditor_factory.cc",
     "consent_auditor/consent_auditor_factory.h",
     "content_index/content_index_metrics.cc",
@@ -5355,7 +5353,6 @@ static_library("browser") {
       "component_updater/recovery_improved_component_installer_win.cc",
       "component_updater/sw_reporter_installer_win.cc",
       "component_updater/sw_reporter_installer_win.h",
-      "component_updater/updater_state_win.cc",
       "download/download_status_updater_win.cc",
       "download/trusted_sources_manager_win.cc",
       "enterprise/signals/device_info_fetcher_win.cc",
@@ -5626,7 +5623,6 @@ static_library("browser") {
       "chrome_browser_application_mac.mm",
       "chrome_browser_main_mac.h",
       "chrome_browser_main_mac.mm",
-      "component_updater/updater_state_mac.mm",
       "download/download_status_updater_mac.mm",
       "download/drag_download_item_mac.mm",
       "enterprise/signals/device_info_fetcher_mac.h",
@@ -5754,6 +5750,21 @@ static_library("browser") {
 
   if (is_win || is_linux || is_android || is_chromeos) {
     deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
+  }
+
+  if (is_mac || is_win) {
+    # Support for the recovery improved component.
+    sources += [
+      "component_updater/updater_state.cc",
+      "component_updater/updater_state.h",
+    ]
+    deps += [ "//chrome/updater:browser_sources" ]
+    if (is_mac) {
+      sources += [ "component_updater/updater_state_mac.mm" ]
+    }
+    if (is_win) {
+      sources += [ "component_updater/updater_state_win.cc" ]
+    }
   }
 
   if (is_linux || is_win || is_mac || is_chromeos_ash) {
@@ -5971,7 +5982,10 @@ static_library("browser") {
       "recovery/recovery_install_global_error_factory.h",
     ]
 
-    deps += [ "//chrome/common/notifications" ]
+    deps += [
+      "//chrome/common/notifications",
+      "//chrome/updater:browser_sources",
+    ]
 
     if (enable_chromium_updater) {
       deps += [ "//chrome/browser/updater:browser_updater_client" ]

@@ -4554,7 +4554,6 @@ test("unit_tests") {
     "../browser/component_updater/origin_trials_component_installer_unittest.cc",
     "../browser/component_updater/subresource_filter_component_installer_unittest.cc",
     "../browser/component_updater/trust_token_key_commitments_component_installer_unittest.cc",
-    "../browser/component_updater/updater_state_unittest.cc",
     "../browser/content_index/content_index_provider_unittest.cc",
     "../browser/content_settings/content_settings_default_provider_unittest.cc",
     "../browser/content_settings/content_settings_mock_observer.cc",
@@ -7999,6 +7998,10 @@ test("unit_tests") {
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
       "//build/config/fuchsia/test/network_capabilities.test-cmx",
     ]
+  }
+
+  if (is_mac || is_win) {
+    sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
   }
 }
 

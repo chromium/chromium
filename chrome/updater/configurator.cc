@@ -210,7 +210,7 @@ crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
 update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
     const {
   return base::BindRepeating([](bool /*is_machine*/) {
-    return base::flat_map<std::string, std::string>();
+    return update_client::UpdaterStateAttributes();
   });
 }
 

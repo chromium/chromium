@@ -104,6 +104,14 @@ base::Time UpdaterState::StateReaderKeystone::GetUpdaterLastChecked(
 }
 
 bool UpdaterState::StateReaderKeystone::IsAutoupdateCheckEnabled() const {
+  return UpdaterState::IsAutoupdateCheckEnabled();
+}
+
+int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
+  return UpdaterState::GetUpdatePolicy();
+}
+
+bool UpdaterState::IsAutoupdateCheckEnabled() {
   // Auto-update check period override (in seconds).
   // Applies only to older versions of Keystone.
   base::scoped_nsobject<NSNumber> timeInterval =
@@ -116,7 +124,7 @@ bool UpdaterState::StateReaderKeystone::IsAutoupdateCheckEnabled() const {
   return 0 < value && value < (24 * 60 * 60);
 }
 
-int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
+int UpdaterState::GetUpdatePolicy() {
   return -1;  // Keystone does not support update policies.
 }
 

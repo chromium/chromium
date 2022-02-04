@@ -10,7 +10,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,7 +51,7 @@ class UpdaterState {
 
   class StateReader {
    public:
-    static std::unique_ptr<StateReader> Create();
+    static std::unique_ptr<StateReader> Create(bool is_machine);
 
     // Returns the state of the Chrome updater.
     State Read(bool is_machine) const;
@@ -68,6 +70,7 @@ class UpdaterState {
 #if BUILDFLAG(IS_MAC)
   class StateReaderKeystone final : public StateReader {
    private:
+    // Overrides for StateReader.
     std::string GetUpdaterName() const override;
     base::Version GetUpdaterVersion(bool is_machine) const override;
     bool IsAutoupdateCheckEnabled() const override;
@@ -78,6 +81,7 @@ class UpdaterState {
 #elif BUILDFLAG(IS_WIN)
   class StateReaderOmaha final : public StateReader {
    private:
+    // Overrides for StateReader.
     std::string GetUpdaterName() const override;
     base::Version GetUpdaterVersion(bool is_machine) const override;
     bool IsAutoupdateCheckEnabled() const override;
@@ -86,6 +90,22 @@ class UpdaterState {
     int GetUpdatePolicy() const override;
   };
 #endif
+  class StateReaderChromiumUpdater final : public StateReader {
+   public:
+    explicit StateReaderChromiumUpdater(base::Value parsed_json);
+
+   private:
+    // Overrides for StateReader.
+    std::string GetUpdaterName() const override;
+    base::Version GetUpdaterVersion(bool is_machine) const override;
+    bool IsAutoupdateCheckEnabled() const override;
+    base::Time GetUpdaterLastStartedAU(bool is_machine) const override;
+    base::Time GetUpdaterLastChecked(bool is_machine) const override;
+    int GetUpdatePolicy() const override;
+
+    base::Time FindTimeKey(base::StringPiece key) const;
+    const base::Value parsed_json_;
+  };
 
   explicit UpdaterState(bool is_machine);
 

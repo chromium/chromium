@@ -248,7 +248,11 @@ absl::optional<bool> ChromeConfigurator::IsMachineExternallyManaged() const {
 
 update_client::UpdaterStateProvider
 ChromeConfigurator::GetUpdaterStateProvider() const {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return base::BindRepeating(&UpdaterState::GetState);
+#else
+  return configurator_impl_.GetUpdaterStateProvider();
+#endif
 }
 
 }  // namespace

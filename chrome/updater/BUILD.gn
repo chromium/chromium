@@ -461,6 +461,7 @@ if (is_win || is_mac || is_linux) {
 
     if (is_win) {
       sources += [
+        "//chrome/updater/util_win.cc",
         "//chrome/updater/lib_util_win.cc",
         "//chrome/updater/win/user_info.cc",
         "//chrome/updater/win/user_info.h",
@@ -491,6 +492,7 @@ if (is_win || is_mac || is_linux) {
     }
 
     visibility = [
+      "//chrome/browser",
       "//chrome/browser/ui:ui",
       "//chrome/browser/updater:*",
       "//chrome/test:*",

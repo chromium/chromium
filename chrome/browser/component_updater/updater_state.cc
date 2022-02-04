@@ -8,16 +8,32 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/enterprise_util.h"
+#include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
+namespace {
+
+// These literals must not be changed since they affect the forward and
+// backward compatibility with //chrome/updater.
+constexpr char kUpdaterPrefsActiveVersion[] = "active_version";
+constexpr char kUpdaterPrefsLastChecked[] = "update_time";
+constexpr char kUpdaterPrefsLastStarted[] = "last_started";
+}  // namespace
 
 UpdaterState::State::State() = default;
 UpdaterState::State::State(const UpdaterState::State&) = default;
@@ -25,8 +41,39 @@ UpdaterState::State& UpdaterState::State::operator=(
     const UpdaterState::State&) = default;
 UpdaterState::State::~State() = default;
 
-std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create() {
+std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
+    bool is_machine) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (std::unique_ptr<StateReader> state_reader_chromium_updater =
+          [is_machine]() -> std::unique_ptr<StateReader> {
+        // Create a `StateReaderChromiumUpdater` instance only if a prefs.json
+        // file for the updater can be found and parsed successfully.
+        const absl::optional<base::FilePath> global_prefs_dir =
+            updater::GetBaseDirectory(is_machine
+                                          ? updater::UpdaterScope::kSystem
+                                          : updater::UpdaterScope::kUser);
+        if (!global_prefs_dir)
+          return nullptr;
+        std::string contents;
+        constexpr char kUpdaterPrefsFilename[] = "prefs.json";
+        constexpr int kMaxPrefsFileSize = 0x20000;  // 128KiB.
+        if (!base::ReadFileToStringWithMaxSize(
+                global_prefs_dir->AppendASCII(kUpdaterPrefsFilename), &contents,
+                kMaxPrefsFileSize)) {
+          return nullptr;
+        }
+        absl::optional<base::Value> parsed_json =
+            base::JSONReader::Read(contents);
+        return parsed_json ? std::make_unique<StateReaderChromiumUpdater>(
+                                 std::move(*parsed_json))
+                           : nullptr;
+      }()) {
+    return state_reader_chromium_updater;
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_MAC)
   return std::make_unique<UpdaterState::StateReaderKeystone>();
 #elif BUILDFLAG(IS_WIN)
@@ -34,9 +81,49 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create() {
 #else
   return nullptr;
 #endif  // IS_MAC
+
 #else
   return nullptr;
 #endif  // GOOGLE_CHROME_BRANDING
+}
+
+UpdaterState::StateReaderChromiumUpdater::StateReaderChromiumUpdater(
+    base::Value parsed_json)
+    : parsed_json_(std::move(parsed_json)) {}
+
+base::Time UpdaterState::StateReaderChromiumUpdater::FindTimeKey(
+    base::StringPiece key) const {
+  return base::ValueToTime(parsed_json_.FindKey(key)).value_or(base::Time());
+}
+
+std::string UpdaterState::StateReaderChromiumUpdater::GetUpdaterName() const {
+  return "ChromiumUpdater";
+}
+
+base::Version UpdaterState::StateReaderChromiumUpdater::GetUpdaterVersion(
+    bool /*is_machine*/) const {
+  const std::string* val =
+      parsed_json_.FindStringKey(kUpdaterPrefsActiveVersion);
+  return val ? base::Version(*val) : base::Version();
+}
+
+bool UpdaterState::StateReaderChromiumUpdater::IsAutoupdateCheckEnabled()
+    const {
+  return UpdaterState::IsAutoupdateCheckEnabled();
+}
+
+base::Time UpdaterState::StateReaderChromiumUpdater::GetUpdaterLastStartedAU(
+    bool /*is_machine*/) const {
+  return FindTimeKey(kUpdaterPrefsLastStarted);
+}
+
+base::Time UpdaterState::StateReaderChromiumUpdater::GetUpdaterLastChecked(
+    bool /*is_machine*/) const {
+  return FindTimeKey(kUpdaterPrefsLastChecked);
+}
+
+int UpdaterState::StateReaderChromiumUpdater::GetUpdatePolicy() const {
+  return UpdaterState::GetUpdatePolicy();
 }
 
 UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
@@ -69,7 +156,7 @@ UpdaterState::Attributes UpdaterState::GetState(bool is_machine) {
 
 absl::optional<UpdaterState::State> UpdaterState::ReadState(bool is_machine) {
   std::unique_ptr<UpdaterState::StateReader> state_reader =
-      UpdaterState::StateReader::Create();
+      UpdaterState::StateReader::Create(is_machine);
   if (!state_reader)
     return absl::nullopt;
   return state_reader->Read(is_machine);
