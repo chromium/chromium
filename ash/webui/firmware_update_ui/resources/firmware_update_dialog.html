@@ -32,18 +32,20 @@
         isInitiallyInflight_)]]" restamp>
   <cr-dialog id="updateDialog" show-on-attach
       on-close="closeDialog_">
-    <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font">
+    <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font"
+        tabindex="0" aria-labelledby="updateDialogTitle">
       [[dialogContent.title]]
     </div>
     <div slot="body" class="firmware-dialog-body-font">
-      <div id="updateDialogBody">
+      <div id="updateDialogBody" aria-hidden="true" tabindex="0">
         [[dialogContent.body]]
       </div>
     </div>
     <div slot="footer"
         hidden$="[[!shouldShowProgressBar_(installationProgress.*,
                    isInitiallyInflight_)]]">
-      <label id="progress" class="firmware-dialog-installing-font">
+      <label id="progress" class="firmware-dialog-installing-font"
+          aria-live="polite" tabindex="0">
         [[dialogContent.footer]]
       </label>
       <template is="dom-if"
