@@ -54,7 +54,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcUdpPortRangeEnabledPolicyTest,
   const PrefService::Preference* pref =
       user_prefs::UserPrefs::Get(browser()->profile())
           ->FindPreference(prefs::kWebRTCUDPPortRange);
-  pref->GetValue()->GetAsString(&port_range);
+  if (pref->GetValue()->is_string())
+    port_range = pref->GetValue()->GetString();
   EXPECT_EQ(kTestWebRtcUdpPortRange, port_range);
 }
 
@@ -64,7 +65,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcUdpPortRangeDisabledPolicyTest,
   const PrefService::Preference* pref =
       user_prefs::UserPrefs::Get(browser()->profile())
           ->FindPreference(prefs::kWebRTCUDPPortRange);
-  pref->GetValue()->GetAsString(&port_range);
+  if (pref->GetValue()->is_string())
+    port_range = pref->GetValue()->GetString();
   EXPECT_TRUE(port_range.empty());
 }
 
