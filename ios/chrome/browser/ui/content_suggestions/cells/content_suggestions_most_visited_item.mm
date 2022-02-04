@@ -36,12 +36,19 @@
   return self;
 }
 
-- (void)configureCell:(ContentSuggestionsMostVisitedCell*)cell {
+- (void)configureCell:(MDCCollectionViewCell*)cell {
   [super configureCell:cell];
-  cell.titleLabel.text = self.title;
-  cell.accessibilityLabel = self.title;
-  [cell.faviconView configureWithAttributes:self.attributes];
-  cell.accessibilityCustomActions = [self customActions];
+  if (![cell isKindOfClass:[ContentSuggestionsMostVisitedCell class]]) {
+    // Do not attempt to configure cell if it is not the correct class
+    // (crbug.com/1276562).
+    return;
+  }
+  ContentSuggestionsMostVisitedCell* mostVisitedCell =
+      static_cast<ContentSuggestionsMostVisitedCell*>(cell);
+  mostVisitedCell.titleLabel.text = self.title;
+  mostVisitedCell.accessibilityLabel = self.title;
+  [mostVisitedCell.faviconView configureWithAttributes:self.attributes];
+  mostVisitedCell.accessibilityCustomActions = [self customActions];
 }
 
 - (CGFloat)cellHeightForWidth:(CGFloat)width {
