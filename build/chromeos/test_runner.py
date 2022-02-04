@@ -239,7 +239,15 @@ class RemoteTest:
     for dirpath, _, filenames in os.walk(path):
       for f in filenames:
         artifact_path = os.path.join(dirpath, f)
-        artifacts[os.path.relpath(artifact_path, path)] = {
+        artifact_id = os.path.relpath(artifact_path, path)
+        # Some artifacts will have non-Latin characters in the filename, eg:
+        # 'ui_tree_Chinese Pinyin-你好.txt'. ResultDB's API rejects such
+        # characters as an artifact ID, so force the file name down into ascii.
+        # For more info, see:
+        # https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/artifact.proto;drc=3bff13b8037ca76ec19f9810033d914af7ec67cb;l=46
+        artifact_id = artifact_id.encode('ascii', 'replace').decode()
+        artifact_id = artifact_id.replace('\\', '?')
+        artifacts[artifact_id] = {
             'filePath': artifact_path,
         }
     return artifacts
