@@ -26,6 +26,7 @@
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
 #include "components/google/core/common/google_util.h"
+#include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -740,7 +741,11 @@ void Controller::InitFromParameters() {
     DCHECK(GetDeeplinkURL().is_valid());  // |deeplink_url_| must be set.
     user_data_.selected_login_.emplace(
         GetDeeplinkURL().DeprecatedGetOriginAsURL(), *password_change_username);
-    // TODO(crbug.com/1281844): Inform PasswordChangeSuccessTracker.
+    GetPasswordChangeSuccessTracker()->OnChangePasswordFlowStarted(
+        user_data_.selected_login_->origin,
+        user_data_.selected_login_->username,
+        password_manager::PasswordChangeSuccessTracker::StartEvent::
+            kAutomatedFlow);
   }
 
   user_model_.SetCurrentURL(GetCurrentURL());

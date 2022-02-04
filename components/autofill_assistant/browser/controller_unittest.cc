@@ -34,6 +34,7 @@
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
+#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -90,6 +91,8 @@ class ControllerTest : public testing::Test {
 
     ON_CALL(mock_client_, GetWebContents).WillByDefault(Return(web_contents()));
     ON_CALL(mock_client_, HasHadUI()).WillByDefault(Return(true));
+    ON_CALL(mock_client_, GetPasswordChangeSuccessTracker())
+        .WillByDefault(Return(&mock_password_change_success_tracker_));
 
     mock_runtime_manager_ = std::make_unique<MockRuntimeManager>();
     controller_ = std::make_unique<Controller>(
@@ -246,6 +249,8 @@ class ControllerTest : public testing::Test {
   FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate_;
   std::unique_ptr<MockRuntimeManager> mock_runtime_manager_;
   NiceMock<MockControllerObserver> mock_observer_;
+  password_manager::MockPasswordChangeSuccessTracker
+      mock_password_change_success_tracker_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<Controller> controller_;
 };
@@ -1978,19 +1983,25 @@ TEST_F(ControllerTest, WriteUserData) {
 }
 
 TEST_F(ControllerTest, StartPasswordChangeFlow) {
-  GURL initialUrl("http://example.com/password");
+  const GURL initialUrl("http://example.com/password");
+  const std::string username = "test_username";
   EXPECT_CALL(*mock_service_, OnGetScriptsForUrl(Eq(initialUrl), _, _))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
+  EXPECT_CALL(mock_password_change_success_tracker_,
+              OnChangePasswordFlowStarted(
+                  initialUrl.DeprecatedGetOriginAsURL(), username,
+                  password_manager::PasswordChangeSuccessTracker::StartEvent::
+                      kAutomatedFlow));
 
   EXPECT_TRUE(controller_->Start(
       initialUrl, std::make_unique<TriggerContext>(
                       /* parameters = */ std::make_unique<ScriptParameters>(
                           base::flat_map<std::string, std::string>{
-                              {"PASSWORD_CHANGE_USERNAME", "test_username"}}),
+                              {"PASSWORD_CHANGE_USERNAME", username}}),
                       TriggerContext::Options())));
   // Initial navigation.
   SimulateNavigateToUrl(GURL("http://b.example.com"));
-  EXPECT_EQ(GetUserData()->selected_login_->username, "test_username");
+  EXPECT_EQ(GetUserData()->selected_login_->username, username);
   EXPECT_EQ(GetUserData()->selected_login_->origin,
             initialUrl.DeprecatedGetOriginAsURL());
   EXPECT_EQ(controller_->GetCurrentURL().host(), "b.example.com");
