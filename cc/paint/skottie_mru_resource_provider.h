@@ -5,11 +5,15 @@
 #ifndef CC_PAINT_SKOTTIE_MRU_RESOURCE_PROVIDER_H_
 #define CC_PAINT_SKOTTIE_MRU_RESOURCE_PROVIDER_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/modules/skresources/include/SkResources.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 
@@ -25,7 +29,8 @@ class CC_PAINT_EXPORT SkottieMRUResourceProvider
  public:
   using FrameDataCallback = SkottieWrapper::FrameDataCallback;
 
-  explicit SkottieMRUResourceProvider(FrameDataCallback frame_data_cb);
+  SkottieMRUResourceProvider(FrameDataCallback frame_data_cb,
+                             base::StringPiece animation_json);
   SkottieMRUResourceProvider(const SkottieMRUResourceProvider&) = delete;
   SkottieMRUResourceProvider& operator=(const SkottieMRUResourceProvider&) =
       delete;
@@ -42,6 +47,7 @@ class CC_PAINT_EXPORT SkottieMRUResourceProvider
       const char resource_id[]) const override;
 
   const SkottieWrapper::FrameDataCallback frame_data_cb_;
+  const base::flat_map</*asset_id*/ std::string, gfx::Size> image_asset_sizes_;
   // SkResources.h declares loadImageAsset() as a "const" method. Although the
   // method is logically const, these book-keeping members need to be updated in
   // that method. Hence, they're marked "mutable".

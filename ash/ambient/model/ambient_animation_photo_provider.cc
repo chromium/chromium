@@ -166,7 +166,8 @@ AmbientAnimationPhotoProvider::~AmbientAnimationPhotoProvider() = default;
 scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset>
 AmbientAnimationPhotoProvider::LoadImageAsset(
     base::StringPiece asset_id,
-    const base::FilePath& resource_path) {
+    const base::FilePath& resource_path,
+    const absl::optional<gfx::Size>& size) {
   // Note in practice, all of the image assets are loaded one time by Skottie
   // when the animation is initially loaded. So the set of assets does not
   // change once the animation starts rendering.

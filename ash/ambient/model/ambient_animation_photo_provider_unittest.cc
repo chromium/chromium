@@ -58,7 +58,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     for (int i = 0; i < kNumDynamicAssets; ++i) {
       CHECK(resource_metadata.RegisterAsset(
           "dummy-resource-path", "dummy-resource-name",
-          GenerateTestLottieDynamicAssetId(i)));
+          GenerateTestLottieDynamicAssetId(i), /*size=*/absl::nullopt));
     }
     return resource_metadata;
   }
@@ -71,7 +71,8 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
 
   scoped_refptr<ImageAsset> LoadAsset(base::StringPiece asset_id) {
     scoped_refptr<ImageAsset> asset = provider_.LoadImageAsset(
-        asset_id, base::FilePath("dummy-resource-path/dummy-resource-name"));
+        asset_id, base::FilePath("dummy-resource-path/dummy-resource-name"),
+        /*size=*/absl::nullopt);
     CHECK(asset) << asset_id;
     return asset;
   }

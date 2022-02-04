@@ -8,6 +8,7 @@
 #include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -20,13 +21,15 @@ TEST(AmbientAnimationPhotoConfigTest, SetsTopicSetSize) {
               Eq(0u));
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
       "test-resource-path", "test-resource-name-0",
-      GenerateTestLottieDynamicAssetId(/*unique_id=*/0)));
+      GenerateTestLottieDynamicAssetId(/*unique_id=*/0),
+      /*size=*/absl::nullopt));
   EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
                   .topic_set_size,
               Eq(1u));
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
       "test-resource-path", "test-resource-name-1",
-      GenerateTestLottieDynamicAssetId(/*unique_id=*/1)));
+      GenerateTestLottieDynamicAssetId(/*unique_id=*/1),
+      /*size=*/absl::nullopt));
   EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
                   .topic_set_size,
               Eq(2u));

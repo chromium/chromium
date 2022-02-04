@@ -13,9 +13,11 @@
 #include "base/strings/string_piece.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "cc/test/lottie_test_data.h"
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/modules/skresources/include/SkResources.h"
 #include "ui/gfx/geometry/size.h"
@@ -25,7 +27,9 @@ namespace {
 
 using ::testing::Contains;
 using ::testing::Eq;
+using ::testing::FieldsAre;
 using ::testing::Key;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -69,18 +73,27 @@ class FrameDataStub {
 
 class SkottieMRUResourceProviderTest : public ::testing::Test {
  protected:
-  SkottieMRUResourceProviderTest()
-      : provider_(sk_make_sp<SkottieMRUResourceProvider>(
-            base::BindRepeating(&FrameDataStub::GetFrameDataForAsset,
-                                base::Unretained(&frame_data_stub_)))),
-        provider_base_(provider_.get()) {}
+  void Init(base::StringPiece animation_json) {
+    provider_ = sk_make_sp<SkottieMRUResourceProvider>(
+        base::BindRepeating(&FrameDataStub::GetFrameDataForAsset,
+                            base::Unretained(&frame_data_stub_)),
+        animation_json);
+    provider_base_ = provider_.get();
+  }
 
   FrameDataStub frame_data_stub_;
-  const sk_sp<SkottieMRUResourceProvider> provider_;
-  const raw_ptr<skresources::ResourceProvider> provider_base_;
+  sk_sp<SkottieMRUResourceProvider> provider_;
+  raw_ptr<skresources::ResourceProvider> provider_base_;
 };
 
 TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id"
+        }
+      ]
+    })");
   sk_sp<skresources::ImageAsset> asset = provider_base_->loadImageAsset(
       "test-resource-path", "test-resource-name", "test-resource-id");
   PaintImage image_1 = CreateBitmapImage(gfx::Size(10, 10));
@@ -99,6 +112,16 @@ TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {
 }
 
 TEST_F(SkottieMRUResourceProviderTest, ProvidesFrameDataForMultipleAssets) {
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id-1"
+        },
+        {
+          "id": "test-resource-id-2"
+        }
+      ]
+    })");
   sk_sp<skresources::ImageAsset> asset_1 = provider_base_->loadImageAsset(
       "test-resource-path", "test-resource-name", "test-resource-id-1");
   sk_sp<skresources::ImageAsset> asset_2 = provider_base_->loadImageAsset(
@@ -114,6 +137,20 @@ TEST_F(SkottieMRUResourceProviderTest, ProvidesFrameDataForMultipleAssets) {
 }
 
 TEST_F(SkottieMRUResourceProviderTest, ReturnsCorrectImageAssetMetadata) {
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id-1",
+          "w": 100,
+          "h": 101
+        },
+        {
+          "id": "test-resource-id-2",
+          "w": 200,
+          "h": 201
+        }
+      ]
+    })");
   sk_sp<skresources::ImageAsset> asset_1 = provider_base_->loadImageAsset(
       "test-resource-path-1", "test-resource-name-1", "test-resource-id-1");
   sk_sp<skresources::ImageAsset> asset_2 = provider_base_->loadImageAsset(
@@ -122,13 +159,117 @@ TEST_F(SkottieMRUResourceProviderTest, ReturnsCorrectImageAssetMetadata) {
       provider_->GetImageAssetMetadata().asset_storage(),
       UnorderedElementsAre(
           Pair("test-resource-id-1",
-               base::FilePath(FILE_PATH_LITERAL(
-                                  "test-resource-path-1/test-resource-name-1"))
-                   .NormalizePathSeparators()),
+               FieldsAre(base::FilePath(
+                             FILE_PATH_LITERAL(
+                                 "test-resource-path-1/test-resource-name-1"))
+                             .NormalizePathSeparators(),
+                         Optional(gfx::Size(100, 101)))),
           Pair("test-resource-id-2",
-               base::FilePath(FILE_PATH_LITERAL(
-                                  "test-resource-path-2/test-resource-name-2"))
-                   .NormalizePathSeparators())));
+               FieldsAre(base::FilePath(
+                             FILE_PATH_LITERAL(
+                                 "test-resource-path-2/test-resource-name-2"))
+                             .NormalizePathSeparators(),
+                         Optional(gfx::Size(200, 201))))));
+}
+
+TEST_F(SkottieMRUResourceProviderTest, HandlesMissingAssetDimensions) {
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id"
+        }
+      ]
+    })");
+  sk_sp<skresources::ImageAsset> asset_1 = provider_base_->loadImageAsset(
+      "test-resource-path", "test-resource-name", "test-resource-id");
+  EXPECT_THAT(
+      provider_->GetImageAssetMetadata().asset_storage(),
+      UnorderedElementsAre(Pair(
+          "test-resource-id",
+          FieldsAre(base::FilePath(FILE_PATH_LITERAL(
+                                       "test-resource-path/test-resource-name"))
+                        .NormalizePathSeparators(),
+                    Eq(absl::nullopt)))));
+}
+
+TEST_F(SkottieMRUResourceProviderTest, HandlesIncompleteDimensions) {
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id",
+          "w": 100
+        }
+      ]
+    })");
+  sk_sp<skresources::ImageAsset> asset_1 = provider_base_->loadImageAsset(
+      "test-resource-path", "test-resource-name", "test-resource-id");
+  EXPECT_THAT(
+      provider_->GetImageAssetMetadata().asset_storage(),
+      UnorderedElementsAre(Pair(
+          "test-resource-id",
+          FieldsAre(base::FilePath(FILE_PATH_LITERAL(
+                                       "test-resource-path/test-resource-name"))
+                        .NormalizePathSeparators(),
+                    Eq(absl::nullopt)))));
+
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id",
+          "h": 100
+        }
+      ]
+    })");
+  asset_1 = provider_base_->loadImageAsset(
+      "test-resource-path", "test-resource-name", "test-resource-id");
+  EXPECT_THAT(
+      provider_->GetImageAssetMetadata().asset_storage(),
+      UnorderedElementsAre(Pair(
+          "test-resource-id",
+          FieldsAre(base::FilePath(FILE_PATH_LITERAL(
+                                       "test-resource-path/test-resource-name"))
+                        .NormalizePathSeparators(),
+                    Eq(absl::nullopt)))));
+}
+
+TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id",
+          "w": -100
+        }
+      ]
+    })");
+  sk_sp<skresources::ImageAsset> asset_1 = provider_base_->loadImageAsset(
+      "test-resource-path", "test-resource-name", "test-resource-id");
+  EXPECT_THAT(
+      provider_->GetImageAssetMetadata().asset_storage(),
+      UnorderedElementsAre(Pair(
+          "test-resource-id",
+          FieldsAre(base::FilePath(FILE_PATH_LITERAL(
+                                       "test-resource-path/test-resource-name"))
+                        .NormalizePathSeparators(),
+                    Eq(absl::nullopt)))));
+
+  Init(R"({
+      "assets": [
+        {
+          "id": "test-resource-id",
+          "h": -100
+        }
+      ]
+    })");
+  asset_1 = provider_base_->loadImageAsset(
+      "test-resource-path", "test-resource-name", "test-resource-id");
+  EXPECT_THAT(
+      provider_->GetImageAssetMetadata().asset_storage(),
+      UnorderedElementsAre(Pair(
+          "test-resource-id",
+          FieldsAre(base::FilePath(FILE_PATH_LITERAL(
+                                       "test-resource-path/test-resource-name"))
+                        .NormalizePathSeparators(),
+                    Eq(absl::nullopt)))));
 }
 
 }  // namespace

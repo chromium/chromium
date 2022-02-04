@@ -4,15 +4,55 @@
 
 #include "cc/paint/skottie_mru_resource_provider.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace cc {
 namespace {
+
+constexpr base::StringPiece kAssetsKey = "assets";
+constexpr base::StringPiece kIdKey = "id";
+constexpr base::StringPiece kWidthKey = "w";
+constexpr base::StringPiece kHeightKey = "h";
+
+// TODO(fmalita): Remove explicit parsing and pass size param directly from
+// Skottie.
+base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
+    base::StringPiece animation_json) {
+  base::flat_map<std::string, gfx::Size> image_asset_sizes;
+
+  absl::optional<base::Value> animation_dict =
+      base::JSONReader::Read(animation_json);
+  if (!animation_dict) {
+    LOG(ERROR) << "Failed to parse Lottie animation json";
+    return image_asset_sizes;
+  }
+
+  const base::Value* assets = animation_dict->FindListKey(kAssetsKey);
+  // An animation may legitimately have no assets in it.
+  if (!assets)
+    return image_asset_sizes;
+
+  for (const base::Value& asset : assets->GetList()) {
+    const std::string* id = asset.FindStringKey(kIdKey);
+    absl::optional<int> width = asset.FindIntKey(kWidthKey);
+    absl::optional<int> height = asset.FindIntKey(kHeightKey);
+    if (id && width && height && *width > 0 && *height > 0 &&
+        !image_asset_sizes.emplace(*id, gfx::Size(*width, *height)).second) {
+      LOG(WARNING) << "Multiple assets found in animation with id " << *id;
+    }
+  }
+  return image_asset_sizes;
+}
 
 class ImageAssetImpl : public skresources::ImageAsset {
  public:
@@ -50,8 +90,10 @@ class ImageAssetImpl : public skresources::ImageAsset {
 }  // namespace
 
 SkottieMRUResourceProvider::SkottieMRUResourceProvider(
-    FrameDataCallback frame_data_cb)
-    : frame_data_cb_(std::move(frame_data_cb)) {}
+    FrameDataCallback frame_data_cb,
+    base::StringPiece animation_json)
+    : frame_data_cb_(std::move(frame_data_cb)),
+      image_asset_sizes_(ParseImageAssetDimensions(animation_json)) {}
 
 SkottieMRUResourceProvider::~SkottieMRUResourceProvider() = default;
 
@@ -66,8 +108,12 @@ sk_sp<skresources::ImageAsset> SkottieMRUResourceProvider::loadImageAsset(
     const char resource_name[],
     const char resource_id[]) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  absl::optional<gfx::Size> size;
+  if (image_asset_sizes_.contains(resource_id))
+    size.emplace(image_asset_sizes_.at(resource_id));
+
   if (!image_asset_metadata_.RegisterAsset(resource_path, resource_name,
-                                           resource_id)) {
+                                           resource_id, std::move(size))) {
     return nullptr;
   }
   return sk_make_sp<ImageAssetImpl>(HashSkottieResourceId(resource_id),

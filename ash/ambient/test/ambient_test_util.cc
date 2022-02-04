@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -23,7 +24,8 @@ AmbientPhotoConfig GenerateAnimationConfigWithNAssets(int num_assets) {
   for (int i = 0; i < num_assets; ++i) {
     CHECK(resource_metadata.RegisterAsset(
         "test-resource-path", "test-resource-name",
-        GenerateTestLottieDynamicAssetId(/*unique_id=*/i)));
+        GenerateTestLottieDynamicAssetId(/*unique_id=*/i),
+        /*size=*/absl::nullopt));
   }
   return CreateAmbientAnimationPhotoConfig(resource_metadata);
 }

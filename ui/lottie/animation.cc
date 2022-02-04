@@ -80,12 +80,14 @@ Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
   if (animation_has_image_assets) {
     DCHECK(frame_data_provider)
         << "SkottieFrameDataProvider required for animations with image assets";
-    for (const auto& asset_metadata :
+    for (const auto& asset_metadata_pair :
          skottie_->GetImageAssetMetadata().asset_storage()) {
-      const std::string& asset_id = asset_metadata.first;
-      const base::FilePath& asset_path = asset_metadata.second;
+      const std::string& asset_id = asset_metadata_pair.first;
+      const cc::SkottieResourceMetadataMap::ImageAssetMetadata& asset_metadata =
+          asset_metadata_pair.second;
       scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset> new_asset =
-          frame_data_provider->LoadImageAsset(asset_id, asset_path);
+          frame_data_provider->LoadImageAsset(
+              asset_id, asset_metadata.resource_path, asset_metadata.size);
       DCHECK(new_asset);
       image_assets_.emplace(cc::HashSkottieResourceId(asset_id),
                             std::move(new_asset));

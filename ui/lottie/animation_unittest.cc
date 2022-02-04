@@ -159,7 +159,8 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
 
   scoped_refptr<ImageAsset> LoadImageAsset(
       base::StringPiece resource_id,
-      const base::FilePath& resource_path) override {
+      const base::FilePath& resource_path,
+      const absl::optional<gfx::Size>& size) override {
     auto new_asset = base::MakeRefCounted<ImageAssetImpl>();
     CHECK(current_assets_.emplace(std::string(resource_id), new_asset).second);
     return new_asset;

@@ -85,9 +85,12 @@ class SkottieWrapperImpl : public SkottieWrapper {
             // * Binding "this" in the constructor is safe because the frame
             //   data callback is only triggered during calls to
             //   |animation_->seek()|.
-            sk_make_sp<SkottieMRUResourceProvider>(base::BindRepeating(
-                &SkottieWrapperImpl::RunCurrentFrameDataCallback,
-                base::Unretained(this)))) {}
+            sk_make_sp<SkottieMRUResourceProvider>(
+                base::BindRepeating(
+                    &SkottieWrapperImpl::RunCurrentFrameDataCallback,
+                    base::Unretained(this)),
+                base::StringPiece(reinterpret_cast<const char*>(data.data()),
+                                  data.size()))) {}
 
   SkottieWrapperImpl(const SkottieWrapperImpl&) = delete;
   SkottieWrapperImpl& operator=(const SkottieWrapperImpl&) = delete;

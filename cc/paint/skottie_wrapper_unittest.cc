@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 namespace {
@@ -28,11 +29,13 @@ namespace {
 using ::testing::_;
 using ::testing::Contains;
 using ::testing::Eq;
+using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::Mock;
 using ::testing::Ne;
 using ::testing::NotNull;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -117,10 +120,16 @@ TEST(SkottieWrapperTest, LoadsImageAssetsMetadata) {
   EXPECT_THAT(
       metadata.asset_storage(),
       UnorderedElementsAre(
-          Pair("image_0", base::FilePath(FILE_PATH_LITERAL("images/img_0.jpg"))
-                              .NormalizePathSeparators()),
-          Pair("image_1", base::FilePath(FILE_PATH_LITERAL("images/img_1.jpg"))
-                              .NormalizePathSeparators())));
+          Pair("image_0",
+               FieldsAre(base::FilePath(FILE_PATH_LITERAL("images/img_0.jpg"))
+                             .NormalizePathSeparators(),
+                         Optional(gfx::Size(kLottieDataWith2AssetsWidth,
+                                            kLottieDataWith2AssetsHeight)))),
+          Pair("image_1",
+               FieldsAre(base::FilePath(FILE_PATH_LITERAL("images/img_1.jpg"))
+                             .NormalizePathSeparators(),
+                         Optional(gfx::Size(kLottieDataWith2AssetsWidth,
+                                            kLottieDataWith2AssetsHeight))))));
 }
 
 TEST(SkottieWrapperTest, LoadsCorrectAssetsForDraw) {

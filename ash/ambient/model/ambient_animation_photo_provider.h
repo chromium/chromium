@@ -36,7 +36,8 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
 
   scoped_refptr<ImageAsset> LoadImageAsset(
       base::StringPiece resource_id,
-      const base::FilePath& resource_path) override;
+      const base::FilePath& resource_path,
+      const absl::optional<gfx::Size>& size) override;
 
  private:
   class DynamicImageAssetImpl;
@@ -53,4 +54,4 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
 
 }  // namespace ash
 
-#endif  // ASH_AMBIENT_MODEL_AMBIENT_ANIMATION_PHOTO_PROVIDER_H
+#endif  // ASH_AMBIENT_MODEL_AMBIENT_ANIMATION_PHOTO_PROVIDER_H_
