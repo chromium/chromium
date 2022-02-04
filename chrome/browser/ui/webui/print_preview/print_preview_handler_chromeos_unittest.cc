@@ -138,9 +138,8 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   void AssertWebUIEventFired(const content::TestWebUI::CallData& data,
                              const std::string& event_id) {
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-    std::string event_fired;
-    ASSERT_TRUE(data.arg1()->GetAsString(&event_fired));
-    EXPECT_EQ(event_id, event_fired);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(event_id, data.arg1()->GetString());
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
