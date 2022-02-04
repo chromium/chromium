@@ -364,7 +364,7 @@ bool Component::Match(StringView input,
   }
 
   // There is no regexp, so directly match against the pattern.
-  std::vector<std::pair<absl::string_view, absl::string_view>>
+  std::vector<std::pair<absl::string_view, absl::optional<absl::string_view>>>
       pattern_group_list;
   // Lossy UTF8 conversion is fine given the input has come through a
   // USVString webidl argument.
@@ -376,9 +376,22 @@ bool Component::Match(StringView input,
     group_list->ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(pattern_group_list.size()));
     for (const auto& pair : pattern_group_list) {
+      // We need to be careful converting the group value to a WTF::String.
+      // If the value is std::nullopt, then we want to use a null String.
+      // If the value exists, but is zero length, then we want to use an empty
+      // string.  We must handle this explicitly since FromUTF8() can convert
+      // some zero length strings to null String.
+      String value;
+      if (pair.second.has_value()) {
+        if (pair.second->empty()) {
+          value = g_empty_string;
+        } else {
+          value = String::FromUTF8(pair.second->data(), pair.second->length());
+        }
+      }
       group_list->emplace_back(
           String::FromUTF8(pair.first.data(), pair.first.length()),
-          String::FromUTF8(pair.second.data(), pair.second.length()));
+          std::move(value));
     }
   }
   return result;

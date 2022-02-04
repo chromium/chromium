@@ -463,7 +463,8 @@ bool Pattern::CanDirectMatch() const {
 
 bool Pattern::DirectMatch(
     absl::string_view input,
-    std::vector<std::pair<absl::string_view, absl::string_view>>*
+    std::vector<
+        std::pair<absl::string_view, absl::optional<absl::string_view>>>*
         group_list_out) const {
   ABSL_ASSERT(CanDirectMatch());
 

@@ -11,6 +11,7 @@
 #include <vector>
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/liburlpattern/options.h"
 
 namespace liburlpattern {
@@ -144,9 +145,12 @@ class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
   //
   // `DirectMatch()` returns true if the pattern matches `input` and false
   // otherwise.  If the `group_list_out` pointer is provided then the vector
-  // is populated with name:value pairs for matched pattern groups.
+  // is populated with name:value pairs for matched pattern groups.  If a
+  // group had an optional modifier and it did not match any input characters
+  // then its `group_list_out` value will be std::nullopt.
   bool DirectMatch(absl::string_view input,
-                   std::vector<std::pair<absl::string_view, absl::string_view>>*
+                   std::vector<std::pair<absl::string_view,
+                                         absl::optional<absl::string_view>>>*
                        group_list_out) const;
 
  private:
