@@ -44,8 +44,8 @@ TEST_F(DiskCacheDirPolicyTest, SetPolicyValid) {
 
   const base::Value* value;
   ASSERT_TRUE(prefs_.GetValue(prefs::kDiskCacheDir, &value));
-  std::string out;
-  ASSERT_TRUE(value->GetAsString(&out));
+  ASSERT_TRUE(value->is_string());
+  const std::string& out = value->GetString();
   EXPECT_NE(std::string::npos, out.find("foo"));
   EXPECT_EQ(std::string::npos, out.find("${user_name}"));
 }
