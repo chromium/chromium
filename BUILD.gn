@@ -1015,6 +1015,9 @@ if (is_chromeos_ash) {
           "//media/gpu/vaapi:vaapi_unittest",
         ]
       }
+      if (use_v4l2_codec) {
+        data_deps += [ "//media/gpu/v4l2:v4l2_stateless_decoder" ]
+      }
     }
   }
 }
