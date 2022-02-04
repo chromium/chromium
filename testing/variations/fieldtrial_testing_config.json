@@ -4315,6 +4315,40 @@
             ]
         }
     ],
+    "OmniboxPrerender": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPrerender_20220125",
+                    "enable_features": [
+                        "OmniboxTriggerForPrerender2"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch"
+                    ]
+                },
+                {
+                    "name": "EnabledPrefetch_20220125",
+                    "enable_features": [
+                        "OmniboxTriggerForNoStatePrefetch"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "Disabled_20220125",
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch",
+                        "OmniboxTriggerForPrerender2"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxUpdatedConnectionSecurityIndicatorsIPH": [
         {
             "platforms": [
