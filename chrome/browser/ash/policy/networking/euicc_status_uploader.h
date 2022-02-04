@@ -68,6 +68,7 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
 
   // chromeos::NetworkStateHandlerObserver:
   void NetworkListChanged() override;
+  void OnShuttingDown() override;
 
   // chromeos::HermesEuiccClient:
   void OnEuiccReset(const dbus::ObjectPath& euicc_path) override;
@@ -92,6 +93,8 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
   // Timer which will try to reupload the status after a while.
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   net::BackoffEntry retry_entry_;
+
+  chromeos::NetworkHandler* network_handler_ = nullptr;
 
   base::WeakPtrFactory<EuiccStatusUploader> weak_ptr_factory_{this};
 };

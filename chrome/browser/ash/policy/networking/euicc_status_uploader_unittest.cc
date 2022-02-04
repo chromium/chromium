@@ -396,4 +396,28 @@ TEST_F(EuiccStatusUploaderTest, ResetRequest) {
                          /*clear_profile_list=*/true);
 }
 
+TEST_F(EuiccStatusUploaderTest, UnexpectedNetworkHandlerShutdown) {
+  SetUpDeviceProfiles(kSetupOneEsimProfile);
+  // NetworkHandler has not been initialized.
+  auto status_uploader = CreateStatusUploader();
+
+  // Initial Request
+  EXPECT_EQ(GetRequestCount(), 1);
+
+  // Requests made normally.
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // NetworkHandler::Shutdown() has already been called before
+  // EuiccStatusUploader is deleted
+  chromeos::NetworkHandler::Shutdown();
+
+  // No requests made as NetworkHandler is not available.
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // Need to reinitialize before exiting test.
+  chromeos::NetworkHandler::Initialize();
+}
+
 }  // namespace policy

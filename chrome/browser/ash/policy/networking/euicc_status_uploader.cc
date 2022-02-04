@@ -68,25 +68,20 @@ EuiccStatusUploader::EuiccStatusUploader(CloudPolicyClient* client,
     LOG(WARNING) << "NetworkHandler is not initialized.";
     return;
   }
-  chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->AddObserver(this);
+  network_handler_ = chromeos::NetworkHandler::Get();
+  network_handler_->managed_network_configuration_handler()->AddObserver(this);
   chromeos::HermesEuiccClient::Get()->AddObserver(this);
-  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
+  network_handler_->network_state_handler()->AddObserver(this, FROM_HERE);
+
   MaybeUploadStatus();
 }
 
 EuiccStatusUploader::~EuiccStatusUploader() {
-  if (chromeos::NetworkHandler::IsInitialized()) {
-    chromeos::NetworkHandler::Get()
-        ->managed_network_configuration_handler()
-        ->RemoveObserver(this);
-    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, FROM_HERE);
-  }
   if (chromeos::HermesEuiccClient::Get())
     chromeos::HermesEuiccClient::Get()->RemoveObserver(this);
+
+  if (network_handler_)
+    OnShuttingDown();
 }
 
 // static
@@ -122,6 +117,13 @@ EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status,
   return upload_request;
 }
 
+void EuiccStatusUploader::OnShuttingDown() {
+  network_handler_->network_state_handler()->RemoveObserver(this, FROM_HERE);
+  network_handler_->managed_network_configuration_handler()->RemoveObserver(
+      this);
+  network_handler_ = nullptr;
+}
+
 void EuiccStatusUploader::PoliciesApplied(const std::string& userhash) {
   MaybeUploadStatus();
 }
@@ -148,11 +150,10 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
   base::Value esim_profiles(base::Value::Type::LIST);
 
   chromeos::NetworkStateHandler::NetworkStateList networks;
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->GetNetworkListByType(ash::NetworkTypePattern::Cellular(),
-                             /*configure_only=*/false, /*visible_only=*/false,
-                             /*limit=*/0, &networks);
+  network_handler_->network_state_handler()->GetNetworkListByType(
+      ash::NetworkTypePattern::Cellular(),
+      /*configure_only=*/false, /*visible_only=*/false,
+      /*limit=*/0, &networks);
 
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
   for (const chromeos::NetworkState* network : networks) {
@@ -166,10 +167,9 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
 
     // Read the SMDP address from ONC.
     const base::Value* policy =
-        chromeos::NetworkHandler::Get()
-            ->managed_network_configuration_handler()
-            ->FindPolicyByGUID(/*userhash=*/std::string(), network->guid(),
-                               &onc_source);
+        network_handler_->managed_network_configuration_handler()
+            ->FindPolicyByGUID(
+                /*userhash=*/std::string(), network->guid(), &onc_source);
     DCHECK(policy);
 
     const base::Value* cellular_dict =
@@ -195,6 +195,10 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
 }
 
 void EuiccStatusUploader::MaybeUploadStatus() {
+  if (!network_handler_) {
+    LOG(WARNING) << "NetworkHandler is not initialized.";
+    return;
+  }
   const base::Value* last_uploaded_pref =
       local_state_->Get(kLastUploadedEuiccStatusPref);
   auto current_state = GetCurrentEuiccStatus();
