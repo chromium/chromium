@@ -87621,7 +87621,7 @@
       ]
      ],
      "css-supports-035.xht": [
-      "471a715131837de25abd9606725d0b700a4ca467",
+      "7dc202b8a4c3711d751a6cd82c540af9b8b2a509",
       [
        null,
        [
@@ -185260,6 +185260,19 @@
        {}
       ]
      ],
+     "width-by-clamp-px-em.html": [
+      "590ac775cba5ab235c395fd31323ba2b1f843fb5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "width-by-max-px-em.html": [
       "2aac59b70744e24fccd91bfc92d1177d6bb5c3a6",
       [
@@ -271465,12 +271478,12 @@
       []
      ],
      "idlharness-expected.txt": [
-      "00708f9eec8efca6e8b3cc144fad676b9a705d7b",
+      "3470bea6fc0796ed7bc4343a82ff8ce2579689f7",
       []
      ],
      "resources": {
       "testhelper.js": [
-       "2792ee51febe3e8ea98f953568a7291a543b6b3f",
+       "89849a7cc2fa5a1570f3668e84c011f9267f8c58",
        []
       ]
      },
@@ -277533,7 +277546,7 @@
       []
      ],
      "OWNERS": [
-      "4f05e87ee6ccdc857c03c62f4121ad07ae928495",
+      "0febacff73698d01004088d1e03ad41efc819535",
       []
      ],
      "idlharness-expected.txt": [
@@ -284204,6 +284217,14 @@
      ]
     },
     "security": {
+     "1xx-response.any-expected.txt": [
+      "6ac068363a83816939013bbde88a7584aca4f307",
+      []
+     ],
+     "1xx-response.any.worker-expected.txt": [
+      "6ac068363a83816939013bbde88a7584aca4f307",
+      []
+     ],
      "support": {
       "embedded-credential-window.sub.html": [
        "20d307e9188405dcec011042487aa2c7354930bf",
@@ -379365,7 +379386,7 @@
        ]
       ],
       "cssMathValue.tentative.html": [
-       "fd9fce861ef4445fe8b02e3e6f65411c5f0ec981",
+       "7ee4e8137e9a235b5f08df6a869a58ed56ddb118",
        [
         null,
         {}
@@ -379648,7 +379669,7 @@
         ]
        ],
        "cssMathValue.tentative.html": [
-        "2be200eea95812c6a753da8da176fc8ebeb15fce",
+        "26f6bba3a5700b314263103abb94200cc723668c",
         [
          null,
          {}
@@ -379676,7 +379697,7 @@
         ]
        ],
        "equals.tentative.html": [
-        "180d3deaf4ae594cee5dcef6ab4172e80bf7eaba",
+        "6e135cef2d8ef059576ac87105a184905a0295f2",
         [
          null,
          {}
@@ -379690,14 +379711,14 @@
         ]
        ],
        "parse.tentative.html": [
-        "382c81390369dd2660a1609c5fa26611fc80b544",
+        "8236b326a8c9253b8ef0f52ad754d443f28391e4",
         [
          null,
          {}
         ]
        ],
        "to.tentative.html": [
-        "bf78c509c8d03b94bd9944de876a41c3584bea19",
+        "7c40903cbbe20af79aad64b154adadf9430269d1",
         [
          null,
          {}
@@ -418652,6 +418673,17 @@
      ]
     },
     "security": {
+     "1xx-response.any.js": [
+      "df4dafcd80b38af93b688dcb318cfaf1978a939f",
+      [
+       "fetch/security/1xx-response.any.html",
+       {}
+      ],
+      [
+       "fetch/security/1xx-response.any.worker.html",
+       {}
+      ]
+     ],
      "dangling-markup-mitigation-data-url.tentative.sub.html": [
       "f27735daa1dd650726525d72a48b91d58d62535b",
       [
