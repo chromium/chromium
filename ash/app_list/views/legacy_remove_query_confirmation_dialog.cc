@@ -26,6 +26,7 @@ constexpr int kDialogWidth = 320;
 }  // namespace
 
 LegacyRemoveQueryConfirmationDialog::LegacyRemoveQueryConfirmationDialog(
+    const std::u16string& query,
     RemovalConfirmationCallback confirm_callback)
     : confirm_callback_(std::move(confirm_callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -52,8 +53,8 @@ LegacyRemoveQueryConfirmationDialog::LegacyRemoveQueryConfirmationDialog(
                                               views::DialogContentType::kText),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  views::Label* label = new views::Label(
-      l10n_util::GetStringUTF16(IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS));
+  views::Label* label = new views::Label(l10n_util::GetStringFUTF16(
+      IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS, query));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetAllowCharacterBreak(true);

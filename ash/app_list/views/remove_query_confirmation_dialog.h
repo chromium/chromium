@@ -30,7 +30,8 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
   // associated result.
   using RemovalConfirmationCallback = base::OnceCallback<void(bool)>;
 
-  explicit RemoveQueryConfirmationDialog(RemovalConfirmationCallback callback);
+  RemoveQueryConfirmationDialog(const std::u16string& query,
+                                RemovalConfirmationCallback callback);
 
   RemoveQueryConfirmationDialog(const RemoveQueryConfirmationDialog&) = delete;
   RemoveQueryConfirmationDialog& operator=(
