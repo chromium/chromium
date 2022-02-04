@@ -59,15 +59,7 @@ class OverlayImage final : public gl::GLImage {
   explicit OverlayImage(AHardwareBuffer* buffer)
       : handle_(base::android::ScopedHardwareBufferHandle::Create(buffer)) {}
 
-  void SetBeginFence(base::ScopedFD fence_fd) {
-    DCHECK(!end_read_fence_.is_valid());
-    DCHECK(!begin_read_fence_.is_valid());
-    begin_read_fence_ = std::move(fence_fd);
-  }
-
   base::ScopedFD TakeEndFence() {
-    DCHECK(!begin_read_fence_.is_valid());
-
     previous_end_read_fence_ =
         base::ScopedFD(HANDLE_EINTR(dup(end_read_fence_.get())));
     return std::move(end_read_fence_);
@@ -78,7 +70,7 @@ class OverlayImage final : public gl::GLImage {
   GetAHardwareBuffer() override {
     return std::make_unique<ScopedHardwareBufferFenceSyncImpl>(
         this, base::android::ScopedHardwareBufferHandle::Create(handle_.get()),
-        std::move(begin_read_fence_), std::move(previous_end_read_fence_));
+        std::move(previous_end_read_fence_));
   }
 
  protected:
@@ -91,17 +83,15 @@ class OverlayImage final : public gl::GLImage {
     ScopedHardwareBufferFenceSyncImpl(
         scoped_refptr<OverlayImage> image,
         base::android::ScopedHardwareBufferHandle handle,
-        base::ScopedFD fence_fd,
         base::ScopedFD available_fence_fd)
         : ScopedHardwareBufferFenceSync(std::move(handle),
-                                        std::move(fence_fd),
+                                        base::ScopedFD(),
                                         std::move(available_fence_fd),
                                         false /* is_video */),
           image_(std::move(image)) {}
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 
     void SetReadFence(base::ScopedFD fence_fd, bool has_context) override {
-      DCHECK(!image_->begin_read_fence_.is_valid());
       DCHECK(!image_->end_read_fence_.is_valid());
       DCHECK(!image_->previous_end_read_fence_.is_valid());
 
@@ -113,9 +103,6 @@ class OverlayImage final : public gl::GLImage {
   };
 
   base::android::ScopedHardwareBufferHandle handle_;
-
-  // The fence for overlay controller to wait on before scanning out.
-  base::ScopedFD begin_read_fence_;
 
   // The fence for overlay controller to set to indicate scanning out
   // completion. The image content should not be modified before passing this
@@ -159,7 +146,7 @@ class SharedImageBackingAHB : public SharedImageBackingAndroid {
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   base::android::ScopedHardwareBufferHandle GetAhbHandle() const;
-  gl::GLImage* BeginOverlayAccess();
+  gl::GLImage* BeginOverlayAccess(gfx::GpuFenceHandle&);
   void EndOverlayAccess();
 
  protected:
@@ -231,7 +218,12 @@ class SharedImageRepresentationOverlayAHB
   }
 
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
-    gl_image_ = ahb_backing()->BeginOverlayAccess();
+    gfx::GpuFenceHandle fence_handle;
+    gl_image_ = ahb_backing()->BeginOverlayAccess(fence_handle);
+
+    if (!fence_handle.is_null())
+      acquire_fences->emplace_back(std::move(fence_handle));
+
     return !!gl_image_;
   }
 
@@ -434,7 +426,8 @@ SharedImageBackingAHB::ProduceOverlay(SharedImageManager* manager,
                                                                tracker);
 }
 
-gl::GLImage* SharedImageBackingAHB::BeginOverlayAccess() {
+gl::GLImage* SharedImageBackingAHB::BeginOverlayAccess(
+    gfx::GpuFenceHandle& begin_read_fence) {
   AutoLock auto_lock(this);
 
   DCHECK(!is_overlay_accessing_);
@@ -452,8 +445,10 @@ gl::GLImage* SharedImageBackingAHB::BeginOverlayAccess() {
   }
 
   if (write_sync_fd_.is_valid()) {
-    base::ScopedFD fence_fd(HANDLE_EINTR(dup(write_sync_fd_.get())));
-    overlay_image_->SetBeginFence(std::move(fence_fd));
+    gfx::GpuFenceHandle fence_handle;
+    fence_handle.owned_fd =
+        base::ScopedFD(HANDLE_EINTR(dup(write_sync_fd_.get())));
+    begin_read_fence = std::move(fence_handle);
   }
 
   is_overlay_accessing_ = true;

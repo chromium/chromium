@@ -345,7 +345,6 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   bool is_primary_plane = false;
   if (scoped_hardware_buffer) {
     hardware_buffer = scoped_hardware_buffer->buffer();
-    fence_fd = scoped_hardware_buffer->TakeFence();
 
     // We currently only promote the display compositor's buffer or a video
     // buffer to an overlay. So if this buffer is not for video then it implies
@@ -374,8 +373,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     if (gpu_fence && surface_state.hardware_buffer) {
       auto fence_handle = gpu_fence->GetGpuFenceHandle().Clone();
       DCHECK(!fence_handle.is_null());
-      fence_fd =
-          MergeFDs(std::move(fence_fd), std::move(fence_handle.owned_fd));
+      fence_fd = std::move(fence_handle.owned_fd);
     }
 
     if (is_primary_plane) {

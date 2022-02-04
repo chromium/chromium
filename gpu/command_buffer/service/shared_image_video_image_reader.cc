@@ -60,9 +60,8 @@ class VideoImage : public gl::GLImage {
  public:
   VideoImage() = default;
 
-  VideoImage(AHardwareBuffer* buffer, base::ScopedFD begin_read_fence)
-      : handle_(base::android::ScopedHardwareBufferHandle::Create(buffer)),
-        begin_read_fence_(std::move(begin_read_fence)) {}
+  VideoImage(AHardwareBuffer* buffer)
+      : handle_(base::android::ScopedHardwareBufferHandle::Create(buffer)) {}
 
   // gl::GLImage:
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
@@ -71,8 +70,7 @@ class VideoImage : public gl::GLImage {
       return nullptr;
 
     return std::make_unique<ScopedHardwareBufferFenceSyncImpl>(
-        this, base::android::ScopedHardwareBufferHandle::Create(handle_.get()),
-        std::move(begin_read_fence_));
+        this, base::android::ScopedHardwareBufferHandle::Create(handle_.get()));
   }
 
   base::ScopedFD TakeEndReadFence() { return std::move(end_read_fence_); }
@@ -86,10 +84,9 @@ class VideoImage : public gl::GLImage {
    public:
     ScopedHardwareBufferFenceSyncImpl(
         scoped_refptr<VideoImage> image,
-        base::android::ScopedHardwareBufferHandle handle,
-        base::ScopedFD fence_fd)
+        base::android::ScopedHardwareBufferHandle handle)
         : ScopedHardwareBufferFenceSync(std::move(handle),
-                                        std::move(fence_fd),
+                                        base::ScopedFD(),
                                         base::ScopedFD(),
                                         /*is_video=*/true),
           image_(std::move(image)) {}
@@ -105,9 +102,6 @@ class VideoImage : public gl::GLImage {
   };
 
   base::android::ScopedHardwareBufferHandle handle_;
-
-  // This fence should be waited upon before reading from the buffer.
-  base::ScopedFD begin_read_fence_;
 
   // This fence should be waited upon to ensure that the reader is finished
   // reading from the buffer.
@@ -531,6 +525,19 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
     // A |CodecImage| must have TextureOwner() for SurfaceControl overlays.
     // Legacy overlays are handled by SharedImageRepresentationLegacyOverlay.
     DCHECK(stream_image()->HasTextureOwner());
+    scoped_hardware_buffer_ = stream_image()->GetAHardwareBuffer();
+
+    // |scoped_hardware_buffer_| could be null for cases when a buffer is
+    // not acquired in ImageReader for some reasons and there is no previously
+    // acquired image left.
+    if (!scoped_hardware_buffer_)
+      return false;
+
+    gfx::GpuFenceHandle handle;
+    handle.owned_fd = scoped_hardware_buffer_->TakeFence();
+    if (!handle.is_null())
+      acquire_fences->emplace_back(std::move(handle));
+
     return true;
   }
 
@@ -543,38 +550,19 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
                                               true);
       }
       gl_image_.reset();
-      scoped_hardware_buffer_.reset();
     }
+    scoped_hardware_buffer_.reset();
   }
 
   gl::GLImage* GetGLImage() override {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     DCHECK(stream_image()->HasTextureOwner())
         << "The backing is already in a SurfaceView!";
+    DCHECK(scoped_hardware_buffer_);
 
-    // Note that we have SurfaceView overlay as well as SurfaceControl.
-    // SurfaceView may/may not have TextureOwner whereas SurfaceControl always
-    // have TextureOwner. It is not possible to know whether we are in
-    // SurfaceView or SurfaceControl mode in Begin/EndReadAccess. Hence
-    // |scoped_hardware_buffer_| and |gl_image_| needs to be created here since
-    // GetGLImage will only be called for SurfaceControl.
     if (!gl_image_) {
-      scoped_hardware_buffer_ = stream_image()->GetAHardwareBuffer();
-
-      // |scoped_hardware_buffer_| could be null for cases when a buffer is
-      // not acquired in ImageReader for some reasons and there is no previously
-      // acquired image left.
-      if (scoped_hardware_buffer_) {
-        gl_image_ = base::MakeRefCounted<VideoImage>(
-            scoped_hardware_buffer_->buffer(),
-            scoped_hardware_buffer_->TakeFence());
-      } else {
-        // Caller of GetGLImage currently do not expect a null |gl_image_|.
-        // Hence creating a valid object with null buffer which results in a
-        // blank video frame and is expected. TODO(vikassoni) : Explore option
-        // of returning a null GLImage here.
-        gl_image_ = base::MakeRefCounted<VideoImage>();
-      }
+      gl_image_ =
+          base::MakeRefCounted<VideoImage>(scoped_hardware_buffer_->buffer());
       gl_image_->SetColorSpace(color_space());
     }
     return gl_image_.get();
