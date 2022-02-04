@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -508,114 +507,114 @@ SiteSettingsHandler::~SiteSettingsHandler() {
 }
 
 void SiteSettingsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "fetchUsageTotal",
       base::BindRepeating(&SiteSettingsHandler::HandleFetchUsageTotal,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearUnpartitionedUsage",
       base::BindRepeating(&SiteSettingsHandler::HandleClearUnpartitionedUsage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearPartitionedUsage",
       base::BindRepeating(&SiteSettingsHandler::HandleClearPartitionedUsage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setDefaultValueForContentType",
       base::BindRepeating(
           &SiteSettingsHandler::HandleSetDefaultValueForContentType,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getDefaultValueForContentType",
       base::BindRepeating(
           &SiteSettingsHandler::HandleGetDefaultValueForContentType,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAllSites",
       base::BindRepeating(&SiteSettingsHandler::HandleGetAllSites,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getCategoryList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetCategoryList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getCookieSettingDescription",
       base::BindRepeating(
           &SiteSettingsHandler::HandleGetCookieSettingDescription,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getRecentSitePermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleGetRecentSitePermissions,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getFormattedBytes",
       base::BindRepeating(&SiteSettingsHandler::HandleGetFormattedBytes,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetExceptionList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getChooserExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getOriginPermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleGetOriginPermissions,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setOriginPermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleSetOriginPermissions,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "resetCategoryPermissionForPattern",
       base::BindRepeating(
           &SiteSettingsHandler::HandleResetCategoryPermissionForPattern,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setCategoryPermissionForPattern",
       base::BindRepeating(
           &SiteSettingsHandler::HandleSetCategoryPermissionForPattern,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "resetChooserExceptionForSite",
       base::BindRepeating(
           &SiteSettingsHandler::HandleResetChooserExceptionForSite,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "isOriginValid",
       base::BindRepeating(&SiteSettingsHandler::HandleIsOriginValid,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "isPatternValidForType",
       base::BindRepeating(&SiteSettingsHandler::HandleIsPatternValidForType,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "updateIncognitoStatus",
       base::BindRepeating(&SiteSettingsHandler::HandleUpdateIncognitoStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "fetchZoomLevels",
       base::BindRepeating(&SiteSettingsHandler::HandleFetchZoomLevels,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeZoomLevel",
       base::BindRepeating(&SiteSettingsHandler::HandleRemoveZoomLevel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setBlockAutoplayEnabled",
       base::BindRepeating(&SiteSettingsHandler::HandleSetBlockAutoplayEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "fetchBlockAutoplayStatus",
       base::BindRepeating(&SiteSettingsHandler::HandleFetchBlockAutoplayStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearEtldPlus1DataAndCookies",
       base::BindRepeating(
           &SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordAction",
       base::BindRepeating(&SiteSettingsHandler::HandleRecordAction,
                           base::Unretained(this)));
@@ -782,10 +781,11 @@ void SiteSettingsHandler::OnZoomLevelChanged(
   SendZoomLevels();
 }
 
-void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
+void SiteSettingsHandler::HandleFetchUsageTotal(
+    const base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  usage_host_ = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  usage_host_ = args[0].GetString();
 
   update_site_details_ = true;
   if (cookies_tree_model_ && !send_sites_list_ &&
@@ -797,9 +797,9 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
 }
 
 void SiteSettingsHandler::HandleClearUnpartitionedUsage(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& origin_string = args->GetListDeprecated()[0].GetString();
+    const base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& origin_string = args[0].GetString();
   auto origin = url::Origin::Create(GURL(origin_string));
   if (origin.opaque())
     return;
@@ -811,19 +811,19 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
 }
 
 void SiteSettingsHandler::HandleClearPartitionedUsage(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& origin = args->GetListDeprecated()[0].GetString();
-  const std::string& etld_plus1 = args->GetListDeprecated()[1].GetString();
+    const base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+  const std::string& origin = args[0].GetString();
+  const std::string& etld_plus1 = args[1].GetString();
 
   RemoveMatchingNodes(cookies_tree_model_.get(), origin, etld_plus1);
 }
 
 void SiteSettingsHandler::HandleSetDefaultValueForContentType(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& content_type = args->GetListDeprecated()[0].GetString();
-  const std::string& setting = args->GetListDeprecated()[1].GetString();
+    const base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+  const std::string& content_type = args[0].GetString();
+  const std::string& setting = args[1].GetString();
   ContentSetting default_setting;
   CHECK(content_settings::ContentSettingFromString(setting, &default_setting));
   ContentSettingsType type =
@@ -855,12 +855,12 @@ void SiteSettingsHandler::HandleSetDefaultValueForContentType(
 }
 
 void SiteSettingsHandler::HandleGetDefaultValueForContentType(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& type = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string& type = args[1].GetString();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -872,11 +872,12 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
   ResolveJavascriptCallback(callback_id, category);
 }
 
-void SiteSettingsHandler::HandleGetAllSites(const base::ListValue* args) {
+void SiteSettingsHandler::HandleGetAllSites(
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  std::string callback_id = args[0].GetString();
 
   all_sites_map_.clear();
   origin_permission_set_.clear();
@@ -940,12 +941,13 @@ void SiteSettingsHandler::HandleGetAllSites(const base::ListValue* args) {
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void SiteSettingsHandler::HandleGetCategoryList(const base::ListValue* args) {
+void SiteSettingsHandler::HandleGetCategoryList(
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
-  GURL origin(args->GetListDeprecated()[1].GetString());
+  CHECK_EQ(2U, args.size());
+  std::string callback_id = args[0].GetString();
+  GURL origin(args[1].GetString());
 
   base::Value result(base::Value::Type::LIST);
   for (ContentSettingsType content_type :
@@ -957,22 +959,21 @@ void SiteSettingsHandler::HandleGetCategoryList(const base::ListValue* args) {
 }
 
 void SiteSettingsHandler::HandleGetCookieSettingDescription(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  std::string callback_id = args[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(GetCookieSettingDescription(profile_)));
 }
 
 void SiteSettingsHandler::HandleGetRecentSitePermissions(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
-  size_t max_sources =
-      base::checked_cast<size_t>(args->GetListDeprecated()[1].GetInt());
+  CHECK_EQ(2U, args.size());
+  std::string callback_id = args[0].GetString();
+  size_t max_sources = base::checked_cast<size_t>(args[1].GetInt());
 
   const std::vector<ContentSettingsType>& content_types =
       site_settings::GetVisiblePermissionCategories();
@@ -1071,21 +1072,22 @@ void SiteSettingsHandler::OnStorageFetched() {
                     PopulateCookiesAndUsageData(profile_));
 }
 
-void SiteSettingsHandler::HandleGetFormattedBytes(const base::ListValue* args) {
+void SiteSettingsHandler::HandleGetFormattedBytes(
+    const base::Value::ConstListView args) {
   AllowJavascript();
-  base::Value::ConstListView list = args->GetListDeprecated();
-  CHECK_EQ(2U, list.size());
-  int64_t num_bytes = static_cast<int64_t>(list[1].GetDouble());
-  ResolveJavascriptCallback(/*callback_id=*/list[0],
+  CHECK_EQ(2U, args.size());
+  int64_t num_bytes = static_cast<int64_t>(args[1].GetDouble());
+  ResolveJavascriptCallback(/*callback_id=*/args[0],
                             base::Value(ui::FormatBytes(num_bytes)));
 }
 
-void SiteSettingsHandler::HandleGetExceptionList(const base::ListValue* args) {
+void SiteSettingsHandler::HandleGetExceptionList(
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& type = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string& type = args[1].GetString();
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
 
@@ -1115,12 +1117,12 @@ void SiteSettingsHandler::HandleGetExceptionList(const base::ListValue* args) {
 }
 
 void SiteSettingsHandler::HandleGetChooserExceptionList(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& type = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string& type = args[1].GetString();
   const site_settings::ChooserTypeNameEntry* chooser_type =
       site_settings::ChooserTypeFromGroupName(type);
   CHECK(chooser_type);
@@ -1131,14 +1133,13 @@ void SiteSettingsHandler::HandleGetChooserExceptionList(
 }
 
 void SiteSettingsHandler::HandleGetOriginPermissions(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  base::Value::ConstListView args_list = args->GetListDeprecated();
-  CHECK_EQ(3U, args_list.size());
-  const base::Value& callback_id = args_list[0];
-  std::string origin = args_list[1].GetString();
-  base::Value::ConstListView types = args_list[2].GetListDeprecated();
+  CHECK_EQ(3U, args.size());
+  const base::Value& callback_id = args[0];
+  std::string origin = args[1].GetString();
+  base::Value::ConstListView types = args[2].GetList();
 
   // Note: Invalid URLs will just result in default settings being shown.
   const GURL origin_url(origin);
@@ -1180,11 +1181,11 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
 }
 
 void SiteSettingsHandler::HandleSetOriginPermissions(
-    const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetListDeprecated().size());
-  std::string origin_string = args->GetListDeprecated()[0].GetString();
-  const std::string* type_string = args->GetListDeprecated()[1].GetIfString();
-  std::string value = args->GetListDeprecated()[2].GetString();
+    const base::Value::ConstListView args) {
+  CHECK_EQ(3U, args.size());
+  std::string origin_string = args[0].GetString();
+  const std::string* type_string = args[1].GetIfString();
+  std::string value = args[2].GetString();
 
   const GURL origin(origin_string);
   if (!origin.is_valid())
@@ -1248,14 +1249,12 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
 }
 
 void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
-    const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetListDeprecated().size());
-  const std::string& primary_pattern_string =
-      args->GetListDeprecated()[0].GetString();
-  const std::string& secondary_pattern_string =
-      args->GetListDeprecated()[1].GetString();
-  const std::string& type = args->GetListDeprecated()[2].GetString();
-  const bool& incognito = args->GetListDeprecated()[3].GetBool();
+    const base::Value::ConstListView args) {
+  CHECK_EQ(4U, args.size());
+  const std::string& primary_pattern_string = args[0].GetString();
+  const std::string& secondary_pattern_string = args[1].GetString();
+  const std::string& type = args[2].GetString();
+  const bool& incognito = args[3].GetBool();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -1310,15 +1309,13 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
 }
 
 void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
-    const base::ListValue* args) {
-  CHECK_EQ(5U, args->GetListDeprecated().size());
-  const std::string& primary_pattern_string =
-      args->GetListDeprecated()[0].GetString();
-  const std::string& secondary_pattern_string =
-      args->GetListDeprecated()[1].GetString();
-  const std::string& type = args->GetListDeprecated()[2].GetString();
-  const std::string& value = args->GetListDeprecated()[3].GetString();
-  const bool& incognito = args->GetListDeprecated()[4].GetBool();
+    const base::Value::ConstListView args) {
+  CHECK_EQ(5U, args.size());
+  const std::string& primary_pattern_string = args[0].GetString();
+  const std::string& secondary_pattern_string = args[1].GetString();
+  const std::string& type = args[2].GetString();
+  const std::string& value = args[3].GetString();
+  const bool& incognito = args[4].GetBool();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -1379,47 +1376,46 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
 }
 
 void SiteSettingsHandler::HandleResetChooserExceptionForSite(
-    const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetListDeprecated().size());
+    const base::Value::ConstListView args) {
+  CHECK_EQ(4U, args.size());
 
-  const std::string& chooser_type_str =
-      args->GetListDeprecated()[0].GetString();
+  const std::string& chooser_type_str = args[0].GetString();
   const site_settings::ChooserTypeNameEntry* chooser_type =
       site_settings::ChooserTypeFromGroupName(chooser_type_str);
   CHECK(chooser_type);
 
-  const std::string& origin_str = args->GetListDeprecated()[1].GetString();
+  const std::string& origin_str = args[1].GetString();
   GURL requesting_origin(origin_str);
   CHECK(requesting_origin.is_valid());
 
-  const std::string& embedding_origin_str =
-      args->GetListDeprecated()[2].GetString();
+  const std::string& embedding_origin_str = args[2].GetString();
   GURL embedding_origin(embedding_origin_str);
   CHECK(embedding_origin.is_valid());
 
   permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type->get_context(profile_);
   chooser_context->RevokeObjectPermission(url::Origin::Create(embedding_origin),
-                                          args->GetListDeprecated()[3]);
+                                          args[3]);
 }
 
-void SiteSettingsHandler::HandleIsOriginValid(const base::ListValue* args) {
+void SiteSettingsHandler::HandleIsOriginValid(
+    const base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& origin_string = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string& origin_string = args[1].GetString();
 
   ResolveJavascriptCallback(callback_id,
                             base::Value(GURL(origin_string).is_valid()));
 }
 
 void SiteSettingsHandler::HandleIsPatternValidForType(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(3U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& pattern_string = args->GetListDeprecated()[1].GetString();
-  const std::string& type = args->GetListDeprecated()[2].GetString();
+  CHECK_EQ(3U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string& pattern_string = args[1].GetString();
+  const std::string& type = args[2].GetString();
 
   std::string reason;
   bool is_valid =
@@ -1432,13 +1428,14 @@ void SiteSettingsHandler::HandleIsPatternValidForType(
 }
 
 void SiteSettingsHandler::HandleUpdateIncognitoStatus(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
   FireWebUIListener("onIncognitoStatusChanged",
                     base::Value(profile_->HasPrimaryOTRProfile()));
 }
 
-void SiteSettingsHandler::HandleFetchZoomLevels(const base::ListValue* args) {
+void SiteSettingsHandler::HandleFetchZoomLevels(
+    const base::Value::ConstListView args) {
   AllowJavascript();
   SendZoomLevels();
 }
@@ -1521,10 +1518,11 @@ void SiteSettingsHandler::SendZoomLevels() {
   FireWebUIListener("onZoomLevelsChanged", zoom_levels_exceptions);
 }
 
-void SiteSettingsHandler::HandleRemoveZoomLevel(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
+void SiteSettingsHandler::HandleRemoveZoomLevel(
+    const base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
 
-  std::string origin = args->GetListDeprecated()[0].GetString();
+  std::string origin = args[0].GetString();
 
   if (origin ==
       l10n_util::GetStringUTF8(IDS_ZOOMLEVELS_CHROME_ERROR_PAGES_LABEL)) {
@@ -1538,7 +1536,7 @@ void SiteSettingsHandler::HandleRemoveZoomLevel(const base::ListValue* args) {
 }
 
 void SiteSettingsHandler::HandleFetchBlockAutoplayStatus(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
   SendBlockAutoplayStatus();
 }
@@ -1568,15 +1566,15 @@ void SiteSettingsHandler::SendBlockAutoplayStatus() {
 }
 
 void SiteSettingsHandler::HandleSetBlockAutoplayEnabled(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
   if (!UnifiedAutoplayConfig::IsBlockAutoplayUserModifiable(profile_))
     return;
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  CHECK(args->GetListDeprecated()[0].is_bool());
-  bool value = args->GetListDeprecated()[0].GetBool();
+  CHECK_EQ(1U, args.size());
+  CHECK(args[0].is_bool());
+  bool value = args[0].GetBool();
 
   profile_->GetPrefs()->SetBoolean(prefs::kBlockAutoplayEnabled, value);
 }
@@ -1730,9 +1728,9 @@ void SiteSettingsHandler::GetOriginCookies(
 }
 
 void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& etld_plus1 = args->GetListDeprecated()[0].GetString();
+    const base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& etld_plus1 = args[0].GetString();
 
   AllowJavascript();
   RemoveMatchingNodes(cookies_tree_model_.get(), absl::nullopt, etld_plus1);
@@ -1761,10 +1759,10 @@ void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
   RemoveNonTreeModelData(affected_origins);
 }
 
-void SiteSettingsHandler::HandleRecordAction(const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
-  CHECK_EQ(1U, list.size());
-  int action = list[0].GetInt();
+void SiteSettingsHandler::HandleRecordAction(
+    const base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  int action = args[0].GetInt();
   DCHECK_LE(action, static_cast<int>(AllSitesAction2::kMaxValue));
   DCHECK_GE(action, static_cast<int>(AllSitesAction2::kLoadPage));
 
