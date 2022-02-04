@@ -1125,7 +1125,6 @@ static_library("ui") {
       "media_router/cast_dialog_model.h",
       "media_router/cast_modes_with_media_sources.cc",
       "media_router/cast_modes_with_media_sources.h",
-      "media_router/cloud_services_dialog.h",
       "media_router/media_cast_mode.cc",
       "media_router/media_cast_mode.h",
       "media_router/media_router_ui.cc",
@@ -1777,10 +1776,6 @@ static_library("ui") {
 
     if (is_linux || is_chromeos_lacros) {
       deps += [ "//ui/base/ime/linux" ]
-    }
-
-    if (!toolkit_views) {
-      sources += [ "media_router/cloud_services_dialog.cc" ]
     }
 
     if (enable_extensions) {
