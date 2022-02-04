@@ -177,6 +177,7 @@ source_set("eg_app_support+eg2") {
     "//ios/third_party/material_components_ios",
     "//ios/web:eg_app_support+eg2",
     "//ios/web/common",
+    "//ios/web/js_messaging:js_messaging",
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",

@@ -54,6 +54,7 @@
 #import "ios/testing/open_url_context.h"
 #include "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
+#import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -92,6 +93,18 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   std::string serialized_value;
   JSONStringValueSerializer serializer(&serialized_value);
   serializer.Serialize(*value);
+  return base::SysUTF8ToNSString(serialized_value);
+}
+// Returns a JSON-encoded string representing the given |value|. If |value| is
+// nullptr, returns a string representing a base::Value of type NONE.
+NSString* SerializedValue(const base::Value* value) {
+  base::Value none_value(base::Value::Type::NONE);
+  const base::Value* result = value ? value : &none_value;
+  DCHECK(result);
+
+  std::string serialized_value;
+  JSONStringValueSerializer serializer(&serialized_value);
+  serializer.Serialize(*result);
   return base::SysUTF8ToNSString(serialized_value);
 }
 }
@@ -958,33 +971,39 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   __block NSString* blockResult = nil;
   __block bool blockError = false;
 
-  std::string script = base::SysNSStringToUTF8(javaScript);
   web::WebFrame* web_frame =
       web::GetMainFrame(chrome_test_util::GetCurrentWebState());
 
-  web_frame->ExecuteJavaScript(
-      script, base::BindOnce(^(const base::Value* value, bool error) {
-        handlerCalled = true;
-        blockError = error;
+  if (web_frame) {
+    std::string script = base::SysNSStringToUTF8(javaScript);
+    web_frame->ExecuteJavaScript(
+        script, base::BindOnce(^(const base::Value* value, bool error) {
+          handlerCalled = true;
+          blockError = error;
+          blockResult = SerializedValue(value);
+        }));
 
-        base::Value none_value(base::Value::Type::NONE);
-        const base::Value* result = value ? value : &none_value;
-        DCHECK(result);
+    bool completed = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return handlerCalled;
+    });
 
-        std::string serialized_value;
-        JSONStringValueSerializer serializer(&serialized_value);
-        serializer.Serialize(*result);
-        blockResult = base::SysUTF8ToNSString(serialized_value);
-      }));
+    BOOL success = completed && !blockError;
 
-  bool completed = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return handlerCalled;
-  });
+    JavaScriptExecutionResult* result =
+        [[JavaScriptExecutionResult alloc] initWithResult:blockResult
+                                      successfulExecution:success];
+    return result;
+  }
 
-  BOOL success = completed && !blockError;
+  NSError* error = nil;
+  id output = [self executeJavaScript:javaScript error:&error];
+  std::unique_ptr<base::Value> value = web::ValueResultFromWKResult(output);
+
+  NSString* callbackResult = SerializedValue(value.get());
+  BOOL success = error ? false : true;
 
   JavaScriptExecutionResult* result =
-      [[JavaScriptExecutionResult alloc] initWithResult:blockResult
+      [[JavaScriptExecutionResult alloc] initWithResult:callbackResult
                                     successfulExecution:success];
   return result;
 }

@@ -5,6 +5,7 @@ specific_include_rules = {
    "+components/password_manager/core/common/password_manager_features.h",
    "+components/payments/core/features.h",
    "+components/ukm/ios/features.h",
+   "+ios/web/js_messaging",
    "+services/metrics/public/cpp/ukm_recorder.h",
   ],
 
