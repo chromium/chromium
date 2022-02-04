@@ -163,11 +163,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 this::supportsFindInPage, getTabCreatorManagerSupplier(), getFullscreenManager(),
                 getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
                 getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
-                this::isInOverviewMode, this::shouldShowOverviewPageOnStart, this::isWarmOnResume,
-                /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
-                getIntentRequestTracker(), () -> mToolbarCoordinator, () -> mNavigationController,
-                () -> mIntentDataProvider, getMultiWindowModeStateDispatcher(),
-                new OmniboxPedalDelegateImpl(this));
+                this::isInOverviewMode, this::isWarmOnResume, /* appMenuDelegate= */ this,
+                /* statusBarColorProvider= */ this, getIntentRequestTracker(),
+                () -> mToolbarCoordinator, () -> mNavigationController, () -> mIntentDataProvider,
+                getMultiWindowModeStateDispatcher(), new OmniboxPedalDelegateImpl(this));
         // clang-format on
         return mBaseCustomTabRootUiCoordinator;
     }

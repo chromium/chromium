@@ -127,7 +127,6 @@ public class TopToolbarCoordinator implements Toolbar {
      *         enabled.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      *         colors.
-     * @param shouldHideToolbarLayoutOnStart Whether to hide toolbar layout on startup.
      * @param startSurfaceLogoClickedCallback The callback to be notified when the logo is clicked
      *         on Start surface. On NTP, the logo is in the new tab page layout instead of the
      *         toolbar and the logo click events are processed in NewTabPageLayout. So this callback
@@ -155,8 +154,7 @@ public class TopToolbarCoordinator implements Toolbar {
             boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
             boolean isTabGroupsAndroidContinuationEnabled, HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier, OfflineDownloader offlineDownloader,
-            boolean initializeWithIncognitoColors, boolean shouldHideToolbarLayoutOnStart,
-            ObservableSupplier<Profile> profileSupplier,
+            boolean initializeWithIncognitoColors, ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> startSurfaceLogoClickedCallback) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
@@ -168,7 +166,6 @@ public class TopToolbarCoordinator implements Toolbar {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
-            if (shouldHideToolbarLayoutOnStart) mToolbarLayout.setVisibility(View.GONE);
             View.OnClickListener homeButtonOnClickListener = v -> {
                 if (tabController != null) {
                     tabController.openHomepage();
