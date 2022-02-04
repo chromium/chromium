@@ -143,6 +143,7 @@ def PrintJavaLines(java_lines):
       print(' ')
     print(l)
 
+
 def PrintOutput(trace_lines, value_lines, java_lines, more_info):
   if trace_lines:
     PrintTraceLines(trace_lines)
@@ -157,13 +158,15 @@ def PrintOutput(trace_lines, value_lines, java_lines, more_info):
   if java_lines:
     PrintJavaLines(java_lines)
 
+
 def PrintDivider():
   print()
   print('-----------------------------------------------------\n')
 
 
 def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
-                          arch_defined, llvm_symbolizer, apks_directory):
+                          arch_defined, llvm_symbolizer, apks_directory,
+                          pass_through):
   """Symbolize stacks on the fly as they are read from an input stream."""
 
   if fallback_monochrome:
@@ -188,6 +191,8 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
   for line in iter(sys.stdin.readline, b''):
     if not line: # EOF
       break
+    if pass_through:
+      sys.stdout.write(line)
     maybe_line, maybe_so_dir = preprocessor([line])
     useful_lines.extend(maybe_line)
     so_dirs.extend(maybe_so_dir)

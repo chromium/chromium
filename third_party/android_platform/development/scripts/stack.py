@@ -46,8 +46,18 @@ _ANDROID_M_MAJOR_VERSION=6
 
 def PrintUsage():
   """Print usage and exit with error."""
+  print("Usage: " + sys.argv[0] + " [options] [FILE]")
   print()
-  print("  usage: " + sys.argv[0] + " [options] [FILE]")
+  print("Find all parts in FILE belonging to stack traces and symbolize")
+  print("them: copy to stdout augmenting with source file names and line")
+  print("numbers.")
+  print()
+  print("Not providing FILE or setting it to '-' implies reading from stdin.")
+  print()
+  print("  -p, --pass-through")
+  print("       Copy all lines from stdin to stdout in addition to")
+  print("       symbolizing relevant lines. This way ADB logcat can")
+  print("       be piped through the tool to symbolize on the fly.")
   print()
   print("  --symbols-dir=path")
   print("       path to the Android OS symbols dir, such as")
@@ -90,13 +100,6 @@ def PrintUsage():
   print("  --verbose")
   print("       enable extra logging, particularly for debugging failed")
   print("       symbolization")
-  print()
-  print("  FILE should contain a stack trace in it somewhere")
-  print("       the tool will find that and re-print it with")
-  print("       source files and line numbers.  If you don't")
-  print("       pass FILE, or if file is -, it reads from")
-  print("       stdin.")
-  print()
   sys.exit(1)
 
 def UnzipSymbols(symbolfile, symdir=None):
@@ -143,14 +146,15 @@ def UnzipSymbols(symbolfile, symdir=None):
 
 def main(argv, test_symbolizer=None):
   try:
-    options, arguments = getopt.getopt(argv, "", [
-        "more-info", "less-info", "chrome-symbols-dir=", "output-directory=",
-        "apks-directory=", "symbols-dir=", "symbols-zip=", "arch=",
-        "fallback-monochrome", "verbose", "quiet", "help",
+    options, arguments = getopt.getopt(argv, "p", [
+        "pass-through", "more-info", "less-info", "chrome-symbols-dir=",
+        "output-directory=", "apks-directory=", "symbols-dir=", "symbols-zip=",
+        "arch=", "fallback-monochrome", "verbose", "quiet", "help",
     ])
   except getopt.GetoptError:
     PrintUsage()
 
+  pass_through = False
   zip_arg = None
   more_info = False
   fallback_monochrome = False
@@ -160,6 +164,10 @@ def main(argv, test_symbolizer=None):
   for option, value in options:
     if option == "--help":
       PrintUsage()
+    elif option == "--pass-through":
+      pass_through = True
+    elif option == "-p":
+      pass_through = True
     elif option == "--symbols-dir":
       symbol.SYMBOLS_DIR = os.path.abspath(os.path.expanduser(value))
     elif option == "--symbols-zip":
@@ -202,17 +210,21 @@ def main(argv, test_symbolizer=None):
   if zip_arg:
     rootdir, symbol.SYMBOLS_DIR = UnzipSymbols(zip_arg)
 
-  if not arguments or arguments[0] == "-":
+  if not arguments or arguments[0] == '-':
     logging.info('Reading native crash info from stdin (symbolization starts '
                  'on the first unrelated line or EOF)')
     with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
       stack_core.StreamingConvertTrace(sys.stdin, {}, more_info,
                                        fallback_monochrome, arch_defined,
-                                       symbolizer, apks_directory)
+                                       symbolizer, apks_directory, pass_through)
   else:
     logging.info('Searching for native crashes in: %s',
                  os.path.realpath(arguments[0]))
-    f = open(arguments[0], "r")
+    if pass_through:
+      logging.error('Processing files in --pass-through mode is not supported')
+      return 1
+
+    f = open(arguments[0], 'r')
 
     lines = f.readlines()
     f.close()
@@ -234,6 +246,8 @@ def main(argv, test_symbolizer=None):
     cmd = "rm -rf \"%s\"" % rootdir
     logging.info('cleaning up (%s)', cmd)
     os.system(cmd)
+
+  return 0
 
 if __name__ == "__main__":
   sys.exit(main(sys.argv[1:]))
