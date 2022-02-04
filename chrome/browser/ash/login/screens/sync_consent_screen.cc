@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -196,10 +197,14 @@ void SyncConsentScreen::ShowImpl() {
   } else {
     PrepareScreenBasedOnCapability();
   }
+
+  bool is_arc_restricted =
+      AccountAppsAvailability::IsArcAccountRestrictionsEnabled();
+
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
-  view_->Show();
+  view_->Show(is_arc_restricted);
 }
 
 void SyncConsentScreen::HideImpl() {

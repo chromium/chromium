@@ -93,16 +93,20 @@
         aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
         for-step="no-split">
       <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
-      <h1 slot="title" consent-description>
+      <h1 slot="title" consent-description hidden="[[isArcRestricted_]]">
         [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
       </h1>
-      <div slot="subtitle" consent-description>
+      <h1 slot="title" consent-description hidden="[[!isArcRestricted_]]">
+        [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
+      </h1>
+      <div slot="subtitle" consent-description hidden="[[isArcRestricted_]]">
         [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
       </div>
       <img slot="subtitle" src="images/sync-consent.svg"
           class="oobe-illustration" aria-hidden="true">
       </div>
-      <div slot="content" class="landscape-header-aligned">
+      <div slot="content" class="landscape-header-aligned"
+          hidden="[[isArcRestricted_]]">
         <div class="overview-list-item layout horizontal">
           <img class="overview-list-item-icon" src="images/settings_gear.svg"
               width="24" height="24" aria-hidden="true">
@@ -132,6 +136,18 @@
           [[i18nDynamic(locale, 'syncConsentReviewSyncOptionsText')]]
         </cr-checkbox>
       </div>
+      <div slot="content" class="landscape-header-aligned"
+          hidden="[[!isArcRestricted_]]">
+        <div consent-description>
+          [[i18nDynamic(locale,
+              'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
+        </div>
+        <cr-checkbox id="reviewSettingsBoxArcRestricted" consent-description
+            hidden="[[isMinorMode_]]">
+          [[i18nDynamic(locale,
+              'syncConsentReviewSyncOptionsWithArcRestrictedText')]]
+        </cr-checkbox>
+      </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="nonSplitSettingsDeclineButton"
             on-click="onNonSplitSettingsDeclined_" hidden="[[!isMinorMode_]]"
@@ -157,13 +173,17 @@
         aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
         for-step="split">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-      <h1 slot="title" consent-description>
+      <h1 slot="title" consent-description hidden="[[isArcRestricted_]]">
         [[i18nDynamic(locale, 'syncConsentScreenSplitSettingsTitle')]]
       </h1>
-      <div slot="subtitle" consent-description>
+      <h1 slot="title" consent-description hidden="[[!isArcRestricted_]]">
+        [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
+      </h1>
+      <div slot="subtitle" consent-description hidden="[[isArcRestricted_]]">
         [[i18nDynamic(locale, 'syncConsentScreenSplitSettingsSubtitle')]]
       </div>
-      <div slot="content" class="landscape-vertical-centered">
+      <div slot="content" class="landscape-vertical-centered"
+          hidden="[[isArcRestricted_]]">
 
         <!-- "Chrome OS settings sync" -->
         <div class="overview-list-item layout horizontal center">
@@ -219,6 +239,12 @@
           </div>
         </div>
       </div>
+      <div slot="content" consent-description class="landscape-header-aligned"
+          hidden="[[!isArcRestricted_]]">
+        [[i18nDynamic(locale,
+            'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
+      </div>
+
       <div slot="bottom-buttons">
         <oobe-text-button id="declineButton" on-click="onDeclineTap_"
             label-for-aria="[[i18nDynamic(locale,

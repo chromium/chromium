@@ -1216,6 +1216,9 @@
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE" desc="Alternate title for the dialog that explains Chrome Sync and privacy options on first login.">
     Sync your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
+  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED" desc="Alternate title for the dialog that explains Chrome Sync and privacy options on first login.">
+    Get your apps, settings, and more on any ChromeOS device
+  </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE" desc="The subtitle of the dialog that explains Chrome Sync and privacy options on first login.">
     The following services help keep your data safe and secure. You can turn these features off at any time.
   </message>
@@ -1230,6 +1233,9 @@
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION" desc="Description of 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
     Your apps, settings, and other customizations will be synced across all Chrome OS devices signed in with your Google Account.
+  </message>
+  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED" desc="Alternate description of the sync confirmation dialog that is displayed on the first user log in.">
+    Sync your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> so your preferences will be ready on any device when you sign in with your Google Account. Preferences include apps, settings, Wi-Fi passwords, languages, wallpaper, keyboard shortcuts, and more.
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME" desc="Title of the 'Chrome browser sync' section of the sync confirmation dialog that is displayed on the first user log in.">
     Chrome browser sync
@@ -1257,6 +1263,9 @@
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER" desc="The label to the checkbox explaining that when checked, it will trigger user settings screen opened after session start.">
     Review sync options following setup
+  </message>
+  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER_ARC_RESTRICTED" desc="Alternate string for the label to the checkbox explaining that when checked, it will trigger user settings screen opened after session start.">
+    Review device sync after setup
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE" desc="The label on the button that closes dialog while accepting the selected settings.">
     Accept and continue

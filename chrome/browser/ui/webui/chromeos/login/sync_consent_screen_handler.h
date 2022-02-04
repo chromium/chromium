@@ -27,7 +27,7 @@ class SyncConsentScreenView {
   virtual void Bind(ash::SyncConsentScreen* screen) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(bool is_arc_restricted) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -64,7 +64,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
 
   // SyncConsentScreenView:
   void Bind(ash::SyncConsentScreen* screen) override;
-  void Show() override;
+  void Show(bool is_arc_restricted) override;
   void Hide() override;
   void SetThrobberVisible(bool visible) override;
   void SetIsMinorMode(bool value) override;

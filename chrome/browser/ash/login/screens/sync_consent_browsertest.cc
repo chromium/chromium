@@ -144,15 +144,10 @@ class SyncConsentTest
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
 
-    if (is_minor_user_) {
+    if (is_arc_restricted_) {
       expected_consent_ids_ = {
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED,
       };
     } else {
       expected_consent_ids_ = {
@@ -161,9 +156,26 @@ class SyncConsentTest
           IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
           IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
           IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
       };
+    }
+
+    if (is_minor_user_) {
+      // In minor mode, decline and turn on button should be displayed.
+      expected_consent_ids_.push_back(IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2);
+      expected_consent_ids_.push_back(
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC);
+    } else {
+      // In regular mdoe, `review later` checkbox and accept button should be
+      // displayed.
+      if (is_arc_restricted_) {
+        expected_consent_ids_.push_back(
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER_ARC_RESTRICTED);
+      } else {
+        expected_consent_ids_.push_back(
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER);
+      }
+      expected_consent_ids_.push_back(
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE);
     }
 
     SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(this);
@@ -248,6 +260,7 @@ class SyncConsentTest
   base::HistogramTester histogram_tester_;
   std::vector<int> expected_consent_ids_;
   bool is_minor_user_ = false;
+  bool is_arc_restricted_ = false;
 
   static SyncConsentScreen* GetSyncConsentScreen() {
     return static_cast<SyncConsentScreen*>(
@@ -396,6 +409,70 @@ IN_PROC_BROWSER_TEST_F(SyncConsentRecorderTest, SyncConsentRecorder) {
   histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
                                        true, 1);
 }
+
+// Tests the different combinations of minor mode and ARC restricted mode.
+class SyncConsentTestWithModesParams
+    : public SyncConsentTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SyncConsentTestWithModesParams() {
+    std::tie(is_minor_user_, is_arc_restricted_) = GetParam();
+    if (is_arc_restricted_) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kArcAccountRestrictions, features::kLacrosSupport}, {});
+    }
+  }
+
+  SyncConsentTestWithModesParams(const SyncConsentTestWithModesParams&) =
+      delete;
+  SyncConsentTestWithModesParams& operator=(
+      const SyncConsentTestWithModesParams&) = delete;
+
+  ~SyncConsentTestWithModesParams() override = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SyncConsentTestWithModesParams, Accept) {
+  LoginAndShowSyncConsentScreenWithCapability();
+  WaitForScreenShown();
+
+  SyncConsentScreen* screen = GetSyncConsentScreen();
+  ConsentRecordedWaiter consent_recorded_waiter;
+  screen->SetDelegateForTesting(&consent_recorded_waiter);
+
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().ExpectVisiblePath(kOverviewDialog);
+
+  if (is_minor_user_) {
+    test::OobeJS().ExpectHiddenPath(kReviewSettingsCheckBox);
+  } else {
+    test::OobeJS().ExpectVisiblePath(kReviewSettingsCheckBox);
+  }
+
+  test::OobeJS().TapOnPath(kNonSplitSettingsAcceptButton);
+
+  consent_recorded_waiter.Wait();
+  screen->SetDelegateForTesting(nullptr);  // cleanup
+
+  EXPECT_EQ(SyncConsentScreen::CONSENT_GIVEN,
+            consent_recorded_waiter.consent_given_);
+  EXPECT_THAT(consent_recorded_waiter.consent_description_strings_,
+              UnorderedElementsAreArray(GetLocalizedExpectedConsentStrings()));
+
+  EXPECT_THAT(consent_recorded_waiter.consent_description_ids_,
+              UnorderedElementsAreArray(expected_consent_ids_));
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Sync-consent.Next", 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SyncConsentTestWithModesParams,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 class SyncConsentTestWithParams
     : public SyncConsentRecorderTest,

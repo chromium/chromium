@@ -58,6 +58,13 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
       isMinorMode_: Boolean,
 
       /**
+       * Indicates whether ArcAccountRestrictions and LacrosSupport features are
+       * enabled.
+       * @private
+       */
+      isArcRestricted_: Boolean,
+
+      /**
        * The text key for the opt-in button (it could vary based on whether
        * the user is in minor mode).
        * @private
@@ -75,6 +82,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
 
     this.isChildAccount_ = false;
     this.isMinorMode_ = false;
+    this.isArcRestricted_ = false;
   }
 
   get EXTERNAL_API() {
@@ -92,6 +100,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    */
   onBeforeShow(data) {
     this.setIsChildAccount(data['isChildAccount']);
+    this.isArcRestricted_ = data['isArcRestricted'];
   }
 
   /**

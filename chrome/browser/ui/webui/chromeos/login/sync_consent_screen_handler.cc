@@ -153,6 +153,19 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
       "syncConsentScreenPersonalizeGoogleServicesDescription",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION,
       builder);
+
+  RememberLocalizedValue(
+      "syncConsentScreenTitleArcRestrictions",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED, builder);
+  RememberLocalizedValueWithDeviceName(
+      "syncConsentScreenOsSyncDescriptionArcRestrictions",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED,
+      builder);
+  RememberLocalizedValue(
+      "syncConsentReviewSyncOptionsWithArcRestrictedText",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER_ARC_RESTRICTED,
+      builder);
+
   RememberLocalizedValue("syncConsentScreenAccept",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2, builder);
   RememberLocalizedValue("syncConsentScreenDecline",
@@ -164,10 +177,11 @@ void SyncConsentScreenHandler::Bind(SyncConsentScreen* screen) {
   BaseScreenHandler::SetBaseScreen(screen);
 }
 
-void SyncConsentScreenHandler::Show() {
+void SyncConsentScreenHandler::Show(bool is_arc_restricted) {
   auto* user_manager = user_manager::UserManager::Get();
   base::DictionaryValue data;
   data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
+  data.SetBoolean("isArcRestricted", is_arc_restricted);
   ShowScreenWithData(kScreenId, &data);
 }
 

@@ -906,12 +906,25 @@ cr.define('cr.ui.login.debug', function() {
       id: 'sync-consent',
       kind: ScreenKind.NORMAL,
       defaultState: 'step-no-split',
-      states: [{
-        id: 'minor-mode',
-        data: {
-          isMinorMode: true,
+      states: [
+        {
+          id: 'minor-mode',
+          data: {
+            isChildAccount: true,
+            isArcRestricted: false,
+          },
+          trigger: (screen) => {
+            screen.setIsMinorMode(true);
+          },
         },
-      }]
+        {
+          id: 'arc-restricted',
+          data: {
+            isChildAccount: false,
+            isArcRestricted: true,
+          },
+        }
+      ]
     },
     {
       id: 'consolidated-consent',
