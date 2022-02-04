@@ -106,8 +106,14 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
-      ->UpdateApplicationList(request);
+  // TODO(crbug.com/1293993): Either profile or registry_service are null, when
+  // neither should be.
+  CHECK(profile);
+  CHECK(!profile->IsOffTheRecord());
+  auto* registry_service =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  CHECK(registry_service);
+  registry_service->UpdateApplicationList(request);
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
