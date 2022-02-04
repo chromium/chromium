@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -426,11 +427,11 @@ void EventReportValidator::ValidateIdentities(base::Value* value) {
       for (const auto& actual_identity : identities) {
         const std::string* url = actual_identity.FindStringKey(
             SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUrl);
-        std::u16string username;
-        EXPECT_TRUE(actual_identity
-                        .FindPath(SafeBrowsingPrivateEventRouter::
-                                      kKeyPasswordBreachIdentitiesUsername)
-                        ->GetAsString(&username));
+        const std::string* actual_username = actual_identity.FindStringPath(
+            SafeBrowsingPrivateEventRouter::
+                kKeyPasswordBreachIdentitiesUsername);
+        EXPECT_NE(nullptr, actual_username);
+        const std::u16string username = base::UTF8ToUTF16(*actual_username);
         EXPECT_NE(nullptr, url);
         if (expected_identity.first == *url &&
             expected_identity.second == username) {
@@ -527,8 +528,9 @@ void EventReportValidator::ValidateField(
     const absl::optional<std::u16string>& expected_value) {
   base::Value* v = value->FindPath(field_key);
   if (expected_value.has_value()) {
-    std::u16string actual_string_value;
-    ASSERT_TRUE(v->GetAsString(&actual_string_value));
+    ASSERT_TRUE(v->is_string());
+    const std::u16string actual_string_value =
+        base::UTF8ToUTF16(v->GetString());
     ASSERT_EQ(actual_string_value, expected_value.value())
         << "Mismatch in field " << field_key;
   } else {
