@@ -175,7 +175,7 @@ class CppConverterWriter(writer.CodeWriter):
         'if (!value->is_list()) {{\n'
         '  goto error;\n'
         '}}\n'
-        'for (const auto& element : value->GetList()) {{\n'
+        'for (const auto& element : value->GetListDeprecated()) {{\n'
     )
 
     with self.AddIndent():
