@@ -5344,7 +5344,7 @@ const char kWifiSyncAndroidDescription[] =
 
 const char kWindowControlMenu[] = "Float current active window";
 const char kWindowControlMenuDescription[] =
-    "Enables the accelerator (Control + Alt + F) to float current active "
+    "Enables the accelerator (Command + Alt + F) to float current active "
     "window.";
 
 const char kLauncherNudgeName[] = "Enable launcher nudge";
