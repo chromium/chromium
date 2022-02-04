@@ -19,6 +19,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
 #include "net/base/escape.h"
+#include "net/base/parse_number.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
@@ -141,14 +142,18 @@ v8::Local<v8::Object> CreateObjectFromMap(
 }  // namespace
 
 TrustedSignals::Result::Result(
-    std::map<std::string, std::string> bidder_json_data)
-    : bidder_json_data_(std::move(bidder_json_data)) {}
+    std::map<std::string, std::string> bidder_json_data,
+    absl::optional<uint32_t> data_version)
+    : bidder_json_data_(std::move(bidder_json_data)),
+      data_version_(data_version) {}
 
 TrustedSignals::Result::Result(
     std::map<std::string, std::string> render_url_json_data,
-    std::map<std::string, std::string> ad_component_json_data)
+    std::map<std::string, std::string> ad_component_json_data,
+    absl::optional<uint32_t> data_version)
     : render_url_json_data_(std::move(render_url_json_data)),
-      ad_component_json_data_(std::move(ad_component_json_data)) {}
+      ad_component_json_data_(std::move(ad_component_json_data)),
+      data_version_(data_version) {}
 
 v8::Local<v8::Object> TrustedSignals::Result::GetBiddingSignals(
     AuctionV8Helper* v8_helper,
@@ -281,8 +286,10 @@ void TrustedSignals::StartDownload(
                      base::Unretained(this)));
 }
 
-void TrustedSignals::OnDownloadComplete(std::unique_ptr<std::string> body,
-                                        absl::optional<std::string> error_msg) {
+void TrustedSignals::OnDownloadComplete(
+    std::unique_ptr<std::string> body,
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    absl::optional<std::string> error_msg) {
   // The downloader's job is done, so clean it up.
   auction_downloader_.reset();
 
@@ -294,7 +301,7 @@ void TrustedSignals::OnDownloadComplete(std::unique_ptr<std::string> body,
                      v8_helper_, trusted_signals_url_,
                      std::move(bidding_signals_keys_), std::move(render_urls_),
                      std::move(ad_component_render_urls_), std::move(body),
-                     std::move(error_msg),
+                     std::move(headers), std::move(error_msg),
                      base::SequencedTaskRunnerHandle::Get(),
                      weak_ptr_factory.GetWeakPtr()));
 }
@@ -307,6 +314,7 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     absl::optional<std::set<std::string>> render_urls,
     absl::optional<std::set<std::string>> ad_component_render_urls,
     std::unique_ptr<std::string> body,
+    scoped_refptr<net::HttpResponseHeaders> headers,
     absl::optional<std::string> error_msg,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
     base::WeakPtr<TrustedSignals> weak_instance) {
@@ -315,8 +323,20 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
                              nullptr, std::move(error_msg));
     return;
   }
-
   DCHECK(!error_msg.has_value());
+
+  uint32_t data_version;
+  std::string data_version_string;
+  if (headers &&
+      headers->GetNormalizedHeader("Data-Version", &data_version_string) &&
+      !net::ParseUint32(data_version_string, &data_version)) {
+    std::string error = base::StringPrintf(
+        "Rejecting load of %s due to invalid Data-Version header: %s",
+        signals_url.spec().c_str(), data_version_string.c_str());
+    PostCallbackToUserThread(std::move(user_thread_task_runner), weak_instance,
+                             nullptr, std::move(error));
+    return;
+  }
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
   v8::Context::Scope context_scope(v8_helper->scratch_context());
@@ -336,10 +356,15 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
 
   scoped_refptr<Result> result;
 
+  absl::optional<uint32_t> maybe_data_version;
+  if (!data_version_string.empty())
+    maybe_data_version = data_version;
+
   if (bidding_signals_keys) {
     // Handle bidding signals case.
     result = base::MakeRefCounted<Result>(
-        ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys));
+        ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys),
+        maybe_data_version);
   } else {
     // Handle scoring signals case.
     result = base::MakeRefCounted<Result>(
@@ -347,7 +372,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
                               *render_urls),
         ParseChildKeyValueMap(v8_helper.get(), v8_object,
                               "adComponentRenderUrls",
-                              *ad_component_render_urls));
+                              *ad_component_render_urls),
+        maybe_data_version);
   }
 
   PostCallbackToUserThread(std::move(user_thread_task_runner), weak_instance,

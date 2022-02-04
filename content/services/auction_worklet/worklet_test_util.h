@@ -53,6 +53,10 @@ void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content);
+void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
+                              const GURL& url,
+                              const std::string content,
+                              uint32_t data_version);
 
 // Adds a task to `v8_helper->v8_runner()` that blocks until the return value
 // is signaled. The returned event will be deleted afterwards.

@@ -100,6 +100,7 @@ class WorkletLoaderBase {
 
  private:
   void OnDownloadComplete(std::unique_ptr<std::string> body,
+                          scoped_refptr<net::HttpResponseHeaders> headers,
                           absl::optional<std::string> error_msg);
 
   static void HandleDownloadResultOnV8Thread(

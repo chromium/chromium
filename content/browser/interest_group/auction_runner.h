@@ -212,6 +212,8 @@ class CONTENT_EXPORT AuctionRunner {
     // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd().
     absl::optional<GURL> seller_debug_loss_report_url;
     absl::optional<GURL> seller_debug_win_report_url;
+
+    absl::optional<uint32_t> data_version;
   };
 
   AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
@@ -292,6 +294,8 @@ class CONTENT_EXPORT AuctionRunner {
   // Callback from ScoreBid().
   void OnBidScored(BidState* state,
                    double score,
+                   uint32_t data_version,
+                   bool has_data_version,
                    const absl::optional<GURL>& debug_loss_report_url,
                    const absl::optional<GURL>& debug_win_report_url,
                    const std::vector<std::string>& errors);

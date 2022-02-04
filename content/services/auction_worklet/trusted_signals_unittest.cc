@@ -582,5 +582,39 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDeleteBeforeCallback) {
   event_handle->Signal();
 }
 
+TEST_F(TrustedSignalsTest, ScoringSignalsWithDataVersion) {
+  AddVersionedJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/"
+           "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
+      kBaseScoringJson, 2u);
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchScoringSignals(/*render_urls=*/{"https://foo.test/"},
+                          /*ad_component_render_urls=*/{}, kHostname);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1}})",
+            ExtractScoringSignals(signals.get(),
+                                  /*render_url=*/GURL("https://foo.test/"),
+                                  /*ad_component_render_urls=*/{}));
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(2u, signals->GetDataVersion());
+}
+
+TEST_F(TrustedSignalsTest, ScoringSignalsWithInvalidDataVersion) {
+  AddResponse(&url_loader_factory_,
+              GURL("https://url.test/"
+                   "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
+              kJsonMimeType, absl::nullopt, kBaseScoringJson,
+              "X-Allow-FLEDGE: true\nData-Version: 2.0");
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchScoringSignals(/*render_urls=*/{"https://foo.test/"},
+                          /*ad_component_render_urls=*/{}, kHostname);
+  ASSERT_TRUE(error_msg_.has_value());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/ due to invalid Data-Version header: "
+      "2.0",
+      error_msg_.value());
+}
+
 }  // namespace
 }  // namespace auction_worklet

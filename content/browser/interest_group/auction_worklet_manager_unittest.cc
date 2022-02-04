@@ -276,6 +276,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,
                     double browser_signal_desirability,
+                    uint32_t browser_signal_data_version,
+                    bool browser_signal_has_data_version,
                     ReportResultCallback report_result_callback) override {
     NOTREACHED();
   }

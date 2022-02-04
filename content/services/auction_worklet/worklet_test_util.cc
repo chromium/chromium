@@ -80,6 +80,16 @@ void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
   AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content);
 }
 
+void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
+                              const GURL& url,
+                              const std::string content,
+                              uint32_t data_version) {
+  std::string headers = base::StringPrintf("%s\nData-Version: %u",
+                                           kAllowFledgeHeader, data_version);
+  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content,
+              headers);
+}
+
 base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper) {
   auto event = std::make_unique<base::WaitableEvent>();
   base::WaitableEvent* event_handle = event.get();

@@ -461,11 +461,15 @@ void AuctionRunner::ScoreBid(BidState* state) {
 void AuctionRunner::OnBidScored(
     BidState* state,
     double score,
+    uint32_t data_version,
+    bool has_data_version,
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
     const std::vector<std::string>& errors) {
   DCHECK_EQ(state->state, BidState::State::kSellerScoringBid);
   state->seller_score = score;
+  if (has_data_version)
+    state->data_version = data_version;
   --outstanding_bids_;
   state->state = BidState::State::kScoringComplete;
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
@@ -584,7 +588,8 @@ void AuctionRunner::ReportSellerResult() {
       auction_config_->auction_ad_config_non_shared_params.Clone(),
       top_bidder_->bidder.interest_group.owner,
       top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
-      top_bidder_->seller_score,
+      top_bidder_->seller_score, top_bidder_->data_version.value_or(0),
+      top_bidder_->data_version.has_value(),
       base::BindOnce(&AuctionRunner::OnReportSellerResultComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

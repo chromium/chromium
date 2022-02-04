@@ -95,6 +95,7 @@ WorkletLoaderBase::~WorkletLoaderBase() = default;
 
 void WorkletLoaderBase::OnDownloadComplete(
     std::unique_ptr<std::string> body,
+    scoped_refptr<net::HttpResponseHeaders> headers,
     absl::optional<std::string> error_msg) {
   DCHECK(load_worklet_callback_);
 

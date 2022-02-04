@@ -59,10 +59,12 @@ class AuctionDownloaderTest : public testing::Test {
 
  protected:
   void DownloadCompleteCallback(std::unique_ptr<std::string> body,
+                                scoped_refptr<net::HttpResponseHeaders> headers,
                                 absl::optional<std::string> error) {
     DCHECK(!body_);
     DCHECK(run_loop_);
     body_ = std::move(body);
+    headers_ = std::move(headers);
     error_ = std::move(error);
     EXPECT_EQ(error_.has_value(), !body_);
     run_loop_->Quit();
@@ -77,6 +79,7 @@ class AuctionDownloaderTest : public testing::Test {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<std::string> body_;
+  scoped_refptr<net::HttpResponseHeaders> headers_;
   absl::optional<std::string> error_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -172,6 +175,47 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
       "Rejecting load of https://url.test/script.js due to lack of "
       "X-Allow-FLEDGE: true.",
       last_error_msg());
+}
+
+TEST_F(AuctionDownloaderTest, PassesHeaders) {
+  std::string allow_fledge_string;
+  std::string data_version_string;
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "X-Allow-FLEDGE: true");
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_FALSE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+
+  mime_type_ = AuctionDownloader::MimeType::kJson;
+  AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 10u);
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+  EXPECT_EQ("10", data_version_string);
+
+  AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 5u);
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+  EXPECT_EQ("5", data_version_string);
+
+  AddJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody);
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_FALSE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
 }
 
 // Redirect responses are treated as failures.

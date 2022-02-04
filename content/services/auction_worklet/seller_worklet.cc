@@ -219,6 +219,8 @@ void SellerWorklet::ReportResult(
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     double browser_signal_desirability,
+    uint32_t browser_signal_data_version,
+    bool browser_signal_has_data_version,
     ReportResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -233,6 +235,9 @@ void SellerWorklet::ReportResult(
   report_result_task->browser_signal_render_url = browser_signal_render_url;
   report_result_task->browser_signal_bid = browser_signal_bid;
   report_result_task->browser_signal_desirability = browser_signal_desirability;
+  if (browser_signal_has_data_version)
+    report_result_task->browser_signal_data_version =
+        browser_signal_data_version;
   report_result_task->callback = std::move(callback);
 
   // If not yet ready, need to wait for load to complete.
@@ -307,6 +312,7 @@ void SellerWorklet::V8State::ScoreAd(
   std::vector<v8::Local<v8::Value>> args;
   if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args)) {
     PostScoreAdCallbackToUserThread(std::move(callback), /*score=*/0,
+                                    /*data_version=*/absl::nullopt,
                                     /*debug_loss_report_url=*/absl::nullopt,
                                     /*debug_win_report_url=*/absl::nullopt,
                                     /*errors=*/std::vector<std::string>());
@@ -318,6 +324,7 @@ void SellerWorklet::V8State::ScoreAd(
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
                            *auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThread(std::move(callback), /*score=*/0,
+                                    /*data_version=*/absl::nullopt,
                                     /*debug_loss_report_url=*/absl::nullopt,
                                     /*debug_win_report_url=*/absl::nullopt,
                                     /*errors=*/std::vector<std::string>());
@@ -325,10 +332,12 @@ void SellerWorklet::V8State::ScoreAd(
   }
 
   v8::Local<v8::Value> trusted_scoring_signals_value;
+  absl::optional<uint32_t> data_version;
   if (trusted_scoring_signals) {
     trusted_scoring_signals_value = trusted_scoring_signals->GetScoringSignals(
         v8_helper_.get(), context, browser_signal_render_url,
         browser_signal_ad_components);
+    data_version = trusted_scoring_signals->GetDataVersion();
   } else {
     trusted_scoring_signals_value = v8::Null(isolate);
   }
@@ -346,6 +355,7 @@ void SellerWorklet::V8State::ScoreAd(
       !browser_signals_dict.Set("biddingDurationMsec",
                                 browser_signal_bidding_duration_msecs)) {
     PostScoreAdCallbackToUserThread(std::move(callback), /*score=*/0,
+                                    /*data_version=*/absl::nullopt,
                                     /*debug_loss_report_url=*/absl::nullopt,
                                     /*debug_win_report_url=*/absl::nullopt,
                                     /*errors=*/std::vector<std::string>());
@@ -355,6 +365,7 @@ void SellerWorklet::V8State::ScoreAd(
     if (!browser_signals_dict.Set("adComponents",
                                   browser_signal_ad_components)) {
       PostScoreAdCallbackToUserThread(std::move(callback), /*score=*/0,
+                                      /*data_version=*/absl::nullopt,
                                       /*debug_loss_report_url=*/absl::nullopt,
                                       /*debug_win_report_url=*/absl::nullopt,
                                       /*errors=*/std::vector<std::string>());
@@ -373,6 +384,7 @@ void SellerWorklet::V8State::ScoreAd(
                        "scoreAd", args, errors_out)
            .ToLocal(&score_ad_result)) {
     PostScoreAdCallbackToUserThread(std::move(callback), /*score=*/0,
+                                    /*data_version=*/absl::nullopt,
                                     /*debug_loss_report_url=*/absl::nullopt,
                                     /*debug_win_report_url=*/absl::nullopt,
                                     std::move(errors_out));
@@ -386,6 +398,7 @@ void SellerWorklet::V8State::ScoreAd(
                       " scoreAd() did not return a valid number."}));
 
     PostScoreAdCallbackToUserThread(std::move(callback), /*score=*/0,
+                                    /*data_version=*/absl::nullopt,
                                     /*debug_loss_report_url=*/absl::nullopt,
                                     /*debug_win_report_url=*/absl::nullopt,
                                     std::move(errors_out));
@@ -396,14 +409,14 @@ void SellerWorklet::V8State::ScoreAd(
     // Keep debug report URLs because we want to send debug loss reports if
     // seller rejected all bids.
     PostScoreAdCallbackToUserThread(
-        std::move(callback), /*score=*/0,
+        std::move(callback), /*score=*/0, data_version,
         for_debugging_only_bindings.TakeLossReportUrl(),
         for_debugging_only_bindings.TakeWinReportUrl(), std::move(errors_out));
     return;
   }
 
   PostScoreAdCallbackToUserThread(
-      std::move(callback), score,
+      std::move(callback), score, data_version,
       for_debugging_only_bindings.TakeLossReportUrl(),
       for_debugging_only_bindings.TakeWinReportUrl(), std::move(errors_out));
 }
@@ -415,6 +428,7 @@ void SellerWorklet::V8State::ReportResult(
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     double browser_signal_desirability,
+    absl::optional<uint32_t> browser_signal_data_version,
     ReportResultCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
@@ -449,7 +463,10 @@ void SellerWorklet::V8State::ReportResult(
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
-      !browser_signals_dict.Set("desirability", browser_signal_desirability)) {
+      !browser_signals_dict.Set("desirability", browser_signal_desirability) ||
+      (browser_signal_data_version.has_value() &&
+       !browser_signals_dict.Set("dataVersion",
+                                 browser_signal_data_version.value()))) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,
                                          /*report_url=*/absl::nullopt,
@@ -515,13 +532,14 @@ void SellerWorklet::V8State::PostResumeToUserThread(
 void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
     ScoreAdCallbackInternal callback,
     double score,
+    absl::optional<uint32_t> data_version,
     absl::optional<GURL> debug_loss_report_url,
     absl::optional<GURL> debug_win_report_url,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), score,
+      base::BindOnce(std::move(callback), score, data_version,
                      std::move(debug_loss_report_url),
                      std::move(debug_win_report_url), std::move(errors)));
 }
@@ -629,6 +647,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
 void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     ScoreAdTaskList::iterator task,
     double score,
+    absl::optional<uint32_t> data_version,
     absl::optional<GURL> debug_loss_report_url,
     absl::optional<GURL> debug_win_report_url,
     std::vector<std::string> errors) {
@@ -640,7 +659,8 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     errors.insert(errors.begin(), *task->trusted_scoring_signals_error_msg);
 
   std::move(task->callback)
-      .Run(score, debug_loss_report_url, debug_win_report_url, errors);
+      .Run(score, data_version.value_or(0), data_version.has_value(),
+           debug_loss_report_url, debug_win_report_url, errors);
   score_ad_tasks_.erase(task);
 }
 
@@ -655,7 +675,7 @@ void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
           std::move(task->auction_ad_config_non_shared_params),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url), task->browser_signal_bid,
-          task->browser_signal_desirability,
+          task->browser_signal_desirability, task->browser_signal_data_version,
           base::BindOnce(
               &SellerWorklet::DeliverReportResultCallbackOnUserThread,
               weak_ptr_factory_.GetWeakPtr(), task)));

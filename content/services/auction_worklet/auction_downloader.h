@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -37,6 +38,7 @@ class AuctionDownloader {
   // invoked after the AuctionDownloader is destroyed.
   using AuctionDownloaderCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
+                              scoped_refptr<net::HttpResponseHeaders> headers,
                               absl::optional<std::string> error)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked

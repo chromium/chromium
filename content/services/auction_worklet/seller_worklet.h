@@ -89,6 +89,8 @@ class SellerWorklet : public mojom::SellerWorklet {
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,
                     double browser_signal_desirability,
+                    uint32_t browser_signal_data_version,
+                    bool browser_signal_has_data_version,
                     ReportResultCallback callback) override;
   void ConnectDevToolsAgent(
       mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override;
@@ -143,6 +145,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     GURL browser_signal_render_url;
     double browser_signal_bid;
     double browser_signal_desirability;
+    absl::optional<uint32_t> browser_signal_data_version;
 
     ReportResultCallback callback;
   };
@@ -159,6 +162,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     // V8State, and avoids having to make a copy of the errors vector.
     using ScoreAdCallbackInternal =
         base::OnceCallback<void(double score,
+                                absl::optional<uint32_t> data_version,
                                 absl::optional<GURL> debug_loss_report_url,
                                 absl::optional<GURL> debug_win_report_url,
                                 std::vector<std::string> errors)>;
@@ -192,6 +196,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                       const GURL& browser_signal_render_url,
                       double browser_signal_bid,
                       double browser_signal_desirability,
+                      absl::optional<uint32_t> browser_signal_data_version,
                       ReportResultCallbackInternal callback);
 
     void ConnectDevToolsAgent(
@@ -206,6 +211,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     void PostScoreAdCallbackToUserThread(
         ScoreAdCallbackInternal callback,
         double score,
+        absl::optional<uint32_t> data_version,
         absl::optional<GURL> debug_loss_report_url,
         absl::optional<GURL> debug_win_report_url,
         std::vector<std::string> errors);
@@ -257,6 +263,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   void DeliverScoreAdCallbackOnUserThread(
       ScoreAdTaskList::iterator task,
       double score,
+      absl::optional<uint32_t> data_version,
       absl::optional<GURL> debug_loss_report_url,
       absl::optional<GURL> debug_win_report_url,
       std::vector<std::string> errors);

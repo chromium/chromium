@@ -291,6 +291,8 @@ std::string MakeDecisionScript(
         throw new Error("wrong decisionLogicUrl in auctionConfig");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname in browserSignals");
+      if (browserSignals.dataVersion !== undefined)
+        throw new Error("wrong dataVersion in browserSignals");
       if (sendReportUrl)
         sendReportTo(sendReportUrl + browserSignals.bid);
       return browserSignals;
@@ -594,6 +596,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,
                     double browser_signal_desirability,
+                    uint32_t browser_signal_data_version,
+                    bool browser_signal_has_data_version,
                     ReportResultCallback report_result_callback) override {
     report_result_callback_ = std::move(report_result_callback);
     if (report_result_run_loop_)
@@ -2452,8 +2456,8 @@ TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
 
   // scoreAd() that only accepts bids where the scoring signals of the
   // `renderUrl` is "accept".
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
-                                         kSellerUrl, std::string(R"(
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         std::string(R"(
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                  browserSignals) {
   let signal = trustedScoringSignals.renderUrl[browserSignals.renderUrl];
@@ -2464,11 +2468,19 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
     return 0;
   throw "incorrect trustedScoringSignals";
 }
-                                         )") + kBasicReportResult);
+
+function reportResult(auctionConfig, browserSignals) {
+  sendReportTo("https://reporting.example.com/" + browserSignals.bid);
+  if (browserSignals.dataVersion !== 2) {
+    throw new Error("wrong dataVersion in browserSignals");
+  }
+  return browserSignals;
+}
+                                         )"));
 
   // Only accept first bidder's bid. Requests will always be batched non-racily,
   // since a mock time is in use.
-  auction_worklet::AddJsonResponse(
+  auction_worklet::AddVersionedJsonResponse(
       &url_loader_factory_,
       GURL(trusted_scoring_signals_url_->spec() +
            "?hostname=publisher1.com"
@@ -2477,7 +2489,8 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
            "https%3A%2F%2Fad2.com-component1.com%2F"),
       R"(
 {"renderUrls":{"https://ad1.com/":"accept", "https://ad2.com/":"reject"}}
-      )");
+      )",
+      /*data_version=*/2);
 
   RunStandardAuction();
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
@@ -2882,7 +2895,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(7, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+        .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+             /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
     // Finish the auction.
@@ -2946,7 +2960,8 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(7, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+      .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Score Bidder2's bid.
@@ -2954,7 +2969,8 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Bidder1 crashes while running ReportWin.
@@ -3065,14 +3081,16 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(5, score_ad_params.bid);
       std::move(score_ad_params.callback)
-          .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+          .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+               /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       // Score Bidder2's bid.
       EXPECT_EQ(kBidder2, score_ad_params2.interest_group_owner);
       EXPECT_EQ(7, score_ad_params2.bid);
       std::move(score_ad_params2.callback)
-          .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+          .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+               /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       seller_worklet->WaitForReportResult();
@@ -3147,7 +3165,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
       std::move(score_ad_params.callback)
-          .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+          .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+               /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       // Finish the auction.
@@ -3229,7 +3248,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
       std::move(score_ad_params.callback)
-          .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+          .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+               /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
       // Finish the auction.
@@ -3447,7 +3467,8 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Bidder1 never gets to report anything, since the seller providing a bad
@@ -3495,7 +3516,8 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   seller_worklet->WaitForReportResult();
@@ -3550,7 +3572,8 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(7, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/11, /*debug_loss_report_url=*/absl::nullopt,
+      .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
   // Finish the auction.
@@ -3604,7 +3627,8 @@ TEST_F(AuctionRunnerTest, Tie) {
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+        .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+             /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
     // Bidder2 returns a bid, which is then scored.
@@ -3614,7 +3638,8 @@ TEST_F(AuctionRunnerTest, Tie) {
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+        .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+             /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
     // Need to flush the service pipe to make sure the AuctionRunner has
     // received the score.
@@ -3734,6 +3759,7 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
           case Event::kBid1Scored:
             std::move(score_ad_params1.callback)
                 .Run(/*score=*/bidder1_wins ? 11 : 9,
+                     /*data_version=*/0, /*has_data_version=*/false,
                      /*debug_loss_report_url=*/absl::nullopt,
                      /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
@@ -3741,7 +3767,9 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
             break;
           case Event::kBid2Scored:
             std::move(score_ad_params2.callback)
-                .Run(/*score=*/10, /*debug_loss_report_url=*/absl::nullopt,
+                .Run(/*score=*/10, /*data_version=*/0,
+                     /*has_data_version=*/false,
+                     /*debug_loss_report_url=*/absl::nullopt,
                      /*debug_win_report_url=*/absl::nullopt,
                      /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
@@ -4011,7 +4039,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/10, test_case.seller_debug_loss_report_url,
+        .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+             test_case.seller_debug_loss_report_url,
              test_case.seller_debug_win_report_url, /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
@@ -4064,7 +4093,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, GURL("https://seller-debug-loss-reporting.com/1"),
+      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+           GURL("https://seller-debug-loss-reporting.com/1"),
            GURL("https://seller-debug-win-reporting.com/1"), /*errors=*/{});
 
   seller_worklet->WaitForReportResult();

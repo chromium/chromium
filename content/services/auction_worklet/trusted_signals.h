@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -47,11 +48,13 @@ class TrustedSignals {
   class Result : public base::RefCountedThreadSafe<Result> {
    public:
     // Constructor for bidding signals.
-    explicit Result(std::map<std::string, std::string> bidder_json_data);
+    Result(std::map<std::string, std::string> bidder_json_data,
+           absl::optional<uint32_t> data_version);
 
     // Constructor for scoring signals.
     Result(std::map<std::string, std::string> render_url_json_data,
-           std::map<std::string, std::string> ad_component_json_data);
+           std::map<std::string, std::string> ad_component_json_data,
+           absl::optional<uint32_t> data_version);
 
     explicit Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
@@ -81,6 +84,8 @@ class TrustedSignals {
         const GURL& render_url,
         const std::vector<std::string>& ad_component_render_urls) const;
 
+    absl::optional<uint32_t> GetDataVersion() const { return data_version_; }
+
    private:
     friend class base::RefCountedThreadSafe<Result>;
 
@@ -94,6 +99,9 @@ class TrustedSignals {
         render_url_json_data_;
     const absl::optional<std::map<std::string, std::string>>
         ad_component_json_data_;
+
+    // Data version associated with the trusted signals.
+    const absl::optional<uint32_t> data_version_;
   };
 
   using LoadSignalsCallback =
@@ -146,6 +154,7 @@ class TrustedSignals {
                      const GURL& full_signals_url);
 
   void OnDownloadComplete(std::unique_ptr<std::string> body,
+                          scoped_refptr<net::HttpResponseHeaders> headers,
                           absl::optional<std::string> error_msg);
 
   // Parses the response body on the V8 thread, and extracts values associated
@@ -157,6 +166,7 @@ class TrustedSignals {
       absl::optional<std::set<std::string>> render_urls,
       absl::optional<std::set<std::string>> ad_component_render_urls,
       std::unique_ptr<std::string> body,
+      scoped_refptr<net::HttpResponseHeaders> headers,
       absl::optional<std::string> error_msg,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
       base::WeakPtr<TrustedSignals> weak_instance);
