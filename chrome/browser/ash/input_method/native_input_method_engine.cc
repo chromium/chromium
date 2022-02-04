@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
@@ -138,22 +139,6 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
 
 bool IsLacrosEnabled() {
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
-}
-
-bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
-                                    const std::string& engine_id) {
-  const base::Value* input_method_settings = pref_service->GetDictionary(
-      ::prefs::kLanguageInputMethodSpecificSettings);
-  absl::optional<bool> predictive_writing_setting =
-      input_method_settings->FindBoolPath(
-          engine_id + ".physicalKeyboardEnablePredictiveWriting");
-  if (predictive_writing_setting == absl::nullopt) {
-    // If no preference has been set yet by the user then we can assume the
-    // default preference as enabled.
-    return true;
-  }
-  // Otherwise take whatever preference the user has set.
-  return *predictive_writing_setting;
 }
 
 bool IsPredictiveWritingEnabled(PrefService* pref_service,

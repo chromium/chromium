@@ -1653,6 +1653,8 @@ source_set("chromeos") {
     "../ash/input_method/assistive_suggester.h",
     "../ash/input_method/assistive_suggester_client_filter.cc",
     "../ash/input_method/assistive_suggester_client_filter.h",
+    "../ash/input_method/assistive_suggester_prefs.cc",
+    "../ash/input_method/assistive_suggester_prefs.h",
     "../ash/input_method/assistive_suggester_switch.h",
     "../ash/input_method/assistive_window_controller.cc",
     "../ash/input_method/assistive_window_controller.h",
