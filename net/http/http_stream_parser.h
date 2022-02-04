@@ -275,6 +275,11 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // True if reading a keep-alive response. False if not, or if don't yet know.
   bool response_is_keep_alive_;
 
+  // True if we've seen a response that has an HTTP status line. This is
+  // persistent across multiple response parsing. If we see a status line
+  // for a response, this will remain true forever.
+  bool has_seen_status_line_ = false;
+
   // Keep track of the number of response body bytes read so far.
   int64_t response_body_read_;
 

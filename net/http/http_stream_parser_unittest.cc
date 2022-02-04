@@ -1399,6 +1399,25 @@ TEST(HttpStreamParser, Http09PortTests) {
   }
 }
 
+TEST(HttpStreamParser, ContinueWithBody) {
+  const std::string kResponse =
+      "HTTP/1.1 100 Continue\r\n\r\nhello\r\nworld\r\n";
+
+  SimpleGetRunner get_runner;
+  get_runner.set_url(GURL("http://foo.com/"));
+  get_runner.AddRead(kResponse);
+  get_runner.SetupParserAndSendRequest();
+
+  get_runner.ReadHeadersExpectingError(OK);
+  ASSERT_TRUE(get_runner.response_info()->headers);
+  EXPECT_EQ("HTTP/1.1 100 Continue",
+            get_runner.response_info()->headers->GetStatusLine());
+
+  // We ignore informational responses and start reading the next response in
+  // the stream. This simulates the behavior.
+  get_runner.ReadHeadersExpectingError(ERR_INVALID_HTTP_RESPONSE);
+}
+
 TEST(HttpStreamParser, NullFails) {
   const char kTestHeaders[] =
       "HTTP/1.1 200 OK\r\n"
