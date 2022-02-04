@@ -1741,6 +1741,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmSerializationTimeMilliSeconds" units="ms"
+    expires_after="2022-06-30">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Time to serialize a WebAssembly module for storing it in the cache. Recorded
+    on each serialization, which happens after top-tier compilation finished, or
+    when a new chunk of functions was compiled (with dynamic tiering).
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmThrowCount" units="count" expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -96,8 +97,13 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     const size_t kWireBytesSizeThresholdBytes = 1UL << 10;  // 1 KB.
     if (wire_bytes.size() < kWireBytesSizeThresholdBytes)
       return;
-
-    v8::OwnedBuffer serialized_module = compiled_module.Serialize();
+    v8::OwnedBuffer serialized_module;
+    {
+      // Use a standard milliseconds based timer (up to 10 seconds, 50 buckets),
+      // similar to "V8.WasmDeserializationTimeMilliSeconds" defined in V8.
+      SCOPED_UMA_HISTOGRAM_TIMER("V8.WasmSerializationTimeMilliSeconds");
+      serialized_module = compiled_module.Serialize();
+    }
     // V8 might not be able to serialize the module.
     if (serialized_module.size == 0)
       return;
