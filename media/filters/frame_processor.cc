@@ -804,11 +804,11 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
                                    << " frame";
       return false;
     }
-    if (decode_timestamp == kNoDecodeTimestamp) {
-      MEDIA_LOG(ERROR, media_log_) << "Unknown DTS for " << frame->GetTypeName()
-                                   << " frame";
-      return false;
-    }
+
+    // StreamParserBuffer's GetDecodeTimestamp() shouldn't return
+    // kNoDecodeTimestamp if we already found the frame's PTS was kNoTimestamp
+    // and failed processing.
+    DCHECK(decode_timestamp != kNoDecodeTimestamp);
 
     // TODO(wolenetz): Determine whether any DTS>PTS logging is needed. See
     // http://crbug.com/354518.
