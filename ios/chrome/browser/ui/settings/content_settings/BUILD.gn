@@ -55,9 +55,11 @@ source_set("content_settings_ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
+    "//ui/base",
   ]
 }
 

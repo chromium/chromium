@@ -7,6 +7,9 @@
 #include "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,6 +24,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeMobile = kItemTypeEnumZero,
   ItemTypeDesktop,
+  ItemTypeFooter,
 };
 
 }  // namespace
@@ -35,6 +39,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.title = l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_TITLE);
   [self loadModel];
 }
 
@@ -48,12 +53,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewDetailIconItem* mobileItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeMobile];
-  mobileItem.text = @"TEST - Mobile";
+  mobileItem.text = l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_MOBILE);
   [model addItem:mobileItem toSectionWithIdentifier:SectionIdentifierMode];
 
   TableViewDetailIconItem* desktopItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeDesktop];
-  desktopItem.text = @"TEST - Desktop";
+  desktopItem.text = l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP);
   [model addItem:desktopItem toSectionWithIdentifier:SectionIdentifierMode];
 
   for (TableViewItem* item in [self.tableViewModel
@@ -62,6 +67,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       item.accessoryType = UITableViewCellAccessoryCheckmark;
     }
   }
+
+  TableViewLinkHeaderFooterItem* footer =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  footer.text = l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_SUBTITLE);
+  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierMode];
 }
 
 - (void)tableView:(UITableView*)tableView

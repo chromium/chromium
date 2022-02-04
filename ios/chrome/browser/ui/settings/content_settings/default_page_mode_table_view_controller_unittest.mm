@@ -25,12 +25,12 @@ class DefaultPageModeTableViewControllerTest
 TEST_F(DefaultPageModeTableViewControllerTest, TestItems) {
   CreateController();
   CheckController();
-  CheckTitle(nil);
+  CheckTitle(@"Default Site Mode");
 
   ASSERT_EQ(1, NumberOfSections());
   ASSERT_EQ(2, NumberOfItemsInSection(0));
-  CheckTextCellText(@"TEST - Mobile", 0, 0);
-  CheckTextCellText(@"TEST - Desktop", 0, 1);
+  CheckTextCellText(@"Mobile", 0, 0);
+  CheckTextCellText(@"Desktop", 0, 1);
 
   CheckAccessoryType(UITableViewCellAccessoryNone, 0, 0);
   CheckAccessoryType(UITableViewCellAccessoryNone, 0, 1);

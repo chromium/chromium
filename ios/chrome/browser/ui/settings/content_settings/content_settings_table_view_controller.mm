@@ -79,9 +79,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The item related to the switch for the "Show Link Preview" setting.
 @property(nonatomic, strong) TableViewSwitchItem* linkPreviewItem;
 
+// The item related to the default mode used to load the pages.
+@property(nonatomic, strong) TableViewDetailIconItem* defaultModeItem;
+
 // The coordinator showing the view to choose the defaultMode.
 @property(nonatomic, strong)
-    DefaultPageModeCoordinator* defaultModeViewController;
+    DefaultPageModeCoordinator* defaultModeViewCoordinator;
+
+// The setting used to store the default mode.
+@property(nonatomic, strong) ContentSettingBackedBoolean* requestDesktopSetting;
 
 // Helpers to create collection view items.
 - (id)blockPopupsItem;
@@ -115,6 +121,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
         initWithPrefService:browserState->GetPrefs()
                    prefName:prefs::kLinkPreviewEnabled];
     [_linkPreviewEnabled setObserver:self];
+
+    _requestDesktopSetting = [[ContentSettingBackedBoolean alloc]
+        initWithHostContentSettingsMap:settingsMap
+                             settingID:ContentSettingsType::REQUEST_DESKTOP_SITE
+                              inverted:NO];
+    [_requestDesktopSetting setObserver:self];
   }
   return self;
 }
@@ -179,7 +191,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (base::FeatureList::IsEnabled(kAddSettingForDefaultPageMode)) {
-    [model addItem:[self defaultSiteMode]
+    self.defaultModeItem = [self defaultSiteMode];
+    [model addItem:self.defaultModeItem
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
 }
@@ -196,12 +209,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - ContentSettingsTableViewController
 
-- (TableViewItem*)defaultSiteMode {
+- (TableViewDetailIconItem*)defaultSiteMode {
   _defaultSiteMode = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypeSettingsDefaultSiteMode];
-  NSString* subtitle = @"TEST - Mobile";
-  _defaultSiteMode.text = @"TEST - Default Mode";
-  _defaultSiteMode.detailText = subtitle;
+  _defaultSiteMode.text =
+      l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_LABEL);
+  _defaultSiteMode.detailText = [self defaultModeDescription];
   _defaultSiteMode.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return _defaultSiteMode;
 }
@@ -324,10 +337,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case ItemTypeSettingsDefaultSiteMode: {
-      self.defaultModeViewController = [[DefaultPageModeCoordinator alloc]
+      self.defaultModeViewCoordinator = [[DefaultPageModeCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:_browser];
-      [self.defaultModeViewController start];
+      [self.defaultModeViewCoordinator start];
     }
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -348,6 +361,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else if (observableBoolean == self.linkPreviewEnabled) {
     self.linkPreviewItem.on = [self.linkPreviewEnabled value];
     [self reconfigureCellsForItems:@[ self.linkPreviewItem ]];
+  } else if (observableBoolean == self.requestDesktopSetting &&
+             self.defaultModeItem) {
+    self.defaultModeItem.detailText = [self defaultModeDescription];
+    [self reconfigureCellsForItems:@[ self.defaultModeItem ]];
   } else {
     NOTREACHED();
   }
@@ -384,6 +401,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
         postNotificationName:kMailToInstanceChanged
                       object:nil];
   }
+}
+
+// Returns the string for the default mode.
+- (NSString*)defaultModeDescription {
+  return self.requestDesktopSetting.value
+             ? l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP)
+             : l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_MOBILE);
 }
 
 @end
