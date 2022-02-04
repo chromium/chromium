@@ -343,6 +343,17 @@ bool PasswordCheckDelegate::MuteInsecureCredential(
   return insecure_credentials_manager_.MuteCredential(*insecure_credential);
 }
 
+bool PasswordCheckDelegate::UnmuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  // Try to obtain the original CredentialWithPassword. Return false if fails.
+  const CredentialWithPassword* insecure_credential =
+      FindMatchingInsecureCredential(credential);
+  if (!insecure_credential)
+    return false;
+
+  return insecure_credentials_manager_.UnmuteCredential(*insecure_credential);
+}
+
 void PasswordCheckDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   // If the delegate isn't initialized yet, enqueue the callback and return

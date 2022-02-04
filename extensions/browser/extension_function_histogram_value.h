@@ -1683,6 +1683,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_STOPARC = 1620,
   PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL = 1621,
   WEB_AUTHENTICATION_PROXY_COMPLETE_GET_REQUEST = 1622,
+  PASSWORDSPRIVATE_UNMUTEINSECURECREDENTIAL = 1623,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

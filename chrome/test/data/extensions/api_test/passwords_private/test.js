@@ -629,6 +629,54 @@ var availableTests = [
         });
   },
 
+  function unmuteInsecureCredentialSucceeds() {
+    chrome.passwordsPrivate.unmuteInsecureCredential(
+        {
+          id: 0,
+          formattedOrigin: 'example.com',
+          detailedOrigin: 'https://example.com',
+          isAndroidCredential: false,
+          signonRealm: 'https://example.com',
+          username: 'alice',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+            isMuted: true,
+          },
+        },
+        () => {
+          chrome.test.assertNoLastError();
+          // Ensure that the callback is invoked.
+          chrome.test.succeed();
+        });
+  },
+
+  function unmuteInsecureCredentialFails() {
+    chrome.passwordsPrivate.unmuteInsecureCredential(
+        {
+          id: 0,
+          formattedOrigin: 'example.com',
+          detailedOrigin: 'https://example.com',
+          isAndroidCredential: false,
+          signonRealm: 'https://example.com',
+          username: 'alice',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+            isMuted: true,
+          },
+        },
+        () => {
+          chrome.test.assertLastError(
+              'Could not unmute the insecure credential. Probably no ' +
+              'matching password could be found.');
+          // Ensure that the callback is invoked.
+          chrome.test.succeed();
+        });
+  },
+
   function startPasswordCheck() {
     chrome.passwordsPrivate.startPasswordCheck(() => {
       chrome.test.assertNoLastError();

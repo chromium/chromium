@@ -331,6 +331,15 @@ chrome.passwordsPrivate.muteInsecureCredential = function(
     credential, callback) {};
 
 /**
+ * Requests to unmute |credential| from the password store. Invokes |callback| on
+ * completion.
+ * @param {!chrome.passwordsPrivate.InsecureCredential} credential
+ * @param {function(): void=} callback
+ */
+ chrome.passwordsPrivate.unmuteInsecureCredential = function(
+  credential, callback) {};
+
+/**
  * Starts a check for insecure passwords. Invokes |callback| on completion.
  * @param {function(): void=} callback
  */
