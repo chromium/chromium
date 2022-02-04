@@ -59,8 +59,7 @@ class CONTENT_EXPORT RateLimitTable {
   // Checks if the given attribution is allowed according to the data in the
   // table and policy as specified by the delegate.
   AttributionAllowedStatus AttributionAllowed(sql::Database* db,
-                                              const AttributionReport& report,
-                                              base::Time now);
+                                              const AttributionReport& report);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.
@@ -77,26 +76,6 @@ class CONTENT_EXPORT RateLimitTable {
       const std::vector<StoredSource::Id>& source_ids);
 
  private:
-  // Returns the capacity for the given `attribution_type`, `impression_site`,
-  // `conversion_destination`, according to `delegate_->GetRateLimits()`.
-  // Returns 0 if there is no capacity, -1 on error.
-  int64_t GetCapacity(sql::Database* db,
-                      AttributionStorage::AttributionType attribution_type,
-                      const std::string& serialized_impression_site,
-                      const std::string& serialized_conversion_destination,
-                      base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Returns false on failure.
-  [[nodiscard]] bool AddRow(
-      sql::Database* db,
-      AttributionStorage::AttributionType attribution_type,
-      StoredSource::Id source_id,
-      const std::string& serialized_impression_site,
-      const std::string& serialized_impression_origin,
-      const std::string& serialized_conversion_destination,
-      const std::string& serialized_conversion_origin,
-      base::Time time) VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   // Returns false on failure.
   [[nodiscard]] bool ClearAllDataInRange(sql::Database* db,
                                          base::Time delete_begin,
