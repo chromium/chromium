@@ -21,8 +21,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-// Flaky on Chrome OS debug. http://crbug.com/1293903
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+// Flaky on Chrome OS debug and Linux Chromium OS ASan LSan Tests. b/217762791
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_GetSingleImage DISABLED_GetSingleImage
 #define MAYBE_CellularUninitialized DISABLED_CellularUninitialized
 #define MAYBE_CellularScanning DISABLED_CellularScanning

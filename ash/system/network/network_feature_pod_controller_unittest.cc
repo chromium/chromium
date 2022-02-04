@@ -35,8 +35,8 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 
-// Flaky on Chrome OS debug. http://crbug.com/1293903
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+// Flaky on Chrome OS debug and Linux Chromium OS ASan LSan Tests. b/217762791
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_HasCorrectButtonStateWhenNetworkStateChanges \
   DISABLED_HasCorrectButtonStateWhenNetworkStateChanges
 #define MAYBE_PressingIconOrLabelIsHandledCorrectly_Cellular \
