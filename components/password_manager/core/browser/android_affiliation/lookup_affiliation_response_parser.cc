@@ -74,11 +74,12 @@ bool ParseFacets(const std::vector<FacetURI>& requested_facet_uris,
 
 bool ParseLookupAffiliationResponse(
     const std::vector<FacetURI>& requested_facet_uris,
-    const affiliation_pb::LookupAffiliationResponse& response,
+    const affiliation_pb::LookupAffiliationByHashPrefixResponse& response,
     AffiliationFetcherDelegate::Result* result) {
-  return ParseFacets(requested_facet_uris, response.affiliation(),
+  return ParseFacets(requested_facet_uris, response.affiliations(),
                      result->affiliations) &&
-         ParseFacets(requested_facet_uris, response.group(), result->groupings);
+         ParseFacets(requested_facet_uris, response.groups(),
+                     result->groupings);
 }
 
 }  // namespace password_manager
