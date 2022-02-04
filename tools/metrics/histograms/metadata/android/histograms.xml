@@ -954,6 +954,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DynamicColors.IsAvailable" enum="Boolean"
+    expires_after="2023-02-02">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-sbui-team@google.com</owner>
+  <summary>
+    Recorded during ChromeBaseAppCompatActivity initialization if third_party
+    dynamic colors logic thinks dynamic colors are available. This is often
+    based on Android version and OEM. This metric is not related to whether
+    dynamic colors are desired by features/experiments.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Android.FeatureModules.AvailabilityStatus"
     enum="FeatureModuleAvailabilityStatus" expires_after="2022-06-13">
 <!-- Name completed by histogram_suffixes

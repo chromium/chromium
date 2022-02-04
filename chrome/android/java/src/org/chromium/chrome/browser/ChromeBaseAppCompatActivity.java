@@ -24,6 +24,7 @@ import com.google.android.material.color.DynamicColors;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -215,6 +217,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (supportsDynamicColors()) {
             DynamicColors.applyIfAvailable(this);
         }
+        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+            // #registerSyntheticFieldTrial requires native.
+            boolean isDynamicColorAvailable = DynamicColors.isDynamicColorAvailable();
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.DynamicColors.IsAvailable", isDynamicColorAvailable);
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    "IsDynamicColorAvailable", isDynamicColorAvailable ? "Enabled" : "Disabled");
+        });
 
         // Try to enable browser overscroll when content overscroll is enabled for consistency. This
         // needs to be in a cached feature because activity startup happens before native is
