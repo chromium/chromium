@@ -57,8 +57,8 @@ print_preview_non_webcomponents_files = [ "toolbar_manager.js" ]
 # Preview.
 print_preview_webcomponents_files = [
   "elements/viewer-page-indicator.js",
-  "elements/viewer-zoom-button.js",
-  "elements/viewer-zoom-toolbar.js",
+  "elements/viewer-zoom-button.ts",
+  "elements/viewer-zoom-toolbar.ts",
   "pdf_viewer_pp.js",
 ]
 
@@ -89,3 +89,13 @@ shared_webcomponents_files = [
   "elements/viewer-error-dialog.js",
   "pdf_viewer_shared_style.js",
 ]
+
+# Print Preview's GRDP needs all the shared + Print Preview specific files.
+print_preview_grdp_ts_files =
+    shared_non_webcomponents_files + shared_webcomponents_files +
+    print_preview_non_webcomponents_files + print_preview_webcomponents_files
+
+print_preview_grdp_input_files = []
+foreach(f, print_preview_grdp_ts_files) {
+  print_preview_grdp_input_files += [ string_replace(f, ".ts", ".js") ]
+}

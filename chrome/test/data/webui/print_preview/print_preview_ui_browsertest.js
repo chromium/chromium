@@ -185,7 +185,7 @@ TEST_F('PrintPreviewPdfViewerTest', 'PageIndicator', function() {
 var PrintPreviewPdfZoomToolbarTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/pdf_zoom_toolbar_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/pdf_zoom_toolbar_test.js&host=webui-test';
   }
 
   /** @override */

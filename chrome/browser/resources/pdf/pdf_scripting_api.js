@@ -2,6 +2,53 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/** @interface */
+export class PDFPlugin extends HTMLIFrameElement {
+  /** @param {boolean} darkMode */
+  darkModeChanged(darkMode) {}
+
+  hideToolbar() {}
+  /**
+   * @param {string} url
+   * @param {number} index
+   */
+  loadPreviewPage(url, index) {}
+
+  /**
+   * @param {string} url
+   * @param {boolean} color
+   * @param {Array<number>} pages
+   * @param {boolean} modifiable
+   */
+  resetPrintPreviewMode(url, color, pages, modifiable) {}
+
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
+  scrollPosition(x, y) {}
+
+  /**
+   * @param {!KeyboardEvent} e
+   */
+  sendKeyEvent(e) {}
+
+  /**
+   * @param {function(KeyboardEvent): void} callback
+   */
+  setKeyEventCallback(callback) {}
+
+  /**
+   * @param {function(success): void} callback
+   */
+  setLoadCompleteCallback(callback) {}
+
+  /**
+   * @param {function(number, number, number, number, number): void} callback
+   */
+  setViewportChangedCallback(callback) {}
+}
+
 /**
  * Turn a dictionary received from postMessage into a key event.
  * @param {Object} dict A dictionary representing the key event.
@@ -318,7 +365,7 @@ export class PDFScriptingAPI {
  * by print preview and accessibility.
  * @param {string} src the source URL of the PDF to load initially.
  * @param {string} baseUrl the base URL of the PDF viewer
- * @return {!HTMLIFrameElement} the iframe element containing the PDF viewer.
+ * @return {!PDFPlugin} the iframe element containing the PDF viewer.
  */
 export function PDFCreateOutOfProcessPlugin(src, baseUrl) {
   const client = new PDFScriptingAPI(window, null);
@@ -341,5 +388,5 @@ export function PDFCreateOutOfProcessPlugin(src, baseUrl) {
   iframe.setLoadCompleteCallback = client.setLoadCompleteCallback.bind(client);
   iframe.setViewportChangedCallback =
       client.setViewportChangedCallback.bind(client);
-  return iframe;
+  return /** @type {!PDFPlugin} */ (iframe);
 }

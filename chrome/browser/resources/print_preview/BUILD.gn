@@ -100,11 +100,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-copy("copy_pdf_definitions") {
-  sources = [ "../pdf/pdf_scripting_api.d.ts" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/pdf/{{source_file_part}}" ]
-}
-
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
@@ -113,17 +108,18 @@ ts_library("build_ts") {
   in_files = web_component_files + non_web_component_files
 
   deps = [
+    "//chrome/browser/resources/pdf:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
 
-  definitions = [
-    "//tools/typescript/definitions/chrome_send.d.ts",
-    "$target_gen_dir/$preprocess_folder/pdf/pdf_scripting_api.d.ts",
-  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
+  path_mappings = [ "chrome://print/pdf/*|" + rebase_path(
+                        "$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
+                        target_gen_dir) ]
 
   extra_deps = [
-    ":copy_pdf_definitions",
     ":preprocess",
     ":preprocess_generated",
   ]

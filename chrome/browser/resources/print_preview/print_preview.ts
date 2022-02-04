@@ -4,6 +4,7 @@
 
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
 export {CloudPrintInterface, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
@@ -35,7 +36,6 @@ export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, ColorModeRestri
 export {PinModeRestriction} from './native_layer.js';
 export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServersConfig} from './native_layer_cros.js';
 // </if>
-export {PDFPlugin} from './pdf/pdf_scripting_api.js';
 export {getSelectDropdownBackground, Range} from './print_preview_utils.js';
 export {PrintPreviewAdvancedSettingsDialogElement} from './ui/advanced_settings_dialog.js';
 export {PrintPreviewAdvancedSettingsItemElement} from './ui/advanced_settings_item.js';
