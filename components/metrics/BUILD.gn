@@ -477,6 +477,7 @@ source_set("unit_tests") {
     ":test_support",
     ":ui",
     "//base",
+    "//base:base_stack_sampling_profiler_test_util",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/component_updater:test_support",

@@ -439,4 +439,23 @@ StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
 #endif
 }
 
+uintptr_t TestModule::GetBaseAddress() const {
+  return base_address_;
+}
+std::string TestModule::GetId() const {
+  return id_;
+}
+FilePath TestModule::GetDebugBasename() const {
+  return debug_basename_;
+}
+size_t TestModule::GetSize() const {
+  return size_;
+}
+bool TestModule::IsNative() const {
+  return is_native_;
+}
+
+bool operator==(const Frame& a, const Frame& b) {
+  return a.instruction_pointer == b.instruction_pointer && a.module == b.module;
+}
 }  // namespace base

@@ -11,6 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/profiler/stack_sampling_profiler_test_util.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -20,21 +22,6 @@ namespace {
 // The image base returned by LookupFunctionEntry starts at this value and is
 // incremented by the same value with each call.
 const uintptr_t kImageBaseIncrement = 1 << 20;
-
-// Stub module for testing.
-class TestModule : public ModuleCache::Module {
- public:
-  TestModule(uintptr_t base_address) : base_address_(base_address) {}
-
-  uintptr_t GetBaseAddress() const override { return base_address_; }
-  std::string GetId() const override { return ""; }
-  FilePath GetDebugBasename() const override { return FilePath(); }
-  size_t GetSize() const override { return 0; }
-  bool IsNative() const override { return true; }
-
- private:
-  const uintptr_t base_address_;
-};
 
 class TestUnwindFunctions : public Win32StackFrameUnwinder::UnwindFunctions {
  public:

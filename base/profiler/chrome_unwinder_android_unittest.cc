@@ -9,6 +9,7 @@
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
+#include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
@@ -39,25 +40,6 @@ const uint16_t cfi_data[] = {
     0x9,
 };
 
-class TestModule : public ModuleCache::Module {
- public:
-  TestModule(uintptr_t base_address,
-             size_t size,
-             const std::string& build_id = "TestModule")
-      : base_address_(base_address), size_(size), build_id_(build_id) {}
-
-  uintptr_t GetBaseAddress() const override { return base_address_; }
-  std::string GetId() const override { return build_id_; }
-  FilePath GetDebugBasename() const override { return FilePath(); }
-  size_t GetSize() const override { return size_; }
-  bool IsNative() const override { return true; }
-
- private:
-  const uintptr_t base_address_;
-  const size_t size_;
-  const std::string build_id_;
-};
-
 // Utility function to add a single native module during test setup. Returns
 // a pointer to the provided module.
 const ModuleCache::Module* AddNativeModule(
@@ -76,10 +58,6 @@ ArmCFITable::FrameEntry MakeFrameEntry(uint16_t cfa_offset,
 }
 
 }  // namespace
-
-bool operator==(const Frame& a, const Frame& b) {
-  return a.instruction_pointer == b.instruction_pointer && a.module == b.module;
-}
 
 // Tests unwind step under normal operation.
 TEST(ChromeUnwinderAndroidTest, Step) {
@@ -209,10 +187,8 @@ TEST(ChromeUnwinderAndroidTest, CanUnwindFrom) {
   auto cfi_table = ArmCFITable::Parse(
       {reinterpret_cast<const uint8_t*>(cfi_data), sizeof(cfi_data)});
 
-  auto chrome_module =
-      std::make_unique<TestModule>(0x1000, 0x500, "ChromeModule");
-  auto non_chrome_module =
-      std::make_unique<TestModule>(0x2000, 0x500, "OtherModule");
+  auto chrome_module = std::make_unique<TestModule>(0x1000, 0x500);
+  auto non_chrome_module = std::make_unique<TestModule>(0x2000, 0x500);
 
   ModuleCache module_cache;
   ChromeUnwinderAndroid unwinder(cfi_table.get(),

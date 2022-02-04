@@ -117,6 +117,7 @@ source_set("tests") {
     ":privacy_check",
     ":test_utils",
     "//base",
+    "//base:base_stack_sampling_profiler_test_util",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",

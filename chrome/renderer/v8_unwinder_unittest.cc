@@ -25,22 +25,6 @@
 
 namespace {
 
-class TestModule : public base::ModuleCache::Module {
- public:
-  TestModule(uintptr_t base_address, size_t size)
-      : base_address_(base_address), size_(size) {}
-
-  uintptr_t GetBaseAddress() const override { return base_address_; }
-  std::string GetId() const override { return ""; }
-  base::FilePath GetDebugBasename() const override { return base::FilePath(); }
-  size_t GetSize() const override { return size_; }
-  bool IsNative() const override { return true; }
-
- private:
-  const uintptr_t base_address_;
-  const size_t size_;
-};
-
 v8::Local<v8::String> ToV8String(const char* str) {
   return v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), str)
       .ToLocalChecked();
@@ -524,7 +508,7 @@ TEST(V8UnwinderTest, CanUnwindFrom_OtherModule) {
   unwinder.OnStackCapture();
   unwinder.UpdateModules();
 
-  auto other_module = std::make_unique<TestModule>(1, 10);
+  auto other_module = std::make_unique<base::TestModule>(1, 10);
   const base::ModuleCache::Module* other_module_ptr = other_module.get();
   module_cache.AddCustomNativeModule(std::move(other_module));
 

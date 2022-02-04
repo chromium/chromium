@@ -5,6 +5,7 @@
 #include "base/profiler/chrome_unwinder_android_v2.h"
 
 #include "base/profiler/chrome_unwind_info_android.h"
+#include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -949,25 +950,6 @@ TEST(ChromeUnwinderAndroidV2Test,
   }
 }
 
-class TestModule : public ModuleCache::Module {
- public:
-  TestModule(uintptr_t base_address,
-             size_t size,
-             const std::string& build_id = "TestModule")
-      : base_address_(base_address), size_(size), build_id_(build_id) {}
-
-  uintptr_t GetBaseAddress() const override { return base_address_; }
-  std::string GetId() const override { return build_id_; }
-  FilePath GetDebugBasename() const override { return FilePath(); }
-  size_t GetSize() const override { return size_; }
-  bool IsNative() const override { return true; }
-
- private:
-  const uintptr_t base_address_;
-  const size_t size_;
-  const std::string build_id_;
-};
-
 // Utility function to add a single native module during test setup. Returns
 // a pointer to the provided module.
 const ModuleCache::Module* AddNativeModule(
@@ -990,10 +972,8 @@ TEST(ChromeUnwinderAndroidV2Test, CanUnwindFrom) {
       make_span(page_table, 1ul),
   };
 
-  auto chrome_module =
-      std::make_unique<TestModule>(0x1000, 0x500, "ChromeModule");
-  auto non_chrome_module =
-      std::make_unique<TestModule>(0x2000, 0x500, "OtherModule");
+  auto chrome_module = std::make_unique<TestModule>(0x1000, 0x500);
+  auto non_chrome_module = std::make_unique<TestModule>(0x2000, 0x500);
 
   ModuleCache module_cache;
   ChromeUnwinderAndroidV2 unwinder(dummy_unwind_info,
