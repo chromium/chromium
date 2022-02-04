@@ -155,9 +155,11 @@ void ReadLaterUI::BindInterface(
 }
 
 void ReadLaterUI::CreatePageHandler(
+    mojo::PendingRemote<reader_mode::mojom::Page> page,
     mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver) {
-  reader_mode_page_handler_ =
-      std::make_unique<ReaderModePageHandler>(std::move(receiver));
+  DCHECK(page);
+  reader_mode_page_handler_ = std::make_unique<ReaderModePageHandler>(
+      std::move(page), std::move(receiver));
 }
 
 void ReadLaterUI::SetActiveTabURL(const GURL& url) {

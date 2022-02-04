@@ -57,6 +57,7 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
 
   // reader_mode::mojom::PageHandlerFactory:
   void CreatePageHandler(
+      mojo::PendingRemote<reader_mode::mojom::Page> page,
       mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<ReadLaterPageHandler> page_handler_;

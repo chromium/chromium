@@ -35,6 +35,7 @@ export class ReaderModeElement extends ReaderModeElementBase {
   private apiProxy_: ReaderModeApiProxy = ReaderModeApiProxy.getInstance();
   private readLaterApi_: ReadLaterApiProxy =
       ReadLaterApiProxyImpl.getInstance();
+  private listenerIds_: number[];
   private paragraphs_: string[];
 
   connectedCallback() {
@@ -43,12 +44,24 @@ export class ReaderModeElement extends ReaderModeElementBase {
       // Show the UI as soon as the app is connected.
       this.readLaterApi_.showUI();
     }
-    this.showReaderMode_();
+
+    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    this.listenerIds_ = [callbackRouter.onEssentialContent.addListener(
+        (essential_content: string[]) =>
+            this.showEssentialContent_(essential_content))];
+
+    this.apiProxy_.showUI();
   }
 
-  async showReaderMode_() {
-    const {result} = await this.apiProxy_.showReaderMode();
-    this.paragraphs_ = result;
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.listenerIds_.forEach(
+        id => this.apiProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  showEssentialContent_(essential_content: string[]) {
+    this.paragraphs_ = essential_content;
   }
 }
 customElements.define(ReaderModeElement.is, ReaderModeElement);

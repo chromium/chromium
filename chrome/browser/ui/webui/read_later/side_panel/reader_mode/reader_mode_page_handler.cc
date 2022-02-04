@@ -78,12 +78,13 @@ void AddTextNodesToVector(const ui::AXNode* node,
 }  // namespace
 
 ReaderModePageHandler::ReaderModePageHandler(
+    mojo::PendingRemote<reader_mode::mojom::Page> page,
     mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)), page_(std::move(page)) {}
 
 ReaderModePageHandler::~ReaderModePageHandler() = default;
 
-void ReaderModePageHandler::ShowReaderMode(ShowReaderModeCallback callback) {
+void ReaderModePageHandler::ShowUI() {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
@@ -94,14 +95,13 @@ void ReaderModePageHandler::ShowReaderMode(ShowReaderModeCallback callback) {
   // This will include subframe content for any subframes loaded at this point.
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&ReaderModePageHandler::CombineTextNodesAndMakeCallback,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_pointer_factory_.GetWeakPtr()),
       ui::AXMode::kWebContents,
       /* exclude_offscreen= */ false, kMaxNodes,
       /* timeout= */ {});
 }
 
 void ReaderModePageHandler::CombineTextNodesAndMakeCallback(
-    ShowReaderModeCallback callback,
     const ui::AXTreeUpdate& update) {
   ui::AXTree tree;
   bool success = tree.Unserialize(update);
@@ -118,5 +118,5 @@ void ReaderModePageHandler::CombineTextNodesAndMakeCallback(
   text_node_contents.reserve(update.nodes.size());
   AddTextNodesToVector(reader_root, &text_node_contents);
 
-  std::move(callback).Run(text_node_contents);
+  page_->OnEssentialContent(std::move(text_node_contents));
 }

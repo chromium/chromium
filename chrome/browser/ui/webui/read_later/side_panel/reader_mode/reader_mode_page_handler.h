@@ -8,7 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ui {
 struct AXTreeUpdate;
@@ -17,19 +19,20 @@ struct AXTreeUpdate;
 class ReaderModePageHandler : public reader_mode::mojom::PageHandler {
  public:
   explicit ReaderModePageHandler(
+      mojo::PendingRemote<reader_mode::mojom::Page> page,
       mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver);
   ReaderModePageHandler(const ReaderModePageHandler&) = delete;
   ReaderModePageHandler& operator=(const ReaderModePageHandler&) = delete;
   ~ReaderModePageHandler() override;
 
   // reader_mode::mojom::PageHandler:
-  void ShowReaderMode(ShowReaderModeCallback callback) override;
+  void ShowUI() override;
 
  private:
-  void CombineTextNodesAndMakeCallback(ShowReaderModeCallback callback,
-                                       const ui::AXTreeUpdate& update);
+  void CombineTextNodesAndMakeCallback(const ui::AXTreeUpdate& update);
 
   mojo::Receiver<reader_mode::mojom::PageHandler> receiver_;
+  mojo::Remote<reader_mode::mojom::Page> page_;
   base::WeakPtrFactory<ReaderModePageHandler> weak_pointer_factory_{this};
 };
 

@@ -2,22 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandlerFactory, PageHandlerRemote} from './reader_mode.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './reader_mode.mojom-webui.js';
 
 let instance: ReaderModeApiProxy|null = null;
 
 export class ReaderModeApiProxy {
+  callbackRouter: PageCallbackRouter;
   handler: PageHandlerRemote;
 
   constructor() {
+    this.callbackRouter = new PageCallbackRouter();
     this.handler = new PageHandlerRemote();
-
     const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(this.handler.$.bindNewPipeAndPassReceiver());
+    factory.createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  showReaderMode() {
-    return this.handler.showReaderMode();
+  getCallbackRouter() {
+    return this.callbackRouter;
+  }
+
+  showUI() {
+    this.handler.showUI();
   }
 
   static getInstance() {
