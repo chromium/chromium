@@ -7,7 +7,7 @@ load("//lib/builders.star", "os")
 load("//lib/branches.star", "branches")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
-load("//project.star", "branch_type")
+load("//project.star", "BRANCH_TYPES", "branch_type")
 
 try_.defaults.set(
     cores = 8,
@@ -49,29 +49,35 @@ def presubmit_builder(*, name, tryjob, **kwargs):
 # long after the change has been made, so make it a presubmit builder to ensure
 # it's checked with current code. The builder runs in a few minutes and only for
 # infra/config changes, so it won't impose a heavy burden on our capacity.
+def branch_configs():
+    """Get the branch configs to be tested.
+
+    Returns:
+      A list of objects that can be used as the value of the "branch_configs"
+      property for the branch_configuration/tester recipe. See
+      https://chromium.googlesource.com/chromium/tools/build/+/refs/heads/main/recipes/recipes/branch_configuration/tester.proto
+      The returned configs will cover standard branches and every combination of
+      post-stable branches.
+    """
+    type_combos = []
+    for t in BRANCH_TYPES:
+        # The standard branch type can only appear alone, so add it afterwards
+        if t == branch_type.STANDARD:
+            continue
+        type_combos = type_combos + [[t]] + [c + [t] for c in type_combos]
+
+    type_combos = [[branch_type.STANDARD]] + sorted(type_combos, key = lambda x: (len(x), x))
+    return [{
+        "name": " + ".join(c),
+        "branch_types": c,
+    } for c in type_combos]
+
 presubmit_builder(
     name = "branch-config-verifier",
     executable = "recipe:branch_configuration/tester",
     properties = {
         "branch_script": "infra/config/scripts/branch.py",
-        "branch_configs": [
-            {
-                "name": branch_type.STANDARD,
-                "branch_types": [branch_type.STANDARD],
-            },
-            {
-                "name": branch_type.DESKTOP_EXTENDED_STABLE,
-                "branch_types": [branch_type.DESKTOP_EXTENDED_STABLE],
-            },
-            {
-                "name": branch_type.CROS_LTS,
-                "branch_types": [branch_type.CROS_LTS],
-            },
-            {
-                "name": "{} + {}".format(branch_type.DESKTOP_EXTENDED_STABLE, branch_type.CROS_LTS),
-                "branch_types": [branch_type.DESKTOP_EXTENDED_STABLE, branch_type.CROS_LTS],
-            },
-        ],
+        "branch_configs": branch_configs(),
         "starlark_entry_points": ["infra/config/main.star", "infra/config/dev.star"],
     },
     tryjob = try_.job(
