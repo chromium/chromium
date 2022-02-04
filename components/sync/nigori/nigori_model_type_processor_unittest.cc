@@ -538,32 +538,6 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
                                 std::move(updates));
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
-       ShouldNotResetDataOnCacheGuidMismatchWhenDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      switches::kSyncNigoriRemoveMetadataOnCacheGuidMismatch);
-
-  SimulateModelReadyToSync(/*initial_sync_done=*/true);
-  ASSERT_TRUE(ProcessorHasEntity());
-
-  syncer::DataTypeActivationRequest request;
-  request.error_handler = base::DoNothing();
-  const char kOtherCacheGuid[] = "OtherCacheGuid";
-  request.cache_guid = kOtherCacheGuid;
-  ASSERT_NE(processor()->GetMetadata().model_type_state.cache_guid(),
-            kOtherCacheGuid);
-  ASSERT_TRUE(processor()->IsTrackingMetadata());
-
-  EXPECT_CALL(*mock_nigori_sync_bridge(), ApplyDisableSyncChanges()).Times(0);
-  processor()->OnSyncStarting(request, base::DoNothing());
-
-  EXPECT_TRUE(processor()->IsTrackingMetadata());
-  EXPECT_EQ(processor()->GetModelTypeStateForTest().cache_guid(), kCacheGuid);
-
-  EXPECT_TRUE(ProcessorHasEntity());
-}
-
 TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
   SimulateModelReadyToSync(/*initial_sync_done=*/false);
 

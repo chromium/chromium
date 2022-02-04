@@ -15,10 +15,6 @@ constexpr inline char kSyncServiceURL[] = "sync-url";
 // Specifies the vault server used for trusted vault passphrase.
 constexpr inline char kTrustedVaultServiceURL[] = "trusted-vault-service-url";
 
-constexpr inline base::Feature kSyncNigoriRemoveMetadataOnCacheGuidMismatch{
-    "SyncNigoriRemoveMetadataOnCacheGuidMismatch",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BASE_SYNC_BASE_SWITCHES_H_

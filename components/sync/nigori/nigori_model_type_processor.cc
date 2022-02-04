@@ -422,24 +422,12 @@ void NigoriModelTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncNigoriRemoveMetadataOnCacheGuidMismatch)) {
-    if (model_type_state_.initial_sync_done() &&
-        model_type_state_.cache_guid() != activation_request_.cache_guid) {
-      ClearMetadataAndReset();
-      DCHECK(model_ready_to_sync_);
-    }
-
-    model_type_state_.set_cache_guid(activation_request_.cache_guid);
-  } else {
-    // Legacy logic.
-    if (!model_type_state_.has_cache_guid()) {
-      model_type_state_.set_cache_guid(activation_request_.cache_guid);
-    } else if (model_type_state_.cache_guid() !=
-               activation_request_.cache_guid) {
-      // Not implemented in legacy codepath.
-    }
+  if (model_type_state_.initial_sync_done() &&
+      model_type_state_.cache_guid() != activation_request_.cache_guid) {
+    ClearMetadataAndReset();
+    DCHECK(model_ready_to_sync_);
   }
+  model_type_state_.set_cache_guid(activation_request_.cache_guid);
 
   // Cache GUID verification earlier above guarantees the user is the same.
   model_type_state_.set_authenticated_account_id(
