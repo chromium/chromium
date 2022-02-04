@@ -1420,8 +1420,7 @@ void BluetoothAdapterBlueZ::NotifyDeviceConnectedStateChanged(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  for (auto& observer : observers_)
-    observer.DeviceConnectedStateChanged(this, device, is_now_connected);
+  BluetoothAdapter::NotifyDeviceConnectedStateChanged(device, is_now_connected);
 }
 
 void BluetoothAdapterBlueZ::UseProfile(

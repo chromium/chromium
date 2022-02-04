@@ -659,6 +659,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void NotifyDevicePairedChanged(BluetoothDevice* device,
                                  bool new_paired_status);
+  void NotifyDeviceConnectedStateChanged(BluetoothDevice* device,
+                                         bool is_connected);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

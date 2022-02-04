@@ -340,6 +340,7 @@ void BluetoothAdapterFloss::OnGetConnectionState(
   // Connected if connection state >= 1:
   // https://android.googlesource.com/platform/packages/modules/Bluetooth/+/84eff3217e552cbb3399e6deecdfce6748ae34ef/system/btif/src/btif_dm.cc#693
   device->SetIsConnected(*ret >= 1);
+  NotifyDeviceConnectedStateChanged(device, device->IsConnected());
 }
 
 void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
@@ -355,6 +356,7 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
   }
 
   device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret));
+  NotifyDevicePairedChanged(device, device->IsPaired());
 }
 
 // Announce to observers a change in the adapter state.
@@ -554,6 +556,7 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
       static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
   device->SetBondState(bond_state);
   NotifyDeviceChanged(device);
+  NotifyDevicePairedChanged(device, device->IsPaired());
 
   if (bond_state == FlossAdapterClient::BondState::kBonded)
     device->ConnectAllEnabledProfiles();
@@ -576,6 +579,7 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
 
   device->SetIsConnected(true);
   NotifyDeviceChanged(device);
+  NotifyDeviceConnectedStateChanged(device, true);
 }
 
 void BluetoothAdapterFloss::AdapterDeviceDisconnected(
@@ -595,6 +599,7 @@ void BluetoothAdapterFloss::AdapterDeviceDisconnected(
 
   device->SetIsConnected(false);
   NotifyDeviceChanged(device);
+  NotifyDeviceConnectedStateChanged(device, false);
 }
 
 std::unordered_map<device::BluetoothDevice*, device::BluetoothDevice::UUIDSet>
