@@ -8,7 +8,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchHeuristics;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchIPH;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInteractionRecorder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.EngagementSuppression;
@@ -161,10 +160,6 @@ public class ContextualSearchPanelMetrics {
                 // Tracking bug for RS in the Bar: https://crbug.com/1210674.
                 ContextualSearchUma.logAllSearches(/* wasRelatedSearches */ false);
             }
-
-            // Notifications to Feature Engagement.
-            ContextualSearchIPH.doSearchFinishedNotifications(profile, mWasSearchContentViewSeen,
-                    mWasActivatedByTap, mWasContextualCardsDataShown);
 
             writeInteractionOutcomesAndReset();
         }

@@ -56,7 +56,6 @@ public interface ContextualSearchPanelInterface {
     ContextualSearchBarControl getSearchBarControl();
     ContextualSearchPanelMetrics getPanelMetrics();
     Rect getPanelRect();
-    void setIsPanelHelpActive(boolean isActive);
     void clearRelatedSearches();
 
     /** {@link OverlayPanel} methods */

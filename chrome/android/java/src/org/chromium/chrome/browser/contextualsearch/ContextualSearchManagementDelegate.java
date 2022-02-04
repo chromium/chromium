@@ -85,24 +85,6 @@ public interface ContextualSearchManagementDelegate {
     void onPanelFinishedShowing();
 
     /**
-     * Called when the Contextual Search panel is resized.
-     */
-    void onPanelResized();
-
-    /**
-     * Called when the privacy Opt-in in the panel has been accepted.
-     */
-    void onPromoOptIn();
-
-    /** Returns whether the In-Panel-Help is currently enabled. */
-    boolean isPanelHelpEnabled();
-
-    /**
-     * Called when the Help section of the panel has its OK button clicked.
-     */
-    void onPanelHelpOkClicked();
-
-    /**
      * Notifies that a Related Searches suggestion has been clicked, and whether it was shown in the
      * Bar or the content area of the Panel.
      * @param suggestionIndex The 0-based index into the list of suggestions provided by the

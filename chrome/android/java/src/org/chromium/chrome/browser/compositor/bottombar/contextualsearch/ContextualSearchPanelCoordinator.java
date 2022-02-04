@@ -217,9 +217,6 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     }
 
     @Override
-    public void setIsPanelHelpActive(boolean isActive) {}
-
-    @Override
     public void clearRelatedSearches() {}
 
     @Override

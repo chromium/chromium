@@ -55,12 +55,6 @@ void ContextualSearchLayer::SetProperties(
     float search_promo_height,
     float search_promo_opacity,
     int search_promo_background_color,
-    // Panel Help
-    int panel_help_resource_id,
-    bool panel_help_visible,
-    float panel_help_height,
-    float panel_help_opacity,
-    int panel_help_container_background_color,
     // Related Searches
     int related_searches_in_content_resource_id,
     bool related_searches_in_content_visible,
@@ -122,8 +116,7 @@ void ContextualSearchLayer::SetProperties(
       open_tab_icon_resource_id, close_icon_resource_id);
 
   //  TODO(donnd): Update when moving Related Searches.
-  float content_view_top = search_bar_bottom + panel_help_height +
-                           search_promo_height +
+  float content_view_top = search_bar_bottom + search_promo_height +
                            related_searches_in_content_height;
   float should_render_bar_border = search_bar_border_visible
       && !should_render_progress_bar;
@@ -299,42 +292,6 @@ void ContextualSearchLayer::SetProperties(
   } else if (related_searches_in_content_.get() &&
              related_searches_in_content_->parent()) {
     related_searches_in_content_->RemoveFromParent();
-  }
-
-  // ---------------------------------------------------------------------------
-  // Panel Help
-  // ---------------------------------------------------------------------------
-  if (panel_help_visible) {
-    ui::Resource* panel_help_resource = resource_manager_->GetResource(
-        ui::ANDROID_RESOURCE_TYPE_DYNAMIC, panel_help_resource_id);
-    if (panel_help_container_->parent() != layer_) {
-      // NOTE(donnd): This layer can appear just below the Bar so it should be
-      // always placed before the Search Bar Shadow to make sure it won't
-      // occlude the shadow.
-      layer_->InsertChild(panel_help_container_, 0);
-    }
-    if (panel_help_resource) {
-      int panel_help_content_height = panel_help_resource->size().height();
-      gfx::Size panel_help_size(search_panel_width, panel_help_height);
-      panel_help_container_->SetBounds(panel_help_size);
-      panel_help_container_->SetPosition(gfx::PointF(0.f, next_section_top));
-      panel_help_container_->SetMasksToBounds(true);
-      panel_help_container_->SetBackgroundColor(
-          panel_help_container_background_color);
-
-      if (panel_help_->parent() != panel_help_container_)
-        panel_help_container_->AddChild(panel_help_);
-
-      panel_help_->SetUIResourceId(panel_help_resource->ui_resource()->id());
-      panel_help_->SetBounds(panel_help_resource->size());
-      panel_help_->SetPosition(
-          gfx::PointF(0.f, panel_help_height - panel_help_content_height));
-      panel_help_->SetOpacity(panel_help_opacity);
-      // Next section goes beyond this section.
-      next_section_top += panel_help_height;
-    }
-  } else if (panel_help_container_.get() && panel_help_container_->parent()) {
-    panel_help_container_->RemoveFromParent();
   }
 
   // ---------------------------------------------------------------------------
@@ -734,8 +691,6 @@ ContextualSearchLayer::ContextualSearchLayer(
       search_provider_icon_layer_(cc::UIResourceLayer::Create()),
       thumbnail_layer_(cc::UIResourceLayer::Create()),
       quick_action_icon_layer_(cc::UIResourceLayer::Create()),
-      panel_help_(cc::UIResourceLayer::Create()),
-      panel_help_container_(cc::SolidColorLayer::Create()),
       search_promo_(cc::UIResourceLayer::Create()),
       search_promo_container_(cc::SolidColorLayer::Create()),
       related_searches_in_bar_(cc::UIResourceLayer::Create()),
@@ -760,11 +715,6 @@ ContextualSearchLayer::ContextualSearchLayer(
 
   // Search Bar Caption
   search_caption_->SetIsDrawable(true);
-
-  // In-Panel Help section
-  panel_help_container_->SetIsDrawable(true);
-  panel_help_container_->SetBackgroundColor(kSearchBackgroundColor);
-  panel_help_->SetIsDrawable(true);
 
   // Search Opt Out Promo
   search_promo_container_->SetIsDrawable(true);

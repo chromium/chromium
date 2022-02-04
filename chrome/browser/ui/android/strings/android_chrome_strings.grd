@@ -821,12 +821,6 @@ Touch &amp; hold any word to search. To refine your search, select more or fewer
       <message name="IDS_CONTEXTUAL_SEARCH_NO_THANKS_BUTTON" desc="A button to confirm and dismiss opt out promo">
         No thanks
       </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_HELP_BODY" desc="Some help text that is shown in the body of a paragraph. The text tells the user what gesture to use instead of a previous gesture in order to search.">
-        To search from this page, touch &amp; hold words instead of tapping them
-      </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_HELP_HEADER" desc="Summary help text that is shown at the top of a paragraph. The text tells the user what gesture to use in order to search.">
-        Touch &amp; hold for more relevant info
-      </message>
       <message name="IDS_CONTEXTUAL_SEARCH_DEFAULT_CAPTION" desc="Summary help text that is shown as a second line in the Contextual Search peeking bottom sheet telling the user that they can tap the text in order to open the sheet and see search results there.">
         Tap to see search results
       </message>
@@ -3893,23 +3887,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CONTEXTUAL_SEARCH_QUICK_ACTION_CAPTION_GENERIC_WEBSITE" desc="Caption displayed in the Contextual Search bar prompting the user to navigate to a web page.">
         Go to page
       </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_IPH_ENABLE" desc="An in-product-help message for the Touch to Search feature on Chrome Android. The message encourages users to let Google Search servers have access to the page content to get better translations.">
-        To get better translations, let Google Search use the current page
-      </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_IPH_ENTITY" desc="An in-product-help message for the Tap to Search feature on Chrome Android. The message encourages users to open a panel that contains search results for the word or phrase they tapped on.">
-        See instant search results in this panel
-      </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_IPH_SEARCH_RESULT" desc="An in-product-help message for the Tap to Search feature. It encourages users to open the Tap to Search panel to see search results for a word or phrase they have tapped.">
-        Tap a word to search instantly or see related actions
-      </message>
       <message name="IDS_CONTEXTUAL_SEARCH_IPH_TAP" desc="An in-product-help message for encouraging users to tap instead of long pressing to trigger the Tap to Search feature.">
         You can also search with a quick tap on a word
-      </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_IPH_TOUCH_AND_HOLD" desc="An in-product-help message for encouraging users to use a touch and hold gesture to trigger the Touch to Search feature.">
-        To search, touch &amp; hold a word
-      </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_IPH_TOUCH_AND_HOLD_ENGAGED" desc="An in-product-help message for encouraging engaged users to use a touch and hold gesture to trigger the Touch to Search feature.">
-        To search, touch &amp; hold a word instead of tapping it
       </message>
 
       <!-- Web apps -->

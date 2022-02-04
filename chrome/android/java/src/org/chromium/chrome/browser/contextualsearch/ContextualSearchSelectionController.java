@@ -472,7 +472,7 @@ public class ContextualSearchSelectionController {
             mY = y;
             mFontSizeDips = fontSizeDips;
             mTextRunLength = textRunLength;
-            mHandler.handleValidTap(x, y);
+            mHandler.handleValidTap();
         } else {
             // Long press, or long-press selection handles shown; reset last tap state.
             mLastTapState = null;

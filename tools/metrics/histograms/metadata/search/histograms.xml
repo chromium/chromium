@@ -292,6 +292,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHShown"
     enum="BooleanPreviouslyShown" expires_after="2022-04-04">
+  <obsolete>
+    Removed 01/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -303,6 +306,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHWorked"
     enum="BooleanOptedIn" expires_after="2022-04-04">
+  <obsolete>
+    Removed 01/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>

@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchBarControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelHelp;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPromoControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -52,14 +51,12 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
      *        in the Bar to facilitate one-click searching.
      * @param relatedSearchesInContentControl A control that displays Related Searches suggestions
      *        in the panel content area to facilitate one-click searching.
-     * @param helpControl A control for the help section of the panel that promotes modified
-     *        user usage and appears below the Bar and above the content.
      * @param imageControl The object controlling the image displayed in the Bar.
      */
     public void update(ResourceManager resourceManager, ContextualSearchPanel panel,
             ContextualSearchBarControl searchBarControl,
             ContextualSearchBarBannerControl barBannerControl,
-            ContextualSearchPromoControl promoControl, ContextualSearchPanelHelp helpControl,
+            ContextualSearchPromoControl promoControl,
             RelatedSearchesControl relatedSearchesInBarControl,
             RelatedSearchesControl relatedSearchesInContentControl,
             ContextualSearchImageControl imageControl) {
@@ -87,13 +84,6 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         float searchPromoHeightPx = promoControl.getHeightPx();
         float searchPromoOpacity = promoControl.getOpacity();
         int searchPromoBackgroundColor = promoControl.getBackgroundColor();
-
-        // Panel Help section
-        int panelHelpViewId = helpControl.getViewId();
-        boolean panelHelpVisible = helpControl.isVisible();
-        float panelHelpHeightPx = helpControl.getHeightPx();
-        float panelHelpOpacity = helpControl.getOpacity();
-        int panelHelpContainerBackgroundColor = helpControl.getContainerBackgroundColor();
 
         // Related Searches section
         int relatedSearchesInContentViewId = relatedSearchesInContentControl.getViewId();
@@ -181,9 +171,6 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 panel.getTabHeight() * mDpToPx, panel.getBasePageBrightness(),
                 panel.getBasePageY() * mDpToPx, panelWebContents, searchPromoVisible,
                 searchPromoHeightPx, searchPromoOpacity, searchPromoBackgroundColor,
-                // Panel Help
-                panelHelpViewId, panelHelpVisible, panelHelpHeightPx, panelHelpOpacity,
-                panelHelpContainerBackgroundColor,
                 // Related Searches
                 relatedSearchesInContentViewId, relatedSearchesInContentVisible,
                 relatedSearchesInContentHeightPx, relatedSearchesInBarViewId,
@@ -264,9 +251,6 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float basePageBrightness, float basePageYOffset, WebContents webContents,
                 boolean searchPromoVisible, float searchPromoHeight, float searchPromoOpacity,
                 int searchPromoBackgroundColor,
-                // Panel Help
-                int panelHelpResourceId, boolean panelHelpVisible, float panelHelpHeight,
-                float panelHelpOpacity, int panelHelpBackgroundColor,
                 // Related Searches
                 int relatedSearchesInContentResourceId, boolean relatedSearchesInContentVisible,
                 float relatedSearchesInContentHeight, int relatedSearchesInBarResourceId,

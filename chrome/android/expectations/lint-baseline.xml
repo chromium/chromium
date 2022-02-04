@@ -2493,14 +2493,6 @@
         id="VectorRaster"
         message="">
         <location
-            file="../../chrome/android/java/res/drawable/ic_touch_app_blue.xml"
-            line="14"/>
-    </issue>
-
-    <issue
-        id="VectorRaster"
-        message="">
-        <location
             file="../../chrome/android/java/res/drawable/ic_translate.xml"
             line="14"/>
     </issue>

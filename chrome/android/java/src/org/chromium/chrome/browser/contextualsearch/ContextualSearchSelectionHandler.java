@@ -28,10 +28,8 @@ interface ContextualSearchSelectionHandler {
 
     /**
      * Handle a valid tap gesture on the base page.
-     * @param x The x-coordinate of the tap in pixels.
-     * @param y The y-coordinate of the tap in pixels.
      */
-    public void handleValidTap(int x, int y);
+    public void handleValidTap();
 
     /**
      * Handle an invalid tap gesture on the base page.
