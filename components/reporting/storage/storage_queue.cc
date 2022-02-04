@@ -747,53 +747,50 @@ void StorageQueue::DeleteUnusedFiles(
     const base::flat_set<base::FilePath>& used_files_set) const {
   // Note, that these files were not reserved against disk allowance and do not
   // need to be discarded.
-  std::vector<base::FilePath> files_to_delete;
+  // If the deletion of a file fails, the file will be naturally handled next
+  // time.
   base::FileEnumerator dir_enum(options_.directory(),
                                 /*recursive=*/true,
                                 base::FileEnumerator::FILES);
-  for (base::FilePath full_name = dir_enum.Next(); !full_name.empty();
-       full_name = dir_enum.Next()) {
-    if (!used_files_set.contains(full_name)) {
-      // File is not being used, delete it.
-      files_to_delete.push_back(std::move(full_name));
-    }
-  }
-  for (const auto& file_to_delete : files_to_delete) {
-    // If it fails, the file will be naturally handled next time.
-    DeleteFileWarnIfFailed(file_to_delete);
-  }
+  DeleteFilesWarnIfFailed(
+      dir_enum, base::BindRepeating(
+                    [](const base::flat_set<base::FilePath>* used_files_set,
+                       const base::FilePath& full_name) {
+                      return !used_files_set->contains(full_name);
+                    },
+                    &used_files_set));
 }
 
 void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
-  std::vector<base::FilePath> files_to_delete;
+  // Delete file on disk. Note: disk space has already been released when the
+  // metafile was destructed, and so we don't need to do that here.
+  // If the deletion of a file fails, the file will be naturally handled next
+  // time.
   base::FileEnumerator dir_enum(
       options_.directory(),
       /*recursive=*/false, base::FileEnumerator::FILES,
       base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
-  for (base::FilePath full_name = dir_enum.Next(); !full_name.empty();
-       full_name = dir_enum.Next()) {
-    const auto extension = dir_enum.GetInfo().GetName().FinalExtension();
-    if (extension.empty()) {
-      continue;
-    }
-    int64_t sequencing_id = 0;
-    bool success = base::StringToInt64(
-        dir_enum.GetInfo().GetName().FinalExtension().substr(1),
-        &sequencing_id);
-    if (!success) {
-      continue;
-    }
-    if (sequencing_id >= sequencing_id_to_keep) {
-      continue;
-    }
-    files_to_delete.push_back(std::move(full_name));
-  }
-  for (const auto& file_to_delete : files_to_delete) {
-    // Delete file on disk. Note: disk space has already been released when the
-    // metafile was destructed, and so we don't need to do that here.
-    // If it fails, the file will be naturally handled next time.
-    DeleteFileWarnIfFailed(file_to_delete);
-  }
+
+  DeleteFilesWarnIfFailed(
+      dir_enum,
+      base::BindRepeating(
+          [](int64_t sequencing_id_to_keep, const base::FilePath& full_name) {
+            const auto extension = full_name.FinalExtension();
+            if (extension.empty()) {
+              return false;
+            }
+            int64_t sequencing_id = 0;
+            bool success =
+                base::StringToInt64(extension.substr(1), &sequencing_id);
+            if (!success) {
+              return false;
+            }
+            if (sequencing_id >= sequencing_id_to_keep) {
+              return false;
+            }
+            return true;
+          },
+          sequencing_id_to_keep));
 }
 
 // Context for uploading data from the queue in proper sequence.

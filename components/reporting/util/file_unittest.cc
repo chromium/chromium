@@ -64,5 +64,25 @@ TEST(FileTest, DeleteFileWarnIfFailed) {
   }
 }
 
+TEST(FileTest, DeleteFilesWarnIfFailed) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const auto dir_path = temp_dir.GetPath();
+  ASSERT_TRUE(base::DirectoryExists(dir_path));
+
+  base::FilePath file_path;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_path, &file_path));
+
+  // empty the directory
+  base::FileEnumerator dir_enum(dir_path, /*recursive=*/false,
+                                base::FileEnumerator::FILES,
+                                FILE_PATH_LITERAL("*"));
+  ASSERT_TRUE(DeleteFilesWarnIfFailed(dir_enum))
+      << "Failed to delete " << file_path.MaybeAsASCII();
+  ASSERT_FALSE(base::PathExists(file_path))
+      << "Deletion succeeds but " << file_path.MaybeAsASCII()
+      << " still exists.";
+}
+
 }  // namespace
 }  // namespace reporting

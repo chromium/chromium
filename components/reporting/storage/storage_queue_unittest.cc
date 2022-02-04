@@ -31,6 +31,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/storage/storage_configuration.h"
+#include "components/reporting/util/file.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -72,6 +73,19 @@ const base::FilePath::StringPieceType kInvalidDirectoryPath =
 const base::FilePath::StringPieceType kInvalidDirectoryPath =
     FILE_PATH_LITERAL("////////////");
 #endif
+
+// Ensure files as specified by the parameters are deleted. Take the same
+// parameters as base::FileEnumerator().
+template <typename... FileEnumeratorParams>
+void EnsureDeletingFiles(FileEnumeratorParams... file_enum_params) {
+  base::FileEnumerator dir_enum(file_enum_params...);
+  ASSERT_TRUE(DeleteFilesWarnIfFailed(dir_enum));
+  // Ensure that the files have been deleted
+  ASSERT_TRUE(base::FileEnumerator(
+                  std::forward<FileEnumeratorParams>(file_enum_params)...)
+                  .Next()
+                  .empty());
+}
 
 class StorageQueueTest
     : public ::testing::TestWithParam<
@@ -781,14 +795,9 @@ TEST_P(StorageQueueTest,
   ResetTestStorageQueue();
 
   // Delete all metadata files.
-  base::FileEnumerator dir_enum(
-      options.directory(),
-      /*recursive=*/false, base::FileEnumerator::FILES,
-      base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
-  base::FilePath full_name;
-  while (full_name = dir_enum.Next(), !full_name.empty()) {
-    base::DeleteFile(full_name);
-  }
+  EnsureDeletingFiles(options.directory(),
+                      /*recursive=*/false, base::FileEnumerator::FILES,
+                      base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
 
   // Reopen, starting a new generation.
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
@@ -888,17 +897,11 @@ TEST_P(StorageQueueTest,
   // Reopen with the same generation and sequencing information.
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
-  // Delete the data file *.generation.0
-  {
-    base::FileEnumerator dir_enum(
-        options.directory(),
-        /*recursive=*/false, base::FileEnumerator::FILES,
-        base::StrCat({options.file_prefix(), FILE_PATH_LITERAL(".*.0")}));
-    base::FilePath full_name;
-    while (full_name = dir_enum.Next(), !full_name.empty()) {
-      base::DeleteFile(full_name);
-    }
-  }
+  // Delete the data files *.generation.0
+  EnsureDeletingFiles(
+      options.directory(),
+      /*recursive=*/false, base::FileEnumerator::FILES,
+      base::StrCat({options.file_prefix(), FILE_PATH_LITERAL(".*.0")}));
 
   // Write more data.
   WriteStringOrDie(kMoreData[0]);

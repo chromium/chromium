@@ -4,6 +4,11 @@
 
 #include "components/reporting/util/file.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/callback.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
@@ -17,4 +22,22 @@ bool DeleteFileWarnIfFailed(const base::FilePath& path) {
   return delete_result;
 }
 
+bool DeleteFilesWarnIfFailed(
+    base::FileEnumerator& dir_enum,
+    base::RepeatingCallback<bool(const base::FilePath&)> pred) {
+  std::vector<base::FilePath> files_to_delete;
+  for (auto full_name = dir_enum.Next(); !full_name.empty();
+       full_name = dir_enum.Next()) {
+    if (pred.Run(full_name)) {
+      files_to_delete.push_back(std::move(full_name));
+    }
+  }
+  bool success = true;
+  for (const auto& file_to_delete : files_to_delete) {
+    if (!DeleteFileWarnIfFailed(file_to_delete)) {
+      success = false;
+    }
+  }
+  return success;
+}
 }  // namespace reporting
