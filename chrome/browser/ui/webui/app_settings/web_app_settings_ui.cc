@@ -27,6 +27,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementCameraPermissionLabel", IDS_APP_MANAGEMENT_CAMERA},
       {"appManagementUninstallLabel", IDS_APP_MANAGEMENT_UNINSTALL_APP},
       {"appManagementWindowModeLabel", IDS_APP_MANAGEMENT_WINDOW},
+      {"appManagementRunOnOsLoginModeLabel",
+       IDS_APP_MANAGEMENT_RUN_ON_OS_LOGIN},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

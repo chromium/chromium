@@ -12,7 +12,7 @@ import {App} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, WindowMode} from './constants.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
-import {getWindowModeBoolean, recordAppManagementUserAction} from './util.js';
+import {recordAppManagementUserAction} from './util.js';
 
 export class AppManagementWindowModeElement extends PolymerElement {
   static get is() {
@@ -62,7 +62,7 @@ export class AppManagementWindowModeElement extends PolymerElement {
       return false;
     }
     assert(app);
-    return getWindowModeBoolean(app.windowMode);
+    return this.getWindowModeBoolean(app.windowMode);
   }
 
   private onClick_() {
@@ -83,11 +83,28 @@ export class AppManagementWindowModeElement extends PolymerElement {
         this.app.id,
         newWindowMode,
     );
-    const booleanWindowMode = getWindowModeBoolean(newWindowMode);
+    const booleanWindowMode = this.getWindowModeBoolean(newWindowMode);
     const windowModeChangeAction = booleanWindowMode ?
         AppManagementUserAction.WindowModeChangedToWindow :
         AppManagementUserAction.WindowModeChangedToBrowser;
     recordAppManagementUserAction(this.app.type, windowModeChangeAction);
+  }
+
+  private convertWindowModeToBool(windowMode: WindowMode): boolean {
+    switch (windowMode) {
+      case WindowMode.kBrowser:
+        return false;
+      case WindowMode.kWindow:
+        return true;
+      default:
+        assertNotReached();
+        return false;
+    }
+  }
+
+  private getWindowModeBoolean(windowMode: WindowMode): boolean {
+    assert(windowMode !== WindowMode.kUnknown, 'Window Mode Not Set');
+    return this.convertWindowModeToBool(windowMode);
   }
 }
 

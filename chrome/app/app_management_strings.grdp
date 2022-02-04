@@ -49,6 +49,9 @@
   <message name="IDS_APP_MANAGEMENT_STORAGE" desc="Label for the Android storage permission toggle.">
     Storage
   </message>
+  <message name="IDS_APP_MANAGEMENT_RUN_ON_OS_LOGIN" desc="Label for toggling running on OS Login mode.">
+    Start app when you sign in
+  </message>
   <message name="IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING" desc="Tooltip label explaining that an app cannot be uninstalled as it has been installed by an adminstrator.">
     This app has been installed by your administrator.
   </message>

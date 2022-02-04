@@ -30,6 +30,11 @@
     <h1 class="cr-title-text">[[app_.title]]</h1>
   </div>
   <div class="permission-list">
+    <app-management-run-on-os-login-item
+      class="permission-card-row separated-row"
+      login-mode-label="$i18n{appManagementRunOnOsLoginModeLabel}"
+      app="[[app_]]">
+    </app-management-run-on-os-login-item>
     <app-management-window-mode
       class="permission-card-row separated-row"
       window-mode-label="$i18n{appManagementWindowModeLabel}"

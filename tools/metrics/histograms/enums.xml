@@ -3629,6 +3629,8 @@ Unknown properties are collapsed to zero. -->
   <int value="24" label="Overlapping apps dialog shown"/>
   <int value="25" label="Window mode changed to browser"/>
   <int value="26" label="Window mode changed to window"/>
+  <int value="27" label="Run on OS Login mode turned on"/>
+  <int value="28" label="Run on OS Login mode turned off"/>
 </enum>
 
 <enum name="AppMenuHighlightItem">
