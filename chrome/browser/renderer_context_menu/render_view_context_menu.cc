@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -404,9 +405,6 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE, 100},
        {IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS, 101},
        {IDC_SEND_TAB_TO_SELF, 102},
-       {IDC_CONTENT_LINK_SEND_TAB_TO_SELF, 103},
-       {IDC_SEND_TAB_TO_SELF_SINGLE_TARGET, 104},
-       {IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET, 105},
        {IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE, 106},
        {IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES, 107},
        {IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE, 108},
@@ -1417,45 +1415,6 @@ void RenderViewContextMenu::AppendLinkItems() {
     if (!ShouldUseShareMenu() && params_.has_image_contents)
       AppendQRCodeGeneratorItem(/*for_image=*/true, /*draw_icon=*/true);
 
-    const bool should_offer_to_share_url =
-        send_tab_to_self::ShouldOfferToShareUrl(
-            SendTabToSelfSyncServiceFactory::GetForProfile(profile),
-            params_.link_url);
-    if (browser && !ShouldUseShareMenu() && should_offer_to_share_url) {
-      if (send_tab_to_self::GetValidDeviceCount(GetProfile()) == 1) {
-#if BUILDFLAG(IS_MAC)
-        menu_model_.AddItem(
-            IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
-            l10n_util::GetStringFUTF16(
-                IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-                send_tab_to_self::GetSingleTargetDeviceName(GetProfile())));
-#else
-        menu_model_.AddItemWithIcon(
-            IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
-            l10n_util::GetStringFUTF16(
-                IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-                send_tab_to_self::GetSingleTargetDeviceName(GetProfile())),
-            ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
-#endif
-      } else {
-        send_tab_to_self_sub_menu_model_ =
-            std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
-                source_web_contents_,
-                send_tab_to_self::SendTabToSelfMenuType::kLink,
-                params_.link_url);
-#if BUILDFLAG(IS_MAC)
-        menu_model_.AddSubMenuWithStringId(
-            IDC_CONTENT_LINK_SEND_TAB_TO_SELF, IDS_LINK_MENU_SEND_TAB_TO_SELF,
-            send_tab_to_self_sub_menu_model_.get());
-#else
-        menu_model_.AddSubMenuWithStringIdAndIcon(
-            IDC_CONTENT_LINK_SEND_TAB_TO_SELF, IDS_LINK_MENU_SEND_TAB_TO_SELF,
-            send_tab_to_self_sub_menu_model_.get(),
-            ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
-#endif
-      }
-    }
-
 #if !BUILDFLAG(IS_FUCHSIA)
     AppendClickToCallItem();
 #endif
@@ -1733,37 +1692,16 @@ void RenderViewContextMenu::AppendPageItems() {
       send_tab_to_self::ShouldOfferFeature(source_web_contents_)) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     send_tab_to_self_menu_present = true;
-    if (send_tab_to_self::GetValidDeviceCount(GetProfile()) == 1) {
 #if BUILDFLAG(IS_MAC)
-      menu_model_.AddItem(
-          IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
-          l10n_util::GetStringFUTF16(
-              IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-              send_tab_to_self::GetSingleTargetDeviceName(GetProfile())));
+    menu_model_.AddItem(
+        IDC_SEND_TAB_TO_SELF,
+        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
 #else
-      menu_model_.AddItemWithIcon(
-          IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
-          l10n_util::GetStringFUTF16(
-              IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-              send_tab_to_self::GetSingleTargetDeviceName(GetProfile())),
-          ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
+    menu_model_.AddItemWithIcon(
+        IDC_SEND_TAB_TO_SELF,
+        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
+        ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
 #endif
-    } else {
-      send_tab_to_self_sub_menu_model_ =
-          std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
-              source_web_contents_,
-              send_tab_to_self::SendTabToSelfMenuType::kContent);
-#if BUILDFLAG(IS_MAC)
-      menu_model_.AddSubMenuWithStringId(
-          IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
-          send_tab_to_self_sub_menu_model_.get());
-#else
-      menu_model_.AddSubMenuWithStringIdAndIcon(
-          IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
-          send_tab_to_self_sub_menu_model_.get(),
-          ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
-#endif
-    }
   }
 
   // Context menu item for QR Code Generator.
@@ -2397,9 +2335,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_SPELLPANEL_TOGGLE:
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
     case IDC_SEND_TAB_TO_SELF:
-    case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
     case IDC_CONTENT_LINK_SEND_TAB_TO_SELF:
-    case IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET:
       return true;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
@@ -2651,17 +2587,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       embedder_web_contents_->OnSavePage();
       break;
 
-    case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
-      send_tab_to_self::ShareToSingleTarget(source_web_contents_);
-      send_tab_to_self::RecordDeviceClicked(
-          send_tab_to_self::ShareEntryPoint::kContentMenu);
-      break;
-
-    case IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET:
-      send_tab_to_self::ShareToSingleTarget(source_web_contents_,
-                                            params_.link_url);
-      send_tab_to_self::RecordDeviceClicked(
-          send_tab_to_self::ShareEntryPoint::kLinkMenu);
+    case IDC_SEND_TAB_TO_SELF:
+      send_tab_to_self::SendTabToSelfBubbleController::
+          CreateOrGetFromWebContents(source_web_contents_)
+              ->ShowBubble();
       break;
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE: {
