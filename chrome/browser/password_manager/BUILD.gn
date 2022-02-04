@@ -25,6 +25,8 @@ source_set("backend_factory") {
 
 buildflag_header("password_manager_buildflags") {
   header = "password_manager_buildflags.h"
-  flags =
-      [ "USE_LEGACY_PASSWORD_STORE_BACKEND=$use_legacy_password_store_backend" ]
+  flags = [
+    "USE_LEGACY_PASSWORD_STORE_BACKEND=$use_legacy_password_store_backend",
+    "PASSWORD_MANAGER_USE_INTERNAL_ANDROID_RESOURCES=$password_manager_use_internal_android_resources",
+  ]
 }

@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -170,8 +171,15 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
       GetPrimaryButtonTextId(update_password, use_followup_button_text)));
 
-  message_->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerAndroid)) {
+    message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+        IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
+    message_->DisableIconTint();
+  } else {
+    message_->SetIconResourceId(
+        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
+  }
 
   if (!update_password) {
     message_->SetSecondaryIconResourceId(

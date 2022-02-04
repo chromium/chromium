@@ -23,6 +23,7 @@ import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
 import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
+import("//chrome/browser/password_manager/buildflags.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
@@ -715,6 +716,10 @@ android_library("chrome_java") {
 
   # TODO(crbug.com/1174713): This is temporary to not break downstream targets.
   public_deps = [ "//chrome/browser/notifications:java" ]
+
+  if (password_manager_use_internal_android_resources) {
+    deps += [ "//clank/components/password_manager:java_resources" ]
+  }
 }
 
 # Template for strict mode detection enabling/disabling so that proguard strips out
@@ -885,7 +890,10 @@ java_cpp_template("resource_id_javagen") {
     "$root_gen_dir/device/vr/buildflags/buildflags.h",
   ]
 
-  deps = [ "//device/vr/buildflags" ]
+  deps = [
+    "//chrome/browser/password_manager:password_manager_buildflags",
+    "//device/vr/buildflags",
+  ]
 }
 
 junit_binary("chrome_junit_tests") {

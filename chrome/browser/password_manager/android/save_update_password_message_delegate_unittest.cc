@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -18,6 +19,7 @@
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,7 +64,8 @@ class MockPasswordEditDialog : public PasswordEditDialog {
 };
 
 class SaveUpdatePasswordMessageDelegateTest
-    : public ChromeRenderViewHostTestHarness {
+    : public base::test::WithFeatureOverride,
+      public ChromeRenderViewHostTestHarness {
  public:
   SaveUpdatePasswordMessageDelegateTest();
 
@@ -142,7 +145,9 @@ class SaveUpdatePasswordMessageDelegateTest
 };
 
 SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest()
-    : delegate_(base::WrapUnique(
+    : base::test::WithFeatureOverride(
+          password_manager::features::kUnifiedPasswordManagerAndroid),
+      delegate_(base::WrapUnique(
           new SaveUpdatePasswordMessageDelegate(base::BindRepeating(
               &SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog,
               base::Unretained(this))))) {}
@@ -308,7 +313,7 @@ void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for save password message.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
        MessagePropertyValues_SavePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
@@ -329,9 +334,18 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
             GetMessageWrapper()->GetSecondaryButtonMenuText());
-  EXPECT_EQ(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
-      GetMessageWrapper()->GetIconResourceId());
+
+  if (IsParamFeatureEnabled()) {
+    EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
+                  IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
+              GetMessageWrapper()->GetIconResourceId());
+
+  } else {
+    EXPECT_EQ(
+        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
+        GetMessageWrapper()->GetIconResourceId());
+  }
+
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
             GetMessageWrapper()->GetSecondaryIconResourceId());
 
@@ -340,7 +354,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for update password message.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
        MessagePropertyValues_UpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
@@ -361,7 +375,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests that the description is set correctly when signed-in user saves a
 // password.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
        SignedInDescription_SavePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
@@ -381,7 +395,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests that the description is set correctly when signed-in user updates a
 // password.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
        SignedInDescription_UpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
@@ -400,7 +414,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 }
 
 // Tests that the previous prompt gets dismissed when the new one is enqueued.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -417,7 +431,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
 
 // Tests that password form is saved and metrics recorded correctly when the
 // user clicks "Save" button.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -441,7 +455,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
 
 // Tests that password form is not saved and metrics recorded correctly when the
 // user dismisses the message.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, DontSaveOnDismiss) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, DontSaveOnDismiss) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -465,7 +479,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, DontSaveOnDismiss) {
 
 // Tests that password form is not saved and metrics recorded correctly when the
 // message is autodismissed.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -489,7 +503,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
 
 // Tests that update password message with a single PasswordForm immediately
 // saves the form on Update button tap and doesn't display confirmation dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -514,7 +528,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
-TEST_F(SaveUpdatePasswordMessageDelegateTest, DialogProperties) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, DialogProperties) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -532,7 +546,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, DialogProperties) {
 
 // Tests triggering password edit dialog and saving credentials after the
 // user accepts the dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -560,7 +574,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
 
 // Tests that credentials are not saved if the user cancels password edit
 // dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -584,3 +598,5 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_CANCEL, 1);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SaveUpdatePasswordMessageDelegateTest);

@@ -12,6 +12,8 @@
 // NOLINT(build/header_guard)
 // no-include-guard-because-multiply-included
 
+#include "chrome/browser/password_manager/password_manager_buildflags.h"
+
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
 #ifndef LINK_RESOURCE_ID
 #error "LINK_RESOURCE_ID should be defined before including this file"
@@ -56,6 +58,16 @@ DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SETTINGS, R.drawable.settings_cog)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SAFETY_CHECK, R.drawable.safety_check)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD, R.drawable.shield)
+
+// Unified Password Manager resources
+// Color logo is used for Google branded builds only.
+#if BUILDFLAG(PASSWORD_MANAGER_USE_INTERNAL_ANDROID_RESOURCES)
+DECLARE_RESOURCE_ID(IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP,
+                    R.drawable.ic_password_manager_logo_24dp)
+#else
+DECLARE_RESOURCE_ID(IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP,
+                    R.drawable.ic_vpn_key_blue)
+#endif
 
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are
