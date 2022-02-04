@@ -1001,7 +1001,7 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
   // ID is returned here. Otherwise, we should find the pending RFH and not
   // create a new proxy.
   auto opener_frame_token =
-      popup->GetRenderManager()->GetOpenerFrameToken(instance);
+      popup->GetRenderManager()->GetOpenerFrameToken(instance->group());
   RenderFrameProxyHost* proxy =
       contents()->GetRenderManager()->GetRenderFrameProxyHost(
           instance->group());

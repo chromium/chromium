@@ -7770,7 +7770,7 @@ void RenderFrameHostImpl::UpdateOpener() {
 
   auto opener_frame_token =
       frame_tree_node_->render_manager()->GetOpenerFrameToken(
-          GetSiteInstance());
+          GetSiteInstance()->group());
   GetAssociatedLocalFrame()->UpdateOpener(opener_frame_token);
 }
 

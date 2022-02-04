@@ -280,7 +280,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   if (frame_tree_node_->opener()) {
     opener_frame_token =
         frame_tree_node_->render_manager()->GetOpenerFrameToken(
-            site_instance_.get());
+            site_instance_group_.get());
   }
 
   int view_routing_id = GetRenderViewHost()->GetRoutingID();
@@ -403,7 +403,7 @@ void RenderFrameProxyHost::UpdateOpener() {
 
   auto opener_frame_token =
       frame_tree_node_->render_manager()->GetOpenerFrameToken(
-          GetSiteInstance());
+          site_instance_group_.get());
   GetAssociatedRemoteFrame()->UpdateOpener(opener_frame_token);
 }
 

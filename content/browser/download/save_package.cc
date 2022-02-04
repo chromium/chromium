@@ -1079,7 +1079,8 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
 
         absl::optional<blink::FrameToken> frame_token =
             save_item_frame_tree_node->render_manager()
-                ->GetFrameTokenForSiteInstance(target->GetSiteInstance());
+                ->GetFrameTokenForSiteInstanceGroup(
+                    target->GetSiteInstance()->group());
 
         DCHECK(frame_token.has_value());
 

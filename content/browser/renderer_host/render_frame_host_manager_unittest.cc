@@ -1436,9 +1436,9 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
       opener1_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance()->group())
           ->GetRenderViewHost()
           ->IsRenderViewLive());
-  EXPECT_EQ(
-      opener1_manager->GetFrameTokenForSiteInstance(rfh2->GetSiteInstance()),
-      rfh2->GetRenderViewHost()->opener_frame_token());
+  EXPECT_EQ(opener1_manager->GetFrameTokenForSiteInstanceGroup(
+                rfh2->GetSiteInstance()->group()),
+            rfh2->GetRenderViewHost()->opener_frame_token());
 }
 
 // Test that we reuse the same guest SiteInstance if we navigate across sites.
@@ -2282,9 +2282,9 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWithCycleOnOpenerChain) {
 
   // Verify that the proxies' openers point to each other.
   auto tab1_opener_frame_token =
-      tab1_manager->GetOpenerFrameToken(rfh2->GetSiteInstance());
+      tab1_manager->GetOpenerFrameToken(rfh2->GetSiteInstance()->group());
   auto tab2_opener_frame_token =
-      tab2_manager->GetOpenerFrameToken(rfh2->GetSiteInstance());
+      tab2_manager->GetOpenerFrameToken(rfh2->GetSiteInstance()->group());
   EXPECT_EQ(*tab1_opener_frame_token, tab2_proxy->GetFrameToken());
   EXPECT_EQ(*tab2_opener_frame_token, tab1_proxy->GetFrameToken());
 
@@ -2293,7 +2293,7 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWithCycleOnOpenerChain) {
   // Verify that this IPC was sent and that it passed correct frame token.
   base::RunLoop().RunUntilIdle();
   DCHECK(proxy_observers.OpenerFrameToken(tab2_proxy) ==
-         tab2_manager->GetOpenerFrameToken(rfh2->GetSiteInstance()));
+         tab2_manager->GetOpenerFrameToken(rfh2->GetSiteInstance()->group()));
 }
 
 // Test that opener proxies are created properly when the opener points
@@ -2333,7 +2333,7 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWhenOpenerPointsToSelf) {
 
   // Verify that the proxy's opener points to itself.
   auto opener_frame_token =
-      opener_manager->GetOpenerFrameToken(rfh2->GetSiteInstance());
+      opener_manager->GetOpenerFrameToken(rfh2->GetSiteInstance()->group());
   EXPECT_EQ(*opener_frame_token, opener_proxy->GetFrameToken());
 
   // Setting the opener in opener_proxy required an extra IPC message, since
@@ -2341,7 +2341,7 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWhenOpenerPointsToSelf) {
   // Verify that this IPC was sent and that it passed correct frame token.
   base::RunLoop().RunUntilIdle();
   DCHECK(proxy_observers.OpenerFrameToken(opener_proxy) ==
-         opener_manager->GetOpenerFrameToken(rfh2->GetSiteInstance()));
+         opener_manager->GetOpenerFrameToken(rfh2->GetSiteInstance()->group()));
 }
 
 // Build the following frame opener graph and see that it can be properly

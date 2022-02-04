@@ -340,13 +340,13 @@ class CONTENT_EXPORT RenderFrameHostManager {
   int GetRoutingIdForSiteInstance(SiteInstance* site_instance);
 
   // Returns the frame token for a RenderFrameHost or RenderFrameProxyHost
-  // that has the given SiteInstance and is associated with this
+  // that has the given SiteInstanceGroup and is associated with this
   // RenderFrameHostManager. Returns absl::nullopt if none is found. Note that
   // the FrameToken will internally be either a LocalFrameToken (if the frame is
-  // a RenderFrameHost in the given |site_instance|) or a RemoteFrameToken (if
-  // it is a RenderFrameProxyHost).
-  absl::optional<blink::FrameToken> GetFrameTokenForSiteInstance(
-      SiteInstance* site_instance);
+  // a RenderFrameHost in the given |site_instance_group|) or a RemoteFrameToken
+  // (if it is a RenderFrameProxyHost).
+  absl::optional<blink::FrameToken> GetFrameTokenForSiteInstanceGroup(
+      SiteInstanceGroup* site_instance_group);
 
   // Notifies the RenderFrameHostManager that a new NavigationRequest has been
   // created and set in the FrameTreeNode so that it can speculatively create a
@@ -427,11 +427,12 @@ class CONTENT_EXPORT RenderFrameHostManager {
   void CreateProxiesForNewNamedFrame();
 
   // Returns a blink::FrameToken for the current FrameTreeNode's opener
-  // node in the given SiteInstance.  May return a frame token of either a
-  // RenderFrameHost (if opener's current or pending RFH has SiteInstance
-  // |instance|) or a RenderFrameProxyHost.  Returns absl::nullopt if there is
-  // no opener, or if the opener node doesn't have a proxy for |instance|.
-  absl::optional<blink::FrameToken> GetOpenerFrameToken(SiteInstance* instance);
+  // node in the given SiteInstanceGroup.  May return a frame token of either a
+  // RenderFrameHost (if opener's current or pending RFH has SiteInstanceGroup
+  // |group|) or a RenderFrameProxyHost.  Returns absl::nullopt if there is
+  // no opener, or if the opener node doesn't have a proxy for |group|.
+  absl::optional<blink::FrameToken> GetOpenerFrameToken(
+      SiteInstanceGroup* group);
 
   // Called on the RFHM of the inner WebContents to create a
   // RenderFrameProxyHost in its outer WebContents's SiteInstance,

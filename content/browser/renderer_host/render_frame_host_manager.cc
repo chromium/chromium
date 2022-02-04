@@ -2951,7 +2951,8 @@ bool RenderFrameHostManager::InitRenderView(
   if (render_view_host->IsRenderViewLive())
     return true;
 
-  auto opener_frame_token = GetOpenerFrameToken(site_instance);
+  auto opener_frame_token = GetOpenerFrameToken(
+      static_cast<SiteInstanceImpl*>(site_instance)->group());
 
   bool created = delegate_->CreateRenderViewForRenderManager(
       render_view_host, opener_frame_token, proxy);
@@ -3054,8 +3055,10 @@ bool RenderFrameHostManager::InitRenderFrame(
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
 
   absl::optional<blink::FrameToken> opener_frame_token;
-  if (frame_tree_node_->opener())
-    opener_frame_token = GetOpenerFrameToken(site_instance);
+  if (frame_tree_node_->opener()) {
+    opener_frame_token = GetOpenerFrameToken(
+        static_cast<SiteInstanceImpl*>(site_instance)->group());
+  }
 
   int parent_routing_id = MSG_ROUTING_NONE;
   if (frame_tree_node_->parent()) {
@@ -3188,13 +3191,12 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstance(
 }
 
 absl::optional<blink::FrameToken>
-RenderFrameHostManager::GetFrameTokenForSiteInstance(
-    SiteInstance* site_instance) {
-  if (render_frame_host_->GetSiteInstance() == site_instance)
+RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
+    SiteInstanceGroup* site_instance_group) {
+  if (render_frame_host_->GetSiteInstance()->group() == site_instance_group)
     return render_frame_host_->GetFrameToken();
 
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(site_instance)->group());
+  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance_group);
   if (proxy)
     return proxy->GetFrameToken();
 
@@ -3684,8 +3686,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
     if (!proxy)
       continue;
 
-    auto opener_frame_token =
-        node->render_manager()->GetOpenerFrameToken(instance);
+    auto opener_frame_token = node->render_manager()->GetOpenerFrameToken(
+        static_cast<SiteInstanceImpl*>(instance)->group());
     DCHECK(opener_frame_token);
     proxy->GetAssociatedRemoteFrame()->UpdateOpener(opener_frame_token);
   }
@@ -3710,13 +3712,13 @@ void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
 }
 
 absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
-    SiteInstance* instance) {
+    SiteInstanceGroup* group) {
   if (!frame_tree_node_->opener())
     return absl::nullopt;
 
   return frame_tree_node_->opener()
       ->render_manager()
-      ->GetFrameTokenForSiteInstance(instance);
+      ->GetFrameTokenForSiteInstanceGroup(group);
 }
 
 void RenderFrameHostManager::ExecutePageBroadcastMethod(
