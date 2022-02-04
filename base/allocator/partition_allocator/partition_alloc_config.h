@@ -177,4 +177,16 @@ constexpr bool kUseLazyCommit = true;
 constexpr bool kUseLazyCommit = false;
 #endif
 
+// On these platforms, lock all the partitions before fork(), and unlock after.
+// This may be required on more platforms in the future.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define PA_HAS_ATFORK_HANDLER
+#endif
+
+// PartitionAlloc uses PartitionRootEnumerator to acquire all
+// PartitionRoots at BeforeFork and to release at AfterFork.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_HAS_ATFORK_HANDLER)
+#define PA_USE_PARTITION_ROOT_ENUMERATOR
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

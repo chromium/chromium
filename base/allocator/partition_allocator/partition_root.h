@@ -88,6 +88,11 @@ BASE_EXPORT void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address);
 #else
 ALWAYS_INLINE void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address) {}
 #endif
+
+#if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
+class PartitionRootEnumerator;
+#endif
+
 }  // namespace internal
 
 enum PartitionPurgeFlags {
@@ -726,6 +731,15 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   uintptr_t MaybeInitThreadCacheAndAlloc(uint16_t bucket_index,
                                          size_t* slot_size);
+
+#if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
+  static internal::PartitionLock& GetEnumeratorLock();
+
+  PartitionRoot* GUARDED_BY(GetEnumeratorLock()) next_root = nullptr;
+  PartitionRoot* GUARDED_BY(GetEnumeratorLock()) prev_root = nullptr;
+
+  friend class internal::PartitionRootEnumerator;
+#endif  // defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
 
   friend class internal::ThreadCache;
 };

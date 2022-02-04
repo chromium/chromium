@@ -32,6 +32,7 @@ void ReinitPCScanMetadataAllocatorForTesting() {
   PCScanMetadataAllocator().PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                         PartitionPurgeDiscardUnusedSystemPages);
   // Then, reinit the allocator.
+  PCScanMetadataAllocator().~PartitionRoot();
   memset(&PCScanMetadataAllocator(), 0, sizeof(PCScanMetadataAllocator()));
   PCScanMetadataAllocator().Init(kConfig);
 }
