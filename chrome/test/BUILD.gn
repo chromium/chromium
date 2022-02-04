@@ -828,6 +828,7 @@ if (is_android) {
       "../renderer/autofill/fake_password_generation_driver.cc",
       "../renderer/autofill/fake_password_generation_driver.h",
       "../renderer/autofill/password_autofill_agent_browsertest.cc",
+      "../renderer/autofill/password_generation_agent_browsertest.cc",
       "../renderer/autofill/password_generation_test_utils.cc",
       "../renderer/autofill/password_generation_test_utils.h",
       "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
