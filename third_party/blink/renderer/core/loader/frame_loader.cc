@@ -1340,13 +1340,6 @@ String FrameLoader::UserAgent() const {
   return user_agent;
 }
 
-String FrameLoader::FullUserAgent() const {
-  String user_agent = Client()->FullUserAgent();
-  probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
-                                &user_agent);
-  return user_agent;
-}
-
 String FrameLoader::ReducedUserAgent() const {
   String user_agent = Client()->ReducedUserAgent();
   probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),

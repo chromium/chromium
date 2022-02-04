@@ -301,12 +301,8 @@ class BLINK_PLATFORM_EXPORT Platform {
   WrapSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
-  // Returns the default User-Agent string, it can either full User-Agent string
-  // or reduced User-Agent string based on policy setting.
+  // Returns the User-Agent string.
   virtual WebString UserAgent() { return WebString(); }
-  // Returns the full User-Agent string.
-  virtual WebString FullUserAgent() { return WebString(); }
-  // Returns the reduced User-Agent string.
   virtual WebString ReducedUserAgent() { return WebString(); }
 
   // Returns the User Agent metadata. This will replace `UserAgent()` if we

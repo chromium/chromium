@@ -509,29 +509,6 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());
 }
 
-TEST_P(UserAgentUtilsTest, UserAgentStringFull) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  // Verify that the full user agent string respects
-  // --force-major-version-to-minor
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kFullUserAgent,
-       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
-      {});
-  { EXPECT_EQ(GetUserAgent(), GetFullUserAgent()); }
-
-  // Verify that the full user agent string when both reduced and full UA
-  // feature enabled respects
-  // --force-major-version-to-minor
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kFullUserAgent, blink::features::kReduceUserAgent,
-       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
-      {});
-  { EXPECT_EQ(GetUserAgent(), GetFullUserAgent()); }
-}
-
 TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
   auto metadata = GetUserAgentMetadata();
 

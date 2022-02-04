@@ -427,10 +427,6 @@ std::string ContentBrowserClientImpl::GetUserAgent() {
   return embedder_support::GetUserAgent();
 }
 
-std::string ContentBrowserClientImpl::GetFullUserAgent() {
-  return embedder_support::GetFullUserAgent();
-}
-
 std::string ContentBrowserClientImpl::GetReducedUserAgent() {
   return embedder_support::GetReducedUserAgent();
 }

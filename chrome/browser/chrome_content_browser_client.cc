@@ -5814,10 +5814,6 @@ std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
   }
 }
 
-std::string ChromeContentBrowserClient::GetFullUserAgent() {
-  return embedder_support::GetFullUserAgent();
-}
-
 std::string ChromeContentBrowserClient::GetReducedUserAgent() {
   return embedder_support::GetReducedUserAgent();
 }

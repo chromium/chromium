@@ -425,12 +425,6 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
       continue;
     }
 
-    // TODO(crbug.com/1225444): `Sec-CH-Partitioned-Cookies` client hint isn't
-    // yet implemented.
-    if (hint == mojom::WebClientHintsType::kPartitionedCookies) {
-      continue;
-    }
-
     const std::string header = GetClientHintToNameMap().at(hint);
     if (!headers.HasHeader(header))
       hints.push_back(hint);

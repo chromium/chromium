@@ -638,7 +638,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::string GetUserAgent() override;
   std::string GetUserAgentBasedOnPolicy(
       content::BrowserContext* context) override;
-  std::string GetFullUserAgent() override;
   std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 

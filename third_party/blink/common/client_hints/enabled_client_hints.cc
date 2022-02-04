@@ -90,24 +90,23 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
   return false;
 }
 
-bool IsUserAgentOriginTrialEnabled(
+bool IsUaReducedClientHintEnabled(
     const GURL& url,
     const GURL* third_party_url,
-    const net::HttpResponseHeaders* response_headers,
-    base::StringPiece feature_name) {
+    const net::HttpResponseHeaders* response_headers) {
   blink::TrialTokenValidator validator;
   base::Time now = base::Time::Now();
   if (third_party_url == nullptr) {
-    // It's not a third-party embed request, validate the feature_name OT
+    // It's not a third-party embed request, validate the UserAgentReduction OT
     // token as normal.
-    return validator.RequestEnablesFeature(url, response_headers, feature_name,
-                                           now);
+    return validator.RequestEnablesFeature(url, response_headers,
+                                           "UserAgentReduction", now);
   }
 
   // Validate the third-party OT token.
   bool enabled = false;
   // Iterate through all of the Origin-Trial headers and validate if any of
-  // them are valid third-party OT tokens for the feature_name trial.
+  // them are valid third-party OT tokens for the UserAgentReduction trial.
   if (validator.IsTrialPossibleOnOrigin(*third_party_url)) {
     url::Origin origin = url::Origin::Create(url);
     url::Origin third_party_origin = url::Origin::Create(*third_party_url);
@@ -117,7 +116,7 @@ bool IsUserAgentOriginTrialEnabled(
       blink::TrialTokenResult result =
           validator.ValidateToken(token, origin, &third_party_origin, now);
       if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
-        if (result.ParsedToken()->feature_name() == feature_name) {
+        if (result.ParsedToken()->feature_name() == "UserAgentReduction") {
           enabled = true;
           break;
         }
@@ -147,13 +146,8 @@ void EnabledClientHints::SetIsEnabled(
     const bool should_send) {
   bool enabled = should_send;
   if (enabled && type == WebClientHintsType::kUAReduced) {
-    enabled = IsUserAgentOriginTrialEnabled(
-        url, third_party_url, response_headers, "UserAgentReduction");
-  }
-  if (enabled && type == WebClientHintsType::kFullUserAgent) {
     enabled =
-        IsUserAgentOriginTrialEnabled(url, third_party_url, response_headers,
-                                      "SendFullUserAgentAfterReduction");
+        IsUaReducedClientHintEnabled(url, third_party_url, response_headers);
   }
   SetIsEnabled(type, enabled);
 }

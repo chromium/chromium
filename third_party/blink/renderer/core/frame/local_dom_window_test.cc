@@ -230,18 +230,13 @@ TEST_F(LocalDOMWindowTest, EnforceSandboxFlags) {
   }
 }
 
-TEST_F(LocalDOMWindowTest, UserAgent) {
+TEST_F(LocalDOMWindowTest, ReducedUserAgent) {
   EXPECT_EQ(GetFrame().DomWindow()->UserAgent(),
             GetFrame().Loader().UserAgent());
   {
     ScopedUserAgentReductionForTest s1(true);
     EXPECT_EQ(GetFrame().DomWindow()->UserAgent(),
               GetFrame().Loader().ReducedUserAgent());
-  }
-  {
-    ScopedSendFullUserAgentAfterReductionForTest s1(true);
-    EXPECT_EQ(GetFrame().DomWindow()->UserAgent(),
-              GetFrame().Loader().FullUserAgent());
   }
 }
 

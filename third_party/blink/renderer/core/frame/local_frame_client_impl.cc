@@ -820,17 +820,6 @@ String LocalFrameClientImpl::ReducedUserAgent() {
   return reduced_user_agent_;
 }
 
-String LocalFrameClientImpl::FullUserAgent() {
-  WebString override =
-      web_frame_->Client() ? web_frame_->Client()->UserAgentOverride() : "";
-  if (!override.IsEmpty())
-    return override;
-
-  if (full_user_agent_.IsEmpty())
-    full_user_agent_ = Platform::Current()->FullUserAgent();
-  return full_user_agent_;
-}
-
 absl::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
   bool ua_override_on = web_frame_->Client() &&
                         !web_frame_->Client()->UserAgentOverride().IsEmpty();
