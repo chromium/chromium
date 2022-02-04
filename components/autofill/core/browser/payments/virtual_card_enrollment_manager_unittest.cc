@@ -233,4 +233,27 @@ TEST_F(VirtualCardEnrollmentManagerTest,
   }
 }
 
+TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
+  personal_data_manager_->SetPaymentsCustomerData(
+      std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
+
+  virtual_card_enrollment_manager_->Unenroll(
+      /*instrument_id=*/9223372036854775807);
+
+  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+      request_details =
+          payments_client_->update_virtual_card_enrollment_request_details();
+  EXPECT_EQ(request_details.virtual_card_enrollment_source,
+            VirtualCardEnrollmentSource::kSettingsPage);
+  EXPECT_EQ(request_details.virtual_card_enrollment_request_type,
+            VirtualCardEnrollmentRequestType::kUnenroll);
+  EXPECT_EQ(request_details.billing_customer_number, 123456);
+  EXPECT_EQ(request_details.instrument_id, 9223372036854775807);
+
+  // The request should not include a context token, and should succeed.
+  EXPECT_FALSE(request_details.vcn_context_token.has_value());
+  EXPECT_EQ(virtual_card_enrollment_manager_->GetPaymentsRpcResult(),
+            AutofillClient::PaymentsRpcResult::kSuccess);
+}
+
 }  // namespace autofill

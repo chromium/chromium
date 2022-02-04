@@ -72,7 +72,26 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {}
+void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {
+  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+      request_details;
+
+  // Unenroll can only happen from the settings page.
+  request_details.virtual_card_enrollment_source =
+      VirtualCardEnrollmentSource::kSettingsPage;
+
+  request_details.virtual_card_enrollment_request_type =
+      VirtualCardEnrollmentRequestType::kUnenroll;
+  request_details.billing_customer_number =
+      payments::GetBillingCustomerId(personal_data_manager_);
+  request_details.instrument_id = instrument_id;
+
+  payments_client_->UpdateVirtualCardEnrollment(
+      request_details,
+      base::BindOnce(&VirtualCardEnrollmentManager::
+                         OnDidGetUpdateVirtualCardEnrollmentResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
 bool VirtualCardEnrollmentManager::IsVirtualCardEnrollmentBlocked(
     const std::string& guid) const {
