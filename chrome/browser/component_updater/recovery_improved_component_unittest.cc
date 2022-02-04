@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <iterator>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -83,64 +84,67 @@ void TestActionHandler::Elevate(Callback callback) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_WIN)
-TEST_F(RecoveryImprovedActionHandlerTest, Handle) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+TEST_F(RecoveryImprovedActionHandlerTest, HandleError) {
   unzip::SetUnzipperLaunchOverrideForTesting(
       base::BindRepeating(&unzip::LaunchInProcessUnzipper));
 
   // Tests the error is propagated through the callback in the error case.
-  {
-    base::RunLoop runloop;
-    base::MakeRefCounted<TestActionHandler>()->Handle(
-        base::FilePath{FILE_PATH_LITERAL("not-found")}, "some-session-id",
-        base::BindOnce(
-            [](base::OnceClosure quit_closure, bool succeeded, int error_code,
-               int extra_code1) {
-              EXPECT_FALSE(succeeded);
-              EXPECT_EQ(update_client::UnpackerError::kInvalidFile,
-                        static_cast<update_client::UnpackerError>(error_code));
-              EXPECT_EQ(2, extra_code1);
-              std::move(quit_closure).Run();
-            },
-            runloop.QuitClosure()));
-    runloop.Run();
-  }
+  base::RunLoop runloop;
+  base::MakeRefCounted<TestActionHandler>()->Handle(
+      base::FilePath{FILE_PATH_LITERAL("not-found")}, "some-session-id",
+      base::BindOnce(
+          [](base::OnceClosure quit_closure, bool succeeded, int error_code,
+             int extra_code1) {
+            EXPECT_FALSE(succeeded);
+            EXPECT_EQ(update_client::UnpackerError::kInvalidFile,
+                      static_cast<update_client::UnpackerError>(error_code));
+            EXPECT_EQ(2, extra_code1);
+            std::move(quit_closure).Run();
+          },
+          runloop.QuitClosure()));
+  runloop.Run();
+}
+#endif  //  BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(RecoveryImprovedActionHandlerTest, HandleSuccess) {
+  unzip::SetUnzipperLaunchOverrideForTesting(
+      base::BindRepeating(&unzip::LaunchInProcessUnzipper));
 
   // Tests that the recovery program runs and it returns an expected value.
-  {
-    constexpr char kActionRunFileName[] = "ChromeRecovery.crx3";
-    base::FilePath from_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &from_path);
-    from_path = from_path.AppendASCII("components")
-                    .AppendASCII("test")
-                    .AppendASCII("data")
-                    .AppendASCII("update_client")
-                    .AppendASCII(kActionRunFileName);
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    const base::FilePath to_path =
-        temp_dir_.GetPath().AppendASCII(kActionRunFileName);
-    ASSERT_TRUE(base::CopyFile(from_path, to_path));
+  constexpr char kActionRunFileName[] = "ChromeRecovery.crx3";
+  base::FilePath from_path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &from_path);
+  from_path = from_path.AppendASCII("components")
+                  .AppendASCII("test")
+                  .AppendASCII("data")
+                  .AppendASCII("update_client")
+                  .AppendASCII(kActionRunFileName);
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  const base::FilePath to_path =
+      temp_dir_.GetPath().AppendASCII(kActionRunFileName);
+  ASSERT_TRUE(base::CopyFile(from_path, to_path));
 
-    base::RunLoop runloop;
-    base::MakeRefCounted<TestActionHandler>()->Handle(
-        to_path, "some-session-id",
-        base::BindOnce(
-            [](base::OnceClosure quit_closure, bool succeeded, int error_code,
-               int extra_code1) {
-              EXPECT_TRUE(succeeded);
-              EXPECT_EQ(1877345072, error_code);
-              EXPECT_EQ(0, extra_code1);
-              std::move(quit_closure).Run();
-            },
-            runloop.QuitClosure()));
-    {
-      // For some reason, the task which runs the wait for the recovery EXE
-      // execution is handled with some delay. This causes the run loop to
-      // fail with a timeout.
-      const base::test::ScopedRunLoopTimeout specific_timeout(
-          FROM_HERE, base::Seconds(60));
-      runloop.Run();
-    }
+  base::RunLoop runloop;
+  base::MakeRefCounted<TestActionHandler>()->Handle(
+      to_path, "some-session-id",
+      base::BindOnce(
+          [](base::OnceClosure quit_closure, bool succeeded, int error_code,
+             int extra_code1) {
+            EXPECT_TRUE(succeeded);
+            EXPECT_EQ(1877345072, error_code);
+            EXPECT_EQ(0, extra_code1);
+            std::move(quit_closure).Run();
+          },
+          runloop.QuitClosure()));
+  {
+    // For some reason, the task which runs the wait for the recovery EXE
+    // execution is handled with some delay. This causes the run loop to
+    // fail with a timeout.
+    const base::test::ScopedRunLoopTimeout specific_timeout(FROM_HERE,
+                                                            base::Seconds(60));
+    runloop.Run();
   }
 }
 #endif  //  OS_WIN
