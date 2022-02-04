@@ -218,6 +218,17 @@ void WebApps::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
 
+void WebApps::SetWindowMode(const std::string& app_id,
+                            apps::mojom::WindowMode window_mode) {
+  publisher_helper().SetWindowMode(app_id, window_mode);
+}
+
+void WebApps::SetRunOnOsLoginMode(
+    const std::string& app_id,
+    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+  publisher_helper().SetRunOnOsLoginMode(app_id, run_on_os_login_mode);
+}
+
 void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
@@ -326,11 +337,6 @@ void WebApps::StartPublishingWebApps(
                      true /* should_notify_initialized */);
 
   subscribers_.Add(std::move(subscriber));
-}
-
-void WebApps::SetWindowMode(const std::string& app_id,
-                            apps::mojom::WindowMode window_mode) {
-  publisher_helper().SetWindowMode(app_id, window_mode);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

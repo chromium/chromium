@@ -45,6 +45,15 @@ void AppServiceProxy::FlushMojoCallsForTesting() {
   receivers_.FlushForTesting();
 }
 
+void AppServiceProxy::SetRunOnOsLoginMode(
+    const std::string& app_id,
+    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+  if (app_service_.is_connected()) {
+    app_service_->SetRunOnOsLoginMode(app_registry_cache_.GetAppType(app_id),
+                                      app_id, run_on_os_login_mode);
+  }
+}
+
 bool AppServiceProxy::MaybeShowLaunchPreventionDialog(
     const apps::AppUpdate& update) {
   return false;

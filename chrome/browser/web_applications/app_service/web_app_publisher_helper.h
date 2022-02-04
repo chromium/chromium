@@ -213,6 +213,12 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
+  void SetRunOnOsLoginMode(const std::string& app_id,
+                           apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
+
+  void HandleRunOnOsLogin(const std::string& app_id,
+                          web_app::RunOnOsLoginMode login_mode);
+
   // Converts |display_mode| to a |window_mode|.
   apps::mojom::WindowMode ConvertDisplayModeToWindowMode(
       blink::mojom::DisplayMode display_mode);

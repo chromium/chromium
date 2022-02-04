@@ -65,6 +65,10 @@ interface PageHandler {
   // Used to set the Window Mode from the frontend inside
   // app_management_page_handler.
   SetWindowMode(string app_id, apps.mojom.WindowMode window_mode);
+  // Used to set the Run On OS Login Modes from the frontend
+  // of an app via app_management_page_handler.
+  SetRunOnOsLoginMode(string app_id,
+    apps.mojom.RunOnOsLoginMode run_on_os_login_mode);
 };
 
 // Frontend interface.

@@ -672,13 +672,12 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 #else
   app->has_badge = apps::mojom::OptionalBool::kFalse;
 #endif
-  bool is_managed_login =
+  bool is_managed =
       provider_->policy_manager().GetUrlRunOnOsLoginPolicy(web_app->app_id()) !=
       web_app::RunOnOsLoginPolicy::kAllowed;
   apps::mojom::RunOnOsLoginMode login_mode =
       GetRunOnOsLoginMode(web_app->app_id());
-  app->run_on_os_login =
-      apps::mojom::RunOnOsLogin::New(login_mode, is_managed_login);
+  app->run_on_os_login = apps::mojom::RunOnOsLogin::New(login_mode, is_managed);
   return app;
 }
 
@@ -1126,6 +1125,36 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
                                                  /*is_user_action=*/true);
 }
 
+void WebAppPublisherHelper::SetRunOnOsLoginMode(
+    const std::string& app_id,
+    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+  bool is_managed = provider_->policy_manager().GetUrlRunOnOsLoginPolicy(
+                        app_id) != web_app::RunOnOsLoginPolicy::kAllowed;
+  if (!is_managed) {
+    web_app::RunOnOsLoginMode login_mode =
+        ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode);
+    provider_->sync_bridge().SetAppRunOnOsLoginMode(app_id, login_mode);
+    HandleRunOnOsLogin(app_id, login_mode);
+  }
+}
+
+void WebAppPublisherHelper::HandleRunOnOsLogin(
+    const std::string& app_id,
+    web_app::RunOnOsLoginMode login_mode) {
+  if (login_mode == web_app::RunOnOsLoginMode::kNotRun) {
+    web_app::OsHooksOptions os_hooks;
+    os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    provider_->os_integration_manager().UninstallOsHooks(app_id, os_hooks,
+                                                         base::DoNothing());
+  } else {
+    web_app::InstallOsHooksOptions install_options;
+    install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    provider_->os_integration_manager().InstallOsHooks(
+        app_id, base::DoNothing(), /*web_application_info=*/nullptr,
+        std::move(install_options));
+  }
+}
+
 apps::mojom::RunOnOsLoginMode WebAppPublisherHelper::GetRunOnOsLoginMode(
     const std::string& app_id) {
   return ConvertOsLoginModeToMojom(registrar().GetAppRunOnOsLoginMode(app_id));
@@ -1205,12 +1234,11 @@ void WebAppPublisherHelper::PublishRunOnOsLoginModeUpdate(
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_type = app_type();
   app->app_id = app_id;
-  bool is_managed_login = provider_->policy_manager().GetUrlRunOnOsLoginPolicy(
-                              app_id) != web_app::RunOnOsLoginPolicy::kAllowed;
+  bool is_managed = provider_->policy_manager().GetUrlRunOnOsLoginPolicy(
+                        app_id) != web_app::RunOnOsLoginPolicy::kAllowed;
   apps::mojom::RunOnOsLoginMode login_mode =
       ConvertOsLoginModeToMojom(run_on_os_login_mode);
-  app->run_on_os_login =
-      apps::mojom::RunOnOsLogin::New(login_mode, is_managed_login);
+  app->run_on_os_login = apps::mojom::RunOnOsLogin::New(login_mode, is_managed);
   delegate_->PublishWebApp(std::move(app));
 }
 

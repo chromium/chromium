@@ -30,6 +30,51 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
   helper_.CheckPlatformShortcutNotExists("SiteA");
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckRunOnOsLoginModeOnPolicyAppWorks) {
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteA");
+  helper_.EnableRunOnOSLoginMode("SiteA");
+  helper_.CheckRunOnOSLoginModeEnabled("SiteA");
+  helper_.DisableRunOnOSLoginMode("SiteA");
+  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  // Clear out installed app
+  helper_.UninstallPolicyApp("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckRunOnOsLoginModeOnNormalAppWorks) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckPlatformShortcutAndIcon("SiteA");
+  helper_.EnableRunOnOSLoginMode("SiteA");
+  helper_.CheckRunOnOSLoginModeEnabled("SiteA");
+  helper_.DisableRunOnOSLoginMode("SiteA");
+  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  // Clear out installed app
+  helper_.UninstallFromList("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckRunOnOsLoginWorksOnPolicyAppAllowed) {
+  helper_.InstallPolicyAppOsLoginModeAllowed("SiteA");
+  helper_.EnableRunOnOSLoginMode("SiteA");
+  helper_.CheckRunOnOSLoginModeEnabled("SiteA");
+  helper_.DisableRunOnOSLoginMode("SiteA");
+  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckRunOnOsLoginWorksOnPolicyAppBlocked) {
+  helper_.InstallPolicyAppOsLoginModeBlocked("SiteA");
+  helper_.EnableRunOnOSLoginMode("SiteA");
+  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteA");
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

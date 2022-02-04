@@ -4,7 +4,7 @@
 
 import {App, PageCallbackRouter, PageHandlerInterface, PageRemote} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {OptionalBool, Permission, WindowMode} from 'chrome://resources/cr_components/app_management/types.mojom-webui.js';
+import {OptionalBool, Permission, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/types.mojom-webui.js';
 
 export class FakePageHandler implements PageHandlerInterface {
   private app: App|null = null;
@@ -42,6 +42,8 @@ export class FakePageHandler implements PageHandlerInterface {
   }
 
   setWindowMode(_appId: string, _windowMode: WindowMode) {}
+
+  setRunOnOsLoginMode(_appId: string, _loginMode: RunOnOsLoginMode) {}
 }
 
 export class TestAppManagementBrowserProxy implements BrowserProxy {

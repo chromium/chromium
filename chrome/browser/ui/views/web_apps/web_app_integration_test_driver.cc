@@ -512,6 +512,20 @@ void WebAppIntegrationTestDriver::ClosePwa() {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::DisableRunOnOSLoginMode(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kNotRun);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::EnableRunOnOSLoginMode(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kWindowed);
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::InstallCreateShortcutTabbed(
     const std::string& site_mode) {
   BeforeStateChangeAction();
@@ -1679,6 +1693,23 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
 #endif
 
   return shortcut_correct;
+}
+
+void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
+    const std::string& site_mode,
+    apps::mojom::RunOnOsLoginMode login_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile());
+  app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
+#endif
 }
 
 Browser* WebAppIntegrationTestDriver::browser() {

@@ -147,6 +147,8 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   // State change actions:
   void CloseCustomToolbar();
   void ClosePwa();
+  void DisableRunOnOSLoginMode(const std::string& site_mode);
+  void EnableRunOnOSLoginMode(const std::string& site_mode);
   void InstallCreateShortcutTabbed(const std::string& site_mode);
   void InstallCreateShortcutWindowed(const std::string& site_mode);
   void InstallMenuOption(const std::string& site_mode);
@@ -256,6 +258,9 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   bool IsShortcutAndIconCreated(Profile* profile,
                                 const std::string& name,
                                 const AppId& id);
+
+  void SetRunOnOsLoginMode(const std::string& site_mode,
+                           apps::mojom::RunOnOsLoginMode login_mode);
 
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();

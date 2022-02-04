@@ -41,6 +41,10 @@ class AppServiceProxy : public AppServiceProxyBase {
                  gfx::NativeWindow parent_window) override;
   void FlushMojoCallsForTesting() override;
 
+  // Used for setting Run on OS Login modes.
+  void SetRunOnOsLoginMode(const std::string& app_id,
+                           apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
+
  private:
   // For access to Initialize.
   friend class AppServiceProxyFactory;

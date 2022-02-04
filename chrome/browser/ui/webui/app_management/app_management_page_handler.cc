@@ -291,6 +291,17 @@ void AppManagementPageHandler::SetWindowMode(
 #endif
 }
 
+void AppManagementPageHandler::SetRunOnOsLoginMode(
+    const std::string& app_id,
+    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#else
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetRunOnOsLoginMode(
+      app_id, run_on_os_login_mode);
+#endif
+}
+
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   base::flat_map<apps::mojom::PermissionType, apps::mojom::PermissionPtr>

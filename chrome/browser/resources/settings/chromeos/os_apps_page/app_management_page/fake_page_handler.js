@@ -307,6 +307,14 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
+   * @param {apps.mojom.RunOnOsLoginMode} runOnOsLoginMode
+   */
+  setRunOnOsLoginMode(appId, runOnOsLoginMode) {
+    assertNotReached();
+  }
+
+  /**
+   * @param {string} appId
    * @return {!Promise<{ appIds: !Array<!string> }>}
    */
   async getOverlappingPreferredApps(appId) {
