@@ -459,15 +459,15 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(RevokeStatus status) {
 void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientIdMetadata data) {
-  // TODO(cbiesinger): we currently do not send referer to IDP when fetching the
-  // client metadata so we cannot get any response. Making client metadata
-  // optional until the fix is in place. https://crbug.com/1284781.
+  // We purposefully do not check status; client metadata is optional.
   client_id_metadata_ = data;
+
   network_manager_->SendAccountsRequest(
       endpoints_.accounts, request_dialog_controller_->GetBrandIconIdealSize(),
       request_dialog_controller_->GetBrandIconMinimumSize(),
       base::BindOnce(&FederatedAuthRequestImpl::DownloadBitmap,
                      weak_ptr_factory_.GetWeakPtr()),
+      client_id_,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -652,6 +652,11 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
       // Populate the accounts login state.
       for (auto& account : accounts) {
+        // We set the login state based on the IDP response if it sends
+        // back an approved_clients list. If it does not, we need to set
+        // it here based on browser state.
+        if (account.login_state)
+          continue;
         LoginState login_state = LoginState::kSignUp;
         // Consider this a sign-in if we have seen a successful sign-up for
         // this account before.

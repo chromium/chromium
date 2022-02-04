@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -28,6 +29,7 @@ using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using AccountsRequestCallback =
     content::IdpNetworkRequestManager::AccountsRequestCallback;
 using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
+using LoginState = content::IdentityRequestAccount::LoginState;
 
 namespace content {
 
@@ -61,7 +63,9 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
   std::tuple<FetchStatus, AccountList, IdentityProviderMetadata>
-  SendAccountsRequestAndWaitForResponse(const char* test_accounts) {
+  SendAccountsRequestAndWaitForResponse(const char* test_accounts,
+                                        const char* client_id = "",
+                                        bool send_id_and_referrer = false) {
     GURL accounts_endpoint(kTestAccountsEndpoint);
     test_url_loader_factory().AddResponse(accounts_endpoint.spec(),
                                           test_accounts);
@@ -83,7 +87,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         kTestIdpBrandIconMinimumSize,
         base::BindOnce(&IdpNetworkRequestManagerTest::DownloadBitmap,
                        base::Unretained(this)),
-        std::move(callback));
+        client_id, std::move(callback));
     run_loop.Run();
 
     return {parsed_accounts_response, parsed_accounts,
@@ -663,6 +667,72 @@ TEST_F(IdpNetworkRequestManagerTest, AccountRequestReferrer) {
 
   ASSERT_TRUE(called);
   EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+}
+
+// Verifies that we correctly check the signed-in status.
+TEST_F(IdpNetworkRequestManagerTest, AccountSignedInStatus) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(GURL(kTestAccountsEndpoint), request.url);
+        EXPECT_EQ(request.request_body, nullptr);
+        EXPECT_FALSE(request.referrer.is_valid());
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "approved_clients": ["xxx"]
+    },
+    {
+      "sub" : "2",
+      "email": "jim@idp.test",
+      "name": "Jim R. Example",
+      "approved_clients": []
+    },
+    {
+      "sub" : "3",
+      "email": "rashida@idp.test",
+      "name": "Rashida R. Example",
+      "approved_clients": ["yyy"]
+    },
+    {
+      "sub" : "4",
+      "email": "wei@idp.test",
+      "name": "Wei R. Example"
+    },
+    {
+      "sub" : "5",
+      "email": "hans@idp.test",
+      "name": "Hans R. Example",
+      "approved_clients": ["xxx", "yyy"]
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+  ASSERT_EQ(5ul, accounts.size());
+  ASSERT_TRUE(accounts[0].login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn, *accounts[0].login_state);
+  ASSERT_TRUE(accounts[1].login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp, *accounts[1].login_state);
+  ASSERT_TRUE(accounts[2].login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp, *accounts[2].login_state);
+  EXPECT_FALSE(accounts[3].login_state.has_value());
+  ASSERT_TRUE(accounts[4].login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn, *accounts[4].login_state);
 }
 
 // Tests the token request implementation.

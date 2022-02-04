@@ -46,12 +46,13 @@ struct CONTENT_EXPORT IdentityRequestAccount {
     kAuto,
   };
 
-  IdentityRequestAccount(const std::string& account_id,
-                         const std::string& email,
-                         const std::string& name,
-                         const std::string& given_name,
-                         const GURL& picture,
-                         LoginState login_state = LoginState::kSignUp);
+  IdentityRequestAccount(
+      const std::string& account_id,
+      const std::string& email,
+      const std::string& name,
+      const std::string& given_name,
+      const GURL& picture,
+      absl::optional<LoginState> login_state = absl::nullopt);
   IdentityRequestAccount(const IdentityRequestAccount&);
   ~IdentityRequestAccount();
 
@@ -61,10 +62,9 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   std::string given_name;
   GURL picture;
 
-  // The account login state. Unlike the other fields this one is not populated
-  // by the IDP but instead by the browser based on its stored permission
-  // grants.
-  LoginState login_state;
+  // The account login state. Unlike the other fields this one can be populated
+  // either by the IDP or by the browser based on its stored permission grants.
+  absl::optional<LoginState> login_state;
 };
 
 struct ClientIdData {

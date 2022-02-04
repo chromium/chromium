@@ -155,6 +155,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                    int idp_brand_icon_ideal_size,
                                    int idp_brand_icon_minimum_size,
                                    BrandIconDownloader icon_downloader,
+                                   const std::string& client_id,
                                    AccountsRequestCallback callback);
 
   // Request a new token for this user account and RP from the IDP.
@@ -177,7 +178,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     AccountRequestInfo(AccountsRequestCallback callback,
                        int idp_brand_icon_ideal_size,
                        int idp_brand_icon_minimum_size,
-                       BrandIconDownloader idp_brand_icon_downloader);
+                       BrandIconDownloader idp_brand_icon_downloader,
+                       const std::string& client_id);
     ~AccountRequestInfo();
     AccountRequestInfo(AccountRequestInfo&&);
 
@@ -185,6 +187,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     int idp_brand_icon_ideal_size;
     int idp_brand_icon_minimum_size;
     BrandIconDownloader idp_brand_icon_downloader;
+    std::string client_id;
   };
 
   void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);

@@ -31,6 +31,8 @@
 namespace content {
 
 namespace {
+using LoginState = IdentityRequestAccount::LoginState;
+
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
 
@@ -146,7 +148,8 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
 }
 
 absl::optional<content::IdentityRequestAccount> ParseAccount(
-    const base::Value& account) {
+    const base::Value& account,
+    const std::string& client_id) {
   // TODO(yigu): Per spec the account id field should be "account_id" instead of
   // "sub". Using "sub" temporarily to unblock partner deployment.
   auto* account_id = account.FindStringKey("sub");
@@ -154,20 +157,38 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
   auto* name = account.FindStringKey("name");
   auto* given_name = account.FindStringKey("given_name");
   auto* picture = account.FindStringKey("picture");
+  auto* approved_clients = account.FindListKey("approved_clients");
 
   // required fields
   if (!(account_id && email && name))
     return absl::nullopt;
 
-  return content::IdentityRequestAccount(*account_id, *email, *name,
-                                         given_name ? *given_name : "",
-                                         picture ? GURL(*picture) : GURL());
+  absl::optional<LoginState> approved_value;
+  if (approved_clients) {
+    for (const base::Value& entry : approved_clients->GetList()) {
+      if (entry.is_string() && entry.GetString() == client_id) {
+        approved_value = LoginState::kSignIn;
+        break;
+      }
+    }
+    if (!approved_value) {
+      // We did get an approved_clients list, but the client ID was not found.
+      // This means we are certain that the client is not approved; set to
+      // kSignUp instead of leaving as nullopt.
+      approved_value = LoginState::kSignUp;
+    }
+  }
+
+  return content::IdentityRequestAccount(
+      *account_id, *email, *name, given_name ? *given_name : "",
+      picture ? GURL(*picture) : GURL(), approved_value);
 }
 
 // Parses accounts from given Value. Returns true if parse is successful and
 // adds parsed accounts to the |account_list|.
 bool ParseAccounts(const base::Value* accounts,
-                   IdpNetworkRequestManager::AccountList& account_list) {
+                   IdpNetworkRequestManager::AccountList& account_list,
+                   const std::string& client_id) {
   DCHECK(account_list.empty());
   if (!accounts->is_list())
     return false;
@@ -176,7 +197,7 @@ bool ParseAccounts(const base::Value* accounts,
     if (!account.is_dict())
       return false;
 
-    auto parsed_account = ParseAccount(account);
+    auto parsed_account = ParseAccount(account, client_id);
     if (parsed_account)
       account_list.push_back(parsed_account.value());
   }
@@ -289,11 +310,13 @@ IdpNetworkRequestManager::AccountRequestInfo::AccountRequestInfo(
     AccountsRequestCallback callback,
     int idp_brand_icon_ideal_size,
     int idp_brand_icon_minimum_size,
-    IdpNetworkRequestManager::BrandIconDownloader idp_brand_icon_downloader)
+    IdpNetworkRequestManager::BrandIconDownloader idp_brand_icon_downloader,
+    const std::string& client_id)
     : callback(std::move(callback)),
       idp_brand_icon_ideal_size(idp_brand_icon_ideal_size),
       idp_brand_icon_minimum_size(idp_brand_icon_minimum_size),
-      idp_brand_icon_downloader(std::move(idp_brand_icon_downloader)) {}
+      idp_brand_icon_downloader(std::move(idp_brand_icon_downloader)),
+      client_id(client_id) {}
 IdpNetworkRequestManager::AccountRequestInfo::~AccountRequestInfo() = default;
 IdpNetworkRequestManager::AccountRequestInfo::AccountRequestInfo(
     AccountRequestInfo&&) = default;
@@ -375,6 +398,7 @@ void IdpNetworkRequestManager::SendAccountsRequest(
     int idp_brand_icon_ideal_size,
     int idp_brand_icon_minimum_size,
     BrandIconDownloader idp_brand_icon_downloader,
+    const std::string& client_id,
     AccountsRequestCallback callback) {
   DCHECK(!url_loader_);
 
@@ -388,7 +412,7 @@ void IdpNetworkRequestManager::SendAccountsRequest(
           weak_ptr_factory_.GetWeakPtr(),
           AccountRequestInfo(std::move(callback), idp_brand_icon_ideal_size,
                              idp_brand_icon_minimum_size,
-                             std::move(idp_brand_icon_downloader))),
+                             std::move(idp_brand_icon_downloader), client_id)),
       maxResponseSizeInKiB * 1024);
 }
 
@@ -661,7 +685,8 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
   AccountList account_list;
   auto& response = *result.value;
   const base::Value* accounts = response.FindKey(kAccountsKey);
-  bool accounts_present = accounts && ParseAccounts(accounts, account_list);
+  bool accounts_present =
+      accounts && ParseAccounts(accounts, account_list, request_info.client_id);
 
   if (!accounts_present) {
     Fail();
