@@ -40,6 +40,8 @@ include_rules = [
 
 specific_include_rules = {
     ".*test.*": [
+        # TODO(crbug.com/1294176): Remove when no longer needed.
+        "+base/cfi_buildflags.h",
         "+base/run_loop.h",
         "+base/test/scoped_run_loop_timeout.h",
         "+base/test/test_timeouts.h",

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cfi_buildflags.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "media/audio/audio_sink_parameters.h"
@@ -116,7 +117,8 @@ class AudioDeviceFactoryTestingPlatformSupport : public blink::Platform {
 }  // namespace
 
 // Flaky on TSAN. See https://crbug.com/1127211
-#if defined(THREAD_SANITIZER)
+// Flaky with CFI. See https://crbug.com/1294176
+#if defined(THREAD_SANITIZER) || BUILDFLAG(CFI_CAST_CHECK)
 #define MAYBE_WebRtcAudioRendererTest DISABLED_WebRtcAudioRendererTest
 #else
 #define MAYBE_WebRtcAudioRendererTest WebRtcAudioRendererTest
