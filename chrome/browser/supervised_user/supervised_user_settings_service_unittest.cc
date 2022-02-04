@@ -170,7 +170,9 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
+  EXPECT_TRUE(value->is_string());
+  if (value->is_string())
+    string_value = value->GetString();
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
@@ -329,7 +331,9 @@ TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
+  EXPECT_TRUE(value->is_string());
+  if (value->is_string())
+    string_value = value->GetString();
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
