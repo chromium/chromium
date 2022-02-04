@@ -1,3 +1,6 @@
-tableCellAuto.AXARIARowIndex=1
-tableCell.AXARIARowIndex=2
-div.AXARIARowIndex=n/a
+tableCellAuto.accessibilityAttributeNames.has(AXARIARowIndex)='yes'
+tableCellAuto.accessibilityAttributeValue(AXARIARowIndex)=1
+tableCell.accessibilityAttributeNames.has(AXARIARowIndex)='yes'
+tableCell.accessibilityAttributeValue(AXARIARowIndex)=2
+div.accessibilityAttributeNames.has(AXARIARowIndex)='no'
+div.accessibilityAttributeValue(AXARIARowIndex)=NULL

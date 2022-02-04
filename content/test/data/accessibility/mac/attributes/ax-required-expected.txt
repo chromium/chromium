@@ -1,10 +1,6 @@
-input.AXRequired=0
-input_required.AXRequired=1
-input_aria_required.AXRequired=0
-input_aria_required_true.AXRequired=1
-input_aria_required_false.AXRequired=0
-combobox.AXRequired=0
-combobox_aria_required_true.AXRequired=1
-combobox_aria_required_false.AXRequired=0
-not_applicable.AXRequired=n/a
-not_applicable_aria.AXRequired=n/a
+input.accessibilityAttributeNames.has(AXRequired)='yes'
+input.accessibilityAttributeValue(AXRequired)=0
+input_required.accessibilityAttributeNames.has(AXRequired)='yes'
+input_required.accessibilityAttributeValue(AXRequired)=1
+not_applicable.accessibilityAttributeNames.has(AXRequired)='no'
+not_applicable.accessibilityAttributeValue(AXRequired)=0
