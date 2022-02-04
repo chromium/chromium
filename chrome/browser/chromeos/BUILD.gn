@@ -3636,9 +3636,7 @@ source_set("chromeos") {
   }
 
   if (enable_hibernate) {
-    deps += [
-      "//chromeos/dbus/hiberman",
-    ]
+    deps += [ "//chromeos/dbus/hiberman" ]
   }
 }
 
