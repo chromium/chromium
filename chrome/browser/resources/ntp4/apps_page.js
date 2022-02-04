@@ -203,6 +203,12 @@ AppContextMenu.prototype = {
     this.uninstall_.disabled = !app.appData.mayDisable;
     if (this.appinfo_) {
       this.appinfo_.hidden = !app.appData.isLocallyInstalled;
+
+      if (app.appData.settingsMenuItemOverrideText) {
+        this.appinfo_.textContent = app.appData.settingsMenuItemOverrideText;
+      } else {
+        this.appinfo_.textContent = loadTimeData.getString('appinfodialog');
+      }
     }
 
     this.createShortcutSeparator_.hidden = this.createShortcut_.hidden =
@@ -216,11 +222,7 @@ AppContextMenu.prototype = {
     this.runOnOsLogin_.checked =
         app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NOT_RUN;
 
-    if (app.appData.settingsMenuItemOverrideText) {
-      this.appinfo_.textContent = app.appData.settingsMenuItemOverrideText;
-    } else {
-      this.appinfo_.textContent = loadTimeData.getString('appinfodialog');
-    }
+
   },
 
   /** @private */
