@@ -168,9 +168,8 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 
   void ExpectAccountInfoChanged(const content::TestWebUI::CallData& call_data) {
     EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-    std::string event;
-    ASSERT_TRUE(call_data.arg1()->GetAsString(&event));
-    EXPECT_EQ("account-info-changed", event);
+    ASSERT_TRUE(call_data.arg1()->is_string());
+    EXPECT_EQ("account-info-changed", call_data.arg1()->GetString());
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
