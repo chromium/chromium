@@ -136,12 +136,12 @@ class UserSigninMediatorTest : public PlatformTest {
           NSLog(@" signInIdentity ");
           authentication_service()->SignIn(identity_);
         });
-    OCMExpect([performer_mock_
-                  shouldHandleMergeCaseForIdentity:identity_
-                                      browserState:browser_state_.get()])
-        .andReturn(NO);
-    NSLog(@" shouldHandleMergeCaseForIdentity ");
     if (postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC) {
+      OCMExpect([performer_mock_
+                    shouldHandleMergeCaseForIdentity:identity_
+                                        browserState:browser_state_.get()])
+          .andReturn(NO);
+      NSLog(@" shouldHandleMergeCaseForIdentity ");
       OCMExpect(
           [performer_mock_ commitSyncForBrowserState:browser_state_.get()]);
     }

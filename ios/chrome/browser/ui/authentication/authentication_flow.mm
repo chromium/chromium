@@ -203,6 +203,10 @@ enum AuthenticationState {
     case FETCH_MANAGED_STATUS:
       return CHECK_MERGE_CASE;
     case CHECK_MERGE_CASE:
+      // If the user enabled Sync, expect the data clearing strategy to be set.
+      DCHECK(_postSignInAction == POST_SIGNIN_ACTION_NONE ||
+             (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC &&
+              self.localDataClearingStrategy != SHOULD_CLEAR_DATA_USER_CHOICE));
       if (_shouldShowManagedConfirmation)
         return SHOW_MANAGED_CONFIRMATION;
       else if (_shouldSignOut)
@@ -269,13 +273,18 @@ enum AuthenticationState {
 
     case CHECK_MERGE_CASE:
       DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
-      if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
-                                           browserState:browserState]) &&
-          (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)) {
-        [_performer promptMergeCaseForIdentity:_identityToSignIn
-                                       browser:_browser
-                                viewController:_presentingViewController];
-        return;
+      if (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC) {
+        if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
+                                             browserState:browserState])) {
+          [_performer promptMergeCaseForIdentity:_identityToSignIn
+                                         browser:_browser
+                                  viewController:_presentingViewController];
+          return;
+        } else {
+          // If the user is not prompted to choose a data clearing strategy,
+          // Chrome defaults to merging the account data.
+          self.localDataClearingStrategy = SHOULD_CLEAR_DATA_MERGE_DATA;
+        }
       }
       [self continueSignin];
       return;
@@ -429,7 +438,10 @@ enum AuthenticationState {
 }
 
 - (void)didChooseClearDataPolicy:(ShouldClearData)shouldClearData {
+  // Assumes this is the first time the user has updated their data clearing
+  // strategy.
   DCHECK_NE(SHOULD_CLEAR_DATA_USER_CHOICE, shouldClearData);
+  DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
   _shouldSignOut = YES;
   self.localDataClearingStrategy = shouldClearData;
 

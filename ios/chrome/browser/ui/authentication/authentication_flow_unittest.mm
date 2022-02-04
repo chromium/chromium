@@ -345,10 +345,6 @@ TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
   }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
 
-  [[[performer_ expect] andReturnBool:NO]
-      shouldHandleMergeCaseForIdentity:managed_identity_
-                          browserState:browser_state_.get()];
-
   [[performer_ expect] signInIdentity:managed_identity_
                      withHostedDomain:@"foo.com"
                        toBrowserState:browser_state_.get()];
