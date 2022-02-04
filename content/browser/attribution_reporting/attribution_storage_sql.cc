@@ -684,8 +684,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       AttributionReport::EventLevelData(trigger_data, trigger.priority(),
                                         /*id=*/absl::nullopt));
 
-  switch (
-      rate_limit_table_.AttributionAllowed(db_.get(), report, current_time)) {
+  switch (rate_limit_table_.AttributionAllowed(db_.get(), report)) {
     case RateLimitTable::AttributionAllowedStatus::kAllowed:
       break;
     case RateLimitTable::AttributionAllowedStatus::kNotAllowed:
