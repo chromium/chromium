@@ -107,10 +107,27 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
                                   const AttributionReport& report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const CommonSourceInfo& common_info = report.source().common_info();
-  AttributionType attribution_type =
-      AttributionTypeFromSourceType(common_info.source_type());
+  return AddRow(
+      db,
+      AttributionTypeFromSourceType(
+          report.source().common_info().source_type()),
+      report.source().source_id(),
+      report.source().common_info().ImpressionSite().Serialize(),
+      SerializeOrigin(report.source().common_info().impression_origin()),
+      report.source().common_info().ConversionDestination().Serialize(),
+      SerializeOrigin(report.source().common_info().conversion_origin()),
+      report.trigger_time());
+}
 
+bool RateLimitTable::AddRow(
+    sql::Database* db,
+    AttributionType attribution_type,
+    StoredSource::Id source_id,
+    const std::string& serialized_impression_site,
+    const std::string& serialized_impression_origin,
+    const std::string& serialized_conversion_destination,
+    const std::string& serialized_conversion_origin,
+    base::Time time) {
   // Only delete expired rate limits periodically to avoid excessive DB
   // operations.
   const base::TimeDelta delete_frequency =
@@ -131,30 +148,51 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
   statement.BindInt(0, SerializeAttributionType(attribution_type));
-  statement.BindInt64(1, *report.source().source_id());
-  statement.BindString(2, common_info.ImpressionSite().Serialize());
-  statement.BindString(3, SerializeOrigin(common_info.impression_origin()));
-  statement.BindString(4, common_info.ConversionDestination().Serialize());
-  statement.BindString(5, SerializeOrigin(common_info.conversion_origin()));
-  statement.BindTime(6, report.trigger_time());
+  statement.BindInt64(1, *source_id);
+  statement.BindString(2, serialized_impression_site);
+  statement.BindString(3, serialized_impression_origin);
+  statement.BindString(4, serialized_conversion_destination);
+  statement.BindString(5, serialized_conversion_origin);
+  statement.BindTime(6, time);
   return statement.Run();
 }
 
 AttributionAllowedStatus RateLimitTable::AttributionAllowed(
     sql::Database* db,
-    const AttributionReport& report) {
+    const AttributionReport& report,
+    base::Time now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const CommonSourceInfo& common_info = report.source().common_info();
-  AttributionType attribution_type =
-      AttributionTypeFromSourceType(common_info.source_type());
+  const std::string serialized_impression_site =
+      report.source().common_info().ImpressionSite().Serialize();
+  const std::string serialized_conversion_destination =
+      report.source().common_info().ConversionDestination().Serialize();
 
+  const int64_t capacity = GetCapacity(
+      db,
+      AttributionTypeFromSourceType(
+          report.source().common_info().source_type()),
+      serialized_impression_site, serialized_conversion_destination, now);
+  // This should only be possible if there is DB corruption.
+  if (capacity < 0)
+    return AttributionAllowedStatus::kError;
+  if (capacity == 0)
+    return AttributionAllowedStatus::kNotAllowed;
+  return AttributionAllowedStatus::kAllowed;
+}
+
+int64_t RateLimitTable::GetCapacity(
+    sql::Database* db,
+    AttributionType attribution_type,
+    const std::string& serialized_impression_site,
+    const std::string& serialized_conversion_destination,
+    base::Time now) {
   const AttributionStorage::Delegate::RateLimitConfig rate_limits =
       delegate_->GetRateLimits(attribution_type);
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
   DCHECK_GT(rate_limits.max_contributions_per_window, 0);
 
-  base::Time min_timestamp = report.trigger_time() - rate_limits.time_window;
+  base::Time min_timestamp = now - rate_limits.time_window;
 
   static constexpr char kAttributionAllowedSql[] =
       "SELECT COUNT(*) FROM rate_limits "
@@ -166,18 +204,18 @@ AttributionAllowedStatus RateLimitTable::AttributionAllowed(
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
   statement.BindInt(0, SerializeAttributionType(attribution_type));
-  statement.BindString(1, common_info.ImpressionSite().Serialize());
-  statement.BindString(2, common_info.ConversionDestination().Serialize());
+  statement.BindString(1, serialized_impression_site);
+  statement.BindString(2, serialized_conversion_destination);
   statement.BindTime(3, min_timestamp);
 
   if (!statement.Step())
-    return AttributionAllowedStatus::kError;
+    return -1;
 
   int64_t count = statement.ColumnInt64(0);
 
-  return count < rate_limits.max_contributions_per_window
-             ? AttributionAllowedStatus::kAllowed
-             : AttributionAllowedStatus::kNotAllowed;
+  return rate_limits.max_contributions_per_window > count
+             ? rate_limits.max_contributions_per_window - count
+             : 0;
 }
 
 bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
