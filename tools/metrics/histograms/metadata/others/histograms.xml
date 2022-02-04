@@ -4902,6 +4902,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DriveOffline.CrosAutoEnableOutcome"
     enum="CrosEnableDriveOfflineOutcome" expires_after="2022-02-05">
+  <obsolete>
+    Removed 2022-02 as this feature never launched.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
