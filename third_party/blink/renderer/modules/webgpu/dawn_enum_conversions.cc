@@ -545,6 +545,9 @@ WGPUStencilOperation AsDawnEnum<WGPUStencilOperation>(
 
 template <>
 WGPUStoreOp AsDawnEnum<WGPUStoreOp>(const WTF::String& webgpu_enum) {
+  if (webgpu_enum.IsNull()) {
+    return WGPUStoreOp_Undefined;
+  }
   if (webgpu_enum == "store") {
     return WGPUStoreOp_Store;
   }
@@ -557,8 +560,14 @@ WGPUStoreOp AsDawnEnum<WGPUStoreOp>(const WTF::String& webgpu_enum) {
 
 template <>
 WGPULoadOp AsDawnEnum<WGPULoadOp>(const WTF::String& webgpu_enum) {
+  if (webgpu_enum.IsNull()) {
+    return WGPULoadOp_Undefined;
+  }
   if (webgpu_enum == "load") {
     return WGPULoadOp_Load;
+  }
+  if (webgpu_enum == "clear") {
+    return WGPULoadOp_Clear;
   }
   NOTREACHED();
   return WGPULoadOp_Force32;
