@@ -318,6 +318,7 @@ class WPTWeblayerAdapter(WPTAndroidAdapter):
   @property
   def rest_args(self):
     args = super(WPTWeblayerAdapter, self).rest_args
+    args.append('--test-type=testharness')
     args.append(ANDROID_WEBLAYER)
     return args
 

@@ -6078,7 +6078,7 @@
             ]
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 32
+          "shards": 18
         },
         "test_id_prefix": "ninja://weblayer/shell/android:weblayer_shell_wpt/"
       }

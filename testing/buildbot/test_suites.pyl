@@ -5094,7 +5094,7 @@
     'weblayer_shell_wpt': {
       'weblayer_shell_wpt': {
         'swarming': {
-          'shards': 32,
+          'shards': 18,
           'expiration': 18000,
           'hard_timeout': 14400,
         },
