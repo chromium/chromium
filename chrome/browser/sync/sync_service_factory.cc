@@ -195,13 +195,6 @@ syncer::SyncServiceImpl* SyncServiceFactory::GetAsSyncServiceImplForProfile(
   return static_cast<syncer::SyncServiceImpl*>(GetForProfile(profile));
 }
 
-content::BrowserContext* SyncServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  if (context->IsOffTheRecord())
-    return nullptr;
-  return context;
-}
-
 SyncServiceFactory::SyncServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SyncService",
