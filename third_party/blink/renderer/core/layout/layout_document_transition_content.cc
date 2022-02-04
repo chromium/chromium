@@ -13,7 +13,9 @@ LayoutDocumentTransitionContent::LayoutDocumentTransitionContent(
     DocumentTransitionContentElement* element)
     : LayoutReplaced(element),
       layer_(
-          cc::DocumentTransitionContentLayer::Create(element->resource_id())) {}
+          cc::DocumentTransitionContentLayer::Create(element->resource_id())) {
+  SetIntrinsicSize(element->intrinsic_size());
+}
 
 LayoutDocumentTransitionContent::~LayoutDocumentTransitionContent() = default;
 
@@ -34,10 +36,6 @@ CompositingReasons
 LayoutDocumentTransitionContent::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
   return CompositingReason::kDocumentTransitionContentElement;
-}
-
-void LayoutDocumentTransitionContent::SetSourceOpacity(float opacity) {
-  layer_->SetSourceOpacity(opacity);
 }
 
 void LayoutDocumentTransitionContent::PaintReplaced(

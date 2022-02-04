@@ -33,10 +33,8 @@ DocumentTransitionContentLayerImpl::~DocumentTransitionContentLayerImpl() =
 
 std::unique_ptr<LayerImpl> DocumentTransitionContentLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  auto layer =
-      DocumentTransitionContentLayerImpl::Create(tree_impl, id(), resource_id_);
-  PushLocalPropertiesTo(layer.get());
-  return layer;
+  return DocumentTransitionContentLayerImpl::Create(tree_impl, id(),
+                                                    resource_id_);
 }
 
 void DocumentTransitionContentLayerImpl::AppendQuads(
@@ -61,30 +59,11 @@ void DocumentTransitionContentLayerImpl::AppendQuads(
       render_pass->CreateAndAppendSharedQuadState();
   PopulateScaledSharedQuadState(shared_quad_state, device_scale_factor,
                                 contents_opaque());
-  shared_quad_state->opacity *= source_opacity_;
 
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<viz::SharedElementDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, resource_id_);
   append_quads_data->has_shared_element_resources = true;
-}
-
-void DocumentTransitionContentLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  LayerImpl::PushPropertiesTo(layer);
-
-  auto* content_layer_impl =
-      static_cast<DocumentTransitionContentLayerImpl*>(layer);
-  PushLocalPropertiesTo(content_layer_impl);
-}
-
-void DocumentTransitionContentLayerImpl::PushLocalPropertiesTo(
-    DocumentTransitionContentLayerImpl* layer_impl) const {
-  layer_impl->SetSourceOpacity(source_opacity_);
-}
-
-void DocumentTransitionContentLayerImpl::SetSourceOpacity(float opacity) {
-  source_opacity_ = opacity;
-  SetNeedsPushProperties();
 }
 
 const char* DocumentTransitionContentLayerImpl::LayerTypeAsString() const {

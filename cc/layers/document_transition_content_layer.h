@@ -13,7 +13,6 @@
 #include "components/viz/common/shared_element_resource_id.h"
 
 namespace cc {
-class DocumentTransitionContentLayerImpl;
 
 // A layer that renders a texture cached in the Viz process.
 class CC_EXPORT DocumentTransitionContentLayer : public Layer {
@@ -28,18 +27,9 @@ class CC_EXPORT DocumentTransitionContentLayer : public Layer {
 
   viz::SharedElementResourceId DocumentTransitionResourceId() const override;
 
-  // Set the source opacity, which is the opacity specified on the shared
-  // element that this layer draws. This is multiplied by any of this layer's
-  // own opacity to give the effect that the source shared element was captured
-  // with its opacity preserved.
-  void SetSourceOpacity(float opacity);
-
   // Layer overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
 
  protected:
   explicit DocumentTransitionContentLayer(
@@ -48,12 +38,7 @@ class CC_EXPORT DocumentTransitionContentLayer : public Layer {
  private:
   ~DocumentTransitionContentLayer() override;
 
-  void PushLocalPropertiesTo(
-      DocumentTransitionContentLayerImpl* layer_impl) const;
-
   const viz::SharedElementResourceId resource_id_;
-
-  float source_opacity_ = 1.f;
 };
 
 }  // namespace cc

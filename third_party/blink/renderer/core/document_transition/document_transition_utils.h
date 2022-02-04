@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_UTILS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_content_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -41,38 +40,6 @@ class CORE_EXPORT DocumentTransitionUtils {
               kPseudoIdTransitionNewContent, document_transition_tag))
         func(content);
     }
-  }
-
-  static DocumentTransitionContentElement* FindOldContentElement(
-      Document& document,
-      const AtomicString& tag) {
-    return FindContentElement(document, tag, kPseudoIdTransitionOldContent);
-  }
-
-  static DocumentTransitionContentElement* FindNewContentElement(
-      Document& document,
-      const AtomicString& tag) {
-    return FindContentElement(document, tag, kPseudoIdTransitionNewContent);
-  }
-
- private:
-  static DocumentTransitionContentElement*
-  FindContentElement(Document& document, const AtomicString& tag, PseudoId id) {
-    DCHECK(id == kPseudoIdTransitionOldContent ||
-           id == kPseudoIdTransitionNewContent);
-
-    auto* transition_pseudo =
-        document.documentElement()->GetPseudoElement(kPseudoIdTransition);
-    if (!transition_pseudo)
-      return nullptr;
-
-    auto* container_pseudo =
-        transition_pseudo->GetPseudoElement(kPseudoIdTransitionContainer, tag);
-    if (!container_pseudo)
-      return nullptr;
-
-    return static_cast<DocumentTransitionContentElement*>(
-        container_pseudo->GetPseudoElement(id, tag));
   }
 };
 

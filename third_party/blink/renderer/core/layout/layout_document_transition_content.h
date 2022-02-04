@@ -23,9 +23,6 @@ class CORE_EXPORT LayoutDocumentTransitionContent : public LayoutReplaced {
     return "LayoutDocumentTransitionContent";
   }
   void OnIntrinsicSizeUpdated(const LayoutSize& intrinsic_size);
-  void SetSourceOpacity(float opacity);
-
-  using LayoutReplaced::SetIntrinsicSize;
 
  protected:
   PaintLayerType LayerTypeRequired() const override;
