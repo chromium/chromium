@@ -545,7 +545,8 @@ scoped_refptr<NodeChannel> NodeController::GetBrokerChannel() {
 
 void NodeController::AddPeer(const ports::NodeName& name,
                              scoped_refptr<NodeChannel> channel,
-                             bool start_channel) {
+                             bool start_channel,
+                             bool allow_name_reuse) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   DCHECK(name != ports::kInvalidNodeName);
@@ -561,6 +562,11 @@ void NodeController::AddPeer(const ports::NodeName& name,
       // other. The losing pipe will be silently closed and introduction should
       // not be affected.
       DVLOG(1) << "Ignoring duplicate peer name " << name;
+      return;
+    }
+
+    if (dropped_peers_.Contains(name) && !allow_name_reuse) {
+      LOG(ERROR) << "Trying to re-add dropped peer " << name;
       return;
     }
 
@@ -604,6 +610,7 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
     if (it != peers_.end()) {
       ports::NodeName peer = it->first;
       peers_.erase(it);
+      dropped_peers_.Insert(peer);
       DVLOG(1) << "Dropped peer " << peer;
     }
 
@@ -1272,7 +1279,8 @@ void NodeController::OnAcceptPeer(const ports::NodeName& from_node,
     // Note that we explicitly drop any prior connection to the same peer so
     // that new isolated connections can replace old ones.
     DropPeer(peer_name, nullptr);
-    AddPeer(peer_name, channel, false /* start_channel */);
+    AddPeer(peer_name, channel, false /* start_channel */,
+            true /* allow_name_reuse */);
     DVLOG(1) << "Node " << name_ << " accepted peer " << peer_name;
   }
 
@@ -1387,6 +1395,25 @@ NodeController::IsolatedConnection::operator=(const IsolatedConnection& other) =
 NodeController::IsolatedConnection&
 NodeController::IsolatedConnection::operator=(IsolatedConnection&& other) =
     default;
+
+BoundedPeerSet::BoundedPeerSet() = default;
+BoundedPeerSet::~BoundedPeerSet() = default;
+
+void BoundedPeerSet::Insert(const ports::NodeName& name) {
+  if (new_set_.size() == kHalfSize) {
+    old_set_.clear();
+    std::swap(old_set_, new_set_);
+  }
+  new_set_.insert(name);
+}
+
+bool BoundedPeerSet::Contains(const ports::NodeName& name) {
+  if (old_set_.find(name) != old_set_.end())
+    return true;
+  if (new_set_.find(name) != new_set_.end())
+    return true;
+  return false;
+}
 
 }  // namespace core
 }  // namespace mojo
