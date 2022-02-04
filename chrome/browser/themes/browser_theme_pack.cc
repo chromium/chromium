@@ -617,12 +617,17 @@ SkColor GetContrastingColorForBackground(SkColor bg_color,
 }  // namespace internal
 
 BrowserThemePack::~BrowserThemePack() {
-  if (data_pack_) {
-    auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    DCHECK(task_runner);
-    task_runner->DeleteSoon(FROM_HERE, data_pack_.release());
+  DCHECK(!data_pack_ || using_data_pack_);
+
+  if (using_data_pack_) {
+    if (data_pack_) {
+      auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      DCHECK(task_runner);
+      task_runner->DeleteSoon(FROM_HERE, std::move(data_pack_));
+    }
   } else {
+    // When not using a data_pack, the memory is allocated and must be freed.
     delete header_;
     delete [] tints_;
     delete [] colors_;
@@ -750,17 +755,24 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::EXTENSION));
   pack->set_extension_id(expected_id);
+
+  // The data pack is loaded in a local variable to be released synchronously
+  // in case of failures (see https://crbug.com/1292632).
   // Scale factor parameter is moot as data pack has image resources for all
   // supported scale factors.
-  pack->data_pack_ = std::make_unique<ui::DataPack>(ui::kScaleFactorNone);
+  std::unique_ptr<ui::DataPack> data_pack =
+      std::make_unique<ui::DataPack>(ui::kScaleFactorNone);
 
-  if (!pack->data_pack_->LoadFromPath(path)) {
+  // The browser theme pack is using a data pack.
+  pack->using_data_pack_ = true;
+
+  if (!data_pack->LoadFromPath(path)) {
     LOG(ERROR) << "Failed to load theme data pack.";
     return nullptr;
   }
 
   base::StringPiece pointer;
-  if (!pack->data_pack_->GetStringPiece(kHeaderID, &pointer))
+  if (!data_pack->GetStringPiece(kHeaderID, &pointer))
     return nullptr;
   pack->header_ = reinterpret_cast<BrowserThemePackHeader*>(const_cast<char*>(
       pointer.data()));
@@ -778,27 +790,27 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  if (!pack->data_pack_->GetStringPiece(kTintsID, &pointer))
+  if (!data_pack->GetStringPiece(kTintsID, &pointer))
     return nullptr;
   pack->tints_ = reinterpret_cast<TintEntry*>(const_cast<char*>(
       pointer.data()));
 
-  if (!pack->data_pack_->GetStringPiece(kColorsID, &pointer))
+  if (!data_pack->GetStringPiece(kColorsID, &pointer))
     return nullptr;
   pack->colors_ =
       reinterpret_cast<ColorPair*>(const_cast<char*>(pointer.data()));
 
-  if (!pack->data_pack_->GetStringPiece(kDisplayPropertiesID, &pointer))
+  if (!data_pack->GetStringPiece(kDisplayPropertiesID, &pointer))
     return nullptr;
   pack->display_properties_ = reinterpret_cast<DisplayPropertyPair*>(
       const_cast<char*>(pointer.data()));
 
-  if (!pack->data_pack_->GetStringPiece(kSourceImagesID, &pointer))
+  if (!data_pack->GetStringPiece(kSourceImagesID, &pointer))
     return nullptr;
   pack->source_images_ = reinterpret_cast<int*>(
       const_cast<char*>(pointer.data()));
 
-  if (!pack->data_pack_->GetStringPiece(kScaleFactorsID, &pointer))
+  if (!data_pack->GetStringPiece(kScaleFactorsID, &pointer))
     return nullptr;
 
   if (!InputScalesValid(pointer, pack->scale_factors_)) {
@@ -806,7 +818,11 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
                 << "from those supported by platform.";
     return nullptr;
   }
+
+  // The loaded pack is valid and can be used as a theme pack.
+  pack->data_pack_ = std::move(data_pack);
   pack->is_valid_ = true;
+
   return pack;
 }
 

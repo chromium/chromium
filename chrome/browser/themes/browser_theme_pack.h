@@ -286,6 +286,7 @@ class BrowserThemePack : public CustomThemeSupplier {
 
   // Data pack, if we have one.
   std::unique_ptr<ui::DataPack> data_pack_;
+  bool using_data_pack_ = false;
 
   // All structs written to disk need to be packed; no alignment tricks here,
   // please.
