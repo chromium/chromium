@@ -459,50 +459,50 @@ PrintPreviewHandler::PrintPreviewHandler() {
 PrintPreviewHandler::~PrintPreviewHandler() = default;
 
 void PrintPreviewHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPrinters",
       base::BindRepeating(&PrintPreviewHandler::HandleGetPrinters,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPreview", base::BindRepeating(&PrintPreviewHandler::HandleGetPreview,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "print", base::BindRepeating(&PrintPreviewHandler::HandlePrint,
                                    base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPrinterCapabilities",
       base::BindRepeating(&PrintPreviewHandler::HandleGetPrinterCapabilities,
                           base::Unretained(this)));
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "showSystemDialog",
       base::BindRepeating(&PrintPreviewHandler::HandleShowSystemDialog,
                           base::Unretained(this)));
 #endif
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "signIn", base::BindRepeating(&PrintPreviewHandler::HandleSignin,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "closePrintPreviewDialog",
       base::BindRepeating(&PrintPreviewHandler::HandleClosePreviewDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "hidePreview",
       base::BindRepeating(&PrintPreviewHandler::HandleHidePreview,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cancelPendingPrintRequest",
       base::BindRepeating(&PrintPreviewHandler::HandleCancelPendingPrintRequest,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "saveAppState",
       base::BindRepeating(&PrintPreviewHandler::HandleSaveAppState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getInitialSettings",
       base::BindRepeating(&PrintPreviewHandler::HandleGetInitialSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "managePrinters",
       base::BindRepeating(&PrintPreviewHandler::HandleManagePrinters,
                           base::Unretained(this)));
@@ -622,12 +622,11 @@ std::string PrintPreviewHandler::GetCallbackId(int request_id) {
   return result;
 }
 
-void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
-  CHECK_GE(list.size(), 2u);
-  std::string callback_id = list[0].GetString();
+void PrintPreviewHandler::HandleGetPrinters(base::Value::ConstListView args) {
+  CHECK_GE(args.size(), 2u);
+  std::string callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
-  int type = list[1].GetInt();
+  int type = args[1].GetInt();
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(type);
 
   // Immediately resolve the callback without fetching printers if the printer
@@ -653,21 +652,20 @@ void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
 }
 
 void PrintPreviewHandler::HandleGetPrinterCapabilities(
-    const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
+    base::Value::ConstListView args) {
   // Validate that we have a valid callback_id
-  if (list.size() < 1 || !list[0].is_string() || list[0].GetString().empty()) {
+  if (args.size() < 1 || !args[0].is_string() || args[0].GetString().empty()) {
     RejectJavascriptCallback(base::Value(""), base::Value());
     return;
   }
   // If we got here, we know that we have at least one string element.
-  std::string callback_id = list[0].GetString();
-  if (list.size() < 3) {
+  std::string callback_id = args[0].GetString();
+  if (args.size() < 3) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
-  const std::string* printer_name = list[1].GetIfString();
-  absl::optional<int> type = list[2].GetIfInt();
+  const std::string* printer_name = args[1].GetIfString();
+  absl::optional<int> type = args[2].GetIfInt();
   if (!printer_name || printer_name->empty() || !type.has_value()) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
@@ -692,16 +690,16 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetListDeprecated().size());
+void PrintPreviewHandler::HandleGetPreview(base::Value::ConstListView args) {
+  DCHECK_EQ(2U, args.size());
   std::string callback_id;
   std::string json_str;
 
   // All of the conditions below should be guaranteed by the print preview
   // javascript.
-  callback_id = args->GetListDeprecated()[0].GetString();
+  callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
-  json_str = args->GetListDeprecated()[1].GetString();
+  json_str = args[1].GetString();
   base::Value settings = GetSettingsDictionary(json_str);
   CHECK(settings.is_dict());
   int request_id = settings.FindIntKey(kPreviewRequestID).value();
@@ -764,14 +762,14 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
   last_preview_settings_ = std::move(settings);
 }
 
-void PrintPreviewHandler::HandlePrint(const base::ListValue* args) {
+void PrintPreviewHandler::HandlePrint(base::Value::ConstListView args) {
   ReportRegeneratePreviewRequestCountBeforePrint(
       regenerate_preview_request_count_);
-  CHECK(args->GetListDeprecated()[0].is_string());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK(args[0].is_string());
+  std::string callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
-  CHECK(args->GetListDeprecated()[1].is_string());
-  std::string json_str = args->GetListDeprecated()[1].GetString();
+  CHECK(args[1].is_string());
+  std::string json_str = args[1].GetString();
 
   base::Value settings = GetSettingsDictionary(json_str);
   if (!settings.is_dict()) {
@@ -827,30 +825,31 @@ void PrintPreviewHandler::HandlePrint(const base::ListValue* args) {
                                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void PrintPreviewHandler::HandleHidePreview(const base::ListValue* /*args*/) {
+void PrintPreviewHandler::HandleHidePreview(
+    base::Value::ConstListView /*args*/) {
   print_preview_ui()->OnHidePreviewDialog();
 }
 
 void PrintPreviewHandler::HandleCancelPendingPrintRequest(
-    const base::ListValue* /*args*/) {
+    base::Value::ConstListView /*args*/) {
   WebContents* initiator = GetInitiator();
   if (initiator)
     ClearInitiatorDetails();
   ShowPrintErrorDialog();
 }
 
-void PrintPreviewHandler::HandleSaveAppState(const base::ListValue* args) {
+void PrintPreviewHandler::HandleSaveAppState(base::Value::ConstListView args) {
   std::string data_to_save;
   PrintPreviewStickySettings* sticky_settings =
       PrintPreviewStickySettings::GetInstance();
-  if (args->GetListDeprecated()[0].is_string())
-    data_to_save = args->GetListDeprecated()[0].GetString();
+  if (args[0].is_string())
+    data_to_save = args[0].GetString();
   if (!data_to_save.empty())
     sticky_settings->StoreAppState(data_to_save);
   sticky_settings->SaveInPrefs(GetPrefs());
 }
 
-void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
+void PrintPreviewHandler::HandleSignin(base::Value::ConstListView /*args*/) {
   Profile* profile = Profile::FromWebUI(web_ui());
   DCHECK(profile);
 
@@ -879,7 +878,7 @@ void PrintPreviewHandler::OnSignInTabClosed() {
 
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 void PrintPreviewHandler::HandleShowSystemDialog(
-    const base::ListValue* /*args*/) {
+    base::Value::ConstListView /*args*/) {
   ReportUserActionHistogram(
       UserActionBuckets::kFallbackToAdvancedSettingsDialog);
 
@@ -900,7 +899,7 @@ void PrintPreviewHandler::HandleShowSystemDialog(
 #endif
 
 void PrintPreviewHandler::HandleClosePreviewDialog(
-    const base::ListValue* /*args*/) {
+    base::Value::ConstListView /*args*/) {
   ReportUserActionHistogram(UserActionBuckets::kCancel);
 
   ReportRegeneratePreviewRequestCountBeforeCancel(
@@ -935,9 +934,9 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
 }
 
 void PrintPreviewHandler::HandleGetInitialSettings(
-    const base::ListValue* args) {
-  CHECK(args->GetListDeprecated()[0].is_string());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+    base::Value::ConstListView args) {
+  CHECK(args[0].is_string());
+  std::string callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();
@@ -1196,7 +1195,8 @@ void PrintPreviewHandler::OnPrintPreviewCancelled(int request_id) {
 }
 
 void PrintPreviewHandler::OnPrintRequestCancelled() {
-  HandleCancelPendingPrintRequest(nullptr);
+  base::Value empty(base::Value::Type::LIST);
+  HandleCancelPendingPrintRequest(empty.GetList());
 }
 
 void PrintPreviewHandler::ClearInitiatorDetails() {
@@ -1305,7 +1305,8 @@ void PrintPreviewHandler::SetPdfSavedClosureForTesting(
   GetPdfPrinterHandler()->SetPdfSavedClosureForTesting(std::move(closure));
 }
 
-void PrintPreviewHandler::HandleManagePrinters(const base::ListValue* args) {
+void PrintPreviewHandler::HandleManagePrinters(
+    base::Value::ConstListView args) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (!local_printer_) {
     LOG(ERROR) << "Local printer not available";
