@@ -295,6 +295,7 @@ class MockService : public TestExtensionService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : prefs_(prefs),
         pending_extension_manager_(prefs->profile()),
+        corrupted_extension_reinstaller_(prefs->profile()),
         downloader_delegate_override_(nullptr),
         test_shared_url_loader_factory_(url_loader_factory) {}
 
@@ -317,6 +318,10 @@ class MockService : public TestExtensionService {
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_.get();
+  }
+
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
+    return &corrupted_extension_reinstaller_;
   }
 
   const CoreAccountId& account_id() { return account_info_.account_id; }
@@ -365,6 +370,7 @@ class MockService : public TestExtensionService {
  protected:
   const raw_ptr<TestExtensionPrefs> prefs_;
   PendingExtensionManager pending_extension_manager_;
+  CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
 
  private:
   std::unique_ptr<ExtensionDownloader> CreateExtensionDownloader(
@@ -509,6 +515,10 @@ class ServiceForDownloadTests : public MockService {
 
   PendingExtensionManager* pending_extension_manager() override {
     return &pending_extension_manager_;
+  }
+
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
+    return &corrupted_extension_reinstaller_;
   }
 
   const std::string& extension_id() const { return extension_id_; }

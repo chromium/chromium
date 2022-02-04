@@ -48,45 +48,6 @@ void SetupPendingExtensionManagerForTest(
 // lifetime. This class should only be used from the UI thread.
 class PendingExtensionManager {
  public:
-  // The reason why we want to reinstall the extension.
-  // Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
-  // update enums.xml (name: ExtensionPolicyReinstallReason) when adding new
-  // entries.
-  enum class PolicyReinstallReason {
-    // Tried to load extension which was previously disabled because of
-    // corruption (but is a force-installed extension and therefore should be
-    // repaired).
-    // That happens when extension corruption was detected, but for some reason
-    // reinstall could not happen in the same session (no internet or session
-    // was closed right after detection), so at start of the next session we add
-    // extension to reinstall list again.
-    CORRUPTION_DETECTED_IN_PRIOR_SESSION = 0,
-
-    // Corruption detected in an extension from Chrome Web Store.
-    CORRUPTION_DETECTED_WEBSTORE = 1,
-
-    // Corruption detected in an extension outside Chrome Web Store.
-    CORRUPTION_DETECTED_NON_WEBSTORE = 2,
-
-    // Planned future option:
-    // Extension doesn't have hashes for corruption checks. This should not
-    // happen for extension from Chrome Web Store (since we can fetch hashes
-    // from server), but for extensions outside Chrome Web Store that means that
-    // we need to reinstall the extension (and compute hashes during
-    // installation).
-    // Not used currently, see https://crbug.com/958794#c22 for details.
-    // NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE = 3,
-
-    // Extension doesn't have hashes for corruption checks. Ideally this
-    // extension should be reinstalled in this case, but currently we just skip
-    // them. See https://crbug.com/958794#c22 for details.
-    NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP = 4,
-
-    // Magic constant used by the histogram macros.
-    // Always update it to the max value.
-    kMaxValue = NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP
-  };
-
   explicit PendingExtensionManager(content::BrowserContext* context);
 
   PendingExtensionManager(const PendingExtensionManager&) = delete;
@@ -117,29 +78,6 @@ class PendingExtensionManager {
   // Whether there is a high-priority pending extension (one from either policy
   // or an external component extension).
   bool HasHighPriorityPendingExtension() const;
-
-  // Records UMA metrics about policy reinstall to UMA. Temporarily exposed
-  // publicly because we now skip reinstall for non-webstore policy
-  // force-installed extensions without hashes, but are interested in number
-  // of such cases.
-  // See https://crbug.com/958794#c22 for details.
-  void RecordPolicyReinstallReason(PolicyReinstallReason reason_for_uma);
-
-  // Notifies the manager that we are reinstalling the policy force-installed
-  // extension with |id| because we detected corruption in the current copy.
-  // |reason_for_uma| indicates origin and details of the requires, and is used
-  // for statistics purposes (sent to UMA). |manifest_location_for_uma| the
-  // manifest location, and is used for statistics purposes (sent to UMA)
-  void ExpectReinstallForCorruption(
-      const ExtensionId& id,
-      absl::optional<PolicyReinstallReason> reason_for_uma,
-      mojom::ManifestLocation manifest_location_for_uma);
-
-  // Are we expecting a reinstall of the extension with |id| due to corruption?
-  bool IsReinstallForCorruptionExpected(const ExtensionId& id) const;
-
-  // Whether or not there are any corrupted extensions.
-  bool HasAnyReinstallForCorruption() const;
 
   // Adds an extension in a pending state; the extension with the
   // given info will be installed on the next auto-update cycle.
@@ -182,8 +120,7 @@ class PendingExtensionManager {
 
   // Get the list of pending IDs that should be installed from an update URL.
   // Pending extensions that will be installed from local files will not be
-  // included in the set. This includes corrupted user installed that should be
-  // repaired.
+  // included in the set.
   std::list<std::string> GetPendingIdsForUpdateCheck() const;
 
  private:
@@ -212,10 +149,6 @@ class PendingExtensionManager {
   raw_ptr<content::BrowserContext> context_;
 
   PendingExtensionList pending_extension_list_;
-
-  // A set of extension ids that are being reinstalled due to corruption, mapped
-  // to the time we detected the corruption.
-  std::map<ExtensionId, base::TimeTicks> expected_reinstalls_;
 
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            UpdatePendingExtensionAlreadyInstalled);

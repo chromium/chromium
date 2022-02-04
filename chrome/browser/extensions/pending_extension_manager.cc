@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/version.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,14 +56,6 @@ const PendingExtensionInfo* PendingExtensionManager::GetById(
 }
 
 bool PendingExtensionManager::Remove(const std::string& id) {
-  if (base::Contains(expected_reinstalls_, id)) {
-    base::TimeDelta latency = base::TimeTicks::Now() - expected_reinstalls_[id];
-    base::UmaHistogramLongTimes("Extensions.CorruptPolicyExtensionResolved",
-                             latency);
-    LOG(ERROR) << "Corrupted extension " << id << " reinstalled with latency "
-               << latency;
-    expected_reinstalls_.erase(id);
-  }
   PendingExtensionList::iterator iter;
   for (iter = pending_extension_list_.begin();
        iter != pending_extension_list_.end();
@@ -107,32 +98,6 @@ bool PendingExtensionManager::HasHighPriorityPendingExtension() const {
                                info.install_source() ==
                                    ManifestLocation::kExternalComponent;
                       }) != pending_extension_list_.end();
-}
-
-void PendingExtensionManager::RecordPolicyReinstallReason(
-    PolicyReinstallReason reason_for_uma) {
-  base::UmaHistogramEnumeration("Extensions.CorruptPolicyExtensionDetected3",
-                                reason_for_uma);
-}
-
-void PendingExtensionManager::ExpectReinstallForCorruption(
-    const ExtensionId& id,
-    absl::optional<PolicyReinstallReason> reason_for_uma,
-    mojom::ManifestLocation manifest_location_for_uma) {
-  if (base::Contains(expected_reinstalls_, id))
-    return;
-  expected_reinstalls_[id] = base::TimeTicks::Now();
-  if (reason_for_uma)
-    RecordPolicyReinstallReason(*reason_for_uma);
-}
-
-bool PendingExtensionManager::IsReinstallForCorruptionExpected(
-    const ExtensionId& id) const {
-  return base::Contains(expected_reinstalls_, id);
-}
-
-bool PendingExtensionManager::HasAnyReinstallForCorruption() const {
-  return !expected_reinstalls_.empty();
 }
 
 bool PendingExtensionManager::AddFromSync(
@@ -274,11 +239,6 @@ std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
     const {
   std::list<std::string> result;
 
-  // Add the extensions that need repairing but are not necessarily from an
-  // external loader.
-  for (const auto& iter : expected_reinstalls_)
-    result.push_back(iter.first);
-
   for (PendingExtensionList::const_iterator iter =
            pending_extension_list_.begin();
        iter != pending_extension_list_.end(); ++iter) {
@@ -293,8 +253,7 @@ std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
       continue;
     }
 
-    if (!base::Contains(expected_reinstalls_, iter->id()))
-      result.push_back(iter->id());
+    result.push_back(iter->id());
   }
 
   return result;

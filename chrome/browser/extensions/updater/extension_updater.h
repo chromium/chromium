@@ -211,7 +211,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // Add fetch records for extensions that are installed to the downloader,
   // ignoring |pending_ids| so the extension isn't fetched again.
   void AddToDownloader(const ExtensionSet* extensions,
-                       const std::list<ExtensionId>& pending_ids,
+                       const std::set<ExtensionId>& pending_ids,
                        int request_id,
                        ManifestFetchData::FetchPriority fetch_priority,
                        ExtensionUpdateCheckParams* update_check_params);

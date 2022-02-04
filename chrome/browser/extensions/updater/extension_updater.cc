@@ -298,7 +298,7 @@ void ExtensionUpdater::DoCheckSoon() {
 
 void ExtensionUpdater::AddToDownloader(
     const ExtensionSet* extensions,
-    const std::list<ExtensionId>& pending_ids,
+    const std::set<ExtensionId>& pending_ids,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority,
     ExtensionUpdateCheckParams* update_check_params) {
@@ -401,20 +401,35 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   // and external install sources.
   const PendingExtensionManager* pending_extension_manager =
       service_->pending_extension_manager();
+  const CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
+      service_->corrupted_extension_reinstaller();
 
   ExtensionUpdateCheckParams update_check_params;
 
   if (params.ids.empty()) {
-    std::list<ExtensionId> pending_ids =
-        pending_extension_manager->GetPendingIdsForUpdateCheck();
-    // If no extension ids are specified, check for updates for all extensions.
+    // If no extension ids are specified, then:
+    //   * install all pending extensions from the pending extension manager,
+    //   * reinstall corrupted extension to repair them,
+    //   * check for updates for all installed extensions.
+
+    // Use a set so extension IDs will be deduplicated automatically.
+    std::set<ExtensionId> pending_ids;
+    for (const ExtensionId& id :
+         pending_extension_manager->GetPendingIdsForUpdateCheck()) {
+      pending_ids.insert(id);
+    }
+    // Include corrupted extensions that should be repaired.
+    for (const auto& it :
+         corrupted_extension_reinstaller->GetExpectedReinstalls()) {
+      pending_ids.insert(it.first);
+    }
 
     for (const ExtensionId& pending_id : pending_ids) {
       const PendingExtensionInfo* info =
           pending_extension_manager->GetById(pending_id);
 
       const bool is_corrupt_reinstall =
-          pending_extension_manager->IsReinstallForCorruptionExpected(
+          corrupted_extension_reinstaller->IsReinstallForCorruptionExpected(
               pending_id);
 
       // Extensions from the webstore that are corrupted do not have

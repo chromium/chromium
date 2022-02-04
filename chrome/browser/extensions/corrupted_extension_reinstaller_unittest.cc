@@ -60,14 +60,16 @@ using CorruptedExtensionReinstallerUnittest = ExtensionServiceTestBase;
 
 // Tests that a single extension corruption will keep retrying reinstallation.
 TEST_F(CorruptedExtensionReinstallerUnittest, Retry) {
+  // Reinstaller depends on the extension service.
   InitializeEmptyExtensionService();
-  service()->pending_extension_manager()->ExpectReinstallForCorruption(
+
+  CorruptedExtensionReinstaller reinstaller(profile());
+  reinstaller.ExpectReinstallForCorruption(
       kDummyExtensionId,
-      PendingExtensionManager::PolicyReinstallReason::
+      CorruptedExtensionReinstaller::PolicyReinstallReason::
           CORRUPTION_DETECTED_WEBSTORE,
       mojom::ManifestLocation::kInternal);
 
-  CorruptedExtensionReinstaller reinstaller(profile_.get());
   TestReinstallerTracker tracker;
 
   reinstaller.NotifyExtensionDisabledDueToCorruption();
@@ -82,14 +84,16 @@ TEST_F(CorruptedExtensionReinstallerUnittest, Retry) {
 // CheckForExternalUpdates() when one is already in-flight through PostTask.
 TEST_F(CorruptedExtensionReinstallerUnittest,
        DoNotScheduleWhenAlreadyInflight) {
+  // Reinstaller depends on the extension service.
   InitializeEmptyExtensionService();
-  service()->pending_extension_manager()->ExpectReinstallForCorruption(
+
+  CorruptedExtensionReinstaller reinstaller(profile_.get());
+  reinstaller.ExpectReinstallForCorruption(
       kDummyExtensionId,
-      PendingExtensionManager::PolicyReinstallReason::
+      CorruptedExtensionReinstaller::PolicyReinstallReason::
           CORRUPTION_DETECTED_WEBSTORE,
       mojom::ManifestLocation::kInternal);
 
-  CorruptedExtensionReinstaller reinstaller(profile_.get());
   TestReinstallerTracker tracker;
 
   reinstaller.NotifyExtensionDisabledDueToCorruption();

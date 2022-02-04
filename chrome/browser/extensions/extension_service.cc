@@ -230,7 +230,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
     ManifestLocation current = extension->location();
-    if (!pending_extension_manager_.IsReinstallForCorruptionExpected(
+    if (!corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
             info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
                        current, info.download_location)) {
@@ -283,7 +283,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
       // set of extensions. If the extension is corrupted, it should be
       // reinstalled, thus it should be added to the pending extensions for
       // installation.
-      if (!pending_extension_manager_.IsReinstallForCorruptionExpected(
+      if (!corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
               info.extension_id)) {
         return false;
       }
@@ -524,7 +524,7 @@ void ExtensionService::Init() {
   // Check for updates especially for corrupted user installed extension from
   // the webstore. This will do nothing if an extension update check was
   // triggered before and is still running.
-  if (pending_extension_manager_.HasAnyReinstallForCorruption())
+  if (corrupted_extension_reinstaller()->HasAnyReinstallForCorruption())
     CheckForUpdatesSoon();
 }
 
@@ -1614,6 +1614,13 @@ void ExtensionService::OnExtensionInstalled(
   std::string install_parameter;
   const PendingExtensionInfo* pending_extension_info =
       pending_extension_manager()->GetById(id);
+  bool is_reinstall_for_corruption =
+      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+          extension->id());
+
+  if (is_reinstall_for_corruption)
+    corrupted_extension_reinstaller()->MarkResolved(id);
+
   if (pending_extension_info) {
     if (!pending_extension_info->ShouldAllowInstall(extension, profile())) {
       // Hack for crbug.com/558299, see comment on DeleteThemeDoNotUse.
@@ -1642,10 +1649,7 @@ void ExtensionService::OnExtensionInstalled(
 
     install_parameter = pending_extension_info->install_parameter();
     pending_extension_manager()->Remove(id);
-  } else if (pending_extension_manager()->IsReinstallForCorruptionExpected(
-                 extension->id())) {
-    pending_extension_manager()->Remove(id);
-  } else {
+  } else if (!is_reinstall_for_corruption) {
     // We explicitly want to re-enable an uninstalled external
     // extension; if we're here, that means the user is manually
     // installing the extension.
