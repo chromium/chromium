@@ -18,11 +18,6 @@ namespace chromeos {
 namespace network_handler {
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDBusFailedError[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDBusFailedErrorMessage[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kErrorName[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kErrorDetail[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDbusErrorName[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDbusErrorMessage[];
 
 // On success, |result| contains the result. On failure, |result| is nullopt.
 using ResultCallback =
@@ -39,35 +34,17 @@ using PropertiesCallback =
 
 // An error callback used by both the configuration handler and the state
 // handler to receive error results from the API.
-using ErrorCallback =
-    base::OnceCallback<void(const std::string& error_name,
-                            std::unique_ptr<base::DictionaryValue> error_data)>;
+using ErrorCallback = base::OnceCallback<void(const std::string& error_name)>;
 
 using ServiceResultCallback =
     base::OnceCallback<void(const std::string& service_path,
                             const std::string& guid)>;
 
-// Create a DictionaryValue for passing to ErrorCallback.
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::DictionaryValue* CreateErrorData(const std::string& path,
-                                       const std::string& error_name,
-                                       const std::string& error_detail);
-
 // If not NULL, runs |error_callback| with an ErrorData dictionary created from
 // the other arguments.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void RunErrorCallback(ErrorCallback error_callback,
-                      const std::string& path,
-                      const std::string& error_name,
-                      const std::string& error_detail);
-
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::DictionaryValue> CreateDBusErrorData(
-    const std::string& path,
-    const std::string& error_name,
-    const std::string& error_detail,
-    const std::string& dbus_error_name,
-    const std::string& dbus_error_message);
+                      const std::string& error_name);
 
 // Callback for Shill errors.
 // |error_name| is the error name passed to |error_callback|.

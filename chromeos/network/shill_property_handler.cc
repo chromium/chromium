@@ -162,10 +162,10 @@ void ShillPropertyHandler::SetTechnologyEnabled(
   if (enabled) {
     if (prohibited_technologies_.find(technology) !=
         prohibited_technologies_.end()) {
-      chromeos::network_handler::RunErrorCallback(
-          std::move(error_callback), "", "prohibited_technologies",
-          "Ignored: Attempt to enable prohibited network technology " +
-              technology);
+      NET_LOG(ERROR) << "Attempt to enable prohibited network technology: "
+                     << technology;
+      chromeos::network_handler::RunErrorCallback(std::move(error_callback),
+                                                  "prohibited_technologies");
       NetworkMetricsHelper::LogEnableTechnologyResult(technology,
                                                       /*success=*/false);
       return;

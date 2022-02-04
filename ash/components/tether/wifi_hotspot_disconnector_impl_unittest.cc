@@ -181,8 +181,7 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
       network_handler::RunErrorCallback(
           std::move(test_network_connection_handler_
                         ->last_disconnect_error_callback()),
-          wifi_service_path_, NetworkConnectionHandler::kErrorDisconnectFailed,
-          std::string() /* error_detail */);
+          NetworkConnectionHandler::kErrorDisconnectFailed);
     }
 
     // Now that the callbacks have been invoked, both the network

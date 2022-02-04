@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -59,23 +58,11 @@ void CopyServiceResult(bool* called,
   *guid_out = guid;
 }
 
-std::string PrettyJson(const base::DictionaryValue& value) {
-  std::string pretty;
-  base::JSONWriter::WriteWithOptions(
-      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &pretty);
-  return pretty;
+void ErrorCallback(const std::string& error_name) {
+  ADD_FAILURE() << "Unexpected error: " << error_name;
 }
 
-void ErrorCallback(const std::string& error_name,
-                   std::unique_ptr<base::DictionaryValue> error_data) {
-  ADD_FAILURE() << "Unexpected error: " << error_name
-                << " with associated data: \n"
-                << PrettyJson(*error_data);
-}
-
-void RecordError(std::string* error_name_ptr,
-                 const std::string& error_name,
-                 std::unique_ptr<base::DictionaryValue> error_data) {
+void RecordError(std::string* error_name_ptr, const std::string& error_name) {
   *error_name_ptr = error_name;
 }
 

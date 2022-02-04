@@ -93,8 +93,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
                           base::Unretained(this));
   }
 
-  void ErrorCallback(const std::string& error_name,
-                     std::unique_ptr<base::DictionaryValue> error_data) {
+  void ErrorCallback(const std::string& error_name) {
     VLOG(1) << "ErrorCallback: " << error_name;
     result_ = error_name;
   }

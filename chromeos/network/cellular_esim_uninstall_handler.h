@@ -11,7 +11,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -158,8 +157,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
 
   void AttemptNetworkDisconnect(const NetworkState* network);
   void OnDisconnectSuccess();
-  void OnDisconnectFailure(const std::string& error_name,
-                           std::unique_ptr<base::DictionaryValue> error_data);
+  void OnDisconnectFailure(const std::string& error_name);
 
   void AttemptShillInhibit();
   void OnShillInhibit(
@@ -177,9 +175,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
 
   void AttemptRemoveShillService();
   void OnRemoveServiceSuccess();
-  void OnRemoveServiceFailure(
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnRemoveServiceFailure(const std::string& error_name);
   void OnNetworkListWaitTimeout();
 
   absl::optional<dbus::ObjectPath> GetEnabledCellularESimProfilePath();

@@ -153,8 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
 
   // Sets the owner metadata when there is an active user, otherwise a no-op.
   void SetIsCreatedByUser(const std::string& network_guid);
-  void OnDisableHiddenError(const std::string& error_name,
-                            std::unique_ptr<base::DictionaryValue> error_data);
+  void OnDisableHiddenError(const std::string& error_name);
 
   base::ObserverList<NetworkMetadataObserver> observers_;
   NetworkConfigurationHandler* network_configuration_handler_;

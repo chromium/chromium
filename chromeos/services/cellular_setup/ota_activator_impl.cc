@@ -379,15 +379,12 @@ void OtaActivatorImpl::AttemptToCompleteActivation() {
 }
 
 void OtaActivatorImpl::OnCompleteActivationError(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   NET_LOG(ERROR) << "CompleteActivation() failed. Error name: " << error_name;
   FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);
 }
 
-void OtaActivatorImpl::OnNetworkConnectionError(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void OtaActivatorImpl::OnNetworkConnectionError(const std::string& error_name) {
   if (connect_retry_attempts_ >= kMaxConnectRetryAttempt) {
     NET_LOG(ERROR) << "Reached max connection retry attempts.";
     FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -38,18 +37,8 @@ const char kVpnHistogramConfigurationSourceThirdParty[] =
 const char kVpnHistogramConfigurationSourceWireGuard[] =
     "Network.Ash.VPN.WireGuard.ConfigurationSource";
 
-std::string PrettyJson(const base::DictionaryValue& value) {
-  std::string pretty;
-  base::JSONWriter::WriteWithOptions(
-      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &pretty);
-  return pretty;
-}
-
-void ErrorCallback(const std::string& error_name,
-                   std::unique_ptr<base::DictionaryValue> error_data) {
-  ADD_FAILURE() << "Unexpected error: " << error_name
-                << " with associated data: \n"
-                << PrettyJson(*error_data);
+void ErrorCallback(const std::string& error_name) {
+  ADD_FAILURE() << "Unexpected error: " << error_name;
 }
 
 }  // namespace

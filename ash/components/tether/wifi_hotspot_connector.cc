@@ -106,9 +106,7 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
   }
 }
 
-void WifiHotspotConnector::OnEnableWifiError(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void WifiHotspotConnector::OnEnableWifiError(const std::string& error_name) {
   is_waiting_for_wifi_to_enable_ = false;
   PA_LOG(ERROR) << "Failed to enable Wi-Fi: " << error_name;
 }

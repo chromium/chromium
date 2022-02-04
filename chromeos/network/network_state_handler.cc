@@ -323,9 +323,8 @@ void NetworkStateHandler::SetTechnologyEnabled(
                        << "DeviceState, but the current state was: "
                        << tether_technology_state_;
         network_handler::RunErrorCallback(
-            std::move(error_callback), kTetherDevicePath,
-            NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable,
-            "");
+            std::move(error_callback),
+            NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable);
         continue;
       }
 

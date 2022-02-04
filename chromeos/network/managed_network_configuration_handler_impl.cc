@@ -77,17 +77,14 @@ std::string ToDebugString(::onc::ONCSource source,
 void InvokeErrorCallback(const std::string& service_path,
                          network_handler::ErrorCallback error_callback,
                          const std::string& error_name) {
-  std::string error_msg = "ManagedConfig Error: " + error_name;
-  NET_LOG(ERROR) << error_msg << " For: " << NetworkPathId(service_path);
-  network_handler::RunErrorCallback(std::move(error_callback), service_path,
-                                    error_name, error_msg);
+  NET_LOG(ERROR) << "ManagedConfig Error: " << error_name
+                 << " For: " << NetworkPathId(service_path);
+  network_handler::RunErrorCallback(std::move(error_callback), error_name);
 }
 
-void LogErrorWithDictAndCallCallback(
-    base::OnceClosure callback,
-    const base::Location& from_where,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void LogErrorWithDictAndCallCallback(base::OnceClosure callback,
+                                     const base::Location& from_where,
+                                     const std::string& error_name) {
   device_event_log::AddEntry(from_where.file_name(), from_where.line_number(),
                              device_event_log::LOG_TYPE_NETWORK,
                              device_event_log::LOG_LEVEL_ERROR, error_name);

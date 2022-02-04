@@ -29,8 +29,7 @@ namespace chromeos {
 
 namespace {
 
-void IgnoreDisconnectError(const std::string& error_name,
-                           std::unique_ptr<base::DictionaryValue> error_data) {}
+void IgnoreDisconnectError(const std::string& error_name) {}
 
 const NetworkState* GetNetworkStateFromId(const std::string& network_id) {
   // Note: network_id === NetworkState::guid.
@@ -79,14 +78,12 @@ class NetworkConnectImpl : public NetworkConnect {
   void ActivateCellular(const std::string& network_id);
   void HandleUnconfiguredNetwork(const std::string& network_id);
   void OnConnectFailed(const std::string& network_id,
-                       const std::string& error_name,
-                       std::unique_ptr<base::DictionaryValue> error_data);
+                       const std::string& error_name);
   bool GetNetworkProfilePath(bool shared, std::string* profile_path);
   void OnConnectSucceeded(const std::string& network_id);
   void CallConnectToNetwork(const std::string& network_id,
                             bool check_error_state);
-  void OnConfigureFailed(const std::string& error_name,
-                         std::unique_ptr<base::DictionaryValue> error_data);
+  void OnConfigureFailed(const std::string& error_name);
   void OnConfigureSucceeded(bool connect_on_configure,
                             const std::string& service_path,
                             const std::string& network_id);
@@ -95,8 +92,7 @@ class NetworkConnectImpl : public NetworkConnect {
                                bool connect_on_configure);
   void SetPropertiesFailed(const std::string& desc,
                            const std::string& network_id,
-                           const std::string& config_error_name,
-                           std::unique_ptr<base::DictionaryValue> error_data);
+                           const std::string& config_error_name);
   void SetPropertiesToClear(base::DictionaryValue* properties_to_set,
                             std::vector<std::string>* properties_to_clear);
   void ClearPropertiesAndConnect(
@@ -194,10 +190,8 @@ bool NetworkConnectImpl::GetNetworkProfilePath(bool shared,
   return true;
 }
 
-void NetworkConnectImpl::OnConnectFailed(
-    const std::string& network_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void NetworkConnectImpl::OnConnectFailed(const std::string& network_id,
+                                         const std::string& error_name) {
   NET_LOG(ERROR) << "Connect Failed: " << error_name
                  << " For: " << NetworkGuidId(network_id);
   if (error_name == NetworkConnectionHandler::kErrorConnectFailed ||
@@ -228,8 +222,7 @@ void NetworkConnectImpl::CallConnectToNetwork(const std::string& network_id,
                                               bool check_error_state) {
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
-    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound,
-                    nullptr);
+    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound);
     return;
   }
 
@@ -242,9 +235,7 @@ void NetworkConnectImpl::CallConnectToNetwork(const std::string& network_id,
       check_error_state, ConnectCallbackMode::ON_COMPLETED);
 }
 
-void NetworkConnectImpl::OnConfigureFailed(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void NetworkConnectImpl::OnConfigureFailed(const std::string& error_name) {
   NET_LOG(ERROR) << "Unable to configure network";
   delegate_->ShowNetworkConnectError(
       NetworkConnectionHandler::kErrorConfigureFailed, "");
@@ -285,8 +276,7 @@ void NetworkConnectImpl::CallCreateConfiguration(
 void NetworkConnectImpl::SetPropertiesFailed(
     const std::string& desc,
     const std::string& network_id,
-    const std::string& config_error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& config_error_name) {
   NET_LOG(ERROR) << desc << ": Failed: " << config_error_name
                  << "For: " << NetworkGuidId(network_id);
   delegate_->ShowNetworkConnectError(
@@ -317,7 +307,7 @@ void NetworkConnectImpl::ClearPropertiesAndConnect(
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
     SetPropertiesFailed("ClearProperties", network_id,
-                        NetworkConnectionHandler::kErrorNotFound, nullptr);
+                        NetworkConnectionHandler::kErrorNotFound);
     return;
   }
   // After configuring a network, ignore any (possibly stale) error state.
@@ -339,7 +329,7 @@ void NetworkConnectImpl::ConfigureSetProfileSucceeded(
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
     SetPropertiesFailed("SetProperties", network_id,
-                        NetworkConnectionHandler::kErrorNotFound, nullptr);
+                        NetworkConnectionHandler::kErrorNotFound);
     return;
   }
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
@@ -357,8 +347,7 @@ void NetworkConnectImpl::ConnectToNetworkId(const std::string& network_id) {
   NET_LOG(USER) << "ConnectToNetwork: " << NetworkGuidId(network_id);
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
-    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound,
-                    nullptr);
+    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound);
     return;
   }
   if (PreviousConnectAttemptHadError(network)) {

@@ -4,8 +4,6 @@
 
 #include "chromeos/network/auto_connect_handler.h"
 
-#include <sstream>
-
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -47,61 +45,28 @@ void RecordDisconnectByPolicyResult(const NetworkState* network, bool success) {
   }
 }
 
-void DisconnectErrorCallback(
-    const NetworkState* network,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void DisconnectErrorCallback(const NetworkState* network,
+                             const std::string& error_name) {
   RecordDisconnectByPolicyResult(network, /*success=*/false);
-
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
 
   NET_LOG(ERROR) << "AutoConnectHandler.Disconnect failed for: "
                  << NetworkPathId(network->path())
-                 << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << " Error name: " << error_name;
 }
 
-void RemoveNetworkConfigurationErrorCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
+void RemoveNetworkConfigurationErrorCallback(const std::string& error_name) {
   NET_LOG(ERROR) << "AutoConnectHandler RemoveNetworkConfiguration failed."
-                 << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << " Error name: " << error_name;
 }
 
-void ConnectToNetworkErrorCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
+void ConnectToNetworkErrorCallback(const std::string& error_name) {
   NET_LOG(ERROR) << "AutoConnectHandler ConnectToNetwork failed."
-                 << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << " Error name: " << error_name;
 }
 
-void SetPropertiesErrorCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
+void SetPropertiesErrorCallback(const std::string& error_name) {
   NET_LOG(ERROR) << "AutoConnectHandler SetProperties failed."
-                 << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << " Error name: " << error_name;
 }
 
 std::string AutoConnectReasonsToString(int auto_connect_reasons) {

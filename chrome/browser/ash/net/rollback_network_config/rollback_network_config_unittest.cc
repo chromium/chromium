@@ -151,8 +151,7 @@ TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   return local_state;
 }
 
-void PrintErrorAndFail(const std::string& error_name,
-                       std::unique_ptr<base::DictionaryValue>) {
+void PrintErrorAndFail(const std::string& error_name) {
   LOG(ERROR) << error_name;
   FAIL();
 }
@@ -194,7 +193,7 @@ bool NetworkExists(const std::string& guid) {
 void SetUpDeviceWideNetworkConfig(const base::Value& config) {
   base::RunLoop run_loop;
   managed_network_configuration_handler()->CreateConfiguration(
-      kDeviceUserHash, base::Value::AsDictionaryValue(config),
+      kDeviceUserHash, config,
       base::BindLambdaForTesting(
           [&](const std::string& service_path, const std::string& guid) {
             run_loop.Quit();
@@ -210,7 +209,7 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
   const chromeos::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), base::Value::AsDictionaryValue(config),
+      network_state->path(), config,
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }),
       base::BindOnce(&PrintErrorAndFail));
   run_loop.Run();

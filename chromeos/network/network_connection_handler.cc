@@ -112,8 +112,7 @@ void NetworkConnectionHandler::InvokeConnectErrorCallback(
     const std::string& error_name) {
   NET_LOG(ERROR) << "Connect Failure: " << error_name << " for "
                  << NetworkPathId(service_path);
-  network_handler::RunErrorCallback(std::move(error_callback), service_path,
-                                    error_name, "");
+  network_handler::RunErrorCallback(std::move(error_callback), error_name);
   for (auto& observer : observers_)
     observer.ConnectFailed(service_path, error_name);
 }

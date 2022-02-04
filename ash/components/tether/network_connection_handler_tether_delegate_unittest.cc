@@ -138,10 +138,7 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
 
   void OnSuccess() { result_ = kSuccessResult; }
 
-  void OnError(const std::string& error,
-               std::unique_ptr<base::DictionaryValue> error_data) {
-    result_ = error;
-  }
+  void OnError(const std::string& error) { result_ = error; }
 
   std::string GetResultAndReset() {
     std::string result;

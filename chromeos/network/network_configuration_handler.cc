@@ -45,10 +45,9 @@ std::string StripQuotations(const std::string& in_str) {
 void InvokeErrorCallback(const std::string& service_path,
                          network_handler::ErrorCallback error_callback,
                          const std::string& error_name) {
-  std::string error_msg = "Config Error: " + error_name;
-  NET_LOG(ERROR) << error_msg << " For: " << NetworkPathId(service_path);
-  network_handler::RunErrorCallback(std::move(error_callback), service_path,
-                                    error_name, error_msg);
+  NET_LOG(ERROR) << "Config Error: " << error_name
+                 << " For: " << NetworkPathId(service_path);
+  network_handler::RunErrorCallback(std::move(error_callback), error_name);
 }
 
 void SetNetworkProfileErrorCallback(

@@ -285,10 +285,8 @@ void CellularInhibitor::OnSetPropertySuccess() {
   CheckInhibitPropertyIfNeeded();
 }
 
-void CellularInhibitor::OnSetPropertyError(
-    bool attempted_inhibit,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void CellularInhibitor::OnSetPropertyError(bool attempted_inhibit,
+                                           const std::string& error_name) {
   NET_LOG(ERROR) << (attempted_inhibit ? "Inhibit" : "Uninhibit")
                  << "CellularScanning() failed: " << error_name;
   ReturnSetInhibitPropertyResult(/*success=*/false,

@@ -101,7 +101,7 @@ class EuiccTest : public ESimTestBase {
         network_connection_handler()
             ->connect_calls()
             .back()
-            .InvokeErrorCallback("fake_error_name", /*error_data=*/nullptr);
+            .InvokeErrorCallback("fake_error_name");
       } else {
         network_connection_handler()
             ->connect_calls()

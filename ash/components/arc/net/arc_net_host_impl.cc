@@ -429,8 +429,7 @@ void ForgetNetworkSuccessCallback(
 
 void ForgetNetworkFailureCallback(
     base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
 }
 
@@ -441,8 +440,7 @@ void StartConnectSuccessCallback(
 
 void StartConnectFailureCallback(
     base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
 }
 
@@ -453,16 +451,14 @@ void StartDisconnectSuccessCallback(
 
 void StartDisconnectFailureCallback(
     base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
 }
 
 void ArcVpnSuccessCallback() {}
 
 void ArcVpnErrorCallback(const std::string& operation,
-                         const std::string& error_name,
-                         std::unique_ptr<base::DictionaryValue> error_data) {
+                         const std::string& error_name) {
   NET_LOG(ERROR) << "ArcVpnErrorCallback: " << operation << ": " << error_name;
 }
 
@@ -619,8 +615,7 @@ void ArcNetHostImpl::CreateNetworkSuccessCallback(
 
 void ArcNetHostImpl::CreateNetworkFailureCallback(
     base::OnceCallback<void(const std::string&)> callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   NET_LOG(ERROR) << "CreateNetworkFailureCallback: " << error_name;
   std::move(callback).Run(std::string());
 }

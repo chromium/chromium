@@ -53,8 +53,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
                                     const std::string& tether_network_guid,
                                     WifiConnectionCallback callback);
 
-  void OnEnableWifiError(const std::string& error_name,
-                         std::unique_ptr<base::DictionaryValue> error_data);
+  void OnEnableWifiError(const std::string& error_name);
 
   // NetworkStateHandlerObserver:
   void DeviceListChanged() override;

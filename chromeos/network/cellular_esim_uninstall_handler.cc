@@ -195,8 +195,7 @@ void CellularESimUninstallHandler::OnDisconnectSuccess() {
 }
 
 void CellularESimUninstallHandler::OnDisconnectFailure(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   DCHECK_EQ(state_, UninstallState::kDisconnectingNetwork);
 
   NET_LOG(ERROR) << "Failed disconnecting network for request "
@@ -393,8 +392,7 @@ void CellularESimUninstallHandler::OnRemoveServiceSuccess() {
 }
 
 void CellularESimUninstallHandler::OnRemoveServiceFailure(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   DCHECK_EQ(state_, UninstallState::kRemovingShillService);
   NET_LOG(ERROR) << "Error removing service for request "
                  << *uninstall_requests_.front() << ". Error: " << error_name;

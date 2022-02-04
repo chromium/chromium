@@ -171,20 +171,16 @@ class VpnService : public KeyedService,
                                     const std::string& guid);
 
   // Callback used to indicate that configuration creation failed.
-  void OnCreateConfigurationFailure(
-      FailureCallback callback,
-      VpnConfiguration* configuration,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnCreateConfigurationFailure(FailureCallback callback,
+                                    VpnConfiguration* configuration,
+                                    const std::string& error_name);
 
   // Callback used to indicate that removing a configuration succeeded.
   void OnRemoveConfigurationSuccess(SuccessCallback callback);
 
   // Callback used to indicate that removing a configuration failed.
-  void OnRemoveConfigurationFailure(
-      FailureCallback callback,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnRemoveConfigurationFailure(FailureCallback callback,
+                                    const std::string& error_name);
 
   void OnGetShillProperties(const std::string& service_path,
                             absl::optional<base::Value> dictionary);

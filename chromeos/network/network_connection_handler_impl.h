@@ -119,10 +119,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   void CallShillConnect(const std::string& service_path);
 
   // Handles failure from ConfigurationHandler calls.
-  void HandleConfigurationFailure(
-      const std::string& service_path,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void HandleConfigurationFailure(const std::string& service_path,
+                                  const std::string& error_name);
 
   // Handles success or failure from Shill.Service.Connect.
   void HandleShillConnectSuccess(const std::string& service_path);

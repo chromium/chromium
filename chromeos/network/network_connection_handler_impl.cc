@@ -458,8 +458,8 @@ void NetworkConnectionHandlerImpl::DisconnectNetwork(
   if (!network) {
     NET_LOG(ERROR) << "Disconnect Error: Not Found: "
                    << NetworkPathId(service_path);
-    network_handler::RunErrorCallback(std::move(error_callback), service_path,
-                                      kErrorNotFound, "");
+    network_handler::RunErrorCallback(std::move(error_callback),
+                                      kErrorNotFound);
     return;
   }
   const std::string connection_state = network->connection_state();
@@ -467,8 +467,8 @@ void NetworkConnectionHandlerImpl::DisconnectNetwork(
       !NetworkState::StateIsConnecting(connection_state) &&
       !GetPendingRequest(service_path)) {
     NET_LOG(ERROR) << "Disconnect Error: Not Connected: " << NetworkId(network);
-    network_handler::RunErrorCallback(std::move(error_callback), service_path,
-                                      kErrorNotConnected, "");
+    network_handler::RunErrorCallback(std::move(error_callback),
+                                      kErrorNotConnected);
     return;
   }
   if (NetworkTypePattern::Tether().MatchesType(network->type())) {
@@ -603,8 +603,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     const std::string& service_path,
     absl::optional<base::Value> properties) {
   if (!properties) {
-    HandleConfigurationFailure(service_path, "GetShillProperties failed",
-                               nullptr);
+    HandleConfigurationFailure(service_path, "GetShillProperties failed");
     return;
   }
   NET_LOG(EVENT) << "VerifyConfiguredAndConnect: "
@@ -623,8 +622,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   const std::string* type = properties->FindStringKey(shill::kTypeProperty);
   if (!type) {
-    HandleConfigurationFailure(service_path, "Properties with no type",
-                               nullptr);
+    HandleConfigurationFailure(service_path, "Properties with no type");
     return;
   }
   bool connectable =
@@ -902,8 +900,7 @@ void NetworkConnectionHandlerImpl::CallShillConnect(
 
 void NetworkConnectionHandlerImpl::HandleConfigurationFailure(
     const std::string& service_path,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   NET_LOG(ERROR) << "Connect configuration failure: " << error_name
                  << " for: " << NetworkPathId(service_path);
   ConnectRequest* request = GetPendingRequest(service_path);

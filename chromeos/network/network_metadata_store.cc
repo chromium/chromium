@@ -222,9 +222,7 @@ bool NetworkMetadataStore::HasFixedHiddenNetworks() {
   return profile_pref_service_->GetBoolean(kHasFixedHiddenNetworks);
 }
 
-void NetworkMetadataStore::OnDisableHiddenError(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void NetworkMetadataStore::OnDisableHiddenError(const std::string& error_name) {
   NET_LOG(EVENT) << "Failed to disable HiddenSSID on synced network. Error: "
                  << error_name;
 }

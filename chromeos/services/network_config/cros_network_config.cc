@@ -2503,11 +2503,9 @@ void CrosNetworkConfig::SetPropertiesConfigureSuccess(
   set_properties_callbacks_.erase(iter);
 }
 
-void CrosNetworkConfig::SetPropertiesFailure(
-    const std::string& guid,
-    int callback_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void CrosNetworkConfig::SetPropertiesFailure(const std::string& guid,
+                                             int callback_id,
+                                             const std::string& error_name) {
   auto iter = set_properties_callbacks_.find(callback_id);
   DCHECK(iter != set_properties_callbacks_.end());
   NET_LOG(ERROR) << "Failed to set network properties: " << guid
@@ -2564,10 +2562,8 @@ void CrosNetworkConfig::ConfigureNetworkSuccess(int callback_id,
   configure_network_callbacks_.erase(iter);
 }
 
-void CrosNetworkConfig::ConfigureNetworkFailure(
-    int callback_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void CrosNetworkConfig::ConfigureNetworkFailure(int callback_id,
+                                                const std::string& error_name) {
   auto iter = configure_network_callbacks_.find(callback_id);
   DCHECK(iter != configure_network_callbacks_.end());
   DCHECK(iter->second);
@@ -2633,11 +2629,9 @@ void CrosNetworkConfig::ForgetNetworkSuccess(int callback_id) {
   forget_network_callbacks_.erase(iter);
 }
 
-void CrosNetworkConfig::ForgetNetworkFailure(
-    const std::string& guid,
-    int callback_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void CrosNetworkConfig::ForgetNetworkFailure(const std::string& guid,
+                                             int callback_id,
+                                             const std::string& error_name) {
   auto iter = forget_network_callbacks_.find(callback_id);
   DCHECK(iter != forget_network_callbacks_.end());
   NET_LOG(ERROR) << "Failed to forget network: " << guid
@@ -2752,8 +2746,7 @@ void CrosNetworkConfig::SetCellularSimStateSuccess(int callback_id) {
 
 void CrosNetworkConfig::SetCellularSimStateFailure(
     int callback_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   auto iter = set_cellular_sim_state_callbacks_.find(callback_id);
   DCHECK(iter != set_cellular_sim_state_callbacks_.end());
   std::move(iter->second).Run(false);
@@ -2796,8 +2789,7 @@ void CrosNetworkConfig::SelectCellularMobileNetworkSuccess(int callback_id) {
 
 void CrosNetworkConfig::SelectCellularMobileNetworkFailure(
     int callback_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   auto iter = select_cellular_mobile_network_callbacks_.find(callback_id);
   DCHECK(iter != select_cellular_mobile_network_callbacks_.end());
   std::move(iter->second).Run(false);
@@ -2944,10 +2936,8 @@ void CrosNetworkConfig::StartConnectSuccess(int callback_id) {
   start_connect_callbacks_.erase(iter);
 }
 
-void CrosNetworkConfig::StartConnectFailure(
-    int callback_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void CrosNetworkConfig::StartConnectFailure(int callback_id,
+                                            const std::string& error_name) {
   auto iter = start_connect_callbacks_.find(callback_id);
   DCHECK(iter != start_connect_callbacks_.end());
   mojom::StartConnectResult result;
@@ -3004,10 +2994,8 @@ void CrosNetworkConfig::StartDisconnectSuccess(int callback_id) {
   start_disconnect_callbacks_.erase(iter);
 }
 
-void CrosNetworkConfig::StartDisconnectFailure(
-    int callback_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void CrosNetworkConfig::StartDisconnectFailure(int callback_id,
+                                               const std::string& error_name) {
   auto iter = start_disconnect_callbacks_.find(callback_id);
   DCHECK(iter != start_disconnect_callbacks_.end());
   std::move(iter->second).Run(false);

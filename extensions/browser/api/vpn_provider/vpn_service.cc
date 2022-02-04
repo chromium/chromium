@@ -561,8 +561,7 @@ void VpnService::OnCreateConfigurationSuccess(
 void VpnService::OnCreateConfigurationFailure(
     VpnService::FailureCallback callback,
     VpnConfiguration* configuration,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   DestroyConfigurationInternal(configuration);
   std::move(callback).Run(error_name, std::string());
 }
@@ -574,8 +573,7 @@ void VpnService::OnRemoveConfigurationSuccess(
 
 void VpnService::OnRemoveConfigurationFailure(
     VpnService::FailureCallback callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   std::move(callback).Run(error_name, std::string());
 }
 

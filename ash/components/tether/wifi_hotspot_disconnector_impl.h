@@ -49,12 +49,10 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
                                   const std::string& wifi_network_path,
                                   base::OnceClosure success_callback,
                                   StringErrorCallback error_callback);
-  void OnFailedWifiDisconnect(
-      const std::string& wifi_network_guid,
-      const std::string& wifi_network_path,
-      StringErrorCallback error_callback,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnFailedWifiDisconnect(const std::string& wifi_network_guid,
+                              const std::string& wifi_network_path,
+                              StringErrorCallback error_callback,
+                              const std::string& error_name);
   void CleanUpAfterWifiDisconnection(const std::string& wifi_network_path,
                                      base::OnceClosure success_callback,
                                      StringErrorCallback error_callback);

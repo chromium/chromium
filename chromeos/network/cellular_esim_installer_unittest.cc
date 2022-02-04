@@ -161,7 +161,7 @@ class CellularESimInstallerTest : public testing::Test {
       EXPECT_LE(1u, network_connection_handler_->connect_calls().size());
       if (fail_connect) {
         network_connection_handler_->connect_calls().back().InvokeErrorCallback(
-            "fake_error_name", /*error_data=*/nullptr);
+            "fake_error_name");
       } else {
         network_connection_handler_->connect_calls()
             .back()

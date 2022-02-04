@@ -168,8 +168,7 @@ void AppendDeviceState(
 
 void NetworkHandlerFailureCallback(
     NetworkingPrivateDelegate::FailureCallback callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   std::move(callback).Run(error_name);
 }
 

@@ -164,7 +164,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     if (should_fail) {
       network_connection_handler_->disconnect_calls()
           .front()
-          .InvokeErrorCallback("disconnect_error", nullptr);
+          .InvokeErrorCallback("disconnect_error");
     } else {
       network_connection_handler_->disconnect_calls()
           .front()

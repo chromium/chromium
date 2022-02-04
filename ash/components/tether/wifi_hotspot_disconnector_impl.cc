@@ -108,8 +108,7 @@ void WifiHotspotDisconnectorImpl::OnFailedWifiDisconnect(
     const std::string& wifi_network_guid,
     const std::string& wifi_network_path,
     StringErrorCallback error_callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   PA_LOG(ERROR) << "Failed to disconnect from Wi-Fi network with GUID "
                 << wifi_network_guid << ". Error name: " << error_name;
   CleanUpAfterWifiDisconnection(wifi_network_path, base::OnceClosure(),

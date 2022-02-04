@@ -288,10 +288,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void SuccessCallback() { result_ = kSuccessResult; }
 
-  void ErrorCallback(const std::string& error_name,
-                     std::unique_ptr<base::DictionaryValue> error_data) {
-    result_ = error_name;
-  }
+  void ErrorCallback(const std::string& error_name) { result_ = error_name; }
 
   std::string GetResultAndReset() {
     std::string result;

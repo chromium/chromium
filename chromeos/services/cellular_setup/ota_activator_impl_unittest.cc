@@ -213,7 +213,7 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     EXPECT_EQ(kTestCellularServicePath, connect_calls.back().service_path());
     EXPECT_EQ(ConnectCallbackMode::ON_COMPLETED,
               connect_calls.back().connect_callback_mode());
-    connect_calls.back().InvokeErrorCallback("fake_error", nullptr);
+    connect_calls.back().InvokeErrorCallback("fake_error");
     base::RunLoop().RunUntilIdle();
   }
 
@@ -232,8 +232,7 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     if (success) {
       complete_activation_calls[0].InvokeSuccessCallback();
     } else {
-      complete_activation_calls[0].InvokeErrorCallback(
-          "error", nullptr /* error_data */);
+      complete_activation_calls[0].InvokeErrorCallback("error");
     }
   }
 

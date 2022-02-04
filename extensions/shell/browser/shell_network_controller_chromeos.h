@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace extensions {
@@ -65,8 +64,7 @@ class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
 
   // Handles a successful or failed connection attempt.
   void HandleConnectionSuccess();
-  void HandleConnectionError(const std::string& error_name,
-                             std::unique_ptr<base::DictionaryValue> error_data);
+  void HandleConnectionError(const std::string& error_name);
 
   // Current status of communication with the chromeos::NetworkStateHandler.
   // This is tracked to avoid sending duplicate requests before the handler has
