@@ -66,6 +66,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -439,8 +440,13 @@ class CrostiniCreditsHandler
       RespondOnUIThread();
       return;
     }
-    crostini::CrostiniManager::GetForProfile(profile_)->GetInstallLocation(
-        base::BindOnce(&CrostiniCreditsHandler::LoadCredits, this));
+
+    if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
+      crostini::CrostiniManager::GetForProfile(profile_)->GetInstallLocation(
+          base::BindOnce(&CrostiniCreditsHandler::LoadCredits, this));
+    } else {
+      RespondWithPlaceholder();
+    }
   }
 
   void LoadCredits(base::FilePath path) {
