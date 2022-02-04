@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 
@@ -176,6 +177,14 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // metadata about the DoH server itself will not be cached across restarts
   // (alternative service info if it supports QUIC, for instance).
   const IsolationInfo& isolation_info() const { return isolation_info_; }
+
+  // Network to perform the DNS lookups for. When equal to kInvalidNetworkHandle
+  // the decision of which one to target is left to the resolver.
+  NetworkChangeNotifier::NetworkHandle target_network() const {
+    // TODO(stefanoduo): Retrieve this from url_request_context_ once it can be
+    // bound to a network.
+    return NetworkChangeNotifier::kInvalidNetworkHandle;
+  }
 
   base::SafeRef<ResolveContext> AsSafeRef() {
     return weak_ptr_factory_.GetSafeRef();

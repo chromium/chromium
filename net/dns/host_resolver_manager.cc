@@ -1110,7 +1110,8 @@ class HostResolverManager::ProcTask {
            Callback callback,
            scoped_refptr<base::TaskRunner> proc_task_runner,
            const NetLogWithSource& job_net_log,
-           const base::TickClock* tick_clock)
+           const base::TickClock* tick_clock,
+           NetworkChangeNotifier::NetworkHandle network)
       : hostname_(std::move(hostname)),
         address_family_(address_family),
         flags_(flags),
@@ -1120,7 +1121,8 @@ class HostResolverManager::ProcTask {
         proc_task_runner_(std::move(proc_task_runner)),
         attempt_number_(0),
         net_log_(job_net_log),
-        tick_clock_(tick_clock) {
+        tick_clock_(tick_clock),
+        network_(network) {
     DCHECK(callback_);
     if (!params_.resolver_proc.get())
       params_.resolver_proc = HostResolverProc::GetDefault();
@@ -1173,7 +1175,7 @@ class HostResolverManager::ProcTask {
         FROM_HERE,
         base::BindOnce(&ProcTask::DoLookup, hostname_, address_family_, flags_,
                        params_.resolver_proc, network_task_runner_,
-                       std::move(completion_callback)));
+                       std::move(completion_callback), network_));
 
     net_log_.AddEventWithIntParams(
         NetLogEventType::HOST_RESOLVER_MANAGER_ATTEMPT_STARTED,
@@ -1204,11 +1206,12 @@ class HostResolverManager::ProcTask {
       HostResolverFlags flags,
       scoped_refptr<HostResolverProc> resolver_proc,
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
-      AttemptCompletionCallback completion_callback) {
+      AttemptCompletionCallback completion_callback,
+      NetworkChangeNotifier::NetworkHandle network) {
     AddressList results;
     int os_error = 0;
     int error = resolver_proc->Resolve(hostname, address_family, flags,
-                                       &results, &os_error);
+                                       &results, &os_error, network);
 
     network_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(completion_callback), results,
@@ -1302,6 +1305,8 @@ class HostResolverManager::ProcTask {
   NetLogWithSource net_log_;
 
   raw_ptr<const base::TickClock> tick_clock_;
+  // Network to perform DNS lookups for.
+  NetworkChangeNotifier::NetworkHandle network_;
 
   // Used to loop back from the blocking lookup attempt tasks as well as from
   // delayed retry tasks. Invalidate WeakPtrs on completion and cancellation to
@@ -2516,7 +2521,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         key_.flags, resolver_->proc_params_,
         base::BindOnce(&Job::OnProcTaskComplete, base::Unretained(this),
                        tick_clock_->NowTicks()),
-        proc_task_runner_, net_log_, tick_clock_);
+        proc_task_runner_, net_log_, tick_clock_,
+        key_.resolve_context->target_network());
 
     // Start() could be called from within Resolve(), hence it must NOT directly
     // call OnProcTaskComplete, for example, on synchronous failure.
