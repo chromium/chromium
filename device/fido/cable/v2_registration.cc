@@ -74,7 +74,9 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     instance_id_->GetToken(
         kFCMSenderId, instance_id::kGCMScope,
         /*time_to_live=*/base::TimeDelta(),
-        /*flags=*/{},
+        // This flag causes high-priority messages to be processed immediately
+        // rather than deferred until the device is not dozing.
+        {instance_id::InstanceID::Flags::kBypassScheduler},
         base::BindOnce(&FCMHandler::GetTokenComplete, base::Unretained(this)));
   }
 
