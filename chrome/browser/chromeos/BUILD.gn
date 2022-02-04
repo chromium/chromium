@@ -2523,6 +2523,8 @@ source_set("chromeos") {
     "../ash/policy/enrollment/private_membership/psm_rlwe_id_provider.h",
     "../ash/policy/enrollment/private_membership/psm_rlwe_id_provider_impl.cc",
     "../ash/policy/enrollment/private_membership/psm_rlwe_id_provider_impl.h",
+    "../ash/policy/enrollment/private_membership/testing_psm_rlwe_id_provider.cc",
+    "../ash/policy/enrollment/private_membership/testing_psm_rlwe_id_provider.h",
     "../ash/policy/enrollment/tpm_enrollment_key_signing_service.cc",
     "../ash/policy/enrollment/tpm_enrollment_key_signing_service.h",
     "../ash/policy/external_data/cloud_external_data_manager_base.cc",
