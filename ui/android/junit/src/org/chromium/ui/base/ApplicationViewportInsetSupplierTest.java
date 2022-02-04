@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -16,6 +17,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the ApplicationViewportInsetSupplier. */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ApplicationViewportInsetSupplierTest {
     /** A callback with the ability to get the last value pushed to it. */
     private static class CapturingCallback<T> implements Callback<T> {

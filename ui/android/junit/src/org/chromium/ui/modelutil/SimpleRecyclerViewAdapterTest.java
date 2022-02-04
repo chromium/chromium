@@ -27,7 +27,11 @@ import java.util.List;
  * Tests to ensure/validate SimpleRecyclerViewAdapter behavior.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        instrumentedPackages =
+                {
+                        "androidx.recyclerview.widget.RecyclerView" // required to mock final
+                })
 public class SimpleRecyclerViewAdapterTest {
     private static final PropertyModel.WritableIntPropertyKey INT_PROPERTY =
             new PropertyModel.WritableIntPropertyKey();
