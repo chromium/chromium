@@ -221983,6 +221983,19 @@
       ]
      ]
     },
+    "imperative-slot-layout-invalidation-001.html": [
+     "c6a579b70c10595b03346db3ced007e91b02324a",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/imperative-slot-layout-invalidation-001-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "layout-slot-no-longer-assigned.html": [
      "dfcac99da023ec2bbd94835f71efaef952a62341",
      [
@@ -314416,6 +314429,10 @@
     ],
     "imperative-slot-api-slotchange-expected.txt": [
      "0b282942e4c31ae4405e0d7929ca2cdd21c34788",
+     []
+    ],
+    "imperative-slot-layout-invalidation-001-ref.html": [
+     "98bc61ba4d16ccd8c91f4f6eb3ede84fe8c03386",
      []
     ],
     "reference": {
@@ -447703,15 +447720,6 @@
          "testdriver": true
         }
        ]
-      ],
-      "render-blocked-apis-by-stylesheet-link.tentative.html": [
-       "1be31b031d0c995d0a869406bc448f75c4adffae",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
       ]
      },
      "self-origin.any.js": [
@@ -513738,6 +513746,15 @@
       }
      ]
     ],
+    "single-touch-vertical-rl.html": [
+     "857007b1f8a5c548da2e2c306cb80bdea96bf2e5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "single-touch.html": [
      "4db96c208d62fe4b09558cce8312d4aba1d39836",
      [
@@ -529041,7 +529058,7 @@
      ]
     ],
     "videoFrame-construction.any.js": [
-     "be4d24e8941a29948d8929417c9254fb80c883ac",
+     "6f151f51f28eb1f0eaee5615ade256b994a86cb2",
      [
       "webcodecs/videoFrame-construction.any.html",
       {
