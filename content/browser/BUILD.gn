@@ -116,6 +116,7 @@ source_set("browser") {
     "//content/browser/payments:payment_app_proto",
     "//content/browser/prerender:mojo_bindings",
     "//content/browser/process_internals:mojo_bindings",
+    "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",
     "//content/browser/webrtc/resources",
     "//content/common",

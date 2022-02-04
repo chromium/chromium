@@ -37,10 +37,6 @@ files that belong there instead.
       <include name="IDR_PROCESS_INTERNALS_MOJO_JS" file="${root_gen_dir}/mojom-webui/content/browser/process_internals/process_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_CSS" file="browser/resources/process/process_internals.css" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_JS" file="browser/resources/process/process_internals.js" type="BINDATA" />
-      <include name="IDR_QUOTA_INTERNALS_HTML" file="browser/resources/quota/quota_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_QUOTA_INTERNALS_JS" file="browser/resources/quota/quota_internals.js" type="BINDATA" />
-      <include name="IDR_QUOTA_INTERNALS_CSS" file="browser/resources/quota/quota_internals.css" type="BINDATA" />
-      <include name="IDR_QUOTA_INTERNALS_MOJOM_JS" file="${root_gen_dir}/mojom-webui/storage/browser/quota/quota_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_HTML" file="browser/resources/service_worker/serviceworker_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_JS" file="browser/resources/service_worker/serviceworker_internals.js" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_CSS" file="browser/resources/service_worker/serviceworker_internals.css" type="BINDATA" />

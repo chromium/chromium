@@ -5,7 +5,8 @@
 #include "content/browser/quota/quota_internals_ui.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/grit/dev_ui_content_resources.h"
+#include "content/grit/quota_internals_resources.h"
+#include "content/grit/quota_internals_resources_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -19,11 +20,10 @@ QuotaInternalsUI::QuotaInternalsUI(WebUI* web_ui) : WebUIController(web_ui) {
   WebUIDataSource* source =
       WebUIDataSource::Create(kChromeUIQuotaInternalsHost);
 
-  source->AddResourcePath("quota_internals.mojom-webui.js",
-                          IDR_QUOTA_INTERNALS_MOJOM_JS);
-  source->AddResourcePath("quota_internals.js", IDR_QUOTA_INTERNALS_JS);
-  source->AddResourcePath("quota-internals", IDR_QUOTA_INTERNALS_HTML);
-  source->SetDefaultResource(IDR_QUOTA_INTERNALS_HTML);
+  source->AddResourcePaths(
+      base::make_span(kQuotaInternalsResources, kQuotaInternalsResourcesSize));
+
+  source->SetDefaultResource(IDR_QUOTA_INTERNALS_QUOTA_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
