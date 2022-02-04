@@ -380,6 +380,11 @@ void WebApp::SetPermissionsPolicy(
   permissions_policy_ = std::move(permissions_policy);
 }
 
+void WebApp::SetInstallSourceForMetrics(
+    absl::optional<webapps::WebappInstallSource> install_source) {
+  install_source_for_metrics_ = install_source;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -474,7 +479,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.is_storage_isolated_,
         app.launch_handler_,
         app.parent_app_id_,
-        app.permissions_policy_
+        app.permissions_policy_,
+        app.install_source_for_metrics_
         // clang-format on
     );
   };
@@ -585,6 +591,13 @@ base::Value WebApp::AsDebugValue() const {
   root.SetKey("file_handlers", ConvertDebugValueList(file_handlers_));
 
   root.SetKey("manifest_icons", ConvertDebugValueList(manifest_icons_));
+
+  if (install_source_for_metrics_) {
+    root.SetIntKey("install_source_for_metrics",
+                   static_cast<int>(*install_source_for_metrics_));
+  } else {
+    root.SetStringKey("install_source_for_metrics", "not set");
+  }
 
   root.SetStringKey("install_time", ConvertToString(install_time_));
 

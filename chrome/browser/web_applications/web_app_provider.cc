@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -374,6 +375,30 @@ void WebAppProvider::RegisterProfilePrefs(
   IsolationPrefsUtilsRegisterProfilePrefs(registry);
   RegisterInstallBounceMetricProfilePrefs(registry);
   RegisterDailyWebAppMetricsProfilePrefs(registry);
+}
+
+// static
+void WebAppProvider::MigrateProfilePrefs(Profile* profile) {
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  if (provider) {
+    provider->on_registry_ready_.Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppProvider::DoMigrateProfilePrefs,
+                       provider->weak_ptr_factory_.GetWeakPtr(), profile));
+  }
+}
+
+void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
+  std::map<AppId, int> sources =
+      TakeAllWebAppInstallSources(profile->GetPrefs());
+  ScopedRegistryUpdate update(sync_bridge_.get());
+  for (const auto& iter : sources) {
+    WebApp* web_app = update->UpdateApp(iter.first);
+    if (web_app && !web_app->install_source_for_metrics()) {
+      web_app->SetInstallSourceForMetrics(
+          static_cast<webapps::WebappInstallSource>(iter.second));
+    }
+  }
 }
 
 }  // namespace web_app

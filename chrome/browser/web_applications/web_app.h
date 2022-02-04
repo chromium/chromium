@@ -21,6 +21,7 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -243,6 +244,11 @@ class WebApp {
     return permissions_policy_;
   }
 
+  const absl::optional<webapps::WebappInstallSource>
+  install_source_for_metrics() const {
+    return install_source_for_metrics_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -320,6 +326,8 @@ class WebApp {
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
   void SetPermissionsPolicy(
       std::vector<PermissionsPolicyDeclaration> permissions_policy);
+  void SetInstallSourceForMetrics(
+      absl::optional<webapps::WebappInstallSource> install_source);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -398,6 +406,11 @@ class WebApp {
   absl::optional<LaunchHandler> launch_handler_;
   absl::optional<AppId> parent_app_id_;
   std::vector<PermissionsPolicyDeclaration> permissions_policy_;
+  // The source of the latest install, used for logging metrics. WebAppRegistrar
+  // provides range validation. Optional only to support legacy installations,
+  // since this used to be tracked as a pref. It might also be null if the value
+  // read from the database is not recognized by this client.
+  absl::optional<webapps::WebappInstallSource> install_source_for_metrics_;
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()

@@ -687,6 +687,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
   expected_app->SetScope(url);
   expected_app->SetName("Name");
   expected_app->SetIsLocallyInstalled(expect_locally_installed);
+  expected_app->SetInstallSourceForMetrics(webapps::WebappInstallSource::SYNC);
   expected_app->SetDescription("Description");
   expected_app->SetThemeColor(SK_ColorCYAN);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
@@ -762,6 +763,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
   expected_app->SetUserDisplayMode(DisplayMode::kBrowser);
   expected_app->SetIsLocallyInstalled(expect_locally_installed);
+  expected_app->SetInstallSourceForMetrics(webapps::WebappInstallSource::SYNC);
   expected_app->SetThemeColor(SK_ColorRED);
   // |scope| and |description| are empty here. |display_mode| is |kUndefined|.
 

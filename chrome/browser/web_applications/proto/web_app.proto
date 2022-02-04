@@ -298,4 +298,8 @@ message WebAppProto {
 
   // Contains the permissions policy that should be applied to the web app.
   repeated WebAppPermissionsPolicy permissions_policy = 49;
+
+  // The precise source of the latest install, used for metrics purposes. The
+  // meaning of the value aligns with `webapps::WebappInstallSource`.
+  optional uint32 install_source_for_metrics = 50;
 }

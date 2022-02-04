@@ -358,6 +358,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         syncer::TimeToProtoTime(web_app.manifest_update_time()));
   }
 
+  if (web_app.install_source_for_metrics()) {
+    local_data->set_install_source_for_metrics(
+        static_cast<int>(*web_app.install_source_for_metrics()));
+  }
+
   if (web_app.chromeos_data().has_value()) {
     auto& chromeos_data = web_app.chromeos_data().value();
     auto* mutable_chromeos_data = local_data->mutable_chromeos_data();
@@ -769,12 +774,22 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetLastLaunchTime(
         syncer::ProtoTimeToTime(local_data.last_launch_time()));
   }
-  if (local_data.has_install_time()) {
-    web_app->SetInstallTime(syncer::ProtoTimeToTime(local_data.install_time()));
+  if (local_data.has_install_source_for_metrics()) {
+    int install_source = local_data.install_source_for_metrics();
+    if (install_source >= 0 &&
+        install_source <
+            static_cast<int>(webapps::WebappInstallSource::COUNT)) {
+      web_app->SetInstallSourceForMetrics(
+          static_cast<webapps::WebappInstallSource>(install_source));
+    }
   }
   if (local_data.has_manifest_update_time()) {
     web_app->SetManifestUpdateTime(
         syncer::ProtoTimeToTime(local_data.manifest_update_time()));
+  }
+
+  if (local_data.has_install_time()) {
+    web_app->SetInstallTime(syncer::ProtoTimeToTime(local_data.install_time()));
   }
 
   absl::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =

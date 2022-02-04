@@ -135,6 +135,11 @@ class WebAppProvider : public KeyedService {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Kicks off a migration of some entries from the `web_app_ids` pref
+  // dictionary to the web app database. This should be safe to delete one year
+  // after 02-2022.
+  static void MigrateProfilePrefs(Profile* profile);
+
   // Signals when app registry becomes ready.
   const base::OneShotEvent& on_registry_ready() const {
     return on_registry_ready_;
@@ -159,6 +164,8 @@ class WebAppProvider : public KeyedService {
   void OnSyncBridgeReady();
 
   void CheckIsConnected() const;
+
+  void DoMigrateProfilePrefs(Profile* profile);
 
   std::unique_ptr<WebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppMover> web_app_mover_;

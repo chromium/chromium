@@ -723,6 +723,28 @@ base::Time WebAppRegistrar::GetAppInstallTime(const AppId& app_id) const {
   return web_app ? web_app->install_time() : base::Time();
 }
 
+absl::optional<webapps::WebappInstallSource>
+WebAppRegistrar::GetAppInstallSourceForMetrics(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app)
+    return absl::nullopt;
+
+  absl::optional<webapps::WebappInstallSource> value =
+      web_app->install_source_for_metrics();
+
+  // If the migration code hasn't run yet, `WebApp::install_source_for_metrics_`
+  // may not be populated. After migration code is removed, this branch can be
+  // deleted.
+  if (!value) {
+    absl::optional<int> old_value =
+        GetWebAppInstallSourceDeprecated(profile_->GetPrefs(), app_id);
+    if (old_value)
+      return static_cast<webapps::WebappInstallSource>(*old_value);
+  }
+
+  return value;
+}
+
 std::vector<apps::IconInfo> WebAppRegistrar::GetAppIconInfos(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

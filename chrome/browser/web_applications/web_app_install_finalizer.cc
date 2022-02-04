@@ -224,9 +224,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->AddSource(source);
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetParentAppId(options.parent_app_id);
-
-  UpdateWebAppInstallSource(profile_->GetPrefs(), app_id,
-                            static_cast<int>(options.install_source));
+  web_app->SetInstallSourceForMetrics(options.install_source);
 
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,

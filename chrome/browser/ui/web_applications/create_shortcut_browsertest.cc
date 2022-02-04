@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // LatestWebAppInstallSource should be correctly set and reported to UMA for
-  // both installable and non-installable sites.
+  // both installable and non-installable (shortcut) sites.
   for (const GURL& url :
        {GetInstallableAppURL(),
         embedded_test_server()->GetURL(
@@ -97,11 +97,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
     NavigateToURLAndWait(browser(), url);
     AppId app_id = InstallShortcutAppForCurrentUrl();
 
-    absl::optional<int> install_source =
-        GetWebAppInstallSource(profile()->GetPrefs(), app_id);
-    EXPECT_TRUE(install_source.has_value());
-    EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
-              webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+    EXPECT_EQ(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+              *registrar().GetAppInstallSourceForMetrics(app_id));
     histogram_tester.ExpectUniqueSample(
         "Webapp.Install.InstallEvent",
         static_cast<int>(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT),

@@ -85,7 +85,6 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -174,6 +173,7 @@
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1850,6 +1850,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 01/2022.
   invalidation::InvalidatorRegistrarWithMemory::
       ClearTopicsWithObsoleteOwnerNames(profile_prefs);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Added 02/2022.
+  web_app::WebAppProvider::MigrateProfilePrefs(profile);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

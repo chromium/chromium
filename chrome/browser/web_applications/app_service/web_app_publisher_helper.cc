@@ -160,14 +160,12 @@ apps::mojom::InstallReason GetHighestPriorityInstallReason(
   }
 }
 
-apps::mojom::InstallSource GetInstallSource(PrefService* prefs,
-                                            const AppId& app_id) {
-  auto install_source = web_app::GetWebAppInstallSource(prefs, app_id);
-  if (!install_source.has_value()) {
+apps::mojom::InstallSource ConvertInstallSourceToMojom(
+    absl::optional<webapps::WebappInstallSource> source) {
+  if (!source)
     return apps::mojom::InstallSource::kUnknown;
-  }
 
-  switch (static_cast<webapps::WebappInstallSource>(install_source.value())) {
+  switch (*source) {
     case webapps::WebappInstallSource::MENU_BROWSER_TAB:
     case webapps::WebappInstallSource::MENU_CUSTOM_TAB:
     case webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
@@ -192,6 +190,7 @@ apps::mojom::InstallSource GetInstallSource(PrefService* prefs,
     case webapps::WebappInstallSource::SYNC:
       return apps::mojom::InstallSource::kSync;
     case webapps::WebappInstallSource::COUNT:
+      NOTREACHED();
       return apps::mojom::InstallSource::kUnknown;
   }
 }
@@ -499,7 +498,9 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
       apps::ConvertMojomInstallReasonToInstallReason(
           GetHighestPriorityInstallReason(web_app)),
       apps::ConvertMojomInstallSourceToInstallSource(
-          GetInstallSource(profile()->GetPrefs(), web_app->app_id())));
+          ConvertInstallSourceToMojom(
+              provider_->registrar().GetAppInstallSourceForMetrics(
+                  web_app->app_id()))));
 
   app->description = web_app->description();
   app->additional_search_terms = web_app->additional_search_terms();
@@ -593,8 +594,8 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
       apps::PublisherBase::MakeApp(app_type(), web_app->app_id(), readiness,
                                    web_app->name(), install_reason);
 
-  app->install_source =
-      GetInstallSource(profile()->GetPrefs(), web_app->app_id());
+  app->install_source = ConvertInstallSourceToMojom(
+      provider_->registrar().GetAppInstallSourceForMetrics(web_app->app_id()));
 
   GURL install_url;
   if (registrar().HasExternalAppWithInstallSource(

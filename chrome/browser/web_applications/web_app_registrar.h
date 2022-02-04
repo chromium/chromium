@@ -28,6 +28,10 @@ namespace apps {
 struct ShareTarget;
 }  // namespace apps
 
+namespace webapps {
+enum class WebappInstallSource;
+}
+
 namespace web_app {
 
 class AppRegistrarObserver;
@@ -177,6 +181,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   base::Time GetAppLastBadgingTime(const AppId& app_id) const;
   base::Time GetAppLastLaunchTime(const AppId& app_id) const;
   base::Time GetAppInstallTime(const AppId& app_id) const;
+
+  absl::optional<webapps::WebappInstallSource> GetAppInstallSourceForMetrics(
+      const AppId& app_id) const;
 
   // Returns the "icons" field from the app manifest, use |WebAppIconManager| to
   // load icon bitmap data.
