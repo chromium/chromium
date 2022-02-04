@@ -3495,6 +3495,10 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
   if (!input)
     return false;
 
+  if (!input->GetLayoutObject() ||
+      input->GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible)
+    return false;
+
   if (!input->IsCheckable())
     return false;
 
