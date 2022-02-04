@@ -394,6 +394,22 @@ void DockedMagnifierController::MaybePerformViewportResizing(
   DCHECK(current_source_root_window_);
   gfx::Rect root_bounds = current_source_root_window_->GetBoundsInRootWindow();
   float magnifier_height = root_bounds.height() / screen_height_divisor_;
+  float root_y = event->root_location_f().y();
+  const int separator_top = separator_layer_->bounds().y();
+  const int separator_bottom = separator_layer_->bounds().bottom();
+  bool cursor_is_over_resizer =
+      root_y >= separator_top - 1 && root_y <= separator_bottom;
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+
+  // If the mouse is over the divider, change cursor to north/south resize.
+  if (cursor_is_over_resizer && !is_cursor_locked_) {
+    cursor_manager->SetCursor(ui::mojom::CursorType::kNorthSouthResize);
+    cursor_manager->LockCursor();
+    is_cursor_locked_ = true;
+  } else if (!cursor_is_over_resizer && is_cursor_locked_) {
+    cursor_manager->UnlockCursor();
+    is_cursor_locked_ = false;
+  }
 
   // If user releases left mouse button, or any other mouse button is pressed,
   // ignore and stop resizing.
@@ -405,18 +421,14 @@ void DockedMagnifierController::MaybePerformViewportResizing(
     }
     return;
   }
-  float root_y = event->root_location_f().y();
   float new_screen_height_divisor =
       root_bounds.height() / (root_y + resize_offset_);
 
-  const int separator_top = separator_layer_->bounds().y();
-  const int separator_bottom = separator_layer_->bounds().bottom();
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
       // User clicks within separator to start resizing Docked Magnifier.
       // Subtracting one is needed to capture when mouse is at the very top.
-      if (!has_started_resize_ && root_y >= separator_top - 1 &&
-          root_y <= separator_bottom) {
+      if (!has_started_resize_ && cursor_is_over_resizer) {
         resize_offset_ = magnifier_height - root_y;
         has_started_resize_ = true;
         RootWindowController::ForWindow(current_source_root_window_)

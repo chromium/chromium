@@ -189,6 +189,9 @@ class ASH_EXPORT DockedMagnifierController
   // Indicates the the above value is valid and doesn't need to be recalculated.
   bool is_minimum_point_of_interest_height_valid_ = false;
 
+  // Indicates cursor is locked, because cursor has moved over separator.
+  bool is_cursor_locked_ = false;
+
   // The viewport widget which occupies the top 1/4th of the current display on
   // which it is shown. It contains all the magnifier related layer.
   views::Widget* viewport_widget_ = nullptr;
