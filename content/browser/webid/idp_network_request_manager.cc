@@ -356,11 +356,20 @@ void IdpNetworkRequestManager::FetchIdpWellKnown(
 
   idp_well_known_callback_ = std::move(callback);
 
-  // TODO(yigu): Using .well-known in sub-directory (non-root) is common for multi-tenancy. However,
-  // this may be an invalid use of .well-known and we should enforce it to be under root.
-  // https://crbug.com/1277712.
-  GURL target_url =
-      provider_.Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
+  // Accepts both "https://idp.example/foo/" and "https://idp.example/foo" as
+  // valid provider url to locate the manifest. Historically, URLs with a
+  // trailing slash indicate a directory while those without a trailing slash
+  // denote a file. However, to give developers more flexibility, we append a
+  // trailing slash if one is not present.
+  GURL target_url = provider_;
+  if (target_url.path().empty() || target_url.path().back() != '/') {
+    std::string new_path = target_url.path() + '/';
+    GURL::Replacements replacements;
+    replacements.SetPathStr(new_path);
+    target_url = target_url.ReplaceComponents(replacements);
+  }
+
+  target_url = target_url.Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
 
   url_loader_ =
       CreateUncredentialedUrlLoader(target_url, /* send_referrer= */ false);
