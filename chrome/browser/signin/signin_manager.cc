@@ -21,12 +21,10 @@ SigninManager::SigninManager(PrefService* prefs,
                           base::Unretained(this)));
 
   UpdateUnconsentedPrimaryAccount();
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
-SigninManager::~SigninManager() {
-  identity_manager_->RemoveObserver(this);
-}
+SigninManager::~SigninManager() = default;
 
 void SigninManager::UpdateUnconsentedPrimaryAccount() {
   // Only update the unconsented primary account only after accounts are loaded.
@@ -146,7 +144,13 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-// signin::IdentityManager::Observer implementation.
+void SigninManager::Shutdown() {
+  // Unsubscribe to all notifications to stop calling the identity manager.
+  signin_allowed_.Destroy();
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
+}
+
 void SigninManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   // This is needed for the case where the user chooses to start syncing

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -41,6 +42,9 @@ class SigninManager : public KeyedService,
   // valid UPA.
   CoreAccountInfo ComputeUnconsentedPrimaryAccountInfo() const;
 
+  // KeyedService implementation.
+  void Shutdown() override;
+
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
@@ -61,6 +65,9 @@ class SigninManager : public KeyedService,
 
   raw_ptr<PrefService> prefs_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Helper object to listen for changes to the signin allowed preference.
   BooleanPrefMember signin_allowed_;

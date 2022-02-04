@@ -4,6 +4,7 @@
 #include "chrome/browser/signin/signin_manager.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -21,13 +22,17 @@ using ::testing::Mock;
 
 namespace signin {
 namespace {
+
 const char kTestEmail[] = "me@gmail.com";
 const char kTestEmail2[] = "me2@gmail.com";
 
 class FakeIdentityManagerObserver : public IdentityManager::Observer {
  public:
   explicit FakeIdentityManagerObserver(IdentityManager* identity_manager)
-      : identity_manager_(identity_manager) {}
+      : identity_manager_(identity_manager) {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
+
   ~FakeIdentityManagerObserver() override = default;
 
   void OnPrimaryAccountChanged(
@@ -48,7 +53,10 @@ class FakeIdentityManagerObserver : public IdentityManager::Observer {
  private:
   raw_ptr<IdentityManager> identity_manager_;
   std::vector<PrimaryAccountChangeEvent> events_;
+  base::ScopedObservation<IdentityManager, IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
+
 }  // namespace
 
 class SigninManagerTest : public testing::Test {
@@ -58,18 +66,12 @@ class SigninManagerTest : public testing::Test {
                            /*pref_service=*/&prefs_,
                            signin::AccountConsistencyMethod::kDice,
                            /*test_signin_client=*/nullptr),
-        observer_(identity_test_env_.identity_manager()) {}
+        observer_(identity_test_env_.identity_manager()) {
+    RecreateSigninManager();
+  }
 
   SigninManagerTest(const SigninManagerTest&) = delete;
   SigninManagerTest& operator=(const SigninManagerTest&) = delete;
-
-  void SetUp() override {
-    testing::Test::SetUp();
-    RecreateSigninManager();
-    identity_manager()->AddObserver(&observer_);
-  }
-
-  void TearDown() override { identity_manager()->RemoveObserver(&observer_); }
 
   void RecreateSigninManager() {
     signin_manger_ =
