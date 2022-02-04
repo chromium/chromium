@@ -8,8 +8,11 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
+import android.content.BroadcastReceiver;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -140,5 +143,13 @@ public final class ApiHelperForO {
     /** See {@link Notification#getChannelId()}. */
     public static String getNotificationChannelId(Notification notification) {
         return notification.getChannelId();
+    }
+
+    /**
+     * See {@link Context#registerReceiver(BroadcastReceiver, IntentFilter, String, Handler, int)}
+     */
+    public static Intent registerReceiver(Context context, BroadcastReceiver receiver,
+            IntentFilter filter, String permission, Handler scheduler, int flags) {
+        return context.registerReceiver(receiver, filter, permission, scheduler, flags);
     }
 }

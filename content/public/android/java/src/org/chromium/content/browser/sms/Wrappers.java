@@ -15,7 +15,6 @@ import android.os.Handler;
 
 import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
 import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
-import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.Task;
 
@@ -82,30 +81,35 @@ class Wrappers {
             return new SmsVerificationReceiver(mSmsProviderGms, this);
         }
 
+        private void onRegisterReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+            if (filter.hasAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION)) {
+                mVerificationReceiver = receiver;
+            } else {
+                mUserConsentReceiver = receiver;
+            }
+        }
+
         // ---------------------------------------------------------------------
         // Context overrides:
 
         @Override
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
                 String permission, Handler handler) {
-            assert filter.hasAction(SmsRetriever.SMS_RETRIEVED_ACTION);
-            mUserConsentReceiver = receiver;
-
+            onRegisterReceiver(receiver, filter);
             return super.registerReceiver(receiver, filter, permission, handler);
         }
 
         @Override
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-            assert filter.hasAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION);
-            mVerificationReceiver = receiver;
-            return super.registerReceiver(receiver, filter);
+            throw new RuntimeException(); // Not implemented.
         }
 
         @Override
         @TargetApi(Build.VERSION_CODES.O)
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
                 String permission, Handler handler, int flags) {
-            throw new RuntimeException(); // Not implemented.
+            onRegisterReceiver(receiver, filter);
+            return super.registerReceiver(receiver, filter, permission, handler);
         }
 
         @Override
