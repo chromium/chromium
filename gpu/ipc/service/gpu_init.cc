@@ -6,10 +6,13 @@
 
 #include <string>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -518,6 +521,22 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_info_.macos_specific_texture_target = GL_TEXTURE_2D;
   }
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+  {
+    // On Windows, MITIGATION_FORCE_MS_SIGNED_BINS is used which disallows
+    // loading any .dll that is not signed by Microsoft. Preload the SwiftShader
+    // .dll so it may be accessed later. This is needed for WebGPU to
+    // initialize a software fallback adapter.
+    // Don't handle errors as failure here is non-fatal. Loading SwiftShader
+    // again at a later point will fail as well.
+    base::FilePath module_path;
+    if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+      base::LoadNativeLibrary(module_path.Append(L"vk_swiftshader.dll"),
+                              nullptr);
+    }
+  }
+#endif
 
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] !=
           kGpuFeatureStatusEnabled ||

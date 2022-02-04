@@ -13,10 +13,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -363,6 +366,16 @@ void AddStandardGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   permissions->push_back(
       BrokerFilePermission::ReadWrite(kNvidiaDeviceModeSetPath));
   permissions->push_back(BrokerFilePermission::ReadOnly(kNvidiaParamsPath));
+
+  // For SwiftShader
+  base::FilePath module_path;
+  if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+    std::string sw_path =
+        module_path.Append("libvk_swiftshader.so").MaybeAsASCII();
+    if (!sw_path.empty()) {
+      permissions->push_back(BrokerFilePermission::ReadOnly(sw_path));
+    }
+  }
 }
 
 std::vector<BrokerFilePermission> FilePermissionsForGpu(
