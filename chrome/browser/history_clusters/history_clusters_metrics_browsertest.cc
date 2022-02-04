@@ -203,12 +203,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
           ->template GetAs<HistoryUI>()
           ->GetHistoryClustersHandlerForTesting();
 
-  auto query_params = history_clusters::mojom::QueryParams::New();
-  query_params->query = "cat";
-  page_handler->QueryClusters(std::move(query_params));
-  query_params = history_clusters::mojom::QueryParams::New();
-  query_params->query = "dog";
-  page_handler->QueryClusters(std::move(query_params));
+  page_handler->StartQueryClusters("cat");
+  page_handler->StartQueryClusters("dog");
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
   auto entries =

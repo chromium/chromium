@@ -282,6 +282,10 @@ HistoryClustersService::HistoryClustersService(
 
 HistoryClustersService::~HistoryClustersService() = default;
 
+base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void HistoryClustersService::Shutdown() {}
 
 void HistoryClustersService::AddObserver(Observer* obs) {

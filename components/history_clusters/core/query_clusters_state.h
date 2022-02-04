@@ -7,8 +7,12 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/history_clusters_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
@@ -25,14 +29,40 @@ class HistoryClustersService;
 // It's the history_clusters equivalent to history::QueryHistoryState.
 class QueryClustersState {
  public:
-  explicit QueryClustersState(base::WeakPtr<HistoryClustersService> service);
+  // `is_continuation` is true for all 'next-page' responses, but false for the
+  // first page.
+  using ResultCallback =
+      base::OnceCallback<void(const std::string& query,
+                              std::vector<history::Cluster> cluster_batch,
+                              bool can_load_more,
+                              bool is_continuation)>;
+
+  QueryClustersState(base::WeakPtr<HistoryClustersService> service,
+                     const std::string& query);
   ~QueryClustersState();
 
   QueryClustersState(const QueryClustersState&) = delete;
 
+  // Returns the current query the state contains.
+  const std::string& query() const { return query_; }
+
+  // Used to request another batch of clusters of the same query.
+  void LoadNextBatchOfClusters(ResultCallback callback);
+
  private:
+  // TODO(tommycli): Delete QueryClustersResult struct.
+  void OnGotClusters(base::TimeTicks query_start_time,
+                     ResultCallback callback,
+                     QueryClustersResult result);
+
+  // A weak pointer to the service in case we outlive the service.
   const base::WeakPtr<HistoryClustersService> service_;
 
+  // The string query the user entered into the searchbox.
+  const std::string query_;
+
+  // TODO(tommycli): Actually use this piece of state to implement the
+  // cross-batch deduplication and search caching.
   std::vector<history::Cluster> clusters_;
 
   // A nullopt `continuation_end_time` means we have exhausted History.
@@ -40,6 +70,14 @@ class QueryClustersState {
   // value to indicate we've exhausted history. I've found that to be not
   // explicit enough in practice. This value will never be base::Time().
   absl::optional<base::Time> continuation_end_time_;
+
+  // True for all 'next-page' responses, but false for the first page.
+  bool is_continuation_ = false;
+
+  // Used only to fast-cancel tasks in case we are destroyed.
+  base::CancelableTaskTracker task_tracker_;
+
+  base::WeakPtrFactory<QueryClustersState> weak_factory_{this};
 };
 
 }  // namespace history_clusters

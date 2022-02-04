@@ -52,7 +52,7 @@ class HistoryClustersHandlerTest : public testing::Test {
 };
 
 TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_BelowTheFold) {
-  QueryClustersResult result;
+  std::vector<history::Cluster> clusters;
 
   // High scoring visits should always be above the fold.
   history::Cluster cluster1;
@@ -81,17 +81,16 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_BelowTheFold) {
   cluster3.visits.push_back(CreateVisit("https://zero-score-2", 0));
   cluster3.keywords.push_back(u"keyword");
 
-  result.clusters.push_back(cluster1);
-  result.clusters.push_back(cluster2);
-  result.clusters.push_back(cluster3);
-  result.continuation_end_time = base::Time::FromDoubleT(10);
+  clusters.push_back(cluster1);
+  clusters.push_back(cluster2);
+  clusters.push_back(cluster3);
 
   mojom::QueryResultPtr mojom_result =
-      QueryClustersResultToMojom(&profile_, "query", false, result);
+      QueryClustersResultToMojom(&profile_, "query", clusters, true, false);
 
   EXPECT_EQ(mojom_result->query, "query");
+  EXPECT_EQ(mojom_result->can_load_more, true);
   EXPECT_EQ(mojom_result->is_continuation, false);
-  EXPECT_EQ(mojom_result->continuation_end_time, base::Time::FromDoubleT(10));
 
   ASSERT_EQ(mojom_result->clusters.size(), 3u);
 
@@ -130,7 +129,7 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_BelowTheFold) {
 }
 
 TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_RelatedSearches) {
-  QueryClustersResult result;
+  std::vector<history::Cluster> clusters;
 
   history::Cluster cluster;
   cluster.cluster_id = 4;
@@ -150,10 +149,10 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_RelatedSearches) {
   // searches has been met.
   cluster.visits.push_back(CreateVisit("https://high-score-5", 0, {"ten"}));
 
-  result.clusters.push_back(cluster);
+  clusters.push_back(cluster);
 
   mojom::QueryResultPtr mojom_result =
-      QueryClustersResultToMojom(&profile_, "query", false, result);
+      QueryClustersResultToMojom(&profile_, "query", clusters, false, false);
 
   ASSERT_EQ(mojom_result->clusters.size(), 1u);
   EXPECT_EQ(mojom_result->clusters[0]->id, 4);

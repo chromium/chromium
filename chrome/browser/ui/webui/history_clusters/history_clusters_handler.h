@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HANDLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/history_clusters/core/query_clusters_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,13 +30,17 @@ class WebContents;
 
 namespace history_clusters {
 
+class QueryClustersState;
+
 // Not in an anonymous namespace so that it can be tested.
 // TODO(manukh) Try to setup a complete `HistoryClusterHandler` for testing so
 //  that we can test the public method `QueryClusters` directly instead.
-mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
-                                                 const std::string& query,
-                                                 bool is_continuation,
-                                                 QueryClustersResult result);
+mojom::QueryResultPtr QueryClustersResultToMojom(
+    Profile* profile,
+    const std::string& query,
+    const std::vector<history::Cluster> clusters_batch,
+    bool can_load_more,
+    bool is_continuation);
 
 // Handles bidirectional communication between the history clusters page and the
 // browser.
@@ -53,7 +59,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
   void ToggleVisibility(bool visible,
                         ToggleVisibilityCallback callback) override;
-  void QueryClusters(mojom::QueryParamsPtr query_params) override;
+  void StartQueryClusters(const std::string& query) override;
+  void LoadMoreClusters(const std::string& query) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
   void OpenVisitUrlsInTabGroup(std::vector<mojom::URLVisitPtr> visits) override;
@@ -63,18 +70,14 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
  private:
   // Called with the result of querying clusters. Subsequently, `query_result`
-  // is sent to the JS to update the UI. `query_start_time` is also passed to
-  // allow for performance logging.
-  void OnClustersQueryResult(base::TimeTicks query_start_time,
-                             mojom::QueryResultPtr query_result);
+  // is sent to the JS to update the UI.
+  void OnClustersQueryResult(mojom::QueryResultPtr query_result);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
   void OnVisitsRemoved(std::vector<mojom::URLVisitPtr> visits);
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  // Tracker for query requests to the HistoryClustersService.
-  base::CancelableTaskTracker query_task_tracker_;
   // Tracker for remove requests to the HistoryClustersService.
   base::CancelableTaskTracker remove_task_tracker_;
 
@@ -85,6 +88,9 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   mojo::Remote<mojom::Page> page_;
   mojo::Receiver<mojom::PageHandler> page_handler_;
+
+  // Encapsulates the currently loaded clusters state on the page.
+  std::unique_ptr<QueryClustersState> query_clusters_state_;
 
   base::WeakPtrFactory<HistoryClustersHandler> weak_ptr_factory_{this};
 };

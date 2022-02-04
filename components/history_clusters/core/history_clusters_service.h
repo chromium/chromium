@@ -95,6 +95,10 @@ class HistoryClustersService : public KeyedService {
   HistoryClustersService& operator=(const HistoryClustersService&) = delete;
   ~HistoryClustersService() override;
 
+  // Gets a weak pointer to this service. Used when UIs want to create a query
+  // state object whose lifetime might exceed the service.
+  base::WeakPtr<HistoryClustersService> GetWeakPtr();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -139,6 +143,9 @@ class HistoryClustersService : public KeyedService {
   // The returned clusters are sorted in reverse-chronological order based on
   // their highest scoring visit. The visits within each cluster are sorted by
   // score, from highest to lowest.
+  //
+  // TODO(tommycli): Investigate entirely hiding access to this low-level method
+  // behind QueryClustersState.
   void QueryClusters(const std::string& query,
                      base::Time begin_time,
                      base::Time end_time,

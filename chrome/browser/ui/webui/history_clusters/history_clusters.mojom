@@ -88,19 +88,6 @@ struct Cluster {
   URLVisit visit;
 };
 
-// Parameters used to query the browser for Clusters in reverse chronological
-// order.
-struct QueryParams {
-  // The query string the Clusters are matched against. The default value of
-  // empty string means to return every Cluster that matches the other criteria.
-  string query;
-
-  // The optional time threshold (exclusive) for how recent the Clusters can be.
-  // If specified, Clusters before `end_time` and if missing, Clusters until the
-  // present time that match the other criteria are returned.
-  mojo_base.mojom.Time? end_time;
-};
-
 // Represents a set of Clusters returned by the browser in response to a request
 // for Clusters related to a given query or within a given timespan.
 struct QueryResult {
@@ -112,15 +99,11 @@ struct QueryResult {
   // indicating that we have exhausted History.
   array<history_clusters.mojom.Cluster> clusters;
 
-  // True if this is in response to a continuation query. If so, `clusters` is a
-  // partial set which must be appended to the existing Clusters on the page and
-  // not replace them.
-  bool is_continuation;
+  // True if there is another page of clusters that the UI can request.
+  bool can_load_more;
 
-  // The optional time threshold (exclusive) to be supplied in the follow-up UI
-  // request to load older Clusters. Typically set to `last_visit_time` of the
-  // last cluster in `clusters` if the backend supports paging.
-  mojo_base.mojom.Time? continuation_end_time;
+  // True if this result is in response to a "load more" continuation request.
+  bool is_continuation;
 };
 
 // Browser-side handler for requests from WebUI page.
@@ -133,10 +116,12 @@ interface PageHandler {
   // its state once the request is fulfilled by the browser.
   ToggleVisibility(bool visible) => (bool visible);
 
-  // Requests the freshest Clusters created from the user visit history, in
-  // reverse chronological order, based on the parameters in `query_params`.
-  // Returns either a non-zero length list of clusters, or exhausts history.
-  QueryClusters(QueryParams query_params);
+  // Queries for clusters matching `query`.
+  StartQueryClusters(string query);
+
+  // Asks the service for more clusters. Call this when the user has scrolled
+  // to the bottom of the page. `query` is passed through for sanity checking.
+  LoadMoreClusters(string query);
 
   // Requests to remove all visits to the specified URLs in the specified
   // timespan in `visits`. This includes the less recent visits to the same set
