@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -17,6 +18,12 @@
 namespace ui {
 
 using RendererColorMap = base::flat_map<color::mojom::RendererColorId, SkColor>;
+
+class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
+ public:
+  virtual ~ColorProviderUtilsCallbacks();
+  virtual bool ColorIdName(ColorId color_id, base::StringPiece* color_name) = 0;
+};
 
 // The following functions convert various values to strings intended for
 // logging. Do not retain the results for longer than the scope in which these
@@ -72,6 +79,11 @@ ColorProvider COMPONENT_EXPORT(COLOR) CreateColorProviderFromRendererColorMap(
 bool COMPONENT_EXPORT(COLOR) IsRendererColorMappingEquivalent(
     const ColorProvider& color_provider,
     const RendererColorMap& renderer_color_map);
+
+// Sets the callback for converting a ChromColorId to a string name. This is
+// used by ColorIdName. Only one callback is allowed.
+void COMPONENT_EXPORT(COLOR)
+    SetColorProviderUtilsCallbacks(ColorProviderUtilsCallbacks* callbacks);
 
 }  // namespace ui
 

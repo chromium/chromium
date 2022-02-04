@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -54,7 +55,11 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorOverlayScrollbarStrokeHoveredLight},
 };
 
+ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
+
 }  // namespace
+
+ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
 
 base::StringPiece ColorModeName(ColorProviderManager::ColorMode color_mode) {
   switch (color_mode) {
@@ -99,7 +104,11 @@ base::StringPiece ColorIdName(ColorId color_id) {
   auto* i = color_id_map.find(color_id);
   if (i != color_id_map.cend())
     return i->second;
-  return "<invalid>";
+  base::StringPiece color_name;
+  if (g_color_provider_utils_callbacks &&
+      g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name))
+    return color_name;
+  return base::StringPrintf("ColorId(%d)", color_id);
 }
 
 #include "ui/color/color_id_map_macros.inc"
@@ -298,6 +307,10 @@ bool IsRendererColorMappingEquivalent(
     }
   }
   return true;
+}
+
+void SetColorProviderUtilsCallbacks(ColorProviderUtilsCallbacks* callbacks) {
+  g_color_provider_utils_callbacks = callbacks;
 }
 
 }  // namespace ui
