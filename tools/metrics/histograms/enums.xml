@@ -39038,6 +39038,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Have SSO account, Gave Up"/>
   <int value="6" label="Could not create FirstRun Sentinel - deprecated"/>
   <int value="7" label="Skipped by policy"/>
+  <int value="8" label="Sign-in not supported (Chromium)"/>
 </enum>
 
 <enum name="FirstRunStageResult">

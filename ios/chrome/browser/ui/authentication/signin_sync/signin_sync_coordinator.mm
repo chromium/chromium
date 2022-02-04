@@ -136,8 +136,26 @@
   self.signinIdentityOnStart =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  if (!signin::IsSigninAllowedByPolicy() ||
-      IsSyncDisabledByPolicy(browserState)) {
+  switch (authenticationService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+      // This case is rare. This can happen if sign-in is disabled by user,
+      // and FRE is forced by the flag for test reason.
+      self.attemptStatus = first_run::SignInAttemptStatus::NOT_ATTEMPTED;
+      [self finishPresentingAndSkipRemainingScreens:NO];
+      return;
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+      self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
+      [self finishPresentingAndSkipRemainingScreens:NO];
+      return;
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      self.attemptStatus = first_run::SignInAttemptStatus::NOT_SUPPORTED;
+      [self finishPresentingAndSkipRemainingScreens:NO];
+      return;
+  }
+  if (IsSyncDisabledByPolicy(browserState)) {
     // Skip the screen if sync is disabled by policy.
     self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     [self finishPresentingAndSkipRemainingScreens:NO];
