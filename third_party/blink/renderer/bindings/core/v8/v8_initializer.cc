@@ -99,12 +99,11 @@
 
 namespace blink {
 
-static void ReportFatalErrorInMainThread(const char* location,
-                                         const char* message) {
+static void ReportV8FatalError(const char* location, const char* message) {
   LOG(FATAL)  << "V8 error: " << message << " (" << location << ").";
 }
 
-static void ReportOOMErrorInMainThread(const char* location, bool is_js_heap) {
+static void ReportV8OOMError(const char* location, bool is_js_heap) {
   DVLOG(1) << "V8 " << (is_js_heap ? "javascript" : "process") << " OOM: ("
            << location << ").";
   OOM_CRASH(0);
@@ -778,9 +777,9 @@ void V8Initializer::InitializeMainThread(
 
   InitializeV8Common(isolate);
 
-  isolate->SetOOMErrorHandler(ReportOOMErrorInMainThread);
+  isolate->SetOOMErrorHandler(ReportV8OOMError);
 
-  isolate->SetFatalErrorHandler(ReportFatalErrorInMainThread);
+  isolate->SetFatalErrorHandler(ReportV8FatalError);
   isolate->AddMessageListenerWithErrorLevel(
       MessageHandlerInMainThread,
       v8::Isolate::kMessageError | v8::Isolate::kMessageWarning |
@@ -808,13 +807,6 @@ void V8Initializer::InitializeMainThread(
   WTF::Partitions::InitializeArrayBufferPartition();
 }
 
-static void ReportFatalErrorInWorker(const char* location,
-                                     const char* message) {
-  // FIXME: We temporarily deal with V8 internal error situations such as
-  // out-of-memory by crashing the worker.
-  LOG(FATAL);
-}
-
 // Stack size for workers is limited to 500KB because default stack size for
 // secondary threads is 512KB on Mac OS X. See GetDefaultThreadStackSize() in
 // base/threading/platform_thread_mac.mm for details.
@@ -828,7 +820,8 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
       v8::Isolate::kMessageError | v8::Isolate::kMessageWarning |
           v8::Isolate::kMessageInfo | v8::Isolate::kMessageDebug |
           v8::Isolate::kMessageLog);
-  isolate->SetFatalErrorHandler(ReportFatalErrorInWorker);
+  isolate->SetOOMErrorHandler(ReportV8OOMError);
+  isolate->SetFatalErrorHandler(ReportV8FatalError);
 
   isolate->SetStackLimit(WTF::GetCurrentStackPosition() - kWorkerMaxStackSize);
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);
