@@ -80,7 +80,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   if (self.hasTopToolbar) {
     self.topToolbar = [self createTopToolbar];
