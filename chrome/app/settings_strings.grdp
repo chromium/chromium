@@ -1284,6 +1284,9 @@
   </if>
 
   <!-- Privacy Page -->
+  <message name="IDS_SETTINGS_PRIVACY" desc="Name of the settings page which allows users to modify privacy and security settings.">
+    Privacy and security
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_V2" desc="Name of the settings page which allows users to modify privacy and security settings.">
     Security and Privacy
   </message>
