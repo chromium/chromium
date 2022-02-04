@@ -304,6 +304,11 @@ void LoginAuthFactorsView::UpdateState() {
         label_wrapper_->SetLabelTextAndAccessibleName(
             IDS_AUTH_FACTOR_LABEL_UNLOCKED, IDS_AUTH_FACTOR_LABEL_UNLOCKED);
       }
+
+      // Clear focus so that the focus on arrow button does not jump to another
+      // element after the view transitions.
+      GetFocusManager()->ClearFocus();
+
       return;
     case PrioritizedAuthFactorViewState::kClickRequired:
       // An auth factor requires a click to enter. Show arrow button.

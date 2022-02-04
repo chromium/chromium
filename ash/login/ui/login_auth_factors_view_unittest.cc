@@ -111,15 +111,14 @@ class ScopedAXEventObserver : public views::AXEventObserver {
 
 }  // namespace
 
-class LoginAuthFactorsViewUnittest : public AshTestBase {
+class LoginAuthFactorsViewUnittest : public LoginTestBase {
  public:
   LoginAuthFactorsViewUnittest(const LoginAuthFactorsViewUnittest&) = delete;
   LoginAuthFactorsViewUnittest& operator=(const LoginAuthFactorsViewUnittest&) =
       delete;
 
  protected:
-  LoginAuthFactorsViewUnittest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  LoginAuthFactorsViewUnittest() : LoginTestBase() {
     feature_list_.InitAndEnableFeature(features::kSmartLockUIRevamp);
   }
 
@@ -127,12 +126,12 @@ class LoginAuthFactorsViewUnittest : public AshTestBase {
 
   // LoginTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    LoginTestBase::SetUp();
 
     // We proxy |view_| inside of |container_| so we can control layout.
     // TODO(crbug.com/1233614): Add layout tests to check
     // positioning/ordering of icons.
-    container_ = std::make_unique<views::View>();
+    container_ = new views::View();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
 
@@ -140,12 +139,13 @@ class LoginAuthFactorsViewUnittest : public AshTestBase {
         std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
             &LoginAuthFactorsViewUnittest::set_click_to_enter_called,
             base::Unretained(this), true)));
+    SetWidget(CreateWidgetWithContent(container_));
   }
 
   void TearDown() override {
-    container_.reset();
+    container_ = nullptr;
     view_ = nullptr;
-    AshTestBase::TearDown();
+    LoginTestBase::TearDown();
   }
 
   void AddAuthFactors(std::vector<AuthFactorType> types) {
@@ -189,8 +189,27 @@ class LoginAuthFactorsViewUnittest : public AshTestBase {
               ShouldHidePasswordField());
   }
 
+  void TestArrowButtonClearsFocus(AuthFactorState state_after_click_required) {
+    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+
+    LoginAuthFactorsView::TestApi test_api(view_);
+    auth_factors_[0]->state_ = AuthFactorState::kReady;
+    auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
+    test_api.UpdateState();
+
+    EXPECT_TRUE(view_->GetFocusManager()->GetFocusedView());
+    EXPECT_TRUE(test_api.arrow_button()->HasFocus());
+
+    auth_factors_[1]->state_ = state_after_click_required;
+    test_api.UpdateState();
+
+    EXPECT_FALSE(view_->GetFocusManager()->GetFocusedView());
+  }
+
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<views::View> container_;
+  views::View* container_ = nullptr;
   LoginAuthFactorsView* view_ = nullptr;  // Owned by container.
   std::vector<FakeAuthFactorModel*> auth_factors_;
   bool click_to_enter_called_ = false;
@@ -548,6 +567,59 @@ TEST_F(LoginAuthFactorsViewUnittest, CanUsePin) {
     EXPECT_EQ(can_use_pin, auth_factors_[0]->can_use_pin());
     EXPECT_EQ(can_use_pin, auth_factors_[1]->can_use_pin());
   }
+}
+
+// Ensure that when Smart Lock state is kClickRequired, the arrow button
+// automatically becomes focused.
+TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonRequestsFocus) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kReady;
+  auth_factors_[1]->state_ = AuthFactorState::kReady;
+  test_api.UpdateState();
+
+  // Check that there is no focus initially.
+  EXPECT_FALSE(view_->GetFocusManager()->GetFocusedView());
+  EXPECT_FALSE(test_api.arrow_button()->HasFocus());
+
+  auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
+  test_api.UpdateState();
+
+  // Check that the arrow button becomes focused.
+  EXPECT_TRUE(view_->GetFocusManager()->GetFocusedView());
+  EXPECT_TRUE(test_api.arrow_button()->HasFocus());
+}
+
+// Regression test for b/215754583.
+// The arrow button automatically becomes focused when Smart Lock state is
+// kClickRequired. After the state changes, the button loses visibility and the
+// entire view should have its focus cleared.
+TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocus_Authenticated) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  Shell::Get()->login_screen_controller()->ShowLockScreen();
+
+  TestArrowButtonClearsFocus(
+      /*state_after_click_required=*/AuthFactorState::kAuthenticated);
+}
+
+// When the state transitions from kClickRequired to kReady, kErrorTemporary
+// or kErrorPermanent, the focus is also cleared. The actual experience seems
+// as though the focus is not cleared and instead jumps to the password input.
+// This focus happens inside LoginAuthUserView when the state change causes
+// the password input to become visible.
+TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocus_Ready) {
+  TestArrowButtonClearsFocus(
+      /*state_after_click_required=*/AuthFactorState::kReady);
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocus_Error) {
+  TestArrowButtonClearsFocus(
+      /*state_after_click_required=*/AuthFactorState::kErrorTemporary);
+  TestArrowButtonClearsFocus(
+      /*state_after_click_required=*/AuthFactorState::kErrorPermanent);
 }
 
 }  // namespace ash
