@@ -245,8 +245,11 @@ def main():
     if 'target_os' in gn_args:
       args.target_os = gn_args['target_os'].strip('"')
     else:
-      args.target_os = { 'darwin': 'mac', 'linux2': 'linux', 'win32': 'win' }[
-                           sys.platform]
+      args.target_os = {
+          'darwin': 'mac',
+          'linux': 'linux',
+          'win32': 'win'
+      }[sys.platform]
 
   if args.swarming_os is None:
     args.swarming_os = {
@@ -265,7 +268,7 @@ def main():
   if args.arch == 'detect':
     if args.target_os not in ('android', 'mac', 'win'):
       executable_info = subprocess.check_output(
-          ['file', os.path.join(args.out_dir, args.target_name)])
+          ['file', os.path.join(args.out_dir, args.target_name)], text=True)
       if 'ARM aarch64' in executable_info:
         args.arch = 'arm64',
       else:
