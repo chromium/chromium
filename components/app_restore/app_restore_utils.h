@@ -51,7 +51,7 @@ int32_t FetchRestoreWindowId(const std::string& app_id);
 
 // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
 // apps.
-COMPONENT_EXPORT(APP_RESTORE) int32_t GetArcSessionId();
+COMPONENT_EXPORT(APP_RESTORE) int32_t CreateArcSessionId();
 
 // Sets `arc_session_id` for `window_id`. `arc session id` is assigned when ARC
 // apps are restored.

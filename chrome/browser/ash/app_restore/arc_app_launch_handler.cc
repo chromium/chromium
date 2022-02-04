@@ -420,7 +420,7 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 
     // Set an ARC session id to find the restore window id based on the newly
     // created ARC task id.
-    const int32_t arc_session_id = ::app_restore::GetArcSessionId();
+    const int32_t arc_session_id = ::app_restore::CreateArcSessionId();
     ::app_restore::SetArcSessionIdForWindowId(arc_session_id, data_it.first);
     window_id_to_session_id_[data_it.first] = arc_session_id;
     session_id_to_window_id_[arc_session_id] = data_it.first;
@@ -627,7 +627,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
   } else {
     // Set an ARC session id to find the restore window id based on the newly
     // created ARC task id.
-    const int32_t arc_session_id = ::app_restore::GetArcSessionId();
+    const int32_t arc_session_id = ::app_restore::CreateArcSessionId();
     window_info->window_id = arc_session_id;
     ::app_restore::SetArcSessionIdForWindowId(arc_session_id, window_id);
     window_id_to_session_id_[window_id] = arc_session_id;

@@ -115,10 +115,6 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // Returns the restore window id for the ARC app's `session_id`.
   int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
-  // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
-  // apps.
-  int32_t GetArcSessionId();
-
   // Sets |session_id| for |window_id| to |session_id_to_window_id_|.
   // |session_id| is assigned when ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t session_id, int32_t window_id);
@@ -139,8 +135,6 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // The map from the window id to the app id for ARC app windows. The window id
   // is saved in the window property |kRestoreWindowIdKey|.
   std::map<int32_t, std::string> window_id_to_app_id_;
-
-  int32_t session_id_ = kArcSessionIdOffsetForRestoredLaunching;
 
   // The map from the arc session id to the window id.
   std::map<int32_t, int32_t> session_id_to_window_id_;

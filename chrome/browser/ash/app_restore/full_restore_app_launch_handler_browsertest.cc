@@ -1509,8 +1509,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   app_host()->OnTaskDestroyed(kTaskId1);
 
-  int32_t session_id2 =
-      ::full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 = ::app_restore::CreateArcSessionId();
   ::full_restore::FullRestoreReadHandler::GetInstance()
       ->SetArcSessionIdForWindowId(session_id2, kTaskId1);
 
@@ -1594,8 +1593,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   app_host()->OnTaskDestroyed(kTaskId1);
 
-  int32_t session_id2 =
-      ::full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 = ::app_restore::CreateArcSessionId();
   ::full_restore::FullRestoreReadHandler::GetInstance()
       ->SetArcSessionIdForWindowId(session_id2, kTaskId1);
 
@@ -1621,8 +1619,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   Restore();
   widget->CloseNow();
 
-  int32_t session_id3 =
-      ::full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id3 = ::app_restore::CreateArcSessionId();
   ::full_restore::FullRestoreReadHandler::GetInstance()
       ->SetArcSessionIdForWindowId(session_id3, session_id2);
 

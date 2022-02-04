@@ -101,10 +101,6 @@ void DeskTemplateReadHandler::SetNextRestoreWindowIdForChromeApp(
     restore_data_->SetNextRestoreWindowIdForChromeApp(app_id);
 }
 
-int32_t DeskTemplateReadHandler::GetArcSessionId() {
-  return arc_read_handler_ ? arc_read_handler_->GetArcSessionId() : 0;
-}
-
 void DeskTemplateReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                          int32_t window_id) {
   if (arc_read_handler_)

@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
                                uint32_t primary_color,
                                uint32_t status_bar_color);
 
-  // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
+  // Generates the ARC session id (0 - 1,000,000,000) for save ARC apps.
   int32_t GetArcSessionId();
 
   // Returns the app id that associates with |window|.

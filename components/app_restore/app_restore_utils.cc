@@ -22,6 +22,8 @@ namespace {
 
 const char kCrxAppPrefix[] = "_crx_";
 
+static int32_t session_id_counter = kArcSessionIdOffsetForRestoredLaunching;
+
 // Always use the full restore ARC data if ARC apps for desks templates is not
 // enabled.
 bool ShouldUseFullRestoreArcData() {
@@ -150,12 +152,14 @@ int32_t FetchRestoreWindowId(const std::string& app_id) {
       ->FetchRestoreWindowId(app_id);
 }
 
-int32_t GetArcSessionId() {
-  if (ShouldUseFullRestoreArcData()) {
-    return full_restore::FullRestoreReadHandler::GetInstance()
-        ->GetArcSessionId();
+int32_t CreateArcSessionId() {
+  // ARC session id offset start counting from a large number. When the counter
+  // overflow, it will less the start number.
+  if (session_id_counter < kArcSessionIdOffsetForRestoredLaunching) {
+    LOG(WARNING) << "ARC session id is overflow: " << session_id_counter;
+    session_id_counter = kArcSessionIdOffsetForRestoredLaunching;
   }
-  return DeskTemplateReadHandler::Get()->GetArcSessionId();
+  return ++session_id_counter;
 }
 
 void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id) {

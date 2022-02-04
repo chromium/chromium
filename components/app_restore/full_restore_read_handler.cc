@@ -343,10 +343,6 @@ int32_t FullRestoreReadHandler::GetArcRestoreWindowIdForSessionId(
   return arc_read_handler_->GetArcRestoreWindowIdForSessionId(session_id);
 }
 
-int32_t FullRestoreReadHandler::GetArcSessionId() {
-  return arc_read_handler_ ? arc_read_handler_->GetArcSessionId() : 0;
-}
-
 int32_t FullRestoreReadHandler::GetLacrosRestoreWindowId(
     const std::string& lacros_window_id) const {
   return IsLacrosRestoreRunning()
