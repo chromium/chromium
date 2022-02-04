@@ -45,15 +45,7 @@ bool FrameInfo::IsDroppedAffectingSmoothness() const {
   if (smooth_thread == SmoothThread::kSmoothNone)
     return false;
 
-  if (IsMainSmooth(smooth_thread) && WasMainUpdateDropped()) {
-    return true;
-  }
-
-  if (IsCompositorSmooth(smooth_thread) && WasCompositorUpdateDropped()) {
-    return true;
-  }
-
-  return false;
+  return WasSmoothMainUpdateDropped() || WasSmoothCompositorUpdateDropped();
 }
 
 void FrameInfo::MergeWith(const FrameInfo& other) {
@@ -143,13 +135,19 @@ bool FrameInfo::Validate() const {
   return true;
 }
 
-bool FrameInfo::WasCompositorUpdateDropped() const {
+bool FrameInfo::WasSmoothCompositorUpdateDropped() const {
+  if (!IsCompositorSmooth(smooth_thread))
+    return false;
+
   if (was_merged)
     return compositor_update_was_dropped;
   return final_state == FrameFinalState::kDropped;
 }
 
-bool FrameInfo::WasMainUpdateDropped() const {
+bool FrameInfo::WasSmoothMainUpdateDropped() const {
+  if (!IsMainSmooth(smooth_thread))
+    return false;
+
   if (was_merged)
     return main_update_was_dropped;
 
@@ -178,9 +176,9 @@ bool FrameInfo::IsScrollPrioritizeFrameDropped() const {
   // affecting smoothness.
   switch (scroll_thread) {
     case SmoothEffectDrivingThread::kCompositor:
-      return WasCompositorUpdateDropped();
+      return WasSmoothCompositorUpdateDropped();
     case SmoothEffectDrivingThread::kMain:
-      return WasMainUpdateDropped();
+      return WasSmoothMainUpdateDropped();
     case SmoothEffectDrivingThread::kUnknown:
       return IsDroppedAffectingSmoothness();
   }

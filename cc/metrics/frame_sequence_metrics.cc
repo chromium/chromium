@@ -668,13 +668,13 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
                                           const FrameInfo& frame_info) {
   switch (GetEffectiveThread()) {
     case SmoothEffectDrivingThread::kCompositor:
-      if (frame_info.WasCompositorUpdateDropped()) {
+      if (frame_info.WasSmoothCompositorUpdateDropped()) {
         ++v2_.frames_dropped;
       }
       ++v2_.frames_expected;
       break;
     case SmoothEffectDrivingThread::kMain:
-      if (frame_info.WasMainUpdateDropped()) {
+      if (frame_info.WasSmoothMainUpdateDropped()) {
         ++v2_.frames_dropped;
       }
       ++v2_.frames_expected;

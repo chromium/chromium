@@ -575,7 +575,7 @@ void DroppedFrameCounter::UpdateDroppedFrameCountInWindow(
     dropped_frame_count_in_window_[SmoothnessStrategy::kDefaultStrategy] +=
         count;
   }
-  if (frame_info.WasCompositorUpdateDropped()) {
+  if (frame_info.WasSmoothCompositorUpdateDropped()) {
     DCHECK_GE(dropped_frame_count_in_window_
                       [SmoothnessStrategy::kCompositorFocusedStrategy] +
                   count,
@@ -583,7 +583,7 @@ void DroppedFrameCounter::UpdateDroppedFrameCountInWindow(
     dropped_frame_count_in_window_
         [SmoothnessStrategy::kCompositorFocusedStrategy] += count;
   }
-  if (frame_info.WasMainUpdateDropped()) {
+  if (frame_info.WasSmoothMainUpdateDropped()) {
     DCHECK_GE(dropped_frame_count_in_window_
                       [SmoothnessStrategy::kMainFocusedStrategy] +
                   count,

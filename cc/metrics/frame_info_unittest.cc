@@ -9,11 +9,15 @@
 namespace cc {
 namespace {
 
-using MainThreadResponse = FrameInfo::MainThreadResponse;
 using FrameFinalState = FrameInfo::FrameFinalState;
+using MainThreadResponse = FrameInfo::MainThreadResponse;
+using SmoothThread = FrameInfo::SmoothThread;
 
 TEST(FrameInfoTest, WasMainUpdateDroppedForkedReporters) {
   FrameInfo main, compositor;
+
+  main.smooth_thread = SmoothThread::kSmoothBoth;
+  compositor.smooth_thread = SmoothThread::kSmoothCompositor;
 
   main.main_thread_response = MainThreadResponse::kIncluded;
   compositor.main_thread_response = MainThreadResponse::kMissing;
@@ -27,8 +31,8 @@ TEST(FrameInfoTest, WasMainUpdateDroppedForkedReporters) {
 
   auto test = main;
   test.MergeWith(compositor);
-  EXPECT_TRUE(test.WasMainUpdateDropped());
-  EXPECT_TRUE(test.WasCompositorUpdateDropped());
+  EXPECT_TRUE(test.WasSmoothMainUpdateDropped());
+  EXPECT_TRUE(test.WasSmoothCompositorUpdateDropped());
 
   // Even if the compositor-thread update is presented, the overall main-thread
   // update is dropped if the compositor-update is not accompanied by new
@@ -36,8 +40,8 @@ TEST(FrameInfoTest, WasMainUpdateDroppedForkedReporters) {
   compositor.final_state = FrameFinalState::kPresentedPartialOldMain;
   test = main;
   test.MergeWith(compositor);
-  EXPECT_TRUE(test.WasMainUpdateDropped());
-  EXPECT_FALSE(test.WasCompositorUpdateDropped());
+  EXPECT_TRUE(test.WasSmoothMainUpdateDropped());
+  EXPECT_FALSE(test.WasSmoothCompositorUpdateDropped());
 
   // If the compositor-thread is accompanied by new main-thread update (even if
   // from earlier frames), then the main-thread is update is considered not
@@ -45,8 +49,8 @@ TEST(FrameInfoTest, WasMainUpdateDroppedForkedReporters) {
   compositor.final_state = FrameFinalState::kPresentedPartialNewMain;
   test = main;
   test.MergeWith(compositor);
-  EXPECT_FALSE(test.WasMainUpdateDropped());
-  EXPECT_FALSE(test.WasCompositorUpdateDropped());
+  EXPECT_FALSE(test.WasSmoothMainUpdateDropped());
+  EXPECT_FALSE(test.WasSmoothCompositorUpdateDropped());
 }
 
 }  // namespace

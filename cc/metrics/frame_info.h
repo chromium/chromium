@@ -66,8 +66,11 @@ struct CC_EXPORT FrameInfo {
 
   bool Validate() const;
 
-  bool WasCompositorUpdateDropped() const;
-  bool WasMainUpdateDropped() const;
+  // Returns whether any update from the compositor/main thread was dropped, and
+  // whether the update was part of a smooth sequence.
+  bool WasSmoothCompositorUpdateDropped() const;
+  bool WasSmoothMainUpdateDropped() const;
+
   bool IsScrollPrioritizeFrameDropped() const;
 
  private:
