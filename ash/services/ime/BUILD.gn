@@ -53,7 +53,6 @@ source_set("lib") {
     "//ash/services/ime/public/cpp:rulebased",
     "//ash/services/ime/public/cpp/shared_lib:interfaces",
     "//ash/services/ime/public/mojom",
-    "//ash/services/ime/public/proto:messages_proto",
     "//base",
   ]
 }
@@ -86,7 +85,6 @@ source_set("services_unittests") {
     "//ash/constants",
     "//ash/services/ime:decoder",
     "//ash/services/ime/public/mojom",
-    "//ash/services/ime/public/proto:messages_proto",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
