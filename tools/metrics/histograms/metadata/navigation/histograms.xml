@@ -1114,6 +1114,18 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.UrlParamFilter.FilteredParamCountExperimental"
+    units="count" expires_after="2023-01-02">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>bcl@chromium.org</owner>
+  <summary>
+    The number of parameters filtered out of a given request when switching from
+    normal browsing to incognito. Determined by backend classification of
+    parameters. The filtering is currently experimental; this metric will be
+    replaced.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.UserAgentStringType" enum="UserAgentStringType"
     expires_after="2022-06-12">
   <owner>abeyad@chromium.org</owner>

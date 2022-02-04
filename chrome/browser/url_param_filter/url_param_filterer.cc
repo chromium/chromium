@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -19,8 +20,8 @@
 #include "url/gurl.h"
 
 namespace url_param_filter {
-
 namespace {
+
 // Get the ETLD+1 of the URL, which means any subdomain is treated equivalently.
 std::string GetEtldPlusOne(const GURL& gurl) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -38,12 +39,13 @@ void AddParams(std::set<std::string>& parameter_set,
 
 // Filter a given URL according to the passed-in classifications, optionally
 // checking any encoded, nested URLs.
-GURL FilterUrl(const GURL& source_url,
-               const GURL& destination_url,
-               const ClassificationMap& source_classification_map,
-               const ClassificationMap& destination_classification_map,
-               bool check_nested) {
+FilterResult FilterUrl(const GURL& source_url,
+                       const GURL& destination_url,
+                       const ClassificationMap& source_classification_map,
+                       const ClassificationMap& destination_classification_map,
+                       bool check_nested) {
   GURL result = GURL{destination_url};
+  int filtered_params_count = 0;
 
   std::string source_etld_plus1 = GetEtldPlusOne(source_url);
   std::string destination_etld_plus1 = GetEtldPlusOne(destination_url);
@@ -65,7 +67,7 @@ GURL FilterUrl(const GURL& source_url,
   }
   // Return quickly if there are no parameters we care about.
   if (blocked_parameters.size() == 0) {
-    return result;
+    return FilterResult{destination_url, filtered_params_count};
   }
 
   std::vector<std::string> query_parts;
@@ -79,17 +81,20 @@ GURL FilterUrl(const GURL& source_url,
       if (check_nested) {
         GURL nested = GURL{net::UnescapeBinaryURLComponent(value)};
         if (nested.is_valid()) {
-          GURL modified =
+          FilterResult nested_result =
               FilterUrl(destination_url, nested, source_classification_map,
                         destination_classification_map, false);
           // If a nested URL contains a param we must filter, do so now.
-          if (nested != modified) {
-            value =
-                net::EscapeQueryParamValue(modified.spec(), /*use_plus=*/false);
+          if (nested != nested_result.filtered_url) {
+            value = net::EscapeQueryParamValue(
+                nested_result.filtered_url.spec(), /*use_plus=*/false);
+            filtered_params_count += nested_result.filtered_param_count;
           }
         }
       }
       query_parts.push_back(base::StrCat({key, "=", value}));
+    } else {
+      filtered_params_count++;
     }
   }
 
@@ -97,7 +102,7 @@ GURL FilterUrl(const GURL& source_url,
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query);
   result = result.ReplaceComponents(replacements);
-  return result;
+  return FilterResult{result, filtered_params_count};
 }
 
 url_param_filter::ClassificationMap GetClassifications(
@@ -135,20 +140,31 @@ const url_param_filter::ClassificationMap& GetDestinationClassifications() {
                                  FilterClassification_SiteRole_DESTINATION));
   return *destination_classifications;
 }
+
+// Write metrics about results of param filtering.
+void WriteMetrics(FilterResult result) {
+  base::UmaHistogramCounts100(
+      "Navigation.UrlParamFilter.FilteredParamCountExperimental",
+      result.filtered_param_count);
+}
 }  // anonymous namespace
 
-GURL FilterUrl(const GURL& source_url,
-               const GURL& destination_url,
-               const ClassificationMap& source_classification_map,
-               const ClassificationMap& destination_classification_map) {
+FilterResult FilterUrl(
+    const GURL& source_url,
+    const GURL& destination_url,
+    const ClassificationMap& source_classification_map,
+    const ClassificationMap& destination_classification_map) {
   return FilterUrl(source_url, destination_url, source_classification_map,
                    destination_classification_map, true);
 }
 
 GURL FilterUrl(const GURL& source_url, const GURL& destination_url) {
   if (base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
-    return FilterUrl(source_url, destination_url, GetSourceClassifications(),
-                     GetDestinationClassifications());
+    FilterResult result =
+        FilterUrl(source_url, destination_url, GetSourceClassifications(),
+                  GetDestinationClassifications());
+    WriteMetrics(result);
+    return result.filtered_url;
   }
   return destination_url;
 }

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
 #include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
@@ -18,10 +19,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlEmptyClassifications) {
   GURL source = GURL{"http://source.xyz"};
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
   // If no classifications are passed in, don't modify the destination URL.
-  GURL result = url_param_filter::FilterUrl(
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
       source, expected, url_param_filter::ClassificationMap(),
       url_param_filter::ClassificationMap());
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 0);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlNoChanges) {
@@ -40,10 +42,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlNoChanges) {
 
   // If classifications are passed in, but the destination URL doesn't contain
   // any blocked params, don't modify it.
-  GURL result =
+  url_param_filter::FilterResult result =
       url_param_filter::FilterUrl(source, expected, source_classification_map,
                                   destination_classification_map);
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 0);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSourceBlocked) {
@@ -58,10 +61,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceBlocked) {
   // Navigations from source.xyz with a param called plzblock should have that
   // param removed, regardless of destination.
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
       source, destination, source_classification_map,
       url_param_filter::ClassificationMap());
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 1);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlMultipleSourceBlocked) {
@@ -77,10 +81,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlMultipleSourceBlocked) {
   // Navigations from source.xyz with a param called plzblock or plzblock1
   // should have those params removed, regardless of destination.
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
       source, destination, source_classification_map,
       url_param_filter::ClassificationMap());
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlDestinationBlocked) {
@@ -95,10 +100,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlDestinationBlocked) {
   // Navigations to destination.xyz with a param called plzblock should have
   // that param removed, regardless of source.
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
       source, destination, url_param_filter::ClassificationMap(),
       destination_classification_map);
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 1);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlMultipleDestinationBlocked) {
@@ -114,10 +120,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlMultipleDestinationBlocked) {
   // Navigations to destination.xyz with a param called plzblock and/or
   // plzblock1 should have those param removed, regardless of source.
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
       source, destination, url_param_filter::ClassificationMap(),
       destination_classification_map);
-  ASSERT_EQ(result, expected);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationBlocked) {
@@ -138,10 +145,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationBlocked) {
   // Both source and destination have associated URL param filtering rules. Only
   // nochange should remain.
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(source, destination,
-                                            source_classification_map,
-                                            destination_classification_map);
-  ASSERT_EQ(result, expected);
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest,
@@ -166,10 +174,11 @@ TEST_F(UrlParamFiltererTest,
   // nochange should remain.
   GURL expected =
       GURL{"https://destination.xyz?nochange=asdf&laternochange=fdsa"};
-  GURL result = url_param_filter::FilterUrl(source, destination,
-                                            source_classification_map,
-                                            destination_classification_map);
-  ASSERT_EQ(result, expected);
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlSubdomainsApplied) {
@@ -189,10 +198,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlSubdomainsApplied) {
               FilterClassification_SiteRole_DESTINATION);
 
   GURL expected = GURL{"https://subdomain.destination.xyz?nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(source, destination,
-                                            source_classification_map,
-                                            destination_classification_map);
-  ASSERT_EQ(result, expected);
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlCaseIgnored) {
@@ -212,10 +222,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlCaseIgnored) {
 
   // The disallowed params PlZbLoCk and PLZBLOCK1 should be removed.
   GURL expected = GURL{"https://destination.xyz?nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(source, destination,
-                                            source_classification_map,
-                                            destination_classification_map);
-  ASSERT_EQ(result, expected);
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrl) {
@@ -243,10 +254,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrl) {
       "subdomain.source.xyz?destination=https%3A%2F%2Fdestination.xyz%2F%"
       "3Fnochange%"
       "3Dasdf&nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(source, destination,
-                                            source_classification_map,
-                                            destination_classification_map);
-  ASSERT_EQ(result, expected);
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
 }
 
 TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlNotNeedingFiltering) {
@@ -273,10 +285,11 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlNotNeedingFiltering) {
       "subdomain.source.xyz?destination=https%3A%2F%2Fdestination.xyz%2F%"
       "3Fnochange%"
       "3Dasdf&nochange=asdf"};
-  GURL result = url_param_filter::FilterUrl(source, destination,
-                                            source_classification_map,
-                                            destination_classification_map);
-  ASSERT_EQ(result, expected);
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 1);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureDeactivated) {
@@ -308,4 +321,43 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
   GURL result = url_param_filter::FilterUrl(source, destination);
 
   ASSERT_EQ(result, expected);
+}
+
+TEST_F(UrlParamFiltererTest, FeatureActivatedMetricsWritten) {
+  base::HistogramTester histograms;
+  const std::string histogram_name =
+      "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+  std::string encoded_classification =
+      url_param_filter::CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"source.xyz", {"plzblock"}}}, {{"destination.xyz", {"plzblock1"}}});
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  // With the flag set, the URL should be filtered.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled,
+      {{"classifications", encoded_classification}});
+
+  GURL source = GURL{"http://source.xyz"};
+  GURL destination =
+      GURL{"https://destination.xyz?plzblock=1&plzblock1=2&nochange=asdf"};
+
+  // The histogram should start off empty.
+  histograms.ExpectTotalCount(histogram_name, 0);
+  url_param_filter::FilterUrl(source, destination);
+  // We filtered two parameters.
+  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 2);
+  url_param_filter::FilterUrl(source, destination);
+  // We filtered two more.
+  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 4);
+  destination = GURL{"https://destination.xyz?plzblock=1&nochange=asdf"};
+  url_param_filter::FilterUrl(source, destination);
+
+  // This time just one more.
+  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 5);
+  destination = GURL{"https://destination.xyz?nochange=asdf"};
+  url_param_filter::FilterUrl(source, destination);
+  // This time we didn't filter any.
+  ASSERT_EQ(histograms.GetTotalSum(histogram_name), 5);
+  // The number of samples should be 4 (four calls to FilterUrl).
+  histograms.ExpectTotalCount(histogram_name, 4);
 }
