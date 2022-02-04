@@ -19,6 +19,8 @@ namespace exo {
 class Permission;
 }
 
+class Profile;
+
 // AppServiceAppWindowCrostiniTracker is used to handle Crostini app window
 // special cases, e.g. CrostiniAppDisplay, Crostini shelf app id, etc.
 class AppServiceAppWindowCrostiniTracker {
@@ -48,6 +50,15 @@ class AppServiceAppWindowCrostiniTracker {
  private:
   void RegisterCrostiniWindowForForceClose(aura::Window* window,
                                            const std::string& app_name);
+
+  // Checks the current app id saved in InstanceRegistry for `window`. If the
+  // save app id is not `app_id`, remove the instance and add it back with
+  // `app_id` to modify the app id saved in InstanceRegistry. The app id in
+  // InstanceRegistry can't be modified directly, so we have to remove it first,
+  // then add it back again.
+  void MaybeModifyInstance(Profile* profile,
+                           aura::Window* window,
+                           const std::string& app_id) const;
 
   AppServiceAppWindowShelfController* const app_service_controller_;
 

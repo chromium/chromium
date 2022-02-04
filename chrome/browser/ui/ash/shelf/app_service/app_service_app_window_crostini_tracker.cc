@@ -223,12 +223,23 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // Currently Crostini can only be used from the primary profile. In the
   // future, this may be replaced by some way of matching the container that
   // runs this app with the user that owns it.
-  const Profile* primary_account_profile =
+  Profile* primary_account_profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   std::string shelf_app_id = crostini::GetCrostiniShelfAppId(
       primary_account_profile, exo::GetShellApplicationId(window),
       exo::GetShellStartupId(window));
+
+  // When install a new Crostini app and run it directly, Crostini might not get
+  // the correct app id yet when `window` is created, but use an unregistered
+  // app id for a short term. Then the unregistered app id is saved in
+  // InstanceRegistry for `window`. So when the app id is set for `window`
+  // later, the app id inconsistent DCHECK is hit, which could affect the
+  // instance saved in InstanceRegistry. To prevent the updating for `window` in
+  // InstanceRegistry, call MaybeModifyInstance to check the saved app id and
+  // the expected shelf_app_id, and if they are not consistent, modify the app
+  // id to use `shelf_app_id`.
+  MaybeModifyInstance(primary_account_profile, window, shelf_app_id);
   return shelf_app_id;
 }
 
@@ -243,4 +254,25 @@ void AppServiceAppWindowCrostiniTracker::RegisterCrostiniWindowForForceClose(
   crostini::ForceCloseWatcher::Watch(
       std::make_unique<crostini::ShellSurfaceForceCloseDelegate>(surface,
                                                                  app_name));
+}
+
+void AppServiceAppWindowCrostiniTracker::MaybeModifyInstance(
+    Profile* profile,
+    aura::Window* window,
+    const std::string& app_id) const {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  DCHECK(proxy);
+  auto& instance_registry = proxy->InstanceRegistry();
+  std::string old_app_id = instance_registry.GetShelfId(window).app_id;
+  if (old_app_id.empty() || app_id == old_app_id)
+    return;
+
+  auto* app_service_instance_helper =
+      app_service_controller_->app_service_instance_helper();
+  DCHECK(app_service_instance_helper);
+  auto state = instance_registry.GetState(window);
+  app_service_instance_helper->OnInstances(old_app_id, window, std::string(),
+                                           apps::InstanceState::kDestroyed);
+  app_service_instance_helper->OnInstances(app_id, window, std::string(),
+                                           state);
 }
