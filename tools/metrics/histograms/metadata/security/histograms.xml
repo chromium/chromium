@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2022-01-31">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2022-09-01">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -577,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.DownloadStarted" enum="SecurityLevel"
-    expires_after="2022-02-01">
+    expires_after="2022-09-01">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnComplete" enum="SecurityLevel"
-    expires_after="2022-02-01">
+    expires_after="2022-09-01">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -641,7 +641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Security.SiteEngagement" units="units"
-    expires_after="2022-02-01">
+    expires_after="2022-09-01">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
