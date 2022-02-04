@@ -10,16 +10,20 @@ import {MetricsUtils} from './metrics_utils.js';
 import {SpeechParser} from './parse/speech_parser.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
-const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
-const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
 const ResultEvent =
     chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent;
 const StartOptions = chrome.speechRecognitionPrivate.StartOptions;
 const StopEvent = chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
 const SpeechRecognitionType =
     chrome.speechRecognitionPrivate.SpeechRecognitionType;
+const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
 
-/** Main class for the Chrome OS dictation feature. */
+/**
+ * Main class for the Chrome OS dictation feature.
+ * Please note: this is being developed behind the flag
+ * --enable-experimental-accessibility-dictation-extension
+ */
 export class Dictation {
   constructor() {
     /** @private {InputController} */
@@ -399,7 +403,8 @@ export class Dictation {
    * @private
    */
   setInterimText_(text) {
-    if (!this.commandsFeatureEnabled_) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
 
@@ -423,7 +428,8 @@ export class Dictation {
    * @private
    */
   clearInterimText_() {
-    if (!this.commandsFeatureEnabled_) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
 
@@ -443,7 +449,8 @@ export class Dictation {
    * @private
    */
   showMacroExecuted_(macro, transcript) {
-    if (!this.commandsFeatureEnabled_) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
 
@@ -473,7 +480,8 @@ export class Dictation {
    * @private
    */
   showMacroExecutionFailed_(macro, transcript) {
-    if (!this.commandsFeatureEnabled_) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
 
@@ -508,7 +516,7 @@ export class Dictation {
    * @private
    */
   hideCommandsUI_() {
-    if (!this.commandsFeatureEnabled_) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
       return;
     }
 

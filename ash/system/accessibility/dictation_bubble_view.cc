@@ -234,7 +234,6 @@ class ASH_EXPORT HintView : public views::View {
       num_visible_hints = hints.value().size();
     }
 
-    // Update labels.
     for (size_t i = 0; i < labels_.size(); ++i) {
       bool has_hint_for_index = hints.has_value() && (i < hints.value().size());
       labels_[i]->SetVisible(has_hint_for_index);
@@ -247,14 +246,8 @@ class ASH_EXPORT HintView : public views::View {
     }
 
     // Set visibility of this view based on the number of visible hints.
-    // If the hint view is visible, send an alert event so that ChromeVox reads
-    // hints to the user.
-    if (num_visible_hints > 0) {
-      SetVisible(true);
-      NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-    } else {
-      SetVisible(false);
-    }
+    SetVisible(num_visible_hints > 0 ? true : false);
+
     SizeToPreferredSize();
   }
 
