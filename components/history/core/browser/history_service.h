@@ -741,6 +741,13 @@ class HistoryService : public KeyedService {
   // deleted. `url_id` is the id of the url row.
   void NotifyKeywordSearchTermDeleted(URLID url_id);
 
+  // Notify all HistoryServiceObservers registered that content model
+  // annotations for the URL associated with `row` have changed. `row` contains
+  // the URL information for the page.
+  void NotifyContentModelAnnotationModified(
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations);
+
   // Favicon -------------------------------------------------------------------
 
   // These favicon methods are exposed to the FaviconService. Instead of calling

@@ -177,6 +177,14 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // thread.
     virtual void NotifyKeywordSearchTermDeleted(URLID url_id) = 0;
 
+    // Notify HistoryService that content model annotation associated with
+    // the URL for `row` has been modified. Changes to the floc and related
+    // searches annotations will not trigger this. The event will be forwarded
+    // to the HistoryServiceObservers in the correct thread.
+    virtual void NotifyContentModelAnnotationModified(
+        const URLRow& row,
+        const VisitContentModelAnnotations& model_annotations) = 0;
+
     // Invoked when the backend has finished loading the db.
     virtual void DBLoaded() = 0;
   };

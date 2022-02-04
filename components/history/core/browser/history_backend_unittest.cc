@@ -150,6 +150,9 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
                                       KeywordID keyword_id,
                                       const std::u16string& term) override;
   void NotifyKeywordSearchTermDeleted(URLID url_id) override;
+  void NotifyContentModelAnnotationModified(
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations) override;
   void DBLoaded() override;
 
  private:
@@ -218,12 +221,18 @@ class HistoryBackendTestBase : public testing::Test {
     return urls_deleted_notifications_;
   }
 
+  const std::vector<VisitContentModelAnnotations>
+  modified_content_model_annotations() const {
+    return modified_content_model_annotations_;
+  }
+
   void ClearBroadcastedNotifications() {
     url_visited_notifications_.clear();
     urls_modified_notifications_.clear();
     urls_deleted_notifications_.clear();
     favicon_changed_notifications_page_urls_.clear();
     favicon_changed_notifications_icon_urls_.clear();
+    modified_content_model_annotations_.clear();
   }
 
   base::FilePath test_dir() { return test_dir_; }
@@ -268,6 +277,12 @@ class HistoryBackendTestBase : public testing::Test {
     mem_backend_->OnKeywordSearchTermDeleted(nullptr, url_id);
   }
 
+  void NotifyContentModelAnnotationModified(
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations) {
+    modified_content_model_annotations_.push_back(model_annotations);
+  }
+
   base::test::TaskEnvironment task_environment_;
   HistoryClientFakeBookmarks history_client_;
   scoped_refptr<TestHistoryBackend> backend_;  // Will be NULL on init failure.
@@ -309,6 +324,7 @@ class HistoryBackendTestBase : public testing::Test {
   URLVisitedList url_visited_notifications_;
   URLsModifiedList urls_modified_notifications_;
   URLsDeletedList urls_deleted_notifications_;
+  std::vector<VisitContentModelAnnotations> modified_content_model_annotations_;
 
   base::FilePath test_dir_;
 };
@@ -349,6 +365,12 @@ void HistoryBackendTestDelegate::NotifyKeywordSearchTermUpdated(
 
 void HistoryBackendTestDelegate::NotifyKeywordSearchTermDeleted(URLID url_id) {
   test_->NotifyKeywordSearchTermDeleted(url_id);
+}
+
+void HistoryBackendTestDelegate::NotifyContentModelAnnotationModified(
+    const URLRow& row,
+    const VisitContentModelAnnotations& model_annotations) {
+  test_->NotifyContentModelAnnotationModified(row, model_annotations);
 }
 
 void HistoryBackendTestDelegate::DBLoaded() {
@@ -1640,6 +1662,7 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotationsWithNoEntryInVisitTable) {
   VisitContentAnnotations got_content_annotations;
   ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
+  ASSERT_TRUE(modified_content_model_annotations().empty());
 }
 
 TEST_F(HistoryBackendTest, AddRelatedSearchesWithNoEntryInVisitTable) {
@@ -1746,6 +1769,11 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
       0.5f, {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}}, 123, {}};
   backend_->AddContentModelAnnotationsForVisit(
       visit_id, model_annotations_without_entities);
+  std::vector<VisitContentModelAnnotations> annotations =
+      modified_content_model_annotations();
+  ASSERT_EQ(annotations.size(), 1u);
+  ASSERT_EQ(annotations.at(0).visibility_score, 0.5f);
+  ASSERT_EQ(annotations.at(0).categories.size(), 2u);
   VisitContentModelAnnotations model_annotations_only_entities = {
       -1.0f,
       {},
@@ -1757,6 +1785,10 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   VisitContentAnnotations got_content_annotations;
   ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
+  annotations = modified_content_model_annotations();
+  ASSERT_EQ(annotations.size(), 2u);
+  ASSERT_EQ(annotations.at(1).visibility_score, -1.0f);
+  ASSERT_EQ(annotations.at(1).categories.size(), 0u);
 
   // Model annotations should be merged from both calls.
   EXPECT_EQ(VisitContentAnnotationFlag::kNone,

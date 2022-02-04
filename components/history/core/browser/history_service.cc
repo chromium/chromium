@@ -137,6 +137,15 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
                        history_service_, url_id));
   }
 
+  void NotifyContentModelAnnotationModified(
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations) override {
+    service_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HistoryService::NotifyContentModelAnnotationModified,
+                       history_service_, row, model_annotations));
+  }
+
   void DBLoaded() override {
     service_task_runner_->PostTask(
         FROM_HERE,
@@ -1399,6 +1408,14 @@ void HistoryService::NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                                            const GURL& icon_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   favicons_changed_callback_list_.Notify(page_urls, icon_url);
+}
+
+void HistoryService::NotifyContentModelAnnotationModified(
+    const URLRow& row,
+    const VisitContentModelAnnotations& model_annotations) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (HistoryServiceObserver& observer : observers_)
+    observer.OnContentModelAnnotationModified(this, row, model_annotations);
 }
 
 }  // namespace history

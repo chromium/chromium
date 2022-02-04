@@ -522,6 +522,11 @@ void HistoryBackend::AddContentModelAnnotationsForVisit(
       annotations.model_annotations = model_annotations;
       db_->AddContentAnnotationsForVisit(visit_id, annotations);
     }
+    URLRow url_row;
+    if (db_->GetURLRow(visit_row.url_id, &url_row)) {
+      delegate_->NotifyContentModelAnnotationModified(url_row,
+                                                      model_annotations);
+    }
     ScheduleCommit();
   }
 }
