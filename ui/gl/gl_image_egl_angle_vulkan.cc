@@ -11,6 +11,7 @@
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_surface_egl.h"
 
+#define EGL_TEXTURE_INTERNAL_FORMAT_ANGLE 0x345D
 #define EGL_VULKAN_IMAGE_ANGLE 0x34D3
 #define EGL_VULKAN_IMAGE_CREATE_INFO_HI_ANGLE 0x34D4
 #define EGL_VULKAN_IMAGE_CREATE_INFO_LO_ANGLE 0x34D5
@@ -23,7 +24,8 @@ GLImageEGLAngleVulkan::GLImageEGLAngleVulkan(const gfx::Size& size)
 GLImageEGLAngleVulkan::~GLImageEGLAngleVulkan() = default;
 
 bool GLImageEGLAngleVulkan::Initialize(VkImage image,
-                                       const VkImageCreateInfo* create_info) {
+                                       const VkImageCreateInfo* create_info,
+                                       unsigned int internal_format) {
   DCHECK(image != VK_NULL_HANDLE);
   DCHECK(create_info);
 
@@ -33,6 +35,8 @@ bool GLImageEGLAngleVulkan::Initialize(VkImage image,
       static_cast<EGLint>((info >> 32) & 0xffffffff),
       EGL_VULKAN_IMAGE_CREATE_INFO_LO_ANGLE,
       static_cast<EGLint>(info & 0xffffffff),
+      EGL_TEXTURE_INTERNAL_FORMAT_ANGLE,
+      static_cast<EGLint>(internal_format),
       EGL_NONE,
   };
 

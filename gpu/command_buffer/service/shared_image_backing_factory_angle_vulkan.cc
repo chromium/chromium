@@ -282,7 +282,8 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
 
     auto egl_image = base::MakeRefCounted<gl::GLImageEGLAngleVulkan>(size());
     if (!egl_image->Initialize(vulkan_image_->image(),
-                               &vulkan_image_->create_info())) {
+                               &vulkan_image_->create_info(),
+                               viz::GLInternalFormat(format()))) {
       return false;
     }
 
