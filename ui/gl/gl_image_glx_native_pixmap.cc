@@ -62,12 +62,16 @@ x11::Pixmap XPixmapFromNativePixmap(
 
   auto* connection = x11::Connection::Get();
   x11::Pixmap pixmap_id = connection->GenerateId<x11::Pixmap>();
-  connection->dri3().PixmapFromBuffer(pixmap_id, connection->default_root(),
-                                      native_pixmap.GetDmaBufPlaneSize(0),
-                                      native_pixmap.GetBufferSize().width(),
-                                      native_pixmap.GetBufferSize().height(),
-                                      native_pixmap.GetDmaBufPitch(0), depth,
-                                      bpp, ref_counted_fd);
+  // This should be synced. Otherwise, glXCreatePixmap may fail on ChromeOS
+  // with "failed to create a drawable" error.
+  connection->dri3()
+      .PixmapFromBuffer(pixmap_id, connection->default_root(),
+                        native_pixmap.GetDmaBufPlaneSize(0),
+                        native_pixmap.GetBufferSize().width(),
+                        native_pixmap.GetBufferSize().height(),
+                        native_pixmap.GetDmaBufPitch(0), depth, bpp,
+                        ref_counted_fd)
+      .Sync();
   return pixmap_id;
 }
 

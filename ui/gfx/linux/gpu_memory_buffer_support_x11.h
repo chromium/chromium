@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/native_pixmap_handle.h"
 
 namespace gfx {
 class Size;
@@ -30,6 +31,10 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
   std::unique_ptr<GbmBuffer> CreateBuffer(gfx::BufferFormat format,
                                           const gfx::Size& size,
                                           gfx::BufferUsage usage);
+  std::unique_ptr<GbmBuffer> CreateBufferFromHandle(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::NativePixmapHandle handle);
 
   ~GpuMemoryBufferSupportX11();
 

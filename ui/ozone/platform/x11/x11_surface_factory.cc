@@ -179,4 +179,22 @@ void X11SurfaceFactory::CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
       CreateNativePixmap(widget, vk_device, size, format, usage));
 }
 
+scoped_refptr<gfx::NativePixmap>
+X11SurfaceFactory::CreateNativePixmapFromHandle(
+    gfx::AcceleratedWidget widget,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::NativePixmapHandle handle) {
+  scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
+  auto buffer =
+      ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBufferFromHandle(
+          size, format, std::move(handle));
+  if (buffer) {
+    gfx::NativePixmapHandle handle = buffer->ExportHandle();
+    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
+                                                           std::move(handle));
+  }
+  return pixmap;
+}
+
 }  // namespace ui
