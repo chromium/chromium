@@ -38,7 +38,7 @@ inline uint32_t ByteSwap(uint32_t x) {
 #endif
 }
 
-inline uint64_t ByteSwap(uint64_t x) {
+inline constexpr uint64_t ByteSwap(uint64_t x) {
   // Per build/build_config.h, clang masquerades as MSVC on Windows. If we are
   // actually using clang, we can rely on the builtin.
   //
@@ -53,7 +53,7 @@ inline uint64_t ByteSwap(uint64_t x) {
 #endif
 }
 
-inline uintptr_t ByteSwapUintPtrT(uintptr_t x) {
+inline constexpr uintptr_t ByteSwapUintPtrT(uintptr_t x) {
   // We do it this way because some build configurations are ILP32 even when
   // defined(ARCH_CPU_64_BITS). Unfortunately, we can't use sizeof in #ifs. But,
   // because these conditionals are constexprs, the irrelevant branches will
