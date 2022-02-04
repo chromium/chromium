@@ -166,10 +166,10 @@ class Mp2tStreamParserTest : public testing::Test {
         video_frame_count_(0),
         has_audio_(true),
         has_video_(true),
-        audio_min_dts_(kNoDecodeTimestamp()),
-        audio_max_dts_(kNoDecodeTimestamp()),
-        video_min_dts_(kNoDecodeTimestamp()),
-        video_max_dts_(kNoDecodeTimestamp()),
+        audio_min_dts_(kNoDecodeTimestamp),
+        audio_max_dts_(kNoDecodeTimestamp),
+        video_min_dts_(kNoDecodeTimestamp),
+        video_max_dts_(kNoDecodeTimestamp),
         audio_track_id_(0),
         video_track_id_(0),
         current_audio_config_(),
@@ -207,10 +207,10 @@ class Mp2tStreamParserTest : public testing::Test {
     config_count_ = 0;
     audio_frame_count_ = 0;
     video_frame_count_ = 0;
-    audio_min_dts_ = kNoDecodeTimestamp();
-    audio_max_dts_ = kNoDecodeTimestamp();
-    video_min_dts_ = kNoDecodeTimestamp();
-    video_max_dts_ = kNoDecodeTimestamp();
+    audio_min_dts_ = kNoDecodeTimestamp;
+    audio_max_dts_ = kNoDecodeTimestamp;
+    video_min_dts_ = kNoDecodeTimestamp;
+    video_max_dts_ = kNoDecodeTimestamp;
   }
 
   bool AppendData(const uint8_t* data, size_t length) {
@@ -317,18 +317,18 @@ class Mp2tStreamParserTest : public testing::Test {
     if (!video_buffers.empty()) {
       DecodeTimestamp first_dts = video_buffers.front()->GetDecodeTimestamp();
       DecodeTimestamp last_dts = video_buffers.back()->GetDecodeTimestamp();
-      if (video_max_dts_ != kNoDecodeTimestamp() && first_dts < video_max_dts_)
+      if (video_max_dts_ != kNoDecodeTimestamp && first_dts < video_max_dts_)
         return false;
-      if (video_min_dts_ == kNoDecodeTimestamp())
+      if (video_min_dts_ == kNoDecodeTimestamp)
         video_min_dts_ = first_dts;
       video_max_dts_ = last_dts;
     }
     if (!audio_buffers.empty()) {
       DecodeTimestamp first_dts = audio_buffers.front()->GetDecodeTimestamp();
       DecodeTimestamp last_dts = audio_buffers.back()->GetDecodeTimestamp();
-      if (audio_max_dts_ != kNoDecodeTimestamp() && first_dts < audio_max_dts_)
+      if (audio_max_dts_ != kNoDecodeTimestamp && first_dts < audio_max_dts_)
         return false;
-      if (audio_min_dts_ == kNoDecodeTimestamp())
+      if (audio_min_dts_ == kNoDecodeTimestamp)
         audio_min_dts_ = first_dts;
       audio_max_dts_ = last_dts;
     }

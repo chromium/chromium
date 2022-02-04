@@ -397,7 +397,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
   DVLOG_IF(1, current_timing_desc.pts == kNoTimestamp) << "Missing timestamp";
 
   // If only the PTS is provided, copy the PTS into the DTS.
-  if (current_timing_desc.dts == kNoDecodeTimestamp()) {
+  if (current_timing_desc.dts == kNoDecodeTimestamp) {
     current_timing_desc.dts =
         DecodeTimestamp::FromPresentationTime(current_timing_desc.pts);
   }

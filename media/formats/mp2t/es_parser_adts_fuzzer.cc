@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/formats/mp2t/es_parser_adts.h"
 
 static void NewAudioConfig(const media::AudioDecoderConfig& config) {}
@@ -16,7 +17,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media::mp2t::EsParserAdts es_parser(base::BindRepeating(&NewAudioConfig),
                                       base::BindRepeating(&EmitBuffer), true);
   if (!es_parser.Parse(data, size, media::kNoTimestamp,
-                       media::kNoDecodeTimestamp())) {
+                       media::kNoDecodeTimestamp)) {
     return 0;
   }
   es_parser.Flush();

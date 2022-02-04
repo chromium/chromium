@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
@@ -117,7 +118,7 @@ void SourceBufferRange::AppendBuffersToEnd(
   for (BufferQueue::const_iterator itr = new_buffers.begin();
        itr != new_buffers.end(); ++itr) {
     DCHECK((*itr)->timestamp() != kNoTimestamp);
-    DCHECK((*itr)->GetDecodeTimestamp() != kNoDecodeTimestamp());
+    DCHECK((*itr)->GetDecodeTimestamp() != kNoDecodeTimestamp);
 
     buffers_.push_back(*itr);
     UpdateEndTime(*itr);

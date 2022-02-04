@@ -942,7 +942,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     return ParseResult::kError;
   }
 
-  if (runs_->dts() != kNoDecodeTimestamp()) {
+  if (runs_->dts() != kNoDecodeTimestamp) {
     stream_buf->SetDecodeTimestamp(runs_->dts());
   } else {
     MEDIA_LOG(ERROR, media_log_) << "Frame DTS exceeds representable limit";

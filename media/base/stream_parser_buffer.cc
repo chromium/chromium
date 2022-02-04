@@ -41,7 +41,7 @@ scoped_refptr<StreamParserBuffer> StreamParserBuffer::CopyFrom(
 }
 
 DecodeTimestamp StreamParserBuffer::GetDecodeTimestamp() const {
-  if (decode_timestamp_ == kNoDecodeTimestamp())
+  if (decode_timestamp_ == kNoDecodeTimestamp)
     return DecodeTimestamp::FromPresentationTime(timestamp());
   return decode_timestamp_;
 }
@@ -60,7 +60,7 @@ StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
                                        Type type,
                                        TrackId track_id)
     : DecoderBuffer(data, data_size, side_data, side_data_size),
-      decode_timestamp_(kNoDecodeTimestamp()),
+      decode_timestamp_(kNoDecodeTimestamp),
       config_id_(kInvalidConfigId),
       type_(type),
       track_id_(track_id),

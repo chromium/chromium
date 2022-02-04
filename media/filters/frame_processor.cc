@@ -195,8 +195,7 @@ class MseTrackBuffer {
 MseTrackBuffer::MseTrackBuffer(ChunkDemuxerStream* stream,
                                MediaLog* media_log,
                                SourceBufferParseWarningCB parse_warning_cb)
-    : last_decode_timestamp_(kNoDecodeTimestamp()),
-      last_processed_decode_timestamp_(DecodeTimestamp()),
+    : last_decode_timestamp_(kNoDecodeTimestamp),
       pending_group_start_pts_(kNoTimestamp),
       last_keyframe_presentation_timestamp_(kNoTimestamp),
       last_signalled_group_start_pts_(kNoTimestamp),
@@ -218,7 +217,7 @@ MseTrackBuffer::~MseTrackBuffer() {
 void MseTrackBuffer::Reset() {
   DVLOG(2) << __func__ << "()";
 
-  last_decode_timestamp_ = kNoDecodeTimestamp();
+  last_decode_timestamp_ = kNoDecodeTimestamp;
   last_frame_duration_ = kNoTimestamp;
   highest_presentation_timestamp_ = kNoTimestamp;
   needs_random_access_point_ = true;
@@ -805,7 +804,7 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
                                    << " frame";
       return false;
     }
-    if (decode_timestamp == kNoDecodeTimestamp()) {
+    if (decode_timestamp == kNoDecodeTimestamp) {
       MEDIA_LOG(ERROR, media_log_) << "Unknown DTS for " << frame->GetTypeName()
                                    << " frame";
       return false;
@@ -897,7 +896,7 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     //    times last frame duration:
     DecodeTimestamp track_last_decode_timestamp =
         track_buffer->last_decode_timestamp();
-    if (track_last_decode_timestamp != kNoDecodeTimestamp()) {
+    if (track_last_decode_timestamp != kNoDecodeTimestamp) {
       base::TimeDelta track_dts_delta =
           decode_timestamp - track_last_decode_timestamp;
       if (track_dts_delta.is_negative() ||

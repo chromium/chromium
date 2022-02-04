@@ -460,7 +460,7 @@ class MEDIA_EXPORT SourceBufferStream {
   // verify monotonically increasing intra-GOP DTS sequence and to update max
   // interbuffer distance also by DTS deltas within a coded frame group, the
   // following is needed.
-  DecodeTimestamp last_appended_buffer_decode_timestamp_ = kNoDecodeTimestamp();
+  DecodeTimestamp last_appended_buffer_decode_timestamp_ = kNoDecodeTimestamp;
 
   // The following is the highest presentation timestamp appended so far in this
   // coded frame group. Due to potentially out-of-order decode versus
