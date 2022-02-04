@@ -47,6 +47,7 @@ class SafeBrowsingBlockingPage
     GURL url_;
     // The threat type encountered for |url_|.
     safe_browsing::SBThreatType threat_type_;
+    safe_browsing::ThreatSource threat_source_;
   };
 
   // Constructor used by Create().

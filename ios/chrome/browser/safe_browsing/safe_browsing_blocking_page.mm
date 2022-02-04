@@ -59,10 +59,10 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   PrefService* prefs = browser_state->GetPrefs();
-  safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
+  safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
       SafeBrowsingMetricsCollectorFactory::GetForBrowserState(browser_state);
-  if (safe_browsing_metrics_collector) {
-    safe_browsing_metrics_collector->AddSafeBrowsingEventToPref(
+  if (metrics_collector) {
+    metrics_collector->AddSafeBrowsingEventToPref(
         safe_browsing::SafeBrowsingMetricsCollector::
             SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   }
@@ -80,6 +80,27 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
       /*is_safe_browsing_managed=*/false, "cpn_safe_browsing");
 }
 }  // namespace
+
+namespace safe_browsing {
+SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
+    ThreatSource threat_source) {
+  switch (threat_source) {
+    case ThreatSource::LOCAL_PVER4:
+    case ThreatSource::REMOTE:
+      return SafeBrowsingMetricsCollector::EventType::
+          DATABASE_INTERSTITIAL_BYPASS;
+    case ThreatSource::CLIENT_SIDE_DETECTION:
+      return SafeBrowsingMetricsCollector::EventType::CSD_INTERSTITIAL_BYPASS;
+    case ThreatSource::REAL_TIME_CHECK:
+      return SafeBrowsingMetricsCollector::EventType::
+          REAL_TIME_INTERSTITIAL_BYPASS;
+    default:
+      NOTREACHED() << "Unexpected threat source.";
+      return SafeBrowsingMetricsCollector::EventType::
+          DATABASE_INTERSTITIAL_BYPASS;
+  }
+}
+}  // safe_browsing
 
 #pragma mark - SafeBrowsingBlockingPage
 
@@ -162,7 +183,8 @@ SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
           CreateMetricsHelper(resource),
           GetApplicationContext()->GetApplicationLocale()),
       url_(SafeBrowsingUrlAllowList::GetDecisionUrl(resource)),
-      threat_type_(resource.threat_type) {}
+      threat_type_(resource.threat_type),
+      threat_source_(resource.threat_source) {}
 
 SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
     ~SafeBrowsingControllerClient() {
@@ -176,6 +198,14 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::Proceed() {
   if (web_state()) {
     SafeBrowsingUrlAllowList::FromWebState(web_state())
         ->AllowUnsafeNavigations(url_, threat_type_);
+    ChromeBrowserState* browser_state =
+        ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+    safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
+        SafeBrowsingMetricsCollectorFactory::GetForBrowserState(browser_state);
+    if (metrics_collector) {
+      metrics_collector->AddSafeBrowsingEventToPref(
+          GetEventTypeFromThreatSource(threat_source_));
+    }
   }
   Reload();
 }
