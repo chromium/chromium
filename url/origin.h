@@ -42,6 +42,7 @@ class GURL;
 
 namespace blink {
 class SecurityOrigin;
+class SecurityOriginTest;
 }  // namespace blink
 
 namespace ipc_fuzzer {
@@ -308,6 +309,7 @@ class COMPONENT_EXPORT(URL) Origin {
 
  private:
   friend class blink::SecurityOrigin;
+  friend class blink::SecurityOriginTest;
   // SchemefulSite needs access to the serialization/deserialization logic which
   // includes the nonce.
   friend class net::SchemefulSite;

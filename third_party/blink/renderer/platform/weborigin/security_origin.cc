@@ -165,6 +165,9 @@ SecurityOrigin::SecurityOrigin(const url::Origin::Nonce& nonce,
                                const SecurityOrigin* precursor)
     : nonce_if_opaque_(nonce), precursor_origin_(precursor) {}
 
+SecurityOrigin::SecurityOrigin(NewUniqueOpaque, const SecurityOrigin* precursor)
+    : nonce_if_opaque_(absl::in_place), precursor_origin_(precursor) {}
+
 SecurityOrigin::SecurityOrigin(const SecurityOrigin* other,
                                ConstructIsolatedCopy)
     : protocol_(other->protocol_.IsolatedCopy()),
@@ -235,8 +238,8 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::Create(const KURL& url) {
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateUniqueOpaque() {
-  scoped_refptr<SecurityOrigin> origin =
-      base::AdoptRef(new SecurityOrigin(url::Origin::Nonce(), nullptr));
+  scoped_refptr<SecurityOrigin> origin = base::AdoptRef(
+      new SecurityOrigin(NewUniqueOpaque::kWithLazyInitNonce, nullptr));
   DCHECK(origin->IsOpaque());
   DCHECK(!origin->precursor_origin_);
   return origin;
@@ -676,8 +679,9 @@ void SecurityOrigin::SetOpaqueOriginIsPotentiallyTrustworthy(
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::DeriveNewOpaqueOrigin() const {
-  return base::AdoptRef(new SecurityOrigin(
-      url::Origin::Nonce(), GetOriginOrPrecursorOriginIfOpaque()));
+  return base::AdoptRef(
+      new SecurityOrigin(NewUniqueOpaque::kWithLazyInitNonce,
+                         GetOriginOrPrecursorOriginIfOpaque()));
 }
 
 const SecurityOrigin* SecurityOrigin::GetOriginOrPrecursorOriginIfOpaque()
