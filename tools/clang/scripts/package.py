@@ -506,6 +506,13 @@ def main():
   if sys.platform.startswith('linux'):
     os.symlink('llvm-objcopy', os.path.join(pdir, 'bin', 'llvm-strip'))
 
+    # Make `--target=*-cros-linux-gnu` work with
+    # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON.
+    os.symlink(
+        'x86_64-unknown-linux-gnu',
+        os.path.join(pdir, 'lib', 'clang', RELEASE_VERSION, 'lib',
+                     'x86_64-cros-linux-gnu'))
+
   # Copy libc++ headers.
   if sys.platform == 'darwin':
     shutil.copytree(os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'include', 'c++'),
