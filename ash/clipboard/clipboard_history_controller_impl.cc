@@ -24,14 +24,19 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -78,22 +83,22 @@ ui::ClipboardNonBacked* GetClipboard() {
   return clipboard;
 }
 
-// Serially encodes bitmaps in |bitmaps_to_be_encoded| to PNGs.
-// This function should run on a background thread.
-// |bitmaps_to_be_encoded| maps ClipboardHistoryItem IDs to their corresponding
-// bitmaps which need to be encoded. Returns a map of ClipboardHistoryItem
-// IDs to encoded PNGs.
-// TODO(crbug.com/1277000): Rather than encoding serially, consider posting each
-// encoding as a task.
-std::map<base::UnguessableToken, std::vector<uint8_t>> EncodeBitmapsToPNG(
-    std::map<base::UnguessableToken, SkBitmap> bitmaps_to_be_encoded) {
-  std::map<base::UnguessableToken, std::vector<uint8_t>> encoded_pngs;
-  base::ranges::for_each(bitmaps_to_be_encoded, [&](const auto& id_and_bitmap) {
-    encoded_pngs.emplace(
-        id_and_bitmap.first,
-        ui::ClipboardData::EncodeBitmapData(id_and_bitmap.second));
-  });
-  return encoded_pngs;
+// Encodes `bitmap` and maps the corresponding ClipboardHistoryItem ID, `id, to
+// the resulting PNG in `encoded_pngs`. This function should run on a background
+// thread.
+void EncodeBitmapToPNG(
+    base::OnceClosure barrier_callback,
+    std::map<base::UnguessableToken, std::vector<uint8_t>>* const encoded_pngs,
+    base::Lock* const map_lock,
+    base::UnguessableToken id,
+    SkBitmap bitmap) {
+  auto png = ui::ClipboardData::EncodeBitmapData(bitmap);
+
+  // Don't acquire the lock until after the image encoding has finished.
+  base::AutoLock lock(*map_lock);
+
+  encoded_pngs->emplace(id, std::move(png));
+  std::move(barrier_callback).Run();
 }
 
 }  // namespace
@@ -346,11 +351,6 @@ ClipboardHistoryControllerImpl::CreateScopedPause() {
       clipboard_history_.get());
 }
 
-// TODO(crbug.com/1272798): If there are multiple calls in a row to
-// GetHistoryValues, the same bitmaps may be encoded to PNG multiple times which
-// is a resource waste. The ClipboardHistoryControllerImpl should track the ids
-// of ClipboardHistoryItems for which there is a pending encoding task and avoid
-// scheduling a duplicate encoding task for these items.
 void ClipboardHistoryControllerImpl::GetHistoryValues(
     const std::set<std::string>& item_id_filter,
     GetHistoryValuesCallback callback) const {
@@ -379,13 +379,33 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
     }
   }
 
-  // Encode images on a background thread.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&EncodeBitmapsToPNG, std::move(bitmaps_to_be_encoded)),
-      base::BindOnce(
-          &ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs,
-          weak_ptr_factory_.GetWeakPtr(), item_id_filter, std::move(callback)));
+  // Map of ClipboardHistoryItem ID to its encoded PNG. Since encoding images
+  // may happen on separate threads, `map_lock` is used to ensure thread-safe
+  // insertion into `encoded_pngs`;
+  auto encoded_pngs = std::make_unique<
+      std::map<base::UnguessableToken, std::vector<uint8_t>>>();
+  auto* encoded_pngs_ptr = encoded_pngs.get();
+  auto map_lock = std::make_unique<base::Lock>();
+  auto* map_lock_ptr = map_lock.get();
+
+  // Post back to this sequence once all images have been encoded.
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      bitmaps_to_be_encoded.size(),
+      base::BindPostTask(
+          base::SequencedTaskRunnerHandle::Get(),
+          base::BindOnce(
+              &ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs,
+              weak_ptr_factory_.GetWeakPtr(), item_id_filter,
+              std::move(callback), std::move(encoded_pngs),
+              std::move(map_lock))));
+
+  // Encode images on background threads.
+  for (auto id_and_bitmap : bitmaps_to_be_encoded) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindOnce(&EncodeBitmapToPNG, barrier, encoded_pngs_ptr,
+                                  map_lock_ptr, std::move(id_and_bitmap.first),
+                                  std::move(id_and_bitmap.second)));
+  }
 
   if (!new_bitmap_to_write_while_encoding_for_test_.isNull()) {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
@@ -397,8 +417,11 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
 void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     const std::set<std::string>& item_id_filter,
     GetHistoryValuesCallback callback,
-    std::map<base::UnguessableToken, std::vector<uint8_t>> encoded_pngs) {
+    std::unique_ptr<std::map<base::UnguessableToken, std::vector<uint8_t>>>
+        encoded_pngs,
+    std::unique_ptr<base::Lock> /*map_lock*/) {
   base::Value item_results(base::Value::Type::LIST);
+  DCHECK(encoded_pngs);
 
   bool all_images_encoded = true;
   // Get the clipboard data for each clipboard history item.
@@ -418,8 +441,8 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
           // PNG. Hopefully we just finished encoding and the PNG can be found
           // in `encoded_pngs`, otherwise this item was added while other PNGs
           // were being encoded.
-          auto png_it = encoded_pngs.find(item.id());
-          if (png_it == encoded_pngs.end()) {
+          auto png_it = encoded_pngs->find(item.id());
+          if (png_it == encoded_pngs->end()) {
             // Can't find the encoded PNG. We'll need to restart
             // GetHistoryValues from the top, but allow this for loop to finish
             // to let PNGs we've already encoded get set to their appropriate
