@@ -34,7 +34,10 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -64,6 +67,22 @@ void CloseModalSigninInBrowser(base::WeakPtr<Browser> browser) {
     browser->signin_view_controller()->CloseModalSignin();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+// This layout auto-resizes the host view widget to always adapt to changes in
+// the size of the child views.
+class WidgetAutoResizingLayout : public views::FillLayout {
+ public:
+  WidgetAutoResizingLayout() = default;
+
+ private:
+  // views::FillLayout:
+  void OnLayoutChanged() override {
+    FillLayout::OnLayoutChanged();
+    if (views::Widget* widget = host_view()->GetWidget(); widget) {
+      widget->SetSize(widget->non_client_view()->GetPreferredSize());
+    }
+  }
+};
 
 }  // namespace
 
@@ -102,7 +121,8 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     Browser* browser) {
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUIProfileCustomizationURL),
-      kSyncConfirmationDialogHeight, kSyncConfirmationDialogWidth,
+      ProfileCustomizationUI::kPreferredHeight,
+      ProfileCustomizationUI::kPreferredWidth,
       InitializeSigninWebDialogUI(false));
 
   ProfileCustomizationUI* web_ui = web_view->GetWebContents()
@@ -151,6 +171,8 @@ bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
 
 void SigninViewControllerDelegateViews::CloseModalSignin() {
   NotifyModalDialogClosed();
+  // Either `this` is owned by the view hierarchy through `modal_signin_widget_`
+  // or `modal_signin_widget_` is nullptr and then `this` is self-owned.
   if (modal_signin_widget_) {
     modal_signin_widget_->Close();
   } else {
@@ -238,8 +260,26 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
       << "A tab must be active to present the sign-in modal dialog.";
   DCHECK(content_view_);
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(std::move(content_view));
+  // Use the layout manager of `this` to automatically translate its preferred
+  // size to the owning Widget.
+  SetLayoutManager(std::make_unique<WidgetAutoResizingLayout>());
+  // `AnimatingLayoutManager` resizes `animated_view` to match `content_view`'s
+  // preferred size with animation.
+  views::View* animated_view = AddChildView(std::make_unique<views::View>());
+  views::AnimatingLayoutManager* animating_layout =
+      animated_view->SetLayoutManager(
+          std::make_unique<views::AnimatingLayoutManager>());
+  animating_layout
+      ->SetBoundsAnimationMode(
+          views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateMainAxis)
+      .SetOrientation(views::LayoutOrientation::kVertical);
+  // Using `FlexLayout` because `AnimatingLayoutManager` doesn't work properly
+  // with `FillLayout`.
+  auto* flex_layout = animating_layout->SetTargetLayoutManager(
+      std::make_unique<views::FlexLayout>());
+  flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
+  animated_view->AddChildView(std::move(content_view));
+
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   web_contents_->SetDelegate(this);
@@ -297,9 +337,6 @@ void SigninViewControllerDelegateViews::DisplayModal() {
   // dialog has a chance to be displayed.
   if (!host_web_contents)
     return;
-
-  // Ownership of `this` is transferred to the view hierarchy, through
-  // `modal_signin_widget_`.
 
   gfx::NativeWindow window = host_web_contents->GetTopLevelNativeWindow();
   switch (GetModalType()) {

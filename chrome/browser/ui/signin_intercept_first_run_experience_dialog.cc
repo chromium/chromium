@@ -301,6 +301,7 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
   DCHECK(profile_customization_preloaded_contents_);
   dialog_delegate_->SetWebContents(
       profile_customization_preloaded_contents_.get());
+  dialog_delegate_->ResizeNativeView(ProfileCustomizationUI::kPreferredHeight);
 }
 
 void SigninInterceptFirstRunExperienceDialog::

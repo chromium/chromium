@@ -23,6 +23,9 @@ class ProfileCustomizationUI
     : public ui::MojoWebUIController,
       public customize_themes::mojom::CustomizeThemesHandlerFactory {
  public:
+  static constexpr int kPreferredHeight = 560;
+  static constexpr int kPreferredWidth = 512;
+
   explicit ProfileCustomizationUI(content::WebUI* web_ui);
   ~ProfileCustomizationUI() override;
 
