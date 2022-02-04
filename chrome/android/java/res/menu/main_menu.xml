@@ -151,6 +151,11 @@
         <item android:id="@+id/enter_vr_id"
             android:title="@string/enter_vr"
             android:icon="@drawable/gm_filled_cardboard_24" />
+        <item android:id="@+id/managed_by_divider_line_id"
+            android:title="@null" />
+        <item android:id="@+id/managed_by_standard_menu_id"
+            android:title="@string/managed_browser"
+            android:icon="@drawable/ic_business" />
         <item android:id="@+id/managed_by_menu_id"
             android:title="@string/managed" />
     </group>

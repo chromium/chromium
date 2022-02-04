@@ -5498,6 +5498,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Profile Management strings -->
+      <message name="IDS_MANAGED_BROWSER" desc="The text label of the chrome://management page in the app menu">
+        Managed browser
+      </message>
       <message name="IDS_MANAGEMENT" desc="Title of the chrome://management page, which shows whether the account is managed.">
         Management
       </message>

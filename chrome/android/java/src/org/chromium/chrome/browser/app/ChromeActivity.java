@@ -2692,7 +2692,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
-        if (id == R.id.managed_by_menu_id) {
+        if (id == R.id.managed_by_standard_menu_id) {
             assert ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_MANAGEMENT_PAGE);
 
             openChromeManagementPage();
