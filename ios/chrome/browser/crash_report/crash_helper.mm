@@ -17,6 +17,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/ios/ios_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -180,7 +181,11 @@ void Start() {
       key.Set(channel_name);
     }
   }
-  [[MainThreadFreezeDetector sharedInstance] start];
+
+  // Don't start MTFD when prewarmed, the check thread will just get confused.
+  if (!base::ios::IsApplicationPreWarmed()) {
+    [[MainThreadFreezeDetector sharedInstance] start];
+  }
 }
 
 void SetEnabled(bool enabled) {

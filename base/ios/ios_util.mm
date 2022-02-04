@@ -118,5 +118,9 @@ bool IsMultipleScenesSupported() {
   return false;
 }
 
+bool IsApplicationPreWarmed() {
+  return [NSProcessInfo.processInfo.environment objectForKey:@"ActivePrewarm"];
+}
+
 }  // namespace ios
 }  // namespace base

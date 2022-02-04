@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate.h"
+#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,6 +37,10 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 // scene.
 - (UIWindow*)window {
   if (!_window) {
+    // With iOS15 pre-warming, this appears to be the first callback after the
+    // app is restored.  This is a no-op in non-prewarming.
+    [[MainThreadFreezeDetector sharedInstance] start];
+
     // Sizing of the window is handled by UIKit.
     _window = [[ChromeOverlayWindow alloc] init];
     CustomizeUIWindowAppearance(_window);

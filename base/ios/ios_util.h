@@ -60,6 +60,10 @@ BASE_EXPORT bool IsMultiwindowSupported();
 // iPad.
 BASE_EXPORT bool IsMultipleScenesSupported();
 
+// iOS 15 introduced pre-warming, which launches and then pauses the app, to
+// speed up actual launch time.
+BASE_EXPORT bool IsApplicationPreWarmed();
+
 }  // namespace ios
 }  // namespace base
 
