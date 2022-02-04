@@ -348,10 +348,13 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     if (ui_status() == UIStatus::kDisabled) {
       return;
     }
-    content::TestNavigationObserver navigation_observer(
-        browser->tab_strip_model()->GetActiveWebContents(), 1);
+    // Wait for a Safety Tip bubble to be destroyed. Navigating away from a page
+    // with a safety tip destroys the safety tip, but waiting for the navigation
+    // to complete is racy.
+    views::test::WidgetDestroyedWaiter waiter(
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget());
     ClickLeaveButton();
-    navigation_observer.Wait();
+    waiter.Wait();
   }
 
   bool IsUIShowingOrDisabled() {
@@ -484,8 +487,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SafetyTipPageInfoBubbleViewBrowserTest,
     ::testing::Values(UIStatus::kDisabled,
-                      // Disabled for flakiness. https://crbug.com/1113105.
-                      // UIStatus::kEnabledWithDefaultFeatures,
+                      UIStatus::kEnabledWithDefaultFeatures,
                       UIStatus::kEnabledWithSuspiciousSites));
 // Disabled for flakiness. https://crbug.com/1113105.
 // UIStatus::kEnabledWithAllFeatures));
@@ -908,9 +910,18 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(IsUIShowingOrAllFeaturesEnabled());
 
   // ...but suppressed by the allowlist.
-  reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.sk/"}, {}, {});
-  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  if (AreLookalikeWarningsEnabled()) {
+    views::test::WidgetDestroyedWaiter waiter(
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget());
+    reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.sk/"}, {}, {});
+    SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+    NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+    waiter.Wait();
+  } else {
+    reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.sk/"}, {}, {});
+    SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+    NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  }
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 }
