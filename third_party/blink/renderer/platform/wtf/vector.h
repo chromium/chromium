@@ -1690,6 +1690,7 @@ void Vector<T, inlineCapacity, Allocator>::ReserveCapacity(
       ANNOTATE_CHANGE_SIZE(begin(), new_capacity, old_capacity, new_capacity);
       // Finally, assuming new capacity, re-poison with the used size.
       ANNOTATE_CHANGE_SIZE(begin(), new_capacity, new_capacity, size_);
+      return;
     }
     // In case expansion failed, there's no need to adjust container
     // annotations, as the buffer is freed right away.
