@@ -1478,12 +1478,8 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
 
   // TODO(crbug.com/1283004): Support submission for <form>less forms too.
   if (!form_control.Form().IsNull()) {
-    // TODO(https://crbug.com/1293625): Make this use To<> once To<> is
-    // appropriately hardened.
-    WebInputElement input = form_control.DynamicTo<WebInputElement>();
     // |form_control| can only be |WebInputElement|, not |WebSelectElement|.
-    DCHECK(!input.IsNull())
-        << "Form submission attempt for a non-input element";
+    WebInputElement input = form_control.To<WebInputElement>();
 
     // TODO(crbug.com/1283004): Support filling single username fields too.
     DCHECK(input.IsPasswordFieldForAutofill())

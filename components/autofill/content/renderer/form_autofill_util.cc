@@ -1108,10 +1108,6 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // Only autofill empty fields (or those with the field's default value
     // attribute) and the field that initiated the filling, i.e. the field the
     // user is currently editing and interacting with.
-    // TODO(https://crbug.com/1293625): It's unclear if this code can always
-    // assume an input element. There are no null checks below, so this would
-    // just crash if the expectation is violated. Once To<T>() properly CHECKs,
-    // update this to use To<>().
     const WebInputElement input_element = element.DynamicTo<WebInputElement>();
     static base::NoDestructor<WebString> kValue("value");
     static base::NoDestructor<WebString> kPlaceholder("placeholder");

@@ -108,9 +108,13 @@ class BLINK_EXPORT WebNode {
   v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
                                  v8::Isolate*);
 
+  // Helper to downcast to `T`. Will fail with a CHECK() if converting to `T` is
+  // not legal. The returned `T` will always be non-null if `this` is non-null.
   template <typename T>
   T To() const;
 
+  // Helper to downcast to `T`, returning a null `T` if the conversion could not
+  // be performed.
   template <typename T>
   T DynamicTo() const;
 
@@ -144,7 +148,7 @@ class BLINK_EXPORT WebNode {
 #define DEFINE_WEB_NODE_TYPE_CASTS(type, predicate)    \
   template <>                                          \
   BLINK_EXPORT type WebNode::To<type>() const {        \
-    SECURITY_DCHECK(IsNull() || (predicate));          \
+    SECURITY_CHECK(IsNull() || (predicate));           \
     type result;                                       \
     result.WebNode::Assign(*this);                     \
     return result;                                     \
