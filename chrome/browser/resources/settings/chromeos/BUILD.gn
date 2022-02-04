@@ -178,6 +178,7 @@ generate_grd("build_grd") {
     "images/switch_access_setup_guide_choose_one_switch.svg",
     "images/switch_access_setup_guide_choose_one_switch_dark.svg",
     "images/switch_access_setup_guide_choose_two_switches.svg",
+    "images/switch_access_setup_guide_choose_two_switches_dark.svg",
     "images/switch_access_setup_guide_choose_three_switches.svg",
     "images/switch_access_setup_guide_auto_scan_enabled.svg",
     "images/switch_access_setup_guide_auto_scan_enabled_dark.svg",
