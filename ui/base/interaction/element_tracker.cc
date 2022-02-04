@@ -38,6 +38,10 @@ class ElementTracker::ElementData {
   ElementIdentifier identifier() const { return identifier_; }
   ElementContext context() const { return context_; }
 
+  bool HasElement(const TrackedElement* element) const {
+    return base::Contains(element_lookup_, element);
+  }
+
   bool empty() const {
     return elements_.empty() && shown_callbacks_.empty() &&
            activated_callbacks_.empty() && hidden_callbacks_.empty();
@@ -97,7 +101,7 @@ class ElementTracker::ElementData {
   // Provides a fast lookup into `elements_` by element for checking and
   // removal. Since there could be many elements (e.g. tabs in a browser) we
   // don't want removing a series of them to turn into an O(n^2) operation.
-  std::map<TrackedElement*, std::list<TrackedElement*>::iterator>
+  std::map<const TrackedElement*, std::list<TrackedElement*>::iterator>
       element_lookup_;
 
   base::RepeatingCallbackList<void(TrackedElement*)> shown_callbacks_;
@@ -207,9 +211,11 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
 ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
     ElementIdentifier id) {
   ElementList result;
-  for (const auto [element, data] : element_to_data_lookup_) {
-    if (element->identifier() == id)
-      result.push_back(element);
+  for (const auto& [key, data] : element_data_) {
+    if (key.first == id) {
+      std::copy(data.elements().begin(), data.elements().end(),
+                std::back_inserter(result));
+    }
   }
   return result;
 }
@@ -257,26 +263,26 @@ ElementTracker::~ElementTracker() {
 
 void ElementTracker::NotifyElementShown(TrackedElement* element) {
   GarbageCollector::Frame gc_frame(gc_.get());
-  DCHECK(!base::Contains(element_to_data_lookup_, element));
   ElementData* const element_data =
       GetOrAddElementData(element->identifier(), element->context());
-  element_to_data_lookup_.emplace(element, element_data);
+  DCHECK(!element_data->HasElement(element));
   element_data->NotifyElementShown(element);
 }
 
 void ElementTracker::NotifyElementActivated(TrackedElement* element) {
   GarbageCollector::Frame gc_frame(gc_.get());
-  const auto it = element_to_data_lookup_.find(element);
-  DCHECK(it != element_to_data_lookup_.end());
-  it->second->NotifyElementActivated(element);
+  const auto it =
+      element_data_.find(LookupKey(element->identifier(), element->context()));
+  DCHECK(it != element_data_.end());
+  it->second.NotifyElementActivated(element);
 }
 
 void ElementTracker::NotifyElementHidden(TrackedElement* element) {
   GarbageCollector::Frame gc_frame(gc_.get());
-  const auto it = element_to_data_lookup_.find(element);
-  DCHECK(it != element_to_data_lookup_.end());
-  ElementData* const data = it->second;
-  element_to_data_lookup_.erase(it);
+  const auto it =
+      element_data_.find(LookupKey(element->identifier(), element->context()));
+  DCHECK(it != element_data_.end());
+  ElementData* const data = &it->second;
   data->NotifyElementHidden(element);
   gc_frame.Add(data);
 }

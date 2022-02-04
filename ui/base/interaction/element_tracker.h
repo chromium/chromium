@@ -168,7 +168,6 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   void MaybeCleanup(ElementData* data);
 
   std::map<LookupKey, ElementData> element_data_;
-  std::map<TrackedElement*, ElementData*> element_to_data_lookup_;
   std::unique_ptr<GarbageCollector> gc_;
 };
 
