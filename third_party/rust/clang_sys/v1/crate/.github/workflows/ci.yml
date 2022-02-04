@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        clang: [["13.0", "clang_13_0"]]
+        rust: ["1.40.0"]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      # LLVM and Clang
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: ${{ matrix.clang[0] }}
+          directory: ${{ runner.temp }}/llvm-${{ matrix.clang[0] }}
+      # Rust
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+      # Test
+      - name: Cargo Test (Dynamic)
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --verbose --features ${{ matrix.clang[1] }} -- --nocapture
+      - name: Cargo Test (Runtime)
+        uses: actions-rs/cargo@v1
+        env:
+          # Needed to not find MinGW when loading at runtime
+          LIBCLANG_PATH: ${{ runner.temp }}/llvm-${{ matrix.clang[0] }}/lib
+        with:
+          command: test
+          args: --verbose --features "${{ matrix.clang[1] }} runtime" -- --nocapture

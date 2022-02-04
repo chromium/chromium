@@ -1,0 +1,7 @@
+Name: env_logger
+URL: https://crates.io/crates/env_logger
+Description: A logging implementation for `log` which is configured via an environment
+variable.
+Version: 0.9.0
+Security Critical: no
+License: Apache 2.0

@@ -1,0 +1,33 @@
+language: rust
+sudo: false
+
+# run builds for all the trains (and more)
+rust:
+  - stable
+  - beta
+  - nightly
+
+branches:
+  only:
+    - master
+# the main build
+script:
+  - |
+      cargo build --features "${FEATURES}" &&
+      cargo test --features "${FEATURES}" &&
+      cargo doc --features "${FEATURES}"
+
+env:
+  matrix:
+    - FEATURES=""
+    - FEATURES="serde"
+
+matrix:
+  include:
+    - rust: 1.12.0
+      env: FEATURES=""
+      before_script:
+        - |
+          cargo generate-lockfile &&
+          cargo update -p serde_json --precise 1.0.0 &&
+          cargo update -p serde --precise 1.0.0
