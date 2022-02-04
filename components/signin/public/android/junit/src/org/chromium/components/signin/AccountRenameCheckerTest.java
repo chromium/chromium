@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {AccountRenameCheckerTest.ShadowGoogleAuthUtil.class,
                 CustomShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AccountRenameCheckerTest {
     @Implements(GoogleAuthUtil.class)
     static final class ShadowGoogleAuthUtil {

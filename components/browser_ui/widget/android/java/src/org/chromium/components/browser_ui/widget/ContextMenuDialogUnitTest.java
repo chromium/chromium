@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,6 +41,7 @@ import org.chromium.ui.widget.UiWidgetFactory;
 /** Unit test for {@link ContextMenuDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPhoneWindow.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ContextMenuDialogUnitTest {
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();

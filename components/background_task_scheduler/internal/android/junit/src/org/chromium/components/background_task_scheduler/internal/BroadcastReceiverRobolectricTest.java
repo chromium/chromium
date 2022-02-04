@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowBatteryManager;
 import org.robolectric.shadows.ShadowConnectivityManager;
 
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowBatteryManager.class, ShadowConnectivityManager.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public final class BroadcastReceiverRobolectricTest {
     private static final long WAIT_TIME_MS = 10;
     private CountDownLatch mScheduleLatch;

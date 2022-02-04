@@ -36,6 +36,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
 
@@ -59,6 +60,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {CustomShadowAsyncTask.class, ShadowUserManager.class,
                 ShadowAccountManager.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
     private static final String TEST_TOKEN_SCOPE = "test-token-scope";
 

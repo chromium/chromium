@@ -24,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.fakes.BaseCursor;
 
 import org.chromium.base.ThreadUtils;
@@ -44,6 +45,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumeratedCallback {
     // The Fields the test Cursor represents.
     @IntDef({Fields.ID, Fields.MIME_TYPE, Fields.DATE_ADDED})
