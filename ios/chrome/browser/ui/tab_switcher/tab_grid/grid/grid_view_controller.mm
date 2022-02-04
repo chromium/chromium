@@ -981,6 +981,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)didTransitionToLayoutSuccessfully:(BOOL)success {
+  // If there is no item, the transition layout might be nil, which means there
+  // is no interactive transition. Return to avoid crash below.
+  if (!self.gridHorizontalTransitionLayout)
+    return;
+
   self.transitionLayoutIsFinishing = YES;
   if (success) {
     [self.collectionView finishInteractiveTransition];

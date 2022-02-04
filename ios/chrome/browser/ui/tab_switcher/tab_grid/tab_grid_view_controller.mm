@@ -888,11 +888,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   // Ensure that the View Controller doesn't have safe area inset that already
-  // covers the view's bounds.
-  DCHECK(!CGRectIsEmpty(UIEdgeInsetsInsetRect(
-      self.remoteTabsViewController.tableView.bounds,
-      self.remoteTabsViewController.tableView.safeAreaInsets)));
-  self.remoteTabsViewController.additionalSafeAreaInsets = additionalSafeArea;
+  // covers the view's bounds. This can happen in tests.
+  if (!CGRectIsEmpty(UIEdgeInsetsInsetRect(
+          self.remoteTabsViewController.tableView.bounds,
+          self.remoteTabsViewController.tableView.safeAreaInsets))) {
+    self.remoteTabsViewController.additionalSafeAreaInsets = additionalSafeArea;
+  }
 }
 
 // Sets the proper insets for the Grid ViewControllers to accomodate for the

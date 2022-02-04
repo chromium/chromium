@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,8 +22,10 @@
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/block_cleanup_test.h"
@@ -34,6 +37,10 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface TabGridCoordinator (Testing)
+@property(nonatomic, strong, readonly) BVCContainerViewController* bvcContainer;
+@end
 
 @interface StubSceneState : SceneState
 
@@ -49,6 +56,23 @@
 
 @synthesize window = _window;
 
+@end
+
+@interface StubThumbStripSupporting : NSObject <ThumbStripSupporting>
+@property(nonatomic, readonly, getter=isThumbStripEnabled)
+    BOOL thumbStripEnabled;
+@end
+
+@implementation StubThumbStripSupporting
+
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  _thumbStripEnabled = YES;
+}
+
+- (void)thumbStripDisabled {
+  _thumbStripEnabled = NO;
+}
 @end
 
 @interface TestTabGridCoordinatorDelegate
@@ -117,6 +141,16 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     AddAgentsToBrowser(incognito_browser_.get(), scene_state_);
 
     UIWindow* window = GetAnyKeyWindow();
+
+    regular_popup_menu_coordinator_ = [[PopupMenuCoordinator alloc]
+        initWithBaseViewController:window.rootViewController
+                           browser:browser_.get()];
+    [regular_popup_menu_coordinator_ start];
+    incognito_popup_menu_coordinator_ = [[PopupMenuCoordinator alloc]
+        initWithBaseViewController:window.rootViewController
+                           browser:incognito_browser_.get()];
+    [incognito_popup_menu_coordinator_ start];
+
     coordinator_ = [[TabGridCoordinator alloc]
                      initWithWindow:window
          applicationCommandEndpoint:OCMProtocolMock(
@@ -126,14 +160,21 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
                      regularBrowser:browser_.get()
                    incognitoBrowser:incognito_browser_.get()];
     coordinator_.animationsDisabledForTesting = YES;
-    // TabGirdCoordinator will make its view controller the root, so stash the
+
+    regular_thumbStrip_supporting_ = [[StubThumbStripSupporting alloc] init];
+    incognito_thumbStrip_supporting_ = [[StubThumbStripSupporting alloc] init];
+    coordinator_.regularThumbStripSupporting = regular_thumbStrip_supporting_;
+    coordinator_.incognitoThumbStripSupporting =
+        incognito_thumbStrip_supporting_;
+
+    // TabGridCoordinator will make its view controller the root, so stash the
     // original root view controller before starting |coordinator_|.
     original_root_view_controller_ = [GetAnyKeyWindow() rootViewController];
 
-    [coordinator_ start];
-
     delegate_ = [[TestTabGridCoordinatorDelegate alloc] init];
     coordinator_.delegate = delegate_;
+
+    [coordinator_ start];
 
     normal_tab_view_controller_ = [[UIViewController alloc] init];
     normal_tab_view_controller_.view.frame = CGRectMake(20, 20, 10, 10);
@@ -148,6 +189,15 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
       original_root_view_controller_ = nil;
     }
     [coordinator_ stop];
+  }
+
+  UIViewController* GetBaseViewController() {
+    if (regular_thumbStrip_supporting_.thumbStripEnabled) {
+      return base::mac::ObjCCastStrict<UIViewController>(
+          coordinator_.bvcContainer);
+    } else {
+      return coordinator_.baseViewController;
+    }
   }
 
  protected:
@@ -186,12 +236,20 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   // Used to test logging the time spent in tab grid.
   base::HistogramTester histogram_tester_;
   base::ScopedMockClockOverride scoped_clock_;
+
+  // Thumbstrip supporting stubs.
+  StubThumbStripSupporting* regular_thumbStrip_supporting_;
+  StubThumbStripSupporting* incognito_thumbStrip_supporting_;
+
+  // PopupMenuCoordinator nedded for Thumbstrip support.
+  PopupMenuCoordinator* regular_popup_menu_coordinator_;
+  PopupMenuCoordinator* incognito_popup_menu_coordinator_;
 };
 
 // Tests that the tab grid view controller is the initial active view
 // controller.
 TEST_F(TabGridCoordinatorTest, InitialActiveViewController) {
-  EXPECT_EQ(coordinator_.baseViewController, coordinator_.activeViewController);
+  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 }
 
 // Tests that it is possible to set a TabViewController without first setting a
@@ -207,8 +265,7 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerBeforeTabSwitcher) {
   [coordinator_ showTabGrid];
   bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return coordinator_.baseViewController ==
-               coordinator_.activeViewController;
+        return GetBaseViewController() == coordinator_.activeViewController;
       });
   EXPECT_TRUE(tab_switcher_active);
 }
@@ -217,7 +274,7 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerBeforeTabSwitcher) {
 // TabSwitcher.
 TEST_F(TabGridCoordinatorTest, TabViewControllerAfterTabSwitcher) {
   [coordinator_ showTabGrid];
-  EXPECT_EQ(coordinator_.baseViewController, coordinator_.activeViewController);
+  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
                             incognito:NO
@@ -229,8 +286,7 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerAfterTabSwitcher) {
   [coordinator_ showTabGrid];
   bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return coordinator_.baseViewController ==
-               coordinator_.activeViewController;
+        return GetBaseViewController() == coordinator_.activeViewController;
       });
   EXPECT_TRUE(tab_switcher_active);
 }
@@ -253,10 +309,10 @@ TEST_F(TabGridCoordinatorTest, SwapTabViewControllers) {
 // Tests calling showTabSwitcher twice in a row with the same VC.
 TEST_F(TabGridCoordinatorTest, ShowTabSwitcherTwice) {
   [coordinator_ showTabGrid];
-  EXPECT_EQ(coordinator_.baseViewController, coordinator_.activeViewController);
+  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 
   [coordinator_ showTabGrid];
-  EXPECT_EQ(coordinator_.baseViewController, coordinator_.activeViewController);
+  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 }
 
 // Tests calling showTabViewController twice in a row with the same VC.
@@ -294,7 +350,10 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
     return completion_handler_was_called;
   });
   ASSERT_TRUE(completion_handler_was_called);
-  EXPECT_TRUE(delegate_.didEndCalled);
+  if (!regular_thumbStrip_supporting_.thumbStripEnabled) {
+    // Thumbstrip doesn't call delegate.
+    EXPECT_TRUE(delegate_.didEndCalled);
+  }
 
   // Tests that the completion handler is called when replacing an existing tab
   // view controller. Tests that the delegate 'didEnd' method is *not* called.
@@ -309,7 +368,10 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
     return completion_handler_was_called;
   });
   ASSERT_TRUE(completion_handler_was_called);
-  EXPECT_FALSE(delegate_.didEndCalled);
+  if (!regular_thumbStrip_supporting_.thumbStripEnabled) {
+    // Thumbstrip doesn't call delegate.
+    EXPECT_FALSE(delegate_.didEndCalled);
+  }
 }
 
 // Tests that the tab grid coordinator sizes its view controller to the window.
