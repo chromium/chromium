@@ -109,7 +109,7 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
   ~NetworkDiagnosticsMessageHandler() override = default;
 
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "OpenFeedbackDialog",
         base::BindRepeating(
             &NetworkDiagnosticsMessageHandler::OpenFeedbackDialog,
@@ -117,7 +117,7 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void OpenFeedbackDialog(const base::ListValue* value) {
+  void OpenFeedbackDialog(base::Value::ConstListView value) {
     chrome::ShowFeedbackPage(nullptr, chrome::kFeedbackSourceNetworkHealthPage,
                              "" /*description_template*/,
                              "" /*description_template_placeholder*/,
@@ -141,50 +141,50 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kAddNetwork,
         base::BindRepeating(&NetworkConfigMessageHandler::AddNetwork,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetNetworkProperties,
         base::BindRepeating(
             &NetworkConfigMessageHandler::GetShillNetworkProperties,
             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetDeviceProperties,
         base::BindRepeating(
             &NetworkConfigMessageHandler::GetShillDeviceProperties,
             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetEthernetEAP,
         base::BindRepeating(&NetworkConfigMessageHandler::GetShillEthernetEAP,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kOpenCellularActivationUi,
         base::BindRepeating(
             &NetworkConfigMessageHandler::OpenCellularActivationUi,
             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kResetESimCache,
         base::BindRepeating(&NetworkConfigMessageHandler::ResetESimCache,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kShowNetworkConfig,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkConfig,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kShowAddNewWifiNetworkDialog,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowAddNewWifi,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetHostname,
         base::BindRepeating(&NetworkConfigMessageHandler::GetHostname,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kSetHostname,
         base::BindRepeating(&NetworkConfigMessageHandler::SetHostname,
                             base::Unretained(this)));
@@ -196,10 +196,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     ResolveJavascriptCallback(base::Value(callback_id), response);
   }
 
-  void GetShillNetworkProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetListDeprecated().size());
-    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
-    std::string guid = arg_list->GetListDeprecated()[1].GetString();
+  void GetShillNetworkProperties(base::Value::ConstListView arg_list) {
+    CHECK_EQ(2u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+    std::string guid = arg_list[1].GetString();
 
     std::string service_path;
     if (!GetServicePathFromGuid(guid, &service_path)) {
@@ -231,10 +231,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, return_arg_list);
   }
 
-  void GetShillDeviceProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetListDeprecated().size());
-    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
-    std::string type = arg_list->GetListDeprecated()[1].GetString();
+  void GetShillDeviceProperties(base::Value::ConstListView arg_list) {
+    CHECK_EQ(2u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+    std::string type = arg_list[1].GetString();
 
     const DeviceState* device =
         NetworkHandler::Get()->network_state_handler()->GetDeviceStateByType(
@@ -250,9 +250,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
                        weak_ptr_factory_.GetWeakPtr(), callback_id, type));
   }
 
-  void GetShillEthernetEAP(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
-    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
+  void GetShillEthernetEAP(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
 
     NetworkStateHandler::NetworkStateList list;
     NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
@@ -274,9 +274,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, response);
   }
 
-  void OpenCellularActivationUi(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
-    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
+  void OpenCellularActivationUi(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
 
     const NetworkState* cellular_network =
         NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
@@ -290,7 +290,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, response);
   }
 
-  void ResetESimCache(const base::ListValue* arg_list) {
+  void ResetESimCache(base::Value::ConstListView arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
     if (!handler)
@@ -301,21 +301,21 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     handler_impl->ResetESimProfileCache();
   }
 
-  void ShowNetworkDetails(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
-    std::string guid = arg_list->GetListDeprecated()[0].GetString();
+  void ShowNetworkDetails(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string guid = arg_list[0].GetString();
 
     InternetDetailDialog::ShowDialog(guid);
   }
 
-  void ShowNetworkConfig(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
-    std::string guid = arg_list->GetListDeprecated()[0].GetString();
+  void ShowNetworkConfig(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string guid = arg_list[0].GetString();
 
     InternetConfigDialog::ShowDialogForNetworkId(guid);
   }
 
-  void ShowAddNewWifi(const base::ListValue* arg_list) {
+  void ShowAddNewWifi(base::Value::ConstListView arg_list) {
     InternetConfigDialog::ShowDialogForNetworkType(::onc::network_type::kWiFi);
   }
 
@@ -337,17 +337,17 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, return_arg_list);
   }
 
-  void GetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
-    std::string callback_id = arg_list->GetListDeprecated()[0].GetString();
+  void GetHostname(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
     std::string hostname =
         NetworkHandler::Get()->network_state_handler()->hostname();
     Respond(callback_id, base::Value(hostname));
   }
 
-  void SetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetListDeprecated().size());
-    std::string hostname = arg_list->GetListDeprecated()[0].GetString();
+  void SetHostname(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string hostname = arg_list[0].GetString();
     NET_LOG(USER) << "SET HOSTNAME: " << hostname;
     NetworkHandler::Get()->network_state_handler()->SetHostname(hostname);
   }
@@ -376,9 +376,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, return_arg_list);
   }
 
-  void AddNetwork(const base::ListValue* args) {
-    DCHECK(!args->GetListDeprecated().empty());
-    std::string onc_type = args->GetListDeprecated()[0].GetString();
+  void AddNetwork(base::Value::ConstListView args) {
+    DCHECK(!args.empty());
+    std::string onc_type = args[0].GetString();
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
   }
 
