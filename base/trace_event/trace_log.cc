@@ -863,9 +863,9 @@ void TraceLog::CreateFiltersForTraceConfig() {
     std::unique_ptr<TraceEventFilter> new_filter;
     const std::string& predicate_name = filter_config.predicate_name();
     if (predicate_name == EventNameFilter::kName) {
-      auto whitelist = std::make_unique<std::unordered_set<std::string>>();
-      CHECK(filter_config.GetArgAsSet("event_name_allowlist", &*whitelist));
-      new_filter = std::make_unique<EventNameFilter>(std::move(whitelist));
+      auto allowlist = std::make_unique<std::unordered_set<std::string>>();
+      CHECK(filter_config.GetArgAsSet("event_name_allowlist", &*allowlist));
+      new_filter = std::make_unique<EventNameFilter>(std::move(allowlist));
     } else {
       if (filter_factory_for_testing_)
         new_filter = filter_factory_for_testing_(predicate_name);

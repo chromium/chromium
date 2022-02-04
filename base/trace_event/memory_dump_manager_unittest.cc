@@ -65,8 +65,8 @@ MATCHER(IsNotDeterministicDump, "") {
 namespace {
 
 const char* kMDPName = "TestDumpProvider";
-const char* kWhitelistedMDPName = "WhitelistedTestDumpProvider";
-const char* const kTestMDPWhitelist[] = {kWhitelistedMDPName, nullptr};
+const char* kAllowlistedMDPName = "AllowlistedTestDumpProvider";
+const char* const kTestMDPAllowlist[] = {kAllowlistedMDPName, nullptr};
 
 void RegisterDumpProvider(
     MemoryDumpProvider* mdp,
@@ -754,13 +754,13 @@ TEST_F(MemoryDumpManagerTest, TriggerDumpWithoutTracing) {
                                         MemoryDumpDeterminism::NONE));
 }
 
-TEST_F(MemoryDumpManagerTest, BackgroundWhitelisting) {
-  SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
+TEST_F(MemoryDumpManagerTest, BackgroundAllowlisting) {
+  SetDumpProviderAllowlistForTesting(kTestMDPAllowlist);
 
   // Standard provider with default options (create dump for current process).
   MockMemoryDumpProvider backgroundMdp;
   RegisterDumpProvider(&backgroundMdp, nullptr, kDefaultOptions,
-                       kWhitelistedMDPName);
+                       kAllowlistedMDPName);
 
   EnableForTracing();
 
@@ -860,7 +860,7 @@ class SimpleMockMemoryDumpProvider : public MemoryDumpProvider {
 };
 
 TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
-  SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
+  SetDumpProviderAllowlistForTesting(kTestMDPAllowlist);
 
   int kMDPCount = 1000;
   std::vector<std::unique_ptr<SimpleMockMemoryDumpProvider>> mdps;
@@ -871,14 +871,14 @@ TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
   for (int i = 0; i < kMDPCount; ++i) {
     mdps.push_back(std::make_unique<SimpleMockMemoryDumpProvider>(3));
     RegisterDumpProvider(mdps.back().get(), nullptr, kDefaultOptions,
-                         kWhitelistedMDPName);
+                         kAllowlistedMDPName);
   }
   std::unique_ptr<Thread> stopped_thread(new Thread("test thread"));
   stopped_thread->Start();
   for (int i = 0; i < kMDPCount; ++i) {
     mdps.push_back(std::make_unique<SimpleMockMemoryDumpProvider>(0));
     RegisterDumpProvider(mdps.back().get(), stopped_thread->task_runner(),
-                         kDefaultOptions, kWhitelistedMDPName);
+                         kDefaultOptions, kAllowlistedMDPName);
   }
   stopped_thread->Stop();
 

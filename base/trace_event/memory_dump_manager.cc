@@ -345,7 +345,7 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
     MemoryDumpProviderInfo* mdpinfo =
         pmd_async_state->pending_dump_providers.back().get();
 
-    // If we are in background mode, we should invoke only the whitelisted
+    // If we are in background mode, we should invoke only the allowed
     // providers. Ignore other providers and continue.
     if (pmd_async_state->req_args.level_of_detail ==
             MemoryDumpLevelOfDetail::BACKGROUND &&

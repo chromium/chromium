@@ -34,9 +34,9 @@ namespace trace_event {
 namespace {
 
 const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::DETAILED};
-const char* const kTestDumpNameWhitelist[] = {
-    "Whitelisted/TestName", "Whitelisted/TestName_0x?",
-    "Whitelisted/0x?/TestName", "Whitelisted/0x?", nullptr};
+const char* const kTestDumpNameAllowlist[] = {
+    "Allowlisted/TestName", "Allowlisted/TestName_0x?",
+    "Allowlisted/0x?/TestName", "Allowlisted/0x?", nullptr};
 
 void* Map(size_t size) {
 #if BUILDFLAG(IS_WIN)
@@ -383,26 +383,26 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
   std::unique_ptr<ProcessMemoryDump> pmd(
       new ProcessMemoryDump(background_args));
   ProcessMemoryDump::is_black_hole_non_fatal_for_testing_ = true;
-  SetAllocatorDumpNameAllowlistForTesting(kTestDumpNameWhitelist);
+  SetAllocatorDumpNameAllowlistForTesting(kTestDumpNameAllowlist);
   MemoryAllocatorDump* black_hole_mad = pmd->GetBlackHoleMad(std::string());
 
   // GetAllocatorDump works for uncreated dumps.
-  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotWhitelisted/TestName"));
-  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("Whitelisted/TestName"));
+  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotAllowlisted/TestName"));
+  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("Allowlisted/TestName"));
 
   // Invalid dump names.
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("NotWhitelisted/TestName"));
+            pmd->CreateAllocatorDump("NotAllowlisted/TestName"));
   EXPECT_EQ(black_hole_mad, pmd->CreateAllocatorDump("TestName"));
-  EXPECT_EQ(black_hole_mad, pmd->CreateAllocatorDump("Whitelisted/Test"));
+  EXPECT_EQ(black_hole_mad, pmd->CreateAllocatorDump("Allowlisted/Test"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Not/Whitelisted/TestName"));
+            pmd->CreateAllocatorDump("Not/Allowlisted/TestName"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName/Google"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName/Google"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName/0x1a2Google"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName/0x1a2Google"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName/__12/Google"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName/__12/Google"));
 
   // Suballocations.
   MemoryAllocatorDumpGuid guid(1);
@@ -416,30 +416,30 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
   EXPECT_NE(black_hole_mad, pmd->GetSharedGlobalAllocatorDump(guid));
 
   // Valid dump names.
-  EXPECT_NE(black_hole_mad, pmd->CreateAllocatorDump("Whitelisted/TestName"));
+  EXPECT_NE(black_hole_mad, pmd->CreateAllocatorDump("Allowlisted/TestName"));
   EXPECT_NE(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName_0xA1b2"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName_0xA1b2"));
   EXPECT_NE(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/0xaB/TestName"));
+            pmd->CreateAllocatorDump("Allowlisted/0xaB/TestName"));
 
   // GetAllocatorDump is consistent.
-  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotWhitelisted/TestName"));
-  EXPECT_NE(black_hole_mad, pmd->GetAllocatorDump("Whitelisted/TestName"));
+  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotAllowlisted/TestName"));
+  EXPECT_NE(black_hole_mad, pmd->GetAllocatorDump("Allowlisted/TestName"));
 
-  // Test whitelisted entries.
-  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Whitelisted/TestName"));
+  // Test allowed entries.
+  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Allowlisted/TestName"));
 
-  // Global dumps should be whitelisted.
+  // Global dumps should be allowed.
   ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("global/13456"));
 
   // Global dumps with non-guids should not be.
   ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("global/random"));
 
   // Random names should not.
-  ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("NotWhitelisted/TestName"));
+  ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("NotAllowlisted/TestName"));
 
   // Check hex processing.
-  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Whitelisted/0xA1b2"));
+  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Allowlisted/0xA1b2"));
 }
 
 TEST(ProcessMemoryDumpTest, GuidsTest) {

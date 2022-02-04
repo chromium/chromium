@@ -24,7 +24,7 @@ void InternedSourceLocation::Add(
     msg->set_file_name(location.file_name);
   if (location.function_name != nullptr)
     msg->set_function_name(location.function_name);
-  // TODO(ssid): Add line number once it is whitelisted in internal proto.
+  // TODO(ssid): Add line number once it is allowed in internal proto.
   // TODO(ssid): Add program counter to the proto fields when
   // !BUILDFLAG(ENABLE_LOCATION_SOURCE).
   // TODO(http://crbug.com760702) remove file name and just pass the program
