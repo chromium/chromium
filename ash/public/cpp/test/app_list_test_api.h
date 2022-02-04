@@ -121,9 +121,6 @@ class ASH_EXPORT AppListTestApi {
 
   // Returns true if there is any waiting reorder animation test callback.
   bool HasAnyWaitingReorderDoneCallback() const;
-
-  // Enables/Disables the app list nudge for testing.
-  void DisableAppListNudge(bool disable);
 };
 
 }  // namespace ash

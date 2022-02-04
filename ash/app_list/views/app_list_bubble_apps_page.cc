@@ -13,8 +13,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/views/app_list_nudge_controller.h"
-#include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_reorder_undo_container_view.h"
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
@@ -82,8 +81,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
     ApplicationDragAndDropHost* drag_and_drop_host,
     AppListConfig* app_list_config,
     AppListA11yAnnouncer* a11y_announcer,
-    AppListFolderController* folder_controller)
-    : app_list_nudge_controller_(std::make_unique<AppListNudgeController>()) {
+    AppListFolderController* folder_controller) {
   DCHECK(view_delegate);
   DCHECK(drag_and_drop_host);
   DCHECK(a11y_announcer);
@@ -145,11 +143,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       ColorProvider::ContentLayerType::kSeparatorColor));
 
   // Add a empty container view. A toast view should be added to
-  // `toast_container_` when the app list starts temporary sorting.
+  // `reorder_undo_container_` when the app list starts temporary sorting.
   if (features::IsLauncherAppSortEnabled()) {
-    toast_container_ = scroll_contents->AddChildView(
-        std::make_unique<AppListToastContainerView>(
-            app_list_nudge_controller_.get(),
+    reorder_undo_container_ = scroll_contents->AddChildView(
+        std::make_unique<AppListReorderUndoContainerView>(
             /*tablet_mode=*/false));
   }
 
@@ -369,8 +366,7 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
 
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.
-    app_list_nudge_controller_->OnTemporarySortOrderChanged(new_order);
-    toast_container_->OnTemporarySortOrderChanged(new_order);
+    reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
     return;
   }
 
@@ -388,24 +384,8 @@ void AppListBubbleAppsPage::Layout() {
 
 void AppListBubbleAppsPage::VisibilityChanged(views::View* starting_from,
                                               bool is_visible) {
-  // Cancel any in progress drag without running drop animation if the bubble
-  // apps page is hiding.
-  if (!is_visible) {
+  if (!is_visible)
     scrollable_apps_grid_view_->CancelDragWithNoDropAnimation();
-  }
-
-  if (features::IsLauncherAppSortEnabled()) {
-    // Updates the visibility state in toast container.
-    AppListToastContainerView::VisibilityState state =
-        is_visible ? AppListToastContainerView::kShown
-                   : AppListToastContainerView::kHidden;
-    toast_container_->UpdateVisibilityState(state);
-
-    // Check if the reorder nudge view needs update if the bubble apps page is
-    // showing.
-    if (is_visible)
-      toast_container_->MaybeUpdateReorderNudgeView();
-  }
 }
 
 void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
@@ -511,9 +491,9 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
     std::move(update_position_closure_).Run();
 
   // Record the undo toast's visibility before update.
-  const bool old_toast_visible = toast_container_->is_toast_visible();
+  const bool old_toast_visible = reorder_undo_container_->is_toast_visible();
 
-  toast_container_->OnTemporarySortOrderChanged(new_order);
+  reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
 
   // Skip the fade in animation if the fade out animation is aborted.
   if (aborted)
@@ -523,7 +503,7 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   // change. Meanwhile, the fade in animation relies on the apps grid's bounds
   // to calculate visible items. Therefore trigger layout before starting the
   // fade in animation.
-  if (old_toast_visible != toast_container_->is_toast_visible())
+  if (old_toast_visible != reorder_undo_container_->is_toast_visible())
     Layout();
 
   scrollable_apps_grid_view_->FadeInVisibleItemsForReorder();

@@ -8,7 +8,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
@@ -164,10 +163,6 @@ class SpokenFeedbackAppListTest
     zero_duration_mode_ =
         std::make_unique<ui::ScopedAnimationDurationScaleMode>(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-    // Disable the app list nudge in the spoken feedback app list test.
-    ash::AppListTestApi().DisableAppListNudge(true);
-
     LoggedInSpokenFeedbackTest::SetUp();
   }
 

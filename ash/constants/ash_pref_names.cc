@@ -784,10 +784,6 @@ const char kUsbPowerShareEnabled[] = "ash.power.usb_power_share_enabled";
 const char kSuggestedContentInfoShownInLauncher[] =
     "ash.launcher.suggested_content_info_shown";
 
-// A dictionary value that determines whether the reorder nudge in app list
-// should show to the users.
-const char kAppListReorderNudge[] = "ash.launcher.app_list_reorder_nudge";
-
 // A boolean pref that indicates whether the Suggested Content privacy info may
 // be displayed to user. A false value indicates that the info can be displayed
 // if the value of |kSuggestedContentInfoShownInLauncher| is smaller than the

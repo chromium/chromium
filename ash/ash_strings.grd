@@ -4458,15 +4458,6 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_COLOR" desc="Title of the context menu item in apps grid view in Productivity Launcher for reordering the apps by their icon colors">
         Color
       </message>
-      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE" desc="Title of a nudge shown in the Chrome OS launcher UI above the list of apps that informs users that they can sort their apps by name or color.">
-        Sort your apps by name or color
-      </message>
-      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_CLAMSHELL_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the Chrome OS launcher UI in clamshell mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
-        Right-click anywhere to reorder your apps
-      </message>
-      <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TABLET_MODE_SUBTITLE" desc="Subtitle of a nudge shown in the Chrome OS launcher UI in tablet mode. The nudge locates above the list of apps that informs users that they can sort their apps by name or color.">
-        Touch &amp; hold anywhere to reorder your apps
-      </message>
       <message name="IDS_SUGGESTED_APPS_INDICATOR" desc="Indicator text in the launcher on top of suggested apps.">
         SUGGESTED APPS
       </message>

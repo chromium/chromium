@@ -20,7 +20,7 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
-#include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_reorder_undo_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -83,20 +83,21 @@ AppListFolderView* GetAppListFolderView() {
       ->app_list_folder_view();
 }
 
-AppListToastContainerView* GetToastContainerViewFromBubble() {
+AppListReorderUndoContainerView* GetReorderUndoContainerViewFromBubble() {
   DCHECK(features::IsLauncherAppSortEnabled());
   return GetAppListBubbleView()
       ->apps_page_for_test()
-      ->toast_container_for_test();
+      ->reorder_undo_container_for_test();
 }
 
-AppListToastContainerView* GetToastContainerViewFromFullscreenAppList() {
+AppListReorderUndoContainerView*
+GetReorderUndoContainerViewFromFullscreenAppList() {
   DCHECK(features::IsLauncherAppSortEnabled());
   return GetAppListView()
       ->app_list_main_view()
       ->contents_view()
       ->apps_container_view()
-      ->toast_container_for_test();
+      ->reorder_undo_container_for_test();
 }
 
 // WindowAddedWaiter -----------------------------------------------------------
@@ -345,20 +346,21 @@ bool AppListTestApi::IsFolderViewAnimating() const {
 }
 
 views::View* AppListTestApi::GetBubbleReorderUndoButton() {
-  return GetToastContainerViewFromBubble()->GetToastDismissButtonForTest();
+  return GetReorderUndoContainerViewFromBubble()
+      ->GetToastDismissButtonForTest();
 }
 
 views::View* AppListTestApi::GetFullscreenReorderUndoButton() {
-  return GetToastContainerViewFromFullscreenAppList()
+  return GetReorderUndoContainerViewFromFullscreenAppList()
       ->GetToastDismissButtonForTest();
 }
 
 bool AppListTestApi::GetBubbleReorderUndoToastVisibility() const {
-  return GetToastContainerViewFromBubble()->is_toast_visible();
+  return GetReorderUndoContainerViewFromBubble()->is_toast_visible();
 }
 
 bool AppListTestApi::GetFullscreenReorderUndoToastVisibility() const {
-  return GetToastContainerViewFromFullscreenAppList()->is_toast_visible();
+  return GetReorderUndoContainerViewFromFullscreenAppList()->is_toast_visible();
 }
 
 void AppListTestApi::SetFolderViewAnimationCallback(
@@ -381,10 +383,6 @@ void AppListTestApi::AddReorderAnimationCallback(
 bool AppListTestApi::HasAnyWaitingReorderDoneCallback() const {
   DCHECK(features::IsLauncherAppSortEnabled());
   return GetTopLevelAppsGridView()->HasAnyWaitingReorderDoneCallbackForTest();
-}
-
-void AppListTestApi::DisableAppListNudge(bool disable) {
-  AppListNudgeController::SetNudgeDisabledForTest(disable);
 }
 
 }  // namespace ash

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/app_list/app_list_model_provider.h"
-#include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
@@ -36,13 +35,12 @@ class AppListConfig;
 class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListFolderController;
-class AppListNudgeController;
-class AppListToastContainerView;
 class AppListViewDelegate;
 class ContinueSectionView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
+class AppListReorderUndoContainerView;
 
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
@@ -128,12 +126,8 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
   views::Separator* separator_for_test() { return separator_; }
-  AppListToastContainerView* toast_container_for_test() {
-    return toast_container_;
-  }
-
-  AppListNudgeController* app_list_nudge_controller() {
-    return app_list_nudge_controller_.get();
+  AppListReorderUndoContainerView* reorder_undo_container_for_test() {
+    return reorder_undo_container_;
   }
 
   ScrollViewGradientHelper* gradient_helper_for_test() {
@@ -172,10 +166,8 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
-  AppListToastContainerView* toast_container_ = nullptr;
+  AppListReorderUndoContainerView* reorder_undo_container_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;
-
-  std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
