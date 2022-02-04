@@ -1851,8 +1851,18 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
       !overview_session_->GetCurrentDraggedOverviewItem() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       !IsShowingDesksTemplatesGrid();
-  if (target_visible == IsSaveDeskAsTemplateButtonVisible())
-    return;
+
+  const bool visibility_changed =
+      target_visible != IsSaveDeskAsTemplateButtonVisible();
+
+  // Adds or removes the widget from the accessibility focus order when exiting
+  // the scope. Skip the update if the widget's visibility hasn't changed.
+  base::ScopedClosureRunner update_accessibility_focus(base::BindOnce(
+      [](OverviewSession* session, bool widget_visibility_changed) {
+        if (widget_visibility_changed)
+          session->UpdateAccessibilityFocus();
+      },
+      overview_session_, visibility_changed));
 
   if (!target_visible) {
     if (save_desk_as_template_widget_) {
@@ -1862,7 +1872,6 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
           base::BindOnce(&OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut,
                          weak_ptr_factory_.GetWeakPtr()));
     }
-    overview_session_->UpdateAccessibilityFocus();
     return;
   }
 
@@ -1898,18 +1907,24 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
 
   // Set the widget position above the overview item window and default width
   // and height.
-  // TODO: Reposition Desks Templates bounds for tablet mode.
-  const gfx::RectF overview_item_bounds = window_list_.front()->target_bounds();
+  const gfx::Point first_overview_item_origin =
+      gfx::ToRoundedPoint(window_list_.front()->target_bounds().origin());
   const gfx::Size preferred_size =
       save_desk_as_template_widget_->GetContentsView()->GetPreferredSize();
+
+  // Animate the widget so it moves with the items. The widget's size isn't
+  // changing, so its ok to use a bounds animation as opposed to a transform
+  // animation.
+  ScopedOverviewAnimationSettings settings(
+      OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
+      save_desk_as_template_widget_->GetNativeWindow());
   save_desk_as_template_widget_->SetBounds(gfx::Rect(
       // Align the widget so it is visually aligned with the first overview
       // item, which has a invisible border of `kWindowMargin` thickness.
-      overview_item_bounds.x() + kWindowMargin,
-      overview_item_bounds.y() - kSaveDeskAsTemplateOverviewItemSpacingDp,
-      preferred_size.width(), preferred_size.height()));
-
-  overview_session_->UpdateAccessibilityFocus();
+      first_overview_item_origin +
+          gfx::Vector2d(kWindowMargin,
+                        -kSaveDeskAsTemplateOverviewItemSpacingDp),
+      preferred_size));
 }
 
 bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {

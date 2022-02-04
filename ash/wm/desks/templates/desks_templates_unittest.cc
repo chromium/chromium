@@ -689,17 +689,50 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
 // overview item. Regression test for https://crbug.com/1285491.
 TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonAligned) {
   // Create a test window in the current desk.
-  auto test_window = CreateAppWindow();
+  auto test_window1 = CreateAppWindow();
+  auto test_window2 = CreateAppWindow();
+  // A widget is needed to close.
+  auto test_widget = CreateTestWidget();
+
   ToggleOverview();
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   auto* overview_grid =
       GetOverviewSession()->GetGridWithRootWindow(root_window);
   views::Widget* save_desk_as_template_widget =
       GetSaveDeskAsTemplateButtonForRoot(root_window);
-  auto& window_list = overview_grid->window_list();
-  ASSERT_FALSE(window_list.empty());
-  EXPECT_EQ(window_list.front()->target_bounds().x() + kWindowMargin,
-            save_desk_as_template_widget->GetWindowBoundsInScreen().x());
+
+  auto verify_save_desk_widget_bounds = [&overview_grid,
+                                         save_desk_as_template_widget]() {
+    auto& window_list = overview_grid->window_list();
+    ASSERT_FALSE(window_list.empty());
+    EXPECT_EQ(
+        std::round(window_list.front()->target_bounds().x()) + kWindowMargin,
+        save_desk_as_template_widget->GetWindowBoundsInScreen().x());
+    EXPECT_EQ(std::round(window_list.front()->target_bounds().y()) - 40,
+              save_desk_as_template_widget->GetWindowBoundsInScreen().y());
+  };
+
+  verify_save_desk_widget_bounds();
+
+  // Tests that the save desk button remains slightly above the first overview
+  // item after changes to the window position. Regression test for
+  // https://crbug.com/1289020.
+
+  // Delete an overview item and verify.
+  OverviewItem* item = GetOverviewItemForWindow(test_widget->GetNativeWindow());
+  item->CloseWindow();
+
+  // `NativeWidgetAura::Close()` fires a post task.
+  base::RunLoop().RunUntilIdle();
+  verify_save_desk_widget_bounds();
+
+  // Create a new desk to leave zero state and verify.
+  const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view->IsZeroState());
+  auto* new_desk_button = desks_bar_view->zero_state_new_desk_button();
+  ClickOnView(new_desk_button);
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
+  verify_save_desk_widget_bounds();
 }
 
 // Tests that the save desk as template button is disabled when the maximum
