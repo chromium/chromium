@@ -6100,6 +6100,10 @@ static_library("browser") {
       "signin/signin_global_error.h",
       "signin/signin_global_error_factory.cc",
       "signin/signin_global_error_factory.h",
+      "signin/signin_manager.cc",
+      "signin/signin_manager.h",
+      "signin/signin_manager_factory.cc",
+      "signin/signin_manager_factory.h",
       "upgrade_detector/get_installed_version.cc",
       "upgrade_detector/get_installed_version.h",
       "upgrade_detector/installed_version_monitor.h",
@@ -6407,10 +6411,6 @@ static_library("browser") {
       "signin/logout_tab_helper.h",
       "signin/process_dice_header_delegate_impl.cc",
       "signin/process_dice_header_delegate_impl.h",
-      "signin/signin_manager.cc",
-      "signin/signin_manager.h",
-      "signin/signin_manager_factory.cc",
-      "signin/signin_manager_factory.h",
     ]
     if (is_win) {
       sources += [

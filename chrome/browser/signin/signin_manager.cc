@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/signin_manager.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -54,6 +56,23 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
 CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   DCHECK(identity_manager_->AreRefreshTokensLoaded());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, the first time an account is added to the profile, it is set as
+  // primary account. The `SigninManager` never removes the primary account.
+  // TODO(https://crbug.com/1260291): Revisit this once signout flows are
+  // defined.
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager_->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSignin);
+  }
+
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager_->GetAccountsWithRefreshTokens();
+  if (!accounts.empty())
+    return accounts[0];
+
+  return CoreAccountInfo();
+#else
   // UPA is equal to the primary account with sync consent if it exists.
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return identity_manager_->GetPrimaryAccountInfo(
@@ -124,6 +143,7 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   // No indication that the current UPA is invalid, return current UPA.
   return identity_manager_->GetPrimaryAccountInfo(
       signin::ConsentLevel::kSignin);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 // signin::IdentityManager::Observer implementation.

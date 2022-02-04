@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
@@ -455,6 +456,15 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
   ASSERT_TRUE(entry);
   EXPECT_EQ(entry->GetGaiaIds(), base::flat_set<std::string>{kGaiaId});
 
+  // Set the primary account (simulate the `SigninManager`).
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager->GetAccountsWithRefreshTokens();
+  ASSERT_EQ(1u, accounts.size());
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      accounts[0].account_id, signin::ConsentLevel::kSignin);
+
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -510,6 +520,15 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
           ->GetProfileAttributesWithPath(new_profile->GetPath());
   ASSERT_TRUE(entry);
   EXPECT_EQ(entry->GetGaiaIds(), base::flat_set<std::string>{kGaiaId});
+
+  // Set the primary account (simulate the `SigninManager`).
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager->GetAccountsWithRefreshTokens();
+  ASSERT_EQ(1u, accounts.size());
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      accounts[0].account_id, signin::ConsentLevel::kSignin);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());

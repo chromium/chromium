@@ -11,8 +11,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 ProfilePickerLacrosSignInProvider::ProfilePickerLacrosSignInProvider() =
     default;
@@ -54,10 +53,15 @@ void ProfilePickerLacrosSignInProvider::
               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ProfilePickerLacrosSignInProvider::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
+void ProfilePickerLacrosSignInProvider::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    return;
+  }
+
   identity_manager_observation_.Reset();
-  OnLacrosAccountLoaded(account_info);
+  OnProfileSignedIn();
 }
 
 void ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated(
@@ -73,30 +77,22 @@ void ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated(
       result->profile_path);
   DCHECK(profile);
   profile_ = profile;
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  auto accounts = identity_manager->GetAccountsWithRefreshTokens();
-  if (!accounts.empty()) {
-    DCHECK_EQ(accounts.size(), 1u);
-    OnLacrosAccountLoaded(accounts[0]);
+
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    OnProfileSignedIn();
     return;
   }
 
   // Listen for sign-in getting completed.
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
   identity_manager_observation_.Observe(identity_manager);
 }
 
-void ProfilePickerLacrosSignInProvider::OnLacrosAccountLoaded(
-    const CoreAccountInfo& account) {
-  DCHECK(!account.IsEmpty());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account.account_id, signin::ConsentLevel::kSignin);
-
+void ProfilePickerLacrosSignInProvider::OnProfileSignedIn() {
   std::move(callback_).Run(profile_);
   // The object gets deleted now.
 }
