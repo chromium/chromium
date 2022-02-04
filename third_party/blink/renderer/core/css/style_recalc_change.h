@@ -34,6 +34,11 @@ class CORE_EXPORT StyleRecalcChange {
     // If set, will prevent style recalc for the node passed to
     // ShouldRecalcStyleFor. This flag is lost when ForChildren is called.
     kSuppressRecalc = 1 << 3,
+    // If set, and kReattach is also set, the element should be explicitly
+    // marked for re-attachment even if its style doesn't change. Used for query
+    // container children to resume re-attachment that was blocked when style
+    // recalc for container children was skipped.
+    kMarkReattach = 1 << 4,
   };
   using Flags = uint8_t;
 
@@ -83,6 +88,9 @@ class CORE_EXPORT StyleRecalcChange {
   StyleRecalcChange ForceReattachLayoutTree() const {
     return {propagate_, static_cast<Flags>(flags_ | kReattach)};
   }
+  StyleRecalcChange ForceMarkReattachLayoutTree() const {
+    return {propagate_, static_cast<Flags>(flags_ | kMarkReattach)};
+  }
   StyleRecalcChange ForceRecalcContainer() const {
     return {propagate_, static_cast<Flags>(flags_ | kRecalcContainer)};
   }
@@ -103,6 +111,10 @@ class CORE_EXPORT StyleRecalcChange {
   }
 
   bool ReattachLayoutTree() const { return flags_ & kReattach; }
+  bool MarkReattachLayoutTree() const {
+    return (flags_ & (kMarkReattach | kReattach)) ==
+           (kMarkReattach | kReattach);
+  }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }
   bool RecalcDescendants() const { return propagate_ == kRecalcDescendants; }
   bool UpdatePseudoElements() const { return propagate_ != kNo; }

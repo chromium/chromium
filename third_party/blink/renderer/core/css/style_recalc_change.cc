@@ -129,7 +129,7 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
       result &= ~kRecalcContainer;
   }
 
-  result &= ~kSuppressRecalc;
+  result &= ~(kSuppressRecalc | kMarkReattach);
 
   return result;
 }

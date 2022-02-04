@@ -2939,7 +2939,7 @@ bool Element::SkipStyleRecalcForContainer(
   // Store the child_change so that we can continue interleaved style layout
   // from where we left off.
   EnsureElementRareData().EnsureContainerQueryData().SkipStyleRecalc(
-      child_change);
+      child_change.ForceMarkReattachLayoutTree());
 
   GetDocument().GetStyleEngine().SkipStyleRecalcForContainer();
 
@@ -3010,6 +3010,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     SetNeedsReattachLayoutTree();
     child_change = child_change.ForceReattachLayoutTree();
     ClearNeedsStyleRecalc();
+  } else if (change.MarkReattachLayoutTree() && GetComputedStyle()) {
+    SetNeedsReattachLayoutTree();
+    DCHECK(!NeedsStyleRecalc());
   }
 
   // We're done with self style, notify the display lock.
