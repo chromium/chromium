@@ -337,7 +337,8 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
   for (const auto& entry : state.GetListDeprecated()) {
     std::string spki_b64;
     const base::DictionaryValue* dict_entry = nullptr;
-    if (entry.GetAsString(&spki_b64)) {
+    if (entry.is_string()) {
+      spki_b64 = entry.GetString();
       // This handles the case that the store contained a plain list of base64
       // and DER-encoded SPKIs from an older version of ChromeOS.
       KeyEntry new_entry(spki_b64);
