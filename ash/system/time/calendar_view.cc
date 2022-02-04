@@ -256,6 +256,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                 calendar_view->set_should_months_animate(true);
               },
               base::Unretained(this))) {
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  GetViewAccessibility().OverrideName(GetClassName());
+
   CreateTitleRow(IDS_ASH_CALENDAR_TITLE);
 
   // Add the header.
@@ -326,6 +329,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
       calendar_view_controller_.get());
   scoped_view_observer_.AddObservation(scroll_view_);
   scoped_view_observer_.AddObservation(content_view_);
+  scoped_view_observer_.AddObservation(this);
 }
 
 CalendarView::~CalendarView() {
@@ -551,6 +555,12 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
 }
 
 void CalendarView::OnViewFocused(View* observed_view) {
+  if (observed_view == this) {
+    content_view_->RequestFocus();
+    SetFocusBehavior(FocusBehavior::NEVER);
+    return;
+  }
+
   if (observed_view != content_view_ || IsDateCellViewFocused())
     return;
 
