@@ -154,7 +154,8 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(!!qrCodeDetectorContainer);
   });
 
-  test('Switch camera button states', async function() {
+  // TODO(b/217936048) Disable flaky test. Renable when test is fixed.
+  test.skip('Switch camera button states', async function() {
     await flushAsync();
     const video = activationCodePage.$$('#video');
     const startScanningButton = activationCodePage.$$('#startScanningButton');
