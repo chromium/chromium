@@ -165,18 +165,18 @@ int SandboxedVfsFile::Read(void* buffer, int size, sqlite3_int64 offset) {
   if (bytes_read == size)
     return SQLITE_OK;
 
-  // SQLite first reads the database header without locking the file. On
-  // Windows, this read will fail if there is an exclusive lock on the file,
-  // even if the current process owns that lock.
-  if (sqlite_lock_mode_ == SQLITE_LOCK_NONE) {
-    // The unlocked read is considered an optimization. SQLite can continue even
-    // if the read fails, as long as failure is communicated by zeroing out the
-    // output buffer.
-    std::memset(data, 0, size);
-    return SQLITE_OK;
-  }
-
   if (bytes_read < 0) {
+    // SQLite first reads the database header without locking the file. On
+    // Windows, this read will fail if there is an exclusive lock on the file,
+    // even if the current process owns that lock.
+    if (sqlite_lock_mode_ == SQLITE_LOCK_NONE) {
+      // The unlocked read is considered an optimization. SQLite can continue
+      // even if the read fails, as long as failure is communicated by zeroing
+      // out the output buffer.
+      std::memset(data, 0, size);
+      return SQLITE_OK;
+    }
+
     vfs_->SetLastError(base::File::GetLastFileError());
     return SQLITE_IOERR_READ;
   }
