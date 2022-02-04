@@ -228,6 +228,8 @@ class JSChecker {
       const std::string& value,
       std::initializer_list<base::StringPiece> element_ids);
 
+  bool IsVisible(std::initializer_list<base::StringPiece> element_ids);
+
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
   }

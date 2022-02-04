@@ -180,7 +180,8 @@ found in the LICENSE file. -->
 
     <!-- LOADED DIALOG -->
     <oobe-adaptive-dialog id="loadedDialog" for-step="loaded" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
+        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]"
+        read-more>
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[getTitle_(locale, isEnterpriseManagedAccount_, isChildAccount_)]]

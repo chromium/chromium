@@ -531,6 +531,12 @@ void JSChecker::SelectElementInPath(
   Evaluate(js);
 }
 
+bool JSChecker::IsVisible(
+    std::initializer_list<base::StringPiece> element_ids) {
+  bool is_hidden = GetBool(test::GetOobeElementPath(element_ids) + ".hidden");
+  return !is_hidden;
+}
+
 JSChecker OobeJS() {
   return JSChecker(LoginDisplayHost::default_host()->GetOobeWebContents());
 }
