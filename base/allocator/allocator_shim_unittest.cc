@@ -707,9 +707,25 @@ TEST_F(AllocatorShimTest, InterceptVasprintf) {
   EXPECT_GT(stream.str().size(), 30u);
   // Should not crash.
 }
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
+
+// Non-regression test for crbug.com/1291885.
+TEST_F(AllocatorShimTest, BatchMalloc) {
+  constexpr unsigned kNumToAllocate = 20;
+  void* pointers[kNumToAllocate];
+
+  EXPECT_EQ(kNumToAllocate, malloc_zone_batch_malloc(malloc_default_zone(), 10,
+                                                     pointers, kNumToAllocate));
+  malloc_zone_batch_free(malloc_default_zone(), pointers, kNumToAllocate);
+  // Should not crash.
+}
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
 
 }  // namespace
 }  // namespace allocator

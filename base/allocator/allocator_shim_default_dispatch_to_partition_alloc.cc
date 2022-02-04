@@ -440,6 +440,33 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
   return size;
 }
 
+unsigned PartitionBatchMalloc(const AllocatorDispatch*,
+                              size_t size,
+                              void** results,
+                              unsigned num_requested,
+                              void* context) {
+  // No real batching: we could only acquire the lock once for instance, keep it
+  // simple for now.
+  for (unsigned i = 0; i < num_requested; i++) {
+    // No need to check the results, we crash if it fails.
+    results[i] = PartitionMalloc(nullptr, size, nullptr);
+  }
+
+  // Either all succeeded, or we crashed.
+  return num_requested;
+}
+
+void PartitionBatchFree(const AllocatorDispatch*,
+                        void** to_be_freed,
+                        unsigned num_to_be_freed,
+                        void* context) {
+  // No real batching: we could only acquire the lock once for instance, keep it
+  // simple for now.
+  for (unsigned i = 0; i < num_to_be_freed; i++) {
+    PartitionFree(nullptr, to_be_freed[i], nullptr);
+  }
+}
+
 // static
 ThreadSafePartitionRoot* PartitionAllocMalloc::Allocator() {
   return ::Allocator();
@@ -603,8 +630,8 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &base::internal::PartitionRealloc,   // realloc_function
     &base::internal::PartitionFree,      // free_function
     &base::internal::PartitionGetSizeEstimate,  // get_size_estimate_function
-    nullptr,                                    // batch_malloc_function
-    nullptr,                                    // batch_free_function
+    &base::internal::PartitionBatchMalloc,      // batch_malloc_function
+    &base::internal::PartitionBatchFree,        // batch_free_function
 #if BUILDFLAG(IS_APPLE)
     // On Apple OSes, free_definite_size() is always called from free(), since
     // get_size_estimate() is used to determine whether an allocation belongs to
