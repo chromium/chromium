@@ -17,7 +17,7 @@ declare_args() {
   enable_rust = false
 
   # The version string returned by rustc -V.
-  rustc_version = "rustc 1.56.1-dev"
+  rustc_version = "rustc 1.58.1-dev"
 
   # Use experimental Rust toolchain built in-tree. See //tools/rust/build.py.
   # When set to true rustc_version will need to be manually set.

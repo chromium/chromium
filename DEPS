@@ -509,7 +509,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/third_party/android_rust_toolchain/linux-amd64',
-        'version': 'Bu8heOPkhOm7UcWIQy5lqgr7sVusGKVi_LjAzmJ1MrcC',
+        'version': 'BKAbvHjGv4-os-v8MS3I54bPsY-397xgaJ3yBeIVS20C',
       },
     ],
     'dep_type': 'cipd',
