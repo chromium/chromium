@@ -1723,6 +1723,42 @@ LayoutBlockFlow SECTION style="position: relative; column-count: 1"
             ToSimpleLayoutTree(*multicol->GetLayoutObject()));
 }
 
+TEST_F(MultiColumnRenderingTest, LegacyMulticolWithTHeadContainingNGFixedpos) {
+  // Disable LayoutNGBlockFragmentation, so that multicol uses legacy layout.
+  ScopedLayoutNGBlockFragmentationForTest layout_ng_block_fragmentation(false);
+
+  // Enable MathML, which forces LayoutNG even in legacy multicol.
+  ScopedMathMLCoreForTest mathml_core(true);
+  ScopedLayoutNGForTest layout_ng(true);
+
+  // The table-header-group is a LayoutTableSection and contains position:fixed
+  // due to transform. But LayoutTableSection is not a LayoutBlock, so the
+  // ContainingBlock() of the fixed element is the anonymous LayoutTable.
+  // This combination should not crash.
+  SetBodyContent(
+      "<div style='column-count: 1'>"
+      "<div style='display: table-header-group; transform: scale(1)'>"
+      "<math style='position: absolute'>"
+      "<mtext style='position: fixed'></mtext>"
+      "</math>"
+      "</div>"
+      "</div>");
+
+  Element* multicol = GetDocument().QuerySelector("div");
+  EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV style="column-count: 1"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutTable (anonymous)
+  |  |  +--LayoutTableSection DIV style="display: table-header-group; transform: scale(1)"
+  |  |  |  +--LayoutTableRow (anonymous)
+  |  |  |  |  +--LayoutTableCell (anonymous)
+  |  |  |  |  |  +--LayoutNGMathMLBlock math style="position: absolute"
+  |  |  |  |  |  |  +--LayoutNGMathMLBlockFlow mtext style="position: fixed"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+            ToSimpleLayoutTree(*multicol->GetLayoutObject()));
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

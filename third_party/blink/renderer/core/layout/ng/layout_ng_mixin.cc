@@ -357,15 +357,18 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
       .Run(/* only_layout */ this);
   scoped_refptr<const NGLayoutResult> result =
       container_builder.ToBoxFragment();
-  // These are the unpositioned OOF descendants of the current OOF block.
-  for (const auto& descendant :
-       result->PhysicalFragment().OutOfFlowPositionedDescendants()) {
-    descendant.Node().InsertIntoLegacyPositionedObjectsOf(
-        To<LayoutBlock>(container));
-  }
 
   const auto& fragment = result->PhysicalFragment();
   DCHECK_GT(fragment.Children().size(), 0u);
+
+  // Handle the unpositioned OOF descendants of the current OOF block.
+  if (fragment.HasOutOfFlowPositionedDescendants()) {
+    LayoutBlock* oof_container =
+        LayoutObject::FindNonAnonymousContainingBlock(container);
+    for (const auto& descendant : fragment.OutOfFlowPositionedDescendants())
+      descendant.Node().InsertIntoLegacyPositionedObjectsOf(oof_container);
+  }
+
   // Copy sizes of all child fragments to Legacy.
   // There could be multiple fragments, when this node has descendants whose
   // container is this node's container.
