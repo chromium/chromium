@@ -43,6 +43,13 @@ class InstallServiceWorkItem : public WorkItem {
   // the SCM. For example,
   // "C:\Program Files (x86)\Google\Chrome\ElevationService.exe" /svc
   //
+  // |com_service_cmd_line_args| indicates switches that the SCM needs to pass
+  // to ServiceMain() during COM activation. This is used to distinguish a
+  // non-COM SCM activation (for example, an AUTO start, or when someone
+  // manually starts the service using the control panel) from a COM service
+  // activation. For example, "comsvc" could be a switch used to indicate a COM
+  // activation.
+  //
   // NOTE: |registry_path| is mapped to the 32-bit view of the registry for
   // legacy reasons. |registry_path| is the path in HKEY_LOCAL_MACHINE under
   // which the service persists information, for instance if the service has to
@@ -56,6 +63,7 @@ class InstallServiceWorkItem : public WorkItem {
                          const std::wstring& display_name,
                          uint32_t start_type,
                          const base::CommandLine& service_cmd_line,
+                         const base::CommandLine& com_service_cmd_line_args,
                          const std::wstring& registry_path,
                          const std::vector<GUID>& clsids,
                          const std::vector<GUID>& iids);

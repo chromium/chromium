@@ -256,10 +256,14 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
   // TODO(crbug.com/1292806) : SERVICE_DEMAND_START will change to
   // SERVICE_AUTO_START once the Wake task is plumbed into the service startup.
+  // TODO(crbug.com/1292806) : the  `com_service_cmd_line_args` will change from
+  // base::CommandLine(base::CommandLine::NO_PROGRAM) to switches that indicate
+  // a COM activation once the Wake task is plumbed into the service startup.
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
       GetServiceDisplayName(internal_service).c_str(), SERVICE_DEMAND_START,
-      com_service_command, UPDATER_KEY,
+      com_service_command, base::CommandLine(base::CommandLine::NO_PROGRAM),
+      UPDATER_KEY,
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),
       {}));

@@ -126,6 +126,9 @@
         "LocalService": {
           "type": "SZ",
           "data": "$CHROME_ELEVATION_SERVICE_NAME"
+        },
+        "ServiceParameters": {
+          "data": "ValueShouldNotExist"
         }
       }
     },

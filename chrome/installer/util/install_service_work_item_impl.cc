@@ -156,6 +156,7 @@ InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     const std::wstring& display_name,
     uint32_t start_type,
     const base::CommandLine& service_cmd_line,
+    const base::CommandLine& com_service_cmd_line_args,
     const std::wstring& registry_path,
     const std::vector<GUID>& clsids,
     const std::vector<GUID>& iids)
@@ -164,6 +165,7 @@ InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
       display_name_(display_name),
       start_type_(start_type),
       service_cmd_line_(service_cmd_line),
+      com_service_cmd_line_args_(com_service_cmd_line_args),
       registry_path_(registry_path),
       clsids_(clsids),
       iids_(iids),
@@ -257,6 +259,18 @@ bool InstallServiceWorkItemImpl::DoComRegistration() {
     com_registration_work_items_->AddSetRegValueWorkItem(
         HKEY_LOCAL_MACHINE, appid_reg_path, WorkItem::kWow64Default,
         L"LocalService", GetCurrentServiceName(), true);
+
+    base::CommandLine::StringType com_service_args_string =
+        com_service_cmd_line_args_.GetArgumentsString();
+    if (!com_service_args_string.empty()) {
+      com_registration_work_items_->AddSetRegValueWorkItem(
+          HKEY_LOCAL_MACHINE, appid_reg_path, WorkItem::kWow64Default,
+          L"ServiceParameters", com_service_args_string, true);
+    } else {
+      com_registration_work_items_->AddDeleteRegValueWorkItem(
+          HKEY_LOCAL_MACHINE, appid_reg_path, WorkItem::kWow64Default,
+          L"ServiceParameters");
+    }
   }
 
   for (const auto& iid : iids_) {
