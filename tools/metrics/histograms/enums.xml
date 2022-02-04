@@ -55272,6 +55272,7 @@ from previous Chrome versions.
   <int value="871713352" label="ImprovedLanguageSettings:enabled"/>
   <int value="872509587" label="ArcWindowPredictor:enabled"/>
   <int value="873323760" label="MediaFoundationClearPlayback:disabled"/>
+  <int value="875077636" label="OriginAgentClusterDefaultEnable:disabled"/>
   <int value="876349279" label="WebViewExtraHeadersSameDomainOnly:enabled"/>
   <int value="876879670" label="OfflinePagesInDownloadHomeOpenInCct:enabled"/>
   <int value="877059804" label="AutofillPreventMixedFormsFilling:disabled"/>
@@ -55485,6 +55486,7 @@ from previous Chrome versions.
   <int value="1036565901" label="AssistPersonalInfo:enabled"/>
   <int value="1036958177"
       label="enable-experimental-accessibility-dictation-extension"/>
+  <int value="1037038569" label="OriginAgentClusterDefaultEnable:enabled"/>
   <int value="1037961753" label="CCTIncognito:disabled"/>
   <int value="1038264914" label="PerDeskShelf:enabled"/>
   <int value="1042202617" label="RemoteCopyReceiver:enabled"/>

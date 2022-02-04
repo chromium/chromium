@@ -1898,6 +1898,15 @@ const char kEnableDeJellyDescription[] =
     "bugs, visual artifacts, and performance cost. This implementation may be "
     "removed at any time.";
 
+const char kOriginAgentClusterDefaultName[] =
+    "Origin-keyed Agent Clusters by default";
+const char kOriginAgentClusterDefaultDescription[] =
+    "Select the default behaviour for the Origin-Agent-Cluster http header. "
+    "If enabled, an absent header will cause pages to be assigned to an "
+    "origin-keyed agent cluster, and to a site-keyed agent cluster when "
+    "disabled. Documents whose agent clusters are origin-keyed cannot set "
+    "document.domain to relax the same-origin policy.";
+
 const char kOsSettingsAppNotificationsPageName[] =
     "CrOS Settings App Notifications Page";
 const char kOsSettingsAppNotificationsPageDescription[] =
