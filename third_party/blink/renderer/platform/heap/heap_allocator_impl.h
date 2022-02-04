@@ -150,6 +150,33 @@ class PLATFORM_EXPORT HeapAllocator {
     }
   }
 
+  template <typename T>
+  static void GenerationalBarrierForBacking(
+      const HeapConsistency::WriteBarrierParams& params,
+      T* slot_in_backing) {
+    if constexpr (WTF::IsMemberOrWeakMemberType<std::decay_t<T>>::value) {
+      // TODO(1029379): Provide GetSlot() and call it here.
+      HeapConsistency::GenerationalBarrier(params, slot_in_backing);
+    }
+    // TODO(1029379): Handle other traceable types.
+  }
+
+  template <typename K, typename V>
+  static void GenerationalBarrierForBacking(
+      const HeapConsistency::WriteBarrierParams& params,
+      std::pair<K, V>* slot_in_backing) {
+    GenerationalBarrierForBacking(params, &slot_in_backing->first);
+    GenerationalBarrierForBacking(params, &slot_in_backing->second);
+  }
+
+  template <typename K, typename V>
+  static void GenerationalBarrierForBacking(
+      const HeapConsistency::WriteBarrierParams& params,
+      WTF::KeyValuePair<K, V>* slot_in_backing) {
+    GenerationalBarrierForBacking(params, &slot_in_backing->key);
+    GenerationalBarrierForBacking(params, &slot_in_backing->value);
+  }
+
   template <typename T, typename Traits>
   static void NotifyNewObject(T* slot_in_backing) {
     HeapConsistency::WriteBarrierParams params;
@@ -166,7 +193,7 @@ class PLATFORM_EXPORT HeapAllocator {
             TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
         break;
       case HeapConsistency::WriteBarrierType::kGenerational:
-        HeapConsistency::GenerationalBarrier(params, slot_in_backing);
+        GenerationalBarrierForBacking(params, slot_in_backing);
         break;
       case HeapConsistency::WriteBarrierType::kNone:
         break;
@@ -191,7 +218,7 @@ class PLATFORM_EXPORT HeapAllocator {
             TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
         break;
       case HeapConsistency::WriteBarrierType::kGenerational:
-        HeapConsistency::GenerationalBarrier(params, first_element);
+        GenerationalBarrierForBacking(params, first_element);
         break;
       case HeapConsistency::WriteBarrierType::kNone:
         break;

@@ -8,6 +8,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
+import("//v8/gni/v8.gni")
 
 buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
@@ -15,7 +16,7 @@ buildflag_header("blink_heap_buildflags") {
 
   flags = [
     "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification",
-    "BLINK_HEAP_YOUNG_GENERATION=$enable_blink_heap_young_generation",
+    "BLINK_HEAP_YOUNG_GENERATION=$cppgc_enable_young_generation",
   ]
 }
 
@@ -148,7 +149,7 @@ source_set("blink_heap_unittests_sources") {
     "test/weakness_marking_test.cc",
   ]
 
-  if (enable_blink_heap_young_generation) {
+  if (cppgc_enable_young_generation) {
     sources += [ "test/minor_gc_test.cc" ]
   }
 

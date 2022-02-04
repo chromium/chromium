@@ -208,6 +208,11 @@ void ThreadState::CollectAllGarbageForTesting(StackState stack_state) {
   }
 }
 
+void ThreadState::CollectGarbageInYoungGenerationForTesting(
+    StackState stack_state) {
+  cpp_heap().CollectGarbageInYoungGenerationForTesting(stack_state);
+}
+
 namespace {
 
 class CustomSpaceStatisticsReceiverImpl final

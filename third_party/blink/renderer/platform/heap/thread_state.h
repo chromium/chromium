@@ -92,6 +92,10 @@ class PLATFORM_EXPORT ThreadState final {
   void CollectAllGarbageForTesting(
       StackState stack_state = StackState::kNoHeapPointers);
 
+  // Perform stop-the-world garbage collection in young generation for testing.
+  void CollectGarbageInYoungGenerationForTesting(
+      StackState stack_state = StackState::kNoHeapPointers);
+
   void EnableDetachedGarbageCollectionsForTesting();
 
   static ThreadState* AttachMainThreadForTesting(v8::Platform*);
