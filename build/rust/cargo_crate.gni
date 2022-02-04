@@ -260,14 +260,4 @@ set_defaults("cargo_crate") {
   executable_configs = default_executable_configs
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  # lld currently eats a section which Rust executables need to
-  # determine their command line arguments. These lines work around this
-  # by retaining all sections.
-  # TODO(crbug/1281664) - remove these lines when this is fixed.
-  executable_configs -= [ "//build/config/compiler:default_optimization" ]
-  executable_configs += [
-    "//build/config/compiler:no_optimize",
-    "//build/rust:keep_sections",
-  ]
 }

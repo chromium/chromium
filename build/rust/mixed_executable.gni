@@ -20,16 +20,4 @@ template("mixed_executable") {
 
 set_defaults("mixed_executable") {
   configs = default_executable_configs
-
-  # lld currently eats a section which Rust executables need to
-  # determine their command line arguments. These lines work around this
-  # by retaining all sections.
-  # TODO(crbug/1281664) - remove these lines when this is fixed.
-  if (toolchain_has_rust) {
-    configs -= [ "//build/config/compiler:default_optimization" ]
-    configs += [
-      "//build/config/compiler:no_optimize",
-      "//build/rust:keep_sections",
-    ]
-  }
 }

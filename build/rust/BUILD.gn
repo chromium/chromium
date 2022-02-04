@@ -47,13 +47,3 @@ source_set("cxx_cppdeps") {
 group("cxx_rustdeps") {
   deps = [ "//third_party/rust/cxx/v1:lib" ]
 }
-
-# lld currently eats a section which Rust executables need to
-# determine their command line arguments. These lines work around this
-# by retaining all sections.
-# TODO(crbug/1281664) - remove these lines when this is fixed.
-config("keep_sections") {
-  if (is_linux || is_chromeos || is_android) {
-    ldflags = [ "-Wl,--no-gc-sections" ]
-  }
-}
