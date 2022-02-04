@@ -148,7 +148,7 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
       base::BindRepeating(&AppLauncherPageUI::OnHideWebStoreIconChanged,
                           base::Unretained(this)));
 
-  source->AddBoolean("canShowAppInfoDialog", CanPlatformShowAppInfoDialog());
+  source->AddBoolean("canShowAppInfoDialog", true);
 
   AppLauncherHandler::RegisterLoadTimeData(GetProfile(), source);
 
