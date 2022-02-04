@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_reset_euicc_job.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -14,8 +15,10 @@
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -25,6 +28,7 @@ namespace em = enterprise_management;
 
 namespace {
 
+const base::TimeDelta kNetworkListWaitTimeout = base::Seconds(20);
 const char kTestEuiccPath[] = "/test/hermes/123456789";
 const char kTestEid[] = "123456789";
 const RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
@@ -63,10 +67,10 @@ void VerifyJobResult(base::RunLoop* run_loop,
 
 class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
  public:
-  DeviceCommandResetEuiccJobTest() {
-    cellular_inhibitor_->Init(helper_.network_state_handler(),
-                              helper_.network_device_handler());
-  }
+  DeviceCommandResetEuiccJobTest()
+      : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
   DeviceCommandResetEuiccJobTest(const DeviceCommandResetEuiccJobTest&) =
       delete;
   DeviceCommandResetEuiccJobTest& operator=(
@@ -75,7 +79,8 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    helper_.hermes_manager_test()->AddEuicc(
+    helper_ = std::make_unique<chromeos::NetworkHandlerTestHelper>();
+    helper_->hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEid,
         /*is_active=*/true, /*physical_slot=*/0);
 
@@ -91,7 +96,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
   std::unique_ptr<RemoteCommandJob> CreateResetEuiccJob(
       base::TimeTicks issued_time) {
     std::unique_ptr<DeviceCommandResetEuiccJob> job =
-        DeviceCommandResetEuiccJob::CreateForTesting(cellular_inhibitor_.get());
+        std::make_unique<DeviceCommandResetEuiccJob>();
     auto reset_euicc_command_proto =
         GenerateResetEuiccCommandProto(base::TimeTicks::Now() - issued_time);
     EXPECT_TRUE(job->Init(base::TimeTicks::Now(), reset_euicc_command_proto,
@@ -102,7 +107,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
   }
 
   void AddFakeESimProfile() {
-    helper_.hermes_euicc_test()->AddFakeCarrierProfile(
+    helper_->hermes_euicc_test()->AddFakeCarrierProfile(
         dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive,
         /*activation_code=*/"",
         chromeos::HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
@@ -110,10 +115,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
   }
 
   base::HistogramTester histogram_tester_;
-  chromeos::NetworkStateTestHelper helper_{
-      /*use_default_devices_and_services=*/true};
-  std::unique_ptr<chromeos::CellularInhibitor> cellular_inhibitor_ =
-      std::make_unique<chromeos::CellularInhibitor>();
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper> helper_;
   base::TimeTicks test_start_time_ = base::TimeTicks::Now();
 };
 
@@ -130,6 +132,7 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
                               base::Unretained(job.get()),
                               RemoteCommandJob::Status::SUCCEEDED,
                               /*expected_profile_count=*/0)));
+  task_environment()->FastForwardBy(kNetworkListWaitTimeout);
   run_loop.Run();
   // Verify that the notification should be displayed.
   EXPECT_TRUE(tester.GetNotification(
@@ -143,7 +146,8 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
   histogram_tester_.ExpectTotalCount(kResetEuiccDurationHistogram, 1);
 }
 
-TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccInhibitFailure) {
+TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
+  // Simulate a failure by removing the cellular device.
   chromeos::ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
@@ -157,14 +161,14 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccInhibitFailure) {
                               RemoteCommandJob::Status::FAILED,
                               /*expected_profile_count=*/2)));
   run_loop.Run();
-  // Verify that the notification should be displayed.
-  EXPECT_TRUE(tester.GetNotification(
+  // Verify that the notification was not displayed.
+  EXPECT_FALSE(tester.GetNotification(
       DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
   // Verfiy that appropriate metrics have been logged.
   histogram_tester_.ExpectTotalCount(kResetEuiccOperationResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kResetEuiccOperationResultHistogram,
-      DeviceCommandResetEuiccJob::ResetEuiccResult::kInhibitFailed,
+      DeviceCommandResetEuiccJob::ResetEuiccResult::kHermesResetFailed,
       /*expected_count=*/1);
   histogram_tester_.ExpectTotalCount(kResetEuiccDurationHistogram, 0);
 }

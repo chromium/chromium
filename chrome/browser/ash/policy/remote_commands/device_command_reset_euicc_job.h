@@ -5,17 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_RESET_EUICC_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_RESET_EUICC_JOB_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
-#include "chromeos/network/cellular_inhibitor.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "dbus/object_path.h"
-
-namespace chromeos {
-enum class HermesResponseStatus;
-class CellularInhibitor;
-}  // namespace chromeos
 
 namespace policy {
 
@@ -31,11 +23,6 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
       delete;
   ~DeviceCommandResetEuiccJob() override;
 
-  // Creates an instance of DeviceCommandResetEuiccJob with given
-  // CellularInhibitor. Only used in tests.
-  static std::unique_ptr<DeviceCommandResetEuiccJob> CreateForTesting(
-      chromeos::CellularInhibitor* cellular_inhbitor);
-
   static const char kResetEuiccNotificationId[];
 
   // RemoteCommandJob:
@@ -44,8 +31,7 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
  private:
   friend class DeviceCommandResetEuiccJobTest;
   FRIEND_TEST_ALL_PREFIXES(DeviceCommandResetEuiccJobTest, ResetEuicc);
-  FRIEND_TEST_ALL_PREFIXES(DeviceCommandResetEuiccJobTest,
-                           ResetEuiccInhibitFailure);
+  FRIEND_TEST_ALL_PREFIXES(DeviceCommandResetEuiccJobTest, ResetEuiccFailure);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -57,9 +43,6 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
   };
   static void RecordResetEuiccResult(ResetEuiccResult result);
 
-  explicit DeviceCommandResetEuiccJob(
-      chromeos::CellularInhibitor* cellular_inhibitor);
-
   // RemoteCommandJob:
   void RunImpl(CallbackWithResult succeeded_callback,
                CallbackWithResult failed_callback) override;
@@ -67,20 +50,12 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
   CallbackWithResult CreateTimedResetMemorySuccessCallback(
       CallbackWithResult success_callback);
 
-  void PerformResetEuicc(
-      dbus::ObjectPath euicc_path,
-      CallbackWithResult succeeded_callback,
-      CallbackWithResult failed_callback,
-      std::unique_ptr<chromeos::CellularInhibitor::InhibitLock> inhibit_lock);
-  void OnResetMemoryResponse(
-      CallbackWithResult succeeded_callback,
-      CallbackWithResult failed_callback,
-      std::unique_ptr<chromeos::CellularInhibitor::InhibitLock> inhibit_lock,
-      chromeos::HermesResponseStatus status);
+  void OnResetMemoryResponse(CallbackWithResult succeeded_callback,
+                             CallbackWithResult failed_callback,
+                             bool status);
   void RunResultCallback(CallbackWithResult callback);
   void ShowResetEuiccNotification();
 
-  chromeos::CellularInhibitor* const cellular_inhibitor_;
   base::WeakPtrFactory<DeviceCommandResetEuiccJob> weak_ptr_factory_{this};
 };
 

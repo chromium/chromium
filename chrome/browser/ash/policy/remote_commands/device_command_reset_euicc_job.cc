@@ -16,8 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/network_handler.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -44,22 +43,8 @@ void DeviceCommandResetEuiccJob::RecordResetEuiccResult(
       "Network.Cellular.ESim.Policy.ResetEuicc.Result", result);
 }
 
-DeviceCommandResetEuiccJob::DeviceCommandResetEuiccJob()
-    : DeviceCommandResetEuiccJob(
-          chromeos::NetworkHandler::Get()->cellular_inhibitor()) {}
-
-DeviceCommandResetEuiccJob::DeviceCommandResetEuiccJob(
-    chromeos::CellularInhibitor* cellular_inhibitor)
-    : cellular_inhibitor_(cellular_inhibitor) {}
-
+DeviceCommandResetEuiccJob::DeviceCommandResetEuiccJob() = default;
 DeviceCommandResetEuiccJob::~DeviceCommandResetEuiccJob() = default;
-
-// static
-std::unique_ptr<DeviceCommandResetEuiccJob>
-DeviceCommandResetEuiccJob::CreateForTesting(
-    chromeos::CellularInhibitor* cellular_inhibitor) {
-  return base::WrapUnique(new DeviceCommandResetEuiccJob(cellular_inhibitor));
-}
 
 enterprise_management::RemoteCommand_Type DeviceCommandResetEuiccJob::GetType()
     const {
@@ -89,45 +74,24 @@ void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
     return;
   }
 
-  ShowResetEuiccNotification();
   SYSLOG(INFO) << "Executing EUICC reset memory remote command";
-  cellular_inhibitor_->InhibitCellularScanning(
-      chromeos::CellularInhibitor::InhibitReason::kResettingEuiccMemory,
+  chromeos::CellularESimUninstallHandler* uninstall_handler =
+      chromeos::NetworkHandler::Get()->cellular_esim_uninstall_handler();
+  uninstall_handler->ResetEuiccMemory(
+      *euicc_path,
       base::BindOnce(
-          &DeviceCommandResetEuiccJob::PerformResetEuicc,
-          weak_ptr_factory_.GetWeakPtr(), *euicc_path,
+          &DeviceCommandResetEuiccJob::OnResetMemoryResponse,
+          weak_ptr_factory_.GetWeakPtr(),
           CreateTimedResetMemorySuccessCallback(std::move(succeeded_callback)),
           std::move(failed_callback)));
-}
-
-void DeviceCommandResetEuiccJob::PerformResetEuicc(
-    dbus::ObjectPath euicc_path,
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback,
-    std::unique_ptr<chromeos::CellularInhibitor::InhibitLock> inhibit_lock) {
-  if (!inhibit_lock) {
-    SYSLOG(ERROR) << "Unable to reset EUICC. Could not get inhibit lock";
-    RecordResetEuiccResult(ResetEuiccResult::kInhibitFailed);
-    RunResultCallback(std::move(failed_callback));
-    return;
-  }
-
-  chromeos::HermesEuiccClient::Get()->ResetMemory(
-      euicc_path, hermes::euicc::ResetOptions::kDeleteOperationalProfiles,
-      base::BindOnce(&DeviceCommandResetEuiccJob::OnResetMemoryResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(succeeded_callback), std::move(failed_callback),
-                     std::move(inhibit_lock)));
 }
 
 void DeviceCommandResetEuiccJob::OnResetMemoryResponse(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback,
-    std::unique_ptr<chromeos::CellularInhibitor::InhibitLock> inhibit_lock,
-    chromeos::HermesResponseStatus status) {
-  if (status != chromeos::HermesResponseStatus::kSuccess) {
-    SYSLOG(ERROR) << "Euicc reset failed. status = "
-                  << static_cast<int>(status);
+    bool success) {
+  if (!success) {
+    SYSLOG(ERROR) << "Euicc reset failed.";
     RecordResetEuiccResult(ResetEuiccResult::kHermesResetFailed);
     RunResultCallback(std::move(failed_callback));
     return;
@@ -136,8 +100,7 @@ void DeviceCommandResetEuiccJob::OnResetMemoryResponse(
   SYSLOG(INFO) << "Successfully cleared EUICC";
   RecordResetEuiccResult(ResetEuiccResult::kSuccess);
   RunResultCallback(std::move(succeeded_callback));
-
-  // inhibit_lock is automatically released when destroyed.
+  ShowResetEuiccNotification();
 }
 
 void DeviceCommandResetEuiccJob::RunResultCallback(
