@@ -34,7 +34,7 @@ Process::Process(ProcessHandle handle)
 }
 
 Process::Process(Process&& other)
-    : process_(other.process_.Take()),
+    : process_(other.process_.release()),
       is_current_process_(other.is_current_process_) {
   other.Close();
 }
@@ -44,7 +44,7 @@ Process::~Process() {
 
 Process& Process::operator=(Process&& other) {
   DCHECK_NE(this, &other);
-  process_.Set(other.process_.Take());
+  process_.Set(other.process_.release());
   is_current_process_ = other.is_current_process_;
   other.Close();
   return *this;
@@ -90,11 +90,11 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
 }
 
 bool Process::IsValid() const {
-  return process_.IsValid() || is_current();
+  return process_.is_valid() || is_current();
 }
 
 ProcessHandle Process::Handle() const {
-  return is_current_process_ ? GetCurrentProcess() : process_.Get();
+  return is_current_process_ ? GetCurrentProcess() : process_.get();
 }
 
 Process Process::Duplicate() const {
@@ -117,7 +117,7 @@ Process Process::Duplicate() const {
 ProcessHandle Process::Release() {
   if (is_current())
     return ::GetCurrentProcess();
-  return process_.Take();
+  return process_.release();
 }
 
 ProcessId Process::Pid() const {
@@ -143,7 +143,7 @@ bool Process::is_current() const {
 
 void Process::Close() {
   is_current_process_ = false;
-  if (!process_.IsValid())
+  if (!process_.is_valid())
     return;
 
   process_.Close();
@@ -184,7 +184,7 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
   // Record the event that this thread is blocking upon (for hang diagnosis).
   base::debug::ScopedProcessWaitActivity process_activity(this);
 
-  HANDLE events[] = {Handle(), stop_event_handle.Get()};
+  HANDLE events[] = {Handle(), stop_event_handle.get()};
   DWORD wait_result =
       ::WaitForMultipleObjects(base::size(events), events, FALSE, INFINITE);
 

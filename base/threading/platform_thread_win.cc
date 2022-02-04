@@ -114,17 +114,15 @@ DWORD __stdcall ThreadFunc(void* params) {
   if (did_dup) {
     scoped_platform_handle.Set(platform_handle);
     ThreadIdNameManager::GetInstance()->RegisterThread(
-        scoped_platform_handle.Get(),
-        PlatformThread::CurrentId());
+        scoped_platform_handle.get(), PlatformThread::CurrentId());
   }
 
   delete thread_params;
   delegate->ThreadMain();
 
   if (did_dup) {
-    ThreadIdNameManager::GetInstance()->RemoveName(
-        scoped_platform_handle.Get(),
-        PlatformThread::CurrentId());
+    ThreadIdNameManager::GetInstance()->RemoveName(scoped_platform_handle.get(),
+                                                   PlatformThread::CurrentId());
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

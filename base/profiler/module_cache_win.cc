@@ -126,10 +126,10 @@ std::unique_ptr<ModuleCache::Module> CreateModuleForHandle(
     ScopedModuleHandle module_handle) {
   FilePath pdb_name;
   std::string build_id;
-  GetDebugInfoForModule(module_handle.Get(), &build_id, &pdb_name);
+  GetDebugInfoForModule(module_handle.get(), &build_id, &pdb_name);
 
   MODULEINFO module_info;
-  if (!::GetModuleInformation(GetCurrentProcessHandle(), module_handle.Get(),
+  if (!::GetModuleInformation(GetCurrentProcessHandle(), module_handle.get(),
                               &module_info, sizeof(module_info))) {
     return nullptr;
   }
@@ -144,7 +144,7 @@ std::unique_ptr<ModuleCache::Module> CreateModuleForHandle(
 std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
   ScopedModuleHandle module_handle = GetModuleHandleForAddress(address);
-  if (!module_handle.IsValid())
+  if (!module_handle.is_valid())
     return nullptr;
   return CreateModuleForHandle(std::move(module_handle));
 }

@@ -322,7 +322,7 @@ void CompareAppContainer(const Sid& package_sid, const std::vector<Sid>& caps) {
   ASSERT_EQ(0, status);
   ScopedHandle scoped_tmp_token(tmp_token);
   absl::optional<AccessToken> ac_token =
-      AccessToken::FromToken(scoped_tmp_token.Get());
+      AccessToken::FromToken(scoped_tmp_token.get());
   ASSERT_TRUE(ac_token);
   EXPECT_TRUE(ac_token->IsAppContainer());
   EXPECT_EQ(ac_token->AppContainerSid(), package_sid);
@@ -367,19 +367,19 @@ TEST(AccessTokenTest, FromToken) {
 TEST(AccessTokenTest, FromProcess) {
   ScopedHandle process(
       ::OpenProcess(PROCESS_TERMINATE, FALSE, ::GetCurrentProcessId()));
-  ASSERT_TRUE(process.IsValid());
-  CheckTokenError(AccessToken::FromProcess(process.Get()), ERROR_ACCESS_DENIED);
+  ASSERT_TRUE(process.is_valid());
+  CheckTokenError(AccessToken::FromProcess(process.get()), ERROR_ACCESS_DENIED);
   process.Set(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE,
                             ::GetCurrentProcessId()));
-  ASSERT_TRUE(process.IsValid());
-  absl::optional<AccessToken> token = AccessToken::FromProcess(process.Get());
+  ASSERT_TRUE(process.is_valid());
+  absl::optional<AccessToken> token = AccessToken::FromProcess(process.get());
   ASSERT_TRUE(token);
   ASSERT_FALSE(token->IsImpersonation());
   ATL::CAccessToken atl_token;
-  ASSERT_TRUE(atl_token.GetProcessToken(TOKEN_QUERY, process.Get()));
+  ASSERT_TRUE(atl_token.GetProcessToken(TOKEN_QUERY, process.get()));
   CompareTokens(*token, atl_token);
   absl::optional<AccessToken> imp_token =
-      AccessToken::FromProcess(process.Get(), true);
+      AccessToken::FromProcess(process.get(), true);
   ASSERT_TRUE(imp_token);
   ASSERT_TRUE(imp_token->IsImpersonation());
   ASSERT_TRUE(imp_token->IsIdentification());
@@ -406,8 +406,8 @@ TEST(AccessTokenTest, FromThread) {
                   ERROR_NO_TOKEN);
   ScopedHandle thread(
       ::OpenThread(THREAD_TERMINATE, FALSE, ::GetCurrentThreadId()));
-  ASSERT_TRUE(thread.IsValid());
-  CheckTokenError(AccessToken::FromThread(thread.Get()), ERROR_ACCESS_DENIED);
+  ASSERT_TRUE(thread.is_valid());
+  CheckTokenError(AccessToken::FromThread(thread.get()), ERROR_ACCESS_DENIED);
 
   ATL::CAccessToken atl_imp_token;
   ASSERT_TRUE(CreateImpersonationToken(SecurityImpersonation, &atl_imp_token));
@@ -416,8 +416,8 @@ TEST(AccessTokenTest, FromThread) {
 
   thread.Set(::OpenThread(THREAD_QUERY_LIMITED_INFORMATION, FALSE,
                           ::GetCurrentThreadId()));
-  ASSERT_TRUE(thread.IsValid());
-  absl::optional<AccessToken> imp_token = AccessToken::FromThread(thread.Get());
+  ASSERT_TRUE(thread.is_valid());
+  absl::optional<AccessToken> imp_token = AccessToken::FromThread(thread.get());
   atl_imp_token.Revert();
   ASSERT_TRUE(imp_token);
   ASSERT_TRUE(imp_token->IsImpersonation());
@@ -428,10 +428,10 @@ TEST(AccessTokenTest, FromThread) {
   ASSERT_TRUE(CreateImpersonationToken(SecurityIdentification, &atl_id_token));
   ASSERT_TRUE(atl_id_token.Impersonate());
   CAutoRevertImpersonation scoped_imp2(&atl_id_token);
-  CheckTokenError(AccessToken::FromThread(thread.Get(), false),
+  CheckTokenError(AccessToken::FromThread(thread.get(), false),
                   ERROR_BAD_IMPERSONATION_LEVEL);
   absl::optional<AccessToken> id_token =
-      AccessToken::FromThread(thread.Get(), true);
+      AccessToken::FromThread(thread.get(), true);
   atl_id_token.Revert();
   ASSERT_TRUE(id_token);
   EXPECT_TRUE(id_token->IsIdentification());

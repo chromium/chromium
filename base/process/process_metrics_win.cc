@@ -145,10 +145,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   FILETIME kernel_time;
   FILETIME user_time;
 
-  if (!process_.IsValid())
+  if (!process_.is_valid())
     return TimeDelta();
 
-  if (!GetProcessTimes(process_.Get(), &creation_time, &exit_time, &kernel_time,
+  if (!GetProcessTimes(process_.get(), &creation_time, &exit_time, &kernel_time,
                        &user_time)) {
     // This should never fail because we duplicate the handle to guarantee it
     // will remain valid.
@@ -161,10 +161,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
 }
 
 bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  if (!process_.IsValid())
+  if (!process_.is_valid())
     return false;
 
-  return GetProcessIoCounters(process_.Get(), io_counters) != FALSE;
+  return GetProcessIoCounters(process_.get(), io_counters) != FALSE;
 }
 
 uint64_t ProcessMetrics::GetCumulativeDiskUsageInBytes() {

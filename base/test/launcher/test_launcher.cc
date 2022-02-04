@@ -323,7 +323,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   win::ScopedHandle job_handle;
   if (flags & TestLauncher::USE_JOB_OBJECTS) {
     job_handle.Set(CreateJobObject(NULL, NULL));
-    if (!job_handle.IsValid()) {
+    if (!job_handle.is_valid()) {
       LOG(ERROR) << "Could not create JobObject.";
       return -1;
     }
@@ -337,12 +337,12 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
       job_flags |= JOB_OBJECT_LIMIT_BREAKAWAY_OK;
     }
 
-    if (!SetJobObjectLimitFlags(job_handle.Get(), job_flags)) {
+    if (!SetJobObjectLimitFlags(job_handle.get(), job_flags)) {
       LOG(ERROR) << "Could not SetJobObjectLimitFlags.";
       return -1;
     }
 
-    new_options.job_handle = job_handle.Get();
+    new_options.job_handle = job_handle.get();
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   DCHECK(!new_options.job_handle);

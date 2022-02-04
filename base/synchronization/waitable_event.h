@@ -108,7 +108,7 @@ class BASE_EXPORT WaitableEvent {
   bool NOT_TAIL_CALLED TimedWait(const TimeDelta& wait_delta);
 
 #if BUILDFLAG(IS_WIN)
-  HANDLE handle() const { return handle_.Get(); }
+  HANDLE handle() const { return handle_.get(); }
 #endif
 
   // Declares that this WaitableEvent will only ever be used by a thread that is

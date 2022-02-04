@@ -156,7 +156,7 @@ absl::optional<AccessToken> AccessToken::FromProcess(HANDLE process,
     if (!::OpenProcessToken(process, TOKEN_DUPLICATE, &token))
       return absl::nullopt;
     ScopedHandle primary_token(token);
-    if (!::DuplicateToken(primary_token.Get(), SecurityIdentification, &token))
+    if (!::DuplicateToken(primary_token.get(), SecurityIdentification, &token))
       return absl::nullopt;
   } else {
     if (!::OpenProcessToken(process, TOKEN_QUERY, &token))
@@ -201,27 +201,27 @@ Sid AccessToken::User() const {
 
 AccessToken::Group AccessToken::UserGroup() const {
   absl::optional<std::vector<char>> buffer =
-      GetTokenInfo(token_.Get(), TokenUser);
+      GetTokenInfo(token_.get(), TokenUser);
   SID_AND_ATTRIBUTES& user = GetType<TOKEN_USER>(buffer)->User;
   return {UnwrapSid(Sid::FromPSID(user.Sid)), user.Attributes};
 }
 
 Sid AccessToken::Owner() const {
   absl::optional<std::vector<char>> buffer =
-      GetTokenInfo(token_.Get(), TokenOwner);
+      GetTokenInfo(token_.get(), TokenOwner);
   return UnwrapSid(Sid::FromPSID(GetType<TOKEN_OWNER>(buffer)->Owner));
 }
 
 Sid AccessToken::PrimaryGroup() const {
   absl::optional<std::vector<char>> buffer =
-      GetTokenInfo(token_.Get(), TokenPrimaryGroup);
+      GetTokenInfo(token_.get(), TokenPrimaryGroup);
   return UnwrapSid(
       Sid::FromPSID(GetType<TOKEN_PRIMARY_GROUP>(buffer)->PrimaryGroup));
 }
 
 absl::optional<Sid> AccessToken::LogonId() const {
   std::vector<AccessToken::Group> groups =
-      GetGroupsFromToken(token_.Get(), TokenLogonSid);
+      GetGroupsFromToken(token_.get(), TokenLogonSid);
   for (const AccessToken::Group& group : groups) {
     if (group.IsLogonId())
       return group.GetSid().Clone();
@@ -231,7 +231,7 @@ absl::optional<Sid> AccessToken::LogonId() const {
 
 DWORD AccessToken::IntegrityLevel() const {
   absl::optional<std::vector<char>> buffer =
-      GetTokenInfo(token_.Get(), TokenIntegrityLevel);
+      GetTokenInfo(token_.get(), TokenIntegrityLevel);
   if (!buffer)
     return MAXDWORD;
 
@@ -242,27 +242,27 @@ DWORD AccessToken::IntegrityLevel() const {
 
 DWORD AccessToken::SessionId() const {
   absl::optional<DWORD> value =
-      GetTokenInfoFixed<DWORD>(token_.Get(), TokenSessionId);
+      GetTokenInfoFixed<DWORD>(token_.get(), TokenSessionId);
   if (!value)
     return MAXDWORD;
   return *value;
 }
 
 std::vector<AccessToken::Group> AccessToken::Groups() const {
-  return GetGroupsFromToken(token_.Get(), TokenGroups);
+  return GetGroupsFromToken(token_.get(), TokenGroups);
 }
 
 bool AccessToken::IsRestricted() const {
-  return !!::IsTokenRestricted(token_.Get());
+  return !!::IsTokenRestricted(token_.get());
 }
 
 std::vector<AccessToken::Group> AccessToken::RestrictedSids() const {
-  return GetGroupsFromToken(token_.Get(), TokenRestrictedSids);
+  return GetGroupsFromToken(token_.get(), TokenRestrictedSids);
 }
 
 bool AccessToken::IsAppContainer() const {
   absl::optional<DWORD> value =
-      GetTokenInfoFixed<DWORD>(token_.Get(), TokenIsAppContainer);
+      GetTokenInfoFixed<DWORD>(token_.get(), TokenIsAppContainer);
   if (!value)
     return false;
   return !!*value;
@@ -270,7 +270,7 @@ bool AccessToken::IsAppContainer() const {
 
 absl::optional<Sid> AccessToken::AppContainerSid() const {
   absl::optional<std::vector<char>> buffer =
-      GetTokenInfo(token_.Get(), TokenAppContainerSid);
+      GetTokenInfo(token_.get(), TokenAppContainerSid);
   if (!buffer)
     return absl::nullopt;
 
@@ -282,12 +282,12 @@ absl::optional<Sid> AccessToken::AppContainerSid() const {
 }
 
 std::vector<AccessToken::Group> AccessToken::Capabilities() const {
-  return GetGroupsFromToken(token_.Get(), TokenCapabilities);
+  return GetGroupsFromToken(token_.get(), TokenCapabilities);
 }
 
 absl::optional<AccessToken> AccessToken::LinkedToken() const {
   absl::optional<TOKEN_LINKED_TOKEN> value =
-      GetTokenInfoFixed<TOKEN_LINKED_TOKEN>(token_.Get(), TokenLinkedToken);
+      GetTokenInfoFixed<TOKEN_LINKED_TOKEN>(token_.get(), TokenLinkedToken);
   if (!value)
     return absl::nullopt;
   return AccessToken(value->LinkedToken);
@@ -295,7 +295,7 @@ absl::optional<AccessToken> AccessToken::LinkedToken() const {
 
 absl::optional<AccessToken::Dacl> AccessToken::DefaultDacl() const {
   absl::optional<std::vector<char>> dacl_buffer =
-      GetTokenInfo(token_.Get(), TokenDefaultDacl);
+      GetTokenInfo(token_.get(), TokenDefaultDacl);
   if (!dacl_buffer)
     return absl::nullopt;
   TOKEN_DEFAULT_DACL* dacl_ptr = GetType<TOKEN_DEFAULT_DACL>(dacl_buffer);
@@ -307,16 +307,16 @@ absl::optional<AccessToken::Dacl> AccessToken::DefaultDacl() const {
 }
 
 CHROME_LUID AccessToken::Id() const {
-  return ConvertLuid(GetTokenStatistics(token_.Get()).TokenId);
+  return ConvertLuid(GetTokenStatistics(token_.get()).TokenId);
 }
 
 CHROME_LUID AccessToken::AuthenticationId() const {
-  return ConvertLuid(GetTokenStatistics(token_.Get()).AuthenticationId);
+  return ConvertLuid(GetTokenStatistics(token_.get()).AuthenticationId);
 }
 
 std::vector<AccessToken::Privilege> AccessToken::Privileges() const {
   absl::optional<std::vector<char>> privileges =
-      GetTokenInfo(token_.Get(), TokenPrivileges);
+      GetTokenInfo(token_.get(), TokenPrivileges);
   if (!privileges)
     return {};
   TOKEN_PRIVILEGES* privileges_ptr = GetType<TOKEN_PRIVILEGES>(privileges);
@@ -331,7 +331,7 @@ std::vector<AccessToken::Privilege> AccessToken::Privileges() const {
 
 bool AccessToken::IsElevated() const {
   absl::optional<TOKEN_ELEVATION> value =
-      GetTokenInfoFixed<TOKEN_ELEVATION>(token_.Get(), TokenElevation);
+      GetTokenInfoFixed<TOKEN_ELEVATION>(token_.get(), TokenElevation);
   if (!value)
     return false;
   return !!value->TokenIsElevated;
@@ -339,7 +339,7 @@ bool AccessToken::IsElevated() const {
 
 bool AccessToken::IsMember(const Sid& sid) const {
   BOOL is_member = FALSE;
-  return ::CheckTokenMembership(token_.Get(), sid.GetPSID(), &is_member) &&
+  return ::CheckTokenMembership(token_.get(), sid.GetPSID(), &is_member) &&
          !!is_member;
 }
 
@@ -351,11 +351,11 @@ bool AccessToken::IsMember(WellKnownSid known_sid) const {
 }
 
 bool AccessToken::IsImpersonation() const {
-  return GetTokenStatistics(token_.Get()).TokenType == TokenImpersonation;
+  return GetTokenStatistics(token_.get()).TokenType == TokenImpersonation;
 }
 
 bool AccessToken::IsIdentification() const {
-  TOKEN_STATISTICS stats = GetTokenStatistics(token_.Get());
+  TOKEN_STATISTICS stats = GetTokenStatistics(token_.get());
   if (stats.TokenType != TokenImpersonation)
     return false;
 

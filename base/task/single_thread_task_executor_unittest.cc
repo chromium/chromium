@@ -449,14 +449,14 @@ TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
 
   file_.Set(CreateFile(name, GENERIC_READ, 0, NULL, OPEN_EXISTING,
                        FILE_FLAG_OVERLAPPED, NULL));
-  EXPECT_TRUE(file_.IsValid());
+  EXPECT_TRUE(file_.is_valid());
 }
 
 void TestIOHandler::Init() {
-  CurrentIOThread::Get()->RegisterIOHandler(file_.Get(), this);
+  CurrentIOThread::Get()->RegisterIOHandler(file_.get(), this);
 
   DWORD read;
-  EXPECT_FALSE(ReadFile(file_.Get(), buffer_, size(), &read, context()));
+  EXPECT_FALSE(ReadFile(file_.get(), buffer_, size(), &read, context()));
   EXPECT_EQ(static_cast<DWORD>(ERROR_IO_PENDING), GetLastError());
 }
 
@@ -469,19 +469,19 @@ void TestIOHandler::OnIOCompleted(MessagePumpForIO::IOContext* context,
 
 void RunTest_IOHandler() {
   win::ScopedHandle callback_called(CreateEvent(NULL, TRUE, FALSE, NULL));
-  ASSERT_TRUE(callback_called.IsValid());
+  ASSERT_TRUE(callback_called.is_valid());
 
   const wchar_t* kPipeName = L"\\\\.\\pipe\\iohandler_pipe";
   win::ScopedHandle server(
       CreateNamedPipe(kPipeName, PIPE_ACCESS_OUTBOUND, 0, 1, 0, 0, 0, NULL));
-  ASSERT_TRUE(server.IsValid());
+  ASSERT_TRUE(server.is_valid());
 
   Thread thread("IOHandler test");
   Thread::Options options;
   options.message_pump_type = MessagePumpType::IO;
   ASSERT_TRUE(thread.StartWithOptions(std::move(options)));
 
-  TestIOHandler handler(kPipeName, callback_called.Get());
+  TestIOHandler handler(kPipeName, callback_called.get());
   thread.task_runner()->PostTask(
       FROM_HERE, BindOnce(&TestIOHandler::Init, Unretained(&handler)));
   // Make sure the thread runs and sleeps for lack of work.
@@ -489,9 +489,9 @@ void RunTest_IOHandler() {
 
   const char buffer[] = "Hello there!";
   DWORD written;
-  EXPECT_TRUE(WriteFile(server.Get(), buffer, sizeof(buffer), &written, NULL));
+  EXPECT_TRUE(WriteFile(server.get(), buffer, sizeof(buffer), &written, NULL));
 
-  DWORD result = WaitForSingleObject(callback_called.Get(), 1000);
+  DWORD result = WaitForSingleObject(callback_called.get(), 1000);
   EXPECT_EQ(WAIT_OBJECT_0, result);
 
   thread.Stop();
@@ -1766,9 +1766,9 @@ void RunTest_NestingDenial2(MessagePumpType message_pump_type) {
   win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
   worker.task_runner()->PostTask(
       FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
-                          event.Get(), true, &order, false));
+                          event.get(), true, &order, false));
   // Let the other thread execute.
-  WaitForSingleObject(event.Get(), INFINITE);
+  WaitForSingleObject(event.get(), INFINITE);
   RunLoop().Run();
 
   ASSERT_EQ(17u, order.Size());
@@ -1816,9 +1816,9 @@ TEST(SingleThreadTaskExecutorTest, NestingSupport2) {
   win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
   worker.task_runner()->PostTask(
       FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
-                          event.Get(), false, &order, true));
+                          event.get(), false, &order, true));
   // Let the other thread execute.
-  WaitForSingleObject(event.Get(), INFINITE);
+  WaitForSingleObject(event.get(), INFINITE);
   RunLoop().Run();
 
   ASSERT_EQ(18u, order.Size());

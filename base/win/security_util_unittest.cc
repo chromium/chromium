@@ -72,7 +72,7 @@ bool CreateWithDacl(const FilePath& path, const wchar_t* sddl, bool directory) {
 
   return ScopedHandle(::CreateFile(path.value().c_str(), GENERIC_ALL, 0,
                                    &security_attr, CREATE_ALWAYS, 0, nullptr))
-      .IsValid();
+      .is_valid();
 }
 
 }  // namespace

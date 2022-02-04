@@ -48,7 +48,7 @@ void WaitableEventWatcher::StopWatching() {
 }
 
 void WaitableEventWatcher::OnObjectSignaled(HANDLE h) {
-  DCHECK_EQ(duplicated_event_handle_.Get(), h);
+  DCHECK_EQ(duplicated_event_handle_.get(), h);
   WaitableEvent* event = event_;
   EventCallback callback = std::move(callback_);
   event_ = nullptr;

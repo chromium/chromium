@@ -45,8 +45,8 @@ ScopedProcessInformation::~ScopedProcessInformation() {
 }
 
 bool ScopedProcessInformation::IsValid() const {
-  return process_id_ || process_handle_.Get() || thread_id_ ||
-         thread_handle_.Get();
+  return process_id_ || process_handle_.get() || thread_id_ ||
+         thread_handle_.get();
 }
 
 void ScopedProcessInformation::Close() {
@@ -83,8 +83,8 @@ bool ScopedProcessInformation::DuplicateFrom(
 
 PROCESS_INFORMATION ScopedProcessInformation::Take() {
   PROCESS_INFORMATION process_information = {};
-  process_information.hProcess = process_handle_.Take();
-  process_information.hThread = thread_handle_.Take();
+  process_information.hProcess = process_handle_.release();
+  process_information.hThread = thread_handle_.release();
   process_information.dwProcessId = process_id();
   process_information.dwThreadId = thread_id();
   process_id_ = 0;
@@ -95,12 +95,12 @@ PROCESS_INFORMATION ScopedProcessInformation::Take() {
 
 HANDLE ScopedProcessInformation::TakeProcessHandle() {
   process_id_ = 0;
-  return process_handle_.Take();
+  return process_handle_.release();
 }
 
 HANDLE ScopedProcessInformation::TakeThreadHandle() {
   thread_id_ = 0;
-  return thread_handle_.Take();
+  return thread_handle_.release();
 }
 
 }  // namespace win

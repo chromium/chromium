@@ -111,7 +111,7 @@ EventLogMessage::~EventLogMessage() {
   ScopedEventLogHandle event_log_handle(
       RegisterEventSourceA(nullptr, g_event_source_name->c_str()));
 
-  if (!event_log_handle.IsValid()) {
+  if (!event_log_handle.is_valid()) {
     stream() << " !!NOT ADDED TO EVENTLOG!!";
     return;
   }
@@ -140,7 +140,7 @@ EventLogMessage::~EventLogMessage() {
     stream() << " !!ERROR GETTING USER SID!!";
   }
 
-  if (!ReportEventA(event_log_handle.Get(), log_type, g_category, g_event_id,
+  if (!ReportEventA(event_log_handle.get(), log_type, g_category, g_event_id,
                     user_sid, 1, 0, strings, nullptr)) {
     stream() << " !!NOT ADDED TO EVENTLOG!!";
   }

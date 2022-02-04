@@ -642,7 +642,7 @@ MessagePumpForIO::IOHandler::~IOHandler() = default;
 MessagePumpForIO::MessagePumpForIO() {
   port_.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr,
                                      reinterpret_cast<ULONG_PTR>(nullptr), 1));
-  DCHECK(port_.IsValid());
+  DCHECK(port_.is_valid());
 }
 
 MessagePumpForIO::~MessagePumpForIO() = default;
@@ -657,7 +657,7 @@ void MessagePumpForIO::ScheduleWork() {
 
   // Make sure the MessagePump does some work for us.
   const BOOL ret = ::PostQueuedCompletionStatus(
-      port_.Get(), 0, reinterpret_cast<ULONG_PTR>(this),
+      port_.get(), 0, reinterpret_cast<ULONG_PTR>(this),
       reinterpret_cast<OVERLAPPED*>(this));
   if (ret)
     return;  // Post worked perfectly.
@@ -685,7 +685,7 @@ HRESULT MessagePumpForIO::RegisterIOHandler(HANDLE file_handle,
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   HANDLE port = ::CreateIoCompletionPort(
-      file_handle, port_.Get(), reinterpret_cast<ULONG_PTR>(handler), 1);
+      file_handle, port_.get(), reinterpret_cast<ULONG_PTR>(handler), 1);
   return (port != nullptr) ? S_OK : HRESULT_FROM_WIN32(GetLastError());
 }
 
@@ -695,7 +695,7 @@ bool MessagePumpForIO::RegisterJobObject(HANDLE job_handle,
 
   JOBOBJECT_ASSOCIATE_COMPLETION_PORT info;
   info.CompletionKey = handler;
-  info.CompletionPort = port_.Get();
+  info.CompletionPort = port_.get();
   return ::SetInformationJobObject(job_handle,
                                    JobObjectAssociateCompletionPortInformation,
                                    &info, sizeof(info)) != FALSE;
@@ -792,7 +792,7 @@ bool MessagePumpForIO::GetIOItem(DWORD timeout, IOItem* item) {
   memset(item, 0, sizeof(*item));
   ULONG_PTR key = reinterpret_cast<ULONG_PTR>(nullptr);
   OVERLAPPED* overlapped = nullptr;
-  if (!::GetQueuedCompletionStatus(port_.Get(), &item->bytes_transfered, &key,
+  if (!::GetQueuedCompletionStatus(port_.get(), &item->bytes_transfered, &key,
                                    &overlapped, timeout)) {
     if (!overlapped)
       return false;  // Nothing in the queue.

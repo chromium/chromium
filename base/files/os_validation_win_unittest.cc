@@ -187,7 +187,7 @@ class OpenFileTest : public OsValidationTest,
     file_handle_.Set(::CreateFileW(temp_file_path_.value().c_str(), access_,
                                    share_mode_, nullptr, OPEN_EXISTING,
                                    FILE_ATTRIBUTE_NORMAL, nullptr));
-    ASSERT_TRUE(file_handle_.IsValid()) << ::GetLastError();
+    ASSERT_TRUE(file_handle_.is_valid()) << ::GetLastError();
 
     // Get a second unique name in the temp dir to which the file might be
     // moved.
@@ -206,7 +206,7 @@ class OpenFileTest : public OsValidationTest,
   DWORD share_mode() const { return share_mode_; }
   const FilePath& temp_file_path() const { return temp_file_path_; }
   const FilePath& temp_file_dest_path() const { return temp_file_dest_path_; }
-  HANDLE file_handle() const { return file_handle_.Get(); }
+  HANDLE file_handle() const { return file_handle_.get(); }
 
  private:
   struct BitAndName {
@@ -312,9 +312,9 @@ TEST_P(OpenFileTest, MapThenDelete) {
   win::ScopedHandle mapping(::CreateFileMappingA(
       file_handle(), nullptr, protection | SEC_IMAGE, 0, 0, nullptr));
   auto result = ::GetLastError();
-  ASSERT_TRUE(mapping.IsValid()) << result;
+  ASSERT_TRUE(mapping.is_valid()) << result;
 
-  auto* view = ::MapViewOfFile(mapping.Get(), FILE_MAP_READ, 0, 0, 0);
+  auto* view = ::MapViewOfFile(mapping.get(), FILE_MAP_READ, 0, 0, 0);
   result = ::GetLastError();
   ASSERT_NE(view, nullptr) << result;
   ScopedClosureRunner unmapper(
