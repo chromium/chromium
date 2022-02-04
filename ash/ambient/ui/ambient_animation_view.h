@@ -10,6 +10,9 @@
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/lottie/animation_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -46,6 +49,9 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   void OnViewBoundsChanged(View* observed_view) override;
 
+  void StartThroughputTracking();
+  void RestartThroughputTracking();
+
   AmbientViewEventHandler* const event_handler_;
 
   const std::unique_ptr<const AmbientAnimationStaticResources>
@@ -55,6 +61,9 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   views::AnimatedImageView* animated_image_view_ = nullptr;
   base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{
       this};
+
+  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  base::RepeatingTimer throughput_tracker_restart_timer_;
 };
 
 }  // namespace ash

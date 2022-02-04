@@ -1,3 +1,7 @@
+include_rules = [
+  "+cc/metrics",
+]
+
 specific_include_rules = {
   "ambient_backend_controller_impl\.*": [
     "+chromeos/assistant/internal/ambient/backdrop_client_config.h",

@@ -14,18 +14,48 @@
 #include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/time/time.h"
+#include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/compositor.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
+
+constexpr base::TimeDelta kThroughputTrackerRestartPeriod = base::Seconds(30);
+
+// TODO(esum): Record throughput metrics to track animation performance in the
+// field. We can use ash::metrics_util::CalculateSmoothness().
+void LogCompositorThroughput(
+    base::TimeTicks logging_start_time,
+    const cc::FrameSequenceMetrics::CustomReportData& data) {
+  base::TimeDelta duration = base::TimeTicks::Now() - logging_start_time;
+  float duration_sec = duration.InSecondsF();
+  // Use VLOG instead of DVLOG since this log is performance-related and
+  // developers will almost certainly only care about this log on non-debug
+  // builds. The overhead of "--vmodule" regex matching is very minor so far to
+  // performance/CPU.
+  VLOG(1) << "Compositor throughput report: frames_expected="
+          << data.frames_expected << " frames_produced=" << data.frames_produced
+          << " jank_count=" << data.jank_count
+          << " expected_fps=" << data.frames_expected / duration_sec
+          << " actual_fps=" << data.frames_produced / duration_sec
+          << " duration=" << duration;
+}
+
+}  // namespace
 
 AmbientAnimationView::AmbientAnimationView(
     const AmbientBackendModel* model,
@@ -87,6 +117,27 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
       << " from " << previous_animation_bounds.ToString() << " to "
       << animated_image_view_->GetImageBounds().ToString();
   animated_image_view_->Play();
+  if (!throughput_tracker_restart_timer_.IsRunning()) {
+    RestartThroughputTracking();
+    throughput_tracker_restart_timer_.Start(
+        FROM_HERE, kThroughputTrackerRestartPeriod, this,
+        &AmbientAnimationView::RestartThroughputTracking);
+  }
+}
+
+void AmbientAnimationView::RestartThroughputTracking() {
+  // Stop() must be called to trigger throughput reporting.
+  if (throughput_tracker_ && !throughput_tracker_->Stop()) {
+    LOG(WARNING) << "Throughput will not be reported";
+  }
+
+  views::Widget* widget = GetWidget();
+  DCHECK(widget);
+  ui::Compositor* compositor = widget->GetCompositor();
+  DCHECK(compositor);
+  throughput_tracker_ = compositor->RequestNewThroughputTracker();
+  throughput_tracker_->Start(base::BindOnce(
+      &LogCompositorThroughput, /*logging_start_time=*/base::TimeTicks::Now()));
 }
 
 BEGIN_METADATA(AmbientAnimationView, views::View)
