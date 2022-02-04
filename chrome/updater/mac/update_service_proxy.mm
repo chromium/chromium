@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -179,17 +180,23 @@ scoped_refptr<UpdateService> CreateUpdateServiceProxy(
   return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
 }
 
-UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope) {
+UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope) : scope_(scope) {
   client_.reset([[CRUUpdateServiceProxyImpl alloc] initWithScope:scope]);
   callback_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 
 void UpdateServiceProxy::GetVersion(
-    base::OnceCallback<void(const base::Version&)> callback) const {
+    base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto timeout_callback = std::make_unique<base::CancelableOnceClosure>(
+      base::BindOnce(&UpdateServiceProxy::Reset, base::Unretained(this)));
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, timeout_callback->callback(), base::Minutes(2));
+
   __block base::OnceCallback<void(const base::Version&)> block_callback =
-      std::move(callback);
+      std::move(callback).Then(base::BindOnce(
+          &base::CancelableOnceClosure::Cancel, std::move(timeout_callback)));
   auto reply = ^(NSString* version) {
     callback_runner_->PostTask(
         FROM_HERE,
@@ -299,6 +306,12 @@ void UpdateServiceProxy::Update(
            policySameVersionUpdate:policySameVersionUpdateWrapper.get()
                        updateState:stateObserver.get()
                              reply:reply];
+}
+
+void UpdateServiceProxy::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  client_.reset([[CRUUpdateServiceProxyImpl alloc] initWithScope:scope_]);
 }
 
 void UpdateServiceProxy::Uninitialize() {

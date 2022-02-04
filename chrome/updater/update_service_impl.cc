@@ -206,7 +206,7 @@ UpdateServiceImpl::UpdateServiceImpl(scoped_refptr<Configurator> config)
       update_client_(update_client::UpdateClientFactory(config)) {}
 
 void UpdateServiceImpl::GetVersion(
-    base::OnceCallback<void(const base::Version&)> callback) const {
+    base::OnceCallback<void(const base::Version&)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   main_task_runner_->PostTask(

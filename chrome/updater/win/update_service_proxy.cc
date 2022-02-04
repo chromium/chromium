@@ -354,7 +354,7 @@ UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
 UpdateServiceProxy::~UpdateServiceProxy() = default;
 
 void UpdateServiceProxy::GetVersion(
-    base::OnceCallback<void(const base::Version&)> callback) const {
+    base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
   com_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UpdateServiceProxy::GetVersionOnSTA, this,
