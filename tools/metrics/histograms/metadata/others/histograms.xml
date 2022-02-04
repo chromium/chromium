@@ -3426,6 +3426,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.DeleteSentReportOperation"
     enum="ConversionPostSendReportDeleteEvent" expires_after="M105">
+  <obsolete>
+    The error rate is not high enough to merit monitoring. Removed on
+    2022-02-02.
+  </obsolete>
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

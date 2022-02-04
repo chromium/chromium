@@ -83,12 +83,6 @@ void RecordCreateReportStatus(CreateReportResult::Status status) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
 }
 
-// We measure this in order to be able to count reports that weren't
-// successfully deleted, which can lead to duplicate reports.
-void RecordDeleteEvent(AttributionManagerImpl::DeleteEvent event) {
-  base::UmaHistogramEnumeration("Conversions.DeleteSentReportOperation", event);
-}
-
 ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
     SendResult::Status status) {
   switch (status) {
@@ -550,7 +544,6 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
             std::move(done), weak_factory_.GetWeakPtr(), report_id,
             report.report_time()));
   } else {
-    RecordDeleteEvent(DeleteEvent::kStarted);
     attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
         .WithArgs(report_id)
         .Then(base::BindOnce(
@@ -558,8 +551,6 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                base::WeakPtr<AttributionManagerImpl> manager,
                AttributionReport::EventLevelData::Id report_id, bool success) {
               std::move(done).Run();
-              RecordDeleteEvent(success ? DeleteEvent::kSucceeded
-                                        : DeleteEvent::kFailed);
 
               if (manager && success) {
                 manager->MarkReportCompleted(report_id);

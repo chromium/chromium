@@ -914,7 +914,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
       1);
 }
 
-TEST_F(AttributionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
+TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -933,13 +933,6 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
   network_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
   EXPECT_THAT(StoredReports(), IsEmpty());
-
-  static constexpr char kMetric[] = "Conversions.DeleteSentReportOperation";
-  histograms.ExpectTotalCount(kMetric, 2);
-  histograms.ExpectBucketCount(
-      kMetric, AttributionManagerImpl::DeleteEvent::kStarted, 1);
-  histograms.ExpectBucketCount(
-      kMetric, AttributionManagerImpl::DeleteEvent::kSucceeded, 1);
 }
 
 TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {

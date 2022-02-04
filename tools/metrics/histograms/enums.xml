@@ -16399,6 +16399,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ConversionPostSendReportDeleteEvent">
+  <obsolete>
+    The error rate is not high enough to merit monitoring.
+  </obsolete>
   <int value="0" label="Started"/>
   <int value="1" label="Succeeded"/>
   <int value="2" label="Failed"/>

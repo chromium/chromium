@@ -63,15 +63,6 @@ class CONTENT_EXPORT AttributionManagerImpl
     : public AttributionManager,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class DeleteEvent {
-    kStarted = 0,
-    kSucceeded = 1,
-    kFailed = 2,
-    kMaxValue = kFailed,
-  };
-
   // This class is responsible for sending conversion reports to their
   // configured endpoints over the network.
   class NetworkSender {
