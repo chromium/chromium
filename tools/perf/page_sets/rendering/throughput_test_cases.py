@@ -147,6 +147,13 @@ class MainAnimationsHalfPresented(ThroughputMetricStory):
          'main-animations-half-presented.html')
 
 
+class NoUpdateCompositorAnimationWithJankyMainAnimation(ThroughputMetricStory):
+  BASE_NAME = 'no_update_compositor_animation_with_janky_main_animation'
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/throughput_test_cases/'
+         'mixed-jank.html')
+
+
 class ThroughputScrolling(ThroughputMetricStory):
   ABSTRACT_STORY = True
   URL = ('file://../../../../chrome/test/data/perf/throughput_test_cases/'
