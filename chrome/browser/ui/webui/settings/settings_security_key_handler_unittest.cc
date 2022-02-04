@@ -57,9 +57,9 @@ class TestSecurityKeysCredentialHandler : public SecurityKeysCredentialHandler {
   // callback.
   std::string SimulateStart() {
     constexpr char kCallbackId[] = "securityKeyCredentialManagementStart";
-    base::ListValue args;
+    base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
-    HandleStart(&args);
+    HandleStart(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -68,10 +68,10 @@ class TestSecurityKeysCredentialHandler : public SecurityKeysCredentialHandler {
   // callback.
   std::string SimulateProvidePIN() {
     constexpr char kCallbackId[] = "securityKeyCredentialManagementPIN";
-    base::ListValue args;
+    base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append(kTestPIN);
-    HandlePIN(&args);
+    HandlePIN(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -98,9 +98,9 @@ class TestSecurityKeysBioEnrollmentHandler
   // callback.
   std::string SimulateStart() {
     constexpr char kCallbackId[] = "bioEnrollStart";
-    base::ListValue args;
+    base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
-    HandleStart(&args);
+    HandleStart(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -109,10 +109,10 @@ class TestSecurityKeysBioEnrollmentHandler
   // callback.
   std::string SimulateProvidePIN() {
     constexpr char kCallbackId[] = "bioEnrollProvidePIN";
-    base::ListValue args;
+    base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append(kTestPIN);
-    HandleProvidePIN(&args);
+    HandleProvidePIN(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -121,9 +121,9 @@ class TestSecurityKeysBioEnrollmentHandler
   // completed callback.
   std::string SimulateStartEnrolling() {
     constexpr char kCallbackId[] = "bioEnrollStartEnrolling";
-    base::ListValue args;
+    base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
-    HandleStartEnrolling(&args);
+    HandleStartEnrolling(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -197,7 +197,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   std::string new_username = "jsapple@example.com";
   std::string new_displayname = "John S. Apple";
 
-  base::ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("securityKeyCredentialManagementUpdate");
   args.Append(credential_id_hex);
   args.Append(user_id_hex);
@@ -212,7 +212,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   EXPECT_TRUE(*response->FindBoolKey("supportsUpdateUserInformation"));
 
   handler_->SimulateProvidePIN();
-  handler_->HandleUpdateUserInformation(&args);
+  handler_->HandleUpdateUserInformation(args.GetList());
   base::RunLoop().RunUntilIdle();
 
   device::PublicKeyCredentialUserEntity updated_user(
@@ -239,9 +239,9 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestForcePINChange) {
   handler_->GetDiscoveryFactory()->SetCtap2Config(config);
 
   std::string callback_id("start_callback_id");
-  base::ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append(callback_id);
-  handler_->HandleStart(&args);
+  handler_->HandleStart(args.GetList());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(web_ui_->call_data()[0]->arg1()->GetString(),

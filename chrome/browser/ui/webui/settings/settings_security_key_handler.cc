@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
@@ -47,8 +46,8 @@ base::flat_set<device::FidoTransportProtocol> supported_transports() {
 }
 
 void HandleClose(base::RepeatingClosure close_callback,
-                 const base::ListValue* args) {
-  DCHECK_EQ(0u, args->GetListDeprecated().size());
+                 base::Value::ConstListView args) {
+  DCHECK_EQ(0u, args.size());
   close_callback.Run();
 }
 
@@ -96,15 +95,15 @@ SecurityKeysPINHandler::SecurityKeysPINHandler() = default;
 SecurityKeysPINHandler::~SecurityKeysPINHandler() = default;
 
 void SecurityKeysPINHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyStartSetPIN",
       base::BindRepeating(&SecurityKeysPINHandler::HandleStartSetPIN,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeySetPIN",
       base::BindRepeating(&SecurityKeysPINHandler::HandleSetPIN,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyPINClose",
       base::BindRepeating(&HandleClose,
                           base::BindRepeating(&SecurityKeysPINHandler::Close,
@@ -119,14 +118,15 @@ void SecurityKeysPINHandler::Close() {
   callback_id_.clear();
 }
 
-void SecurityKeysPINHandler::HandleStartSetPIN(const base::ListValue* args) {
+void SecurityKeysPINHandler::HandleStartSetPIN(
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(State::kNone, state_);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
 
   AllowJavascript();
   DCHECK(callback_id_.empty());
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   state_ = State::kStartSetPIN;
   set_pin_ = std::make_unique<device::SetPINRequestHandler>(
       supported_transports(),
@@ -180,15 +180,15 @@ void SecurityKeysPINHandler::OnSetPINComplete(
                             base::Value(std::move(response)));
 }
 
-void SecurityKeysPINHandler::HandleSetPIN(const base::ListValue* args) {
+void SecurityKeysPINHandler::HandleSetPIN(base::Value::ConstListView args) {
   DCHECK(state_ == State::kGatherNewPIN || state_ == State::kGatherChangePIN);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(3u, args->GetListDeprecated().size());
+  DCHECK_EQ(3u, args.size());
 
   DCHECK(callback_id_.empty());
-  callback_id_ = args->GetListDeprecated()[0].GetString();
-  const std::string old_pin = args->GetListDeprecated()[1].GetString();
-  const std::string new_pin = args->GetListDeprecated()[2].GetString();
+  callback_id_ = args[0].GetString();
+  const std::string old_pin = args[1].GetString();
+  const std::string new_pin = args[2].GetString();
 
   DCHECK((state_ == State::kGatherNewPIN) == old_pin.empty());
 
@@ -202,15 +202,15 @@ SecurityKeysResetHandler::SecurityKeysResetHandler() = default;
 SecurityKeysResetHandler::~SecurityKeysResetHandler() = default;
 
 void SecurityKeysResetHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyReset",
       base::BindRepeating(&SecurityKeysResetHandler::HandleReset,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyCompleteReset",
       base::BindRepeating(&SecurityKeysResetHandler::HandleCompleteReset,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyResetClose",
       base::BindRepeating(&HandleClose,
                           base::BindRepeating(&SecurityKeysResetHandler::Close,
@@ -225,14 +225,14 @@ void SecurityKeysResetHandler::Close() {
   callback_id_.clear();
 }
 
-void SecurityKeysResetHandler::HandleReset(const base::ListValue* args) {
+void SecurityKeysResetHandler::HandleReset(base::Value::ConstListView args) {
   DCHECK_EQ(State::kNone, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
 
   AllowJavascript();
   DCHECK(callback_id_.empty());
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
 
   state_ = State::kStartReset;
   reset_ = std::make_unique<device::ResetRequestHandler>(
@@ -256,12 +256,12 @@ void SecurityKeysResetHandler::OnResetSent() {
 }
 
 void SecurityKeysResetHandler::HandleCompleteReset(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
 
   DCHECK(callback_id_.empty());
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
 
   switch (state_) {
     case State::kWaitingForResetNoCallbackYet:
@@ -319,15 +319,16 @@ SecurityKeysCredentialHandler::SecurityKeysCredentialHandler(
     : SecurityKeysHandlerBase(std::move(discovery_factory)) {}
 SecurityKeysCredentialHandler::~SecurityKeysCredentialHandler() = default;
 
-void SecurityKeysCredentialHandler::HandleStart(const base::ListValue* args) {
+void SecurityKeysCredentialHandler::HandleStart(
+    base::Value::ConstListView args) {
   DCHECK_EQ(State::kNone, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
   DCHECK(!credential_management_);
 
   AllowJavascript();
   DCHECK(callback_id_.empty());
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
 
   state_ = State::kStart;
   credential_management_ =
@@ -343,28 +344,28 @@ void SecurityKeysCredentialHandler::HandleStart(const base::ListValue* args) {
 }
 
 void SecurityKeysCredentialHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyCredentialManagementStart",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandleStart,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyCredentialManagementPIN",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandlePIN,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyCredentialManagementEnumerate",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandleEnumerate,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyCredentialManagementDelete",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandleDelete,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyCredentialManagementUpdate",
       base::BindRepeating(
           &SecurityKeysCredentialHandler::HandleUpdateUserInformation,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyCredentialManagementClose",
       base::BindRepeating(
           &HandleClose,
@@ -382,47 +383,47 @@ void SecurityKeysCredentialHandler::Close() {
   DCHECK(!credential_management_provide_pin_cb_);
 }
 
-void SecurityKeysCredentialHandler::HandlePIN(const base::ListValue* args) {
+void SecurityKeysCredentialHandler::HandlePIN(base::Value::ConstListView args) {
   DCHECK_EQ(State::kPIN, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetListDeprecated().size());
+  DCHECK_EQ(2u, args.size());
   DCHECK(credential_management_);
   DCHECK(credential_management_provide_pin_cb_);
   DCHECK(callback_id_.empty());
 
-  callback_id_ = args->GetListDeprecated()[0].GetString();
-  std::string pin = args->GetListDeprecated()[1].GetString();
+  callback_id_ = args[0].GetString();
+  std::string pin = args[1].GetString();
 
   std::move(credential_management_provide_pin_cb_).Run(pin);
 }
 
 void SecurityKeysCredentialHandler::HandleEnumerate(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_EQ(state_, State::kReady);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
   DCHECK(credential_management_);
   DCHECK(callback_id_.empty());
 
   state_ = State::kGettingCredentials;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   credential_management_->GetCredentials(
       base::BindOnce(&SecurityKeysCredentialHandler::OnHaveCredentials,
                      weak_factory_.GetWeakPtr()));
 }
 
-void SecurityKeysCredentialHandler::HandleDelete(const base::ListValue* args) {
+void SecurityKeysCredentialHandler::HandleDelete(
+    base::Value::ConstListView args) {
   DCHECK_EQ(State::kReady, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetListDeprecated().size());
+  DCHECK_EQ(2u, args.size());
   DCHECK(credential_management_);
   DCHECK(callback_id_.empty());
 
   state_ = State::kDeletingCredentials;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   std::vector<device::PublicKeyCredentialDescriptor> credential_ids;
-  for (const base::Value& el :
-       args->GetListDeprecated()[1].GetListDeprecated()) {
+  for (const base::Value& el : args[1].GetList()) {
     std::vector<uint8_t> credential_id_bytes;
     if (!base::HexStringToBytes(el.GetString(), &credential_id_bytes)) {
       NOTREACHED();
@@ -439,31 +440,29 @@ void SecurityKeysCredentialHandler::HandleDelete(const base::ListValue* args) {
 }
 
 void SecurityKeysCredentialHandler::HandleUpdateUserInformation(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_EQ(State::kReady, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(5u, args->GetListDeprecated().size());
+  DCHECK_EQ(5u, args.size());
   DCHECK(credential_management_);
   DCHECK(callback_id_.empty());
 
   state_ = State::kUpdatingUserInformation;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
 
   std::vector<uint8_t> credential_id_bytes;
-  if (!base::HexStringToBytes(args->GetListDeprecated()[1].GetString(),
-                              &credential_id_bytes)) {
+  if (!base::HexStringToBytes(args[1].GetString(), &credential_id_bytes)) {
     NOTREACHED();
   }
   device::PublicKeyCredentialDescriptor credential_id(
       device::CredentialType::kPublicKey, credential_id_bytes);
 
   std::vector<uint8_t> user_handle;
-  if (!base::HexStringToBytes(args->GetListDeprecated()[2].GetString(),
-                              &user_handle)) {
+  if (!base::HexStringToBytes(args[2].GetString(), &user_handle)) {
     NOTREACHED();
   }
-  std::string new_username = args->GetListDeprecated()[3].GetString();
-  std::string new_displayname = args->GetListDeprecated()[4].GetString();
+  std::string new_username = args[3].GetString();
+  std::string new_displayname = args[4].GetString();
 
   device::PublicKeyCredentialUserEntity updated_user(
       std::move(user_handle), std::move(new_username),
@@ -661,15 +660,15 @@ SecurityKeysBioEnrollmentHandler::SecurityKeysBioEnrollmentHandler(
 SecurityKeysBioEnrollmentHandler::~SecurityKeysBioEnrollmentHandler() = default;
 
 void SecurityKeysBioEnrollmentHandler::HandleStart(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(state_, State::kNone);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
   DCHECK(callback_id_.empty());
 
   AllowJavascript();
   state_ = State::kStart;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   bio_ = std::make_unique<device::BioEnrollmentHandler>(
       supported_transports(),
       base::BindOnce(&SecurityKeysBioEnrollmentHandler::OnReady,
@@ -682,41 +681,41 @@ void SecurityKeysBioEnrollmentHandler::HandleStart(
 }
 
 void SecurityKeysBioEnrollmentHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollStart",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleStart,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollProvidePIN",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleProvidePIN,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollGetSensorInfo",
       base::BindRepeating(
           &SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollEnumerate",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleEnumerate,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollStartEnrolling",
       base::BindRepeating(
           &SecurityKeysBioEnrollmentHandler::HandleStartEnrolling,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollDelete",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleDelete,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollRename",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleRename,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollCancel",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleCancel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollClose",
       base::BindRepeating(
           &HandleClose,
@@ -808,19 +807,19 @@ void SecurityKeysBioEnrollmentHandler::OnGatherPIN(
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleProvidePIN(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetListDeprecated().size());
+  DCHECK_EQ(2u, args.size());
   DCHECK_EQ(state_, State::kGatherPIN);
   state_ = State::kGatherPIN;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
-  std::move(provide_pin_cb_).Run(args->GetListDeprecated()[1].GetString());
+  callback_id_ = args[0].GetString();
+  std::move(provide_pin_cb_).Run(args[1].GetString());
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
   DCHECK_EQ(state_, State::kReady);
   base::DictionaryValue response;
   response.SetIntKey("maxTemplateFriendlyName",
@@ -829,18 +828,17 @@ void SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo(
     response.SetIntKey("maxSamplesForEnroll",
                        *sensor_info_.max_samples_for_enroll);
   }
-  ResolveJavascriptCallback(
-      base::Value(std::move(args->GetListDeprecated()[0].GetString())),
-      std::move(response));
+  ResolveJavascriptCallback(base::Value(std::move(args[0].GetString())),
+                            std::move(response));
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleEnumerate(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
   DCHECK_EQ(state_, State::kReady);
   state_ = State::kEnumerating;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   bio_->EnumerateTemplates(
       base::BindOnce(&SecurityKeysBioEnrollmentHandler::OnHaveEnumeration,
                      weak_factory_.GetWeakPtr()));
@@ -870,12 +868,12 @@ void SecurityKeysBioEnrollmentHandler::OnHaveEnumeration(
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleStartEnrolling(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
   DCHECK_EQ(state_, State::kReady);
   state_ = State::kEnrolling;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   bio_->EnrollTemplate(
       base::BindRepeating(
           &SecurityKeysBioEnrollmentHandler::OnEnrollingResponse,
@@ -941,14 +939,13 @@ void SecurityKeysBioEnrollmentHandler::OnHavePostEnrollmentEnumeration(
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleDelete(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetListDeprecated().size());
+  DCHECK_EQ(2u, args.size());
   state_ = State::kDeleting;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   std::vector<uint8_t> template_id;
-  if (!base::HexStringToBytes(args->GetListDeprecated()[1].GetString(),
-                              &template_id)) {
+  if (!base::HexStringToBytes(args[1].GetString(), &template_id)) {
     NOTREACHED();
     return;
   }
@@ -970,19 +967,18 @@ void SecurityKeysBioEnrollmentHandler::OnDelete(
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleRename(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(args->GetListDeprecated().size(), 3u);
+  DCHECK_EQ(args.size(), 3u);
   state_ = State::kRenaming;
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
   std::vector<uint8_t> template_id;
-  if (!base::HexStringToBytes(args->GetListDeprecated()[1].GetString(),
-                              &template_id)) {
+  if (!base::HexStringToBytes(args[1].GetString(), &template_id)) {
     NOTREACHED();
     return;
   }
   bio_->RenameTemplate(
-      std::move(template_id), args->GetListDeprecated()[2].GetString(),
+      std::move(template_id), args[2].GetString(),
       base::BindOnce(&SecurityKeysBioEnrollmentHandler::OnRename,
                      weak_factory_.GetWeakPtr()));
 }
@@ -999,10 +995,10 @@ void SecurityKeysBioEnrollmentHandler::OnRename(
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleCancel(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(state_, State::kEnrolling);
-  DCHECK_EQ(0u, args->GetListDeprecated().size());
+  DCHECK_EQ(0u, args.size());
   DCHECK(!callback_id_.empty());
   // OnEnrollmentFinished() will be invoked once the cancellation is complete.
   bio_->CancelEnrollment();
@@ -1015,35 +1011,35 @@ void SecurityKeysPhonesHandler::OnJavascriptAllowed() {}
 void SecurityKeysPhonesHandler::OnJavascriptDisallowed() {}
 
 void SecurityKeysPhonesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyPhonesEnumerate",
       base::BindRepeating(&SecurityKeysPhonesHandler::HandleEnumerate,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyPhonesDelete",
       base::BindRepeating(&SecurityKeysPhonesHandler::HandleDelete,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "securityKeyPhonesRename",
       base::BindRepeating(&SecurityKeysPhonesHandler::HandleRename,
                           base::Unretained(this)));
 }
 
-void SecurityKeysPhonesHandler::HandleEnumerate(const base::ListValue* args) {
+void SecurityKeysPhonesHandler::HandleEnumerate(
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
+  DCHECK_EQ(1u, args.size());
 
   AllowJavascript();
-  DoEnumerate(args->GetListDeprecated()[0]);
+  DoEnumerate(args[0]);
 }
 
-void SecurityKeysPhonesHandler::HandleDelete(const base::ListValue* args) {
+void SecurityKeysPhonesHandler::HandleDelete(base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetListDeprecated().size());
+  DCHECK_EQ(2u, args.size());
 
   AllowJavascript();
-  const std::string public_key_base64 =
-      args->GetListDeprecated()[1].GetString();
+  const std::string public_key_base64 = args[1].GetString();
   std::array<uint8_t, device::kP256X962Length> public_key;
   const bool ok = DecodePublicKey(public_key_base64, &public_key);
   DCHECK(ok);
@@ -1054,17 +1050,16 @@ void SecurityKeysPhonesHandler::HandleDelete(const base::ListValue* args) {
           ->GetPrefs();
   cablev2::DeletePairingByPublicKey(prefs, public_key);
 
-  DoEnumerate(args->GetListDeprecated()[0]);
+  DoEnumerate(args[0]);
 }
 
-void SecurityKeysPhonesHandler::HandleRename(const base::ListValue* args) {
+void SecurityKeysPhonesHandler::HandleRename(base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(3u, args->GetListDeprecated().size());
+  DCHECK_EQ(3u, args.size());
 
   AllowJavascript();
-  const std::string public_key_base64 =
-      args->GetListDeprecated()[1].GetString();
-  const std::string new_name = args->GetListDeprecated()[2].GetString();
+  const std::string public_key_base64 = args[1].GetString();
+  const std::string new_name = args[2].GetString();
   content::BrowserContext* const browser_ctx =
       web_ui()->GetWebContents()->GetBrowserContext();
 
@@ -1092,7 +1087,7 @@ void SecurityKeysPhonesHandler::HandleRename(const base::ListValue* args) {
       Profile::FromBrowserContext(browser_ctx)->GetPrefs();
   cablev2::RenamePairing(prefs, public_key, new_name, known_devices->Names());
 
-  ResolveJavascriptCallback(args->GetListDeprecated()[0], base::Value());
+  ResolveJavascriptCallback(args[0], base::Value());
 }
 
 void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
