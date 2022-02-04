@@ -26,6 +26,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -108,8 +109,6 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 // Tests that browser tests print the callstack when a child process crashes.
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::CommandLine new_test = CreateCommandLine();
   new_test.AppendSwitchASCII(base::kGTestFilterFlag,
@@ -162,14 +161,18 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
 #endif
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_BrowserCrashCallStack) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::CommandLine new_test = CreateCommandLine();
   new_test.AppendSwitchASCII(base::kGTestFilterFlag,
                              "ContentBrowserTest.MANUAL_BrowserCrash");
   new_test.AppendSwitch(switches::kRunManualTestsFlag);
   new_test.AppendSwitch(switches::kSingleProcessTests);
+  // A browser process immediate crash can race the initialization of the
+  // network service process and leave the process hanging, so run the network
+  // service in-process.
+  new_test.AppendSwitchASCII(switches::kEnableFeatures,
+                             features::kNetworkServiceInProcess.name);
+
   std::string output;
   base::GetAppOutputAndError(new_test, &output);
 
