@@ -87,10 +87,11 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::STRING: {
-      std::u16string str_value;
-      if (!value.GetAsString(&str_value))
+      if (!value.is_string())
         return false;
-      return key.WriteValue(name.c_str(), base::as_wcstr(str_value)) ==
+      return key.WriteValue(
+                 name.c_str(),
+                 base::as_wcstr(base::UTF8ToUTF16(value.GetString()))) ==
              ERROR_SUCCESS;
     }
 
