@@ -478,34 +478,6 @@ IN_PROC_BROWSER_TEST_F(
             remote_cocoa::mojom::Visibility::kVisible);
 }
 
-// Checks that web contents are marked kHidden on app hide.
-IN_PROC_BROWSER_TEST_F(
-    WindowOcclusionBrowserTestMacWithDisplaySleepDetectionFeature,
-    OcclusionDetectionOnApplicationHide) {
-  InitWindowA();
-
-  EXPECT_EQ(WindowAWebContentsVisibility(),
-            remote_cocoa::mojom::Visibility::kVisible);
-
-  // Fake an application hide notification.
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSApplicationDidHideNotification
-                    object:nil
-                  userInfo:nil];
-
-  EXPECT_EQ(WindowAWebContentsVisibility(),
-            remote_cocoa::mojom::Visibility::kHidden);
-
-  // Fake an application unhide notification.
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSApplicationDidUnhideNotification
-                    object:nil
-                  userInfo:nil];
-
-  EXPECT_EQ(WindowAWebContentsVisibility(),
-            remote_cocoa::mojom::Visibility::kVisible);
-}
-
 // Checks that occlusion updates are ignored in between fullscreen transition
 // notifications.
 IN_PROC_BROWSER_TEST_F(
@@ -705,8 +677,8 @@ IN_PROC_BROWSER_TEST_F(
 
   [window_a miniaturize:nil];
   EXPECT_TRUE([window_a isMiniaturized]);
-  EXPECT_EQ(WindowAWebContentsVisibility(),
-            remote_cocoa::mojom::Visibility::kHidden);
+  EXPECT_NE(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
 
   [window_a deminiaturize:nil];
   EXPECT_FALSE([window_a isMiniaturized]);

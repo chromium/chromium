@@ -32,7 +32,6 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   NSWindow* _windowResizingMovingOrClosing;
   NSWindow* _windowReceivingFullscreenTransitionNotifications;
   BOOL _displaysAreAsleep;
-  BOOL _applicationReceivedHiddenNotification;
 }
 // Computes and returns the `window`'s visibility state, a hybrid of
 // macOS's and our manual occlusion calculation.
@@ -49,7 +48,9 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedInstance = [[self alloc] init];
-    GetWindowClassSwizzler();
+    if (kEnhancedWindowOcclusionDetection.Get()) {
+      GetWindowClassSwizzler();
+    }
   });
   return sharedInstance;
 }
@@ -64,6 +65,7 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
 
   [super dealloc];
 }
@@ -87,38 +89,31 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
 
-  [notificationCenter
-      addObserver:self
-         selector:@selector(notifyUpdateWebContentsVisibility)
-             name:NSApplicationDidChangeOcclusionStateNotification
-           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(windowWillMove:)
-                             name:NSWindowWillMoveNotification
-                           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(windowDidMove:)
-                             name:NSWindowDidMoveNotification
-                           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(notifyUpdateWebContentsVisibility)
-                             name:NSWindowDidMoveNotification
-                           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(windowWillStartLiveResize:)
-                             name:NSWindowWillStartLiveResizeNotification
-                           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(windowWillEndLiveResize)
-                             name:NSWindowDidEndLiveResizeNotification
-                           object:nil];
+  if (kEnhancedWindowOcclusionDetection.Get()) {
+    [notificationCenter addObserver:self
+                           selector:@selector(windowWillMove:)
+                               name:NSWindowWillMoveNotification
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowDidMove:)
+                               name:NSWindowDidMoveNotification
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowWillStartLiveResize:)
+                               name:NSWindowWillStartLiveResizeNotification
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowWillEndLiveResize)
+                               name:NSWindowDidEndLiveResizeNotification
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowWillClose:)
+                               name:NSWindowWillCloseNotification
+                             object:nil];
+  }
   [notificationCenter addObserver:self
                          selector:@selector(windowChangedOcclusionState:)
                              name:NSWindowDidChangeOcclusionStateNotification
-                           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(windowWillClose:)
-                             name:NSWindowWillCloseNotification
                            object:nil];
 
   [notificationCenter addObserver:self
@@ -138,24 +133,18 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
                              name:NSWindowDidExitFullScreenNotification
                            object:nil];
 
-  [notificationCenter addObserver:self
-                         selector:@selector(applicationDidHide)
-                             name:NSApplicationDidHideNotification
-                           object:nil];
-  [notificationCenter addObserver:self
-                         selector:@selector(applicationDidUnhide)
-                             name:NSApplicationDidUnhideNotification
-                           object:nil];
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
-      addObserver:self
-         selector:@selector(displaysDidSleep:)
-             name:NSWorkspaceScreensDidSleepNotification
-           object:nil];
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
-      addObserver:self
-         selector:@selector(displaysDidWake:)
-             name:NSWorkspaceScreensDidWakeNotification
-           object:nil];
+  if (kDisplaySleepAndAppHideDetection.Get()) {
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+        addObserver:self
+           selector:@selector(displaysDidSleep:)
+               name:NSWorkspaceScreensDidSleepNotification
+             object:nil];
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+        addObserver:self
+           selector:@selector(displaysDidWake:)
+               name:NSWorkspaceScreensDidWakeNotification
+             object:nil];
+  }
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
@@ -189,50 +178,12 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 }
 
 - (void)displaysDidSleep:(NSNotification*)notification {
-  // Ignore if display sleep and application hide detection are disabled by the
-  // experiment.
-  if (!kDisplaySleepAndAppHideDetection.Get()) {
-    return;
-  }
-
   _displaysAreAsleep = YES;
   [self notifyUpdateWebContentsVisibility];
 }
 
 - (void)displaysDidWake:(NSNotification*)notification {
-  // Ignore if display sleep and application hide detection are disabled by the
-  // experiment.
-  if (!kDisplaySleepAndAppHideDetection.Get()) {
-    return;
-  }
-
   _displaysAreAsleep = NO;
-  [self notifyUpdateWebContentsVisibility];
-}
-
-- (void)applicationDidHide {
-  // Ignore if display sleep and application hide detection are disabled by the
-  // experiment.
-  if (!kDisplaySleepAndAppHideDetection.Get()) {
-    return;
-  }
-
-  // Use the reception of this notification as an indication of the
-  // application's hidden state because [[NSRunningApplication
-  // currentApplication] isHidden] does not appear to return true when this
-  // notification fires.
-  _applicationReceivedHiddenNotification = YES;
-  [self notifyUpdateWebContentsVisibility];
-}
-
-- (void)applicationDidUnhide {
-  // Ignore if display sleep and application hide detection are disabled by the
-  // experiment.
-  if (!kDisplaySleepAndAppHideDetection.Get()) {
-    return;
-  }
-
-  _applicationReceivedHiddenNotification = NO;
   [self notifyUpdateWebContentsVisibility];
 }
 
@@ -278,8 +229,7 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 
 - (remote_cocoa::mojom::Visibility)contentVisibilityStateForWindow:
     (NSWindow*)window {
-  if (_displaysAreAsleep || _applicationReceivedHiddenNotification ||
-      [window isMiniaturized] || ![window isVisible]) {
+  if (_displaysAreAsleep) {
     return remote_cocoa::mojom::Visibility::kHidden;
   }
 
