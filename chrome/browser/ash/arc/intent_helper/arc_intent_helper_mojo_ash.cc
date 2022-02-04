@@ -29,9 +29,9 @@ ArcIntentHelperMojoAsh::~ArcIntentHelperMojoAsh() = default;
 
 bool ArcIntentHelperMojoAsh::IsArcAvailable() {
   auto* arc_service_manager = ArcServiceManager::Get();
-  return arc_service_manager && !arc_service_manager->arc_bridge_service()
-                                     ->intent_helper()
-                                     ->IsConnected();
+  return arc_service_manager && arc_service_manager->arc_bridge_service()
+                                    ->intent_helper()
+                                    ->IsConnected();
 }
 
 bool ArcIntentHelperMojoAsh::IsRequestUrlHandlerListAvailable() {
