@@ -356,6 +356,8 @@ class ReportBuilder {
   absl::optional<AttributionReport::EventLevelData::Id> report_id_;
 };
 
+bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
+
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
 
 bool operator==(const AttributionStorage::Delegate::FakeReport& a,

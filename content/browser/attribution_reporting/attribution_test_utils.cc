@@ -342,6 +342,15 @@ AttributionReport ReportBuilder::Build() const {
       AttributionReport::EventLevelData(trigger_data_, priority_, report_id_));
 }
 
+bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
+  const auto tie = [](const AttributionTrigger& t) {
+    return std::make_tuple(t.trigger_data(), t.conversion_destination(),
+                           t.reporting_origin(), t.event_source_trigger_data(),
+                           t.priority(), t.dedup_key());
+  };
+  return tie(a) == tie(b);
+}
+
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
     return std::make_tuple(source.source_event_id(), source.impression_origin(),
