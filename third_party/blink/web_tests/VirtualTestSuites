@@ -802,7 +802,8 @@
       "external/wpt/service-workers/service-worker/partitioned-service-worker-getRegistrations.tentative.https.html",
       "external/wpt/service-workers/service-worker/partitioned-service-worker-matchAll.tentative.https.html",
       "external/wpt/service-workers/service-worker/partitioned-service-worker-claim.tentative.https.html",
-      "external/wpt/webstorage/localstorage-basic-partitioned.tentative.sub.html"
+      "external/wpt/webstorage/localstorage-basic-partitioned.tentative.sub.html",
+      "external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html"
     ],
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
   },
