@@ -57,13 +57,16 @@ function createAnimationTarget() {
 // are reported by different threads.
 const epsilon = 50;
 
-function test_render_blocking(finalTest, finalTestTitle) {
+function test_render_blocking(optional_element, finalTest, finalTestTitle) {
   // Ideally, we should observe the 'load' event on the specific render-blocking
   // elements. However, this is not possible for script-blocking stylesheets, so
   // we have to observe the 'load' event on 'window' instead.
-  // TODO(xiaochengh): Add tests for other types of render-blocking elements and
-  // observe the specific 'load' events on them.
-  const loadObserver = new LoadObserver(window);
+  if (!(optional_element instanceof HTMLElement)) {
+    finalTestTitle = finalTest;
+    finalTest = optional_element;
+    optional_element = undefined;
+  }
+  const loadObserver = new LoadObserver(optional_element || window);
 
   promise_test(async test => {
     assert_implements(window.PerformancePaintTiming);
