@@ -777,10 +777,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<IdentityInternalsUI>;
   if (url.host_piece() == chrome::kChromeUINewTabHost)
     return &NewWebUI<NewTabUI>;
-  if (url.host_piece() == chrome::kChromeUINewTabPageHost)
-    return &NewWebUI<NewTabPageUI>;
-  if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
-    return &NewWebUI<NewTabPageThirdPartyUI>;
+  if (!profile->IsOffTheRecord()) {
+    if (url.host_piece() == chrome::kChromeUINewTabPageHost)
+      return &NewWebUI<NewTabPageUI>;
+    if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
+      return &NewWebUI<NewTabPageThirdPartyUI>;
+  }
   if (base::FeatureList::IsEnabled(features::kWebUIFeedback)) {
     if (url.host_piece() == chrome::kChromeUIFeedbackHost)
       return &NewWebUI<FeedbackUI>;
