@@ -72,6 +72,7 @@ struct AppState {
            const std::string app_name,
            const GURL app_scope,
            const apps::mojom::WindowMode& window_mode,
+           const apps::mojom::RunOnOsLoginMode& run_on_os_login_mode,
            const blink::mojom::DisplayMode& effective_display_mode,
            const blink::mojom::DisplayMode& user_display_mode,
            bool is_installed_locally,
@@ -84,6 +85,7 @@ struct AppState {
   std::string name;
   GURL scope;
   apps::mojom::WindowMode window_mode;
+  apps::mojom::RunOnOsLoginMode run_on_os_login_mode;
   blink::mojom::DisplayMode effective_display_mode;
   blink::mojom::DisplayMode user_display_mode;
   bool is_installed_locally;
@@ -143,8 +145,6 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   // https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit#gid=2008870403
 
   // State change actions:
-  void ChangeAppSettingsWindowMode(const std::string& site_mode,
-                                   apps::mojom::WindowMode window_mode);
   void CloseCustomToolbar();
   void ClosePwa();
   void InstallCreateShortcutTabbed(const std::string& site_mode);
@@ -156,6 +156,9 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void InstallPolicyAppTabbedShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedNoShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedShortcut(const std::string& site_mode);
+  // These functions install apps which are tabbed and creates shortcuts.
+  void InstallPolicyAppOsLoginModeAllowed(const std::string& site_mode);
+  void InstallPolicyAppOsLoginModeBlocked(const std::string& site_mode);
   void LaunchFromChromeApps(const std::string& site_mode);
   void LaunchFromLaunchIcon(const std::string& site_mode);
   void NavigateBrowser(const std::string& site_mode);
@@ -191,6 +194,8 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckCustomToolbar();
   void CheckPlatformShortcutAndIcon(const std::string& site_mode);
   void CheckPlatformShortcutNotExists(const std::string& site_mode);
+  void CheckRunOnOSLoginModeEnabled(const std::string& site_mode);
+  void CheckRunOnOSLoginModeDisabled(const std::string& site_mode);
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
@@ -227,9 +232,11 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   GURL GetURLForSiteMode(const std::string& site_mode);
   void InstallCreateShortcut(bool open_in_window);
 
-  void InstallPolicyAppInternal(const std::string& site_mode,
-                                base::Value default_launch_container,
-                                const bool create_shortcut);
+  void InstallPolicyAppInternal(
+      const std::string& site_mode,
+      base::Value default_launch_container,
+      const bool create_shortcut,
+      const apps::mojom::RunOnOsLoginPtr os_login_mode);
 
   void UninstallPolicyAppById(const AppId& id);
   // This action only works if no navigations to the given app_url occur

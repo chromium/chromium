@@ -319,6 +319,7 @@ AppState::AppState(web_app::AppId app_id,
                    const std::string app_name,
                    const GURL app_scope,
                    const apps::mojom::WindowMode& window_mode,
+                   const apps::mojom::RunOnOsLoginMode& run_on_os_login_mode,
                    const blink::mojom::DisplayMode& effective_display_mode,
                    const blink::mojom::DisplayMode& user_display_mode,
                    bool installed_locally,
@@ -327,6 +328,7 @@ AppState::AppState(web_app::AppId app_id,
       name(app_name),
       scope(app_scope),
       window_mode(window_mode),
+      run_on_os_login_mode(run_on_os_login_mode),
       effective_display_mode(effective_display_mode),
       user_display_mode(user_display_mode),
       is_installed_locally(installed_locally),
@@ -336,6 +338,7 @@ AppState::AppState(const AppState&) = default;
 bool AppState::operator==(const AppState& other) const {
   return id == other.id && name == other.name && scope == other.scope &&
          window_mode == other.window_mode &&
+         run_on_os_login_mode == other.run_on_os_login_mode &&
          effective_display_mode == other.effective_display_mode &&
          user_display_mode == other.user_display_mode &&
          is_installed_locally == other.is_installed_locally &&
@@ -486,25 +489,6 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 #endif
 }
 
-void WebAppIntegrationTestDriver::ChangeAppSettingsWindowMode(
-    const std::string& site_mode,
-    apps::mojom::WindowMode window_mode) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  BeforeStateChangeAction();
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
-      << "No app installed for site: " << site_mode;
-  mojo::PendingReceiver<app_management::mojom::Page> page;
-  mojo::Remote<app_management::mojom::PageHandler> handler;
-  AppManagementPageHandler app_management_page_handler(
-      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile());
-  app_management_page_handler.SetWindowMode(app_state->id, window_mode);
-  AfterStateChangeAction();
-#endif
-}
-
 void WebAppIntegrationTestDriver::CloseCustomToolbar() {
   BeforeStateChangeAction();
   ASSERT_TRUE(app_browser());
@@ -622,36 +606,58 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(
 void WebAppIntegrationTestDriver::InstallPolicyAppTabbedNoShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerTabValue),
-                           /*create_shortcut=*/false);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/false, apps::mojom::RunOnOsLoginPtr());
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppTabbedShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerTabValue),
-                           /*create_shortcut=*/true);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/true, apps::mojom::RunOnOsLoginPtr());
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppWindowedNoShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerWindowValue),
-                           /*create_shortcut=*/false);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerWindowValue),
+      /*create_shortcut=*/false, apps::mojom::RunOnOsLoginPtr());
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppWindowedShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerWindowValue),
-                           /*create_shortcut=*/true);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerWindowValue),
+      /*create_shortcut=*/true, apps::mojom::RunOnOsLoginPtr());
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::InstallPolicyAppOsLoginModeAllowed(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/true,
+      apps::mojom::RunOnOsLogin::New(apps::mojom::RunOnOsLoginMode::kNotRun,
+                                     /*is_managed=*/false));
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::InstallPolicyAppOsLoginModeBlocked(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/true,
+      apps::mojom::RunOnOsLogin::New(apps::mojom::RunOnOsLoginMode::kNotRun,
+                                     /*is_managed=*/true));
   AfterStateChangeAction();
 }
 
@@ -1164,6 +1170,28 @@ void WebAppIntegrationTestDriver::CheckCustomToolbar() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckRunOnOSLoginModeEnabled(
+    const std::string& site_mode) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->run_on_os_login_mode,
+            apps::mojom::RunOnOsLoginMode::kWindowed);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckRunOnOSLoginModeDisabled(
+    const std::string& site_mode) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->run_on_os_login_mode,
+            apps::mojom::RunOnOsLoginMode::kNotRun);
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::CheckUserDisplayModeInternal(
     DisplayMode display_mode) {
   BeforeStateCheckAction();
@@ -1405,6 +1433,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
                    registrar.GetAppScope(app_id),
                    web_app_publisher_helper.ConvertDisplayModeToWindowMode(
                        registrar.GetAppUserDisplayMode(app_id)),
+                   web_app_publisher_helper.ConvertOsLoginModeToMojom(
+                       registrar.GetAppRunOnOsLoginMode(app_id)),
                    registrar.GetAppEffectiveDisplayMode(app_id),
                    registrar.GetAppUserDisplayMode(app_id),
                    registrar.IsLocallyInstalled(app_id),
@@ -1456,7 +1486,8 @@ void WebAppIntegrationTestDriver::InstallCreateShortcut(bool open_in_window) {
 void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     const std::string& site_mode,
     base::Value default_launch_container,
-    const bool create_shortcut) {
+    const bool create_shortcut,
+    const apps::mojom::RunOnOsLoginPtr os_login_mode) {
   GURL url = GetAppStartURL(site_mode);
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
@@ -1469,6 +1500,18 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
     update->Append(item.Clone());
+
+    if (os_login_mode) {
+      base::Value dictItem(base::Value::Type::DICTIONARY);
+      if (os_login_mode->is_managed)
+        dictItem.SetKey(kRunOnOsLogin, base::Value(kBlocked));
+      else
+        dictItem.SetKey(kRunOnOsLogin, base::Value(kAllowed));
+      DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
+                                      prefs::kWebAppSettings);
+      base::Value* dict = updateDict.Get();
+      dict->SetKey(std::move(url.spec()), std::move(dictItem));
+    }
   }
   active_app_id_ = observer.Wait();
 }

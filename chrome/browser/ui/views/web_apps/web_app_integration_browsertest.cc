@@ -24,21 +24,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateScope) {
   helper_.NavigateBrowser("SiteA");
   helper_.CheckLaunchIconShown();
 }
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, VerifyWindowModeChanged) {
-  helper_.InstallCreateShortcutWindowed("SiteA");
-  helper_.CheckAppWindowMode("SiteA", apps::mojom::WindowMode::kWindow);
-  // Change to tabbed mode
-  helper_.ChangeAppSettingsWindowMode("SiteA",
-                                      apps::mojom::WindowMode::kTabbedWindow);
-#if BUILDFLAG(IS_CHROMEOS)
-  helper_.CheckAppWindowMode("SiteA", apps::mojom::WindowMode::kWindow);
-#else
-  // Verify change is propagated in W/M/L cases
-  helper_.CheckAppWindowMode("SiteA", apps::mojom::WindowMode::kTabbedWindow);
-#endif
-}
-
 // Automated tests:
 
 // TODO(crbug.com/1279704): Test is consistently failing on Mac and Win7.
