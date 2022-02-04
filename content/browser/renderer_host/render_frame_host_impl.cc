@@ -7702,12 +7702,45 @@ void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
 
   // Collect children first before calling PendingDeletionCheckCompleted() on
   // them, because it may delete them.
-  std::vector<RenderFrameHostImpl*> children_rfh;
-  for (std::unique_ptr<FrameTreeNode>& child : children_)
-    children_rfh.push_back(child->current_frame_host());
+  //
+  // Note: In https://crbug.com/1276535, we believe as a side effect of deleting
+  // on RenderFrameHost, a sibling gets deleted. As an attempt to verify this,
+  // this holds WeakPtr<T> instead of T*.
+  std::vector<base::WeakPtr<RenderFrameHostImpl>> children_rfh;
+  for (std::unique_ptr<FrameTreeNode>& child : children_) {
+    RenderFrameHostImpl* child_rfh = child->current_frame_host();
+    if (!child_rfh) {
+      // A FrameTreeNode is guaranteed to hold a RenderFrameHost.
+      // Note: This is not entirely true anymore, due to Prerender. Maybe this
+      // is a clue to https://crbug.com/1276535 ?
+      static auto* const crash_key_location = AllocateCrashKeyString(
+          "pending_deletion_check_completed_subtree_location_1",
+          base::debug::CrashKeySize::Size32);
+      SetCrashKeyString(crash_key_location, "true");
+      static auto* const crash_key_prerender = AllocateCrashKeyString(
+          "prerender", base::debug::CrashKeySize::Size32);
+      SetCrashKeyString(crash_key_prerender,
+                        frame_tree()->is_prerendering() ? "true" : "false");
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
+    children_rfh.push_back(child_rfh->GetWeakPtr());
+  }
 
-  for (RenderFrameHostImpl* child_rfh : children_rfh)
+  for (base::WeakPtr<RenderFrameHostImpl>& child_rfh : children_rfh) {
+    if (!child_rfh) {
+      // A RenderFrameHost has been deleted, as a result of calling
+      // PendingDeletionCheckCompletedOnSubtree(), this would be unexpected.
+      // Please report to: https://crbug.com/1276535
+      static auto* const crash_key_location = AllocateCrashKeyString(
+          "pending_deletion_check_completed_subtree_location_2",
+          base::debug::CrashKeySize::Size32);
+      SetCrashKeyString(crash_key_location, "true");
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
     child_rfh->PendingDeletionCheckCompletedOnSubtree();
+  }
 }
 
 void RenderFrameHostImpl::ResetNavigationsForPendingDeletion() {
