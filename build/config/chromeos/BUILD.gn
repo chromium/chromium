@@ -13,11 +13,6 @@ declare_args() {
   dump_call_chain_clustering_order = ""
 }
 
-declare_args() {
-  # Whether or not we're using new pass manager to build and link Chrome
-  use_new_pass_manager = dump_call_chain_clustering_order != ""
-}
-
 config("print_orderfile") {
   if (dump_call_chain_clustering_order != "") {
     _output_orderfile =
@@ -27,8 +22,4 @@ config("print_orderfile") {
 }
 
 config("compiler") {
-  if (use_new_pass_manager) {
-    cflags = [ "-fexperimental-new-pass-manager" ]
-    ldflags = [ "-fexperimental-new-pass-manager" ]
-  }
 }
