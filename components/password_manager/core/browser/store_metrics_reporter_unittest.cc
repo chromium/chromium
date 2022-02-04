@@ -185,12 +185,12 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
 
   base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceClosure> done_callback;
-  EXPECT_CALL(done_callback, Run());
   StoreMetricsReporter reporter(
       profile_store.get(), /*account_store=*/nullptr, sync_service(),
       identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false, done_callback.Get());
   histogram_tester.ExpectTotalCount("PasswordManager.Enabled3", 1);
+  EXPECT_CALL(done_callback, Run());
   RunUntilIdle();
 
   // Immediately try to report metrics again, no metrics should be reported
@@ -198,12 +198,13 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   // nevertheless.
   base::HistogramTester histogram_tester2;
   base::MockCallback<base::OnceClosure> done_callback2;
-  EXPECT_CALL(done_callback2, Run());
   StoreMetricsReporter reporter2(
       profile_store.get(), /*account_store=*/nullptr, sync_service(),
       identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false, done_callback2.Get());
   histogram_tester2.ExpectTotalCount("PasswordManager.Enabled3", 0);
+  EXPECT_CALL(done_callback2, Run());
+  RunUntilIdle();
 
   profile_store->ShutdownOnUIThread();
   // Make sure the PasswordStore destruction parts on the background sequence
