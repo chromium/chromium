@@ -15,7 +15,8 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
-#include "ash/app_list/views/app_list_reorder_undo_container_view.h"
+#include "ash/app_list/views/app_list_nudge_controller.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/continue_section_view.h"
@@ -242,7 +243,8 @@ class AppsContainerView::ContinueContainer : public views::View {
 };
 
 AppsContainerView::AppsContainerView(ContentsView* contents_view)
-    : contents_view_(contents_view) {
+    : contents_view_(contents_view),
+      app_list_nudge_controller_(std::make_unique<AppListNudgeController>()) {
   AppListModelProvider::Get()->AddObserver(this);
 
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
@@ -260,12 +262,12 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     continue_container_ = scrollable_container_->AddChildView(
         std::make_unique<ContinueContainer>(this, view_delegate));
     // Add a empty container view. A toast view should be added to
-    // `reorder_undo_container_` when the app list starts temporary sorting.
+    // `toast_container_` when the app list starts temporary sorting.
     if (features::IsLauncherAppSortEnabled()) {
-      reorder_undo_container_ = scrollable_container_->AddChildView(
-          std::make_unique<AppListReorderUndoContainerView>(
-              /*tablet_mode=*/true));
-      reorder_undo_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+      toast_container_ = scrollable_container_->AddChildView(
+          std::make_unique<AppListToastContainerView>(
+              app_list_nudge_controller_.get(), /*tablet_mode=*/true));
+      toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     }
   } else {
     // Add child view at index 0 so focus traversal goes to suggestion chips
@@ -494,6 +496,21 @@ void AppsContainerView::ReparentDragEnded() {
   show_state_ = AppsContainerView::SHOW_APPS;
 }
 
+void AppsContainerView::OnAppListVisibilityChanged(bool shown) {
+  if (!toast_container_)
+    return;
+
+  // Updates the visibility state in toast container.
+  AppListToastContainerView::VisibilityState state =
+      shown ? AppListToastContainerView::kShown
+            : AppListToastContainerView::kHidden;
+  toast_container_->UpdateVisibilityState(state);
+
+  // Check if the reorder nudge view needs update if the app list is showing.
+  if (shown)
+    toast_container_->MaybeUpdateReorderNudgeView();
+}
+
 // PaginationModelObserver:
 void AppsContainerView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
@@ -508,8 +525,8 @@ void AppsContainerView::SelectedPageChanged(int old_selected,
   translate.set_y(-scrollable_container_->bounds().height() * new_selected);
   transform.Translate(translate);
   continue_container_->layer()->SetTransform(transform);
-  if (reorder_undo_container_)
-    reorder_undo_container_->layer()->SetTransform(transform);
+  if (toast_container_)
+    toast_container_->layer()->SetTransform(transform);
 }
 
 void AppsContainerView::TransitionChanged() {
@@ -542,8 +559,8 @@ void AppsContainerView::TransitionChanged() {
     gfx::Transform transform;
     transform.Translate(translate);
     continue_container_->layer()->SetTransform(transform);
-    if (reorder_undo_container_)
-      reorder_undo_container_->layer()->SetTransform(transform);
+    if (toast_container_)
+      toast_container_->layer()->SetTransform(transform);
   }
 }
 
@@ -662,7 +679,8 @@ void AppsContainerView::UpdateForNewSortingOrder(
 
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.
-    reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
+    app_list_nudge_controller_->OnTemporarySortOrderChanged(new_order);
+    toast_container_->OnTemporarySortOrderChanged(new_order);
     return;
   }
 
@@ -847,19 +865,17 @@ void AppsContainerView::Layout() {
     continue_container_->SetBoundsRect(gfx::Rect(0, kDefaultFadeoutMaskHeight,
                                                  grid_rect.width(),
                                                  continue_container_height));
-    const int reorder_undo_container_height =
-        reorder_undo_container_
-            ? reorder_undo_container_->GetPreferredSize().height()
-            : 0;
-    if (reorder_undo_container_) {
-      reorder_undo_container_->SetBoundsRect(
+    const int toast_container_height =
+        toast_container_ ? toast_container_->GetPreferredSize().height() : 0;
+    if (toast_container_) {
+      toast_container_->SetBoundsRect(
           gfx::Rect(0, continue_container_->bounds().bottom(),
-                    grid_rect.width(), reorder_undo_container_height));
+                    grid_rect.width(), toast_container_height));
     }
     // Setting this offset prevents the app items in the grid from overlapping
     // with the continue section.
     first_page_config_changed = apps_grid_view_->ConfigureFirstPagePadding(
-        continue_container_height + reorder_undo_container_height,
+        continue_container_height + toast_container_height,
         continue_container_->HasRecentApps());
   }
 
@@ -980,6 +996,10 @@ void AppsContainerView::OnShown() {
     keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
 
   GetViewAccessibility().OverrideIsLeaf(false);
+
+  // Updates the visibility state in toast container.
+  if (toast_container_)
+    toast_container_->UpdateVisibilityState(AppListToastContainerView::kShown);
 }
 
 void AppsContainerView::OnWillBeHidden() {
@@ -995,6 +1015,12 @@ void AppsContainerView::OnHidden() {
   // contents from the screen reader as the apps grid is not normally
   // actionable in this state.
   GetViewAccessibility().OverrideIsLeaf(true);
+
+  // Updates the visibility state in toast container.
+  if (toast_container_) {
+    toast_container_->UpdateVisibilityState(
+        AppListToastContainerView::kShownInBackground);
+  }
 }
 
 void AppsContainerView::OnAnimationStarted(AppListState from_state,
@@ -1414,9 +1440,9 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
     std::move(update_position_closure_).Run();
 
   // Record the undo toast's visibility before update.
-  const bool old_toast_visible = reorder_undo_container_->is_toast_visible();
+  const bool old_toast_visible = toast_container_->is_toast_visible();
 
-  reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
+  toast_container_->OnTemporarySortOrderChanged(new_order);
 
   // Skip the fade in animation if the fade out animation is aborted.
   if (abort)
@@ -1426,7 +1452,7 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
   // change. Meanwhile, the fade in animation relies on the apps grid's bounds
   // (because of calculating the visible items). Therefore trigger layout before
   // starting the fade in animation.
-  if (old_toast_visible != reorder_undo_container_->is_toast_visible())
+  if (old_toast_visible != toast_container_->is_toast_visible())
     Layout();
 
   apps_grid_view_->FadeInVisibleItemsForReorder();

@@ -1033,4 +1033,29 @@ TEST_F(ScrollableAppsGridViewTest,
                                    /*last_index=*/populated_app_count - 1));
 }
 
+class ScrollableAppsGridViewWithNudgeTest : public ScrollableAppsGridViewTest {
+ public:
+  void SetUp() override {
+    ScrollableAppsGridViewTest::SetUp();
+    GetAppListTestHelper()->DisableAppListNudge(false);
+  }
+};
+
+// Verify on the apps grid with zero scroll offset.
+TEST_F(ScrollableAppsGridViewWithNudgeTest, VerifyVisibleRangeByDefault) {
+  PopulateApps(33);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // With the app list reorder nudge is showing, there's enough space to fit
+  // only 3 rows of apps in the visible portion of the app list.
+  EXPECT_TRUE(
+      IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/3 * cols - 1));
+}
+
 }  // namespace ash

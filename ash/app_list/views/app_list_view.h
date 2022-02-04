@@ -409,6 +409,9 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Updates the title of the window that contains the launcher.
   void UpdateWindowTitle();
 
+  // Called when app list visibility changed.
+  void OnAppListVisibilityChanged(bool shown);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AppListControllerImplTest,
                            CheckAppListViewBoundsWhenVKeyboardEnabled);

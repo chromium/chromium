@@ -321,6 +321,7 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kSuggestedContentInfoDismissedInLauncher, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  AppListNudgeController::RegisterProfilePrefs(registry);
 }
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
@@ -1729,6 +1730,11 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
     // but we do not want to introduce new dependency of AppListController to
     // Assistant.
     GetAssistantViewDelegate()->OnHostViewVisibilityChanged(real_visibility);
+
+    // Updates AppsContainerView in `fullscreen_presenter_`.
+    if (app_list_view)
+      app_list_view->OnAppListVisibilityChanged(real_visibility);
+
     for (auto& observer : observers_)
       observer.OnAppListVisibilityChanged(real_visibility, display_id);
 

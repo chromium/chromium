@@ -1706,6 +1706,10 @@ void AppListView::UpdateWindowTitle() {
   }
 }
 
+void AppListView::OnAppListVisibilityChanged(bool shown) {
+  GetAppsContainerView()->OnAppListVisibilityChanged(shown);
+}
+
 base::TimeDelta AppListView::GetStateTransitionAnimationDuration(
     AppListViewState target_state) {
   if (is_side_shelf_ || (target_state == AppListViewState::kClosed &&

@@ -119,6 +119,9 @@ class AppListTestHelper {
   // Whether the app list is showing a folder.
   bool IsInFolderView();
 
+  // Enables/Disables the app list nudge for testing.
+  void DisableAppListNudge(bool disable);
+
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
   SearchBoxView* GetSearchBoxView();
