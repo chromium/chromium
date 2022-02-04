@@ -334,6 +334,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
       ShouldHidePinToShelf(app->id);
   app->window_mode = update.WindowMode();
   app->supported_links = GetSupportedLinks(profile_, app->id);
+  app->run_on_os_login = update.RunOnOsLogin();
 
   return app;
 }

@@ -4485,6 +4485,7 @@ static_library("browser") {
       "//components/services/app_service/public/cpp:preferred_apps",
       "//components/services/app_service/public/cpp:protocol_handling",
       "//components/services/app_service/public/cpp:publisher",
+      "//components/services/app_service/public/cpp:run_on_os_login",
       "//components/shared_highlighting/core/common",
       "//components/soda",
       "//components/soda:constants",

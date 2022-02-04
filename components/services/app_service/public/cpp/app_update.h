@@ -21,6 +21,7 @@
 namespace apps {
 
 struct IconKey;
+struct RunOnOsLogin;
 
 // Wraps two apps::mojom::AppPtr's, a prior state and a delta on top of that
 // state. The state is conceptually the "sum" of all of the previous deltas,
@@ -200,6 +201,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::mojom::WindowMode WindowMode() const;
   apps::WindowMode GetWindowMode() const;
   bool WindowModeChanged() const;
+
+  apps::mojom::RunOnOsLoginPtr RunOnOsLogin() const;
+  absl::optional<apps::RunOnOsLogin> GetRunOnOsLogin() const;
+  bool RunOnOsLoginChanged() const;
 
   const ::AccountId& AccountId() const;
 

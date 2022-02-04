@@ -91,6 +91,8 @@ struct App {
   // Whether the app's display mode is in the browser or otherwise.
   WindowMode window_mode;
 
+  // Whether the app runs on os login.
+  RunOnOsLogin? run_on_os_login;
   // When adding new fields, also update the App struct in
   // components/services/app_service/public/cpp/app_types.* and the Merge method
   // and other helpers in
@@ -534,4 +536,25 @@ enum WindowMode {
   kBrowser,
   // Opens in a tabbed app window
   kTabbedWindow,
+};
+
+// The RunOnOsLoginModes must be kept in sync
+// with RunOnOsLoginMode in
+// chrome/browser/web_applications/web_app_constants.h
+enum RunOnOsLoginMode {
+  kUnknown = 0,
+  // App won't run on OS Login.
+  kNotRun,
+  // App will run in windowed mode on OS Login.
+  kWindowed,
+};
+
+// RunOnOsLoginMode struct to be used
+// to verify if the mode is set by policy
+// or not.
+struct RunOnOsLogin {
+  RunOnOsLoginMode login_mode;
+  // If the run on os login mode is policy
+  // controlled or not.
+  bool is_managed;
 };

@@ -7,6 +7,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -121,6 +122,8 @@ class AppUpdateTest : public testing::Test {
 
   WindowMode expect_window_mode_;
 
+  absl::optional<RunOnOsLogin> expect_run_on_os_login_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -183,6 +186,12 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_resize_locked_, u.GetResizeLocked());
 
     EXPECT_EQ(expect_window_mode_, u.GetWindowMode());
+    if (expect_run_on_os_login_.has_value()) {
+      ASSERT_TRUE(u.GetRunOnOsLogin().has_value());
+      EXPECT_EQ(expect_run_on_os_login_.value(), u.GetRunOnOsLogin().value());
+    } else {
+      ASSERT_FALSE(u.GetRunOnOsLogin().has_value());
+    }
 
     EXPECT_EQ(account_id_, u.AccountId());
   }
@@ -221,6 +230,7 @@ class AppUpdateTest : public testing::Test {
     expect_intent_filters_.clear();
     expect_resize_locked_ = absl::nullopt;
     expect_window_mode_ = WindowMode::kUnknown;
+    expect_run_on_os_login_ = absl::nullopt;
     CheckExpects(u);
 
     if (delta) {
@@ -842,6 +852,28 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_window_mode_, state->window_mode);
+      CheckExpects(u);
+    }
+
+    // RunOnOsLogin tests.
+
+    if (state) {
+      state->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun, false);
+      expect_run_on_os_login_ = RunOnOsLogin(RunOnOsLoginMode::kNotRun, false);
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kWindowed, false);
+      expect_run_on_os_login_ =
+          RunOnOsLogin(RunOnOsLoginMode::kWindowed, false);
+      CheckExpects(u);
+    }
+
+    if (state) {
+      AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_run_on_os_login_.value(),
+                state->run_on_os_login.value());
       CheckExpects(u);
     }
   }

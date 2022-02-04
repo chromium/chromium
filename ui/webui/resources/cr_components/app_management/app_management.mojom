@@ -29,6 +29,7 @@ struct App {
   bool resize_locked;
   bool hide_resize_locked;
   array<string> supported_links;
+  apps.mojom.RunOnOsLogin? run_on_os_login;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be

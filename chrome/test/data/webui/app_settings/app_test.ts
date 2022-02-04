@@ -8,7 +8,7 @@ import 'chrome://app-settings/web_app_settings.js';
 import {WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppType, InstallReason, OptionalBool, WindowMode} from 'chrome://resources/cr_components/app_management/types.mojom-webui.js';
+import {AppType, InstallReason, OptionalBool, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/types.mojom-webui.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
@@ -33,6 +33,7 @@ suite('AppSettingsAppTest', () => {
       resizeLocked: false,
       hideResizeLocked: true,
       supportedLinks: [],
+      runOnOsLogin: {loginMode: RunOnOsLoginMode.kNotRun, isManaged: false},
     };
 
     const testProxy = new TestAppManagementBrowserProxy();

@@ -100,6 +100,9 @@ class AppUpdateMojomTest : public testing::Test {
   apps::mojom::WindowMode expect_window_mode_;
   bool expect_window_mode_changed_;
 
+  apps::mojom::RunOnOsLoginPtr expect_run_on_os_login_;
+  bool expect_run_on_os_login_changed_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   apps::mojom::PermissionPtr MakePermission(
@@ -141,6 +144,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_intent_filters_changed_ = false;
     expect_resize_locked_changed_ = false;
     expect_window_mode_changed_ = false;
+    expect_run_on_os_login_changed_ = false;
   }
 
   void CheckExpects(const apps::AppUpdate& u) {
@@ -230,6 +234,9 @@ class AppUpdateMojomTest : public testing::Test {
     EXPECT_EQ(expect_window_mode_, u.WindowMode());
     EXPECT_EQ(expect_window_mode_changed_, u.WindowModeChanged());
 
+    EXPECT_EQ(expect_run_on_os_login_, u.RunOnOsLogin());
+    EXPECT_EQ(expect_run_on_os_login_changed_, u.RunOnOsLoginChanged());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -269,6 +276,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_intent_filters_.clear();
     expect_resize_locked_ = apps::mojom::OptionalBool::kUnknown;
     expect_window_mode_ = apps::mojom::WindowMode::kUnknown;
+    expect_run_on_os_login_ = nullptr;
     ExpectNoChange();
     CheckExpects(u);
 
@@ -931,6 +939,32 @@ class AppUpdateMojomTest : public testing::Test {
       delta->window_mode = apps::mojom::WindowMode::kWindow;
       expect_window_mode_ = apps::mojom::WindowMode::kWindow;
       expect_window_mode_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // RunOnOsLogin tests.
+
+    if (state) {
+      auto runOnOsLoginTestPtr = apps::mojom::RunOnOsLogin::New(
+          apps::mojom::RunOnOsLoginMode::kNotRun, false);
+      state->run_on_os_login = runOnOsLoginTestPtr.Clone();
+      expect_run_on_os_login_ = runOnOsLoginTestPtr.Clone();
+      expect_run_on_os_login_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      auto runOnOsLoginTestPtr = apps::mojom::RunOnOsLogin::New(
+          apps::mojom::RunOnOsLoginMode::kWindowed, false);
+      delta->run_on_os_login = runOnOsLoginTestPtr.Clone();
+      expect_run_on_os_login_ = runOnOsLoginTestPtr.Clone();
+      expect_run_on_os_login_changed_ = true;
       CheckExpects(u);
     }
 

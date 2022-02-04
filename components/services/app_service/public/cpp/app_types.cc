@@ -48,6 +48,11 @@ std::unique_ptr<App> App::Clone() const {
   app->resize_locked = resize_locked;
   app->window_mode = window_mode;
 
+  if (run_on_os_login.has_value()) {
+    app->run_on_os_login = apps::RunOnOsLogin(run_on_os_login->login_mode,
+                                              run_on_os_login->is_managed);
+  }
+
   return app;
 }
 
@@ -263,6 +268,12 @@ std::unique_ptr<App> ConvertMojomAppToApp(
 
   app->resize_locked = GetOptionalBool(mojom_app->resize_locked);
   app->window_mode = ConvertMojomWindowModeToWindowMode(mojom_app->window_mode);
+  if (mojom_app->run_on_os_login) {
+    app->run_on_os_login =
+        apps::RunOnOsLogin(ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
+                               mojom_app->run_on_os_login->login_mode),
+                           mojom_app->run_on_os_login->is_managed);
+  }
 
   return app;
 }

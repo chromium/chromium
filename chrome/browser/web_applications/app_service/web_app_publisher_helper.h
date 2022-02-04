@@ -208,12 +208,24 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   apps::mojom::WindowMode GetWindowMode(const std::string& app_id);
 
+  apps::mojom::RunOnOsLoginMode GetRunOnOsLoginMode(const std::string& app_id);
+
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
   // Converts |display_mode| to a |window_mode|.
   apps::mojom::WindowMode ConvertDisplayModeToWindowMode(
       blink::mojom::DisplayMode display_mode);
+
+  // Converts RunOnOsLoginMode from apps::mojom::RunOnOsLoginMode to
+  // web_app::RunOnOsLoginMode.
+  web_app::RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
+      apps::mojom::RunOnOsLoginMode login_mode);
+
+  // Converts RunOnOsLoginMode from web_app::RunOnOsLoginMode to
+  // apps::mojom::RunOnOsLoginMode.
+  apps::mojom::RunOnOsLoginMode ConvertOsLoginModeToMojom(
+      web_app::RunOnOsLoginMode login_mode);
 
   void PublishWindowModeUpdate(const std::string& app_id,
                                blink::mojom::DisplayMode display_mode);

@@ -14,6 +14,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -194,6 +195,9 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 
   // Whether the app's display mode is in the browser or otherwise.
   WindowMode window_mode = WindowMode::kUnknown;
+
+  // Whether the app runs on os login in a new window or not.
+  absl::optional<RunOnOsLogin> run_on_os_login;
 
   // When adding new fields to the App type, the `Clone` function and the
   // `AppUpdate` class should also be updated.

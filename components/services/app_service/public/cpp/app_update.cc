@@ -40,6 +40,11 @@ absl::optional<apps::IconKey> CloneIconKey(const apps::IconKey& icon_key) {
                        icon_key.icon_effects);
 }
 
+absl::optional<apps::RunOnOsLogin> CloneRunOnOsLogin(
+    const apps::RunOnOsLogin& login_data) {
+  return apps::RunOnOsLogin(login_data.login_mode, login_data.is_managed);
+}
+
 }  // namespace
 
 namespace apps {
@@ -154,6 +159,9 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->window_mode != apps::mojom::WindowMode::kUnknown) {
     state->window_mode = delta->window_mode;
   }
+  if (!delta->run_on_os_login.is_null()) {
+    state->run_on_os_login = delta->run_on_os_login.Clone();
+  }
 
   // When adding new fields to the App Mojo type, this function should also be
   // updated.
@@ -224,6 +232,10 @@ void AppUpdate::Merge(App* state, const App* delta) {
 
   SET_OPTIONAL_VALUE(resize_locked)
   SET_ENUM_VALUE(window_mode, WindowMode::kUnknown)
+
+  if (delta->run_on_os_login.has_value()) {
+    state->run_on_os_login = CloneRunOnOsLogin(delta->run_on_os_login.value());
+  }
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -920,6 +932,32 @@ bool AppUpdate::WindowModeChanged() const {
           (mojom_delta_->window_mode != mojom_state_->window_mode));
 }
 
+apps::mojom::RunOnOsLoginPtr AppUpdate::RunOnOsLogin() const {
+  if (mojom_delta_ && !mojom_delta_->run_on_os_login.is_null()) {
+    return mojom_delta_->run_on_os_login.Clone();
+  }
+  if (mojom_state_ && !mojom_state_->run_on_os_login.is_null()) {
+    return mojom_state_->run_on_os_login.Clone();
+  }
+  return apps::mojom::RunOnOsLoginPtr();
+}
+
+absl::optional<apps::RunOnOsLogin> AppUpdate::GetRunOnOsLogin() const {
+  if (delta_ && delta_->run_on_os_login.has_value()) {
+    return CloneRunOnOsLogin(delta_->run_on_os_login.value());
+  }
+  if (state_ && state_->run_on_os_login.has_value()) {
+    return CloneRunOnOsLogin(state_->run_on_os_login.value());
+  }
+  return absl::nullopt;
+}
+
+bool AppUpdate::RunOnOsLoginChanged() const {
+  return mojom_delta_ && !mojom_delta_->run_on_os_login.is_null() &&
+         (!mojom_state_ ||
+          !mojom_delta_->run_on_os_login.Equals(mojom_state_->run_on_os_login));
+}
+
 const ::AccountId& AppUpdate::AccountId() const {
   return account_id_;
 }
@@ -977,6 +1015,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "ResizeLocked: " << app.ResizeLocked() << std::endl;
   out << "WindowMode: " << app.WindowMode() << std::endl;
+  out << "RunOnOsLoginMode: " << app.RunOnOsLogin()->login_mode << std::endl;
 
   return out;
 }

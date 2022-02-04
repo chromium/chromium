@@ -108,6 +108,7 @@ export class FakePageHandler {
       resizeLocked: false,
       hideResizeLocked: true,
       supportedLinks: [],
+      runOnOsLogin: null,
     };
 
     if (optConfig) {
