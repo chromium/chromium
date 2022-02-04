@@ -176,20 +176,45 @@ loadScript.then(async function() {
 
     function testGetAllFrames() {
       chrome.webNavigation.getAllFrames({tabId: tab.id}, function (details) {
-          // Since processIds are randomly assigned we remove them for the
-          // assertEq.
-          details.forEach(element => delete element.processId);
+          var documentIds = [];
+          var nextDocumentId = 1;
+          details.forEach(element => {
+            // Since processIds are randomly assigned we remove them for the
+            // assertEq.
+            delete element.processId;
+            if ('parentDocumentId' in element) {
+              if (documentIds[element.parentDocumentId] === undefined) {
+                documentIds[element.parentDocumentId] = nextDocumentId++;
+              }
+              element.parentDocumentId = documentIds[element.parentDocumentId];
+            }
+            if (documentIds[element.documentId] === undefined) {
+              documentIds[element.documentId] = nextDocumentId++;
+            }
+            element.documentId = documentIds[element.documentId];
+          });
           chrome.test.assertEq(
               [{errorOccurred: false,
+                documentId: 1,
+                documentLifecycle: "active",
                 frameId: 0,
+                frameType: "outermost_frame",
                 parentFrameId: -1,
                 url: URL_MAIN},
               {errorOccurred: false,
+                documentId: 2,
+                documentLifecycle: "active",
                 frameId: 4,
+                frameType: "sub_frame",
+                parentDocumentId: 1,
                 parentFrameId: 0,
                 url: URL_INTERMEDIATE_IFRAME},
               {errorOccurred: false,
-               frameId: mparchEnabled ? 6 : 5,
+                documentId: 3,
+                documentLifecycle: "active",
+                frameId: mparchEnabled ? 6 : 5,
+                frameType: "fenced_frame",
+                parentDocumentId: 2,
                 parentFrameId: 4,
                 url: URL_FENCED_FRAME}],
                details);

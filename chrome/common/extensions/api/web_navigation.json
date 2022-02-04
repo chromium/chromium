@@ -61,6 +61,27 @@
                 "parentFrameId": {
                   "type": "integer",
                   "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
+                },
+                "documentId": {
+                  "type": "string",
+                  "description": "A UUID of the document loaded.",
+                  "nodoc": true
+                },
+                "parentDocumentId": {
+                  "type": "string",
+                  "optional": true,
+                  "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.",
+                  "nodoc": true
+                },
+                "documentLifecycle": {
+                  "type": "string",
+                  "description": "The lifecycle the document is in.",
+                  "nodoc": true
+                },
+                "frameType": {
+                  "type": "string",
+                  "description": "The type of frame the navigation occurred in.",
+                  "nodoc": true
                 }
               }
             }
@@ -111,6 +132,27 @@
                   "url": {
                     "type": "string",
                     "description": "The URL currently associated with this frame."
+                  },
+                  "documentId": {
+                    "type": "string",
+                    "description": "A UUID of the document loaded.",
+                    "nodoc": true
+                  },
+                  "parentDocumentId": {
+                    "type": "string",
+                    "optional": true,
+                    "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.",
+                    "nodoc": true
+                  },
+                  "documentLifecycle": {
+                    "type": "string",
+                    "description": "The lifecycle the document is in.",
+                    "nodoc": true
+                  },
+                  "frameType": {
+                    "type": "string",
+                    "description": "The type of frame the navigation occurred in.",
+                    "nodoc": true
                   }
                 }
               }

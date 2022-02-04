@@ -489,6 +489,19 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
       frame_navigation_state->GetErrorOccurredInFrame();
   frame_details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(render_frame_host);
+  frame_details.document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(render_frame_host).ToString();
+  // Only set the parentDocumentId value if we have a parent.
+  if (content::RenderFrameHost* parent_frame_host =
+          render_frame_host->GetParentOrOuterDocument()) {
+    frame_details.parent_document_id = std::make_unique<std::string>(
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+  }
+  frame_details.frame_type =
+      ToString(ExtensionApiFrameIdMap::GetFrameType(render_frame_host));
+  frame_details.document_lifecycle =
+      ToString(ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host));
+
   return RespondNow(ArgumentList(GetFrame::Results::Create(frame_details)));
 }
 
@@ -531,6 +544,19 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
         frame.frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
         frame.parent_frame_id =
             ExtensionApiFrameIdMap::GetParentFrameId(render_frame_host);
+        frame.document_id =
+            ExtensionApiFrameIdMap::GetDocumentId(render_frame_host).ToString();
+        // Only set the parentDocumentId value if we have a parent.
+        if (content::RenderFrameHost* parent_frame_host =
+                render_frame_host->GetParentOrOuterDocument()) {
+          frame.parent_document_id = std::make_unique<std::string>(
+              ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host)
+                  .ToString());
+        }
+        frame.frame_type =
+            ToString(ExtensionApiFrameIdMap::GetFrameType(render_frame_host));
+        frame.document_lifecycle = ToString(
+            ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host));
         frame.process_id = render_frame_host->GetProcess()->GetID();
         frame.error_occurred = navigation_state->GetErrorOccurredInFrame();
         result_list.push_back(std::move(frame));
