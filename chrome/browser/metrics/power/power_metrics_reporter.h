@@ -25,10 +25,12 @@
 // understand what impacts Chrome's power consumption over an interval of time.
 //
 // This class and its associated data store should be created shortly after
-// performance_monitor::ProcessMonitor.
+// ProcessMonitor.
 class PowerMetricsReporter
     : public performance_monitor::ProcessMonitor::Observer {
  public:
+  using ProcessMonitor = performance_monitor::ProcessMonitor;
+
   // |data_store| will be queried at regular interval to report the metrics, it
   // needs to outlive this class.
   PowerMetricsReporter(
@@ -85,7 +87,7 @@ class PowerMetricsReporter
   // scenario suffix derived from |interval_data|.
   static void ReportHistograms(
       const UsageScenarioDataStore::IntervalData& interval_data,
-      const performance_monitor::ProcessMonitor::Metrics& metrics,
+      const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       BatteryDischarge battery_discharge);
 
@@ -94,39 +96,39 @@ class PowerMetricsReporter
                                       BatteryDischarge battery_discharge,
                                       const std::vector<const char*>& suffixes);
 
-  // Report CPU histograms to histograms with |suffixes|.
-  static void ReportCPUHistograms(
-      const performance_monitor::ProcessMonitor::Metrics& metrics,
+  // Report aggregated process metrics to histograms with |suffixes|.
+  static void ReportAggregatedProcessMetricsHistograms(
+      const ProcessMonitor::Metrics& aggregated_process_metrics,
       const std::vector<const char*>& suffixes);
 
 #if BUILDFLAG(IS_MAC)
   // Report resource coalition metrics to histograms with |suffixes|.
   static void ReportResourceCoalitionHistograms(
-      const performance_monitor::ProcessMonitor::Metrics& metrics,
+      const power_metrics::CoalitionResourceUsageRate& rate,
       const std::vector<const char*>& suffixes);
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
-  // performance_monitor::ProcessMonitor::Observer:
+  // ProcessMonitor::Observer:
   void OnAggregatedMetricsSampled(
-      const performance_monitor::ProcessMonitor::Metrics& metrics) override;
+      const ProcessMonitor::Metrics& aggregated_process_metrics) override;
 
   void OnFirstBatteryStateSampled(
       const BatteryLevelProvider::BatteryState& battery_state);
-  void OnBatteryStateAndMetricsSampled(
-      const performance_monitor::ProcessMonitor::Metrics& metrics,
-      base::TimeTicks scheduled_time,
+  void OnBatteryAndAggregatedProcessMetricsSampled(
+      const ProcessMonitor::Metrics& aggregated_process_metrics,
+      base::TimeTicks battery_sample_begin_time,
       const BatteryLevelProvider::BatteryState& battery_state);
 
   // Report the UKMs for the past interval.
   void ReportUKMs(const UsageScenarioDataStore::IntervalData& interval_data,
-                  const performance_monitor::ProcessMonitor::Metrics& metrics,
+                  const ProcessMonitor::Metrics& aggregated_process_metrics,
                   base::TimeDelta interval_duration,
                   BatteryDischarge battery_discharge,
                   absl::optional<int64_t> main_screen_brightness) const;
 
   void ReportUKMsAndHistograms(
-      const performance_monitor::ProcessMonitor::Metrics& metrics,
+      const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       BatteryDischarge battery_discharge) const;
 
