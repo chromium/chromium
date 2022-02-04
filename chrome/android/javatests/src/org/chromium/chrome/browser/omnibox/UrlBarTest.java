@@ -28,7 +28,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -150,7 +149,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1291159")
+    @FlakyTest(message = "https://crbug.com/1291159")
     public void testAutocompleteUpdatedOnSetText() {
         // Verify that setting a new string will clear the autocomplete.
         mOmnibox.setText("test");
@@ -205,7 +204,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1291968")
+    @FlakyTest(message = "https://crbug.com/1291968")
     public void testAutocompleteUpdatedOnSelection() throws TimeoutException {
         // Verify that setting a selection before the autocomplete clears it.
         verifySelectionState("test", "ing is fun", 1, 1, false, "test", "test", true, "test");
@@ -255,7 +254,7 @@ public class UrlBarTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1291968")
+    @FlakyTest(message = "https://crbug.com/1291968")
     public void testSendCursorPosition() throws TimeoutException {
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicInteger cursorPositionUsed = new AtomicInteger();
@@ -399,7 +398,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1291159")
+    @FlakyTest(message = "https://crbug.com/1291159")
     public void testBatchModeChangesTriggerCorrectSuggestions() {
         final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
         mOmnibox.setText("test");
@@ -416,7 +415,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1291159")
+    @FlakyTest(message = "https://crbug.com/1291159")
     public void testAutocompleteCorrectlyPerservedOnBatchMode() {
         // Valid case (cursor at the end of text, single character, matches previous autocomplete).
         mOmnibox.setText("g");
@@ -453,7 +452,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1291159")
+    @FlakyTest(message = "https://crbug.com/1291159")
     public void testAutocompleteSpanClearedOnNonMatchingCommitText() {
         mOmnibox.setText("a");
         mOmnibox.setAutocompleteText("mazon.com");
