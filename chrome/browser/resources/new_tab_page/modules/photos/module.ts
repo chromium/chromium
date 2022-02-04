@@ -10,7 +10,6 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
-import {recordOccurence} from '../../metrics_utils.js';
 import {Memory} from '../../photos.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';

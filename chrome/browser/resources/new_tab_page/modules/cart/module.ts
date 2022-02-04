@@ -17,7 +17,6 @@ import {DomRepeat, DomRepeatEvent, html, PolymerElement} from 'chrome://resource
 import {MerchantCart} from '../../chrome_cart.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence} from '../../metrics_utils.js';
-import {$$} from '../../utils.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {ChromeCartProxy} from './chrome_cart_proxy.js';

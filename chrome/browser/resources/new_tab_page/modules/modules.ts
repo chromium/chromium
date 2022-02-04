@@ -13,9 +13,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {I18nMixin, loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
-import {$$} from '../utils.js';
 
-import {Module, ModuleHeight} from './module_descriptor.js';
+import {ModuleHeight} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {ModuleWrapperElement} from './module_wrapper.js';
 
