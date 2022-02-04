@@ -70,9 +70,8 @@ class EduCoexistenceLoginHandlerBrowserTest
                                     const std::string& call_type) {
     EXPECT_EQ(call_type, data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(event_name, callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(event_name, data.arg1()->GetString());
   }
 
   void SimulateAccessTokenFetched(EduCoexistenceLoginHandler* handler,
