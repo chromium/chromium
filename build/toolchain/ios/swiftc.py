@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 
+
 class OrderedSet(collections.OrderedDict):
   def add(self, value):
     self[value] = True
@@ -46,6 +47,9 @@ def compile_module(module, sources, settings, extras, tmpdir):
   if not os.path.exists(settings.object_dir):
     os.makedirs(settings.object_dir)
 
+  if not os.path.exists(settings.pch_output_dir):
+    os.makedirs(settings.pch_output_dir)
+
   for key in output_file_map:
     path = output_file_map[key]['object']
     if os.path.exists(path):
@@ -67,25 +71,7 @@ def compile_module(module, sources, settings, extras, tmpdir):
     ])
 
   if settings.whole_module_optimization:
-    # When building with whole module optimization enabled, swiftc has a hidden
-    # requirements that pch for the bridging headers are saved between runs
-    # (via `-pch-output-dir $dir`) or disabled (via `-disable-bridging-pch`).
-    #
-    # Otherwise, the frontend generates the pch of dependent modules and then
-    # try to parse it as a source file. This manifests as weird errors when
-    # module B depends on module A and module A has a bridging header.
-    #
-    # This is not documented but is tested by swiftc unit tests:
-    # https://github.com/apple/swift/blob/main/test/Driver/bridging-pch.swift
-    #
-    # Behaviour was introduced by the following change:
-    # https://github.com/apple/swift/pull/9509
-    #
-    # For the moment disable the use of pch for bridging headers (simpler).
-    # A more future proof solution would be to build all Objective-C code as
-    # modules which would allow not using bridging headers at all.
     extra_args.append('-whole-module-optimization')
-    extra_args.append('-disable-bridging-pch')
 
   if settings.target:
     extra_args.extend([
@@ -142,6 +128,8 @@ def compile_module(module, sources, settings, extras, tmpdir):
       settings.header_path,
       '-output-file-map',
       output_file_map_path,
+      '-pch-output-dir',
+      os.path.abspath(settings.pch_output_dir),
   ] + extra_args + extras + sources)
 
   process.communicate()
@@ -196,6 +184,8 @@ def main(args):
                       help='enable whole module optimization')
   parser.add_argument('-object-dir',
                       help='path to the generated object files directory')
+  parser.add_argument('-pch-output-dir',
+                      help='path to directory where .pch files are saved')
   parser.add_argument('-module-path', help='path to the generated module file')
   parser.add_argument('-header-path', help='path to the generated header file')
   parser.add_argument('-bridge-header',
