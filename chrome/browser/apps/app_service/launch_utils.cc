@@ -214,7 +214,6 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
       app_id, event_flags, launch_source, display_id, fallback_container);
 
   if (intent->url.has_value()) {
-    params.launch_source = apps::mojom::LaunchSource::kFromIntentUrl;
     params.override_url = intent->url.value();
   }
 
@@ -398,7 +397,6 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
   }
 
   if (crosapi_params->intent->url.has_value()) {
-    params.launch_source = apps::mojom::LaunchSource::kFromIntentUrl;
     params.override_url = crosapi_params->intent->url.value();
   }
 

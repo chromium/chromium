@@ -266,8 +266,7 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
   EXPECT_EQ(params.app_id, converted_params.app_id);
   EXPECT_EQ(params.container, converted_params.container);
   EXPECT_EQ(params.disposition, converted_params.disposition);
-  EXPECT_EQ(apps::mojom::LaunchSource::kFromIntentUrl,
-            converted_params.launch_source);
+  EXPECT_EQ(params.launch_source, converted_params.launch_source);
   EXPECT_EQ(params.intent, converted_params.intent);
 }
 
