@@ -83,7 +83,7 @@ sync_pb::EntitySpecifics MakeBookmarkSpecificsToCommit() {
 class SyncerTest : public testing::Test,
                    public SyncCycle::Delegate,
                    public SyncEngineEventListener {
- protected:
+ public:
   SyncerTest() = default;
 
   SyncerTest(const SyncerTest&) = delete;
@@ -93,18 +93,23 @@ class SyncerTest : public testing::Test,
   void OnThrottled(const base::TimeDelta& throttle_duration) override {
     FAIL() << "Should not get silenced.";
   }
+
   void OnTypesThrottled(ModelTypeSet types,
                         const base::TimeDelta& throttle_duration) override {
     scheduler_->OnTypesThrottled(types, throttle_duration);
   }
+
   void OnTypesBackedOff(ModelTypeSet types) override {
     scheduler_->OnTypesBackedOff(types);
   }
+
   bool IsAnyThrottleOrBackoff() override { return false; }
+
   void OnReceivedPollIntervalUpdate(
       const base::TimeDelta& new_interval) override {
     last_poll_interval_received_ = new_interval;
   }
+
   void OnReceivedCustomNudgeDelays(
       const std::map<ModelType, base::TimeDelta>& delay_map) override {
     auto iter = delay_map.find(SESSIONS);
@@ -114,9 +119,11 @@ class SyncerTest : public testing::Test,
     if (iter != delay_map.end() && iter->second.is_positive())
       last_bookmarks_commit_delay_ = iter->second;
   }
+
   void OnReceivedClientInvalidationHintBufferSize(int size) override {
     last_client_invalidation_hint_buffer_size_ = size;
   }
+
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override {}
   void OnReceivedMigrationRequest(ModelTypeSet types) override {}
   void OnProtocolEvent(const ProtocolEvent& event) override {}
@@ -241,6 +248,7 @@ class SyncerTest : public testing::Test,
     ASSERT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
   }
 
+ protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   FakeSyncEncryptionHandler encryption_handler_;
@@ -502,10 +510,10 @@ TEST_F(SyncerTest, CommitManyItemsInOneGo_PostBufferFail) {
 
   histogram_tester.ExpectBucketCount("Sync.CommitResponse.PREFERENCE",
                                      SyncerError::SYNC_SERVER_ERROR,
-                                     /*count=*/1);
+                                     /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Sync.CommitResponse",
                                      SyncerError::SYNC_SERVER_ERROR,
-                                     /*count=*/1);
+                                     /*expected_count=*/1);
 }
 
 // Test that a single conflict response from the server will cause us to exit

@@ -193,15 +193,15 @@ TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
   base::HistogramTester histogram_tester;
   dcm.set_send_error(true);
   EXPECT_FALSE(SyncerProtoUtil::PostAndProcessHeaders(&dcm, msg, &response));
-  EXPECT_EQ(1,
-            histogram_tester.GetBucketCount("Sync.PostedClientToServerMessage",
-                                            /*GET_UPDATES=*/2));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.PostedClientToServerMessage",
+                   /*sample=*/ClientToServerMessage::GET_UPDATES));
 
   dcm.set_send_error(false);
   EXPECT_TRUE(SyncerProtoUtil::PostAndProcessHeaders(&dcm, msg, &response));
-  EXPECT_EQ(2,
-            histogram_tester.GetBucketCount("Sync.PostedClientToServerMessage",
-                                            /*GET_UPDATES=*/2));
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Sync.PostedClientToServerMessage",
+                   /*sample=*/ClientToServerMessage::GET_UPDATES));
 }
 
 }  // namespace syncer

@@ -79,7 +79,7 @@ class SyncCycle {
     virtual void OnReceivedMigrationRequest(ModelTypeSet types) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   SyncCycle(SyncCycleContext* context, Delegate* delegate);

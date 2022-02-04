@@ -6,9 +6,7 @@
 
 #include "components/sync/protocol/sync.pb.h"
 
-namespace syncer {
-
-namespace commit_util {
+namespace syncer::commit_util {
 
 void AddExtensionsActivityToMessage(
     ExtensionsActivity* activity,
@@ -55,6 +53,4 @@ void AddClientConfigParamsToMessage(
   }
 }
 
-}  // namespace commit_util
-
-}  // namespace syncer
+}  // namespace syncer::commit_util

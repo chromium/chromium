@@ -42,7 +42,7 @@ void LogNonReflectionUpdateFreshnessToUma(ModelType type,
       "Sync.NonReflectionUpdateFreshnessPossiblySkewed2", freshness,
       /*min=*/base::Milliseconds(100),
       /*max=*/base::Days(7),
-      /*bucket_count=*/50);
+      /*buckets=*/50);
 
   base::UmaHistogramCustomTimes(
       std::string("Sync.NonReflectionUpdateFreshnessPossiblySkewed2.") +
@@ -50,7 +50,7 @@ void LogNonReflectionUpdateFreshnessToUma(ModelType type,
       freshness,
       /*min=*/base::Milliseconds(100),
       /*max=*/base::Days(7),
-      /*bucket_count=*/50);
+      /*buckets=*/50);
 }
 
 }  // namespace syncer

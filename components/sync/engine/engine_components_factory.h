@@ -44,7 +44,7 @@ class EngineComponentsFactory {
     bool force_short_nudge_delay_for_test;
   };
 
-  virtual ~EngineComponentsFactory() {}
+  virtual ~EngineComponentsFactory() = default;
 
   virtual std::unique_ptr<SyncScheduler> BuildScheduler(
       const std::string& name,

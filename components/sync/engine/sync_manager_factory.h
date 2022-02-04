@@ -21,7 +21,7 @@ class SyncManager;
 // Helper class to allow dependency injection of the SyncManager in tests.
 class SyncManagerFactory {
  public:
-  SyncManagerFactory(
+  explicit SyncManagerFactory(
       network::NetworkConnectionTracker* network_connection_tracker);
 
   SyncManagerFactory(const SyncManagerFactory&) = delete;

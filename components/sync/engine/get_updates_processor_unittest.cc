@@ -38,8 +38,8 @@ std::unique_ptr<SyncInvalidation> BuildInvalidation(
 
 // A test fixture for tests exercising download updates functions.
 class GetUpdatesProcessorTest : public ::testing::Test {
- protected:
-  GetUpdatesProcessorTest() : kTestStartTime(base::TimeTicks::Now()) {}
+ public:
+  GetUpdatesProcessorTest() = default;
 
   GetUpdatesProcessorTest(const GetUpdatesProcessorTest&) = delete;
   GetUpdatesProcessorTest& operator=(const GetUpdatesProcessorTest&) = delete;
@@ -75,9 +75,6 @@ class GetUpdatesProcessorTest : public ::testing::Test {
     response->set_changes_remaining(0);
   }
 
-  const base::TimeTicks kTestStartTime;
-
- protected:
   MockUpdateHandler* AddUpdateHandler(ModelType type) {
     enabled_types_.Put(type);
 
@@ -89,6 +86,8 @@ class GetUpdatesProcessorTest : public ::testing::Test {
     update_handlers_.insert(std::move(handler));
     return handler_ptr;
   }
+
+  const base::TimeTicks kTestStartTime = base::TimeTicks::Now();
 
  private:
   ModelTypeSet enabled_types_;

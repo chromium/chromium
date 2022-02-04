@@ -41,7 +41,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
  public:
   class ObserverForTests {
    public:
-    virtual ~ObserverForTests() {}
+    virtual ~ObserverForTests() = default;
 
     // Called after the server has processed a successful commit. The types
     // updated as part of the commit are passed in |committed_model_types|.

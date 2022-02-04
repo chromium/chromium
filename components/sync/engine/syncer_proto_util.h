@@ -74,7 +74,7 @@ class SyncerProtoUtil {
   static void SetProtocolVersion(sync_pb::ClientToServerMessage* msg);
 
  private:
-  SyncerProtoUtil() {}
+  SyncerProtoUtil() = default;
 
   // Helper functions for PostClientToServerMessage.
 
