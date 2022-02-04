@@ -122,10 +122,13 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                              const syncer::StringOrdinal& new_position,
                              ash::RequestPositionUpdateReason reason) override;
   void RequestMoveItemToFolder(std::string id,
-                               const std::string& folder_id,
-                               ash::RequestMoveToFolderReason reason) override;
+                               const std::string& folder_id) override;
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override;
+  std::string RequestFolderCreation(std::string target_merge_id,
+                                    std::string item_to_merge_id) override;
+  void RequestFolderRename(std::string folder_id,
+                           const std::string& new_name) override;
   void RequestAppListSort(ash::AppListSortOrder order) override;
   void RequestAppListSortRevert() override;
 

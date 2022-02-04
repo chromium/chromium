@@ -43,10 +43,15 @@ class AppListItemListWithUpdater : public AppListModelDelegate {
     item_list_->SetItemPosition(item_list_->FindItem(id), new_position);
   }
   void RequestMoveItemToFolder(std::string id,
-                               const std::string& folder_id,
-                               RequestMoveToFolderReason reason) override {}
+                               const std::string& folder_id) override {}
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override {}
+  std::string RequestFolderCreation(std::string merge_target_id,
+                                    std::string item_to_merge_id) override {
+    return "";
+  }
+  void RequestFolderRename(std::string folder_id,
+                           const std::string& name) override {}
   void RequestAppListSort(AppListSortOrder order) override {}
   void RequestAppListSortRevert() override {}
 

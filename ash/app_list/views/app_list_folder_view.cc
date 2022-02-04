@@ -30,6 +30,7 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -1206,7 +1207,8 @@ void AppListFolderView::OnGestureEvent(ui::GestureEvent* event) {
 
 void AppListFolderView::SetItemName(AppListFolderItem* item,
                                     const std::string& name) {
-  AppListModelProvider::Get()->model()->SetItemName(item, name);
+  AppListModelProvider::Get()->model()->delegate()->RequestFolderRename(
+      folder_item_->id(), name);
 }
 
 const AppListConfig* AppListFolderView::GetAppListConfig() const {

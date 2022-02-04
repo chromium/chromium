@@ -863,6 +863,11 @@ const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
 const base::Feature kLauncherAppSort{"LauncherAppSort",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, app list folders will be moved so app list remains sorted when
+// they get renamed, or created.
+const base::Feature kLauncherFolderRenameKeepsSortOrder{
+    "LauncherFolderRenameKeepsSortOrder", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Uses short intervals for launcher nudge for testing if enabled.
 const base::Feature kLauncherNudgeShortInterval{
     "LauncherNudgeShortInterval", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1665,6 +1670,11 @@ bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
 bool IsLauncherAppSortEnabled() {
   return IsProductivityLauncherEnabled() &&
          base::FeatureList::IsEnabled(kLauncherAppSort);
+}
+
+bool IsLauncherFolderRenameKeepsSortOrderEnabled() {
+  return IsLauncherAppSortEnabled() &&
+         base::FeatureList::IsEnabled(kLauncherFolderRenameKeepsSortOrder);
 }
 
 bool IsLauncherNudgeShortIntervalEnabled() {

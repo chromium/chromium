@@ -170,18 +170,6 @@ enum class RequestPositionUpdateReason {
   kMoveItem
 };
 
-// Lists the reasons that ash requests to move an item into a folder.
-enum class RequestMoveToFolderReason {
-  // Merge two items and move the first item to the created folder.
-  kMergeFirstItem,
-
-  // Merge two items and move the second item to the created folder.
-  kMergeSecondItem,
-
-  // Move an item to an existed folder.
-  kMoveItem
-};
-
 // All possible states of the app list.
 // Note: Do not change the order of these as they are used for metrics.
 enum class AppListState {

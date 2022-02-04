@@ -58,10 +58,13 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
                              const syncer::StringOrdinal& new_position,
                              RequestPositionUpdateReason reason) override;
   void RequestMoveItemToFolder(std::string id,
-                               const std::string& folder_id,
-                               RequestMoveToFolderReason reason) override;
+                               const std::string& folder_id) override;
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override;
+  std::string RequestFolderCreation(std::string merge_target_id,
+                                    std::string item_to_merge_id) override;
+  void RequestFolderRename(std::string id,
+                           const std::string& new_name) override;
   void RequestAppListSort(AppListSortOrder order) override;
   void RequestAppListSortRevert() override;
 

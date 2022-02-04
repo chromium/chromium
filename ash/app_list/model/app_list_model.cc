@@ -156,30 +156,11 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
       LOG(WARNING) << "MergeItems called with OEM folder as target";
       return "";
     }
-    delegate_->RequestMoveItemToFolder(source_item_id, target_item_id,
-                                       RequestMoveToFolderReason::kMoveItem);
+    delegate_->RequestMoveItemToFolder(source_item_id, target_item_id);
     return target_folder->id();
   }
 
-  // Create a new folder in the same location as the target item.
-  std::string new_folder_id = AppListFolderItem::GenerateId();
-  DVLOG(2) << "Creating folder for merge: " << new_folder_id;
-  std::unique_ptr<AppListItem> new_folder_ptr =
-      std::make_unique<AppListFolderItem>(new_folder_id, delegate_);
-  new_folder_ptr->set_position(target_item->position());
-  AppListFolderItem* new_folder =
-      static_cast<AppListFolderItem*>(AddItemToRootListAndNotify(
-          std::move(new_folder_ptr), ReparentItemReason::kAdd));
-
-  // Add the items to the new folder.
-  delegate_->RequestMoveItemToFolder(
-      target_item_id, new_folder_id,
-      RequestMoveToFolderReason::kMergeFirstItem);
-  delegate_->RequestMoveItemToFolder(
-      source_item_id, new_folder_id,
-      RequestMoveToFolderReason::kMergeSecondItem);
-
-  return new_folder->id();
+  return delegate_->RequestFolderCreation(target_item_id, source_item_id);
 }
 
 void AppListModel::MoveItemToFolder(AppListItem* item,

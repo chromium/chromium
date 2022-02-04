@@ -86,12 +86,9 @@ void AppListTestModel::RequestPositionUpdate(
   SetItemMetadata(id, std::move(metadata));
 }
 
-void AppListTestModel::RequestMoveItemToFolder(
-    std::string id,
-    const std::string& folder_id,
-    RequestMoveToFolderReason reason) {
+void AppListTestModel::RequestMoveItemToFolder(std::string id,
+                                               const std::string& folder_id) {
   // Copy the logic of `ChromeAppListModelUpdater::HandleMoveItemToFolder()`.
-
   AppListFolderItem* dest_folder = FindOrCreateFolderItem(folder_id);
   const syncer::StringOrdinal target_position =
       dest_folder->item_list()->CreatePositionBefore(syncer::StringOrdinal());
@@ -109,6 +106,39 @@ void AppListTestModel::RequestMoveItemToRoot(
   auto metadata = FindItem(id)->CloneMetadata();
   metadata->folder_id = "";
   metadata->position = target_position;
+  SetItemMetadata(id, std::move(metadata));
+}
+
+std::string AppListTestModel::RequestFolderCreation(
+    std::string merge_target_id,
+    std::string item_to_merge_id) {
+  auto target_item_metadata = FindItem(merge_target_id)->CloneMetadata();
+  const syncer::StringOrdinal target_item_position =
+      target_item_metadata->position;
+
+  const std::string folder_id = AppListFolderItem::GenerateId();
+  auto folder = std::make_unique<AppListFolderItem>(
+      folder_id, /*app_list_model_delegate=*/this);
+  auto folder_metadata = folder->CloneMetadata();
+  folder_metadata->position = target_item_position;
+  folder->SetMetadata(std::move(folder_metadata));
+  AddItem(folder.release());
+
+  target_item_metadata->folder_id = folder_id;
+  SetItemMetadata(merge_target_id, std::move(target_item_metadata));
+
+  auto item_to_merge_metadata = FindItem(item_to_merge_id)->CloneMetadata();
+  item_to_merge_metadata->position = target_item_position.CreateAfter();
+  item_to_merge_metadata->folder_id = folder_id;
+  SetItemMetadata(item_to_merge_id, std::move(item_to_merge_metadata));
+
+  return folder_id;
+}
+
+void AppListTestModel::RequestFolderRename(std::string id,
+                                           const std::string& new_name) {
+  auto metadata = FindItem(id)->CloneMetadata();
+  metadata->name = new_name;
   SetItemMetadata(id, std::move(metadata));
 }
 

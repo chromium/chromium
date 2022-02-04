@@ -240,6 +240,10 @@ class AppListSyncableService : public syncer::SyncableService,
   // reorder::AppListReorderDelegate:
   void SetAppListPreferredOrder(ash::AppListSortOrder order) override;
   syncer::StringOrdinal CalculateGlobalFrontPosition() const override;
+  bool CalculateNewItemPosition(
+      const ChromeAppListItem& new_item,
+      const std::vector<const ChromeAppListItem*>& local_items,
+      syncer::StringOrdinal* target_position) const override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
 
  private:
