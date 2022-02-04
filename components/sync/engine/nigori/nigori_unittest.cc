@@ -298,7 +298,7 @@ TEST(SyncNigoriTest, CreateByDerivationShouldReportPbkdf2DurationInHistogram) {
   histogram_tester.ExpectUniqueSample(
       "Sync.Crypto.NigoriKeyDerivationDuration.Pbkdf2",
       /*sample=*/FakeTickClock::kTicksAdvanceAfterEachCall.InMilliseconds(),
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncNigoriTest, CreateByDerivationShouldReportScryptDurationInHistogram) {
@@ -314,7 +314,7 @@ TEST(SyncNigoriTest, CreateByDerivationShouldReportScryptDurationInHistogram) {
   histogram_tester.ExpectUniqueSample(
       "Sync.Crypto.NigoriKeyDerivationDuration.Scrypt8192",
       /*sample=*/FakeTickClock::kTicksAdvanceAfterEachCall.InMilliseconds(),
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncNigoriTest, GenerateScryptSaltShouldReturnSaltOfCorrectSize) {
