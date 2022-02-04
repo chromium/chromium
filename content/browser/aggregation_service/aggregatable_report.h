@@ -59,6 +59,10 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
 struct CONTENT_EXPORT AggregatableReportSharedInfo {
   AggregatableReportSharedInfo(base::Time scheduled_report_time,
                                std::string privacy_budget_key);
+
+  // Serializes to a JSON dictionary, represented as a string.
+  std::string SerializeAsJson() const;
+
   base::Time scheduled_report_time;
   std::string privacy_budget_key;
 };
@@ -134,15 +138,15 @@ class CONTENT_EXPORT AggregatableReport {
   // log_2 of the value output space
   static constexpr size_t kValueDomainBitLength = 64;
 
-  // Used as the authenticated information (i.e. context info). This value must
-  // not be reused for new protocols or versions of this protocol unless the
-  // ciphertexts are intended to be compatible. This ensures that, even if
-  // public keys are reused, the same ciphertext cannot be (i.e. no cross-
-  // protocol attacks).
-  static constexpr char kDomainSeparationValue[] = "aggregation_service";
+  // Used as a prefix for the authenticated information (i.e. context info).
+  // This value must not be reused for new protocols or versions of this
+  // protocol unless the ciphertexts are intended to be compatible. This ensures
+  // that, even if public keys are reused, the same ciphertext cannot be (i.e.
+  // no cross-protocol attacks).
+  static constexpr char kDomainSeparationPrefix[] = "aggregation_service";
 
   AggregatableReport(std::vector<AggregationServicePayload> payloads,
-                     AggregatableReportSharedInfo shared_info);
+                     std::string shared_info);
   AggregatableReport(const AggregatableReport& other);
   AggregatableReport& operator=(const AggregatableReport& other);
   AggregatableReport(AggregatableReport&& other);
@@ -152,15 +156,14 @@ class CONTENT_EXPORT AggregatableReport {
   const std::vector<AggregationServicePayload>& payloads() const {
     return payloads_;
   }
-  const AggregatableReportSharedInfo& shared_info() const {
-    return shared_info_;
-  }
+  const std::string& shared_info() const { return shared_info_; }
 
+  // TODO(crbug.com/1251648): Update timestamp to use seconds.
   // Returns the JSON representation of this report of the form
   // {
-  //   "scheduled_report_time": "<timestamp in msec>",
-  //   "privacy_budget_key": "<field for server to do privacy budgeting>",
-  //   "version": "<api version>",
+  //   "shared_info": "{\"scheduled_report_time\":\"[timestamp in
+  //   msec]\",\"privacy_budget_key\":\"[string]\",\"version\":\"[api
+  //   version]\"}",
   //   "aggregation_service_payloads": [
   //     {
   //       "origin": "https://helper1.example",
@@ -192,7 +195,7 @@ class CONTENT_EXPORT AggregatableReport {
   // the original AggregatableReportRequest.
   std::vector<AggregationServicePayload> payloads_;
 
-  AggregatableReportSharedInfo shared_info_;
+  std::string shared_info_;
 };
 
 // Represents a request for an AggregatableReport. Contains all the data

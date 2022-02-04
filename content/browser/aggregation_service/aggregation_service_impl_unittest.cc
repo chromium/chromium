@@ -175,11 +175,7 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Succeed) {
                         /*payload=*/kEFGH5678AsBytes,
                         /*key_id=*/"key_2");
 
-  AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk");
-
-  AggregatableReport report(std::move(payloads), std::move(shared_info));
+  AggregatableReport report(std::move(payloads), "example_shared_info");
   assembler()->TriggerResponse(
       /*report_id=*/0, std::move(report),
       AggregatableReportAssembler::AssemblyStatus::kOk);
@@ -215,11 +211,7 @@ TEST_F(AggregationServiceImplTest, SendReport) {
                         /*payload=*/kEFGH5678AsBytes,
                         /*key_id=*/"key_2");
 
-  AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk");
-
-  AggregatableReport report(std::move(payloads), std::move(shared_info));
+  AggregatableReport report(std::move(payloads), "example_shared_info");
 
   SendReport(GURL("https://example.com/reports"), report);
 

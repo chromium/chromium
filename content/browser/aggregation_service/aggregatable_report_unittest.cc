@@ -26,15 +26,20 @@
 
 namespace content {
 
-std::vector<uint8_t> DecryptPayloadWithHpke(const std::vector<uint8_t>& payload,
-                                            const EVP_HPKE_KEY& key) {
+std::vector<uint8_t> DecryptPayloadWithHpke(
+    const std::vector<uint8_t>& payload,
+    const EVP_HPKE_KEY& key,
+    const std::string& expected_serialized_shared_info) {
   base::span<const uint8_t> enc =
       base::make_span(payload).subspan(0, X25519_PUBLIC_VALUE_LEN);
 
   std::vector<uint8_t> authenticated_info(
-      AggregatableReport::kDomainSeparationValue,
-      AggregatableReport::kDomainSeparationValue +
-          sizeof(AggregatableReport::kDomainSeparationValue));
+      AggregatableReport::kDomainSeparationPrefix,
+      AggregatableReport::kDomainSeparationPrefix +
+          sizeof(AggregatableReport::kDomainSeparationPrefix));
+  authenticated_info.insert(authenticated_info.end(),
+                            expected_serialized_shared_info.begin(),
+                            expected_serialized_shared_info.end());
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(
@@ -94,8 +99,9 @@ void VerifyReport(
     const std::vector<aggregation_service::TestHpkeKey>& encryption_keys) {
   ASSERT_TRUE(report.has_value());
 
-  EXPECT_TRUE(aggregation_service::SharedInfoEqual(report->shared_info(),
-                                                   expected_shared_info));
+  std::string expected_serialized_shared_info =
+      expected_shared_info.SerializeAsJson();
+  EXPECT_EQ(report->shared_info(), expected_serialized_shared_info);
 
   const std::vector<AggregatableReport::AggregationServicePayload>& payloads =
       report->payloads();
@@ -110,7 +116,8 @@ void VerifyReport(
     EXPECT_EQ(payloads[i].key_id, encryption_keys[i].public_key.id);
 
     std::vector<uint8_t> decrypted_payload = DecryptPayloadWithHpke(
-        payloads[i].payload, encryption_keys[i].full_hpke_key);
+        payloads[i].payload, encryption_keys[i].full_hpke_key,
+        expected_serialized_shared_info);
     ASSERT_FALSE(decrypted_payload.empty());
 
     absl::optional<cbor::Value> deserialized_payload =
@@ -119,27 +126,13 @@ void VerifyReport(
     ASSERT_TRUE(deserialized_payload->is_map());
     const cbor::Value::MapValue& payload_map = deserialized_payload->GetMap();
 
-    EXPECT_EQ(payload_map.size(), 6UL);
-
-    ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "version",
-                                          cbor::Value::Type::STRING));
-    EXPECT_EQ(payload_map.at(cbor::Value("version")).GetString(), "");
+    EXPECT_EQ(payload_map.size(), 3UL);
 
     ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "reporting_origin",
                                           cbor::Value::Type::STRING));
     EXPECT_EQ(url::Origin::Create(GURL(
                   payload_map.at(cbor::Value("reporting_origin")).GetString())),
               expected_payload_contents.reporting_origin);
-
-    ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "privacy_budget_key",
-                                          cbor::Value::Type::STRING));
-    EXPECT_EQ(payload_map.at(cbor::Value("privacy_budget_key")).GetString(),
-              expected_shared_info.privacy_budget_key);
-
-    ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "scheduled_report_time",
-                                          cbor::Value::Type::UNSIGNED));
-    EXPECT_EQ(payload_map.at(cbor::Value("scheduled_report_time")).GetInteger(),
-              expected_shared_info.scheduled_report_time.ToJavaTime());
 
     ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "operation",
                                           cbor::Value::Type::STRING));
@@ -479,11 +472,7 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
                         /*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1");
 
-  AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk");
-
-  AggregatableReport report(std::move(payloads), std::move(shared_info));
+  AggregatableReport report(std::move(payloads), "example_shared_info");
   base::Value::DictStorage report_json_value = report.GetAsJson();
 
   std::string report_json_string;
@@ -494,8 +483,7 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","origin":"https://a.example","payload":"ABCD1234"})"
       R"(],)"
-      R"("privacy_budget_key":"example_pbk",)"
-      R"("scheduled_report_time":"1234567890123","version":"")"
+      R"("shared_info":"example_shared_info")"
       R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
@@ -509,11 +497,7 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
                         /*payload=*/kEFGH5678AsBytes,
                         /*key_id=*/"key_2");
 
-  AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk");
-
-  AggregatableReport report(std::move(payloads), std::move(shared_info));
+  AggregatableReport report(std::move(payloads), "example_shared_info");
   base::Value::DictStorage report_json_value = report.GetAsJson();
 
   std::string report_json_string;
@@ -525,10 +509,23 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
       R"({"key_id":"key_1","origin":"https://a.example","payload":"ABCD1234"},)"
       R"({"key_id":"key_2","origin":"https://b.example","payload":"EFGH5678"})"
       R"(],)"
-      R"("privacy_budget_key":"example_pbk",)"
-      R"("scheduled_report_time":"1234567890123","version":"")"
+      R"("shared_info":"example_shared_info")"
       R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
+}
+
+TEST(AggregatableReportTest, SharedInfoSerializeAsJson_ReturnsExpectedString) {
+  AggregatableReportSharedInfo shared_info(
+      base::Time::FromJavaTime(1234567890123),
+      /*privacy_budget_key=*/"example_pbk");
+
+  const char kExpectedString[] = R"({)"
+                                 R"("privacy_budget_key":"example_pbk",)"
+                                 R"("scheduled_report_time":"1234567890123",)"
+                                 R"("version":"")"
+                                 R"(})";
+
+  EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
 }
 
 }  // namespace content

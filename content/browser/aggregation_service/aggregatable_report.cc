@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -38,14 +39,6 @@ using DistributedPointFunction =
     distributed_point_functions::DistributedPointFunction;
 using DpfKey = distributed_point_functions::DpfKey;
 using DpfParameters = distributed_point_functions::DpfParameters;
-
-// Shared info:
-constexpr char kPrivacyBudgetKeyKey[] = "privacy_budget_key";
-constexpr char kScheduledReportTimeKey[] = "scheduled_report_time";
-constexpr char kVersionKey[] = "version";
-
-// TODO(alexmt): Replace with a real version once a version string is decided.
-constexpr char kVersionValue[] = "";
 
 // Payload contents:
 constexpr char kHistogramValue[] = "histogram";
@@ -103,31 +96,11 @@ std::vector<DpfKey> GenerateDpfKeys(
   return dpf_keys;
 }
 
-// Helper that encodes the shared information to a CBOR map. Non-shared
-// information should then be added as appropriate.
-cbor::Value::MapValue EncodeSharedInfoToCbor(
-    const AggregatableReportSharedInfo& shared_info) {
-  cbor::Value::MapValue value;
-
-  value.emplace(kPrivacyBudgetKeyKey, shared_info.privacy_budget_key);
-
-  // Encoded as the number of milliseconds since the Unix epoch, ignoring leap
-  // seconds.
-  DCHECK(!shared_info.scheduled_report_time.is_null());
-  DCHECK(!shared_info.scheduled_report_time.is_inf());
-  value.emplace(kScheduledReportTimeKey,
-                shared_info.scheduled_report_time.ToJavaTime());
-  value.emplace(kVersionKey, kVersionValue);
-
-  return value;
-}
-
 // Returns a vector with a serialized CBOR map for each processing origin. See
 // the AggregatableReport documentation for more detail on the expected format.
 // Returns an empty vector in case of error.
 std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
-    const AggregationServicePayloadContents& payload_contents,
-    const AggregatableReportSharedInfo& shared_info) {
+    const AggregationServicePayloadContents& payload_contents) {
   std::vector<DpfKey> dpf_keys = GenerateDpfKeys(payload_contents);
   if (dpf_keys.empty()) {
     return {};
@@ -141,9 +114,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
         dpf_key.SerializeToArray(serialized_key.data(), serialized_key.size());
     DCHECK(succeeded);
 
-    // Start with putting all shared info in the unencrypted payload.
-    cbor::Value::MapValue value = EncodeSharedInfoToCbor(shared_info);
-
+    cbor::Value::MapValue value;
     value.emplace(kReportingOriginKey,
                   payload_contents.reporting_origin.Serialize());
     value.emplace(kOperationKey, kHistogramValue);
@@ -167,16 +138,14 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
 // Returns an empty vector in case of error.
 std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayloads(
     const AggregationServicePayloadContents& payload_contents,
-    const AggregatableReportSharedInfo& shared_info,
     size_t num_processing_origins) {
   std::vector<std::vector<uint8_t>> unencrypted_payloads;
+
   // If multiple processing origins are specified, one is randomly picked to
   // encode the actual data.
   size_t index_to_populate = base::RandGenerator(num_processing_origins);
   for (size_t i = 0; i < num_processing_origins; ++i) {
-    // Start with putting all shared info in the unencrypted payload.
-    cbor::Value::MapValue value = EncodeSharedInfoToCbor(shared_info);
-
+    cbor::Value::MapValue value;
     value.emplace(kReportingOriginKey,
                   payload_contents.reporting_origin.Serialize());
     value.emplace(kOperationKey, kHistogramValue);
@@ -274,6 +243,30 @@ AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     : scheduled_report_time(std::move(scheduled_report_time)),
       privacy_budget_key(std::move(privacy_budget_key)) {}
 
+std::string AggregatableReportSharedInfo::SerializeAsJson() const {
+  base::Value value(base::Value::Type::DICTIONARY);
+
+  value.SetStringKey("privacy_budget_key", privacy_budget_key);
+
+  // TODO(crbug.com/1251648): Update timestamp to use seconds.
+  // Encoded as the number of milliseconds since the Unix epoch, ignoring leap
+  // seconds.
+  DCHECK(!scheduled_report_time.is_null());
+  DCHECK(!scheduled_report_time.is_inf());
+  value.SetStringKey("scheduled_report_time",
+                     base::NumberToString(scheduled_report_time.ToJavaTime()));
+
+  // TODO(alexmt): Replace with a real version once a version string is decided.
+  value.SetStringKey("version", "");
+
+  std::string serialized_value;
+  JSONStringValueSerializer serializer(&serialized_value);
+  bool succeeded = serializer.Serialize(value);
+  DCHECK(succeeded);
+
+  return serialized_value;
+}
+
 // static
 absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     std::vector<url::Origin> processing_origins,
@@ -341,7 +334,7 @@ AggregatableReport::AggregationServicePayload::~AggregationServicePayload() =
 
 AggregatableReport::AggregatableReport(
     std::vector<AggregationServicePayload> payloads,
-    AggregatableReportSharedInfo shared_info)
+    std::string shared_info)
     : payloads_(std::move(payloads)), shared_info_(std::move(shared_info)) {}
 
 AggregatableReport::AggregatableReport(const AggregatableReport& other) =
@@ -359,7 +352,7 @@ AggregatableReport::~AggregatableReport() = default;
 
 constexpr size_t AggregatableReport::kBucketDomainBitLength;
 constexpr size_t AggregatableReport::kValueDomainBitLength;
-constexpr char AggregatableReport::kDomainSeparationValue[];
+constexpr char AggregatableReport::kDomainSeparationPrefix[];
 
 // static
 bool AggregatableReport::Provider::g_disable_encryption_for_testing_tool_ =
@@ -389,13 +382,12 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   switch (report_request.payload_contents().processing_type) {
     case AggregationServicePayloadContents::ProcessingType::kTwoParty: {
       unencrypted_payloads = ConstructUnencryptedTwoPartyPayloads(
-          report_request.payload_contents(), report_request.shared_info());
+          report_request.payload_contents());
       break;
     }
     case AggregationServicePayloadContents::ProcessingType::kSingleServer: {
       unencrypted_payloads = ConstructUnencryptedSingleServerPayloads(
-          report_request.payload_contents(), report_request.shared_info(),
-          num_processing_origins);
+          report_request.payload_contents(), num_processing_origins);
       break;
     }
   }
@@ -404,11 +396,15 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     return absl::nullopt;
   }
 
-  // TODO(crbug.com/1251648): Resolve whether to use AEAD to ensure shared info
-  // is identical for reporting and aggregation origins.
   std::vector<uint8_t> authenticated_info(
-      kDomainSeparationValue,
-      kDomainSeparationValue + sizeof(kDomainSeparationValue));
+      kDomainSeparationPrefix,
+      kDomainSeparationPrefix + sizeof(kDomainSeparationPrefix));
+
+  std::string encoded_shared_info =
+      report_request.shared_info_.SerializeAsJson();
+  authenticated_info.insert(authenticated_info.end(),
+                            encoded_shared_info.begin(),
+                            encoded_shared_info.end());
 
   // To avoid unnecessary copies, we move the processing origins and shared info
   // from the `report_request`'s private members. Note that the request object
@@ -433,22 +429,13 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   }
 
   return AggregatableReport(std::move(encrypted_payloads),
-                            std::move(report_request.shared_info_));
+                            std::move(encoded_shared_info));
 }
 
 base::Value::DictStorage AggregatableReport::GetAsJson() const {
   base::Value::DictStorage value;
 
-  value.emplace(kPrivacyBudgetKeyKey, shared_info_.privacy_budget_key);
-
-  // Encoded as a string representing the number of milliseconds since the Unix
-  // epoch, ignoring leap seconds.
-  DCHECK(!shared_info_.scheduled_report_time.is_null());
-  DCHECK(!shared_info_.scheduled_report_time.is_inf());
-  value.emplace(
-      kScheduledReportTimeKey,
-      base::NumberToString(shared_info_.scheduled_report_time.ToJavaTime()));
-  value.emplace(kVersionKey, kVersionValue);
+  value.emplace("shared_info", shared_info_);
 
   base::Value payloads_list_value(base::Value::Type::LIST);
   for (const AggregationServicePayload& payload : payloads_) {

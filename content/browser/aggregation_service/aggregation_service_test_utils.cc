@@ -86,7 +86,13 @@ testing::AssertionResult AggregatableReportsEqual(
     }
   }
 
-  return SharedInfoEqual(expected.shared_info(), actual.shared_info());
+  if (expected.shared_info() != actual.shared_info()) {
+    return testing::AssertionFailure()
+           << "Expected shared info " << expected.shared_info()
+           << ", actual: " << actual.shared_info();
+  }
+
+  return testing::AssertionSuccess();
 }
 
 testing::AssertionResult ReportRequestsEqual(
