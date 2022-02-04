@@ -100,7 +100,8 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
      * Register a BroadcastReceiver in the given context.
      */
     public void registerReceiver(Context context) {
-        context.registerReceiver(getBroadcastReceiver(), getIntentFilter());
+        ContextUtils.registerExportedBroadcastReceiver(
+                context, getBroadcastReceiver(), getIntentFilter(), null);
     }
 
     /**
