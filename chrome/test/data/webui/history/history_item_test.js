@@ -81,6 +81,10 @@ suite('<history-item> integration test', function() {
     return testService.whenCalled('queryHistory');
   });
 
+  function getHistoryData() {
+    return element.$['infinite-list'].items;
+  }
+
   test('basic separator insertion', function() {
     element.addNewResults(TEST_HISTORY_RESULTS);
     return flushTasks().then(function() {
@@ -118,7 +122,7 @@ suite('<history-item> integration test', function() {
       const items = element.shadowRoot.querySelectorAll('history-item');
 
       element.removeItemsByIndex_([3]);
-      assertEquals(5, element.historyData_.length);
+      assertEquals(5, getHistoryData().length);
 
       // Checks that a new time gap separator has been inserted.
       assertTrue(items[2].hasTimeGap);
@@ -145,8 +149,8 @@ suite('<history-item> integration test', function() {
           items[1].$$('#bookmark-star').click();
 
           // Check that all items matching this url are unstarred.
-          assertEquals(element.historyData_[1].starred, false);
-          assertEquals(element.historyData_[5].starred, false);
+          assertEquals(getHistoryData()[1].starred, false);
+          assertEquals(getHistoryData()[5].starred, false);
         });
   });
 });

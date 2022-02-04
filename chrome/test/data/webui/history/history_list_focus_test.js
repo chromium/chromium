@@ -4,6 +4,7 @@
 
 import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -43,10 +44,14 @@ suite('<history-list>', function() {
         ])
         .then(flushTasks)
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.$['infinite-list'].fire('iron-resize');
           return waitAfterNextRender(element);
         });
   });
+
+  function getHistoryData() {
+    return element.$['infinite-list'].items;
+  }
 
   test('list focus and keyboard nav', async () => {
     let focused;
@@ -64,42 +69,42 @@ suite('<history-list>', function() {
     pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
     flush();
     focused = items[2].$.link;
-    assertEquals(focused, element.lastFocused_);
+    assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2].row_.isActive());
     assertFalse(items[3].row_.isActive());
 
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     flush();
     focused = items[3].$.link;
-    assertEquals(focused, element.lastFocused_);
+    assertEquals(focused, getDeepActiveElement());
     assertFalse(items[2].row_.isActive());
     assertTrue(items[3].row_.isActive());
 
     pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
     flush();
     focused = items[3].$['menu-button'];
-    assertEquals(focused, element.lastFocused_);
+    assertEquals(focused, getDeepActiveElement());
     assertFalse(items[2].row_.isActive());
     assertTrue(items[3].row_.isActive());
 
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     flush();
     focused = items[2].$['menu-button'];
-    assertEquals(focused, element.lastFocused_);
+    assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2].row_.isActive());
     assertFalse(items[3].row_.isActive());
 
     pressAndReleaseKeyOn(focused, 37, [], 'ArrowLeft');
     flush();
-    focused = items[2].$$('#bookmark-star');
-    assertEquals(focused, element.lastFocused_);
+    focused = items[2].shadowRoot.querySelector('#bookmark-star');
+    assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2].row_.isActive());
     assertFalse(items[3].row_.isActive());
 
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     flush();
     focused = items[3].$.link;
-    assertEquals(focused, element.lastFocused_);
+    assertEquals(focused, getDeepActiveElement());
     assertFalse(items[2].row_.isActive());
     assertTrue(items[3].row_.isActive());
   });
@@ -117,14 +122,13 @@ suite('<history-list>', function() {
     assertTrue(keydownEvent.defaultPrevented);
 
     assertDeepEquals(
-        [true, true, true, true], element.historyData_.map(i => i.selected));
+        [true, true, true, true], getHistoryData().map(i => i.selected));
 
     // If everything is already selected, the same shortcut will trigger
     // cancelling selection.
     pressAndReleaseKeyOn(document.body, 65, modifier, 'a');
     assertDeepEquals(
-        [false, false, false, false],
-        element.historyData_.map(i => i.selected));
+        [false, false, false, false], getHistoryData().map(i => i.selected));
 
     // If the search field is focused, the keyboard event should be handled by
     // the browser (which triggers selection of the text within the search
@@ -135,8 +139,7 @@ suite('<history-list>', function() {
     keydownEvent = await promise;
     assertFalse(keydownEvent.defaultPrevented);
     assertDeepEquals(
-        [false, false, false, false],
-        element.historyData_.map(i => i.selected));
+        [false, false, false, false], getHistoryData().map(i => i.selected));
   });
 
   test('deleting last item will focus on new last item', async () => {
@@ -144,15 +147,15 @@ suite('<history-list>', function() {
     await flushTasks();
     flush();
     const items = polymerSelectAll(element, 'history-item');
-    assertEquals(4, element.historyData_.length);
+    assertEquals(4, getHistoryData().length);
     assertEquals(4, items.length);
     items[3].$['menu-button'].click();
     await flushTasks();
-    element.$$('#menuRemoveButton').click();
-    assertNotEquals(items[2].$['menu-button'], element.lastFocused_);
+    element.shadowRoot.querySelector('#menuRemoveButton').click();
+    assertNotEquals(items[2].$['menu-button'], getDeepActiveElement());
     await testService.whenCalled('removeVisits');
     await flushTasks();
-    assertEquals(3, element.historyData_.length);
-    assertEquals(items[2].$['menu-button'], element.lastFocused_);
+    assertEquals(3, getHistoryData().length);
+    assertEquals(items[2].$['menu-button'], getDeepActiveElement());
   });
 });
