@@ -19,6 +19,12 @@ const g_wasmPromise = new Promise(function(resolve, reject) {
 /** @type {string} */
 const _PATH_SEP = '/';
 
+/**
+ * Limit SuperSize JSON size to 64 MiB; anything longer would be an anomaly.
+ * @constant {number}
+ */
+const JSON_MAX_BYTES_TO_READ = 2 ** 26;
+
 /** @type {Object<string, _FLAGS>} */
 const _NAMES_TO_FLAGS = Object.freeze({
   hot: _FLAGS.HOT,
@@ -222,6 +228,7 @@ async function loadTreeWorkhorse(input, accessToken, optionsStr) {
   let isMultiContainer = null;
   let beforeBlobUrl = null;
   let loadBlobUrl = null;
+  let metadata = null;
   try {
     // It takes a few seconds to process large .size files, so download the main
     // file first, and then overlap its processing with the subsequent download.
@@ -249,12 +256,23 @@ async function loadTreeWorkhorse(input, accessToken, optionsStr) {
             [beforeSizeBuffer.buffer], {type: 'application/octet-stream'}));
       }
     }
+    metadata = wasmLoadMetadata();
   } catch (e) {
     sendProgressMessage(1);
     throw e;
   }
 
-  return {isMultiContainer, beforeBlobUrl, loadBlobUrl}
+  return {isMultiContainer, beforeBlobUrl, loadBlobUrl, metadata};
+}
+
+/**
+ * @return {MetadataType}
+ */
+function wasmLoadMetadata() {
+  const cwrapGetMetaData = Module.cwrap('GetMetadata', 'number', ['']);
+  const stringPtr = cwrapGetMetaData();
+  return /** @type {MetadataType} */ (
+      JSON.parse(Module.UTF8ToString(stringPtr, JSON_MAX_BYTES_TO_READ)));
 }
 
 /**
@@ -291,9 +309,8 @@ async function wasmBuildTree(optionsStr) {
 async function wasmOpen(name) {
   const cwrapOpen = Module.cwrap('Open', 'number', ['string']);
   const stringPtr = cwrapOpen(name);
-  // Something has gone wrong if we get back a string longer than 67MB.
   return /** @type {TreeNode} */ (
-      JSON.parse(Module.UTF8ToString(stringPtr, 2 ** 26)));
+      JSON.parse(Module.UTF8ToString(stringPtr, JSON_MAX_BYTES_TO_READ)));
 }
 
 /**

@@ -69,7 +69,7 @@ if (is_wasm) {
     ]
     ldflags = [
       "-s",
-      "EXPORTED_FUNCTIONS=['_LoadSizeFile','_LoadBeforeSizeFile','_BuildTree','_Open','_QueryProperty','_malloc','_free']",
+      "EXPORTED_FUNCTIONS=['_GetMetadata','_LoadSizeFile','_LoadBeforeSizeFile','_BuildTree','_Open','_QueryProperty','_malloc','_free']",
       "-s",
       "EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString']",
     ]

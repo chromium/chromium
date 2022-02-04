@@ -70,16 +70,27 @@
  */
 
 /**
+ * Nested key-value pairs that stores metadata of .size or .sizediff files.
+ * @typedef {Object} MetadataType
+ * @property {Object|undefined} before_size_file - Metadata of the "before"
+ *     file, grouped by containers.
+ * @property {Object} size_file - Metadata of the "main" / "after" file,
+ *     grouped by containers.
+ */
+
+/**
  * @typedef {Object} LoadTreeResults
- * @property {boolean} isMultiContainer - Whether diff mod is engaged.
+ * @property {boolean} isMultiContainer - Whether multiple containers exist.
  * @property {string} beforeBlobUrl - The BLOB url of the "before" file.
  * @property {string} loadBlobUrl - The BLOB url of the "main" / "after" file.
+ * @property {?MetadataType} metadata
  */
+
 
 /**
  * @typedef {Object} BuildTreeResults
  * @property {Object} root
- * @property {boolean} diffMode - Whether diff mod is engaged.
+ * @property {boolean} diffMode - Whether diff mode is engaged.
  * @property {?LoadTreeResults} loadResults
  */
 

@@ -426,6 +426,12 @@ const newTreeElement = (() => {
   const _dataUrlInput = /** @type {HTMLInputElement} */ (
       form.elements.namedItem('load_url'));
 
+  /** @type {HTMLInputElement} */
+  const _metadataView = document.querySelector('#metadata-view');
+
+  /** @type {HTMLInputElement} */
+  const _metadataContent = document.querySelector('#metadata-content');
+
   /** @type {ProgressBar} */
   const _progress = new ProgressBar('progress');
 
@@ -442,7 +448,8 @@ const newTreeElement = (() => {
    */
   function processLoadTreeResponse(message) {
     const {diffMode} = message;
-    const {beforeBlobUrl, loadBlobUrl, isMultiContainer} = message.loadResults;
+    const {beforeBlobUrl, loadBlobUrl, isMultiContainer, metadata} =
+        message.loadResults;
     console.log(
         '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
         'font-weight:bold;color:red;', '')
@@ -463,6 +470,8 @@ const newTreeElement = (() => {
     } else {
       processBuildTreeResponse(message);
     }
+    setMetadataContent(metadata);
+    _metadataView.classList.toggle('active', true);
   }
 
   /**
@@ -528,6 +537,63 @@ const newTreeElement = (() => {
     errorModal.style.display = show ? '' : 'none';
   }
 
+  /**
+   * Modifies metadata in-place so they render better.
+   * @param {Object} metadata
+   */
+  function formatMetadataInPlace(metadata) {
+    if (metadata?.hasOwnProperty('elf_mtime')) {
+      const date = new Date(metadata['elf_mtime'] * 1000);
+      metadata['elf_mtime'] = date.toString();
+    }
+  }
+
+  /**
+   * Renders the metadata for provided size file.
+   * @param {MetadataType} sizeMetadata
+   * @returns {string}
+   */
+  function renderMetadata(sizeMetadata) {
+    const processContainer = (container) => {
+      if (container?.hasOwnProperty('metadata')) {
+        formatMetadataInPlace(container['metadata']);
+      }
+      // Strip section_sizes because it is already shown in tree.
+      if (container?.hasOwnProperty('section_sizes')) {
+        delete container['section_sizes'];
+      }
+    };
+    if (sizeMetadata?.hasOwnProperty('containers')) {
+      for (const container of sizeMetadata['containers']) {
+        processContainer(container);
+      }
+    } else {
+      // Covers the case if the metadata is in old schema.
+      processContainer(sizeMetadata);
+    }
+    return JSON.stringify(sizeMetadata, null, 2);
+  }
+
+  /**
+   * Sets the metadata from message to the HTML element.
+   * @param {MetadataType} metadata
+   */
+  function setMetadataContent(metadata) {
+    let metadataStr = '';
+    if (metadata) {
+      const sizeMetadata = metadata['size_file'];
+      const sizeMetadataStr = renderMetadata(sizeMetadata);
+      if (metadata.hasOwnProperty('before_size_file')) {
+        const beforeMetadata = metadata['before_size_file'];
+        const beforeMetadataStr = renderMetadata(beforeMetadata);
+        metadataStr =
+            'Metadata for Before Size File:\n' + beforeMetadataStr + '\n\n\n';
+      }
+      metadataStr += 'Metadata for Load Size File:\n' + sizeMetadataStr;
+    }
+    _metadataContent.textContent = metadataStr;
+  }
+
   async function performInitialLoad() {
     let accessToken = null;
     _progress.setValue(0.1);
@@ -576,6 +642,11 @@ const newTreeElement = (() => {
   form.addEventListener('submit', event => {
     event.preventDefault();
     rebuildTree();
+  });
+
+  // Toggles the metadata HTML element on click.
+  _metadataView.addEventListener('click', () => {
+    _metadataContent.classList.toggle('active');
   });
 
   if (new URLSearchParams(location.search).has('load_url')) {

@@ -211,6 +211,17 @@ const char* Open(const char* path) {
   return result.c_str();
 }
 
+// Returns a string representing the metadata that can be parsed to a JS object.
+const char* GetMetadata() {
+  static std::string result;
+  result = "\"size_file\" : " + JsonSerialize(info->fields);
+  if (before_info != nullptr) {
+    result += ", \"before_size_file\" : " + JsonSerialize(before_info->fields);
+  }
+  result = "{" + result + "}";
+  return result.c_str();
+}
+
 // Returns global properties.
 const char* QueryProperty(const char* key) {
   if (!strcmp(key, "isMultiContainer")) {
