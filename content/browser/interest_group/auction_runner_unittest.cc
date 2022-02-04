@@ -448,7 +448,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   }
 
   void ConnectDevToolsAgent(
-      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override {
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
+      override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockBidderWorklet";
   }
@@ -605,7 +606,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   }
 
   void ConnectDevToolsAgent(
-      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override {
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
+      override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockSellerWorklet";
   }
@@ -1563,13 +1565,14 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
     task_environment_.RunUntilIdle();
 
     bool found = false;
-    mojo::Remote<blink::mojom::DevToolsAgent> agent;
+    mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
 
     for (DebuggableAuctionWorklet* debuggable :
          DebuggableAuctionWorkletTracker::GetInstance()->GetAll()) {
       if (debuggable->url() == debug_url) {
         found = true;
-        debuggable->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+        debuggable->ConnectDevToolsAgent(
+            agent.BindNewEndpointAndPassReceiver());
       }
     }
     ASSERT_TRUE(found);
@@ -1630,12 +1633,13 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
     if (debug_url == kBidder2Url) {
       task_environment_.RunUntilIdle();
       found = false;
-      mojo::Remote<blink::mojom::DevToolsAgent> agent;
+      mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
       for (DebuggableAuctionWorklet* debuggable :
            DebuggableAuctionWorkletTracker::GetInstance()->GetAll()) {
         if (debuggable->url() == debug_url) {
           found = true;
-          debuggable->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+          debuggable->ConnectDevToolsAgent(
+              agent.BindNewEndpointAndPassReceiver());
         }
       }
       ASSERT_TRUE(found);

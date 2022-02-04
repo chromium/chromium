@@ -22,7 +22,7 @@ std::string DebuggableAuctionWorklet::Title() const {
 }
 
 void DebuggableAuctionWorklet::ConnectDevToolsAgent(
-    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent) {
   if (auction_worklet::mojom::BidderWorklet** bidder_worklet =
           absl::get_if<auction_worklet::mojom::BidderWorklet*>(&worklet_)) {
     (*bidder_worklet)->ConnectDevToolsAgent(std::move(agent));

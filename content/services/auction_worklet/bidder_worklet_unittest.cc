@@ -942,20 +942,6 @@ TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
       {"https://url.test/:5 Uncaught ReferenceError: Date is not defined."});
 }
 
-TEST_F(BidderWorkletTest, GenerateBidLogAndError) {
-  const char kScript[] = R"(
-    function generateBid() {
-      console.log("Logging");
-      return "hello";
-    }
-  )";
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      kScript, mojom::BidderWorkletBidPtr() /* expected_bid */,
-      {"https://url.test/ [Log]: Logging",
-       "https://url.test/ generateBid() return value not an object."});
-}
-
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
   const std::string kGenerateBidBody =
       R"({ad: interestGroup.name, bid:1, render:"https://response.test/"})";
@@ -2531,9 +2517,9 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
       CreateWorklet(GURL(kUrl2), true /* pause_for_debugger_on_start */);
   GenerateBid(worklet2.get());
 
-  mojo::Remote<blink::mojom::DevToolsAgent> agent1, agent2;
-  worklet1->ConnectDevToolsAgent(agent1.BindNewPipeAndPassReceiver());
-  worklet2->ConnectDevToolsAgent(agent2.BindNewPipeAndPassReceiver());
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent1, agent2;
+  worklet1->ConnectDevToolsAgent(agent1.BindNewEndpointAndPassReceiver());
+  worklet2->ConnectDevToolsAgent(agent2.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug1(std::move(agent1), "123",
                                  true /* use_binary_protocol */);
@@ -2666,8 +2652,8 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
       CreateWorklet(GURL(kUrl), true /* pause_for_debugger_on_start */);
   GenerateBid(worklet.get());
 
-  mojo::Remote<blink::mojom::DevToolsAgent> agent;
-  worklet->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug(std::move(agent), "123",
                                 true /* use_binary_protocol */);
@@ -2748,8 +2734,8 @@ TEST_F(BidderWorkletTest, UnloadWhilePaused) {
       CreateWorklet(GURL(kUrl), /*pause_for_debugger_on_start=*/true);
   GenerateBid(worklet.get());
 
-  mojo::Remote<blink::mojom::DevToolsAgent> agent;
-  worklet->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug(std::move(agent), "123",
                                 /*use_binary_protocol=*/true);

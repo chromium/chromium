@@ -156,5 +156,6 @@ interface SellerWorklet {
            array<string> error_msgs);
 
   // Establishes a debugger connection to the worklet.
-  ConnectDevToolsAgent(pending_receiver<blink.mojom.DevToolsAgent> agent);
+  ConnectDevToolsAgent(
+      pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
 };

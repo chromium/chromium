@@ -248,7 +248,7 @@ void SellerWorklet::ReportResult(
 }
 
 void SellerWorklet::ConnectDevToolsAgent(
-    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   v8_runner_->PostTask(
       FROM_HERE,
@@ -503,7 +503,7 @@ void SellerWorklet::V8State::ReportResult(
 }
 
 void SellerWorklet::V8State::ConnectDevToolsAgent(
-    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   v8_helper_->ConnectDevToolsAgent(std::move(agent), user_thread_, *debug_id_);
 }

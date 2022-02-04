@@ -5,7 +5,9 @@ Attached to target https://a.test:8443/inspector-protocol/resources/fledge_decis
 Attached to target https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
   Bidder instrumentation breakpoint set attempted
 Paused at https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php with reason "EventListener".
+Console call of type: log arg0: generateBid running at https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:8
 Paused at https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php with reason "EventListener".
+Console call of type: log arg0: generateBid running at https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:8
 Attached to target https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
   Bidder instrumentation breakpoint set attempted
 Auction winner:urn:uuid:(randomized)

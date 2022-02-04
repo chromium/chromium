@@ -153,7 +153,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   }
 
   void ConnectDevToolsAgent(
-      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override {
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
+      override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockBidderWorklet";
   }
@@ -283,7 +284,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   }
 
   void ConnectDevToolsAgent(
-      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override {
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
+      override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockSellerWorklet";
   }

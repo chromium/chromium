@@ -49,8 +49,6 @@ source_set("auction_worklet") {
     "auction_worklet_service_impl.h",
     "bidder_worklet.cc",
     "bidder_worklet.h",
-    "console.cc",
-    "console.h",
     "debug_command_queue.cc",
     "debug_command_queue.h",
     "for_debugging_only_bindings.cc",

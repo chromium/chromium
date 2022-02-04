@@ -11,7 +11,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "url/gurl.h"
@@ -36,7 +36,7 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   std::string Title() const;
 
   void ConnectDevToolsAgent(
-      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
 
   // Returns true if the worklet should start in the paused state.
   bool should_pause_on_start() const { return should_pause_on_start_; }

@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -108,7 +109,8 @@ class BidderWorklet : public mojom::BidderWorklet {
                  const url::Origin& browser_signal_seller_origin,
                  ReportWinCallback report_win_callback) override;
   void ConnectDevToolsAgent(
-      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override;
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
+      override;
 
  private:
   struct GenerateBidTask {
@@ -199,7 +201,7 @@ class BidderWorklet : public mojom::BidderWorklet {
         GenerateBidCallbackInternal callback);
 
     void ConnectDevToolsAgent(
-        mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
+        mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
 
    private:
     friend class base::DeleteHelper<V8State>;

@@ -27,6 +27,13 @@
           testRunner.log(`Paused at ${topFrame.url} with reason "${reason}".`);
           targetSession.protocol.Debugger.resume();
         });
+        targetSession.protocol.Runtime.onConsoleAPICalled(event => {
+          const params = event.params;
+          const topFrame = params.stackTrace.callFrames[0];
+          testRunner.log(`Console call of type: ${params.type} ` +
+                         `arg0: ${params.args[0].value} ` +
+                         `at ${topFrame.url}:${topFrame.lineNumber}`);
+        });
 
         await targetSession.protocol.EventBreakpoints.setInstrumentationBreakpoint(
             {eventName: 'beforeBidderWorkletBiddingStart'});

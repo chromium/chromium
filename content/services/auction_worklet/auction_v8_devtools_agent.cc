@@ -36,7 +36,7 @@ AuctionV8DevToolsAgent::~AuctionV8DevToolsAgent() {
 }
 
 void AuctionV8DevToolsAgent::Connect(
-    mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent,
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
     int context_group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   receivers_.Add(this, std::move(agent), context_group_id);

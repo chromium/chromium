@@ -564,20 +564,6 @@ TEST_F(SellerWorkletTest, ScoreAdDateNotAvailable) {
       {"https://url.test/:5 Uncaught ReferenceError: Date is not defined."});
 }
 
-TEST_F(SellerWorkletTest, ScoreAdLogAndError) {
-  const char kScript[] = R"(
-    function scoreAd() {
-      console.log("Logging");
-      return "hello";
-    }
-  )";
-
-  RunScoreAdWithJavascriptExpectingResult(
-      kScript, 0,
-      {"https://url.test/ [Log]: Logging",
-       "https://url.test/ scoreAd() did not return a valid number."});
-}
-
 TEST_F(SellerWorkletTest, ScoreAdMedata) {
   ad_metadata_ = R"("foo")";
   RunScoreAdWithReturnValueExpectingResult(R"(adMetadata === "foo" ? 4 : 0)",
@@ -1719,9 +1705,9 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt, run_loop2.QuitClosure());
 
-  mojo::Remote<blink::mojom::DevToolsAgent> agent1, agent2;
-  worklet1->ConnectDevToolsAgent(agent1.BindNewPipeAndPassReceiver());
-  worklet2->ConnectDevToolsAgent(agent2.BindNewPipeAndPassReceiver());
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent1, agent2;
+  worklet1->ConnectDevToolsAgent(agent1.BindNewEndpointAndPassReceiver());
+  worklet2->ConnectDevToolsAgent(agent2.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug1(std::move(agent1), "123",
                                  true /* use_binary_protocol */);
@@ -1857,8 +1843,8 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt, run_loop.QuitClosure());
 
-  mojo::Remote<blink::mojom::DevToolsAgent> agent;
-  worklet->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug(std::move(agent), "123",
                                 true /* use_binary_protocol */);
@@ -1958,8 +1944,8 @@ TEST_F(SellerWorkletTest, UnloadWhilePaused) {
   auto worklet = CreateWorklet(/*pause_for_debugger_on_start=*/true);
   RunScoreAdOnWorkletExpectingCallbackNeverInvoked(worklet.get());
 
-  mojo::Remote<blink::mojom::DevToolsAgent> agent;
-  worklet->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug(std::move(agent), "123",
                                 /*use_binary_protocol=*/true);

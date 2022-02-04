@@ -10,6 +10,7 @@ header("X-Allow-FLEDGE: true");
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
+  console.log("generateBid running");
   return {'ad': 'example', 'bid': 1 + Number(interestGroup.name),
           'render': interestGroup.ads[0].renderUrl};
 }

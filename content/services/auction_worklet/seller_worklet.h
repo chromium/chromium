@@ -22,6 +22,7 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -93,7 +94,8 @@ class SellerWorklet : public mojom::SellerWorklet {
                     bool browser_signal_has_data_version,
                     ReportResultCallback callback) override;
   void ConnectDevToolsAgent(
-      mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override;
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
+      override;
 
  private:
   // Contains all data needed for a ScoreAd() call. Destroyed only when its
@@ -200,7 +202,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                       ReportResultCallbackInternal callback);
 
     void ConnectDevToolsAgent(
-        mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
+        mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
 
    private:
     friend class base::DeleteHelper<V8State>;
