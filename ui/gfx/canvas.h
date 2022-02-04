@@ -105,8 +105,6 @@ class GFX_EXPORT Canvas {
 
   // Recreates the backing platform canvas with DIP |size| and |image_scale_|.
   // If the canvas is not opaque, it is explicitly cleared.
-  // This method is public so that canvas_skia_paint can recreate the platform
-  // canvas after having initialized the canvas.
   // TODO(pkotwicz): Push the image_scale into skia::PlatformCanvas such that
   // this method can be private.
   void RecreateBackingCanvas(const Size& size,
