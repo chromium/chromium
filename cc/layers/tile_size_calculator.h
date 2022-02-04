@@ -41,6 +41,8 @@ class CC_EXPORT TileSizeCalculator {
   bool IsAffectingParamsChanged();
 
   raw_ptr<PictureLayerImpl> layer_impl_;
+  const bool is_using_raw_draw_;
+  const double raw_draw_tile_size_factor_;
 
   AffectingParams affecting_params_;
 

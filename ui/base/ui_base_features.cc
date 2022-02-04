@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -334,8 +335,16 @@ bool IsSwipeToMoveCursorEnabled() {
 // Enable raw draw for tiles.
 const base::Feature kRawDraw{"RawDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Tile size = viewport size * TileSizeFactor
+const base::FeatureParam<double> kRawDrawTileSizeFactor{&kRawDraw,
+                                                        "TileSizeFactor", 1};
+
 bool IsUsingRawDraw() {
   return base::FeatureList::IsEnabled(kRawDraw);
+}
+
+double RawDrawTileSizeFactor() {
+  return kRawDrawTileSizeFactor.Get();
 }
 
 const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers{
