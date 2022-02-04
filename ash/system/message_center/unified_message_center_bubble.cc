@@ -155,6 +155,9 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
   message_center_view_->SetMaxHeight(available_height);
   message_center_view_->SetAvailableHeight(available_height);
 
+  if (!tray_->bubble())
+    return;
+
   // Note: It's tempting to set the insets for TrayBubbleView in order to
   // achieve the padding, but that enlarges the layer bounds and breaks rounded
   // corner clipping for ARC notifications. This approach only modifies the
@@ -236,17 +239,10 @@ void UnifiedMessageCenterBubble::OnViewVisibilityChanged(
     views::View* starting_view) {
   // Hide the message center widget if the message center is not
   // visible. This is to ensure we do not see an empty bubble.
-
   if (observed_view != message_center_view_)
     return;
 
-  if (observed_view->GetVisible()) {
-    bubble_widget_->Show();
-    return;
-  }
-
-  tray_->ActivateBubble();
-  bubble_widget_->Hide();
+  bubble_view_->UpdateBubble();
 }
 
 void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {

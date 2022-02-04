@@ -392,7 +392,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, HandleAccelerators) {
   views::Widget* message_center_widget =
       GetMessageCenterBubble()->GetBubbleWidget();
   EXPECT_FALSE(quick_settings_widget->IsActive());
-  EXPECT_TRUE(message_center_widget->IsActive());
+  EXPECT_TRUE(message_center_widget->GetFocusManager()->GetFocusedView());
 
   RemoveAllNotifications();
   WaitForAnimation();
@@ -400,7 +400,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, HandleAccelerators) {
       0u,
       message_center::MessageCenter::Get()->GetVisibleNotifications().size());
   EXPECT_FALSE(quick_settings_widget->IsActive());
-  EXPECT_FALSE(message_center_widget->IsActive());
+  EXPECT_FALSE(message_center_widget->GetFocusManager()->GetFocusedView());
 
   EXPECT_EQ(nullptr, GetFirstMessageCenterFocusable());
   EXPECT_EQ(nullptr,
