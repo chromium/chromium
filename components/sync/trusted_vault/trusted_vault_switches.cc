@@ -8,18 +8,8 @@
 
 namespace switches {
 
-// Allows device registration within trusted vault server without having trusted
-// vault key. Effectively disabled if kSyncTrustedVaultPassphraseRecovery
-// is disabled.
-const base::Feature kAllowSilentTrustedVaultDeviceRegistration{
-    "AllowSilentTrustedVaultDeviceRegistration",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Specifies how long requests to vault service shouldn't be retried after
 // encountering transient error.
-// TODO(crbug.com/1292114): Move to the same file as
-// kSyncTrustedVaultPassphraseRecovery so this can be moved to the header as
-// an inline variable.
 const base::FeatureParam<base::TimeDelta>
     kTrustedVaultServiceThrottlingDuration{
         &kSyncTrustedVaultPassphraseRecovery,

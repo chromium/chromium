@@ -10,7 +10,13 @@
 
 namespace switches {
 
-extern const base::Feature kAllowSilentTrustedVaultDeviceRegistration;
+// Allows device registration within trusted vault server without having trusted
+// vault key. Effectively disabled if kSyncTrustedVaultPassphraseRecovery
+// is disabled.
+constexpr inline base::Feature kAllowSilentTrustedVaultDeviceRegistration{
+    "AllowSilentTrustedVaultDeviceRegistration",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 extern const base::FeatureParam<base::TimeDelta>
     kTrustedVaultServiceThrottlingDuration;
 
