@@ -28,13 +28,13 @@ def GetConfigurationForBuild(defines):
     config = {
         'build': 'chromium',
         'app_name': 'Chromium',
+        'doc_url': 'https://chromeenterprise.google/policies/',
         'frame_name': 'Chromium Frame',
         'os_name': 'Chromium OS',
         'webview_name': 'Chromium WebView',
         'win_config': {
             'win': {
-                'reg_mandatory_key_name':
-                'Software\\Policies\\Chromium',
+                'reg_mandatory_key_name': 'Software\\Policies\\Chromium',
                 'reg_recommended_key_name':
                 'Software\\Policies\\Chromium\\Recommended',
                 'mandatory_category_path': ['chromium'],
@@ -43,12 +43,10 @@ def GetConfigurationForBuild(defines):
                     'chromium': 'Chromium',
                     'chromium_recommended': 'Chromium - {doc_recommended}',
                 },
-                'namespace':
-                'Chromium.Policies.Chromium',
+                'namespace': 'Chromium.Policies.Chromium',
             },
             'chrome_os': {
-                'reg_mandatory_key_name':
-                'Software\\Policies\\ChromiumOS',
+                'reg_mandatory_key_name': 'Software\\Policies\\ChromiumOS',
                 'reg_recommended_key_name':
                 'Software\\Policies\\ChromiumOS\\Recommended',
                 'mandatory_category_path': ['chromium_os'],
@@ -58,8 +56,7 @@ def GetConfigurationForBuild(defines):
                     'chromium_os_recommended':
                     'Chromium OS - {doc_recommended}',
                 },
-                'namespace':
-                'Chromium.Policies.ChromiumOS'
+                'namespace': 'Chromium.Policies.ChromiumOS'
             },
         },
         'admx_prefix': 'chromium',
@@ -70,6 +67,7 @@ def GetConfigurationForBuild(defines):
     config = {
         'build': 'chrome',
         'app_name': 'Google Chrome',
+        'doc_url': 'https://chromeenterprise.google/policies/',
         'frame_name': 'Google Chrome Frame',
         'os_name': 'Google Chrome OS',
         'webview_name': 'Android System WebView',

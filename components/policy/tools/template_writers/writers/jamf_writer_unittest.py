@@ -22,6 +22,8 @@ def _JsonFormat(input):
 class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
   '''Unit tests for JamfWriter.'''
 
+  doc_url = 'https://chromeenterprise.google/policies/'
+
   def _GetTestPolicyTemplate(self, policy_name, policy_type, schema_type,
                              policy_caption):
     template = {
@@ -55,7 +57,11 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         }],
         'policy_atomic_group_definitions': [],
         'placeholders': [],
-        'messages': {},
+        'messages': {
+            'doc_policy_documentation': {
+                'text': 'Documentation for policy'
+            }
+        },
     }
     return _JsonFormat(template)
 
@@ -68,9 +74,16 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         },
         'properties': {
             policy_name: {
-                'description': policy_caption,
-                'title': policy_name,
-                'type': policy_type
+                'description':
+                policy_caption,
+                'title':
+                policy_name,
+                'type':
+                policy_type,
+                'links': [{
+                    'rel': 'Documentation for policy',
+                    'href': self.doc_url + '#' + policy_name
+                }]
             }
         },
         'title': 'com.google.chrome.ios',
@@ -107,7 +120,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'A string policy', 'string', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -118,7 +132,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'int', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -139,7 +154,11 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         }],
         'policy_atomic_group_definitions': [],
         'placeholders': [],
-        'messages': {},
+        'messages': {
+            'doc_policy_documentation': {
+                'text': 'Documentation for policy'
+            }
+        }
     }
     policy_json = _JsonFormat(template)
 
@@ -150,11 +169,20 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         },
         'properties': {
             'intPolicyWithMinAndMax': {
-                'description': 'An int policy with min and max',
-                'maximum': 10,
-                'minimum': 0,
-                'title': 'intPolicyWithMinAndMax',
-                'type': 'integer'
+                'description':
+                'An int policy with min and max',
+                'maximum':
+                10,
+                'minimum':
+                0,
+                'title':
+                'intPolicyWithMinAndMax',
+                'type':
+                'integer',
+                'links': [{
+                    'rel': 'Documentation for policy',
+                    'href': self.doc_url + '#' + 'intPolicyWithMinAndMax'
+                }]
             }
         },
         'title': 'com.google.chrome.ios',
@@ -164,7 +192,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
 
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected_json.strip())
 
@@ -175,7 +204,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'An int-enum policy', 'int-enum', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -187,7 +217,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -200,7 +231,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'string-enum-list', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -211,7 +243,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'A boolean policy', 'main', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -222,7 +255,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'list', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -233,7 +267,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'dict', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -244,7 +279,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'dict', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
@@ -277,7 +313,11 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         }],
         'policy_atomic_group_definitions': [],
         'placeholders': [],
-        'messages': {},
+        'messages': {
+            'doc_policy_documentation': {
+                'text': 'Documentation for policy'
+            }
+        }
     }
     policy_json = _JsonFormat(template)
 
@@ -288,9 +328,12 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         },
         'properties': {
             'name': {
-                'description': 'caption',
-                'title': 'name',
-                'type': 'array',
+                'description':
+                'caption',
+                'title':
+                'name',
+                'type':
+                'array',
                 'items': {
                     'title': 'title2',
                     'id': 'id',
@@ -298,7 +341,11 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                     'properties': {
                         'name': 'name'
                     }
-                }
+                },
+                'links': [{
+                    'rel': 'Documentation for policy',
+                    'href': self.doc_url + '#' + 'name'
+                }]
             }
         },
         'title': 'com.google.chrome.ios',
@@ -314,7 +361,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
     output_expected = _JsonFormat(expected)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), output_expected.strip())
 
@@ -325,7 +373,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                        'A external policy', 'external', '83')
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
-        'version': '83.0.4089.0'
+        'version': '83.0.4089.0',
+        'doc_url': self.doc_url
     }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 

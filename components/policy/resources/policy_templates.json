@@ -30143,6 +30143,10 @@ The recommended way to configure policy on Windows is via GPO, although provisio
       'desc': '''A label for the legacy single-line textbox for a policy also has a more user-friendly multi-line textbox. See http://crbug/829328''',
       'text': '''<ph name="POLICY_NAME">$6<ex>Wallpaper Image</ex></ph> (The single-line field is deprecated and will be removed in the future. Please start using the multi-line textbox below.)''',
     },
+    'doc_policy_documentation': {
+      'desc': '''Link title for the policy documentation''',
+      'text': '''Documentation for policy'''
+    },
     'doc_policy_restriction': {
       'desc': '''Caption text of the field 'restrictions' in the summary chart of a policy in the generated documentation''',
       'text': '''Restrictions:'''

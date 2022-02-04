@@ -49,6 +49,7 @@ class JamfWriter(template_writer.TemplateWriter):
     Returns:
       Generated output for the passed template definition.
     '''
+    self.messages = template['messages']
     # Keep track of all items that can be referred to by an id.
     # This is used for '$ref' fields in the policy templates.
     ref_ids_schemas = {}
@@ -90,9 +91,16 @@ class JamfWriter(template_writer.TemplateWriter):
 
     for policy in policies:
       output['properties'][policy['name']] = {
-          'title': policy['name'],
-          'description': policy['caption'],
-          'type': self.TYPE_TO_INPUT[policy['type']]
+          'title':
+          policy['name'],
+          'description':
+          policy['caption'],
+          'type':
+          self.TYPE_TO_INPUT[policy['type']],
+          'links': [{
+              'rel': self.messages['doc_policy_documentation']['text'],
+              'href': self.config['doc_url'] + '#' + policy['name']
+          }]
       }
 
       policy_output = output['properties'][policy['name']]
