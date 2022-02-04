@@ -30,6 +30,16 @@ NOINLINE void FreeForTest(void* data) {
 }
 
 TEST(PartitionAllocAsMalloc, Mallinfo) {
+  // mallinfo was deprecated in glibc 2.33. The Chrome OS device sysroot has
+  // a new-enough glibc, but the Linux one doesn't yet, so we can't switch to
+  // the replacement mallinfo2 yet.
+  // Once we update the Linux sysroot to be new enough, this warning will
+  // start firing on Linux too. At that point, s/mallinfo/mallinfo2/ in this
+  // file and remove the pragma here and and the end of this function.
+#if BUILDFLAG(IS_CHROMEOS)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
   constexpr int kLargeAllocSize = 10 * 1024 * 1024;
   struct mallinfo before = mallinfo();
   void* data = malloc(1000);
@@ -67,6 +77,9 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
   EXPECT_LT(after_free.hblks, after_alloc.hblks);
   EXPECT_LT(after_free.hblkhd, after_alloc.hblkhd);
   EXPECT_LT(after_free.uordblks, after_alloc.uordblks);
+#if BUILDFLAG(IS_CHROMEOS)
+#pragma clang diagnostic pop
+#endif
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
