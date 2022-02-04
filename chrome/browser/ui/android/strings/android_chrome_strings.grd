@@ -5405,8 +5405,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCOUNT_SELECTION_SHEET_IDP_SUBHEADER" desc="Sub-heading for Account Selection sheet where user can pick an account to sign up with." translateable="false">
         with <ph name="IDENTITY_PROVIDER_URL">%1$s<ex>idp.com</ex></ph>
       </message>
+      <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_LINKS" desc="The consent text shown to the user before sign up." translateable="false">
+          To continue, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with this site.
+      </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up." translateable="false">
-        To continue, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link2&gt;</ph>.
+        To continue, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_privacy_policy&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link_privacy_policy&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link_terms_of_service&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link_terms_of_service&gt;</ph>.
       </message>
 
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials." translateable="false">

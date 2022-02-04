@@ -16,6 +16,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -46,6 +48,9 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides functions that map {@link AccountSelectionProperties} changes in a {@link PropertyModel}
@@ -172,8 +177,16 @@ class AccountSelectionViewBinder {
         tabCreator.launchUrl(url, TabLaunchType.FROM_CHROME_UI);
     }
 
-    static NoUnderlineClickableSpan createLink(Resources r, String url) {
-        return new NoUnderlineClickableSpan(r, v -> { openTab(url); });
+    static SpanApplier.SpanInfo createLink(Resources r, String url, String tag) {
+        if (TextUtils.isEmpty(url)) return null;
+
+        String startTag = "<" + tag + ">";
+        String endTag = "</" + tag + ">";
+        Callback<View> onClickCallback = v -> {
+            openTab(url);
+        };
+        return new SpanApplier.SpanInfo(
+                startTag, endTag, new NoUnderlineClickableSpan(r, onClickCallback));
     }
 
     /**
@@ -188,17 +201,34 @@ class AccountSelectionViewBinder {
                     model.get(DataSharingConsentProperties.PROPERTIES);
 
             Resources resources = view.getResources();
-            NoUnderlineClickableSpan privacyPolicyLink =
-                    createLink(resources, properties.mPrivacyPolicyUrl);
-            NoUnderlineClickableSpan termsOfServiceLink =
-                    createLink(resources, properties.mTermsOfServiceUrl);
+            SpanApplier.SpanInfo privacyPolicySpan =
+                    createLink(resources, properties.mPrivacyPolicyUrl, "link_privacy_policy");
+            SpanApplier.SpanInfo termsOfServiceSpan =
+                    createLink(resources, properties.mTermsOfServiceUrl, "link_terms_of_service");
 
+            // TODO(crbug.com/1293913): Validate string choices.
+            int consentTextId = (privacyPolicySpan == null && termsOfServiceSpan == null)
+                    ? R.string.account_selection_data_sharing_consent_no_links
+                    : R.string.account_selection_data_sharing_consent;
             String consentText = String.format(
-                    view.getContext().getString(R.string.account_selection_data_sharing_consent),
-                    properties.mFormattedIdpUrl);
-            SpannableString span = SpanApplier.applySpans(consentText,
-                    new SpanApplier.SpanInfo("<link1>", "</link1>", privacyPolicyLink),
-                    new SpanApplier.SpanInfo("<link2>", "</link2>", termsOfServiceLink));
+                    view.getContext().getString(consentTextId), properties.mFormattedIdpUrl);
+
+            // If the consent text includes the link for the privacy policy or the terms of service,
+            // and there is no corresponding URL, remove the link tag.
+            List<SpanApplier.SpanInfo> spans = new ArrayList<>();
+            if (privacyPolicySpan == null) {
+                consentText = consentText.replaceAll("</?link_privacy_policy>", "");
+            } else {
+                spans.add(privacyPolicySpan);
+            }
+            if (termsOfServiceSpan == null) {
+                consentText = consentText.replaceAll("</?link_terms_of_service>", "");
+            } else {
+                spans.add(termsOfServiceSpan);
+            }
+
+            SpannableString span =
+                    SpanApplier.applySpans(consentText, spans.toArray(new SpanApplier.SpanInfo[0]));
             TextView textView = view.findViewById(R.id.user_data_sharing_consent);
             textView.setText(span);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
