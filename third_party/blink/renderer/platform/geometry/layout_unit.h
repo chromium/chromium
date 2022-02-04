@@ -95,7 +95,7 @@ class LayoutUnit {
  public:
   constexpr LayoutUnit() : value_(0) {}
   template <typename IntegerType>
-  constexpr explicit LayoutUnit(IntegerType value) {
+  constexpr explicit LayoutUnit(IntegerType value) : value_(0) {
     if (std::is_signed<IntegerType>::value)
       SaturatedSet(static_cast<int>(value));
     else
