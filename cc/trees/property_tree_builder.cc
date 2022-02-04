@@ -96,6 +96,12 @@ class PropertyTreeBuilderContext {
   raw_ptr<Layer> root_layer_;
   MutatorHost& mutator_host_;
   PropertyTrees& property_trees_;
+
+  // Ordinarily, it would not be OK to store references to these instances,
+  // because doing so evades the protections of ProtectedSequenceSynchronizer.
+  // It's permitted in this case because PropertyTreeBuilderContext is only ever
+  // allocated on the stack, and it cannot initiate a protected sequence (by
+  // calling into LayerTreeHost::WillCommit).
   TransformTree& transform_tree_;
   ClipTree& clip_tree_;
   EffectTree& effect_tree_;
@@ -262,8 +268,7 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   // For animation subsystem purposes, if this layer has a compositor element
   // id, we build a map from that id to this transform node.
   if (layer->element_id()) {
-    property_trees_.transform_tree_mutable().SetElementIdForNodeId(
-        node->id, layer->element_id());
+    transform_tree_.SetElementIdForNodeId(node->id, layer->element_id());
     node->element_id = layer->element_id();
   }
 
@@ -550,8 +555,7 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   // For animation subsystem purposes, if this layer has a compositor element
   // id, we build a map from that id to this effect node.
   if (layer->element_id()) {
-    property_trees_.effect_tree_mutable().SetElementIdForNodeId(
-        node_id, layer->element_id());
+    effect_tree_.SetElementIdForNodeId(node_id, layer->element_id());
   }
 
   std::vector<std::unique_ptr<viz::CopyOutputRequest>> layer_copy_requests;
@@ -647,8 +651,7 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
     // For animation subsystem purposes, if this layer has a compositor element
     // id, we build a map from that id to this scroll node.
     if (layer->element_id()) {
-      property_trees_.scroll_tree_mutable().SetElementIdForNodeId(
-          node_id, layer->element_id());
+      scroll_tree_.SetElementIdForNodeId(node_id, layer->element_id());
     }
 
     if (node.scrollable) {
