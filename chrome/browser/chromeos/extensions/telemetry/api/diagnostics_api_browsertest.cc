@@ -182,9 +182,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity);
 }
 
-// Crashes on ChromeOS: crbug.com/1274591
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunBatteryChargeRoutineSuccess) {
+                       RunBatteryChargeRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runBatteryChargeRoutine() {
