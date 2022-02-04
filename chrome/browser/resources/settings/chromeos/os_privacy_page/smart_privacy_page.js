@@ -9,6 +9,7 @@
 
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../controls/extension_controlled_indicator.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
@@ -55,6 +56,14 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
         notify: true,
       },
 
+      /**
+       * Whether the smart privacy page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
 
       /**
        * Whether or not quick dim is enabled.
@@ -103,6 +112,18 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
     }
 
     this.attemptDeepLink();
+  }
+
+  /**
+   * Returns the image source based on whether the smart privacy page is being
+   * rendered in dark mode.
+   * @returns {string}
+   * @private
+   */
+  getImageSource_() {
+    return this.isDarkModeActive_ ?
+        'chrome://os-settings/images/smart_privacy_dark.svg' :
+        'chrome://os-settings/images/smart_privacy.svg';
   }
 }
 

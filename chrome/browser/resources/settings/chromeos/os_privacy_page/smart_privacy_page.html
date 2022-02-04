@@ -33,10 +33,13 @@
   }
 </style>
 
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
 <div class="banner underbar">
   <!-- No alt since image is purely decorative. -->
   <img class="left-float-graphic"
-       src="chrome://os-settings/images/smart_privacy.svg"
+       src="[[getImageSource_(isDarkModeActive_)]]"
        alt="" aria-hidden="true">
   <div>
     <iron-icon class="large-icon" icon="cr:security">
