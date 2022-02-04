@@ -230,8 +230,13 @@ void Database::StatementRef::Close(bool forced) {
     // of the function. http://crbug.com/136655.
     absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
     InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
-    sqlite3_finalize(stmt_);
+
+    // `stmt_` references memory loaned from the sqlite3 library. Stop
+    // referencing it from the raw_ptr<> before returning it. This avoids the
+    // raw_ptr<> becoming dangling.
+    sqlite3_stmt* statement = stmt_;
     stmt_ = nullptr;
+    sqlite3_finalize(statement);
   }
   database_ = nullptr;  // The Database may be getting deleted.
 
