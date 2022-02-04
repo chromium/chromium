@@ -2483,31 +2483,6 @@
             ]
         }
     ],
-    "DesktopReadingListEntryPointIPH": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ReadingListEntryPointIPH",
-                    "params": {
-                        "availability": ">14",
-                        "event_trigger": "name:reading_list_entry_point_iph_triggered;comparator:==0;window:365;storage:365",
-                        "event_used": "name:bookmark_star_menu_opened;comparator:==0;window:365;storage:365",
-                        "session_rate": "<3"
-                    },
-                    "enable_features": [
-                        "IPH_ReadingListEntryPoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopTabGroupsUserEducation": [
         {
             "platforms": [
