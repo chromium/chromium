@@ -1443,28 +1443,11 @@ TEST(ValuesTest, StringValue) {
   ASSERT_TRUE(utf16_value.get());
   ASSERT_TRUE(utf16_value->is_string());
 
-  // Test overloaded GetAsString.
-  std::string narrow = "http://google.com";
-  std::u16string utf16 = u"http://google.com";
-  const Value* string_value = nullptr;
-  ASSERT_TRUE(narrow_value->GetAsString(&narrow));
-  ASSERT_TRUE(narrow_value->GetAsString(&utf16));
-  ASSERT_TRUE(narrow_value->GetAsString(&string_value));
-  ASSERT_EQ(std::string("narrow"), narrow);
-  ASSERT_EQ(u"narrow", utf16);
-  ASSERT_EQ(string_value->GetString(), narrow);
+  ASSERT_TRUE(narrow_value->is_string());
+  ASSERT_EQ(std::string("narrow"), narrow_value->GetString());
 
-  ASSERT_TRUE(utf16_value->GetAsString(&narrow));
-  ASSERT_TRUE(utf16_value->GetAsString(&utf16));
-  ASSERT_TRUE(utf16_value->GetAsString(&string_value));
-  ASSERT_EQ(std::string("utf16"), narrow);
-  ASSERT_EQ(u"utf16", utf16);
-  ASSERT_EQ(string_value->GetString(), narrow);
-
-  // Don't choke on NULL values.
-  ASSERT_TRUE(narrow_value->GetAsString(static_cast<std::u16string*>(nullptr)));
-  ASSERT_TRUE(narrow_value->GetAsString(static_cast<std::string*>(nullptr)));
-  ASSERT_TRUE(narrow_value->GetAsString(static_cast<const Value**>(nullptr)));
+  ASSERT_TRUE(utf16_value->is_string());
+  ASSERT_EQ(std::string("utf16"), utf16_value->GetString());
 }
 
 TEST(ValuesTest, ListDeletion) {
@@ -1649,22 +1632,14 @@ TEST(ValuesTest, DeepCopy) {
   ASSERT_TRUE(copy_string);
   ASSERT_NE(copy_string, string_weak);
   ASSERT_TRUE(copy_string->is_string());
-  std::string copy_string_value;
-  std::u16string copy_string16_value;
-  ASSERT_TRUE(copy_string->GetAsString(&copy_string_value));
-  ASSERT_TRUE(copy_string->GetAsString(&copy_string16_value));
-  ASSERT_EQ(std::string("hello"), copy_string_value);
-  ASSERT_EQ(u"hello", copy_string16_value);
+  ASSERT_EQ(std::string("hello"), copy_string->GetString());
 
   Value* copy_string16 = nullptr;
   ASSERT_TRUE(copy_dict->Get("string16", &copy_string16));
   ASSERT_TRUE(copy_string16);
   ASSERT_NE(copy_string16, string16_weak);
   ASSERT_TRUE(copy_string16->is_string());
-  ASSERT_TRUE(copy_string16->GetAsString(&copy_string_value));
-  ASSERT_TRUE(copy_string16->GetAsString(&copy_string16_value));
-  ASSERT_EQ(std::string("hello16"), copy_string_value);
-  ASSERT_EQ(u"hello16", copy_string16_value);
+  ASSERT_EQ(std::string("hello16"), copy_string16->GetString());
 
   Value* copy_binary = nullptr;
   ASSERT_TRUE(copy_dict->Get("binary", &copy_binary));

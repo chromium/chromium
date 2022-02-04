@@ -546,8 +546,6 @@ class BASE_EXPORT Value {
   // DEPRECATED, use `GetIfString()` instead.
   bool GetAsString(std::string* out_value) const;
   bool GetAsString(std::u16string* out_value) const;
-  bool GetAsString(const Value** out_value) const;
-  bool GetAsString(StringPiece* out_value) const;
   // ListValue::From is the equivalent for std::unique_ptr conversions.
   // DEPRECATED, use `is_list()` instead.
   bool GetAsList(ListValue** out_value);

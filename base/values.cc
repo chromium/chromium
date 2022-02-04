@@ -824,22 +824,6 @@ bool Value::GetAsString(std::u16string* out_value) const {
   return is_string();
 }
 
-bool Value::GetAsString(const Value** out_value) const {
-  if (out_value && is_string()) {
-    *out_value = this;
-    return true;
-  }
-  return is_string();
-}
-
-bool Value::GetAsString(StringPiece* out_value) const {
-  if (out_value && is_string()) {
-    *out_value = GetString();
-    return true;
-  }
-  return is_string();
-}
-
 bool Value::GetAsList(ListValue** out_value) {
   if (out_value && is_list()) {
     *out_value = static_cast<ListValue*>(this);
@@ -1199,7 +1183,10 @@ bool DictionaryValue::GetString(StringPiece path,
   if (!Get(path, &value))
     return false;
 
-  return value->GetAsString(out_value);
+  const bool is_string = value->is_string();
+  if (is_string && out_value)
+    *out_value = value->GetString();
+  return is_string;
 }
 
 bool DictionaryValue::GetString(StringPiece path,
@@ -1208,7 +1195,10 @@ bool DictionaryValue::GetString(StringPiece path,
   if (!Get(path, &value))
     return false;
 
-  return value->GetAsString(out_value);
+  const bool is_string = value->is_string();
+  if (is_string && out_value)
+    *out_value = UTF8ToUTF16(value->GetString());
+  return is_string;
 }
 
 bool DictionaryValue::GetStringASCII(StringPiece path,
