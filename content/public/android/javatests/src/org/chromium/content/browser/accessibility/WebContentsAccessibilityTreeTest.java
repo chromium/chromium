@@ -32,7 +32,7 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class WebContentsAccessibilityTreeTest {
     // File path that holds all the relevant tests.
     private static final String BASE_ACCNAME_FILE_PATH = "content/test/data/accessibility/accname/";

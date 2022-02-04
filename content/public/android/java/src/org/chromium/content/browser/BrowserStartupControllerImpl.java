@@ -176,6 +176,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     @Override
     public void startBrowserProcessesAsync(@LibraryProcessType int libraryProcessType,
             boolean startGpuProcess, boolean startMinimalBrowser, final StartupCallback callback) {
+        assert !LibraryLoader.isBrowserProcessStartupBlockedForTesting();
         assertProcessTypeSupported(libraryProcessType);
         assert ThreadUtils.runningOnUiThread() : "Tried to start the browser on the wrong thread.";
         ServicificationStartupUma.getInstance().record(ServicificationStartupUma.getStartupMode(
@@ -237,6 +238,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     @Override
     public void startBrowserProcessesSync(
             @LibraryProcessType int libraryProcessType, boolean singleProcess) {
+        assert !LibraryLoader.isBrowserProcessStartupBlockedForTesting();
         assertProcessTypeSupported(libraryProcessType);
 
         ServicificationStartupUma.getInstance().record(ServicificationStartupUma.getStartupMode(

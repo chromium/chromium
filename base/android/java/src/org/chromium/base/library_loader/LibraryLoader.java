@@ -83,6 +83,8 @@ public class LibraryLoader {
     // The singleton instance of LibraryLoader. Never null (not final for tests).
     private static LibraryLoader sInstance = new LibraryLoader();
 
+    private static boolean sBrowserStartupBlockedForTesting;
+
     // One-way switch becomes true when the libraries are initialized (by calling
     // LibraryLoaderJni.get().libraryLoaded, which forwards to LibraryLoaded(...) in
     // library_loader_hooks.cc). Note that this member should remain a one-way switch, since it
@@ -1041,6 +1043,14 @@ public class LibraryLoader {
     public void setLibrariesLoadedForNativeTests() {
         mLoadState = LoadState.LOADED;
         mInitialized = true;
+    }
+
+    public static void setBrowserProcessStartupBlockedForTesting() {
+        sBrowserStartupBlockedForTesting = true;
+    }
+
+    public static boolean isBrowserProcessStartupBlockedForTesting() {
+        return sBrowserStartupBlockedForTesting;
     }
 
     // The native methods below are defined in library_loader_hooks.cc.
