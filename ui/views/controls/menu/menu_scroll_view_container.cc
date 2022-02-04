@@ -393,18 +393,17 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   const int border_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
   ui::ColorId id = ui::kColorMenuBackground;
-  const bool use_ash_system_ui_layout = content_view_->GetMenuItem()
-                                            ->GetMenuController()
-                                            ->use_ash_system_ui_layout();
-#if BUILDFLAG(IS_CHROMEOS)
-  if (use_ash_system_ui_layout)
-    id = ui::kColorAshSystemUIMenuBackground;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  id = ui::kColorAshSystemUIMenuBackground;
 #endif
   const SkColor color =
       GetWidget() ? GetColorProvider()->GetColor(id) : gfx::kPlaceholderColor;
   auto bubble_border = std::make_unique<BubbleBorder>(
       arrow_, BubbleBorder::STANDARD_SHADOW, color);
-  if (use_ash_system_ui_layout || border_radius > 0) {
+  if (content_view_->GetMenuItem()
+          ->GetMenuController()
+          ->use_ash_system_ui_layout() ||
+      border_radius > 0) {
     bubble_border->SetCornerRadius(border_radius);
     bubble_border->set_md_shadow_elevation(
         menu_config.touchable_menu_shadow_elevation);

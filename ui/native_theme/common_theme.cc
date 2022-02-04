@@ -43,13 +43,22 @@ void CommonThemePaintMenuItemBackground(
   cc::PaintFlags flags;
   switch (state) {
     case NativeTheme::kNormal:
-    case NativeTheme::kDisabled:
-      flags.setColor(color_provider->GetColor(kColorMenuBackground));
+    case NativeTheme::kDisabled: {
+      ui::ColorId id = kColorMenuBackground;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      id = kColorAshSystemUIMenuBackground;
+#endif
+      flags.setColor(color_provider->GetColor(id));
       break;
-    case NativeTheme::kHovered:
-      flags.setColor(
-          color_provider->GetColor(kColorMenuItemBackgroundSelected));
+    }
+    case NativeTheme::kHovered: {
+      ui::ColorId id = kColorMenuItemBackgroundSelected;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      id = kColorAshSystemUIMenuItemBackgroundSelected;
+#endif
+      flags.setColor(color_provider->GetColor(id));
       break;
+    }
     default:
       NOTREACHED() << "Invalid state " << state;
       break;
