@@ -18717,7 +18717,6 @@ IN_PROC_BROWSER_TEST_P(
       "});";
   EXPECT_TRUE(ExecJs(root->child_at(0), script));
 
-  TestNavigationObserver load_observer(web_contents);
   NavigationHandleObserver abort_observer(web_contents, navigated_url);
   BeforeUnloadBlockingDelegate beforeunload_pauser(web_contents);
 
@@ -18730,8 +18729,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(ExecJs(shell(), "document.write()"));  // Cancel the navigation.
 
   // Wait for javascript to get processed, and its consequences (aborting the
-  // navigation) to finish. To achieve that we simply wait for DidStopLoading.
-  load_observer.Wait();
+  // navigation) to finish. To achieve that we simply run script again.
+  EXPECT_EQ(42, EvalJs(shell(), "12 + 30").ExtractInt());
 
   // Verify that the navigation was aborted as expected.
   EXPECT_FALSE(abort_observer.has_committed());
