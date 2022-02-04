@@ -9,7 +9,7 @@
 namespace messages {
 
 const base::Feature kMessagesForAndroidAdsBlocked{
-    "MessagesForAndroidAdsBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidAdsBlocked", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidChromeSurvey{
     "MessagesForAndroidChromeSurvey", base::FEATURE_DISABLED_BY_DEFAULT};

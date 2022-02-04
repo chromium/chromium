@@ -85,6 +85,11 @@ void AdsBlockedMessageDelegate::DismissMessage(
   }
 }
 
+void AdsBlockedMessageDelegate::DismissMessageForTesting(
+    messages::DismissReason dismiss_reason) {
+  HandleMessageDismissed(dismiss_reason);
+}
+
 AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
     content::WebContents* web_contents)
     : AdsBlockedMessageDelegate(web_contents,

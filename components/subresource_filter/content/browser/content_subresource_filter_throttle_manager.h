@@ -166,6 +166,10 @@ class ContentSubresourceFilterThrottleManager
 
   PageLoadStatistics* page_load_statistics() const { return statistics_.get(); }
 
+  ProfileInteractionManager* profile_interaction_manager_for_testing() {
+    return profile_interaction_manager_.get();
+  }
+
   VerifiedRuleset::Handle* ruleset_handle_for_testing() {
     return ruleset_handle_.get();
   }

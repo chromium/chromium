@@ -6,10 +6,9 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 
-// Sets up a callback for MessageDispatcherBridge ResourceIdMapper. This is done
-// in chrome/browser/android because ResourceMapper is not available in
-// components.
+// Sets up a callback for MessageDispatcherBridge additional initialization. For
+// example, the ResourceMapper from chrome can be bound for use in components.
 void JNI_MessagesResourceMapperInitializer_Init(JNIEnv* env) {
-  messages::MessageDispatcherBridge::Get()->SetResourceIdMapper(
+  messages::MessageDispatcherBridge::Get()->Initialize(
       base::BindRepeating(&ResourceMapper::MapToJavaDrawableId));
 }

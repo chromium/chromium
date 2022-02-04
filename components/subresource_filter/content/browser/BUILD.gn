@@ -147,6 +147,9 @@ static_library("test_support") {
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/browser/db:util",
   ]
+  if (is_android) {
+    deps += [ "//components/messages/android:test_support" ]
+  }
 }
 
 source_set("unit_tests") {

@@ -85,9 +85,11 @@ int MessageDispatcherBridge::MapToJavaDrawableId(int resource_id) {
   return resource_id_mapper_.Run(resource_id);
 }
 
-void MessageDispatcherBridge::SetResourceIdMapper(
-    ResourceIdMapper resource_id_mapper) {
+void MessageDispatcherBridge::Initialize(ResourceIdMapper resource_id_mapper) {
   resource_id_mapper_ = std::move(resource_id_mapper);
+  // resource_id_mapper_ will only be initialized in an embedder that supports
+  // the Messages UI.
+  messages_enabled_for_embedder_ = true;
 }
 
 }  // namespace messages

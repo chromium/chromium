@@ -42,10 +42,13 @@ class MessageDispatcherBridge {
   // code that doesn't have access to ResourceMapper, e.g. code in //components.
   virtual int MapToJavaDrawableId(int resource_id);
 
-  void SetResourceIdMapper(ResourceIdMapper resource_id_mapper);
+  void Initialize(ResourceIdMapper resource_id_mapper);
+
+  bool IsMessagesEnabledForEmbedder() { return messages_enabled_for_embedder_; }
 
  protected:
   virtual ~MessageDispatcherBridge();
+  bool messages_enabled_for_embedder_;
 
  private:
   ResourceIdMapper resource_id_mapper_;
