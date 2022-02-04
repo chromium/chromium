@@ -129,7 +129,6 @@ source_set("unit_tests") {
   sources = [
     "base/client_tag_hash_unittest.cc",
     "base/model_type_unittest.cc",
-    "base/node_ordinal_unittest.cc",
     "base/ordinal_unittest.cc",
     "base/protobuf_unittest.cc",
     "base/sync_prefs_unittest.cc",

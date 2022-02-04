@@ -31,8 +31,6 @@ static_library("base") {
     "logging.h",
     "model_type.cc",
     "model_type.h",
-    "node_ordinal.cc",
-    "node_ordinal.h",
     "ordinal.h",
     "passphrase_enums.cc",
     "passphrase_enums.h",
