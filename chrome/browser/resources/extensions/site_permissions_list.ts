@@ -10,8 +10,9 @@ import './strings.m.js';
 import './shared_style.js';
 import './shared_vars.js';
 
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getFaviconUrl} from './url_util.js';
 
 class ExtensionsSitePermissionsListElement extends PolymerElement {
   static get is() {
@@ -36,10 +37,8 @@ class ExtensionsSitePermissionsListElement extends PolymerElement {
     return !!this.sites.length;
   }
 
-  private getFaviconURL_(url: string): string {
-    return getFaviconForPageURL(
-        url, /*isSyncedUrlForHistoryUi=*/ false, /*remoteIconUrlForUma=*/ '',
-        /*size=*/ 20);
+  private getFaviconUrl_(url: string): string {
+    return getFaviconUrl(url);
   }
 }
 

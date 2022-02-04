@@ -10,12 +10,6 @@
     margin: 24px;
   }
 
-  .site-favicon {
-    background-size: 100% 100%;
-    height: var(--cr-icon-size);
-    min-width: var(--cr-icon-size);
-  }
-
   .site-row {
     align-items: center;
     display: flex;
@@ -52,7 +46,7 @@
   <template is="dom-repeat" items="[[sites]]">
     <div class="site-row">
       <div class="site-favicon"
-          style$="background-image:[[getFaviconURL_(item)]]"></div>
+          style$="background-image:[[getFaviconUrl_(item)]]"></div>
       <span class="site">[[item]]</span>
       <cr-icon-button class="subpage-arrow"></cr-icon-button>
       <div class="separator"></div>

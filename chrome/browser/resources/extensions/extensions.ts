@@ -41,3 +41,4 @@ export {ExtensionsSidebarElement} from './sidebar.js';
 export {ExtensionsSitePermissionsElement} from './site_permissions.js';
 export {ExtensionsToggleRowElement} from './toggle_row.js';
 export {ExtensionsToolbarElement} from './toolbar.js';
+export {getFaviconUrl} from './url_util.js';

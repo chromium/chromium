@@ -878,3 +878,17 @@ var CrExtensionsSitePermissionsTest = class extends CrExtensionsBrowserTest {
 TEST_F('CrExtensionsSitePermissionsTest', 'All', () => {
   mocha.run();
 });
+
+////////////////////////////////////////////////////////////////////////////////
+// UrlUtil tests
+
+var CrUrlUtilTest = class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/url_util_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrUrlUtilTest', 'All', () => {
+  mocha.run();
+});

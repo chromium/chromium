@@ -321,7 +321,8 @@
     <template is="dom-if" if="[[showSiteAccessSection_(data.*,
         enableEnhancedSiteControls)]]">
       <div class="section hr">
-        <div class="section-title" role="heading" aria-level="2">
+        <div class="section-title" role="heading" aria-level="2"
+            hidden$="[[enableEnhancedSiteControls]]">
           $i18n{itemSiteAccess}
         </div>
         <div class="section-content">

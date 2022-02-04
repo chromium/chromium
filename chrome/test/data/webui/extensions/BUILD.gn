@@ -47,6 +47,7 @@ non_preprocessed_files = [
   "test_service.ts",
   "test_util.ts",
   "toggle_row_test.ts",
+  "url_util_test.ts",
 ]
 
 if (is_chromeos_ash) {

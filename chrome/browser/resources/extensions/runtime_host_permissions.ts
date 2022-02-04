@@ -20,15 +20,14 @@ import './strings.m.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
+import {getFaviconUrl} from './url_util.js';
 
 export interface ExtensionsRuntimeHostPermissionsElement {
   $: {
     hostActionMenu: CrActionMenuElement,
-    hostAccess: HTMLSelectElement,
   };
 }
 
@@ -135,8 +134,14 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private oldHostAccess_: string|null;
   private revertingHostAccess_: boolean;
 
+  getSelectMenu(): HTMLSelectElement {
+    const selectMenuId =
+        this.enableEnhancedSiteControls ? '#newHostAccess' : '#hostAccess';
+    return this.shadowRoot!.querySelector<HTMLSelectElement>(selectMenuId)!;
+  }
+
   private onHostAccessChange_() {
-    const selectMenu = this.$.hostAccess;
+    const selectMenu = this.getSelectMenu();
     const access = selectMenu.value as chrome.developerPrivate.HostAccess;
 
     // Log a user action when the host access selection is changed by the user,
@@ -176,17 +181,8 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     }
   }
 
-  private getHostPermissionsHeading_(): string {
-    return loadTimeData.getString(
-        this.enableEnhancedSiteControls ? 'newHostPermissionsHeading' :
-                                          'hostPermissionsHeading');
-  }
-
   private showSpecificSites_(): boolean {
-    // TODO(crbug.com/1253673): Show a different "customize for each site" menu
-    // for the new site access menu.
-    return !this.enableEnhancedSiteControls &&
-        this.permissions.hostAccess ===
+    return this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES;
   }
 
@@ -240,7 +236,7 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     if (this.oldHostAccess_) {
       assert(this.permissions.hostAccess === this.oldHostAccess_);
       this.revertingHostAccess_ = true;
-      this.$.hostAccess.value = this.oldHostAccess_;
+      this.getSelectMenu().value = this.oldHostAccess_;
       this.revertingHostAccess_ = false;
       this.oldHostAccess_ = null;
     }
@@ -250,7 +246,7 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     return !!this.oldHostAccess_;
   }
 
-  private onEditHostClick_(e: DomRepeatEvent<string>) {
+  private onOpenEditHostClick_(e: DomRepeatEvent<string>) {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.ActionMenuOpened');
     this.actionMenuModel_ = e.model.item;
@@ -291,6 +287,18 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private onLearnMoreClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.LearnMoreActivated');
+  }
+
+  private onEditHostClick_(e: DomRepeatEvent<string>) {
+    this.doShowHostDialog_(e.target as HTMLElement, e.model.item);
+  }
+
+  private onDeleteHostClick_(e: DomRepeatEvent<string>) {
+    this.delegate.removeRuntimeHostPermission(this.itemId, e.model.item);
+  }
+
+  private getFaviconUrl_(url: string): string {
+    return getFaviconUrl(url);
   }
 }
 
