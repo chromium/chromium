@@ -499,14 +499,6 @@ void TestFeedNetwork::SendDiscoverApiRequest(
     send_query_call_count++;
   }
 
-  bool is_action_upload_request =
-      request_type == UploadActionsDiscoverApi::kRequestType;
-  if (is_action_upload_request) {
-    feedwire::UploadActionsRequest request;
-    ASSERT_TRUE(request.ParseFromString(request_bytes));
-    ASSERT_TRUE(request.has_client_info());
-  }
-
   // If there is no injected response, create a default response.
   if (injected_responses.empty()) {
     switch (request_type) {

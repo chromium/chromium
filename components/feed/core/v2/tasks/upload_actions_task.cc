@@ -53,13 +53,9 @@ UploadActionsTask::Result& UploadActionsTask::Result::operator=(Result&&) =
 
 class UploadActionsTask::Batch {
  public:
-  explicit Batch(const feedwire::ClientInfo& client_info)
+  Batch()
       : feed_action_request_(
-            std::make_unique<feedwire::UploadActionsRequest>()) {
-    *feed_action_request_->mutable_client_info() = client_info;
-    LOG(ERROR) << "Action Request instance ID: "
-               << client_info.client_instance_id();
-  }
+            std::make_unique<feedwire::UploadActionsRequest>()) {}
   Batch(const Batch&) = delete;
   Batch& operator=(const Batch&) = delete;
   ~Batch() = default;
@@ -266,8 +262,7 @@ void UploadActionsTask::UpdateAndUploadNextBatch() {
   }
 
   // Grab a few actions to be processed and erase them from pending_actions_.
-  auto batch = std::make_unique<Batch>(
-      CreateClientInfo(stream_.GetSignedInRequestMetadata()));
+  auto batch = std::make_unique<Batch>();
   std::vector<feedstore::StoredAction> to_update;
   std::vector<LocalActionId> to_erase;
   batch->BiteOffAFewActions(&pending_actions_, &to_update, &to_erase);

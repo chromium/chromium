@@ -2052,18 +2052,6 @@ TEST_F(FeedApiTest, SendsClientInstanceId) {
                                    .client_info()
                                    .client_instance_id());
 
-  // UploadAction, and verify the same token is used.
-  stream_->UploadAction(MakeFeedAction(1ul), CreateLoggingParameters(), true,
-                        base::DoNothing());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ(1, network_.GetActionRequestCount());
-  feedwire::UploadActionsRequest action_request =
-      *network_.GetActionRequestSent();
-
-  EXPECT_EQ(first_instance_id,
-            action_request.client_info().client_instance_id());
-  EXPECT_EQ("", action_request.client_info().chrome_client_info().session_id());
-
   // No signed-out session id was in the request.
   EXPECT_TRUE(network_.query_request_sent->feed_request()
                   .client_info()
