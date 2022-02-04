@@ -1537,7 +1537,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2650049181907741121">Ação a ser realizada quando o usuário fecha a tampa</translation>
 <translation id="2658653824183107970">Usar a implementação legada de <ph name="CORS" /> em vez do novo <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Nunca usar um proxy</translation>
-<translation id="2664391398878045611">A página "Nova guia" não vai mostrar o anúncio do slot do meio, mesmo se ele estiver disponível</translation>
+<translation id="2664391398878045611">A página "Nova guia" não vai mostrar o aviso abaixo da caixa de pesquisa, mesmo se ele estiver disponível</translation>
 <translation id="2664682171745499686">Suprimir alertas de domínios parecidos em domínios</translation>
 <translation id="2665422249821137126">Ativar o cursor grande na tela de login</translation>
 <translation id="2672012807430078509">Controles que ativam o NTLM como protocolo de autenticação para ativações de PMEs</translation>
@@ -2681,7 +2681,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de cartão de crédito nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
-<translation id="3994043824457743421">Mostrar o anúncio do slot do meio na página "Nova guia"</translation>
+<translation id="3994043824457743421">Mostrar o aviso abaixo da caixa de pesquisa na página "Nova guia"</translation>
 <translation id="3997519162482760140">URLs que terão acesso a dispositivos de captura de vídeo em páginas de login SAML</translation>
 <translation id="4004523942550416237">Não mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="4007646377576030214"> Esta política foi suspensa na versão M87 e foi removida na M89. Use a <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar alertas de privacidade de sessões de visitante gerenciadas.
@@ -4518,6 +4518,28 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="631183702829488873">Quando esse recurso é ativado, ele exibirá um botão nas telas de login e de bloqueio que permite a exibição da senha.
           Ele é representado por um ícone de olho no campo de texto da senha. O botão não é exibido quando o recurso está desativado.
       </translation>
+<translation id="6313108604615108577">Esta política controla se a string do user agent da versão principal
+      será congelada em 99.
+
+      O cabeçalho de solicitação do user agent permite que sites identifiquem o aplicativo,
+      o sistema operacional, o fornecedor, e/ou a versão do user agent solicitante.
+      Alguns sites fazem suposições sobre como esse cabeçalho é formatado e podem
+      encontrar problemas com strings de versão que incluem três dígitos na
+      posição principal (por exemplo, 100.0.0.0).
+
+      Se a política for definida como "Default" ou deixada sem definição, as
+      configurações do navegador serão o padrão da versão principal da string do user agent.
+      Se definida como "ForceDisabled", a string do user agent não vai congelar a
+      versão principal.
+      Se definida como "ForceEnabled", a string do user agent sempre vai informar a
+      versão principal como 99 e incluir a versão principal do navegador na posição
+      secundária. Por exemplo, a versão 101.0.0.0 do navegador enviaria um cabeçalho de solicitação do
+      user agent que informa a versão 99.101.0.0.
+
+      Esta política é temporária e será descontinuada. Se
+      esta política e a
+      <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> estiverem
+      ativadas, a string da versão do user agent será sempre 99.0.0.0.</translation>
 <translation id="6313170479290171718">Esta política está obsoleta. Use a <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Se esta política for definida como verdadeira, o teclado na tela será ativado no momento do login. Se ela for definida como falsa, o teclado na tela será desativado no login.
@@ -4944,6 +4966,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       chrome://flags e todas as outras formas de desativar e ativar os recursos do navegador ainda funcionarão como esperado, independentemente de a política ser definida como "Ativada" ou "Desativada".</translation>
 <translation id="6794083666143216172">Permitir que as origens consultem os atributos do dispositivo</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
+<translation id="6796215185873669533">Definir a versão da string do user agent como a configuração padrão do navegador.</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
 <translation id="68031099365512050">Informar o status de áudio</translation>
 <translation id="6810445994095397827">Bloquear o JavaScript nestes sites</translation>
@@ -5263,6 +5286,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="7070525176564511548">A senha precisa ser digitada uma vez por semana (a cada 168 horas).</translation>
 <translation id="7072208053150563108">Taxa de alteração da senha da máquina</translation>
 <translation id="7072567600438630966">Permitir a ativação do recurso "Seu smartphone".</translation>
+<translation id="7074437930865599190">Congelar a string do user agent da versão principal em 99</translation>
 <translation id="7079519252486108041">Bloquear pop-ups nestes sites</translation>
 <translation id="707988220162760379">Sempre abrir arquivos PDF usando um leitor de PDF externo</translation>
 <translation id="7081784525008938771">Se a política for definida como "Ativada" ou não for definida, o usuário não será considerado inativo quando o dispositivo estiver reproduzindo vídeo. Isso impede que os intervalos de inatividade e de escurecimento, desligamento e bloqueio da tela sejam atingidos e que as ações correspondentes sejam realizadas.
@@ -5547,12 +5571,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7434202861148928348">Configurar os nomes de domínio obrigatórios para clientes de acesso remoto</translation>
 <translation id="7443356543619955157">Se a política for definida, será possível aplicar a configuração de rede para todos os usuários de um dispositivo <ph name="PRODUCT_OS_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
 <translation id="7448430478749155471">Ativa o recurso "Selecionar para ouvir" na tela de login</translation>
-<translation id="7456922722153109956">Esta política controla a visibilidade do anúncio do slot do meio na página "Nova guia".
+<translation id="7456922722153109956">Esta política controla a visibilidade do aviso abaixo da caixa de pesquisa na página "Nova guia".
 
-      Se a política estiver definida como Ativada, a página "Nova guia" vai mostrar o anúncio do slot do meio, caso esteja disponível.
+      Se a política estiver definida como Ativada, a página "Nova guia" vai mostrar o aviso abaixo da caixa de pesquisa, caso esteja disponível.
 
-      Se a política estiver definida como Desativada, a página "Nova guia" não vai mostrar o anúncio do slot do meio, mesmo se estiver disponível.
-      </translation>
+      Se a política estiver definida como Desativada, a página "Nova guia" não vai mostrar o aviso abaixo da caixa de pesquisa, mesmo se estiver disponível.</translation>
 <translation id="7458437477941640506">Não faça a reversão para a versão de destino se a versão do SO for mais recente que a de destino. As atualizações também estão desativadas.</translation>
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>
 <translation id="7459633275230216698">Permitir caixas de diálogo para seleção de arquivo</translation>
@@ -5969,6 +5992,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Por padrão, uma extensão ou um app Android não pode usar uma chave designada como corporativa. Isso é equivalente a definir allowCorporateKeyUsage como "Falsa" para a política. Uma extensão ou um app Android só poderá usar chaves de plataforma marcadas como corporativas para assinar dados arbitrários se allowCorporateKeyUsage for definida como "Verdadeira" para eles. Conceda essa permissão apenas se você confiar que a extensão ou o app Android protegerá a chave contra o acesso de invasores.</translation>
 <translation id="7933141401888114454">Ativar a criação de usuários supervisionados</translation>
 <translation id="793473937901685727">Definir a disponibilidade do certificado para apps ARC</translation>
+<translation id="7936302526928951356">A string do user agent não vai congelar a versão principal.</translation>
 <translation id="7937766917976512374">Permitir ou negar captura de vídeo</translation>
 <translation id="7941975817681987555">Não prever ações da rede em nenhuma conexão de rede</translation>
 <translation id="7951605113561734721">Especifica os certificados do cliente em todo o dispositivo que deveriam ser registrados usando o protocolo de gerenciamento do dispositivo.</translation>
@@ -6761,6 +6785,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Cada item da lista da política é uma string que contém um ID de extensão e, opcionalmente, um URL de atualização separados por ponto e vírgula (;). O ID da extensão é a string de 32 letras encontrada, por exemplo, em chrome://extensions no modo de desenvolvedor. Se especificado, o URL de atualização apontará para um documento XML de manifesto de atualização (https://developer.chrome.com/extensions/autoupdate). Por padrão, é usado o URL de atualização da Chrome Web Store. O URL de atualização definido nesta política só é usado na instalação inicial. As atualizações subsequentes da extensão empregam o URL de atualização indicado no manifesto da extensão.
 
        Observação: esta política não se aplica ao modo de navegação anônima. Leia sobre hospedagem de extensões (https://developer.chrome.com/extensions/hosting).</translation>
+<translation id="8827275450034266143">A string do user agent vai congelar a versão principal em 99 e incluir a versão principal do navegador na posição secundária.</translation>
 <translation id="8827366480126575426">O protocolo do gerenciador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir mais tipos de consulta DNS</translation>
 <translation id="8831911834413504983">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que podem executar JavaScript.

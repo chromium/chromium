@@ -4526,6 +4526,28 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="631183702829488873">Cuando esta función está habilitada, muestra un botón en la página acceso o de bloqueo que permite mostrar la contraseña.
           Se representa con el ícono de un ojo en el campo de texto de contraseñas. Cuando la función está inhabilitada, el botón no aparece.
       </translation>
+<translation id="6313108604615108577">Esta política controla si se bloquea la versión
+principal del string usuario-agente en 99.
+
+      El encabezado de la solicitud del usuario-agente permite a los sitios web identificar la aplicación,
+      el sistema operativo, el proveedor o la versión del usuario-agente solicitante.
+      Algunos sitios web hacen suposiciones sobre el formato de este encabezado y pueden
+      tener problemas con strings de versión que incluyen tres dígitos en la
+      posición principal (p. ej., 100.0.0.0).
+
+      Si estableces la política como "Default" o no la estableces, se establecerá de forma predeterminada
+      la configuración del navegador para la versión principal del string usuario-agente.
+      Si la estableces como "ForceDisabled", el string usuario-agente no bloqueará la
+      versión principal.
+      Si la estableces como "ForceEnabled", el string usuario-agente siempre informará la
+      versión principal como 99. También incluirá la versión principal del navegador en la posición
+      de la versión secundaria. Por ejemplo, la versión 101.0.0.0 del navegador enviaría un encabezado de la solicitud
+      del usuario-agente que informe la versión 99.101.0.0.
+
+      Esta política es temporal y dejará de estar disponible en el futuro. Ten en cuenta que,
+      si esta política y
+      <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> están
+      habilitadas, el string de versión del usuario-agente será siempre 99.0.0.0.</translation>
 <translation id="6313170479290171718">Esta política dejó de estar disponible. En su lugar, utiliza <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Si estableces la política como verdadera, se activará el teclado en pantalla para el acceso. Si la estableces como falsa, se desactivará el teclado en pantalla para el acceso.
@@ -4952,6 +4974,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       chrome://flags y cualquier otra forma de activar y desactivar las funciones del navegador seguirán comportándose según lo esperado independientemente de si esta política está habilitada o inhabilitada.</translation>
 <translation id="6794083666143216172">Permitir que los orígenes busquen atributos de dispositivos</translation>
 <translation id="6795485990775913659">Permitir la impresión solo sin PIN</translation>
+<translation id="6796215185873669533">Establecer la versión del string usuario-agente en el valor predeterminado de la configuración del navegador</translation>
 <translation id="6800181452282128474">No enviar consultas a Quirks Servers</translation>
 <translation id="68031099365512050">Informar el estado del audio</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
@@ -5271,6 +5294,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7070525176564511548">Se requiere el ingreso de la contraseña cada semana (168 horas)</translation>
 <translation id="7072208053150563108">Frecuencia de cambio de la contraseña del dispositivo</translation>
 <translation id="7072567600438630966">Permite habilitar Phone Hub</translation>
+<translation id="7074437930865599190">Bloquear la versión principal del string usuario-agente en 99</translation>
 <translation id="7079519252486108041">Bloquear ventanas emergentes en estos sitios</translation>
 <translation id="707988220162760379">Abrir siempre los archivos PDF mediante un visor de PDF externo</translation>
 <translation id="7081784525008938771">Si habilitas la política o no la estableces, no se considerará que el usuario está inactivo cuando se esté reproduciendo video. Esto evitará que se alcancen los tiempos de espera de inactividad, atenuación de la pantalla, pantalla apagada y bloqueo de pantalla, y que se tomen las medidas correspondientes.
@@ -5976,6 +6000,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       De forma predeterminada, una extensión o una aplicación para Android no puede usar claves designadas para uso empresarial, lo cual equivale a establecer la política allowCorporateKeyUsage como falsa. Solo si estableces allowCorporateKeyUsage como verdadera para una extensión o una aplicación para Android, estas podrán usar cualquier clave de plataforma designada para uso empresarial a fin de firmar datos arbitrarios. Otorga este permiso solo si la extensión o la aplicación para Android es de confianza, a fin de proteger el acceso a la clave ante posibles atacantes.</translation>
 <translation id="7933141401888114454">Habilita la creación de usuarios supervisados.</translation>
 <translation id="793473937901685727">Establecer la disponibilidad de certificados para apps de ARC</translation>
+<translation id="7936302526928951356">El string usuario-agente no bloqueará los cambios para la versión principal</translation>
 <translation id="7937766917976512374">Permitir o rechazar la captura de video</translation>
 <translation id="7941975817681987555">No predecir acciones de la red en ninguna conexión de red</translation>
 <translation id="7951605113561734721">Especifica los Certificados de cliente de todo el dispositivo que deben inscribirse con el protocolo de administración de dispositivos.</translation>
@@ -6787,6 +6812,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Cada elemento de la lista de la política es una string que contiene un ID de extensión y, de forma opcional, una URL de actualización separada por un punto y coma (;). El ID de extensión es la string de 32 letras que se encuentra, p. ej., en chrome://extensions, en el Modo de desarrollador. Si se especifica, la URL de actualización debe direccionar a un documento XML del manifiesto de actualización (https://developer.chrome.com/extensions/autoupdate). De forma predeterminada, se usa la URL de actualización de Chrome Web Store. La URL de actualización que se establece en esta política solo se usa para la instalación inicial; las actualizaciones posteriores de la extensión utilizan la URL de actualización que se indica en el manifiesto de la extensión.
 
        Nota: Esta política no se aplica al modo Incógnito. Obtén más información sobre el alojamiento de extensiones en https://developer.chrome.com/extensions/hosting.</translation>
+<translation id="8827275450034266143">El string usuario-agente bloqueará la versión principal en 99. Además, incluirá la versión principal del navegador en la posición de la versión secundaria.</translation>
 <translation id="8827366480126575426">El protocolo para el controlador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir tipos de consultas de DNS adicionales</translation>
 <translation id="8831911834413504983">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden ejecutar JavaScript.
