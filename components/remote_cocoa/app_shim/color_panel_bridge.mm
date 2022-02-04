@@ -42,10 +42,14 @@ remote_cocoa::ColorPanelBridge* g_current_panel_bridge = nullptr;
 - (instancetype)init {
   if ((self = [super init])) {
     NSColorPanel* panel = [NSColorPanel sharedColorPanel];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
+    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self
            selector:@selector(windowWillClose:)
                name:NSWindowWillCloseNotification
+             object:panel];
+    [nc addObserver:self
+           selector:@selector(windowDidResignKey:)
+               name:NSWindowDidResignKeyNotification
              object:panel];
   }
   return self;
@@ -61,6 +65,12 @@ remote_cocoa::ColorPanelBridge* g_current_panel_bridge = nullptr;
   if (g_current_panel_bridge)
     g_current_panel_bridge->host()->DidCloseColorPanel();
   _nonUserChange = NO;
+}
+
+- (void)windowDidResignKey:(NSNotification*)notification {
+  // Close the color panel when the user clicks away.
+  [self windowWillClose:notification];
+  [[NSColorPanel sharedColorPanel] close];
 }
 
 - (void)didChooseColor:(NSColorPanel*)panel {
