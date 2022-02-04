@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -23,8 +22,7 @@ class PrefService;
 
 // Concrete implementation of a reading list model using in memory lists.
 class ReadingListModelImpl : public ReadingListModel,
-                             public ReadingListStoreDelegate,
-                             public KeyedService {
+                             public ReadingListStoreDelegate {
  public:
   using ReadingListEntries = std::map<GURL, ReadingListEntry>;
 
@@ -36,8 +34,6 @@ class ReadingListModelImpl : public ReadingListModel,
   ReadingListModelImpl(std::unique_ptr<ReadingListModelStorage> storage_layer,
                        PrefService* pref_service,
                        base::Clock* clock_);
-
-  ReadingListModelImpl();
 
   syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
 

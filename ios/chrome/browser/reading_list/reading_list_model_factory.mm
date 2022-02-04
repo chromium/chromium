@@ -32,15 +32,8 @@
 // static
 ReadingListModel* ReadingListModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<ReadingListModelImpl*>(
+  return static_cast<ReadingListModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
-}
-
-// static
-ReadingListModel* ReadingListModelFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
-  return static_cast<ReadingListModelImpl*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
 
 // static
@@ -78,8 +71,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
           syncer::READING_LIST,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel()));
-  std::unique_ptr<ReadingListStore> store = std::make_unique<ReadingListStore>(
-      std::move(store_factory), std::move(change_processor));
+  auto store = std::make_unique<ReadingListStore>(std::move(store_factory),
+                                                  std::move(change_processor));
   std::unique_ptr<KeyedService> reading_list_model =
       std::make_unique<ReadingListModelImpl>(std::move(store),
                                              chrome_browser_state->GetPrefs(),

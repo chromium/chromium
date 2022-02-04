@@ -19,8 +19,6 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
  public:
   static ReadingListModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
-  static ReadingListModel* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
   static ReadingListModelFactory* GetInstance();
 
   ReadingListModelFactory(const ReadingListModelFactory&) = delete;
