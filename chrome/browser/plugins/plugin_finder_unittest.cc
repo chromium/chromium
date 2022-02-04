@@ -41,14 +41,14 @@ TEST(PluginFinderTest, JsonSyntax) {
     const base::ListValue* mime_types = NULL;
     if (plugin->GetList("mime_types", &mime_types)) {
       for (const auto& mime_type : mime_types->GetListDeprecated()) {
-        EXPECT_TRUE(mime_type.GetAsString(&dummy_str));
+        EXPECT_TRUE(mime_type.is_string());
       }
     }
 
     const base::ListValue* matching_mime_types = NULL;
     if (plugin->GetList("matching_mime_types", &matching_mime_types)) {
       for (const auto& mime_type : matching_mime_types->GetListDeprecated()) {
-        EXPECT_TRUE(mime_type.GetAsString(&dummy_str));
+        EXPECT_TRUE(mime_type.is_string());
       }
     }
 
