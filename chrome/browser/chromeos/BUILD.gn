@@ -547,8 +547,10 @@ source_set("chromeos") {
   ]
   if (is_chromeos_ash) {
     deps += [ "//remoting/host/chromeos:host_event_reporter_impl" ]
+    if (use_libfuzzer) {
+      deps += [ "//components/exo/wayland:weston_test_stub" ]
+    }
   }
-
   data_deps = [ ":dbus_service_files" ]
 
   allow_circular_includes_from = [
