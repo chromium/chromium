@@ -9,7 +9,16 @@
 #include "components/prefs/pref_service.h"
 
 QuickAnswersStateController::QuickAnswersStateController()
-    : session_observer_(this) {}
+    : session_observer_(this) {
+  // Register pref changes if use session already started.
+  if (ash::Shell::Get()->session_controller() &&
+      ash::Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    PrefService* prefs =
+        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+    DCHECK(prefs);
+    state_.RegisterPrefChanges(prefs);
+  }
+}
 
 QuickAnswersStateController::~QuickAnswersStateController() = default;
 
