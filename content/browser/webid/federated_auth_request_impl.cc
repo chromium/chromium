@@ -895,6 +895,16 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   CleanUp();
 
+  // Avoids exposing to renderer detailed error messages which may leak cross
+  // site information to the API call site.
+  // TODO(yigu): Update RequestIdTokenStatus to only include generic errors to
+  // send to the renderer. Meanwhile, keep the detailed status which is used in
+  // metrics and devtools in content/.
+  if (status >= RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound &&
+      status <= RequestIdTokenStatus::kErrorFetchingIdTokenInvalidRequest) {
+    status = RequestIdTokenStatus::kError;
+  }
+
   if (auth_request_callback_)
     std::move(auth_request_callback_).Run(status, id_token);
 }

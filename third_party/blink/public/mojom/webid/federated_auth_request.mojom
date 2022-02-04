@@ -14,6 +14,9 @@ import "url/mojom/url.mojom";
 // be updated alongside FederatedAuthRequestIssueReason in
 // third_party/blink/public/devtools_protocol/browser_protocol.pdl, which
 // includes all cases except for kSuccess.
+// TODO(npm): Refactor RequestIdTokenStatus to only send generic messages to the
+// renderer and have a separate enum that has detailed messages in content/.
+// Don't change the meaning or the order of these values before it's in place.
 enum RequestIdTokenStatus {
   kSuccess,
   kApprovalDeclined,

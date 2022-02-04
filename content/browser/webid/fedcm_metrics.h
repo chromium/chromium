@@ -82,14 +82,10 @@ void RecordIdTokenResponseAndTurnaroundTime(
     ukm::SourceId source_id);
 
 // Records the status of the |RequestIdToken| call.
-// TODO(yigu): Call this function from |CompleteRequest| once the mojom side
-// |RequestIdTokenStatus| is cleaned up.
 void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
                                 ukm::SourceId source_id);
 
 // Records the status of the |Revoke| call.
-// TODO(yigu): Call this function from |CompleteRevokeRequest| once the mojom
-// side |RevokeStatus| is cleaned up.
 void RecordRevokeStatus(FedCmRevokeStatus status, ukm::SourceId source_id);
 }  // namespace content
 

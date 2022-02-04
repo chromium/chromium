@@ -103,6 +103,7 @@ typedef struct {
 // Expected return values from a call to RequestIdToken.
 typedef struct {
   RequestIdTokenStatus return_status;
+  RequestIdTokenStatus devtools_issue_status;
   const char* token;
 } RequestExpectations;
 
@@ -165,7 +166,7 @@ static const MockClientIdConfiguration kSuccessfulClientId{
 static const AuthRequestTestCase kPermissionTestCases[]{
     {"Successful run with the IdP page loaded",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kSuccess, kToken},
+     {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
      {kToken,
       UserApproval::kApproved,
       FetchStatus::kSuccess,
@@ -179,7 +180,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"Successful run with a token response from the idp_endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kSuccess, kToken},
+     {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
      {kToken,
       UserApproval::kApproved,
       FetchStatus::kSuccess,
@@ -193,25 +194,29 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"Initial user permission denied",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
+     {RequestIdTokenStatus::kApprovalDeclined,
+      RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
      {kToken, UserApproval::kDenied, absl::nullopt, absl::nullopt, "", "", "",
       "", kPermissionNoop, kMediatedNoop}},
 
     {"Wellknown file not found",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound, kEmptyToken},
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kHttpNotFoundError,
       absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
 
     {"Wellknown fetch error",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse, kEmptyToken},
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kNoResponseError,
       absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
 
     {"Error parsing wellknown for Permission mode",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
       kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kInvalidResponseError,
       absl::nullopt, "", kAccountsEndpoint, kTokenEndpoint, "", kPermissionNoop,
@@ -219,7 +224,8 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"Error reaching the idpendpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorFetchingSignin, kEmptyToken},
+     {RequestIdTokenStatus::kErrorFetchingSignin,
+      RequestIdTokenStatus::kErrorFetchingSignin, kEmptyToken},
      {kToken,
       UserApproval::kApproved,
       FetchStatus::kSuccess,
@@ -233,7 +239,8 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"Error parsing the idpendpoint response",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorInvalidSigninResponse, kEmptyToken},
+     {RequestIdTokenStatus::kErrorInvalidSigninResponse,
+      RequestIdTokenStatus::kErrorInvalidSigninResponse, kEmptyToken},
      {kToken,
       UserApproval::kApproved,
       FetchStatus::kSuccess,
@@ -247,7 +254,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"IdP window closed before token provision",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kError, kEmptyToken},
+     {RequestIdTokenStatus::kError, RequestIdTokenStatus::kError, kEmptyToken},
      {kEmptyToken,
       UserApproval::kApproved,
       FetchStatus::kSuccess,
@@ -261,7 +268,8 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"Token provision declined by user after IdP window closed",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
+     {RequestIdTokenStatus::kApprovalDeclined,
+      RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
      {kToken,
       UserApproval::kApproved,
       FetchStatus::kSuccess,
@@ -276,7 +284,8 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 static const AuthRequestTestCase kMediatedTestCases[]{
     {"Error parsing wellknown for Mediated mode missing token endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
       kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
       kIdpEndpoint, kAccountsEndpoint, "", kClientIdMetadataEndpoint,
@@ -284,7 +293,8 @@ static const AuthRequestTestCase kMediatedTestCases[]{
 
     {"Error parsing wellknown for Mediated mode missing accounts endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
       kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
       kIdpEndpoint, "", kTokenEndpoint, kClientIdMetadataEndpoint,
@@ -292,7 +302,8 @@ static const AuthRequestTestCase kMediatedTestCases[]{
 
     {"Error reaching Accounts endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kErrorFetchingAccountsNoResponse, kEmptyToken},
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingAccountsNoResponse, kEmptyToken},
      {kEmptyToken,
       absl::nullopt,
       FetchStatus::kSuccess,
@@ -306,7 +317,8 @@ static const AuthRequestTestCase kMediatedTestCases[]{
 
     {"Error parsing Accounts response",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse, kEmptyToken},
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse, kEmptyToken},
      {kToken,
       absl::nullopt,
       FetchStatus::kSuccess,
@@ -320,7 +332,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
 
     {"Successful Mediated flow",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kSuccess, kToken},
+     {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
      {kToken,
       absl::nullopt,
       FetchStatus::kSuccess,
@@ -846,9 +858,9 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
   auto auth_response = PerformAuthRequest(
       test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
       test_case.inputs.prefer_auto_sign_in);
-  EXPECT_EQ(
-      main_test_rfh()->GetFederatedAuthRequestIssueCount(auth_response.first),
-      auth_response.first == RequestIdTokenStatus::kSuccess ? 0 : 1);
+  EXPECT_EQ(main_test_rfh()->GetFederatedAuthRequestIssueCount(
+                test_case.expected.devtools_issue_status),
+            auth_response.first == RequestIdTokenStatus::kSuccess ? 0 : 1);
 }
 
 // Test Logout method success with multiple relying parties.
@@ -901,7 +913,7 @@ static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
     "Successful mediated flow with one account",
     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
      kNotPreferAutoSignIn},
-    {RequestIdTokenStatus::kSuccess, kToken},
+    {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
     {kToken,
      absl::nullopt,
      FetchStatus::kSuccess,
@@ -917,7 +929,7 @@ static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
     "Failed mediated flow with one account",
     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
      kNotPreferAutoSignIn},
-    {RequestIdTokenStatus::kSuccess, kToken},
+    {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
     {kToken,
      absl::nullopt,
      FetchStatus::kSuccess,
@@ -933,7 +945,7 @@ static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
     "Successful mediated flow with one account",
     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
      kPreferAutoSignIn},
-    {RequestIdTokenStatus::kSuccess, kToken},
+    {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
     {kToken,
      absl::nullopt,
      FetchStatus::kSuccess,
@@ -1354,7 +1366,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
       "Failed mediated flow due to user not selecting an account",
       {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
        kNotPreferAutoSignIn},
-      {RequestIdTokenStatus::kSuccess, kToken},
+      {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
       {kToken,
        absl::nullopt,
        FetchStatus::kSuccess,
