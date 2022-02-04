@@ -36,9 +36,11 @@ struct StructTraits<media::mojom::StatusDataDataView,
     return input.frames;
   }
 
-  static base::span<media::internal::StatusData> causes(
-      media::internal::StatusData& input) {
-    return input.causes;
+  static absl::optional<media::internal::StatusData> cause(
+      const media::internal::StatusData& input) {
+    if (input.cause)
+      return *input.cause;
+    return absl::nullopt;
   }
 
   static base::Value data(const media::internal::StatusData& input) {

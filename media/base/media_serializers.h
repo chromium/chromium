@@ -454,7 +454,8 @@ struct MediaSerializer<StatusData> {
     FIELD_SERIALIZE("message", status.message);
     FIELD_SERIALIZE("stack", status.frames);
     FIELD_SERIALIZE("data", status.data);
-    FIELD_SERIALIZE("causes", status.causes);
+    if (status.cause)
+      FIELD_SERIALIZE("cause", *status.cause);
     return result;
   }
 };

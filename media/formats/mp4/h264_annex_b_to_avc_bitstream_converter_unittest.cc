@@ -132,6 +132,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Failure) {
   std::vector<uint8_t> output(input.size());
 
   auto status = converter.ConvertChunk(input, output, nullptr, nullptr);
+
   ASSERT_EQ(status.code(), MP4Status::Codes::kInvalidSPS);
 }
 

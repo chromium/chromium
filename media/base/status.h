@@ -69,8 +69,9 @@ struct MEDIA_EXPORT StatusData {
   // Stack frames
   std::vector<base::Value> frames;
 
-  // Causes
-  std::vector<StatusData> causes;
+  // Store a root cause. Helpful for debugging, as it can end up containing
+  // the chain of causes.
+  std::unique_ptr<StatusData> cause;
 
   // Data attached to the error
   base::Value data;
@@ -267,7 +268,9 @@ class MEDIA_EXPORT TypedStatus {
   template <typename AnyTraitsType>
   TypedStatus<T>&& AddCause(TypedStatus<AnyTraitsType>&& cause) && {
     DCHECK(data_ && cause.data_);
-    data_->causes.push_back(*cause.data_);
+    // The |cause| status is about to lose its type forever. We need to pack
+    // the group and code now to avoid losing it in the future.
+    data_->cause = std::move(cause.data_);
     return std::move(*this);
   }
 
@@ -275,7 +278,9 @@ class MEDIA_EXPORT TypedStatus {
   template <typename AnyTraitsType>
   void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
-    data_->causes.push_back(*cause.data_);
+    // The |cause| status is about to lose its type forever. We need to pack
+    // the group and code now to avoid losing it in the future.
+    data_->cause = std::move(cause.data_);
   }
 
   inline bool operator==(Codes code) const { return code == this->code(); }
@@ -431,9 +436,6 @@ class MEDIA_EXPORT TypedStatus {
  private:
   std::unique_ptr<internal::StatusData> data_;
 
-  // Let the status sink talk about the internal data.
-  friend class StatusSink;
-
   template <typename StatusEnum, typename DataView>
   friend struct mojo::StructTraits;
 
@@ -443,10 +445,6 @@ class MEDIA_EXPORT TypedStatus {
   // Allow AddCause.
   template <typename StatusEnum>
   friend class TypedStatus;
-
-  void SetInternalData(std::unique_ptr<internal::StatusData> data) {
-    data_ = std::move(data);
-  }
 };
 
 template <typename T>

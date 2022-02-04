@@ -482,7 +482,7 @@ struct StatusData {
   uint16 code;
   string message;
   array<mojo_base.mojom.Value> frames;
-  array<StatusData> causes;
+  StatusData? cause;
   mojo_base.mojom.Value data;
 };
 

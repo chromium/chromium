@@ -28,12 +28,14 @@ bool StructTraits<
   if (!data.ReadData(&output->data))
     return false;
 
-  std::vector<media::internal::StatusData> causes;
-  if (!data.ReadCauses(&causes))
+  absl::optional<media::internal::StatusData> cause;
+  if (!data.ReadCause(&cause))
     return false;
 
-  for (const auto& cause : causes)
-    output->causes.push_back(cause);
+  if (cause.has_value()) {
+    output->cause =
+        std::make_unique<media::internal::StatusData>(std::move(*cause));
+  }
 
   return true;
 }

@@ -147,10 +147,11 @@ TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {
 TEST_F(StatusTest, SingleLayerError) {
   NormalStatus failed = FailEasily();
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 6ul);
+
+  ASSERT_EQ(actual.DictSize(), 5ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(actual.FindListPath("causes")->GetListDeprecated().size(), 0ul);
+  ASSERT_EQ(actual.FindKey("cause"), nullptr);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
 
   const auto& stack = actual.FindListPath("stack")->GetListDeprecated();
@@ -168,10 +169,10 @@ TEST_F(StatusTest, SingleLayerError) {
 TEST_F(StatusTest, MultipleErrorLayer) {
   NormalStatus failed = FailRecursively(3);
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(actual.DictSize(), 5ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetListDeprecated().size(), 4ul);
-  ASSERT_EQ(actual.FindListPath("causes")->GetListDeprecated().size(), 0ul);
+  ASSERT_EQ(actual.FindKey("cause"), nullptr);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
 
   const auto& stack = actual.FindListPath("stack")->GetListDeprecated();
@@ -181,10 +182,10 @@ TEST_F(StatusTest, MultipleErrorLayer) {
 TEST_F(StatusTest, CanHaveData) {
   NormalStatus failed = FailWithData("example", "data");
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(actual.DictSize(), 5ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(actual.FindListPath("causes")->GetListDeprecated().size(), 0ul);
+  ASSERT_EQ(actual.FindKey("cause"), nullptr);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 1ul);
 
   const auto& stack = actual.FindListPath("stack")->GetListDeprecated();
@@ -197,10 +198,10 @@ TEST_F(StatusTest, CanUseCustomSerializer) {
   NormalStatus failed =
       FailWithData("example", UselessThingToBeSerialized("F"));
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(actual.DictSize(), 5ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(actual.FindListPath("causes")->GetListDeprecated().size(), 0ul);
+  ASSERT_EQ(actual.FindKey("cause"), nullptr);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 1ul);
 
   const auto& stack = actual.FindListPath("stack")->GetListDeprecated();
@@ -215,15 +216,16 @@ TEST_F(StatusTest, CausedByHasVector) {
   ASSERT_EQ(actual.DictSize(), 6ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(actual.FindListPath("causes")->GetListDeprecated().size(), 1ul);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
+  ASSERT_NE(actual.FindKey("cause"), nullptr);
 
-  base::Value& nested = actual.FindListPath("causes")->GetListDeprecated()[0];
-  ASSERT_EQ(nested.DictSize(), 6ul);
-  ASSERT_EQ(*nested.FindStringPath("message"), "Message");
-  ASSERT_EQ(nested.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(nested.FindListPath("causes")->GetListDeprecated().size(), 0ul);
-  ASSERT_EQ(nested.FindDictPath("data")->DictSize(), 0ul);
+  base::Value* nested = actual.FindDictPath("cause");
+  ASSERT_NE(nested, nullptr);
+  ASSERT_EQ(nested->DictSize(), 5ul);
+  ASSERT_EQ(*nested->FindStringPath("message"), "Message");
+  ASSERT_EQ(nested->FindListPath("stack")->GetListDeprecated().size(), 1ul);
+  ASSERT_EQ(nested->FindKey("cause"), nullptr);
+  ASSERT_EQ(nested->FindDictPath("data")->DictSize(), 0ul);
 }
 
 TEST_F(StatusTest, CausedByCanAssignCopy) {
@@ -232,21 +234,19 @@ TEST_F(StatusTest, CausedByCanAssignCopy) {
   base::Value causal_serialized = MediaSerialize(causal);
   base::Value copy_causal_serialized = MediaSerialize(copy_causal);
 
-  base::Value& original =
-      causal_serialized.FindListPath("causes")->GetListDeprecated()[0];
-  ASSERT_EQ(original.DictSize(), 6ul);
-  ASSERT_EQ(*original.FindStringPath("message"), "Message");
-  ASSERT_EQ(original.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(original.FindListPath("causes")->GetListDeprecated().size(), 0ul);
-  ASSERT_EQ(original.FindDictPath("data")->DictSize(), 0ul);
+  base::Value* original = causal_serialized.FindDictPath("cause");
+  ASSERT_EQ(original->DictSize(), 5ul);
+  ASSERT_EQ(*original->FindStringPath("message"), "Message");
+  ASSERT_EQ(original->FindListPath("stack")->GetListDeprecated().size(), 1ul);
+  ASSERT_EQ(original->FindKey("cause"), nullptr);
+  ASSERT_EQ(original->FindDictPath("data")->DictSize(), 0ul);
 
-  base::Value& copied =
-      copy_causal_serialized.FindListPath("causes")->GetListDeprecated()[0];
-  ASSERT_EQ(copied.DictSize(), 6ul);
-  ASSERT_EQ(*copied.FindStringPath("message"), "Message");
-  ASSERT_EQ(copied.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(copied.FindListPath("causes")->GetListDeprecated().size(), 0ul);
-  ASSERT_EQ(copied.FindDictPath("data")->DictSize(), 0ul);
+  base::Value* copied = copy_causal_serialized.FindDictPath("cause");
+  ASSERT_EQ(copied->DictSize(), 5ul);
+  ASSERT_EQ(*copied->FindStringPath("message"), "Message");
+  ASSERT_EQ(copied->FindListPath("stack")->GetListDeprecated().size(), 1ul);
+  ASSERT_EQ(copied->FindKey("cause"), nullptr);
+  ASSERT_EQ(copied->FindDictPath("data")->DictSize(), 0ul);
 }
 
 TEST_F(StatusTest, CanCopyEasily) {
@@ -254,17 +254,17 @@ TEST_F(StatusTest, CanCopyEasily) {
   NormalStatus withData = DoSomethingGiveItBack(failed);
 
   base::Value actual = MediaSerialize(failed);
-  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(actual.DictSize(), 5ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(actual.FindListPath("causes")->GetListDeprecated().size(), 0ul);
+  ASSERT_EQ(actual.FindKey("cause"), nullptr);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 0ul);
 
   actual = MediaSerialize(withData);
-  ASSERT_EQ(actual.DictSize(), 6ul);
+  ASSERT_EQ(actual.DictSize(), 5ul);
   ASSERT_EQ(*actual.FindStringPath("message"), "Message");
   ASSERT_EQ(actual.FindListPath("stack")->GetListDeprecated().size(), 1ul);
-  ASSERT_EQ(actual.FindListPath("causes")->GetListDeprecated().size(), 0ul);
+  ASSERT_EQ(actual.FindKey("cause"), nullptr);
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 1ul);
 }
 
