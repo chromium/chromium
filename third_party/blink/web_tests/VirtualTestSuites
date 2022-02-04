@@ -620,9 +620,9 @@
     "args": ["--disable-blink-features=PaymentRequestTotalOptional"]
   },
   {
-    "prefix": "basic-card-disabled",
+    "prefix": "basic-card-enabled",
     "bases": ["payments/payment-request-interface.html", "http/tests/payments/payment-instruments.html"],
-    "args": ["--disable-blink-features=PaymentRequestBasicCard"]
+    "args": ["--enable-blink-features=PaymentRequestBasicCard", "--enable-features=PaymentRequestBasicCard"]
   },
   {
     "prefix": "json-modules",
