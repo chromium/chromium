@@ -3965,6 +3965,21 @@
             ]
         }
     ],
+    "MigrateAlwaysTranslateLanguagesFix": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MigrateAlwaysTranslateLanguagesFix"
+                    ]
+                }
+            ]
+        }
+    ],
     "MigrateDefaultChromeAppToWebAppsGSuite": [
         {
             "platforms": [
