@@ -2968,7 +2968,7 @@
           'xctest',
         ],
         'test_suites': {
-          'isolated_scripts': 'ios15_sdk_simulator_tests'
+          'isolated_scripts': 'ios_code_coverage_tests'
         }
       },
       'ios-simulator-code-coverage': {
@@ -3071,7 +3071,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_13_latest_beta',
+          'xcode_13_beta_bots',
           'xctest',
         ],
         'test_suites': {
@@ -3092,7 +3092,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_13_latest_beta',
+          'xcode_13_beta_bots',
           'xctest',
         ],
         'test_suites': {

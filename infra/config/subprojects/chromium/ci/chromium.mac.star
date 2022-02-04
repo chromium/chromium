@@ -197,6 +197,8 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
+    # TODO(crbug.com/1266211): Use main Xcode when main version >= 13c100.
+    xcode = xcode.x13betabots,
 )
 
 ios_builder(

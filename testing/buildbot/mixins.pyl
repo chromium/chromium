@@ -439,7 +439,7 @@
         '--device=aemu',
       ],
     },
-  }, 
+  },
   'fuchsia_logs': {
     '$mixin_append': {
       'args': [
@@ -534,6 +534,18 @@
           {
             'name': 'runtime_ios_15_0',
             'path': 'Runtime-ios-15.0',
+          },
+        ],
+      },
+    },
+  },
+  'ios_runtime_cache_15_2': {
+    '$mixin_append': {
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'runtime_ios_15_2',
+            'path': 'Runtime-ios-15.2',
           },
         ],
       },
@@ -1181,7 +1193,7 @@
       },
     },
   },
-  # (default in Chromium iOS) xcode 12.4 gm seed
+  # xcode 12.4 gm seed
   'xcode_12d4e': {
     '$mixin_append': {
       'args': [
@@ -1216,17 +1228,18 @@
       },
     },
   },
-  'xcode_13_latest_beta': {
+  # Xcode 13 used on beta bots.
+  'xcode_13_beta_bots': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13a233'
+        '13c100'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13a233',
+          'name': 'xcode_ios_13c100',
           'path': 'Xcode.app',
         },
       ],

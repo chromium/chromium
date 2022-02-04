@@ -149,6 +149,8 @@ try_.builder(
 
 ios_builder(
     name = "ios-catalyst",
+    # TODO(crbug.com/1266211): Use main Xcode when main version >= 13c100.
+    xcode = xcode.x13betabots,
 )
 
 ios_builder(
@@ -233,7 +235,7 @@ ios_builder(
 
 ios_builder(
     name = "ios15-sdk-simulator",
-    xcode = xcode.x13latestbeta,
+    xcode = xcode.x13betabots,
 )
 
 try_.gpu.optional_tests_builder(

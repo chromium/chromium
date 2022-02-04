@@ -1077,7 +1077,7 @@ fyi_ios_builder(
         ),
     ],
     os = os.MAC_11,
-    xcode = xcode.x13latestbeta,
+    xcode = xcode.x13betabots,
 )
 
 fyi_ios_builder(
@@ -1089,7 +1089,7 @@ fyi_ios_builder(
         ),
     ],
     os = os.MAC_11,
-    xcode = xcode.x13latestbeta,
+    xcode = xcode.x13betabots,
 )
 
 fyi_mac_builder(
