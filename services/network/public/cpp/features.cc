@@ -10,6 +10,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "net/base/mime_sniffer.h"
 
 namespace network {
 namespace features {
@@ -207,6 +208,13 @@ static constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
 // number will lead to thread janks. This value was optimized via Finch:
 // see crbug.com/1041006.
 static constexpr uint32_t kMaxNumConsumedBytesInTask = 1024 * 1024;
+
+// The smallest buffer size must be larger than the maximum MIME sniffing
+// chunk size. This is assumed several places in content/browser/loader.
+static_assert(kDefaultDataPipeAllocationSize < kLargerDataPipeAllocationSize);
+static_assert(kDefaultDataPipeAllocationSize >= net::kMaxBytesToSniff,
+              "Smallest data pipe size must be at least as large as a "
+              "MIME-type sniffing buffer.");
 }  // namespace
 
 // static
