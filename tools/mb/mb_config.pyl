@@ -841,7 +841,6 @@
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild',
       'android-binary-size': 'android_binary_size',
       'android_blink_rel': 'android_release_trybot',
-      'android_cfi_rel_ng': 'android_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
       'android_compile_dbg': 'android_debug_trybot_compile_only',
       'android_compile_x64_dbg': 'android_debug_trybot_compile_only_x64',
       'android_compile_x86_dbg': 'android_debug_trybot_compile_only_x86',
@@ -1261,10 +1260,6 @@
 
     'android_cast_debug_static_bot_compile_only': [
       'android', 'cast', 'clang', 'debug_static_bot', 'compile_only',
-    ],
-
-    'android_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on_goma': [
-      'android', 'cfi_full', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'goma',
     ],
 
     'android_clang_asan_debug_bot_reclient': [

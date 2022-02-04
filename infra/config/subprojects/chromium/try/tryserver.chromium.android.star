@@ -390,11 +390,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android_cfi_rel_ng",
-    cores = 32,
-)
-
-try_.builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
