@@ -14,6 +14,7 @@ component("missive") {
     "//components/reporting/proto:interface_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/util:disconnectable_client",
     "//components/reporting/util:status",
     "//dbus",
   ]
