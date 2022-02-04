@@ -2122,6 +2122,9 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
 }
 
 void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
+  if (!IsBackgroundScanningFeatureEnabled())
+    return;
+
   bool is_hardware_offloading_supported =
       IsBluetoothPresent() &&
       FastInitiationScanner::Factory::IsHardwareSupportAvailable(
@@ -3778,11 +3781,13 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
         text.set_text_body(std::string());
     }
 
-    fast_initiation_scanner_cooldown_timer_.Start(
-        FROM_HERE, kFastInitiationScannerCooldown,
-        base::BindRepeating(
-            &NearbySharingServiceImpl::InvalidateFastInitiationScanning,
-            base::Unretained(this)));
+    if (IsBackgroundScanningFeatureEnabled()) {
+      fast_initiation_scanner_cooldown_timer_.Start(
+          FROM_HERE, kFastInitiationScannerCooldown,
+          base::BindRepeating(
+              &NearbySharingServiceImpl::InvalidateFastInitiationScanning,
+              base::Unretained(this)));
+    }
   }
 
   // Make sure to call this before calling Disconnect or we risk loosing some
