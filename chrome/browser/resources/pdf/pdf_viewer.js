@@ -812,6 +812,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         this.viewportScroller.setEnableScrolling(
             /** @type {{ isSelecting: boolean }} */ (data).isSelecting);
         return;
+      case 'setSmoothScrolling':
+        this.viewport.setSmoothScrolling(
+            /** @type {{ smoothScrolling: boolean }} */ (data).smoothScrolling);
+        return;
       case 'formFocusChange':
         this.isFormFieldFocused_ =
             /** @type {{ focused: boolean }} */ (data).focused;
