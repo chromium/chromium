@@ -121,7 +121,7 @@ class CrostiniApps : public KeyedService,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  Profile* profile_;
+  Profile* const profile_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   guest_os::GuestOsRegistryService* registry_;

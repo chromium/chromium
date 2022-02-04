@@ -181,7 +181,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                        apps::mojom::WindowInfoPtr window_info,
                        LaunchAppWithIntentCallback callback);
 
-  apps::InstanceRegistry* instance_registry_;
+  apps::InstanceRegistry* const instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>
       app_window_registry_{this};

@@ -96,7 +96,7 @@ class StandaloneBrowserApps : public apps::PublisherBase,
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
   bool is_browser_load_success_ = true;
-  BrowserAppInstanceRegistry* browser_app_instance_registry_;
+  BrowserAppInstanceRegistry* const browser_app_instance_registry_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Used to observe the browser manager for image load changes.

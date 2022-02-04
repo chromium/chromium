@@ -93,7 +93,7 @@ class AppPublisher {
   AppServiceProxy* proxy() { return proxy_; }
 
  private:
-  raw_ptr<AppServiceProxy> proxy_ = nullptr;
+  const raw_ptr<AppServiceProxy> proxy_;
 };
 
 }  // namespace apps

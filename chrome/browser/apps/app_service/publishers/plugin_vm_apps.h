@@ -113,7 +113,7 @@ class PluginVmApps : public apps::PublisherBase,
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Whether the Plugin VM app is allowed by policy.
-  bool is_allowed_;
+  bool is_allowed_ = false;
 
   std::unique_ptr<plugin_vm::PluginVmPolicySubscription> policy_subscription_;
   PrefChangeRegistrar pref_registrar_;
