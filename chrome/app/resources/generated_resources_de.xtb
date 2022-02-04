@@ -421,7 +421,6 @@
            • Cookies und andere vorübergehende Websitedaten gelöscht
             <ph name="LINE_BREAKS" />
 Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.</translation>
-<translation id="1425233109861512854">Der Zugriffscode wurde nicht erkannt</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ist blockiert</translation>
 <translation id="1426870617281699524">Klicken Sie auf "Wiederholen" und akzeptieren Sie die Aufforderung auf Ihrem Computer</translation>
@@ -1144,7 +1143,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2148892889047469596">Tab streamen</translation>
 <translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2150139952286079145">Ziele suchen</translation>
-<translation id="2150491840563706000">Sie sind nicht berechtigt, auf diesen Bildschirm zu streamen</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" hinzufügen?</translation>
 <translation id="2151576029659734873">Eingegebener Tabindex ist ungültig.</translation>
 <translation id="2152281589789213846">Drucker zu meinem Profil hinzufügen</translation>
@@ -2945,7 +2943,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3943582379552582368">&amp;Zurück</translation>
 <translation id="3943857333388298514">Einfügen</translation>
 <translation id="3945513714196326460">Bitte kürzeren Namen verwenden</translation>
-<translation id="3947643756376959257">Geben Sie den Zugriffscode ein, der auf Chromecast oder dem Fernseher angezeigt wird.</translation>
 <translation id="3948027458879361203">Hostnamen ändern</translation>
 <translation id="3948116654032448504">Mit <ph name="SEARCH_ENGINE" /> nach Bild &amp;suchen</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kann Dateien in den folgenden Ordnern bearbeiten</translation>
@@ -4723,13 +4720,11 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5862109781435984885">Eingabestift-Tools in der Ablage einblenden</translation>
 <translation id="5862319196656206789">Verbundene Geräte einrichten</translation>
 <translation id="5863445608433396414">Debugging-Funktionen aktivieren</translation>
-<translation id="5864147196375746035">Auf ein verwaltetes Gerät streamen</translation>
 <translation id="5864195618110239517">Kostenpflichtige Verbindung nutzen</translation>
 <translation id="5864754048328252126">Aktion bei Inaktivität beim Aufladen</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> wird bald pausiert</translation>
 <translation id="586567932979200359">Sie führen <ph name="PRODUCT_NAME" /> vom Datenträgerabbild aus. Wenn Sie den Browser auf Ihrem Computer installieren, wird er ohne Datenträgerabbild ausgeführt und immer automatisch aktualisiert.</translation>
 <translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
-<translation id="5865848066829891215">Probleme bei der Netzwerkkommunikation</translation>
 <translation id="5867841422488265304">Suchbegriff oder Webadresse eingeben</translation>
 <translation id="5869029295770560994">Ok</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>

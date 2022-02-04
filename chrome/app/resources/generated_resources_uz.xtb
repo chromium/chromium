@@ -421,7 +421,6 @@
            • Cookie fayllar va boshqa vaqtincha sayt maʼlumotlari tozalanadi
             <ph name="LINE_BREAKS" />
            Bukmarklar, tarix va saqlangan parollar joyida qoladi.</translation>
-<translation id="1425233109861512854">Ruxsat kodi tanilmadi</translation>
 <translation id="1426410128494586442">Ha</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> bloklandi</translation>
 <translation id="1426870617281699524">“Qayta urinish” ustiga bosing va kompyuteringizda so‘rovni qabul qiling</translation>
@@ -1146,7 +1145,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2148892889047469596">Tab translatsiyasi</translation>
 <translation id="2149973817440762519">Xatcho‘p tahriri</translation>
 <translation id="2150139952286079145">Belgilangan manzillarni qidirish</translation>
-<translation id="2150491840563706000">Bu ekranni translatsiya qilish huquqi sizda yoʻq</translation>
 <translation id="2150661552845026580">“<ph name="EXTENSION_NAME" />” o‘rnatilsinmi?</translation>
 <translation id="2151576029659734873">Ichki oyna indeksi noto‘g‘ri kiritildi.</translation>
 <translation id="2152281589789213846">Profilingizga printerlarni kiritish</translation>
@@ -2949,7 +2947,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3943582379552582368">&amp;Orqaga</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="3945513714196326460">Qisqaroq nom bering</translation>
-<translation id="3947643756376959257">Chromecast TV ekranida chiqqan kirish kodini kiriting.</translation>
 <translation id="3948027458879361203">Host nomini oʻzgartirish</translation>
 <translation id="3948116654032448504">Tasvirni qidirish (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> quyidagi jildlardagi fayllarni tahrirlay oladi</translation>
@@ -4730,13 +4727,11 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5862109781435984885">Stilus vositalari javonda ko‘rsatilsin</translation>
 <translation id="5862319196656206789">Ulangan qurilmalarni sozlash</translation>
 <translation id="5863445608433396414">Nosozliklarni ko‘rib chiqish funksiyalarini yoqish</translation>
-<translation id="5864147196375746035">Boshqariladigan qurilmaga translatsiya qilish</translation>
 <translation id="5864195618110239517">Trafik hisoblanadigan ulanishdan foydalanish</translation>
 <translation id="5864754048328252126">Quvvatlanayotganda kutish amali</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tez orada pauza qilinadi</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> tizimini diskdagi tasviridan ishga tushirgansiz. Uni kompyuteringizga o‘rnatsangiz, disk tasviri kerak bo‘lmaydi hamda tizim muntazam yangilanib turadi.</translation>
 <translation id="5865733239029070421">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin</translation>
-<translation id="5865848066829891215">Tarmoqqa ulanish muammolari</translation>
 <translation id="5867841422488265304">Qidiring yoki sayt manzilini kiriting</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>

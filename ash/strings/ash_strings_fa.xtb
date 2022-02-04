@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">دستیار (درحال بار کردن…)</translation>
 <translation id="1838895407229022812">«نور شب» خاموش است</translation>
 <translation id="1864454756846565995">‏دستگاه USB-C (درگاه عقب)</translation>
+<translation id="1879018240766558464">درحال‌حاضر از پنجره‌های «ناشناس» پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
 <translation id="1882814835921407042">عدم وجود شبکه تلفن همراه</translation>
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">باز کردن قفل با اثر انگشت</translation>
@@ -947,6 +948,7 @@
 <translation id="7366890467478514168">متصل کردن <ph name="NAME" /></translation>
 <translation id="7371404428569700291">پنجره ضبط</translation>
 <translation id="7377169924702866686">‏Caps Lock روشن است.</translation>
+<translation id="7377481913241237033">اتصال با کد</translation>
 <translation id="7378203170292176219">برای انتخاب ناحیه ضبط، بکشید</translation>
 <translation id="7378594059915113390">کنترل‌های رسانه</translation>
 <translation id="7378889811480108604">حالت «بهینه‌سازی باتری» خاموش است</translation>
@@ -974,6 +976,7 @@
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">‏درحال‌حاضر از برنامه‌های Linux و پنجره‌های «ناشناس» پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
 <translation id="7544300628205093162">نور پس‌زمینه صفحه‌کلید روشن شد</translation>
 <translation id="7548434653388805669">وقت خواب</translation>
 <translation id="7551643184018910560">سنجاق کردن به فقسه</translation>

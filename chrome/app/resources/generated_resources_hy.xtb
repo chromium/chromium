@@ -423,7 +423,6 @@
            • Քուքիները և կայքերի մյուս ժամանակավոր տվյալները կջնջվեն։
             <ph name="LINE_BREAKS" />
            Էջանիշները, պատմությունը և պահված գաղտնաբառերը կպահպանվեն։</translation>
-<translation id="1425233109861512854">Չհաջողվեց ճանաչել մուտքի կոդը</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> հավելվածն արգելափակված է</translation>
 <translation id="1426870617281699524">Սեղմեք «Փորձել կրկին» կոճակը և ընդունեք համակարգչի հուշումը</translation>
@@ -1149,7 +1148,6 @@
 <translation id="2148892889047469596">Ներդիրի հեռարձակում</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
 <translation id="2150139952286079145">Նպատակակետերի որոնում</translation>
-<translation id="2150491840563706000">Դուք այս էկրանին հեռարձակելու թույլտվություն չունեք</translation>
 <translation id="2150661552845026580">Ավելացնե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="2151576029659734873">Ներդիրի սխալ ցուցիչ եք մուտքագրել:</translation>
 <translation id="2152281589789213846">Ավելացնել տպիչներ պրոֆիլում</translation>
@@ -2948,7 +2946,6 @@
 <translation id="3943582379552582368">&amp;Հետ</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3945513714196326460">Մուտքագրեք ավելի կարճ անվանում</translation>
-<translation id="3947643756376959257">Մուտքագրեք Chromecast-ում կամ հեռուստացույցի էկրանին ցուցադրված մուտքի կոդը</translation>
 <translation id="3948027458879361203">Փոխել խնամորդի անունը</translation>
 <translation id="3948116654032448504">Որոնել պատկեր <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> կայքը կարող է փոփոխել ֆայլեր հետևյալ պանակներում</translation>
@@ -4731,13 +4728,11 @@
 <translation id="5862109781435984885">Ցուցադրել ստիլուսի գործիքները դարակում</translation>
 <translation id="5862319196656206789">Կարգավորել միացված սարքերը</translation>
 <translation id="5863445608433396414">Միացնել վրիպազերծման գործառույթները</translation>
-<translation id="5864147196375746035">Հեռարձակել կառավարվող սարքի</translation>
 <translation id="5864195618110239517">Օգտագործել վճարովի թրաֆիկով կապը</translation>
 <translation id="5864754048328252126">Անգործուն ռեժիմի միացում լիցքավորման ընթացքում</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> հավելվածի աշխատանքը շուտով կդադարեցվի</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" />-ը գործարկվում է իր սկավառակի պատկերից: Եթե տեղադրեք այն համակարգչում, կարող եք գործարկել առանց սկավառակի պատկերի` միևնույն ժամանակ այն արդի պահելով:</translation>
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
-<translation id="5865848066829891215">Ցանցային կապի խնդիրներ</translation>
 <translation id="5867841422488265304">Որոնեք կամ մուտքագրեք վեբ հասցեն</translation>
 <translation id="5869029295770560994">Լավ, հասկացա</translation>
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
@@ -6162,6 +6157,7 @@
 <translation id="7376553024552204454">Ընդգծել մկնիկի նշորդը, երբ այն շարժվում է</translation>
 <translation id="737728204345822099">Անվտանգության բանալու վրա կարող է պահվել նշում այս կայքի այցելության մասին։</translation>
 <translation id="7377451353532943397">Միշտ արգելել տվիչների օգտագործումը</translation>
+<translation id="7377481913241237033">Միացում կոդով</translation>
 <translation id="7378611153938412599">Թույլ գաղտնաբառերը հեշտ է գուշակել։ Համոզվեք, որ հուսալի գաղտնաբառեր եք ստեղծում։ <ph name="BEGIN_LINK" />Դիտել հաշվի պաշտպանության այլ խորհուրդներ<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Բացել Chrome Web Store-ը</translation>
 <translation id="7380622428988553498">Սարքի անունն անվավեր նիշեր է պարունակում</translation>

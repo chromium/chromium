@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">Жардамчы (жүктөлүүдө...)</translation>
 <translation id="1838895407229022812">Түнкү жарык өчүк.</translation>
 <translation id="1864454756846565995">USB-C түзмөгү (арткы оюкча)</translation>
+<translation id="1879018240766558464">Жашыруун терезелер учурда колдоого алынбайт. Башка колдонмолор сакталат.</translation>
 <translation id="1882814835921407042">Мобилдик Интернет жок</translation>
 <translation id="1882897271359938046">Төмөнкүгө чагылыштыруу <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Кулпуну манжа изи менен ачуу</translation>
@@ -947,6 +948,7 @@
 <translation id="7366890467478514168"><ph name="NAME" /> түзмөгүн туташтыруу</translation>
 <translation id="7371404428569700291">Терезеден видео жаздырып алуу</translation>
 <translation id="7377169924702866686">Caps Lock күйүп турат.</translation>
+<translation id="7377481913241237033">Код менен туташуу</translation>
 <translation id="7378203170292176219">Жаздыргыңыз келген аймакты тандоо үчүн сүйрөңүз</translation>
 <translation id="7378594059915113390">Медианы башкаруу элементтери</translation>
 <translation id="7378889811480108604">Батареяны үнөмдөгүч режими өчүк</translation>
@@ -974,6 +976,7 @@
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7526573455193969409">Тармак көзөмөлдөнүшү мүмкүн</translation>
 <translation id="7536035074519304529">IP дареги: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux колдонмолору жана жашыруун терезелер учурда колдоого алынбайт. Башка колдонмолор сакталат.</translation>
 <translation id="7544300628205093162">Баскычтоптун жарыгы күйүк</translation>
 <translation id="7548434653388805669">Уктоого убакыт келди</translation>
 <translation id="7551643184018910560">Текчеге кадап коюу</translation>

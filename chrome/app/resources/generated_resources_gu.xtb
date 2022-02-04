@@ -422,7 +422,6 @@
            • કુકી અને સાઇટનો અન્ય હંગામી ડેટા ડિલીટ થઈ જશે
             <ph name="LINE_BREAKS" />
            બુકમાર્ક, ઇતિહાસ અને સાચવેલા પાસવર્ડને કોઈ અસર થશે નહીં.</translation>
-<translation id="1425233109861512854">ઍક્સેસ કોડ ઓળખી શકાયો નથી</translation>
 <translation id="1426410128494586442">હા</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> બ્લૉક કરેલી છે</translation>
 <translation id="1426870617281699524">ફરીથી પ્રયાસ કરો પર ક્લિક કરો અને તમારા કમ્પ્યુટર પર સંકેતને સ્વીકારો</translation>
@@ -1144,7 +1143,6 @@
 <translation id="2148892889047469596">ટેબ કાસ્ટ કરો</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="2150139952286079145">નિર્ધારિત સ્થાન શોધો</translation>
-<translation id="2150491840563706000">તમને આ ડિસ્પ્લેમાં કાસ્ટ કરવાની પરવાનગી નથી</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" ઉમેરીએ?</translation>
 <translation id="2151576029659734873">અમાન્ય ટૅબ અનુક્રમણિકા દાખલ કરી.</translation>
 <translation id="2152281589789213846">તમારી પ્રોફાઇલમાં પ્રિન્ટર ઉમેરો</translation>
@@ -2946,7 +2944,6 @@
 <translation id="3943582379552582368">&amp;પાછળ</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3945513714196326460">ટૂંકું નામ અજમાવી જુઓ</translation>
-<translation id="3947643756376959257">Chromecast અથવા ટીવી પર બતાવવામાં આવેલો ઍક્સેસ કોડ દાખલ કરો.</translation>
 <translation id="3948027458879361203">હોસ્ટનું નામ બદલો</translation>
 <translation id="3948116654032448504">છબી માટે <ph name="SEARCH_ENGINE" /> પર &amp;શોધો</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> નીચેના ફોલ્ડરોમાં સાચવેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
@@ -4727,13 +4724,11 @@
 <translation id="5862109781435984885">શેલ્ફમાં સ્ટાઇલસનાં સાધનો બતાવો</translation>
 <translation id="5862319196656206789">કનેક્ટ કરેલાં ડિવાઇસ સેટઅપ કરો</translation>
 <translation id="5863445608433396414">ડિબગીંગ સુવિધાઓ ચાલુ કરો</translation>
-<translation id="5864147196375746035">મેનેજ કરેલા ડિવાઇસ પર કાસ્ટ કરો</translation>
 <translation id="5864195618110239517">મીટર્ડ કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="5864754048328252126">ચાર્જિંગ દરમ્યાનની નિષ્ક્રિય ક્રિયા</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" />ને ટૂંક સમયમાં થોભાવવામાં આવશે</translation>
 <translation id="586567932979200359">તમે <ph name="PRODUCT_NAME" /> ને તેની ડિસ્ક છબીથી ચલાવી રહ્યા છો. તેને તમારા કમ્પ્યુટર પર ઇન્સ્ટોલ કરવાથી તમે તેને ડિસ્ક છબી વગર ચલાવી શકો છો, અને તે અપ-ટુ-ડેટ રાખવામાં આવશે તેની ખાતરી થાય છે.</translation>
 <translation id="5865733239029070421">Googleને વપરાશના આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલે છે</translation>
-<translation id="5865848066829891215">નેટવર્ક કમ્યુનિકેશન સંબંધિત સમસ્યાઓ</translation>
 <translation id="5867841422488265304">વેબ ઍડ્રેસ શોધો અથવા લખો</translation>
 <translation id="5869029295770560994">બરાબર, સમજાઈ ગયું</translation>
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>

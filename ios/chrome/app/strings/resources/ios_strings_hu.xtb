@@ -85,6 +85,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1650222530560417226">A „Naplózás indítása” gombra koppintva kezdheti meg a jövőbeli JavaScript-konzolnaplók és -hibák gyűjtését az összes lapról. A böngésző addig gyűjti (és tárolja kizárólag a memóriában) a naplókat, amíg Ön be nem zárja az oldalt, vagy rá nem koppint a „Naplózás leállítása” gombra.</translation>
+<translation id="1654232554734641711">Mikrofon-hozzáférés engedélyezve</translation>
 <translation id="1657011748321897393">A megosztás nem sikerült, mert nem csatlakozik a hálózathoz.</translation>
 <translation id="1657641691196698092">Letiltott cookie-k</translation>
 <translation id="165877110639533037">Nincs megnyitott lap</translation>
@@ -396,6 +397,7 @@ Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Írja be
 <translation id="4682686630151240767">1. Nyissa meg az iPhone Beállítások menüjét.</translation>
 <translation id="4689564913179979534">Fizetési módok kezelése...</translation>
 <translation id="470966556546083668">Ne legyen bekapcsolva a szinkronizálás</translation>
+<translation id="4731472194328757163">Kamera- és mikrofon-hozzáférés engedélyezve</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4747097190499141774">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket. Titkosított adatait csak az olvashatja el, aki rendelkezik az Ön összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítaná ezt a beállítást, alaphelyzetbe kell állítania a szinkronizálást. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4751645464639803239">Új inkognitó lap</translation>
@@ -547,6 +549,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6059830886158432458">Itt kezelheti a híreket és a tevékenységeket</translation>
 <translation id="6064824697233747382">Szervezete a szinkronizálás kikapcsolását követeli meg.</translation>
 <translation id="6066301408025741299">Érintse meg a visszavonáshoz</translation>
+<translation id="6077126322656614846">Kamera-hozzáférés engedélyezve</translation>
 <translation id="60829778314739003">Elfogadás és folytatás</translation>
 <translation id="6084848228346514841">Lapok kiválasztása</translation>
 <translation id="6103540626693881831">Eszközalapú titkosítás</translation>

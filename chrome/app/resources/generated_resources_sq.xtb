@@ -385,6 +385,7 @@
 <translation id="1396259464226642517">Ishte i papritur ky rezultat? <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Emri i përdoruesit dhe fjalëkalimi që fute nuk përputhen</translation>
 <translation id="1397500194120344683">Nuk ke pajisje të përshtatshme. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Je identifikuar në Chrome në këto pajisje, kështu që mund t'i përdorësh si çelësa sigurie.</translation>
 <translation id="1398853756734560583">Zmadho</translation>
 <translation id="139911022479327130">Shkyçe telefonin dhe konfirmo që je ti</translation>
 <translation id="1401308693935339022">Përdor vendndodhjen. Lejo që aplikacionet dhe shërbimet me autorizim për vendndodhje të përdorin vendndodhjen e kësaj pajisjeje. Google mund të mbledhë në mënyrë periodike të dhëna të vendndodhjes dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara te vendndodhja.</translation>
@@ -420,7 +421,6 @@
            • Do të fshijë kukit dhe të dhënat e tjera të përkohshme të sajtit
             <ph name="LINE_BREAKS" />
            Faqeshënuesit, historiku dhe fjalëkalimet e ruajtura nuk do të preken.</translation>
-<translation id="1425233109861512854">Kodi i qasjes nuk u njoh</translation>
 <translation id="1426410128494586442">Po</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> është bllokuar</translation>
 <translation id="1426870617281699524">Kliko te "Provo përsëri" dhe prano kërkesën në kompjuter</translation>
@@ -1143,7 +1143,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2148892889047469596">Transmeto skedën</translation>
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2150139952286079145">Kërko vendmbërritjet</translation>
-<translation id="2150491840563706000">Nuk ke leje për të transmetuar në këtë ekran</translation>
 <translation id="2150661552845026580">Të shtohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">U fut indeksi i pavlefshëm i skedës.</translation>
 <translation id="2152281589789213846">Shto printerë në profilin tënd</translation>
@@ -1166,6 +1165,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2163470535490402084">Lidhu në internet për t'u futur te pajisja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dhe 1 çelës tjetër</translation>
+<translation id="2165102982098084499">I ke lidhur këto pajisje duke skanuar një kod QR.</translation>
 <translation id="2165177462441582039">Zgjidh për sa kohë duhet të qëndrojë theksimi në secilin artikull</translation>
 <translation id="2166369534954157698">Zhapiku i gjelbër njomzak nga shporta e vjetër prej xunkthi u hodh si rrufe në qiell të pastër, pranë ca druve të çarë e xhamave të thyer</translation>
 <translation id="2169062631698640254">Identifikohu gjithsesi</translation>
@@ -2942,7 +2942,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3943582379552582368">&amp;Prapa</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3945513714196326460">Provo një emër më të shkurtër</translation>
-<translation id="3947643756376959257">Fut kodin e qasjes që shfaqet në Chromecast ose në televizor.</translation>
 <translation id="3948027458879361203">Ndrysho emrin e pritësit</translation>
 <translation id="3948116654032448504">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për imazhin</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> mund t'i modifikojnë skedarët në dosjet e mëposhtme</translation>
@@ -4722,13 +4721,11 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5862109781435984885">Shfaq veglat e stilolapsit në raft</translation>
 <translation id="5862319196656206789">Konfiguro pajisjet e lidhura</translation>
 <translation id="5863445608433396414">Aktivizo funksionet e korrigjimit</translation>
-<translation id="5864147196375746035">Transmeto te një pajisje e menaxhuar</translation>
 <translation id="5864195618110239517">Përdor lidhjen me matje</translation>
 <translation id="5864754048328252126">Veprimi i gjendjes joaktive gjatë karikimit</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> do të vendoset në pauzë së shpejti</translation>
 <translation id="586567932979200359">Po e ekzekuton <ph name="PRODUCT_NAME" /> nga imazhi i tij i diskut. Instalimi i tij në kompjuter lejon që ta ekzekutosh pa imazhin e diskut dhe garanton se do të mbahet i përditësuar.</translation>
 <translation id="5865733239029070421">Dërgon automatikisht te Google statistika të përdorimit dhe raportet e ndërprerjeve aksidentale</translation>
-<translation id="5865848066829891215">Probleme me komunikimin e rrjetit</translation>
 <translation id="5867841422488265304">Kërko ose shkruaj adresën e uebit</translation>
 <translation id="5869029295770560994">Në rregull, kuptova</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
@@ -5685,6 +5682,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Cilësimet e përfaqësuesit...</translation>
 <translation id="6860427144121307915">Hap në një skedë</translation>
+<translation id="6863496016067551393">Lejohen të gjitha shtesat</translation>
 <translation id="686366188661646310">Të fshihet fjalëkalimi?</translation>
 <translation id="6865313869410766144">Plotëso automatikisht të dhënat e formularit</translation>
 <translation id="6865598234501509159">Faqja nuk është në <ph name="LANGUAGE" /></translation>
@@ -5714,6 +5712,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6900651018461749106">Identifikohu përsëri për të përditësuar <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">E konfirmon që dëshiron ta fshish këtë motor kërkimi?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Zëri për të shikuar paraprakisht</translation>
 <translation id="6902336033320348843">Seksioni nuk mbështetet: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Bashko pajisjen me domenin</translation>
@@ -7363,6 +7362,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8610103157987623234">Format i pasaktë! Provo përsëri më vonë</translation>
 <translation id="8611682088849615761">Vazhdo ta lejosh këtë sajt që të ketë kontroll të plotë mbi pajisjet MIDI</translation>
 <translation id="8613164732773110792">Vetëm shkronja të vogla, shifra, viza poshtë ose viza ndarëse</translation>
+<translation id="8613645710357126807">Nuk lejohet përdorimi i shtesave</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> është shumë i madh për kontroll sigurie. Mund të hapësh skedarë deri në 50 MB.</translation>
 <translation id="8615618338313291042">Aplikacioni "i fshehur": <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Shtoje <ph name="CONTACT_NAME" /> te kontaktet e tua</translation>

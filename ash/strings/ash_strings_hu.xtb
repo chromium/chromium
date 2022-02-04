@@ -113,6 +113,7 @@
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1570871743947603115">Bluetooth ki- és bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
+<translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
 <translation id="1632985212731562677">A Kapcsolóalapú hozzáférés a Beállítások Kisegítő lehetőségek pontjában kapcsolható ki.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> eszköz</translation>
@@ -146,6 +147,7 @@
 <translation id="1836215606488044471">Segéd (betöltés…)</translation>
 <translation id="1838895407229022812">Az Éjszakai fény ki van kapcsolva.</translation>
 <translation id="1864454756846565995">C típusú USB-vel kompatibilis eszköz (hátsó port)</translation>
+<translation id="1879018240766558464">Az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
 <translation id="1882814835921407042">Nincs mobilhálózat</translation>
 <translation id="1882897271359938046">Tükrözés: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Feloldás ujjlenyomattal</translation>
@@ -247,6 +249,7 @@
 <translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2607678425161541573">Online bejelentkezés szükséges</translation>
 <translation id="2621713457727696555">Biztonságos</translation>
+<translation id="263399434338050016">„Select all” (Az összes kijelölése)</translation>
 <translation id="2653019840645008922">Felvétel készítése az ablakról</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2658778018866295321">Kattintás és húzás</translation>
@@ -263,6 +266,7 @@
 <translation id="2727175239389218057">Válasz</translation>
 <translation id="2727977024730340865">Kis teljesítményű töltőt csatlakoztatott. Az akkumulátor töltése nem megbízható.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">„Delete” (Törlés)</translation>
 <translation id="2778650143428714839">A(z) <ph name="DEVICE_TYPE" /> kezelője: <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Kilépés a rögzítés módból</translation>
 <translation id="2792498699870441125">Alt + Keresés</translation>
@@ -306,6 +310,7 @@
 <translation id="3038571455154067151">A bejelentkezéshez adja meg a Family Link szülői hozzáférési kódot</translation>
 <translation id="3039939407102840004">Az érintőceruza töltöttségi szintje <ph name="PERCENTAGE" /> százalékon áll.</translation>
 <translation id="3045488863354895414">Jó napot!</translation>
+<translation id="3047761520276763270">Mondja azt, hogy:</translation>
 <translation id="3051189971848907985">Profil átnevezése. Várjon néhány percet.</translation>
 <translation id="3055162170959710888">Az eszköz mai használatának teljes időtartama: <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">A polc a bal oldalon található</translation>
@@ -552,6 +557,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
 <translation id="4570957409596482333">Felolvasás gomb</translation>
+<translation id="4573176682887762361">„Type [word / phrase]” ([szó/kifejezés] begépelése)</translation>
 <translation id="4577274620589681794">Az idő lejárt · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Előnézetek megjelenítése</translation>
 <translation id="4578196883126898996">Mikrofonja ki van kapcsolva. Kapcsolja be eszköze mikrofonjának gombját.</translation>
@@ -948,6 +954,7 @@ Frissen telepítve</translation>
 <translation id="7366890467478514168"><ph name="NAME" /> csatlakoztatása</translation>
 <translation id="7371404428569700291">Felvétel készítése az ablakról</translation>
 <translation id="7377169924702866686">A Caps Lock be van kapcsolva.</translation>
+<translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
 <translation id="7378203170292176219">Húzással jelöljön ki egy területet a videó készítéséhez</translation>
 <translation id="7378594059915113390">Médiatartalmak vezérlői</translation>
 <translation id="7378889811480108604">Az Akkumulátorkímélő mód ki van kapcsolva</translation>
@@ -975,6 +982,7 @@ Frissen telepítve</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7526573455193969409">Elképzelhető, hogy figyelik a hálózatot</translation>
 <translation id="7536035074519304529">IP-cím: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
 <translation id="7544300628205093162">Billentyűzet háttérvilágítása bekapcsolva</translation>
 <translation id="7548434653388805669">Ideje aludni</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>
@@ -1166,6 +1174,7 @@ Frissen telepítve</translation>
 <translation id="8785070478575117577">Csatlakozás a következőhöz: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> mappa</translation>
+<translation id="880709030178078220">„Help” (Segítség)</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Beviteli módszerek beállításai</translation>
 <translation id="8818320199597151042">Profil eltávolítása. Várjon néhány percet.</translation>

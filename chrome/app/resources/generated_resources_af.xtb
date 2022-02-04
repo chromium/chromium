@@ -423,7 +423,6 @@
            • Webkoekies en ander tydelike werfdata uitvee
             <ph name="LINE_BREAKS" />
            Boekmerke, geskiedenis en gestoorde wagwoorde sal nie geraak word nie.</translation>
-<translation id="1425233109861512854">Toegangskode word nie herken nie</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> word geblokkeer</translation>
 <translation id="1426870617281699524">Klik Probeer Weer en aanvaar die porboodskap op jou rekenaar</translation>
@@ -1159,7 +1158,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2148892889047469596">Saai oortjie uit</translation>
 <translation id="2149973817440762519">Wysig boekmerk</translation>
 <translation id="2150139952286079145">Soekbestemmings</translation>
-<translation id="2150491840563706000">Jy het nie toestemming om na hierdie skerm uit te saai nie</translation>
 <translation id="2150661552845026580">Voeg "<ph name="EXTENSION_NAME" />" by?</translation>
 <translation id="2151576029659734873">Ongeldige oortjie-indeks ingevoer.</translation>
 <translation id="2152281589789213846">Voeg drukkers by jou profiel</translation>
@@ -2962,7 +2960,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3943582379552582368">Terug</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3945513714196326460">Probeer 'n korter naam</translation>
-<translation id="3947643756376959257">Voer die toegangkode in wat op die Chromecast of TV gewys word.</translation>
 <translation id="3948027458879361203">Verander gasheernaam</translation>
 <translation id="3948116654032448504">Deursoek <ph name="SEARCH_ENGINE" /> vir prent</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan jou lêers in die volgende vouers wysig</translation>
@@ -4744,13 +4741,11 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5862109781435984885">Wys stilusnutsgoed op die rak</translation>
 <translation id="5862319196656206789">Stel gekoppelde toestelle op</translation>
 <translation id="5863445608433396414">Aktiveer ontfoutingkenmerke</translation>
-<translation id="5864147196375746035">Saai uit na 'n bestuurde toestel</translation>
 <translation id="5864195618110239517">Gebruik betaalde verbinding</translation>
 <translation id="5864754048328252126">Rushandeling terwyl dit laai</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sal binnekort onderbreek word</translation>
 <translation id="586567932979200359">Jy laat loop <ph name="PRODUCT_NAME" /> tans van sy skyfafbeelding af. As jy dit op jou rekenaar installeer, kan jy dit sonder die skyfafbeelding laat loop, en verseker dat dit op datum gehou word.</translation>
 <translation id="5865733239029070421">Stuur gebruikstatistieke en omvalverslae outomaties na Google</translation>
-<translation id="5865848066829891215">Netwerkkommunikasiekwessies</translation>
 <translation id="5867841422488265304">Soek of tik webadres in</translation>
 <translation id="5869029295770560994">OK, het dit</translation>
 <translation id="5869522115854928033">Gestoorde wagwoorde</translation>
@@ -6175,6 +6170,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7376553024552204454">Lig die muismerker uit wanneer dit beweeg</translation>
 <translation id="737728204345822099">'n Rekord van jou besoek aan hierdie werf kan op jou sekuriteitsleutel gehou word.</translation>
 <translation id="7377451353532943397">Hou aan om sensortoegang te blokkeer</translation>
+<translation id="7377481913241237033">Koppel met 'n kode</translation>
 <translation id="7378611153938412599">Swak wagwoorde is maklik om te raai. Maak seker dat jy sterk wagwoorde skep. <ph name="BEGIN_LINK" />Sien meer sekuriteitswenke.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Maak Chrome Webwinkel oop</translation>
 <translation id="7380622428988553498">Toestelnaam bevat ongeldige karakters</translation>

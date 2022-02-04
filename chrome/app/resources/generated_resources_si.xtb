@@ -424,7 +424,6 @@
            • කුකි සහ වෙනත් තාවකාලික අඩවි දත්ත මැකීම
             <ph name="LINE_BREAKS" />
            පිටුසන්, ඉතිහාසය සහ සුරැකි මුරපද බලපෑමට ලක් නොවනු ඇත.</translation>
-<translation id="1425233109861512854">ප්‍රවේශ කේතය හඳුනා ගෙන නොමැත</translation>
 <translation id="1426410128494586442">ඔව්</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> අවහිර කර ඇත</translation>
 <translation id="1426870617281699524">නැවත උත්සාහ කර, සහ ඔබේ පරිගණකය මත උත්ප්‍රේරකය පිළිගන්න</translation>
@@ -1148,7 +1147,6 @@
 <translation id="2148892889047469596">විකාශ පටිත්ත</translation>
 <translation id="2149973817440762519">පිටු සලකුණු සංස්කරණය කරන්න</translation>
 <translation id="2150139952286079145">ගමනාන්ත සොයන්න</translation>
-<translation id="2150491840563706000">ඔබට මෙම සංදර්ශකය වෙත විකාශය කිරීමට අවසර නැත</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" එක්කරන්නද?</translation>
 <translation id="2151576029659734873">වැරදි ටැබ් දර්ශකය ඇතුළු කරන ලදි.</translation>
 <translation id="2152281589789213846">ඔබේ පැතිකඩට මුද්‍රක එක් කරන්න</translation>
@@ -2951,7 +2949,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3943582379552582368">&amp;ආපසු</translation>
 <translation id="3943857333388298514">අලවන්න</translation>
 <translation id="3945513714196326460">වඩා කෙටි නමක් උත්සාහ කරන්න</translation>
-<translation id="3947643756376959257">Chromecast හෝ TV හි පෙන්වා ඇති ප්‍රවේශ කේතය ඇතුළු කරන්න.</translation>
 <translation id="3948027458879361203">සත්කාරක නම වෙනස් කරන්න</translation>
 <translation id="3948116654032448504">පින්තූරය සඳහා <ph name="SEARCH_ENGINE" /> හි සොයන්න</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> හට පහත ෆෝල්ඩර තුළ ඇති ගොනු සංස්කරණ කර හැක</translation>
@@ -4732,13 +4729,11 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5862109781435984885">රාක්කයෙහි පන්හිඳ මෙවලම් පෙන්වන්න</translation>
 <translation id="5862319196656206789">සම්බන්ධිත උපාංග පිහිටුවන්න</translation>
 <translation id="5863445608433396414">දෝශ නිරාකරණ විශේෂාංග සක්‍රීය</translation>
-<translation id="5864147196375746035">කළමනාකරණය කළ උපාංගයක් වෙත විකාශය කරන්න</translation>
 <translation id="5864195618110239517">මනුගත සම්බන්ධතාව භාවිත කරන්න</translation>
 <translation id="5864754048328252126">ආරෝපණය අතුරතුර අකර්මණ්‍ය ක්‍රියාව</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ඉක්මනින් විරාම වෙයි</translation>
 <translation id="586567932979200359">ඔබ <ph name="PRODUCT_NAME" /> ක්‍රියාත්මක කරන්නේ එහි තැටි අනුරූපයෙනි. එය ඔබේ පරිගණකය තුළ ස්ථාපිත කිරීම තැටි අනුරුවක් නොමැතිව ක්‍රියාකරවීමට ඉඩදෙයි, තවද එය යාවත්කාලීන බව තහවුරු කරයි.</translation>
 <translation id="5865733239029070421">භාවිතා සංඛ්‍යාල්ඛන සහ සහ බිඳ වැටීම් වාර්තා ස්වයංක්‍රියව Google වෙත යවයි</translation>
-<translation id="5865848066829891215">ජාල සන්නිවේදන ගැටලු</translation>
 <translation id="5867841422488265304">වෙබ් ලිපිනය සොයන්න හෝ ටයිප් කරන්න</translation>
 <translation id="5869029295770560994">හරි, තේරුණා</translation>
 <translation id="5869522115854928033">සුරැකි රහස්වචන</translation>

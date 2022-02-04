@@ -113,6 +113,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1570871743947603115">Prepnúť Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Získajte prístup k všetkej svojej aktivite v tejto relácii</translation>
+<translation id="1610778689852195798">Späť</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1637505162081889933">Zariadenia: <ph name="NUM_DEVICES" /></translation>
@@ -247,6 +248,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2596078834055697711">Vytvorenie snímky obrazovky okna</translation>
 <translation id="2607678425161541573">Vyžaduje sa prihlásenie online</translation>
 <translation id="2621713457727696555">Zabezpečená</translation>
+<translation id="263399434338050016">Vybrať všetko</translation>
 <translation id="2653019840645008922">Snímanie okna</translation>
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2658778018866295321">Kliknúť a presunúť</translation>
@@ -263,6 +265,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2727175239389218057">Odpovedať</translation>
 <translation id="2727977024730340865">Batéria je zapojená do nabíjačky s nízkym výkonom. Nabíjanie batérie nemusí byť spoľahlivé.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">Odstrániť</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ukončiť režim snímania</translation>
 <translation id="2792498699870441125">Alt + Hľadať</translation>
@@ -306,6 +309,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3038571455154067151">Ak sa chcete prihlásiť, zadajte prístupový kód rodiča Family Link</translation>
 <translation id="3039939407102840004">Úroveň batérie dotykového pera: <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Dobré popoludnie,</translation>
+<translation id="3047761520276763270">Skúste povedať:</translation>
 <translation id="3051189971848907985">Premenúva sa profil. Počkajte niekoľko minút.</translation>
 <translation id="3055162170959710888">Toto zariadenie si dnes používal(a) <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Polička naľavo</translation>
@@ -551,6 +555,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4570957409596482333">Tlačidlo počúvania vybraného textu</translation>
+<translation id="4573176682887762361">Napísať [slovo/fráza]</translation>
 <translation id="4577274620589681794">Čas vypršal · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Zobraziť ukážky</translation>
 <translation id="4578196883126898996">Mikrofón je vypnutý. Zapnite vypínač mikrofónu zariadenia.</translation>
@@ -1165,6 +1170,7 @@ Nová inštalácia</translation>
 <translation id="8785070478575117577">Pripojiť k sieti <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Priečinok <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">Zobraziť pomocníka</translation>
 <translation id="8814190375133053267">Wi‑Fi</translation>
 <translation id="881757059229893486">Nastavenia metód vstupu</translation>
 <translation id="8818320199597151042">Odstraňuje sa profil. Počkajte niekoľko minút.</translation>

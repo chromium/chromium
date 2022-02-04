@@ -113,6 +113,7 @@
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1570871743947603115">Укључите/искључите Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
+<translation id="1610778689852195798">„Опозови радњу“</translation>
 <translation id="1611993646327628135">Укључено</translation>
 <translation id="1632985212731562677">Приступ помоћу прекидача може да се онемогући у одељку Подешавања &gt; Приступачност.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уређаја</translation>
@@ -248,6 +249,7 @@
 <translation id="2596078834055697711">Направите снимак екрана прозора</translation>
 <translation id="2607678425161541573">Онлајн пријављивање је обавезно</translation>
 <translation id="2621713457727696555">Заштићено</translation>
+<translation id="263399434338050016">„Изабери све“</translation>
 <translation id="2653019840645008922">Снимање прозора</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2658778018866295321">Кликните и превуците</translation>
@@ -264,6 +266,7 @@
 <translation id="2727175239389218057">Одговори</translation>
 <translation id="2727977024730340865">Уређај је укључен у пуњач мале снаге. Пуњење батерије можда неће бити поуздано.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">„Избриши“</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изађите из режима снимања</translation>
 <translation id="2792498699870441125">Alt + тастер за претрагу</translation>
@@ -307,6 +310,7 @@
 <translation id="3038571455154067151">Да бисте се пријавили, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="3039939407102840004">Батерија писаљке је на <ph name="PERCENTAGE" /> посто.</translation>
 <translation id="3045488863354895414">Добар дан,</translation>
+<translation id="3047761520276763270">Пробајте да кажете:</translation>
 <translation id="3051189971848907985">Мења се име профила. Сачекајте неколико минута.</translation>
 <translation id="3055162170959710888">Данас користите овај уређај већ <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Полица на левој страни</translation>
@@ -552,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Сакриј лозинку</translation>
 <translation id="4570957409596482333">Дугме Изаберите за говор</translation>
+<translation id="4573176682887762361">„Унеси [реч или фраза]“</translation>
 <translation id="4577274620589681794">Време је истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Прикажи прегледе</translation>
 <translation id="4578196883126898996">Микрофон је искључен. Укључите дугме за микрофон на уређају.</translation>
@@ -1168,6 +1173,7 @@
 <translation id="8785070478575117577">Повежите се са уређајем <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Фолдер <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">„Помоћ“</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Подешавања метода уноса</translation>
 <translation id="8818320199597151042">Профил се уклања. Сачекајте неколико минута.</translation>

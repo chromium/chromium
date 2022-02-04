@@ -419,7 +419,6 @@
            • Kukilər və digər müvəqqəti sayt datası silinəcək
             <ph name="LINE_BREAKS" />
            Əlfəcinlər, tarixçə və yadda saxlanılmış parollara heç bir təsir göstərilməyəcək.</translation>
-<translation id="1425233109861512854">Giriş kodu tanınmadı</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> bloklanıb</translation>
 <translation id="1426870617281699524">Yenidən Cəhd Edin düyməsinə klikləyin və kompüterdə bildiriş əldə edin</translation>
@@ -1143,7 +1142,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2148892889047469596">Yayım paneli</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
 <translation id="2150139952286079145">Axtarış istiqamətləri</translation>
-<translation id="2150491840563706000">Bu displeydə yayımlamaq icazəniz yoxdur</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" əlavə edilsin?</translation>
 <translation id="2151576029659734873">Yanlış panel indeksi daxil edildi.</translation>
 <translation id="2152281589789213846">Prolfinizə printerlər əlavə edin</translation>
@@ -2945,7 +2943,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3943582379552582368">Geri</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3945513714196326460">Daha qısa ad seçin</translation>
-<translation id="3947643756376959257">Chromecast və ya TV'də göstərilən giriş kodunu daxil edin.</translation>
 <translation id="3948027458879361203">Host adını dəyişdirin</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> şəkil axtarır</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan faylları redaktə edə bilər</translation>
@@ -4723,13 +4720,11 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5862109781435984885">Buferdə fırça alətlərini göstərin</translation>
 <translation id="5862319196656206789">Qoşulmuş cihazları ayarlayın</translation>
 <translation id="5863445608433396414">Debaq funksiyalarını aktiv edin</translation>
-<translation id="5864147196375746035">İdarə edilən cihazda yayımlayın</translation>
 <translation id="5864195618110239517">Limitli bağlantıdan istifadə edin</translation>
 <translation id="5864754048328252126">Şarj edilən zaman cihaz fəaliyyətsiz qaldıqda ediləcək əməliyyat</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tezliklə dayanacaq</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> məhsulunu onun disk obrazindan işlədirsiniz. Onun kompüterə quraşdırılması disk obrazı olmadan işlətməyinizə imkan verəcək və həmişə güncəl qalmasını sağlayacaq.</translation>
 <translation id="5865733239029070421">İstifadə statistikası və qəza raportlarını avtomatik Google'a göndərir</translation>
-<translation id="5865848066829891215">Şəbəkə kommunikasiya problemləri</translation>
 <translation id="5867841422488265304">Veb ünvanı axtarın və yazın</translation>
 <translation id="5869029295770560994">Ok, Anladım</translation>
 <translation id="5869522115854928033">Saxlanılmış parollar</translation>
@@ -6152,6 +6147,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7376553024552204454">Hərəkətdə olarkən maus kursorunu vurğulayın</translation>
 <translation id="737728204345822099">Bu sayta girişinizin yazısı təhlükəsizlik açarınızda saxlanıla bilər.</translation>
 <translation id="7377451353532943397">Sensor girişini blok etməyə davam edin</translation>
+<translation id="7377481913241237033">Kod ilə qoşulun</translation>
 <translation id="7378611153938412599">Zəif parolları tapmaq asandır. Güclü parol yaratdığınıza əmin olun. <ph name="BEGIN_LINK" />Daha çox təhlükəsizlik məsləhətinə baxın.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Veb Mağazanı Açın</translation>
 <translation id="7380622428988553498">Cihaz adında yanlış simvollar var</translation>

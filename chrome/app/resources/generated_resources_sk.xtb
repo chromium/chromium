@@ -341,6 +341,7 @@
 <translation id="1340527397989195812">Zálohovať médiá zo zariadenia pomocou aplikácie Súbory</translation>
 <translation id="1341988552785875222">Aktuálnu tapetu nastavila aplikácia <ph name="APP_NAME" />. Je možné, že pred výberom inej tapety bude nutné aplikáciu <ph name="APP_NAME" /> odinštalovať.</translation>
 <translation id="1343865611738742294">Udeľte systému Linux povolenia aplikácie na prístup k zariadeniam USB. Linux si nezapamätá odstránené zariadenia USB.</translation>
+<translation id="1343920184519992513">Pokračovať, kde ste prestali, a otvoriť konkrétnu skupinu stránok</translation>
 <translation id="1346630054604077329">Potvrdiť a reštartovať</translation>
 <translation id="1347256498747320987">Inštalácia aktualizácií a aplikácií. Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, operátora a výrobcu zariadenia a v prípade potreby pritom môže používať mobilné dáta. Niektoré z týchto aplikácií môžu ponúkať nákupy v aplikácii. <ph name="BEGIN_LINK1" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Ukladací priestor systému Linux</translation>
@@ -423,7 +424,6 @@
            • odstráni súbory cookie a ostatné dočasné údaje webov.
             <ph name="LINE_BREAKS" />
            Záložky, história a uložené heslá nebudú ovplyvnené.</translation>
-<translation id="1425233109861512854">Prístupový kód nebol rozpoznaný</translation>
 <translation id="1426410128494586442">Áno</translation>
 <translation id="142655739075382478">Aplikácia <ph name="APP_NAME" /> je blokovaná</translation>
 <translation id="1426870617281699524">Kliknite na možnosť Skúsiť znova a potvrďte výzvu v počítači</translation>
@@ -1149,7 +1149,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2148892889047469596">Prenášanie karty</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2150139952286079145">Hľadať ciele</translation>
-<translation id="2150491840563706000">Nemáte povolenie spustiť prenos na tejto obrazovke</translation>
 <translation id="2150661552845026580">Pridať rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2151576029659734873">Zadali ste neplatný index kariet.</translation>
 <translation id="2152281589789213846">Pridanie tlačiarní do vášho profilu</translation>
@@ -2950,7 +2949,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3943582379552582368">&amp;Naspäť</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="3945513714196326460">Vyskúšajte kratší názov</translation>
-<translation id="3947643756376959257">Zadajte prístupový kód zobrazený v Chromecaste alebo televízore.</translation>
 <translation id="3948027458879361203">Zmeniť názov hostiteľa</translation>
 <translation id="3948116654032448504">&amp;Hľadať obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> môže upravovať súbory v nasledujúcich priečinkoch</translation>
@@ -4730,13 +4728,11 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5862109781435984885">Zobraziť nástroje pre dotykové pero na poličke</translation>
 <translation id="5862319196656206789">Nastaviť pripojené zariadenia</translation>
 <translation id="5863445608433396414">Aktivovať funkcie ladenia</translation>
-<translation id="5864147196375746035">Prenos do spravovaného zariadenia</translation>
 <translation id="5864195618110239517">Použiť merané pripojenie</translation>
 <translation id="5864754048328252126">Akcia pri nečinnosti počas nabíjania</translation>
 <translation id="5865508026715185451">Aplikácia <ph name="APP_NAME" /> bude čoskoro pozastavená</translation>
 <translation id="586567932979200359">Prehliadač <ph name="PRODUCT_NAME" /> je spustený z jeho obrazu disku. Inštalácia do počítača vám umožní spustiť ho bez obrazu disku a zabezpečí jeho aktualizáciu.</translation>
 <translation id="5865733239029070421">Automaticky odosiela štatistiky o používaní a správy o zlyhaní Googlu</translation>
-<translation id="5865848066829891215">Problémy s komunikáciou v sieti</translation>
 <translation id="5867841422488265304">Zadajte dopyt alebo webovú adresu</translation>
 <translation id="5869029295770560994">Dobre</translation>
 <translation id="5869522115854928033">Uložené heslá</translation>
@@ -5391,6 +5387,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="654871471440386944">Chcete zapnúť prehliadanie Caret?</translation>
 <translation id="6549038875972762904">Znova nastaviť</translation>
 <translation id="6550675742724504774">Možnosti</translation>
+<translation id="65513682072153627">Túto ikonu Spravované uvidíte pri nastavení alebo funkcií ovládanej vaším správcom.</translation>
 <translation id="6551508934388063976">Príkaz nie je k dispozícii. Stlačením kombinácie klávesov CTRL + N otvoríte nové okno.</translation>
 <translation id="6551612971599078809">Web používa USB</translation>
 <translation id="6551739526055143276">Spravované v aplikácii Family Link</translation>

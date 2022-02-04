@@ -421,7 +421,6 @@
            • ลบคุกกี้และข้อมูลชั่วคราวอื่นๆ ของเว็บไซต์
             <ph name="LINE_BREAKS" />
            การดำเนินการนี้จะไม่มีผลกับบุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่านที่บันทึกไว้</translation>
-<translation id="1425233109861512854">ไม่รู้จักรหัสการเข้าถึงนี้</translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ถูกบล็อก</translation>
 <translation id="1426870617281699524">คลิก "ลองอีกครั้ง" และยอมรับการแจ้งเตือนที่แสดงบนคอมพิวเตอร์</translation>
@@ -1147,7 +1146,6 @@
 <translation id="2148892889047469596">แคสต์แท็บ</translation>
 <translation id="2149973817440762519">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="2150139952286079145">ค้นหาปลายทาง</translation>
-<translation id="2150491840563706000">คุณไม่มีสิทธิ์แคสต์ไปยังจอแสดงผลนี้</translation>
 <translation id="2150661552845026580">เพิ่ม "<ph name="EXTENSION_NAME" />" หรือไม่</translation>
 <translation id="2151576029659734873">ดัชนีแท็บที่ป้อนไม่ถูกต้อง</translation>
 <translation id="2152281589789213846">เพิ่มเครื่องพิมพ์ในโปรไฟล์</translation>
@@ -2947,7 +2945,6 @@
 <translation id="3943582379552582368">&amp;กลับ</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3945513714196326460">ลองใช้ชื่อที่สั้นกว่านี้</translation>
-<translation id="3947643756376959257">ป้อนรหัสการเข้าถึงใน Chromecast หรือทีวี</translation>
 <translation id="3948027458879361203">เปลี่ยนชื่อโฮสต์</translation>
 <translation id="3948116654032448504">ค้นหา&amp;รูปภาพด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> แก้ไขไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
@@ -4727,13 +4724,11 @@
 <translation id="5862109781435984885">แสดงเครื่องมือสไตลัสในชั้นวาง</translation>
 <translation id="5862319196656206789">ตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5863445608433396414">เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่อง</translation>
-<translation id="5864147196375746035">แคสต์ไปยังอุปกรณ์ที่มีการจัดการ</translation>
 <translation id="5864195618110239517">ใช้การเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="5864754048328252126">การทำงานสำหรับการไม่ใช้งานขณะที่ชาร์จ</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> จะหยุดชั่วคราวเร็วๆ นี้</translation>
 <translation id="586567932979200359">คุณกำลังเรียกใช้ <ph name="PRODUCT_NAME" /> จากดิสก์อิมเมจ การติดตั้งผลิตภัณฑ์นี้บนคอมพิวเตอร์จะทำให้คุณเรียกใช้ได้โดยไม่ต้องใช้ดิสก์อิมเมจและคุณมั่นใจได้ว่าผลิตภัณฑ์จะอัปเดตตลอดเวลา</translation>
 <translation id="5865733239029070421">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
-<translation id="5865848066829891215">ปัญหาการสื่อสารผ่านเครือข่าย</translation>
 <translation id="5867841422488265304">ค้นหาหรือพิมพ์ที่อยู่เว็บ</translation>
 <translation id="5869029295770560994">รับทราบ</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
@@ -6158,6 +6153,7 @@
 <translation id="7376553024552204454">ไฮไลต์เคอร์เซอร์เมาส์เมื่อขยับ</translation>
 <translation id="737728204345822099">ระบบอาจเก็บบันทึกการเข้าชมเว็บไซต์นี้ไว้ในคีย์ความปลอดภัย</translation>
 <translation id="7377451353532943397">บล็อกการเข้าถึงเซ็นเซอร์ต่อไป</translation>
+<translation id="7377481913241237033">เชื่อมต่อด้วยรหัส</translation>
 <translation id="7378611153938412599">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ตรวจสอบว่าคุณกำลังตั้งรหัสผ่านที่รัดกุม <ph name="BEGIN_LINK" />ดูเคล็ดลับความปลอดภัยเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">เปิด Chrome เว็บสโตร์</translation>
 <translation id="7380622428988553498">ชื่ออุปกรณ์มีอักขระที่ไม่ถูกต้อง</translation>

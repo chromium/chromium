@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">ເປີດໜ້າຈໍອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍນອກແລ້ວ. ມີ <ph name="NUM_UPDATES" /> ອັບເດດໃໝ່.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">ສົງໄສວ່າເປັນຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">ກຳລັງອັບເດດ (ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">ບໍ່ມີເຄືອຂ່າຍ <ph name="NETWORK_NAME" /> ທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ເຄືອຂ່າຍພາຍໃນ, ບໍ່ໂຣມມິງ</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">ຂໍ້ສະເໜີ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ອາດຈະສາມາດຕິດຕາມການເຄື່ອນໄຫວຂອງທ່ານໄດ້.</translation>
 <translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
+<translation id="1491076385728777984">ກຳລັງອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="150962533380566081">PUK ທີ່ຖືກຕ້ອງ.</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
+<translation id="1565038567006703504">ບໍ່ສາມາດອັບເດດ <ph name="DEVICE_NAME" /> ໄດ້</translation>
 <translation id="1567064801249837505">ອະລະບ້ຳ</translation>
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">ໂຫຼດຂໍ້ມູນຮູບພື້ນຫຼັງປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
+<translation id="253029298928638905">ກຳ​ລັງ​ຣີ​ສະ​ຕາດ...</translation>
 <translation id="2536159006530886390">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້.</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ເພື່ອຕັ້ງຄ່າ, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="39823212440917567">ວຽກພິມທີ່ເກົ່າກວ່າ <ph name="NUMBER_OF_DAYS" /> ມື້ຈະຖືກລຶບອອກ</translation>
+<translation id="3993704782688964914">ຕອນນີ້ອັບເດດ <ph name="DEVICE_NAME" /> ຂອງທ່ານແລ້ວ</translation>
 <translation id="4003384961948020559">ບໍ່ສຳເລັດ, ເອົ້າພຸດເຕັມ</translation>
 <translation id="4034824040120875894">ເຄື່ອງພິມ</translation>
 <translation id="4044093238444069296">ບໍ່ສາມາດຕິດຕໍ່ຫາເກດເວໄດ້</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">ກຳລັງຣີສະຕາດ <ph name="DEVICE_NAME" /></translation>
 <translation id="4418498623216225764">ອັບເດດອຸປະກອນຕໍ່ພ່ວງ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ປິດຢູ່</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">ຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້</translation>
 <translation id="4536864596629708641">ການຕັ້ງຄ່າ IP</translation>
 <translation id="4548483925627140043">ບໍ່ພົບສັນຍານ</translation>
+<translation id="4556753742174065117">ອັບເດດເຟີມແວທັງໝົດແລ້ວ</translation>
 <translation id="455835558791489930">ແບັດເຕີຣີ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">ປົດລັອກຊິມແລ້ວ</translation>
 <translation id="4562494484721939086">ບໍ່ມີການບໍລິການ</translation>
@@ -433,6 +441,7 @@
 <translation id="680983167891198932">ກະແຈ</translation>
 <translation id="6816797338148849397">ມີຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ. ໃຊ້ລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ.</translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
+<translation id="6889786074662672253">ໃນລະຫວ່າງທີ່ກຳລັງຣີສະຕາດ, ກະລຸນາຢ່າຖອດປລັກອຸປະກອນພາຍນອກນີ້ ຫຼື ປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="6905724422583748843">ກັບໄປ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">ຝາເຄື່ອງສະແກນເປີດຢູ່. ກະລຸນາປິດຝາແລ້ວລອງໃໝ່.</translation>
 <translation id="6911383237894364323">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີມີເດຍໄດ້</translation>

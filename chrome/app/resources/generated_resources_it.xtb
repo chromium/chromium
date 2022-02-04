@@ -422,7 +422,6 @@
            • Eliminare i cookie e gli altri dati temporanei dei siti
             <ph name="LINE_BREAKS" />
            Non avrà effetto su segnalibri, cronologia e password salvate.</translation>
-<translation id="1425233109861512854">Codice di accesso non riconosciuto</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="142655739075382478">L'app <ph name="APP_NAME" /> è bloccata</translation>
 <translation id="1426870617281699524">Fai clic su Riprova e accetta la richiesta sul computer</translation>
@@ -1148,7 +1147,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2148892889047469596">Trasmetti scheda</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2150139952286079145">Cerca destinazioni</translation>
-<translation id="2150491840563706000">Non hai l'autorizzazione per trasmettere a questo display</translation>
 <translation id="2150661552845026580">Aggiungere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">È stato inserito un indice di tabulazione non valido.</translation>
 <translation id="2152281589789213846">Aggiungi stampanti al tuo profilo</translation>
@@ -2949,7 +2947,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3943582379552582368">&amp;Indietro</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3945513714196326460">Prova con un nome più corto</translation>
-<translation id="3947643756376959257">Inserisci il codice di accesso mostrato su Chromecast o sulla TV.</translation>
 <translation id="3948027458879361203">Cambia nome host</translation>
 <translation id="3948116654032448504">&amp;Cerca l'immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> può modificare i file nelle seguenti cartelle</translation>
@@ -4729,13 +4726,11 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5862109781435984885">Mostra strumenti stilo nella barra delle app</translation>
 <translation id="5862319196656206789">Configura i dispositivi connessi</translation>
 <translation id="5863445608433396414">Attiva funzioni di debug</translation>
-<translation id="5864147196375746035">Trasmetti a un dispositivo gestito</translation>
 <translation id="5864195618110239517">Usa connessione a consumo</translation>
 <translation id="5864754048328252126">Azione stabilita in caso di inattività durante la ricarica</translation>
 <translation id="5865508026715185451">L'app <ph name="APP_NAME" /> verrà presto messa in pausa</translation>
 <translation id="586567932979200359">Stai eseguendo <ph name="PRODUCT_NAME" /> dall'immagine disco. L'installazione sul computer permette di eseguirlo senza immagine disco e ne garantisce l'aggiornamento.</translation>
 <translation id="5865733239029070421">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
-<translation id="5865848066829891215">Problemi di comunicazione di rete</translation>
 <translation id="5867841422488265304">Cerca o digita un indirizzo web</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Password salvate</translation>

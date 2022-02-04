@@ -424,7 +424,6 @@
            • কুকি আৰু ছাইটৰ অন্য সাময়িক ডেটা মচিব
             <ph name="LINE_BREAKS" />
            বুকমাৰ্ক, ইতিহাস আৰু ছেভ হৈ থকা পাছৱৰ্ডত কোনো প্ৰভাৱ নেপেলাব।</translation>
-<translation id="1425233109861512854">এক্সেছ ক’ড চিনাক্ত কৰিব পৰা নাই</translation>
 <translation id="1426410128494586442">হয়</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> অৱৰোধ কৰা হৈছে</translation>
 <translation id="1426870617281699524">‘পুনৰ চেষ্টা কৰক'ত ক্লিক কৰক আৰু আপোনাৰ কম্পিউটাৰৰ প্ৰম্প্‌টো গ্ৰহণ কৰক</translation>
@@ -1157,7 +1156,6 @@
 <translation id="2148892889047469596">টেব কাষ্ট কৰক</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="2150139952286079145">লক্ষ্যস্থান সন্ধান কৰক</translation>
-<translation id="2150491840563706000">এইটো ডিছপ্লে’টো কাষ্ট কৰিবলৈ আপোনাৰ অনুমতি নাই</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" যোগ কৰিবনে?</translation>
 <translation id="2151576029659734873">অমান্য টেব ইণ্ডেক্স দিয়া হৈছে।</translation>
 <translation id="2152281589789213846">আপোনাৰ প্ৰ’ফাইলটোত প্ৰিণ্টাৰসমূহ যোগ কৰক</translation>
@@ -2958,7 +2956,6 @@
 <translation id="3943582379552582368">&amp;উভতি যাওক</translation>
 <translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="3945513714196326460">এটা চুটি নাম দি চাওক</translation>
-<translation id="3947643756376959257">Chromecast অথবা টিভিত দেখুওৱা এক্সেছ ক’ডটো দিয়ক।</translation>
 <translation id="3948027458879361203">হ’ষ্টনাম সলনি কৰক</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />ত প্ৰতিচ্ছবিৰ &amp;সন্ধান কৰক</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />এ তলৰ ফ’ল্ডাৰসমূহত থকা ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
@@ -4739,13 +4736,11 @@
 <translation id="5862109781435984885">শ্বেল্‌ফত ষ্টাইলাছ সঁজুলি দেখুৱাওক</translation>
 <translation id="5862319196656206789">সংযুক্ত হৈ থকা ডিভাইচসমূহ ছেট আপ কৰক</translation>
 <translation id="5863445608433396414">ডিবাগিং সুবিধাসমূহ সক্ষম কৰক</translation>
-<translation id="5864147196375746035">এটা পৰিচালিত ডিভাইচত কাষ্ট কৰক</translation>
 <translation id="5864195618110239517">নিৰিখ-নিৰ্দিষ্ট সংযোগ ব্যৱহাৰ কৰক</translation>
 <translation id="5864754048328252126">চার্জ কৰাৰ সময়ত অন্য একো কাৰ্যকলাপ নকৰাকৈ থকা</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> সোনকালে পজ হ’ব</translation>
 <translation id="586567932979200359">আপুনি <ph name="PRODUCT_NAME" />ক ইয়াৰ ডিস্কৰ প্ৰতিচ্ছবিৰ পৰা চলাই আছে। আপোনাৰ কম্পিউটাৰত এইটো ইনষ্টল কৰিলে আপুনি ইয়াক ডিস্কৰ প্ৰতিচ্ছবিৰ অবিহনেই ব্যৱহাৰ কৰিব পাৰিব আৰু এই কার্যই এইটো আপ-টু-ডে’ট ৰখাটো সুনিশ্চিত কৰে।</translation>
 <translation id="5865733239029070421">Googleলৈ স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই</translation>
-<translation id="5865848066829891215">নেটৱৰ্ক সংযোগৰ সমস্যা</translation>
 <translation id="5867841422488265304">সন্ধান কৰক বা ৱেব ঠিকনা টাইপ কৰক</translation>
 <translation id="5869029295770560994">ঠিক আছে, বুজি পালোঁ</translation>
 <translation id="5869522115854928033">ছেভ কৰা পাছৱৰ্ডসমূহ</translation>

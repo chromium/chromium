@@ -143,6 +143,7 @@
 <translation id="1836215606488044471">Assistant (กำลังโหลด...)</translation>
 <translation id="1838895407229022812">แสงตอนกลางคืนปิดอยู่</translation>
 <translation id="1864454756846565995">อุปกรณ์ USB-C (พอร์ตด้านหลัง)</translation>
+<translation id="1879018240766558464">ขณะนี้ยังไม่รองรับหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="1882814835921407042">ไม่มีเครือข่ายมือถือ</translation>
 <translation id="1882897271359938046">กำลังแสดงผลไปที่ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ปลดล็อกด้วยลายนิ้วมือ</translation>
@@ -944,6 +945,7 @@
 <translation id="7366890467478514168">เชื่อมต่อ <ph name="NAME" /></translation>
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
 <translation id="7377169924702866686">Caps Lock เปิดอยู่</translation>
+<translation id="7377481913241237033">เชื่อมต่อด้วยรหัส</translation>
 <translation id="7378203170292176219">ลากเพื่อเลือกพื้นที่ที่จะบันทึก</translation>
 <translation id="7378594059915113390">การควบคุมสื่อ</translation>
 <translation id="7378889811480108604">โหมดประหยัดแบตเตอรี่ปิดอยู่</translation>
@@ -971,6 +973,7 @@
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="7544300628205093162">ไฟแบ็กไลต์ของแป้นพิมพ์เปิดอยู่</translation>
 <translation id="7548434653388805669">ได้เวลาเข้านอนแล้ว</translation>
 <translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>

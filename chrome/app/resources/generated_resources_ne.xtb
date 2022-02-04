@@ -419,7 +419,6 @@
            • कुकी तथा साइटका अन्य अस्थायी डेटा मेटिने छन्
             <ph name="LINE_BREAKS" />
            बुकमार्क, इतिहास तथा सुरक्षित गरिएका पासवर्डहरूमा केही पनि असर पर्ने छैन।</translation>
-<translation id="1425233109861512854">एक्सेस कोड पहिचान गर्न सकिएन</translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> माथि रोक लगाइएको छ</translation>
 <translation id="1426870617281699524">फेरि प्रयास गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस् र आफ्नो कम्प्युटरमा प्रम्प्टलाई स्वीकार गर्नुहोस्</translation>
@@ -1144,7 +1143,6 @@
 <translation id="2148892889047469596">Cast ट्याब</translation>
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="2150139952286079145">खोज गन्तव्यहरू</translation>
-<translation id="2150491840563706000">तपाईंलाई यो डिस्प्लेमा कास्ट गर्ने अनुमति दिइएको छैन</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" थप्ने?</translation>
 <translation id="2151576029659734873">अवैध ट्याब सूचकांक प्रवेश गरिएको छ।</translation>
 <translation id="2152281589789213846">आफ्नो प्रोफाइलमा प्रिन्टरहरू थप्नुहोस्</translation>
@@ -2944,7 +2942,6 @@
 <translation id="3943582379552582368">&amp;पछाडि</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3945513714196326460">अझ छोटो नाम राखी हेर्नुहोस्</translation>
-<translation id="3947643756376959257">Chromecast वा टिभीमा देखाइएको एक्सेस कोड हाल्नुहोस्।</translation>
 <translation id="3948027458879361203">होस्टनाम परिवर्तन गर्नुहोस्</translation>
 <translation id="3948116654032448504">र छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ले निम्न फोल्डरमा रहेका फाइलहरू सम्पादन गर्न सक्छ</translation>
@@ -4724,13 +4721,11 @@
 <translation id="5862109781435984885">सेल्फमा स्टाइलस सम्बन्धी उपकरणहरू देखाउनुहोस्</translation>
 <translation id="5862319196656206789">कनेक्ट गरिएका यन्त्रहरू सेटअप गर्नुहोस्</translation>
 <translation id="5863445608433396414">डिबग सुविधाहरू सक्षम गर्नुहोस्</translation>
-<translation id="5864147196375746035">व्यवस्थापन गरिएको डिभाइसमा कास्ट गर्नुहोस्</translation>
 <translation id="5864195618110239517">डेटाको सीमा भएको इन्टरनेट प्रयोग गर्नुहोस्</translation>
 <translation id="5864754048328252126">चार्ज भइरहेका बेला यन्त्र निष्क्रिय हुँदा गर्नु पर्ने कारबाही</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> चाँडै पज हुने छ</translation>
 <translation id="586567932979200359">तपाईंले <ph name="PRODUCT_NAME" /> लाई यसको डिस्क छविबाट चलाइरहनु भएको छ। यसलाई तपाईंको कम्प्युटरमा स्थापना गर्नाले यसले तपाईंलाई डिस्क छवि बिना चालू गर्न अनुमति दिन्छ, र यो नवीनतम रहने सुनिश्चित गर्छ।</translation>
 <translation id="5865733239029070421">प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः Google मा पठाउँछ</translation>
-<translation id="5865848066829891215">नेटवर्क सञ्चारसम्बन्धी समस्या देखिए</translation>
 <translation id="5867841422488265304">वेब ठेगाना खोज्नुहोस् वा टाइप गर्नुहोस्</translation>
 <translation id="5869029295770560994">ठिक छ, बुझेँ</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>

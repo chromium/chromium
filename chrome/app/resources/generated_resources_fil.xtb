@@ -342,6 +342,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1340527397989195812">Mag-back up ng media mula sa device gamit ang Files app.</translation>
 <translation id="1341988552785875222">Itinakda ng '<ph name="APP_NAME" />' ang wallpaper sa kasalukuyan. Maaaring kailanganin mong i-uninstall ang '<ph name="APP_NAME" />' bago ka pumili ng ibang wallpaper.</translation>
 <translation id="1343865611738742294">Bugyan ang mga Linux app ng pahintulot na i-access ang mga USB device. Hindi maaalala ng Linux ang isang USB device pagkatapos itong alisin.</translation>
+<translation id="1343920184519992513">Magpatuloy kung saan ka huminto at magbukas ng partikular na hanay ng mga page</translation>
 <translation id="1346630054604077329">Kumpirmahin at i-restart</translation>
 <translation id="1347256498747320987">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang maaari ding awtomatikong mag-download at mag-install ang device na ito ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, na posibleng gumamit ng cellular data. Maaaring nag-aalok ang ilan sa mga app na ito ng mga in-app na pagbili. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">storage ng Linux</translation>
@@ -424,7 +425,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
            • Made-delete ang cookies at iba pang pansamantalang data ng site
             <ph name="LINE_BREAKS" />
            Hindi maaapektuhan ang mga bookmark, history, at naka-save na password.</translation>
-<translation id="1425233109861512854">Hindi nakilala ang access code</translation>
 <translation id="1426410128494586442">Oo</translation>
 <translation id="142655739075382478">Naka-block ang <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">I-click ang Subukang Muli at tanggapin ang prompt sa iyong computer</translation>
@@ -1160,7 +1160,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2148892889047469596">I-cast ang tab</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
 <translation id="2150139952286079145">Maghanap ng mga patutunguhan</translation>
-<translation id="2150491840563706000">Wala kang pahintulot na mag-cast sa display na ito</translation>
 <translation id="2150661552845026580">Idagdag ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Di-wastong index ng tab ang ipinasok.</translation>
 <translation id="2152281589789213846">Magdagdag ng mga printer sa iyong profile</translation>
@@ -2964,7 +2963,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3943582379552582368">&amp;Bumalik</translation>
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3945513714196326460">Sumubok ng mas maikling pangalan</translation>
-<translation id="3947643756376959257">Ilagay ang access code na ipinapakita sa Chromecast o TV.</translation>
 <translation id="3948027458879361203">Baguhin ang hostname</translation>
 <translation id="3948116654032448504">&amp;Maghanap sa <ph name="SEARCH_ENGINE" /> para sa Larawan</translation>
 <translation id="3948507072814225786">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga file sa mga sumusunod na folder</translation>
@@ -4745,13 +4743,11 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5862109781435984885">Ipakita ang mga stylus tool sa shelf</translation>
 <translation id="5862319196656206789">I-set up ang mga nakakonektang device</translation>
 <translation id="5863445608433396414">I-enable ang mga feature para sa pagde-debug</translation>
-<translation id="5864147196375746035">Mag-cast sa isang pinapamahalaang device</translation>
 <translation id="5864195618110239517">Gumamit ng nakametrong koneksyon</translation>
 <translation id="5864754048328252126">Idle na pagkilos habang nagcha-charge</translation>
 <translation id="5865508026715185451">Malapit nang mag-pause ang <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Pinapatakbo mo ang <ph name="PRODUCT_NAME" /> mula sa larawan nito sa disk. Ang pag-install nito ay magbibigay-daan sa iyong patakbuhin ito nang walang larawan ng disk, at makakatiyak na pananatilihin itong napapanahon.</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
-<translation id="5865848066829891215">Mga isyu sa komunikasyon ng network</translation>
 <translation id="5867841422488265304">Maghanap o mag-type ng web address</translation>
 <translation id="5869029295770560994">OK, Nakuha Ko</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
@@ -5406,6 +5402,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="654871471440386944">I-on ang caret browsing?</translation>
 <translation id="6549038875972762904">Gawin ulit ang pag-set up</translation>
 <translation id="6550675742724504774">Mga Pagpipilian</translation>
+<translation id="65513682072153627">Makikita mo ang icon ng Pinapamahalaan na ito kapag pinapamahalaan ng iyong administrator ang isang setting o feature.</translation>
 <translation id="6551508934388063976">Hindi available ang command. Pindutin ang control-N upang magbukas ng bagong window.</translation>
 <translation id="6551612971599078809">Gumagamit ng USB ang site</translation>
 <translation id="6551739526055143276">Pinapamahalaan ng Family Link</translation>

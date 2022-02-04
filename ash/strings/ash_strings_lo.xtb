@@ -113,6 +113,7 @@
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1570871743947603115">ປິດເປີດ Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ເຂົ້າເຖິງທຸກການເຄື່ອນໄຫວຂອງທ່ານໃນເຊດຊັນນີ້</translation>
+<translation id="1610778689852195798">"ຍົກເລີກ"</translation>
 <translation id="1611993646327628135">ເປີດ</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ອຸປະກອນ</translation>
@@ -247,6 +248,7 @@
 <translation id="2596078834055697711">ຖ່າຍພາບໜ້າຈໍ</translation>
 <translation id="2607678425161541573">ຕ້ອງເຂົ້າສູ່ລະບົບອອນລາຍ</translation>
 <translation id="2621713457727696555">ຮັກສາຄວາມປອດໄພແລ້ວ</translation>
+<translation id="263399434338050016">"ເລືອກທັງໝົດ"</translation>
 <translation id="2653019840645008922">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="2653659639078652383">ສົ່ງ</translation>
 <translation id="2658778018866295321">ຄລິກ ແລ້ວລາກ</translation>
@@ -263,6 +265,7 @@
 <translation id="2727175239389218057">ຕອບກັບ</translation>
 <translation id="2727977024730340865">ສຽບໃສ່ເຄື່ອງສາກໄຟຕໍ່າແລ້ວ. ການສາກແບັດເຕີຣີອາດຈະບໍ່ເຊື່ອຖືໄດ້.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"ລຶບ"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">ອອກຈາກໂໝດຖ່າຍຮູບ</translation>
 <translation id="2792498699870441125">Alt+ຊອກຫາ</translation>
@@ -306,6 +309,7 @@
 <translation id="3038571455154067151">ເພື່ອເຂົ້າສູ່ລະບົບ, ກະລຸນາປ້ອນ ລະຫັດການເຂົ້າເຖິງຂອງພໍ່ແມ່ໃນ Family Link ຂອງທ່ານ</translation>
 <translation id="3039939407102840004">ແບັດເຕີຣີປາກກາເຫຼືອ <ph name="PERCENTAGE" /> ເປີເຊັນ.</translation>
 <translation id="3045488863354895414">ສະບາຍດີຕອນບ່າຍ,</translation>
+<translation id="3047761520276763270">ລອງເວົ້າວ່າ:</translation>
 <translation id="3051189971848907985">ກຳລັງປ່ຽນຊື່ໂປຣໄຟລ໌. ກະລຸນາລໍຖ້າສອງສາມນາທີ.</translation>
 <translation id="3055162170959710888">ທ່ານໄດ້ໃຊ້ອຸປະກອນນີ້ເປັນເວລາ <ph name="USED_TIME" /> ໃນມື້ນີ້</translation>
 <translation id="3068711042108640621">ຊັ້ນວາງຢູ່ເບື້ອງຊ້າຍ</translation>
@@ -551,6 +555,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="4570957409596482333">ປຸ່ມເລືອກເພື່ອເວົ້າ</translation>
+<translation id="4573176682887762361">"ພິມ [ຄຳສັບ / ວະລີ]"</translation>
 <translation id="4577274620589681794">ໝົດເວລາແລ້ວ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ສະແດງຕົວຢ່າງ</translation>
 <translation id="4578196883126898996">ໄມໂຄຣໂຟນຂອງທ່ານປິດຢູ່. ກະລຸນາເປີດໃຊ້ປຸ່ມໄມໂຄຣໂຟນຂອງອຸປະກອນທ່ານ.</translation>
@@ -1165,6 +1170,7 @@
 <translation id="8785070478575117577">ເຊື່ອມຕໍ່ກັບ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">ໂຟລເດີ <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"ຊ່ວຍເຫຼືອ"</translation>
 <translation id="8814190375133053267">Wi​-Fi</translation>
 <translation id="881757059229893486">ການຕັ້ງຄ່າວິທີການປ້ອນຂໍ້ມູນ</translation>
 <translation id="8818320199597151042">ກຳລັງລຶບໂປຣໄຟລ໌ອອກ. ກະລຸນາລໍຖ້າສອງສາມນາທີ.</translation>

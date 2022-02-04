@@ -385,6 +385,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1396259464226642517">Espero zenuen emaitza al da? <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Idatzi dituzun erabiltzaile-izena eta pasahitza ez datoz bat</translation>
 <translation id="1397500194120344683">Ez dago gailu egokirik. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Gailu hauetan Chrome-ko saioa hasita daukazunez, segurtasun-giltza gisa erabil ditzakezu.</translation>
 <translation id="1398853756734560583">Maximizatu</translation>
 <translation id="139911022479327130">Desblokeatu telefonoa eta berretsi zure identitatea</translation>
 <translation id="1401308693935339022">Erabili kokapena. Baimendu kokapena atzi dezaketen aplikazio eta zerbitzuei gailuaren kokapena erabiltzea. Google-k kokapen-datu anonimoak biltzen ditu noizean behin, kokapenaren zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko.</translation>
@@ -420,7 +421,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
            • Cookieak eta webguneetako bestelako aldi baterako datuak ezabatuko dira.
             <ph name="LINE_BREAKS" />
            Ez die eragingo laster-markei, historiari eta gordetako pasahitzei.</translation>
-<translation id="1425233109861512854">Ez da ezagutu sarbide-kodea</translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="142655739075382478">Blokeatuta dago <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">Sakatu Saiatu berriro, eta onartu ordenagailuan agertzen den berrespena</translation>
@@ -1146,7 +1146,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2148892889047469596">Igorri fitxa</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
 <translation id="2150139952286079145">Bilatu inprimagailuak</translation>
-<translation id="2150491840563706000">Ez duzu baimenik pantaila honetara edukia igortzeko</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" gehitu nahi duzu?</translation>
 <translation id="2151576029659734873">Fitxa-indize baliogabea idatzi duzu.</translation>
 <translation id="2152281589789213846">Gehitu inprimagailuak profilean</translation>
@@ -1169,6 +1168,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2163470535490402084">Konektatu Internetera <ph name="DEVICE_TYPE" /> gailuan saioa hasteko.</translation>
 <translation id="2163937499206714165">Aktibatu modu iluna</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> eta beste erabilerraztasun-etengailu bat</translation>
+<translation id="2165102982098084499">QR kode bat eskaneatuta lotu dituzu gailuak.</translation>
 <translation id="2165177462441582039">Hautatu zenbat denboraz egon behar duen nabarmenduta elementu bakoitzak</translation>
 <translation id="2166369534954157698">Vaudeville itxurako filmean yogi ñaño bat jipoitzen dute whiski truk Quebec-en.</translation>
 <translation id="2169062631698640254">Hasi saioa halere</translation>
@@ -2944,7 +2944,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3943582379552582368">&amp;Atzera</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3945513714196326460">Idatzi izen laburrago bat</translation>
-<translation id="3947643756376959257">Idatzi Chromecast-ean edo telebistan agertu zaizun sarbide-kodea.</translation>
 <translation id="3948027458879361203">Aldatu ostalari-izena</translation>
 <translation id="3948116654032448504">&amp;Bilatu irudia <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> webguneak karpeta hauetako fitxategiak editatzeko baimena du</translation>
@@ -4724,13 +4723,11 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5862109781435984885">Erakutsi arkatzaren tresnak apalean</translation>
 <translation id="5862319196656206789">Konfiguratu konektatutako gailuak</translation>
 <translation id="5863445608433396414">Gaitu arazketa-eginbideak</translation>
-<translation id="5864147196375746035">Igorri kudeatutako gailu batera</translation>
 <translation id="5864195618110239517">Erabili neurtutako konexioa</translation>
 <translation id="5864754048328252126">Gailua kargatzen ari denean inaktibo geratuz gero gauzatu beharreko ekintza</translation>
 <translation id="5865508026715185451">Laster pausatuko da <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> bere disko-irudiaren bidez abiarazi duzu. Ordenagailuan instalatzen baduzu, ez duzu hori egin beharko eta eguneratuta dagoela ziurtatuko duzu.</translation>
 <translation id="5865733239029070421">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri</translation>
-<translation id="5865848066829891215">Sare bidezko komunikazioaren arazoak</translation>
 <translation id="5867841422488265304">Bilatu edo idatzi webgunearen helbidea</translation>
 <translation id="5869029295770560994">Ados, ulertu dut</translation>
 <translation id="5869522115854928033">Gordetako pasahitzak</translation>
@@ -5687,6 +5684,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Proxy-ezarpenak…</translation>
 <translation id="6860427144121307915">Ireki fitxa batean</translation>
+<translation id="6863496016067551393">Luzapen guztiak exekutatzeko baimena dutenak</translation>
 <translation id="686366188661646310">Pasahitza ezabatu nahi duzu?</translation>
 <translation id="6865313869410766144">Bete inprimakiko datuak automatikoki</translation>
 <translation id="6865598234501509159">Orriak ez du erabiltzen <ph name="LANGUAGE" /></translation>
@@ -5716,6 +5714,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6900532703269623216">Babes hobetua</translation>
 <translation id="6900651018461749106">Hasi saioa berriro <ph name="USER_EMAIL" /> eguneratzeko</translation>
 <translation id="6900654715912436255">Ziur bilatzailea ezabatu nahi duzula?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Aurreikusteko ahotsa</translation>
 <translation id="6902336033320348843">Ez da onartzen atal hau: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Gehitu gailua domeinuan</translation>
@@ -7366,6 +7365,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8610103157987623234">Formatua okerra da. Saiatu berriro.</translation>
 <translation id="8611682088849615761">Jarraitu baimena ematen webguneari MIDI gailuak erabat kontrolatzeko</translation>
 <translation id="8613164732773110792">Minuskulak, digituak, azpimarrak edo marratxoak bakarrik</translation>
+<translation id="8613645710357126807">Luzapenak exekutatzeko baimenik ez dutenak</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> handiegia da segurtasun-egiaztapena egiteko. Gehienez 50 MB dituzten fitxategiak ireki ditzakezu.</translation>
 <translation id="8615618338313291042">Ezkutuko aplikazioa: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Gehitu <ph name="CONTACT_NAME" /> kontaktuetan</translation>

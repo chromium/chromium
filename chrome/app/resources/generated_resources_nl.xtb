@@ -421,7 +421,6 @@
            • Cookies en andere tijdelijke sitegegevens worden verwijderd
             <ph name="LINE_BREAKS" />
            Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.</translation>
-<translation id="1425233109861512854">Toegangscode niet herkend</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> is geblokkeerd</translation>
 <translation id="1426870617281699524">Klik op 'Opnieuw proberen' en accepteer de prompt op je computer</translation>
@@ -1147,7 +1146,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2148892889047469596">Tabblad casten</translation>
 <translation id="2149973817440762519">Bookmark bewerken</translation>
 <translation id="2150139952286079145">Bestemmingen zoeken</translation>
-<translation id="2150491840563706000">Je hebt geen rechten om te casten naar dit scherm</translation>
 <translation id="2150661552845026580">Wil je '<ph name="EXTENSION_NAME" />' toevoegen?</translation>
 <translation id="2151576029659734873">Ongeldige tabbladindex opgegeven.</translation>
 <translation id="2152281589789213846">Printers aan je profiel toevoegen</translation>
@@ -2947,7 +2945,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3943582379552582368">&amp;Vorige</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3945513714196326460">Probeer een kortere naam</translation>
-<translation id="3947643756376959257">Geef de toegangscode op die je ziet op de Chromecast of tv.</translation>
 <translation id="3948027458879361203">Hostnaam wijzigen</translation>
 <translation id="3948116654032448504">&amp;Afbeelding zoeken in <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan bestanden bewerken in de volgende mappen</translation>
@@ -4725,13 +4722,11 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5862109781435984885">Stylustools op de plank bekijken</translation>
 <translation id="5862319196656206789">Verbonden apparaten instellen</translation>
 <translation id="5863445608433396414">Foutopsporingsfuncties aanzetten</translation>
-<translation id="5864147196375746035">Casten naar een beheerd apparaat</translation>
 <translation id="5864195618110239517">Verbinding met datalimiet gebruiken</translation>
 <translation id="5864754048328252126">Inactieve actie tijdens opladen</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> wordt straks onderbroken</translation>
 <translation id="586567932979200359">Je voert <ph name="PRODUCT_NAME" /> uit via de schijfkopie. Als je dit programma installeert op je computer, kun je dit uitvoeren zonder de schijfkopie te gebruiken en blijft het programma bijgewerkt.</translation>
 <translation id="5865733239029070421">Hiermee worden automatisch gebruiksstatistieken en crashrapporten naar Google verzonden</translation>
-<translation id="5865848066829891215">Problemen met netwerkcommunicatie</translation>
 <translation id="5867841422488265304">Zoek of typ een webadres</translation>
 <translation id="5869029295770560994">OK, begrepen</translation>
 <translation id="5869522115854928033">Opgeslagen wachtwoorden</translation>

@@ -343,6 +343,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1340527397989195812">Napravite sigurnosnu kopiju medija s uređaja koristeći aplikaciju Files.</translation>
 <translation id="1341988552785875222">Trenutnu pozadinsku sliku postavila je aplikacija "<ph name="APP_NAME" />". Prije odabira druge pozadinske slike, možda ćete morati deinstalirati aplikaciju "<ph name="APP_NAME" />".</translation>
 <translation id="1343865611738742294">Pruža Linux aplikacijama odobrenje za pristup USB uređajima. Linux neće zapamtiti USB uređaj nakon što ga uklonite.</translation>
+<translation id="1343920184519992513">Nastavite tamo gdje ste stali i otvorite određeni skup stranica</translation>
 <translation id="1346630054604077329">Potvrdi i ponovo pokreni</translation>
 <translation id="1347256498747320987">Instaliranje ažuriranja i aplikacija. Ako nastavite, pristajete da ovaj uređaj također može s vremena na vrijeme automatski preuzimati i instalirati ažuriranja i aplikacije s Googlea, od vašeg mobilnog operatera i proizvođača vašeg uređaja, uz mogući prijenos podataka na mobilnoj mreži. Neke od tih aplikacija mogu također nuditi kupovinu unutar aplikacija. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linuxova pohrana</translation>
@@ -425,7 +426,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
            • izbrisati kolačići i drugi privremeni podaci web lokacije
             <ph name="LINE_BREAKS" />
            Ova radnja neće uticati na oznake, historiju i sačuvane lozinke.</translation>
-<translation id="1425233109861512854">Pristupni kôd nije prepoznat</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="142655739075382478">Aplikacija <ph name="APP_NAME" /> je blokirana</translation>
 <translation id="1426870617281699524">Kliknite Pokušaj ponovo i prihvatite upit na računaru</translation>
@@ -1158,7 +1158,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2148892889047469596">Emitiraj karticu</translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
 <translation id="2150139952286079145">Odredišta za pretraživanje</translation>
-<translation id="2150491840563706000">Nemate odobrenje da emitirate na ovaj ekran</translation>
 <translation id="2150661552845026580">Dodati ekstenziju "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Unesen je nevažeći indeks za karticu.</translation>
 <translation id="2152281589789213846">Dodajte štampače na svoj profil</translation>
@@ -2961,7 +2960,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3943582379552582368">&amp;Nazad</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
 <translation id="3945513714196326460">Pokušajte s kraćim nazivom</translation>
-<translation id="3947643756376959257">Unesite pristupni kôd prikazan na Chromecastu ili TV-u.</translation>
 <translation id="3948027458879361203">Promijeni naziv host računara</translation>
 <translation id="3948116654032448504">Traženje slike koristeći <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> može uređivati fajlove u sljedećim folderima</translation>
@@ -4742,13 +4740,11 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5862109781435984885">Prikaži alate za digitalnu olovku na polici</translation>
 <translation id="5862319196656206789">Postavite povezane uređaje</translation>
 <translation id="5863445608433396414">Omogući funkcije za otklanjanje grešaka</translation>
-<translation id="5864147196375746035">Emitirajte na upravljani uređaj</translation>
 <translation id="5864195618110239517">Koristi vezu s naplatom</translation>
 <translation id="5864754048328252126">Radnja u slučaju neaktivnosti tokom punjenja</translation>
 <translation id="5865508026715185451">Aplikacija <ph name="APP_NAME" /> će se uskoro pauzirati</translation>
 <translation id="586567932979200359">Pokrećete <ph name="PRODUCT_NAME" /> sa slike diska. Ako ga instalirate na računaru, moći ćete ga pokrenuti bez slike diska i uvijek će biti ažuriran.</translation>
 <translation id="5865733239029070421">Automatski šalje Googleu statistiku korištenja i izvještaje o padovima aplikacije</translation>
-<translation id="5865848066829891215">Problemi mrežne komunikacije</translation>
 <translation id="5867841422488265304">Pretražite ili unesite web adresu</translation>
 <translation id="5869029295770560994">Uredu, razumijem</translation>
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
@@ -5403,6 +5399,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="654871471440386944">Uključiti navigaciju kursorom?</translation>
 <translation id="6549038875972762904">Ponovi postavljanje</translation>
 <translation id="6550675742724504774">Opcije</translation>
+<translation id="65513682072153627">Prikazat će se ikona upravljanja kada postavkom ili značajkom upravlja vaš administrator.</translation>
 <translation id="6551508934388063976">Komanda nije dostupna. Pritiniste control-N da otvorite novi prozor.</translation>
 <translation id="6551612971599078809">Web lokacija koristi USB</translation>
 <translation id="6551739526055143276">Računom upravlja Family Link</translation>
@@ -6173,6 +6170,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7376553024552204454">Istakni kursor miša u pokretu</translation>
 <translation id="737728204345822099">Evidencija o vašoj posjeti ovoj web lokaciji može se čuvati na vašem sigurnosnom ključu.</translation>
 <translation id="7377451353532943397">Nastavi blokirati pristup senzoru</translation>
+<translation id="7377481913241237033">Povežite se pomoću koda</translation>
 <translation id="7378611153938412599">Slabe lozinke je lako pogoditi. Vodite računa da kreirate jake lozinke. <ph name="BEGIN_LINK" />Pogledajte još sigurnosnih savjeta.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otvorite Chrome Web trgovinu</translation>
 <translation id="7380622428988553498">Naziv uređaja sadrži nevažeće znakove</translation>

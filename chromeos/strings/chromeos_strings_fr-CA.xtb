@@ -33,11 +33,13 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1387854245479784695">Il s'agit d'une agrégation de tous les cœurs</translation>
+<translation id="1394661041439318933">Le niveau de la pile du boîtier est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Ping de la passerelle</translation>
 <translation id="1398634363027580500">Latence HTTPS très élevée</translation>
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">J'ai une biclé</translation>
+<translation id="1451536289672181509">L'appareil est un clavier.</translation>
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="1478594628797167447">Numériseur</translation>
@@ -82,6 +84,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2104796393919810494">Réparation terminée</translation>
+<translation id="2105810540595158374">L'appareil est une manette de jeu.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -135,6 +138,7 @@
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
+<translation id="3031560714565892478">L'appareil est une caméra vidéo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point d'extrémité</translation>
 <translation id="3069085583900247081">Échec du test</translation>
@@ -142,6 +146,7 @@
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">Processeur</translation>
+<translation id="3124039320086536031">L'appareil est connecté.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Retirer la page?}=1{Retirer la page {PAGE_NUMBER}?}one{Retirer la page {PAGE_NUMBER}?}other{Retirer la page {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Données mobiles</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
@@ -157,6 +162,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
+<translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -164,6 +170,7 @@
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
+<translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
@@ -194,6 +201,7 @@
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3954678691475912818">Le type d'appareil est inconnu.</translation>
 <translation id="3966286471246132217">Pour obtenir des résultats plus précis, fermez toutes les applications jusqu'à la fin du test.</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
@@ -275,6 +283,7 @@
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Choisissez-en un immédiatement</translation>
 <translation id="4891842000192098784">Stress</translation>
+<translation id="4897058166682006107">Le niveau de la pile de l'écouteur gauche est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
@@ -322,6 +331,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5346687412805619883">Réseau local</translation>
 <translation id="5358174242040570474">Un problème est survenu. Essayez de nouveau de choisir un fond d'écran ou rouvrez l'application.</translation>
 <translation id="5372659122375744710">Le réseau Wi-Fi n'est pas sécurisé</translation>
+<translation id="5400907029458559844">L'appareil se connecte.</translation>
 <translation id="5401938042319910061">Exécuter toutes les routines</translation>
 <translation id="5423849171846380976">Activé</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
@@ -383,6 +393,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
+<translation id="6319207335391420837">Mettre à jour le micrologiciel de <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Échec</translation>
 <translation id="6340526405444716530">Personnalisation</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
@@ -415,6 +426,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
 <translation id="6749473226660745022">Photos</translation>
+<translation id="6753452347192452143">L'appareil est un ordinateur.</translation>
 <translation id="6756731097889387912">Impossible d'annuler la numérisation</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
@@ -432,12 +444,14 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6992266763844448459">Sélectionnez cette option si la propriété de l'appareil demeure la même. Par exemple, l'appareil est transféré à une autre personne au sein de l'organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
+<translation id="7041549558901442110">L'appareil n'est pas connecté.</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
 <translation id="7068619307603204412">Préparer votre appareil</translation>
 <translation id="708426984172631313">ARRÊTÉ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Échec – Échec de l'autorisation</translation>
+<translation id="7103252855940681301">Appareil <ph name="INDEX" /> de <ph name="COUNT" /> nommé <ph name="NAME" />.</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144878232160441200">Réessayer</translation>
@@ -471,6 +485,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7502658306369382406">Adresse IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Routines de diagnostic</translation>
+<translation id="7551123448725492271">L'appareil est un appareil audio.</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Écran tactile USB</translation>
@@ -478,6 +493,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7620771111601174153">En savoir plus dans le centre d'aide</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
 <translation id="7648838807254605802">Latence HTTPS élevée</translation>
+<translation id="7656388927906093505">L'appareil est une souris.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7690294790491645610">Confirmez le nouveau mot de passe</translation>
 <translation id="7701040980221191251">Aucun</translation>
@@ -573,6 +589,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8855781559874488009">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP</translation>
 <translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> du terme « <ph name="QUERY" /> » et plus</translation>
 <translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">L'appareil est une tablette.</translation>
 <translation id="8881098542468797602">Test réussi</translation>
 <translation id="8898840733695078011">Intensité du signal</translation>
 <translation id="8910721771319628100">Le seuil de latence du réseau par défaut est trop élevé</translation>
@@ -583,10 +600,12 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8930622219860340959">Sans fil</translation>
 <translation id="8936793075252196307">Adresse IP du client</translation>
 <translation id="8945750210906526975">Pavé tactile interne</translation>
+<translation id="894617464444543719">L'appareil est un téléphone.</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter de nouveau</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Numériser}=1{Numériser la page {NUMBER_OF_PAGES}}one{Numériser la page {NUMBER_OF_PAGES}}other{Numériser les pages {NUMBER_OF_PAGES}}}</translation>
+<translation id="8997710128084572139">Le niveau de la pile de l'appareil est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>

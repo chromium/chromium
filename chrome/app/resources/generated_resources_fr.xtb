@@ -386,6 +386,7 @@
 <translation id="1396259464226642517">Ce résultat était-il inattendu ? <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Le nom d'utilisateur et le mot de passe saisis ne correspondent pas</translation>
 <translation id="1397500194120344683">Aucun appareil éligible. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Vous êtes connecté à Chrome sur ces appareils. Vous pouvez donc les utiliser comme clés de sécurité.</translation>
 <translation id="1398853756734560583">Agrandir</translation>
 <translation id="139911022479327130">Déverrouillez votre téléphone et confirmez votre identité</translation>
 <translation id="1401308693935339022">Utiliser la localisation. Permettre aux services et applications d'utiliser la position de cet appareil s'ils disposent de l'autorisation d'accès nécessaire. Google peut collecter des données de localisation régulièrement et s'en servir de manière anonyme pour améliorer la précision de la localisation et les services géolocalisés.</translation>
@@ -421,7 +422,6 @@
            • Les cookies et les autres données de sites temporaires seront supprimés.
             <ph name="LINE_BREAKS" />
            En revanche, la réinitialisation n'aura aucune incidence sur les favoris, l'historique et les mots de passe enregistrés.</translation>
-<translation id="1425233109861512854">Code d'accès non reconnu</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> est bloqué</translation>
 <translation id="1426870617281699524">Cliquez sur "Réessayer" et acceptez l'invite sur votre ordinateur</translation>
@@ -1147,7 +1147,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2148892889047469596">Caster l'onglet</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2150139952286079145">Rechercher des emplacements de destination</translation>
-<translation id="2150491840563706000">Vous n'êtes pas autorisé à caster sur cet écran</translation>
 <translation id="2150661552845026580">Installer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="2151576029659734873">L'index de l'onglet indiqué est incorrect.</translation>
 <translation id="2152281589789213846">Ajouter des imprimantes à votre profil</translation>
@@ -1170,6 +1169,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Appliquer le mode sombre</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre contacteur</translation>
+<translation id="2165102982098084499">Vous avez associé ces appareils en scannant un code QR.</translation>
 <translation id="2165177462441582039">Sélectionnez la durée d'affichage de l'élément en surbrillance</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
@@ -2947,7 +2947,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3943582379552582368">R&amp;etour</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3945513714196326460">Saisissez un nom plus court</translation>
-<translation id="3947643756376959257">Saisissez le code d'accès affiché sur le Chromecast ou la télévision.</translation>
 <translation id="3948027458879361203">Modifier le nom d'hôte</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Le site <ph name="ORIGIN" /> peut modifier les fichiers des dossiers suivants</translation>
@@ -4728,13 +4727,11 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5862109781435984885">Afficher les outils de stylet sur l'étagère</translation>
 <translation id="5862319196656206789">Configurer les appareils connectés</translation>
 <translation id="5863445608433396414">Activer les fonctionnalités de débogage</translation>
-<translation id="5864147196375746035">Caster sur un appareil géré</translation>
 <translation id="5864195618110239517">Utiliser une connexion facturée à l'usage</translation>
 <translation id="5864754048328252126">Lorsque l'appareil est inactif et en charge</translation>
 <translation id="5865508026715185451">L'application <ph name="APP_NAME" /> sera bientôt suspendue</translation>
 <translation id="586567932979200359">Vous exécutez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
-<translation id="5865848066829891215">Problèmes de communication avec le réseau</translation>
 <translation id="5867841422488265304">Recherchez ou saisissez une adresse Web</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
@@ -5691,6 +5688,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Paramètres du proxy...</translation>
 <translation id="6860427144121307915">Ouvrir dans un onglet</translation>
+<translation id="6863496016067551393">Toutes les extensions sont autorisées</translation>
 <translation id="686366188661646310">Supprimer le mot de passe ?</translation>
 <translation id="6865313869410766144">Données de saisie automatique</translation>
 <translation id="6865598234501509159">La page n'est pas en <ph name="LANGUAGE" /></translation>
@@ -5720,6 +5718,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6900651018461749106">Reconnectez-vous pour mettre à jour le compte <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Voulez-vous vraiment supprimer ce moteur de recherche ?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voix à écouter</translation>
 <translation id="6902336033320348843">Section non compatible : <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Associer l'appareil au domaine</translation>
@@ -7372,6 +7371,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8610103157987623234">Format incorrect, veuillez réessayer</translation>
 <translation id="8611682088849615761">Continuer à autoriser le contrôle total des appareils MIDI pour ce site</translation>
 <translation id="8613164732773110792">Caractères minuscules, chiffres, traits de soulignement ou tirets uniquement</translation>
+<translation id="8613645710357126807">Non autorisés à utiliser les extensions</translation>
 <translation id="8613786722548417558">Impossible de vérifier si le fichier "<ph name="FILE_NAME" />" est sûr, car il est trop volumineux. Vous ne pouvez pas ouvrir de fichiers de plus de 50 Mo.</translation>
 <translation id="8615618338313291042">Application en mode navigation privée : <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Ajouter <ph name="CONTACT_NAME" /> à vos contacts</translation>

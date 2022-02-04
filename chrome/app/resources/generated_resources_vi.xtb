@@ -422,7 +422,6 @@
            • Xóa cookie và dữ liệu trang web tạm thời khác
             <ph name="LINE_BREAKS" />
            Dấu trang, lịch sử duyệt web và mật khẩu đã lưu sẽ không bị ảnh hưởng.</translation>
-<translation id="1425233109861512854">Không nhận dạng được mã truy cập</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="142655739075382478">Đã chặn <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">Hãy nhấp vào Thử lại rồi chấp nhận lời nhắc trên máy tính của bạn</translation>
@@ -1158,7 +1157,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2148892889047469596">Truyền thẻ</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2150139952286079145">Tìm kiếm máy in đích</translation>
-<translation id="2150491840563706000">Bạn không có quyền truyền cho màn hình này</translation>
 <translation id="2150661552845026580">Và "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Chỉ mục thẻ không hợp lệ được nhập.</translation>
 <translation id="2152281589789213846">Thêm máy in vào hồ sơ của bạn</translation>
@@ -2960,7 +2958,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3943582379552582368">&amp;Quay lại</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3945513714196326460">Hãy thử nhập một tên ngắn hơn</translation>
-<translation id="3947643756376959257">Nhập mã truy cập xuất hiện trên Chromecast hoặc TV.</translation>
 <translation id="3948027458879361203">Thay đổi tên máy chủ</translation>
 <translation id="3948116654032448504">&amp;Tìm kiếm hình ảnh trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong các thư mục sau đây</translation>
@@ -4741,13 +4738,11 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5862109781435984885">Hiển thị công cụ bút cảm ứng trên kệ</translation>
 <translation id="5862319196656206789">Thiết lập các thiết bị đã kết nối</translation>
 <translation id="5863445608433396414">Bật tính năng gỡ lỗi</translation>
-<translation id="5864147196375746035">Truyền đến một thiết bị được quản lý</translation>
 <translation id="5864195618110239517">Sử dụng đường kết nối có đo lượng dữ liệu</translation>
 <translation id="5864754048328252126">Trạng thái không hoạt động trong khi sạc</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sắp tạm dừng</translation>
 <translation id="586567932979200359">Bạn đang chạy <ph name="PRODUCT_NAME" /> từ hình ảnh đĩa của nó. Cài đặt trình duyệt này trên máy tính cho phép bạn chạy trình duyệt mà không cần có hình ảnh đĩa và đảm bảo trình duyệt sẽ được cập nhật.</translation>
 <translation id="5865733239029070421">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google</translation>
-<translation id="5865848066829891215">Vấn đề về kết nối mạng</translation>
 <translation id="5867841422488265304">Tìm kiếm hoặc nhập địa chỉ web</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>

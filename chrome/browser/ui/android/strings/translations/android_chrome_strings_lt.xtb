@@ -34,6 +34,7 @@
 <translation id="1171770572613082465">Žr. populiarias svetaines palietę mygtuką „Populiariausios svetainės“</translation>
 <translation id="1173894706177603556">Pervadinti</translation>
 <translation id="1177863135347784049">Priskirtas</translation>
+<translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1197267115302279827">Perkelti žymes</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1202892408424955784">Stebimi produktai</translation>
@@ -1174,6 +1175,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7663313374500954251">Šią naršyklę tvarko: <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Pridėti paskyrą</translation>
 <translation id="766587987807204883">Čia rodomi straipsniai, kuriuos galima skaityti net neprisijungus</translation>
+<translation id="768232549260819724">GIF nukopijuotas</translation>
 <translation id="7682724950699840886">Išbandykite nurodytus patarimus: įsitikinkite, kad įrenginyje yra pakankamai vietos, ir bandykite eksportuoti dar kartą.</translation>
 <translation id="768618399695552958">Kai kurie puslapiai, kuriuose lankotės, yra iš anksto įkelti. Puslapiai gali būti iš anksto įkelti per „Google“ serverius, kai susieti iš „Google“ svetainės.</translation>
 <translation id="7698359219371678927">Kurti el. laišką naudojant „<ph name="APP_NAME" />“</translation>
@@ -1352,6 +1354,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8570677896027847510">Negalima saugiai atsisiųsti failo</translation>
 <translation id="8571213806525832805">Pastarosios 4 savaitės</translation>
 <translation id="8572344201470131220">Vaizdas nukopijuotas</translation>
+<translation id="8580884231102452214">Kopijuoti GIF</translation>
 <translation id="8583805026567836021">Valomi paskyros duomenys</translation>
 <translation id="859046281437143747">Stebėkite kainas naudodami mygtuką „Daugiau parinkčių“</translation>
 <translation id="860043288473659153">Kortelės savininko vardas</translation>

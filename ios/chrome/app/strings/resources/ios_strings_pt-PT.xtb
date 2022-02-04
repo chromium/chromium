@@ -85,6 +85,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar o registo" para recolher futuros registos da consola de JavaScript e erros de todos os separadores. Os registos serão recolhidos (e armazenados apenas na memória) até fechar esta página ou tocar em "Parar o registo".</translation>
+<translation id="1654232554734641711">Acesso ao microfone permitido</translation>
 <translation id="1657011748321897393">A partilha falhou porque não está ligado à rede.</translation>
 <translation id="1657641691196698092">Cookies bloqueados</translation>
 <translation id="165877110639533037">Sem separadores abertos</translation>
@@ -396,6 +397,7 @@ Os dados estão encriptados com a sua frase de acesso de sincronização. Introd
 <translation id="4682686630151240767">1. Abra as Definições do iPhone</translation>
 <translation id="4689564913179979534">Gerir métodos de pagamento</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
+<translation id="4731472194328757163">Acesso à câmara e ao microfone permitidos</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Novo separador de navegação anónima</translation>
@@ -547,6 +549,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6059830886158432458">Controle as suas notícias e atividade aqui.</translation>
 <translation id="6064824697233747382">A sua entidade requer que desative a sincronização.</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
+<translation id="6077126322656614846">Acesso à câmara permitido</translation>
 <translation id="60829778314739003">Aceitar e continuar</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
 <translation id="6103540626693881831">Encriptação no dispositivo</translation>

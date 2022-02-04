@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">Assistant (सेवा लोड हो रही है...)</translation>
 <translation id="1838895407229022812">नाइट लाइट बंद है.</translation>
 <translation id="1864454756846565995">USB-C डिवाइस (पिछला पोर्ट)</translation>
+<translation id="1879018240766558464">फ़िलहाल, गुप्त विंडो काम नहीं कर रही हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="1882814835921407042">आपके फ़ोन में मोबाइल नेटवर्क उपलब्ध नहीं है</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> पर स्क्रीन शेयर कर रहा है</translation>
 <translation id="1885785240814121742">फ़िंगरप्रिंट से अनलॉक करें</translation>
@@ -948,6 +949,7 @@
 <translation id="7366890467478514168"><ph name="NAME" /> कनेक्ट करें</translation>
 <translation id="7371404428569700291">चुनी गई विंडो के लिए वीडियो रिकॉर्ड करें</translation>
 <translation id="7377169924702866686">Caps Lock चालू है.</translation>
+<translation id="7377481913241237033">कोड का इस्तेमाल करके कनेक्ट करें</translation>
 <translation id="7378203170292176219">रिकॉर्ड की जाने वाली जगह चुनने के लिए खींचें</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रण</translation>
 <translation id="7378889811480108604">बैटरी सेवर मोड बंद है</translation>
@@ -975,6 +977,7 @@
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7526573455193969409">नेटवर्क की निगरानी की जा सकती है</translation>
 <translation id="7536035074519304529">आईपी पता: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">फ़िलहाल, Linux ऐप्लिकेशन और गुप्त विंडो काम नहीं कर रही हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="7544300628205093162">कीबोर्ड की बैकलाइट चालू है</translation>
 <translation id="7548434653388805669">सोने का समय हो गया</translation>
 <translation id="7551643184018910560">अलमारी से पिन करें</translation>

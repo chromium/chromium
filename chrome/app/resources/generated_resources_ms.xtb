@@ -387,6 +387,7 @@
 <translation id="1396259464226642517">Adakah hasil ini tidak dijangka? <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Nama pengguna dan kata laluan yang anda masukkan tidak sepadan</translation>
 <translation id="1397500194120344683">Tiada peranti yang layak. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Anda telah log masuk Chrome pada peranti ini, jadi anda boleh menggunakannya sebagai kunci keselamatan.</translation>
 <translation id="1398853756734560583">Maksimumkan</translation>
 <translation id="139911022479327130">Buka kunci elefon anda dan sahkan identiti anda</translation>
 <translation id="1401308693935339022">Gunakan lokasi. Benarkan apl dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti ini. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.</translation>
@@ -422,7 +423,6 @@
            • Memadamkan kuki dan data laman lain yang bersifat sementara
             <ph name="LINE_BREAKS" />
            Penanda halaman, sejarah dan kata laluan yang disimpan tidak akan terjejas.</translation>
-<translation id="1425233109861512854">Kod akses tidak dicam</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> disekat</translation>
 <translation id="1426870617281699524">Klik Cuba Lagi dan terima gesaan pada komputer anda</translation>
@@ -1158,7 +1158,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2148892889047469596">Hantar tab</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
 <translation id="2150139952286079145">Cari destinasi</translation>
-<translation id="2150491840563706000">Anda tidak mempunyai kebenaran untuk menghantar kepada paparan ini</translation>
 <translation id="2150661552845026580">Tambah "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Indeks tab tidak sah dimasukkan.</translation>
 <translation id="2152281589789213846">Tambahkan pencetak pada profil anda</translation>
@@ -1181,6 +1180,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2163470535490402084">Sila sambung ke Internet untuk melog masuk ke <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="2163937499206714165">Hidupkan mod gelap</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dan 1 lagi suis</translation>
+<translation id="2165102982098084499">Anda telah memautkan peranti ini dengan mengimbas kod QR.</translation>
 <translation id="2165177462441582039">Pilih tempoh serlahan dipaparkan pada setiap item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">Log masuk juga</translation>
@@ -2961,7 +2961,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3943582379552582368">&amp;Kembali</translation>
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="3945513714196326460">Cuba nama yang lebih pendek</translation>
-<translation id="3947643756376959257">Masukkan kod akses yang ditunjukkan pada Chromecast atau TV.</translation>
 <translation id="3948027458879361203">Tukar nama hos</translation>
 <translation id="3948116654032448504">&amp;Cari Imej di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> boleh mengedit fail dalam folder berikut</translation>
@@ -4742,13 +4741,11 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5862109781435984885">Tunjukkan alatan stilus dalam rak</translation>
 <translation id="5862319196656206789">Sediakan peranti yang bersambung</translation>
 <translation id="5863445608433396414">Dayakan ciri penyahpepijatan</translation>
-<translation id="5864147196375746035">Hantar ke peranti terurus</translation>
 <translation id="5864195618110239517">Gunakan sambungan bermeter</translation>
 <translation id="5864754048328252126">Tindakan melahu semasa mengecas</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> akan dijeda tidak lama lagi</translation>
 <translation id="586567932979200359">Anda menjalankan <ph name="PRODUCT_NAME" /> daripada imej cakeranya. Pemasangannya pada komputer anda membolehkan anda menjalankannya tanpa imej cakera, dan memastikannya adalah yang terkini.</translation>
 <translation id="5865733239029070421">Menghantar perangkaan penggunaan dan laporan ranap sistem secara automatik kepada Google</translation>
-<translation id="5865848066829891215">Isu komunikasi rangkaian</translation>
 <translation id="5867841422488265304">Cari atau taip alamat web</translation>
 <translation id="5869029295770560994">OK, Faham</translation>
 <translation id="5869522115854928033">Kata laluan disimpan</translation>
@@ -5705,6 +5702,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> saat</translation>
 <translation id="6860097299815761905">Tetapan proksi...</translation>
 <translation id="6860427144121307915">Buka dalam Tab</translation>
+<translation id="6863496016067551393">Semua sambungan dibenarkan</translation>
 <translation id="686366188661646310">Padamkan kata laluan?</translation>
 <translation id="6865313869410766144">Autolengkap data borang</translation>
 <translation id="6865598234501509159">Halaman Bukan dalam <ph name="LANGUAGE" /></translation>
@@ -5734,6 +5732,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6900532703269623216">Perlindungan dipertingkat</translation>
 <translation id="6900651018461749106">Log masuk sekali lagi untuk mengemas kini <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Adakah anda pasti mahu memadamkan enjin carian ini?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Suara untuk dipratonton</translation>
 <translation id="6902336033320348843">Seksyen tidak disokong: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Hubungkan peranti kepada domain</translation>
@@ -6171,6 +6170,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7376553024552204454">Serlahkan kursor tetikus semasa kursor bergerak</translation>
 <translation id="737728204345822099">Rekod lawatan anda ke laman ini mungkin disimpan pada kunci keselamatan anda.</translation>
 <translation id="7377451353532943397">Teruskan menyekat akses penderia</translation>
+<translation id="7377481913241237033">Sambung menggunakan kod</translation>
 <translation id="7378611153938412599">Kata laluan lemah mudah diteka. Pastikan anda membuat kata laluan kukuh. <ph name="BEGIN_LINK" />Lihat pelbagai lagi petua keselamatan.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Buka Gedung Web Chrome</translation>
 <translation id="7380622428988553498">Nama peranti mengandungi aksara tidak sah</translation>
@@ -7387,6 +7387,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8610103157987623234">Format salah, sila cuba lagi</translation>
 <translation id="8611682088849615761">Terus membenarkan tapak ini untuk mengawal sepenuhnya peranti MIDI</translation>
 <translation id="8613164732773110792">Aksara huruf kecil, angka, garis bawah atau sempang sahaja</translation>
+<translation id="8613645710357126807">Tidak dibenarkan untuk menggunakan sambungan</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> terlalu besar untuk semakan keselamatan. Anda boleh membuka fail sehingga 50 MB.</translation>
 <translation id="8615618338313291042">Apl Inkognito: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Tambahkan <ph name="CONTACT_NAME" /> pada kenalan anda</translation>

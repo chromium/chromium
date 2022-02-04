@@ -424,7 +424,6 @@
            • Sletter cookies og andre midlertidige websitedata
             <ph name="LINE_BREAKS" />
            Bogmærker, historik og gemte adgangskoder påvirkes ikke.</translation>
-<translation id="1425233109861512854">Adgangskoden kunne ikke genkendes</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> er blokeret</translation>
 <translation id="1426870617281699524">Klik på Prøv igen, og acceptér meddelelsen på din computer</translation>
@@ -1160,7 +1159,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2148892889047469596">Cast fanen</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
 <translation id="2150139952286079145">Søg efter destinationer</translation>
-<translation id="2150491840563706000">Du har ikke tilladelse til at caste til denne skærm</translation>
 <translation id="2150661552845026580">Vil du tilføje "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Det angivne faneindeks er ugyldigt.</translation>
 <translation id="2152281589789213846">Føj printere til din profil</translation>
@@ -2964,7 +2962,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3943582379552582368">&amp;Tilbage</translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="3945513714196326460">Prøv et kortere navn</translation>
-<translation id="3947643756376959257">Angiv den adgangskode, der vises på Chromecast-enheden eller fjernsynet.</translation>
 <translation id="3948027458879361203">Skift hostname</translation>
 <translation id="3948116654032448504">&amp;Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i følgende mapper</translation>
@@ -4745,13 +4742,11 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5862109781435984885">Vis styluspenværktøjer på hylden</translation>
 <translation id="5862319196656206789">Konfigurer forbundne enheder</translation>
 <translation id="5863445608433396414">Aktivér fejlretningsfunktioner</translation>
-<translation id="5864147196375746035">Cast til en administreret enhed</translation>
 <translation id="5864195618110239517">Brug forbrugsafregnet forbindelse</translation>
 <translation id="5864754048328252126">Handling for inaktivitet under opladning</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sættes snart på pause</translation>
 <translation id="586567932979200359">Du kører <ph name="PRODUCT_NAME" /> fra dets diskbillede. Hvis du installerer det på din computer, kan du køre det uden diskbilledet, og det vil blive opdateret løbende.</translation>
 <translation id="5865733239029070421">Sender automatisk brugsstatistikker og nedbrudsrapporter til Google</translation>
-<translation id="5865848066829891215">Netværksrelaterede kommunikationsfejl</translation>
 <translation id="5867841422488265304">Søg, eller skriv webadresse</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Gemte adgangskoder</translation>

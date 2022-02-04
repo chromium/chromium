@@ -85,6 +85,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1650222530560417226">Ak chcete zhromažďovať budúce denníky a chyby konzoly JavaScript zo všetkých kariet, klepnite na tlačidlo Spustiť zapisovanie do denníka. Denníky sa budú zhromažďovať (a ukladať iba v  pamäti), dokým túto stránku nezatvoríte alebo neklepnete na tlačidlo Zastaviť zapisovanie do denníka.</translation>
+<translation id="1654232554734641711">Prístup k mikrofónu je povolený</translation>
 <translation id="1657011748321897393">Zdieľanie zlyhalo, pretože nemáte pripojenie k sieti.</translation>
 <translation id="1657641691196698092">Blokované súbory cookie</translation>
 <translation id="165877110639533037">Žiadne otvorené karty</translation>
@@ -396,6 +397,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4682686630151240767">1. Otvorte nastavenia iPhonu</translation>
 <translation id="4689564913179979534">Spravovať spôsoby platby…</translation>
 <translation id="470966556546083668">Nezapínať synchronizáciu</translation>
+<translation id="4731472194328757163">Prístup ku kamere a mikrofónu je povolený</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4747097190499141774">Šifrovanie prístupovej frázy nezahŕňa spôsoby platby a adresy zo služby Google Pay. Šifrované údaje si môže prečítať iba používateľ s prístupovou frázou. Prístupová fráza sa neodosiela do Googlu ani sa v ňom neuchováva. Ak ju zabudnete, budete musieť resetovať synchronizáciu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nová karta inkognito</translation>
@@ -547,6 +549,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6059830886158432458">Tu ovládajte svoje príbehy aj aktivitu</translation>
 <translation id="6064824697233747382">Vaša organizácia vyžaduje, aby ste vypli synchronizáciu.</translation>
 <translation id="6066301408025741299">Sťahovanie zrušíte klepnutím.</translation>
+<translation id="6077126322656614846">Prístup ku kamere je povolený</translation>
 <translation id="60829778314739003">Súhlasiť a pokračovať</translation>
 <translation id="6084848228346514841">Výber kariet</translation>
 <translation id="6103540626693881831">Šifrovanie v zariadení</translation>

@@ -425,7 +425,6 @@
            • حذف ملفات تعريف الارتباط والبيانات المؤقَّتة الأخرى للمواقع الإلكترونية
             <ph name="LINE_BREAKS" />
                   لن تتأثر الإشارات المرجعية وكلمات المرور المحفوظة وسجلّ التصفُّح بهذا الإجراء.</translation>
-<translation id="1425233109861512854">لم يتم التعرّف على رمز الدخول.</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> محظور</translation>
 <translation id="1426870617281699524">النقر على "المحاولة مرة أخرى"، وقبول المطالبة على جهاز الكمبيوتر</translation>
@@ -1151,7 +1150,6 @@
 <translation id="2148892889047469596">علامة التبويب "إرسال"</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
 <translation id="2150139952286079145">بحث في الوجهات</translation>
-<translation id="2150491840563706000">ليس لديك إذن للبث على هذه الشاشة.</translation>
 <translation id="2150661552845026580">هل تريد إضافة "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="2151576029659734873">تم إدخال فهرس علامات تبويب غير صحيح.</translation>
 <translation id="2152281589789213846">إضافة الطابعات إلى ملفك الشخصي</translation>
@@ -2951,7 +2949,6 @@
 <translation id="3943582379552582368">&amp;إلى الوراء</translation>
 <translation id="3943857333388298514">لصق</translation>
 <translation id="3945513714196326460">جرِّب استخدام اسم أقصر.</translation>
-<translation id="3947643756376959257">‏عليك إدخال رمز الدخول المعروض على جهاز Chromecast أو التلفزيون.</translation>
 <translation id="3948027458879361203">تغيير اسم المضيف</translation>
 <translation id="3948116654032448504">&amp;بحث على <ph name="SEARCH_ENGINE" /> عن صورة</translation>
 <translation id="3948507072814225786">بإمكان <ph name="ORIGIN" /> تعديل الملفات في المجلدات التالية:</translation>
@@ -4731,13 +4728,11 @@
 <translation id="5862109781435984885">عرض أدوات قلم الشاشة في الرف</translation>
 <translation id="5862319196656206789">إعداد الأجهزة المتّصلة</translation>
 <translation id="5863445608433396414">تفعيل ميزات تصحيح الأخطاء</translation>
-<translation id="5864147196375746035">البث على أحد الأجهزة المُدارة</translation>
 <translation id="5864195618110239517">استخدام اتصال يفرض تكلفة استخدام</translation>
 <translation id="5864754048328252126">حالة الخمول أثناء الشحن</translation>
 <translation id="5865508026715185451">سيتم إيقاف تطبيق <ph name="APP_NAME" /> مؤقتًا بعد قليل.</translation>
 <translation id="586567932979200359">أنت تشغّل <ph name="PRODUCT_NAME" /> من صورته على القرص. ويسمح لك تثبيته على الكمبيوتر بتشغيله بدون الحاجة إلى صورة القرص، كما يضمن ذلك الحفاظ على تحديثه بشكل مستمر.</translation>
 <translation id="5865733239029070421">‏يُرسِل إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا.</translation>
-<translation id="5865848066829891215">مشاكل في اتصال الشبكة</translation>
 <translation id="5867841422488265304">البحث عن عنوان الويب أو إدخاله</translation>
 <translation id="5869029295770560994">حسنًا</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
@@ -6163,6 +6158,7 @@
 <translation id="7376553024552204454">تمييز مؤشر الماوس عندما يتحرك</translation>
 <translation id="737728204345822099">قد يتم حفظ سجلّ زيارتك لهذا الموقع الإلكتروني في مفتاح الأمان.</translation>
 <translation id="7377451353532943397">مواصلة حظر إمكانية الوصول إلى أجهزة الاستشعار</translation>
+<translation id="7377481913241237033">الربط باستخدام رمز</translation>
 <translation id="7378611153938412599">من السهل تخمين كلمات المرور الضعيفة. يُرجى الحرص على إنشاء كلمات مرور قوية. <ph name="BEGIN_LINK" />الاطّلاع على مزيد من نصائح الأمان<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">‏فتح سوق Chrome الإلكتروني</translation>
 <translation id="7380622428988553498">يحتوي اسم الجهاز على أحرف غير صالحة.</translation>

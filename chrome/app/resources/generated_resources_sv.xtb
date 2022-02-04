@@ -387,6 +387,7 @@
 <translation id="1396259464226642517">Var detta resultat oväntat? <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Användarnamnet och lösenordet som du angav stämmer inte</translation>
 <translation id="1397500194120344683">Du har ingen enhet som uppfyller villkoren. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Du är inloggad i Chrome på de här enheterna och kan därför använda dem som säkerhetsnycklar.</translation>
 <translation id="1398853756734560583">Maximera</translation>
 <translation id="139911022479327130">Lås upp telefonen och bekräfta att det är du</translation>
 <translation id="1401308693935339022">Använd plats. Tillåt att appar och tjänster med platsbehörighet använder enhetens plats. Google kan med jämna mellanrum samla in platsdata som används anonymt i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster.</translation>
@@ -422,7 +423,6 @@
            • ta bort cookies och tillfällig webbplatsdata.
             <ph name="LINE_BREAKS" />
            Bokmärken, historiken och sparade lösenord påverkas inte.</translation>
-<translation id="1425233109861512854">Åtkomstkoden känns inte igen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> har blockerats</translation>
 <translation id="1426870617281699524">Klicka på Försök igen och godkänn frågan på datorn</translation>
@@ -1158,7 +1158,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2148892889047469596">Casta fliken</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2150139952286079145">Sök platser</translation>
-<translation id="2150491840563706000">Du har inte behörighet att casta till den här skärmen</translation>
 <translation id="2150661552845026580">Vill du lägga till <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2151576029659734873">Du har angett ett ogiltigt flikindex.</translation>
 <translation id="2152281589789213846">Lägg till skrivare i din profil</translation>
@@ -1181,6 +1180,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2163470535490402084">Anslut till internet om du vill logga in på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Aktivera mörkt läge</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> och 1 till brytare</translation>
+<translation id="2165102982098084499">Du länkade de här enheterna genom att skanna en QR-kod.</translation>
 <translation id="2165177462441582039">Välj hur länge varje objekt ska markeras</translation>
 <translation id="2166369534954157698">Den snabba röda räven hoppar över den lata hunden</translation>
 <translation id="2169062631698640254">Logga in ändå</translation>
@@ -2961,7 +2961,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3943582379552582368">&amp;Bakåt</translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="3945513714196326460">Ange ett kortare namn</translation>
-<translation id="3947643756376959257">Ange åtkomstkoden som visas på Chromecast-enheten eller tv:n.</translation>
 <translation id="3948027458879361203">Ändra värdnamn</translation>
 <translation id="3948116654032448504">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter bild</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> har redigeringsbehörighet till filer i följande mappar</translation>
@@ -4742,13 +4741,11 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5862109781435984885">Visa verktyg för e-penna i hyllan</translation>
 <translation id="5862319196656206789">Konfigurera anslutna enheter</translation>
 <translation id="5863445608433396414">Aktivera felsökningsfunktioner</translation>
-<translation id="5864147196375746035">Casta till en hanterad enhet</translation>
 <translation id="5864195618110239517">Använd anslutning med datapriser</translation>
 <translation id="5864754048328252126">Inaktivitetsåtgärd vid laddning</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> pausas snart</translation>
 <translation id="586567932979200359">Du kör <ph name="PRODUCT_NAME" /> från diskavbildningen. Om du installerar programmet på din dator kan du köra det utan diskavbildningen och du kan vara säker på att det alltid är uppdaterat.</translation>
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
-<translation id="5865848066829891215">Problem med nätverkskommunikation</translation>
 <translation id="5867841422488265304">Skriv en sökning eller en webbadress</translation>
 <translation id="5869029295770560994">Ok, jag förstår</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
@@ -5705,6 +5702,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Proxyinställningar...</translation>
 <translation id="6860427144121307915">Öppna i en flik</translation>
+<translation id="6863496016067551393">Alla tillägg tillåtna</translation>
 <translation id="686366188661646310">Vill du radera lösenordet?</translation>
 <translation id="6865313869410766144">Formuläruppgifter för Autofyll</translation>
 <translation id="6865598234501509159">Sidan är inte på <ph name="LANGUAGE" /></translation>
@@ -5734,6 +5732,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6900532703269623216">Förbättrat skydd</translation>
 <translation id="6900651018461749106">Logga in igen om du vill uppdatera <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Vill du radera den här sökmotorn?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Röst att förhandsgranska</translation>
 <translation id="6902336033320348843">Avsnittet stöds inte: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Anslut enheten till domänen</translation>
@@ -7386,6 +7385,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8610103157987623234">Felaktigt format. Försök igen.</translation>
 <translation id="8611682088849615761">Fortsätt ge den här webbplatsen fullständig kontroll över MIDI-enheter</translation>
 <translation id="8613164732773110792">Endast gemener, siffror, understreck eller bindestreck</translation>
+<translation id="8613645710357126807">Får inte använda tillägg</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> är så stor att den inte går genom säkerhetskontrollen. Du kan öppna filer som är upp till 50 MB stora.</translation>
 <translation id="8615618338313291042">Inkognitoprogram: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Lägg till <ph name="CONTACT_NAME" /> i dina kontakter</translation>

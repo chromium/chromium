@@ -421,7 +421,6 @@
            • کوکیز اور دیگر عارضی سائٹ کے ڈیٹا کو حذف کیا جائے گا
             <ph name="LINE_BREAKS" />
            بک مارکس، سرگزشت اور محفوظ کردہ پاس ورڈز متاثر نہیں ہوں گے۔</translation>
-<translation id="1425233109861512854">رسائی کے کوڈ کی شناخت نہیں ہو سکی</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> مسدود ہے</translation>
 <translation id="1426870617281699524">'دوبارہ کوشش کریں' پر کلک کریں، اور اپنے کمپیوٹر پر پرامپٹ قبول کریں</translation>
@@ -1147,7 +1146,6 @@
 <translation id="2148892889047469596">ٹیب کاسٹ کریں</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2150139952286079145">منازل مقصود تلاش کریں</translation>
-<translation id="2150491840563706000">آپ کو اس ڈسپلے پر کاسٹ کرنے کی اجازت نہیں ہے</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" شامل کریں؟</translation>
 <translation id="2151576029659734873">غلط ٹیب کا انڈیکس درج کیا گیا۔</translation>
 <translation id="2152281589789213846">اپنے پروفائل میں پرنٹرز شامل کریں</translation>
@@ -2946,7 +2944,6 @@
 <translation id="3943582379552582368">&amp;پیچھے</translation>
 <translation id="3943857333388298514">پیسٹ کریں</translation>
 <translation id="3945513714196326460">کوئی چھوٹا نام آزمائیں</translation>
-<translation id="3947643756376959257">‏Chromecast یا TV دکھایا گیا رسائی کا کوڈ درج کریں۔</translation>
 <translation id="3948027458879361203">میزبان کا نام تبدیل کریں</translation>
 <translation id="3948116654032448504">تصویر کیلئے <ph name="SEARCH_ENGINE" /> میں &amp;تلاش کریں</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> مندرجہ ذیل فولڈرز کی فائلز میں ترمیم کر سکتا ہے</translation>
@@ -4725,13 +4722,11 @@
 <translation id="5862109781435984885">شیلف میں اسٹائلس ٹولز دکھائیں</translation>
 <translation id="5862319196656206789">منسلک کردہ آلات سیٹ اپ کریں</translation>
 <translation id="5863445608433396414">ڈیبگنگ خصوصیات کو فعال کریں</translation>
-<translation id="5864147196375746035">نظم کردہ آلے پر کاسٹ کریں</translation>
 <translation id="5864195618110239517">میٹرڈ کنکشن کا استعمال کریں</translation>
 <translation id="5864754048328252126">چارجنگ کے دوران معطلی کی کاروائی</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> جلد ہی رک جائے گی</translation>
 <translation id="586567932979200359">آپ <ph name="PRODUCT_NAME" /> کو اس کی ڈسک امیج سے چلا رہے ہیں۔ اسے آپ کے کمپیوٹر پر انسٹال کرنے سے یہ آپ کو اسے ڈسک امیج کے بغیر چلانے دیتا ہے اور یقینی بناتا ہے کہ اسے اپ ٹو ڈیٹ رکھا جائے گا۔</translation>
 <translation id="5865733239029070421">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتا ہے</translation>
-<translation id="5865848066829891215">نیٹ ورک مواصلت میں در پیش مسائل</translation>
 <translation id="5867841422488265304">ویب پتہ تلاش کریں یا ٹائپ کریں</translation>
 <translation id="5869029295770560994">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>

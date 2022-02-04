@@ -147,6 +147,7 @@
 <translation id="1836215606488044471">المساعد (جارٍ التحميل...)</translation>
 <translation id="1838895407229022812">"الإضاءة الليلية" غير مفعّلة.</translation>
 <translation id="1864454756846565995">‏جهاز USB-C (المنفذ الخلفي)</translation>
+<translation id="1879018240766558464">نوافذ التصفّح المتخفي غير متوافقة حاليًا، ولكن سيتم حفظ التطبيقات الأخرى.</translation>
 <translation id="1882814835921407042">شبكة الجوّال غير متاحة</translation>
 <translation id="1882897271359938046">نسخ إلى <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">فتح القفل باستخدام بصمة الإصبع</translation>
@@ -948,6 +949,7 @@
 <translation id="7366890467478514168">ربط <ph name="NAME" /></translation>
 <translation id="7371404428569700291">تسجيل فيديو للنافذة</translation>
 <translation id="7377169924702866686">‏مفتاح Caps Lock في وضع التفعيل.</translation>
+<translation id="7377481913241237033">الربط باستخدام رمز</translation>
 <translation id="7378203170292176219">يُرجى السحب لتحديد منطقة لتسجيل فيديو لها.</translation>
 <translation id="7378594059915113390">عناصر التحكم في الوسائط</translation>
 <translation id="7378889811480108604">وضع "توفير شحن البطارية" غير مفعَّل.</translation>
@@ -975,6 +977,7 @@
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">‏تطبيقات Linux ونوافذ التصفّح المتخفي غير متوافقة حاليًا، ولكن سيتم حفظ التطبيقات الأخرى.</translation>
 <translation id="7544300628205093162">تم تشغيل الإضاءة الخلفية للوحة المفاتيح.</translation>
 <translation id="7548434653388805669">وقت النوم</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>

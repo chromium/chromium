@@ -1592,6 +1592,7 @@
 <translation id="285627849510728211">詳細なバッテリー充電モードの曜日の設定を行う</translation>
 <translation id="2856674246949497058">OS のバージョンが対象バージョンより新しい場合に、対象バージョンに戻してそのバージョンを維持します。このプロセスでは Powerwash が行われます。</translation>
 <translation id="2866619962692161453">Metapolicy タイプ</translation>
+<translation id="2866726566162790531">すべての HTTP 認証を許可するオリジンのリスト</translation>
 <translation id="2869762730352628426">ログイン画面で自動クリックを有効にする</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2874209944580848064">Android アプリをサポートする <ph name="PRODUCT_OS_NAME" /> デバイスに関する注意:</translation>
@@ -1620,6 +1621,10 @@
       このポリシーを無効するか、未設定のままにすると、登録済みのデバイスは Android ステータス情報を報告しません。</translation>
 <translation id="288923520817177650"><ph name="WEBXR_API_NAME_SHORT" /> による <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> セッションの作成を許可する</translation>
 <translation id="2890645751406497668">特定のベンダー ID と製品 ID を持つ USB デバイスへの接続を自動的にこれらのサイトに許可する。</translation>
+<translation id="2891049933730408118">このポリシーでは、<ph name="AUTH_SCHEMES_POLICY_NAME" /> ポリシーの設定にかかわらず、<ph name="PRODUCT_NAME" /> でサポートする HTTP 認証スキームをすべて許可するオリジンを指定します。
+
+      こちらの形式（<ph name="URL_SCHEME_FORMAT_LINK" />）に沿って、オリジンのパターンを指定します。<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> で最大 1,000 件の例外を指定できます。
+      ワイルドカードは、オリジン全体または一部（スキーム、ホスト、ポート）で使用できます。</translation>
 <translation id="2893546967669465276">管理サーバーにシステムログを送信する</translation>
 <translation id="2893660462311365527">ネットワーク テレメトリーの収集の間隔（ミリ秒単位）。</translation>
 <translation id="2896434627453256512">このポリシーを設定した場合、ゴースト ウィンドウ機能が有効になります。このポリシーが true の場合、クラッシュまたは再起動の後に ARC が起動する前に、復元のアプリ設定に基づいて ARC ゴースト ウィンドウが作成されます。このポリシーが false の場合、ARC が起動する前にゴースト ウィンドウは作成されません。ARC の起動後に ARC アプリが復元されます。</translation>
@@ -1676,6 +1681,15 @@
       このポリシーを設定した場合、ユーザーはこの設定を変更できません。
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> を使用してください。</translation>
+<translation id="2948268792364772890">このポリシーで、管理者はページの終了中にページから同期 XHR リクエストを送信するかどうかを指定できます。
+
+      このポリシーを有効に設定した場合は、ページの終了中にページから同期 XHR リクエストを送信できます。
+
+      このポリシーを無効に設定するか未設定のままにした場合は、ページの終了中にページから同期 XHR リクエストを送信することはできません。
+
+      このポリシーは Chrome 99 で削除されました。
+
+      詳しくは、https://www.chromestatus.com/feature/4664843055398912 をご覧ください。</translation>
 <translation id="2952347049958405264">制限事項:</translation>
 <translation id="2957506574938329824">すべてのサイトに対して Web Bluetooth API による Bluetooth デバイスへのアクセスを許可しない</translation>
 <translation id="2957513448235202597">「<ph name="HTTP_NEGOTIATE" />」認証用のアカウントの種類</translation>

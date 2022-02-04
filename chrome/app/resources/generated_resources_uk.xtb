@@ -390,6 +390,7 @@
 <translation id="1396259464226642517">Неочікуваний результат? <ph name="BEGIN_LINK" />Надіслати відгук<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Введені ім'я користувача та пароль не збігаються</translation>
 <translation id="1397500194120344683">Немає пристроїв, які відповідають вимогам. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Ви ввійшли в Chrome на цих пристроях, тож можете використовувати їх як ключі безпеки.</translation>
 <translation id="1398853756734560583">Збільшити</translation>
 <translation id="139911022479327130">Розблокуйте телефон і підтвердьте свою особу</translation>
 <translation id="1401308693935339022">Використовувати геодані. Дозволити додаткам і сервісам із доступом до геоданих використовувати місцезнаходження цього пристрою. Google може періодично збирати геодані й анонімно обробляти їх, щоб покращувати точність визначення місцезнаходження та роботу сервісів, які працюють на основі геоданих.</translation>
@@ -425,7 +426,6 @@
            • файли cookie й інші тимчасові дані сайтів буде видалено.
             <ph name="LINE_BREAKS" />
            Це не вплине на закладки, історію та збережені паролі.</translation>
-<translation id="1425233109861512854">Код доступу не розпізнано</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="142655739075382478">Додаток <ph name="APP_NAME" /> заблоковано</translation>
 <translation id="1426870617281699524">Натисніть "Повторити спробу", а потім – опцію "Так" у вікні запиту на своєму комп’ютері</translation>
@@ -1161,7 +1161,6 @@
 <translation id="2148892889047469596">Транслювати вкладку</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
 <translation id="2150139952286079145">Пошук місць призначення</translation>
-<translation id="2150491840563706000">У вас немає дозволу транслювати на цей екран</translation>
 <translation id="2150661552845026580">Додати "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Введено недійсний індекс вкладки.</translation>
 <translation id="2152281589789213846">Додати принтери в профіль</translation>
@@ -1184,6 +1183,7 @@
 <translation id="2163470535490402084">Щоб увійти в <ph name="DEVICE_TYPE" />, під’єнайтеся до Інтернету.</translation>
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і ще 1 перемикач</translation>
+<translation id="2165102982098084499">Ви підключили ці пристрої, зісканувавши QR-код.</translation>
 <translation id="2165177462441582039">Виберіть тривалість виділення кожного елемента</translation>
 <translation id="2166369534954157698">абвгґдеєжзиіїйклмнопрстуфхцчшщьюя</translation>
 <translation id="2169062631698640254">Усе одно ввійти</translation>
@@ -2963,7 +2963,6 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="3945513714196326460">Введіть коротшу назву</translation>
-<translation id="3947643756376959257">Введіть код доступу, що відображається на пристрої Chromecast або телевізорі.</translation>
 <translation id="3948027458879361203">Змінити ім’я хосту</translation>
 <translation id="3948116654032448504">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> може змінювати файли в указаних нижче папках</translation>
@@ -4744,13 +4743,11 @@
 <translation id="5862109781435984885">Показувати інструменти стилуса на панелі запуску</translation>
 <translation id="5862319196656206789">Налаштувати підключені пристрої</translation>
 <translation id="5863445608433396414">Увімкнути функції налагодження</translation>
-<translation id="5864147196375746035">Транслювати на керований пристрій</translation>
 <translation id="5864195618110239517">Використовувати підключення з тарифікацією трафіку</translation>
 <translation id="5864754048328252126">Що робити, коли пристрій неактивний і заряджається</translation>
 <translation id="5865508026715185451">Додаток <ph name="APP_NAME" /> невдовзі буде призупинено</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працює, використовуючи своє зображення диска. Встановлення веб-переглядача на комп'ютер дозволить працювати без використання зображення диска та гарантуватиме його постійне оновлення.</translation>
 <translation id="5865733239029070421">Автоматично надсилає статистику використання та звіти про аварійне завершення роботи в Google</translation>
-<translation id="5865848066829891215">Проблеми з підключенням до мережі</translation>
 <translation id="5867841422488265304">Введіть пошуковий запит чи веб-адресу</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Збережені паролі</translation>
@@ -5707,6 +5704,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="6860097299815761905">Налаштування проксі-сервера...</translation>
 <translation id="6860427144121307915">Відкрити у вкладці</translation>
+<translation id="6863496016067551393">Усі розширення дозволено</translation>
 <translation id="686366188661646310">Видалити пароль?</translation>
 <translation id="6865313869410766144">Дані автозаповнення форм</translation>
 <translation id="6865598234501509159">Мова цієї сторінки не <ph name="LANGUAGE" /></translation>
@@ -5736,6 +5734,7 @@
 <translation id="6900532703269623216">Покращений захист</translation>
 <translation id="6900651018461749106">Увійдіть ще раз, щоб оновити обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Видалити цю пошукову систему?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Голос для попереднього прослуховування</translation>
 <translation id="6902336033320348843">Розділ не підтримується: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Приєднайте пристрій до домену</translation>
@@ -7387,6 +7386,7 @@
 <translation id="8610103157987623234">Неправильний формат, повторіть спробу</translation>
 <translation id="8611682088849615761">Надалі надавати цьому сайту доступ до повного контролю над пристроями MIDI</translation>
 <translation id="8613164732773110792">Лише малі літери, цифри, символи підкреслення або тире</translation>
+<translation id="8613645710357126807">Заборонено використовувати розширення</translation>
 <translation id="8613786722548417558">Не вдається перевірити безпеку файлу "<ph name="FILE_NAME" />", оскільки він завеликий. Ви можете відкривати файли розміром до 50 МБ.</translation>
 <translation id="8615618338313291042">Програма в режимі анонімного перегляду: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Додати новий контакт: <ph name="CONTACT_NAME" /></translation>

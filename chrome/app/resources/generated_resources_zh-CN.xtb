@@ -421,7 +421,6 @@
            • 删除 Cookie 和其他临时网站数据
             <ph name="LINE_BREAKS" />
            书签、历史记录和已保存的密码不会受到影响。</translation>
-<translation id="1425233109861512854">无法识别访问代码</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="142655739075382478">“<ph name="APP_NAME" />”已被禁用</translation>
 <translation id="1426870617281699524">请点击“重试”，然后接受计算机上显示的提示</translation>
@@ -1144,7 +1143,6 @@
 <translation id="2148892889047469596">投射标签页</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2150139952286079145">搜索目标打印机</translation>
-<translation id="2150491840563706000">您无权投射到此显示屏</translation>
 <translation id="2150661552845026580">要添加“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="2151576029659734873">输入的标签页索引无效。</translation>
 <translation id="2152281589789213846">将打印机添加到您的个人资料中</translation>
@@ -2943,7 +2941,6 @@
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3945513714196326460">请尝试缩短名称</translation>
-<translation id="3947643756376959257">请输入 Chromecast 或电视上显示的访问代码。</translation>
 <translation id="3948027458879361203">更改主机名</translation>
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
@@ -4723,13 +4720,11 @@
 <translation id="5862109781435984885">在任务栏中显示触控笔工具</translation>
 <translation id="5862319196656206789">设置已连接的设备</translation>
 <translation id="5863445608433396414">启用调试功能</translation>
-<translation id="5864147196375746035">投射到一部受管设备</translation>
 <translation id="5864195618110239517">使用按流量计费的网络连接</translation>
 <translation id="5864754048328252126">充电时的闲置操作</translation>
 <translation id="5865508026715185451">“<ph name="APP_NAME" />”即将暂停</translation>
 <translation id="586567932979200359">您正在通过磁盘映像运行 <ph name="PRODUCT_NAME" />。您只需在计算机上安装该软件，即可在没有磁盘映像的情况下运行它，并可确保使用最新版本。</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
-<translation id="5865848066829891215">网络通信问题</translation>
 <translation id="5867841422488265304">搜索或输入网址</translation>
 <translation id="5869029295770560994">知道了</translation>
 <translation id="5869522115854928033">已保存的密码</translation>

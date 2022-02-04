@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">„Помошник“ (се вчитува…)</translation>
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
+<translation id="1879018240766558464">Прозорците „Инкогнито“ не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="1882814835921407042">Нема мобилна мрежа</translation>
 <translation id="1882897271359938046">Отсликување во <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Отклучи со отпечаток</translation>
@@ -948,6 +949,7 @@
 <translation id="7366890467478514168">Поврзи <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Снимање прозорец</translation>
 <translation id="7377169924702866686">Вклучено е Caps Lock.</translation>
+<translation id="7377481913241237033">Поврзете со код</translation>
 <translation id="7378203170292176219">Повлечете за да изберете област за снимање</translation>
 <translation id="7378594059915113390">Контроли за аудиовизуелни медиуми</translation>
 <translation id="7378889811480108604">Режимот „Штедач на батерија“ е исклучен</translation>
@@ -975,6 +977,7 @@
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7526573455193969409">Мрежата можеби се следи</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Апликациите на Linux и прозорците „Инкогнито“ не се поддржани моментално. Другите апликации ќе се зачуваат.</translation>
 <translation id="7544300628205093162">Заднинското светло на тастатурата е вклучено</translation>
 <translation id="7548434653388805669">Време за спиење</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>

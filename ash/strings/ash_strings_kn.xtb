@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">ಸಹಾಯಕ (ಲೋಡ್ ಆಗುತ್ತಿದೆ...)</translation>
 <translation id="1838895407229022812">ನೈಟ್ ಲೈಟ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="1864454756846565995">USB-C ಸಾಧನ (ಹಿಂದಿನ ಪೋರ್ಟ್)</translation>
+<translation id="1879018240766558464">ಅಜ್ಞಾತ ವಿಂಡೋಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ. ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1882814835921407042">ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ಗೆ ಪ್ರತಿಬಿಂಬಿಸುತ್ತಿದೆ</translation>
 <translation id="1885785240814121742">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ ಮೂಲಕ ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ</translation>
@@ -948,6 +949,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7366890467478514168"><ph name="NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7371404428569700291">ವಿಂಡೋ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="7377169924702866686">CAPS LOCK ಆನ್ ಆಗಿದೆ.</translation>
+<translation id="7377481913241237033">ಕೋಡ್ ಮೂಲಕ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7378203170292176219">ರೆಕಾರ್ಡ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಪ್ರದೇಶವೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="7378594059915113390">ಮೀಡಿಯಾ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="7378889811480108604">ಬ್ಯಾಟರಿ ಸೇವರ್ ಮೋಡ್ ಆಫ್ ಆಗಿದೆ</translation>
@@ -975,6 +977,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="7526573455193969409">ನೆಟ್‌ವರ್ಕ್‌ನ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದಾಗಿದೆ</translation>
 <translation id="7536035074519304529">ಐಪಿ ವಿಳಾಸ: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಅಜ್ಞಾತ ವಿಂಡೋಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ. ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7544300628205093162">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ ಲೈಟ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="7548434653388805669">ಮಲಗುವ ಸಮಯ</translation>
 <translation id="7551643184018910560">ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್‌ ಮಾಡು</translation>

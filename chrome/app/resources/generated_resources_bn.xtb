@@ -388,6 +388,7 @@
 <translation id="1396259464226642517">এই ফলাফলটি কি প্রত্যাশিত ছিল? <ph name="BEGIN_LINK" />মতামত পাঠান<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">আপনার লেখা ইউজারনেম এবং পাসওয়ার্ড মিলছে না</translation>
 <translation id="1397500194120344683">কোনও উপযুক্ত ডিভাইস নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">আপনি এইসব ডিভাইসে Chrome-এ সাইন-ইন করেছেন, তার জন্য এগুলি নিরাপত্তা কী হিসেবে ব্যবহার করতে পারবেন।</translation>
 <translation id="1398853756734560583">বড় করুন</translation>
 <translation id="139911022479327130">আপনার ফোন আনলক করুন এবং এই কাজটি যে আপনিই করছেন তা কনফার্ম করুন</translation>
 <translation id="1401308693935339022">লোকেশন পরিষেবা ব্যবহার করুন। এই ডিভাইসের লোকেশন ব্যবহার করতে অ্যাপ এবং পরিষেবাগুলিকে লোকেশন অ্যাক্সেস করার অনুমতি দিন। Google মাঝে মাঝে লোকেশন ডেটা সংগ্রহ করতে পারে এবং আরও সঠিকভাবে লোকেশন বেছে নিতে ও লোকেশন ভিত্তিক পরিষেবার উন্নতির জন্য সেই ডেটা আপনার পরিচয় গোপন রেখেই ব্যবহার করতে পারে।</translation>
@@ -423,7 +424,6 @@
            • কুকি ও সাইটের অন্যান্য স্বল্পস্থায়ী ডেটা মুছে দেবে
             <ph name="LINE_BREAKS" />
            বুকমার্ক, ইতিহাস ও সেভ করে রাখা পাসওয়ার্ডে প্রভাব পড়বে না।</translation>
-<translation id="1425233109861512854">অ্যাক্সেস কোড শনাক্ত করা যায়নি</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ব্লক করা আছে</translation>
 <translation id="1426870617281699524">'আবার চেষ্টা করুন' এ ক্লিক করে কম্পিউটার স্ক্রিনে দেখানো প্রম্পটে যা করতে বলা হবে তাই করুন</translation>
@@ -1159,7 +1159,6 @@
 <translation id="2148892889047469596">ট্যাব কাস্ট করুন</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2150139952286079145">গন্তব্যস্থল খুঁজুন</translation>
-<translation id="2150491840563706000">আপনার, এই ডিসপ্লেতে কাস্ট করার অনুমতি নেই</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" জুড়বেন?</translation>
 <translation id="2151576029659734873">ভুল ট্যাব সূচি দেওয়া হয়েছে৷</translation>
 <translation id="2152281589789213846">আপনার প্রোফাইলে প্রিন্টার যোগ করুন</translation>
@@ -1182,6 +1181,7 @@
 <translation id="2163470535490402084">আপনার <ph name="DEVICE_TYPE" />এ সাইন-ইন করতে ইন্টারনেটে কানেক্ট করুন।</translation>
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> এবং আরও একটি সুইচ</translation>
+<translation id="2165102982098084499">একটি QR কোড স্ক্যান করে আপনি এইসব ডিভাইস লিঙ্ক করেছেন।</translation>
 <translation id="2165177462441582039">প্রতিটি আইটেমে কতটা সময় হাইলাইট থাকবে সেটি বেছে নিন</translation>
 <translation id="2166369534954157698">বিষণ্ণ ঔদাসীন্যে ঊষাবৌদি বাংলাভাষায় প্রচলিত ঈশপের নিখুঁত গল্পটির ডালপালা অর্ধেক ছড়াতেই ঋতু ভুঁইঞা আর ঐন্দ্রিলা ধড়ফড়িয়ে দারুণ হৈ-হৈ করে উঠল-- ওঃ, ব্যাস্ এবার থামো তো, বুঝেছি বড্ডো পুরানো ঢঙের কেমন এক গল্প যার নীতিবাক্য হল,“মূঢ় আড়ম্বর ও আত্মশ্লাঘার ফল জীবনে বিঘ্ন ও বৃহৎ ক্ষতি”-- তাই না, এ্যাঁ?</translation>
 <translation id="2169062631698640254">যেকোনো প্রকারে সাইন-ইন করুন</translation>
@@ -2960,7 +2960,6 @@
 <translation id="3943582379552582368">&amp;ফিরুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3945513714196326460">আরও ছোট নাম লিখে দেখুন</translation>
-<translation id="3947643756376959257">Chromecast বা টিভিতে দেখানো অ্যাক্সেস কোড লিখুন।</translation>
 <translation id="3948027458879361203">হোস্টনেম পরিবর্তন করুন</translation>
 <translation id="3948116654032448504">&amp;ইমেজের জন্য <ph name="SEARCH_ENGINE" /> সার্চ করুন</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>
@@ -4742,13 +4741,11 @@
 <translation id="5862109781435984885">শেল্ফে স্টাইলাস টুল দেখান</translation>
 <translation id="5862319196656206789">কানেক্ট থাকা ডিভাইসগুলি সেট আপ করুন</translation>
 <translation id="5863445608433396414">ডিবাগিং বৈশিষ্ট্যাবলী চালু করুন</translation>
-<translation id="5864147196375746035">ম্যানেজ করা ডিভাইসে কাস্ট করা</translation>
 <translation id="5864195618110239517">মিটার্ড ইন্টারনেট কানেকশন ব্যবহার করুন</translation>
 <translation id="5864754048328252126">চার্জ করার সময়ে ফোন ইনঅ্যাক্টিভ স্ট্যাটাসে রাখা</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> শীঘ্রই পজ করা হবে</translation>
 <translation id="586567932979200359">আপনি <ph name="PRODUCT_NAME" /> থেকে এটির ডিস্ক ছবি চালাচ্ছেন৷ এটিকে আপনার কম্পিউটারে ইনস্টল করা হলে তা ডিস্ক ছবি ছাড়াই এটিকে চালাতে দেয় এবং এটিকে আপ টু ডেট আছে কিনা তা নিশ্চিত করে৷</translation>
 <translation id="5865733239029070421">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট নিজে থেকেই Google-কে পাঠায়</translation>
-<translation id="5865848066829891215">নেটওয়ার্ক কমিউনিকেশন সংক্রান্ত সমস্যা</translation>
 <translation id="5867841422488265304">ওয়েব ঠিকানা খুঁজুন বা লিখুন</translation>
 <translation id="5869029295770560994">ঠিক আছে, বুঝেছি</translation>
 <translation id="5869522115854928033">সংরক্ষিত পাসওয়ার্ড</translation>
@@ -5705,6 +5702,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> সে</translation>
 <translation id="6860097299815761905">প্রক্সি সেটিংস...</translation>
 <translation id="6860427144121307915">একটি ট্যাবে খুলুন</translation>
+<translation id="6863496016067551393">সব এক্সটেনশন ব্যবহার করা যাবে</translation>
 <translation id="686366188661646310">পাসওয়ার্ড মুছবেন?</translation>
 <translation id="6865313869410766144">স্বতঃপূর্ণ ফর্ম ডেটা</translation>
 <translation id="6865598234501509159">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষায় নেই</translation>
@@ -5734,6 +5732,7 @@
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> আপডেট করতে আবার সাইন-ইন করুন</translation>
 <translation id="6900654715912436255">আপনি কি সত্যিই এই সার্চ ইঞ্জিন মুছে ফেলতে চান?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">প্রিভিউ করার জন্য ভয়েস</translation>
 <translation id="6902336033320348843">এই বিভাগ কাজ করে না: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">ডোমেনে ডিভাইস যোগ করুন</translation>
@@ -7385,6 +7384,7 @@
 <translation id="8610103157987623234">ফর্ম্যাটটি ভুল হয়েছে, আবার চেষ্টা করুন</translation>
 <translation id="8611682088849615761">MIDI ডিভাইসগুলি সম্পূর্ণ নিয়ন্ত্রণ করার ব্যাপারে এই সাইটকে অনুমতি দিয়ে রাখুন</translation>
 <translation id="8613164732773110792">শুধুমাত্র ছোট হাতের অক্ষর, সংখ্যা, আন্ডারস্কোর বা ড্যাশ</translation>
+<translation id="8613645710357126807">এক্সটেনশন ব্যবহারের অনুমতি নেই</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> নিরাপত্তা পরীক্ষা করার পক্ষে খুব বড়। আপনি সর্বাধিক ৫০ এমবি সাইজের ফাইল খুলতে পারবেন।</translation>
 <translation id="8615618338313291042">ছদ্মবেশী অ্যাপ্লিকেশান: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662"><ph name="CONTACT_NAME" />-কে আপনার পরিচিতিতে যোগ করুন</translation>

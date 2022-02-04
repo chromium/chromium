@@ -426,7 +426,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
            • Izbrisani bodo piškotki in drugi začasni podatki spletnih mest.
             <ph name="LINE_BREAKS" />
            To ne bo vplivalo na zaznamke, zgodovino in shranjena gesla.</translation>
-<translation id="1425233109861512854">Koda za dostop ni prepoznana.</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="142655739075382478">Aplikacija <ph name="APP_NAME" /> je blokirana</translation>
 <translation id="1426870617281699524">Kliknite »Poskusi znova« in sprejmite poziv v računalniku.</translation>
@@ -1162,7 +1161,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2148892889047469596">Predvajanje zavihka</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2150139952286079145">Iskanje ciljev</translation>
-<translation id="2150491840563706000">Nimate dovoljenja za predvajanje na tem zaslonu.</translation>
 <translation id="2150661552845026580">Želite dodati »<ph name="EXTENSION_NAME" />«?</translation>
 <translation id="2151576029659734873">Vneseni tabulatorski indeks ni veljaven.</translation>
 <translation id="2152281589789213846">Dodajanje tiskalnikov v profil</translation>
@@ -2965,7 +2963,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3943582379552582368">&amp;Nazaj</translation>
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3945513714196326460">Uporabite krajše ime.</translation>
-<translation id="3947643756376959257">Vnesite kodo za dostop, prikazano v Chromecastu ali na televizorju.</translation>
 <translation id="3948027458879361203">Spreminjanje imena gostitelja</translation>
 <translation id="3948116654032448504">&amp;Išči sliko tu: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Spletno mesto <ph name="ORIGIN" /> lahko ureja datoteke v naslednjih mapah</translation>
@@ -4748,13 +4745,11 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5862109781435984885">Prikaz orodij za pisalo na polici</translation>
 <translation id="5862319196656206789">Nastavitev povezanih naprav</translation>
 <translation id="5863445608433396414">Omogoči funkcije za odpravljanje napak</translation>
-<translation id="5864147196375746035">Predvajanje v upravljani napravi</translation>
 <translation id="5864195618110239517">Uporaba povezave z omejenim prenosom podatkov</translation>
 <translation id="5864754048328252126">Dejanje ob nedejavnosti med polnjenjem</translation>
 <translation id="5865508026715185451">Aplikacija <ph name="APP_NAME" /> bo kmalu zaustavljena</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> izvajate s posnetka diska. Če ga namestite v računalnik, ga lahko izvajate brez posnetka diska in s tem zagotovite, da bo vedno posodobljen.</translation>
 <translation id="5865733239029070421">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu</translation>
-<translation id="5865848066829891215">Težave z omrežno komunikacijo.</translation>
 <translation id="5867841422488265304">Iščite ali vnesite spletni naslov</translation>
 <translation id="5869029295770560994">V redu, razumem</translation>
 <translation id="5869522115854928033">Shranjena gesla</translation>

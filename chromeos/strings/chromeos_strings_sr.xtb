@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Прозор за ажурирање фирмвера за спољне уређаје је отворен. Доступних ажурирања: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
 <translation id="1175951029573070619">Просечан (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Уклони</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Могућ улазни портал</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Ажурира се (завршено је <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Ниједна <ph name="NETWORK_NAME" /> мрежа није доступна</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Матична мрежа, није у ромингу</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Понуде</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управља овим уређајем и може да прати ваше активности.</translation>
 <translation id="1478594628797167447">Скенер</translation>
+<translation id="1491076385728777984">Ажурира се фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управља овим корисником и може даљински да управља подешавањима и надгледа активности корисника.</translation>
 <translation id="150962533380566081">Неважећи PUK.</translation>
 <translation id="1510238584712386396">Покретач</translation>
 <translation id="155865706765934889">Додирна табла</translation>
+<translation id="1565038567006703504">Ажурирање уређаја <ph name="DEVICE_NAME" /> није успело</translation>
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави као позадину</translation>
 <translation id="1621067168122174824">Покрени тест пуњења</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Освежите актуелну слику позадине</translation>
 <translation id="2517472476991765520">Скенирај</translation>
+<translation id="253029298928638905">Рестартује се...</translation>
 <translation id="2536159006530886390">Повезивање на интернет није успело.</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
+<translation id="3993704782688964914">Уређај <ph name="DEVICE_NAME" /> је ажуриран</translation>
 <translation id="4003384961948020559">Није успело – излаз је пун</translation>
 <translation id="4034824040120875894">Штампач</translation>
 <translation id="4044093238444069296">Контакт са мрежним пролазом не успева</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Није покренуто</translation>
 <translation id="4378551569595875038">Повезује се...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">Рестартује се <ph name="DEVICE_NAME" /></translation>
 <translation id="4418498623216225764">Ажурирање периферних уређаја</translation>
 <translation id="4425149324548788773">Мој диск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> мрежа је искључена</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Подударање алтернативног назива субјекта</translation>
 <translation id="4536864596629708641">IP конфигурација</translation>
 <translation id="4548483925627140043">Сигнал није пронађен</translation>
+<translation id="4556753742174065117">Сав фирмвер је ажуриран.</translation>
 <translation id="455835558791489930">Батерија од <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM је откључан</translation>
 <translation id="4562494484721939086">Мобилна мрежа није доступна</translation>
@@ -434,6 +442,7 @@
 <translation id="680983167891198932">Кључ</translation>
 <translation id="6816797338148849397">Доступне су информације везане за ваш избор. Користите тастер са стрелицом нагоре да бисте им приступили.</translation>
 <translation id="6853312040151791195">Брзина пражњења</translation>
+<translation id="6889786074662672253">Не искључујте спољни уређај ни рачунар током рестартовања. Можете да умањите овај прозор. Ово може да потраје неколико минута, а спољни уређај можда неће радити током тог периода.</translation>
 <translation id="6905724422583748843">Вратите се на страницу <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Поклопац скенера је отворен. Затворите га и пробајте поново.</translation>
 <translation id="6911383237894364323">Повезивање са медијским серверима није успело</translation>

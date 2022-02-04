@@ -423,7 +423,6 @@
            • sletter informasjonskapsler og andre midlertidige nettstedsdata
             <ph name="LINE_BREAKS" />
            Bokmerker, loggen og lagrede passord berøres ikke.</translation>
-<translation id="1425233109861512854">Tilgangskoden ble ikke gjenkjent</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> er blokkert</translation>
 <translation id="1426870617281699524">Klikk på Prøv igjen, og godta forespørselen på datamaskinen din</translation>
@@ -1153,7 +1152,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2148892889047469596">Castefane</translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2150139952286079145">Søk etter destinasjoner</translation>
-<translation id="2150491840563706000">Du har ikke tillatelse til å caste til denne skjermen</translation>
 <translation id="2150661552845026580">Vil du legge til «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="2151576029659734873">Ugyldig faneindeks angitt.</translation>
 <translation id="2152281589789213846">Legg til skrivere i profilen din</translation>
@@ -2955,7 +2953,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3943582379552582368">Til&amp;bake</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3945513714196326460">Prøv et kortere navn</translation>
-<translation id="3947643756376959257">Oppgi tilgangskoden som vises på Chromecasten eller TV-en.</translation>
 <translation id="3948027458879361203">Endre vertsnavn</translation>
 <translation id="3948116654032448504">&amp;Søk etter bilder i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i disse mappene</translation>
@@ -4734,13 +4731,11 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5862109781435984885">Vis pekepennverktøyet på hyllen</translation>
 <translation id="5862319196656206789">Konfigurer tilkoblede enheter</translation>
 <translation id="5863445608433396414">Slå på feilsøkingsfunksjoner</translation>
-<translation id="5864147196375746035">Cast til en administrert enhet</translation>
 <translation id="5864195618110239517">Bruk tilkobling med datamåling</translation>
 <translation id="5864754048328252126">Inaktivitetshandling når enheten lades</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> settes snart på pause</translation>
 <translation id="586567932979200359">Du kjører <ph name="PRODUCT_NAME" /> fra diskavbildningen. Hvis du installer produktet på datamaskinen, kan du kjøre det uten diskavbildningen og sikre at det holdes oppdatert.</translation>
 <translation id="5865733239029070421">Sender automatisk brukerstatistikk og programstopprapporter til Google</translation>
-<translation id="5865848066829891215">Problemer med nettverkskommunikasjon</translation>
 <translation id="5867841422488265304">Skriv inn søkeord eller en nettadresse</translation>
 <translation id="5869029295770560994">Greit</translation>
 <translation id="5869522115854928033">Lagrede passord</translation>
@@ -6165,6 +6160,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7376553024552204454">Fremhev musepekeren når den beveger seg</translation>
 <translation id="737728204345822099">Besøket ditt på dette nettstedet kan bli registrert på sikkerhetsnøkkelen.</translation>
 <translation id="7377451353532943397">Fortsett blokkering av sensortilgang</translation>
+<translation id="7377481913241237033">Tilknytt med en kode</translation>
 <translation id="7378611153938412599">Svake passord er enkle å gjette. Sørg for at du lager sterke passord. <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Åpne Chrome Nettmarked</translation>
 <translation id="7380622428988553498">Enhetsnavnet inneholder ugyldige tegn</translation>

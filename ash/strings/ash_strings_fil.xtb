@@ -113,6 +113,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1570871743947603115">I-toggle ang Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
+<translation id="1610778689852195798">"I-undo"</translation>
 <translation id="1611993646327628135">Naka-on</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
@@ -247,6 +248,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2596078834055697711">Kumuha ng screenshot ng window</translation>
 <translation id="2607678425161541573">Kailangang mag-sign in online</translation>
 <translation id="2621713457727696555">Secured</translation>
+<translation id="263399434338050016">"Piliin lahat"</translation>
 <translation id="2653019840645008922">Window capture</translation>
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2658778018866295321">I-click at i-drag</translation>
@@ -263,6 +265,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2727175239389218057">Sumagot</translation>
 <translation id="2727977024730340865">Naka-saksak sa isang low-power charger. Maaaring hindi maging tiyak ang pag-charge ng baterya.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"I-delete"</translation>
 <translation id="2778650143428714839">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Lumabas sa capture mode</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -306,6 +309,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3038571455154067151">Para mag-sign in, ilagay ang iyong access code ng magulang sa Family Link</translation>
 <translation id="3039939407102840004">Nasa <ph name="PERCENTAGE" /> (na) porsyento ang baterya ng stylus.</translation>
 <translation id="3045488863354895414">Magandang hapon,</translation>
+<translation id="3047761520276763270">Subukang sabihin ang:</translation>
 <translation id="3051189971848907985">Nire-rename ang profile. Maghintay nang ilang minuto.</translation>
 <translation id="3055162170959710888">Ginamit mo ang device na ito nang <ph name="USED_TIME" /> ngayong araw</translation>
 <translation id="3068711042108640621">Nasa kaliwa ang shelf</translation>
@@ -551,6 +555,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4570957409596482333">Button ng Select-to-Speak</translation>
+<translation id="4573176682887762361">"I-type ang [salita / parirala]"</translation>
 <translation id="4577274620589681794">Oras na · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Magpakita ng mga preview</translation>
 <translation id="4578196883126898996">Naka-off ang iyong mikropono. I-on ang button ng mikropono ng device mo.</translation>
@@ -1165,6 +1170,7 @@ Kaka-install lang</translation>
 <translation id="8785070478575117577">Kumonekta sa <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Tulong"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Mga Setting ng Mga Pamamaraan ng Pag-input</translation>
 <translation id="8818320199597151042">Inaalis ang profile. Maghintay nang ilang minuto.</translation>

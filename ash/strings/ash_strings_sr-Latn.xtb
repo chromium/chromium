@@ -113,6 +113,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1570871743947603115">Uključite/isključite Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
+<translation id="1610778689852195798">„Opozovi radnju“</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaja</translation>
@@ -248,6 +249,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2596078834055697711">Napravite snimak ekrana prozora</translation>
 <translation id="2607678425161541573">Onlajn prijavljivanje je obavezno</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
+<translation id="263399434338050016">„Izaberi sve“</translation>
 <translation id="2653019840645008922">Snimanje prozora</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Kliknite i prevucite</translation>
@@ -264,6 +266,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Uređaj je uključen u punjač male snage. Punjenje baterije možda neće biti pouzdano.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">„Izbriši“</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-om upravlja <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Izađite iz režima snimanja</translation>
 <translation id="2792498699870441125">Alt + taster za pretragu</translation>
@@ -307,6 +310,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3038571455154067151">Da biste se prijavili, unesite pristupni kôd roditelja za Family Link</translation>
 <translation id="3039939407102840004">Baterija pisaljke je na <ph name="PERCENTAGE" /> posto.</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
+<translation id="3047761520276763270">Probajte da kažete:</translation>
 <translation id="3051189971848907985">Menja se ime profila. Sačekajte nekoliko minuta.</translation>
 <translation id="3055162170959710888">Danas koristite ovaj uređaj već <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Polica na levoj strani</translation>
@@ -552,6 +556,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4570957409596482333">Dugme Izaberite za govor</translation>
+<translation id="4573176682887762361">„Unesi [reč ili fraza]“</translation>
 <translation id="4577274620589681794">Vreme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
 <translation id="4578196883126898996">Mikrofon je isključen. Uključite dugme za mikrofon na uređaju.</translation>
@@ -1168,6 +1173,7 @@ Novo instaliranje</translation>
 <translation id="8785070478575117577">Povežite se sa uređajem <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">„Pomoć“</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Podešavanja metoda unosa</translation>
 <translation id="8818320199597151042">Profil se uklanja. Sačekajte nekoliko minuta.</translation>

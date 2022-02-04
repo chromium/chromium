@@ -422,7 +422,6 @@
            • ኩኪዎችን እና ሌሎች ጊዜያዊ የጣቢያ ውሂብን ይሰርዛል
             <ph name="LINE_BREAKS" />
            ዕልባቶች፣ ታሪክ እና የተቀመጡ የይለፍ ቃላት አይነኩም።</translation>
-<translation id="1425233109861512854">የመዳረሻ ኮድ አልታወቀም</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ታግዷል</translation>
 <translation id="1426870617281699524">እንደገና ይሞክሩ ላይ ጠቅ ያድርጉ፣ እና በኮምፒውተርዎ ላይ ያለውን ጥያቄ ይቀበሉ</translation>
@@ -1155,7 +1154,6 @@
 <translation id="2148892889047469596">ትር ውስድ</translation>
 <translation id="2149973817440762519">እልባት አርትዕ</translation>
 <translation id="2150139952286079145">መድረሻዎችን ይፈልጉ</translation>
-<translation id="2150491840563706000">ወደዚህ ማሳያ cast ለማድረግ ፈቃድ የለዎትም</translation>
 <translation id="2150661552845026580">«<ph name="EXTENSION_NAME" />» ይታከል?</translation>
 <translation id="2151576029659734873">ልክ ያልሆነ የትር መረጃ ጠቋሚ ገብቷል።</translation>
 <translation id="2152281589789213846">አታሚዎችን ወደ የእርስዎ መገለጫ ያክሉ</translation>
@@ -2956,7 +2954,6 @@
 <translation id="3943582379552582368">&amp;ተመለስ</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
 <translation id="3945513714196326460">አጠር ያለ ስም ይሞክሩ</translation>
-<translation id="3947643756376959257">በChromecast ወይም ቲቪ ላይ የሚታየውን የመዳረሻ ኮድ ያስገቡ።</translation>
 <translation id="3948027458879361203">አስተናጋጅ ስም ቀይር</translation>
 <translation id="3948116654032448504">ለምስል <ph name="SEARCH_ENGINE" />ን ይ&amp;ፈልጉ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> በሚከተሉት አቃፊዎች ውስጥ ያሉ ፋይሎችን ማርትዕ ይችላል</translation>
@@ -4734,13 +4731,11 @@
 <translation id="5862109781435984885">በመደርደሪያው ውስጥ የስቲለስ መሣሪያዎችን አሳይ</translation>
 <translation id="5862319196656206789">የተገናኙ መሣሪያዎችን ያቀናብሩ</translation>
 <translation id="5863445608433396414">የማረሚያ ባህሪያትን ያንቁ</translation>
-<translation id="5864147196375746035">ወደሚተዳደር መሣሪያ Cast ያድርጉ</translation>
 <translation id="5864195618110239517">የሚለካ ግንኙነት ተጠቀም</translation>
 <translation id="5864754048328252126">ኃይል እየሞላ ሳለ የስራ መፍታት እርምጃ</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> በቅርቡ ባለበት ይቆማል</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" />ን ከዲስክ ምስሉ እያሄዱ ነው። ኮምፒውተርዎ ላይ መጫን ያለ ዲስክ ምስሉ እንዲያሂዱት ያስችልዎታል፣ እና እንደተዘመነ መቆየቱን ያረጋግጣል።</translation>
 <translation id="5865733239029070421">የአጠቃቀም ስታስቲክስን እና የብልሽት ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል</translation>
-<translation id="5865848066829891215">የአውታረ መረብ ግንኙነት ችግሮች</translation>
 <translation id="5867841422488265304">የድር አድራሻ ይፈልጉ ወይም ይተይቡ</translation>
 <translation id="5869029295770560994">እሺ፣ ገባኝ</translation>
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
@@ -6165,6 +6160,7 @@
 <translation id="7376553024552204454">በሚንቀሳቀስበት ጊዜ የመዳፊት ጠቋሚን አድምቅ</translation>
 <translation id="737728204345822099">ወደዚህ ጣቢያ ያደረጉት የጉብኝትዎ መዝገብ በደህንነት ቁልፍዎ ላይ ሊቀመጥ ይችላል።</translation>
 <translation id="7377451353532943397">የዳሳሽ መዳረሻን ማገዱን ቀጥል</translation>
+<translation id="7377481913241237033">ከኮድ ጋር ተገናኝ</translation>
 <translation id="7378611153938412599">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። ጠንካራ የይለፍ ቃላትን እየፈጠሩ መሆንዎን ያረጋግጡ። <ph name="BEGIN_LINK" />ተጨማሪ ጠቃሚ የደህንነት ምክሮችን ይመልከቱ።<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome የድር መደብርን ይክፈቱ</translation>
 <translation id="7380622428988553498">የመሣሪያ ስም ልክ ያልሆኑ ቁምፊዎችን ይዟል</translation>

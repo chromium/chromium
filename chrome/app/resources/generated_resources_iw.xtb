@@ -425,7 +425,6 @@
            • תמחק קובצי cookie ונתוני אתר זמניים אחרים
             <ph name="LINE_BREAKS" />
            סימניות, היסטוריה וסיסמאות שמורות לא יושפעו.</translation>
-<translation id="1425233109861512854">קוד הגישה לא מזוהה</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="142655739075382478">האפליקציה <ph name="APP_NAME" /> חסומה</translation>
 <translation id="1426870617281699524">יש ללחוץ על 'ניסיון נוסף' ולאשר את הבקשה במחשב.</translation>
@@ -1158,7 +1157,6 @@
 <translation id="2148892889047469596">העברת הכרטיסייה</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2150139952286079145">יעדי חיפוש</translation>
-<translation id="2150491840563706000">‏אין לך רשות להעביר (cast) למסך הזה</translation>
 <translation id="2150661552845026580">להוסיף את "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">הוזן אינדקס שגוי של כרטיסייה</translation>
 <translation id="2152281589789213846">הוספת מדפסות לפרופיל</translation>
@@ -2963,7 +2961,6 @@
 <translation id="3943582379552582368">&amp;אחורה</translation>
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3945513714196326460">יש לנסות שם קצר יותר</translation>
-<translation id="3947643756376959257">‏צריך להזין את קוד הגישה שמופיע ב-Chromecast או בטלוויזיה.</translation>
 <translation id="3948027458879361203">שינוי שם המארח</translation>
 <translation id="3948116654032448504">&amp;חיפוש תמונה ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">ל-<ph name="ORIGIN" /> יש הרשאה לערוך קבצים בתיקיות הבאות</translation>
@@ -4744,13 +4741,11 @@
 <translation id="5862109781435984885">הצגת כלי סטיילוס במדף</translation>
 <translation id="5862319196656206789">הגדרה של מכשירים מחוברים</translation>
 <translation id="5863445608433396414">הפעלת תכונות ניפוי באגים</translation>
-<translation id="5864147196375746035">‏העברה (cast) למכשיר מנוהל</translation>
 <translation id="5864195618110239517">שימוש בחיבור עם חיוב לפי שימוש בנתונים</translation>
 <translation id="5864754048328252126">מה לעשות בעת חוסר פעילות בזמן טעינה</translation>
 <translation id="5865508026715185451">האפליקציה <ph name="APP_NAME" /> תושהה בקרוב</translation>
 <translation id="586567932979200359">מתבצעת הפעלה של <ph name="PRODUCT_NAME" /> מתמונת הדיסק שלו. התקנתו במחשב מאפשרת לך להפעיל אותו ללא תמונת הדיסק, ומבטיחה שיישאר מעודכן.</translation>
 <translation id="5865733239029070421">‏שליחת דוחות קריסה וסטטיסטיקת שימוש אל Google באופן אוטומטי</translation>
-<translation id="5865848066829891215">בעיות בתקשורת הרשת</translation>
 <translation id="5867841422488265304">יש להזין ביטוי לחיפוש או כתובת אינטרנט</translation>
 <translation id="5869029295770560994">בסדר, הבנתי</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>

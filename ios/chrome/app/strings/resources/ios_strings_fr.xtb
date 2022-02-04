@@ -452,6 +452,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5186185447130319458">Privé</translation>
 <translation id="5188482106078495165">Votre paramètre de cookies s'applique à tous les onglets. Pour en appliquer un nouveau à un onglet ouvert, rechargez l'onglet.</translation>
 <translation id="5190835502935405962">Barre de favoris</translation>
+<translation id="519530786644929958">Échec du téléchargement. Nouvelle tentative impossible.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>

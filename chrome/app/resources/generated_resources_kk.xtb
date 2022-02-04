@@ -420,7 +420,6 @@
            • cookie файлдарын және сайттың басқа уақытша деректерін жояды;
             <ph name="LINE_BREAKS" />
            бетбелгілерге, тарихқа және сақталған құпия сөздерге ештеңе болмайды.</translation>
-<translation id="1425233109861512854">Рұқсат коды танылмады</translation>
 <translation id="1426410128494586442">Иә</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> бөгелді</translation>
 <translation id="1426870617281699524">"Әрекетті қайталау" түймесін басып, компьютердегі сұрауларды қабылдаңыз</translation>
@@ -1142,7 +1141,6 @@
 <translation id="2148892889047469596">Қойынды трансляциясы</translation>
 <translation id="2149973817440762519">Бетбелгіні өзгерту</translation>
 <translation id="2150139952286079145">Іздеу мақсаттары</translation>
-<translation id="2150491840563706000">Бұл дисплейге трансляциялауға рұқсатыңыз жоқ.</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" қосасыз ба?</translation>
 <translation id="2151576029659734873">Жарамсыз қойынды индексі енгізілді.</translation>
 <translation id="2152281589789213846">Профильге принтерлерді енгізу</translation>
@@ -2936,7 +2934,6 @@
 <translation id="3943582379552582368">&amp;Артқа</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3945513714196326460">Атты қысқартыңыз.</translation>
-<translation id="3947643756376959257">Chromecast құрылғысында немесе теледидарда көрсетілген рұқсат кодын енгізіңіз.</translation>
 <translation id="3948027458879361203">Хост атауын өзгерту</translation>
 <translation id="3948116654032448504">Кескінді <ph name="SEARCH_ENGINE" /> арқылы &amp;іздеу</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> мына қалталардағы файлдарды өңдей алады.</translation>
@@ -4714,13 +4711,11 @@
 <translation id="5862109781435984885">Стилус құралдарын сөреден көрсету</translation>
 <translation id="5862319196656206789">Жалғанған құрылғыларды реттеу</translation>
 <translation id="5863445608433396414">Түзету мүмкіндіктерін қосу</translation>
-<translation id="5864147196375746035">Басқарылатын құрылғыға трансляциялау</translation>
 <translation id="5864195618110239517">Шектелген байланысты пайдалану</translation>
 <translation id="5864754048328252126">Зарядтау кезіндегі жұмыссыз режим</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> сәлден кейін кідіртіледі</translation>
 <translation id="586567932979200359">Сіз <ph name="PRODUCT_NAME" /> бағдарламасын диск бейнесінен іске қостыңыз. Оны компьютеріңізге орнату оны дисктегі бейнесіз іске қосуға мүмкіндік береді және оның жаңартылуын қамтамасыз етеді.</translation>
 <translation id="5865733239029070421">Қолданыс статистикасын және жаңылыс туралы есептерді Google жүйесіне автоматты түрде жібереді</translation>
-<translation id="5865848066829891215">Желілік байланыс ақаулары</translation>
 <translation id="5867841422488265304">Веб-мекенжайды енгізіңіз не іздеңіз</translation>
 <translation id="5869029295770560994">Жарайды, түсінікті</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>

@@ -421,7 +421,6 @@
 • Supprimer les témoins et d'autres données temporaires relatives aux sites
 <ph name="LINE_BREAKS" />
 Les signets, l'historique et les mots de passe enregistrés ne seront pas touchés.</translation>
-<translation id="1425233109861512854">Code d'accès non reconnu</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> est bloquée</translation>
 <translation id="1426870617281699524">Cliquez sur Réessayer et acceptez l'invite sur votre ordinateur</translation>
@@ -1145,7 +1144,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2148892889047469596">Diffuser l’onglet</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2150139952286079145">Rechercher des destinations</translation>
-<translation id="2150491840563706000">Vous n'avez pas l'autorisation de diffuser du contenu sur cet écran</translation>
 <translation id="2150661552845026580">Installer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="2151576029659734873">L'index de l'onglet entré est incorrect.</translation>
 <translation id="2152281589789213846">Ajouter des imprimantes à votre profil</translation>
@@ -3194,6 +3192,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4231095370974836764">Installez des applications et des jeux de Google Play sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
+<translation id="4236163961381003811">Découvrir plus d'extensions</translation>
 <translation id="4241182343707213132">Redémarrer pour mettre à jour les applications de votre organisation</translation>
 <translation id="4242145785130247982">Plusieurs certificats clients ne sont pas pris en charge</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -4724,7 +4723,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sera bientôt mise en pause</translation>
 <translation id="586567932979200359">Vous utilisez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et vous bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
-<translation id="5865848066829891215">Problèmes de communications réseau</translation>
 <translation id="5867841422488265304">Recherchez ou entrez une adresse Web</translation>
 <translation id="5869029295770560994">OK, j'ai compris</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>

@@ -147,6 +147,7 @@
 <translation id="1836215606488044471">സഹായി (ലോഡുചെയ്യുന്നു...)</translation>
 <translation id="1838895407229022812">നൈറ്റ് ലൈറ്റ് ഓഫാണ്.</translation>
 <translation id="1864454756846565995">USB-C ഉപകരണം (പുറകിലെ പോർട്ട്)</translation>
+<translation id="1879018240766558464">അദൃശ്യ വിൻഡോകൾ നിലവിൽ പിന്തുണയ്ക്കുന്നില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
 <translation id="1882814835921407042">മൊബൈൽ നെറ്റ്‌വർക്ക് ഇല്ല</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് മിറർ ചെയ്യുന്നു</translation>
 <translation id="1885785240814121742">ഫിംഗർപ്രിന്‍റ് ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
@@ -952,6 +953,7 @@
 <translation id="7366890467478514168"><ph name="NAME" /> കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7371404428569700291">വിൻഡോ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7377169924702866686">Caps Lock ഓൺ ആണ്.</translation>
+<translation id="7377481913241237033">കോഡ് ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7378203170292176219">റെക്കോർഡ് ചെയ്യുന്നതിന് ഒരു ഏരിയ തിരഞ്ഞെടുക്കാൻ വലിച്ചിടുക</translation>
 <translation id="7378594059915113390">മീഡിയ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="7378889811480108604">ബാറ്ററി ലാഭിക്കൽ മോഡ് ഓഫാണ്</translation>
@@ -979,6 +981,7 @@
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux ആപ്പുകളും അദൃശ്യ വിൻഡോകളും നിലവിൽ പിന്തുണയ്ക്കുന്നില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
 <translation id="7544300628205093162">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് ഓണാണ്</translation>
 <translation id="7548434653388805669">ഉറങ്ങാൻ സമയമായി</translation>
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>

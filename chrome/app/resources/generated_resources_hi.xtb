@@ -424,7 +424,6 @@
            • कुकी और दूसरा अस्थायी साइट डेटा मिट जाएगा
             <ph name="LINE_BREAKS" />
            बुकमार्क, इतिहास, और सेव किए गए पासवर्ड पर असर नहीं होगा.</translation>
-<translation id="1425233109861512854">ऐक्सेस कोड की पहचान नहीं की जा सकी</translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> को ब्लॉक कर दिया गया है</translation>
 <translation id="1426870617281699524">अपने कंप्यूटर पर 'फिर से कोशिश करें' पर क्लिक करें और संकेत को स्वीकार करें</translation>
@@ -1160,7 +1159,6 @@
 <translation id="2148892889047469596">टैब कास्ट करें</translation>
 <translation id="2149973817440762519">बुकमार्क में बदलाव करें</translation>
 <translation id="2150139952286079145">मंज़िल खोजें</translation>
-<translation id="2150491840563706000">आपके पास इस डिसप्ले पर कास्ट करने की अनुमति नहीं है</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोड़ें?</translation>
 <translation id="2151576029659734873">गलत टैब इंडेक्स डाला गया.</translation>
 <translation id="2152281589789213846">अपने प्रोफ़ाइल में प्रिंटर जोड़ें</translation>
@@ -2962,7 +2960,6 @@
 <translation id="3943582379552582368">&amp;वापस</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="3945513714196326460">इससे छोटा नाम डालें</translation>
-<translation id="3947643756376959257">Chromecast या टीवी पर दिखने वाला ऐक्सेस कोड डालें.</translation>
 <translation id="3948027458879361203">होस्टनेम बदलें</translation>
 <translation id="3948116654032448504">इमेज को <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> नीचे दिए गए फ़ोल्डर में मौजूद फ़ाइलों में बदलाव कर सकती है</translation>
@@ -4743,13 +4740,11 @@
 <translation id="5862109781435984885">शेल्फ़ में स्टाइस टूल दिखाएं</translation>
 <translation id="5862319196656206789">कनेक्ट किए गए डिवाइस सेट अप करें</translation>
 <translation id="5863445608433396414">डीबग करने वाली सुविधाएं चालू करें</translation>
-<translation id="5864147196375746035">मैनेज किए जा रहे किसी डिवाइस पर कास्ट करें</translation>
 <translation id="5864195618110239517">सीमित डेटा वाला कनेक्शन इस्तेमाल करें</translation>
 <translation id="5864754048328252126">चार्ज करते समय डिवाइस पर काम नहीं हो रहा है</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> जल्द ही रुक जाएगा</translation>
 <translation id="586567932979200359">आप <ph name="PRODUCT_NAME" /> को उसकी डिस्क इमेज से चला रहे हैं. इसे अपने कंप्यूटर पर इंस्टॉल करने से यह आपको बिना डिस्क इमेज के चलाने देता है और पक्का करता है कि इससे यह 'अप टू डेट' रहेगा.</translation>
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट अपने आप भेजती है</translation>
-<translation id="5865848066829891215">नेटवर्क कम्यूनिकेशन से जुड़ी गड़बड़ियां</translation>
 <translation id="5867841422488265304">वेब पता खोजें या लिखें</translation>
 <translation id="5869029295770560994">ठीक है, समझ लिया</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
@@ -6174,6 +6169,7 @@
 <translation id="7376553024552204454">माउस कर्सर के हिलने पर उसे हाइलाइट करें</translation>
 <translation id="737728204345822099">आपके इस साइट पर आने की जानकारी को आपकी सुरक्षा कुंजी पर सेव किया जा सकता है.</translation>
 <translation id="7377451353532943397">सेंसर का ऐक्सेस ब्लॉक करते रहें</translation>
+<translation id="7377481913241237033">कोड का इस्तेमाल करके कनेक्ट करें</translation>
 <translation id="7378611153938412599">कमज़ोर पासवर्ड का अंदाज़ा लगाना आसान होता है. पक्का करें कि आप मज़बूत पासवर्ड बना रहे हैं. <ph name="BEGIN_LINK" />सुरक्षा से जुड़ी और सलाह देखें.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome वेब स्टोर खोलें</translation>
 <translation id="7380622428988553498">डिवाइस के नाम में अमान्य वर्ण हैं</translation>

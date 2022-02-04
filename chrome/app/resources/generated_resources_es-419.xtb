@@ -385,6 +385,7 @@
 <translation id="1396259464226642517">¿Fue inesperado este resultado? <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">El nombre de usuario y la contraseña que ingresaste no coinciden</translation>
 <translation id="1397500194120344683">No hay dispositivos compatibles. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Accediste a Chrome desde estos dispositivos. Puedes usarlos como llaves de seguridad.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquea el teléfono y confirma que eres tú</translation>
 <translation id="1401308693935339022">Usa la ubicación. Permite que las apps y los servicios con permiso de ubicación usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos de forma periódica y los use para mejorar la precisión de la ubicación y los servicios basados en ella.</translation>
@@ -420,7 +421,6 @@
            • Se borrarán las cookies y otros datos temporales de los sitios.
             <ph name="LINE_BREAKS" />
            Esta acción no afectará los favoritos, el historial ni las contraseñas guardadas.</translation>
-<translation id="1425233109861512854">No se reconoce el código de acceso</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="142655739075382478">Se bloqueó <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">Haz clic en Reintentar y acepta el mensaje en la computadora</translation>
@@ -1143,7 +1143,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2148892889047469596">Transmitir pestaña</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2150139952286079145">Buscar destinos</translation>
-<translation id="2150491840563706000">No tienes permiso para transmitir a esta pantalla</translation>
 <translation id="2150661552845026580">¿Quieres instalar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Se ingresó un índice de pestaña no válido.</translation>
 <translation id="2152281589789213846">Agrega impresoras a tu perfil</translation>
@@ -1166,6 +1165,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2163470535490402084">Conéctate a Internet para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Activar el modo oscuro</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
+<translation id="2165102982098084499">Asociaste estos dispositivos mediante un escaneo de código QR.</translation>
 <translation id="2165177462441582039">Elige cuánto tiempo debe permanecer destacado cada elemento</translation>
 <translation id="2166369534954157698">El veloz murciélago hindú comía feliz cardillo y kiwi</translation>
 <translation id="2169062631698640254">Acceder de todos modos</translation>
@@ -2943,7 +2943,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto.</translation>
-<translation id="3947643756376959257">Ingresa el código de acceso que se muestra en el Chromecast o TV.</translation>
 <translation id="3948027458879361203">Cambiar el nombre de host</translation>
 <translation id="3948116654032448504">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos en las siguientes carpetas</translation>
@@ -4723,13 +4722,11 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5862109781435984885">Mostrar herramientas de la pluma stylus en la biblioteca</translation>
 <translation id="5862319196656206789">Configurar los dispositivos conectados</translation>
 <translation id="5863445608433396414">Habilitar funciones de depuración</translation>
-<translation id="5864147196375746035">Transmitir a un dispositivo administrado</translation>
 <translation id="5864195618110239517">Usar la conexión de uso medido</translation>
 <translation id="5864754048328252126">Acción de inactividad durante la carga</translation>
 <translation id="5865508026715185451">Pronto se pausará <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Instalarlo en tu computadora te permite ejecutarlo sin la imagen de disco y garantiza que se mantenga actualizado.</translation>
 <translation id="5865733239029070421">Envía automáticamente informes de fallos y estadísticas de uso a Google</translation>
-<translation id="5865848066829891215">Error de comunicación de la red</translation>
 <translation id="5867841422488265304">Busca o escribe la dirección web</translation>
 <translation id="5869029295770560994">Entendido</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
@@ -5686,6 +5683,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Configuración de proxy...</translation>
 <translation id="6860427144121307915">Abrir en una pestaña</translation>
+<translation id="6863496016067551393">Se permiten todas las extensiones</translation>
 <translation id="686366188661646310">¿Quieres borrar la contraseña?</translation>
 <translation id="6865313869410766144">Datos del formulario de autocompletar</translation>
 <translation id="6865598234501509159">La página no está en <ph name="LANGUAGE" /></translation>
@@ -5715,6 +5713,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6900532703269623216">Protección mejorada</translation>
 <translation id="6900651018461749106">Vuelve a acceder para actualizar <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">¿Estás seguro de que deseas borrar este motor de búsqueda?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voz de prueba</translation>
 <translation id="6902336033320348843">La sección no es compatible: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Une el dispositivo al dominio</translation>
@@ -7367,6 +7366,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8610103157987623234">El formato es incorrecto; vuelve a intentarlo</translation>
 <translation id="8611682088849615761">Seguir permitiendo que este sitio controle totalmente los dispositivos MIDI</translation>
 <translation id="8613164732773110792">Solo se permiten caracteres en minúscula, números, guiones bajos o rayas</translation>
+<translation id="8613645710357126807">No se permite usar extensiones</translation>
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> es demasiado grande para hacer un control de seguridad. Se permite abrir archivos de hasta 50 MB.</translation>
 <translation id="8615618338313291042">Aplicación de incógnito: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Agregar a <ph name="CONTACT_NAME" /> a tus contactos</translation>

@@ -423,7 +423,6 @@
            • कुकी आणि इतर तात्पुरता साइट डेटा हटवला जाईल
             <ph name="LINE_BREAKS" />
            बुकमार्क, इतिहास आणि सेव्ह केलेल्या पासवर्डवर परिणाम होणार नाही.</translation>
-<translation id="1425233109861512854">अ‍ॅक्सेस कोड ओळखता आला नाही</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ब्लॉक केले आहे</translation>
 <translation id="1426870617281699524">पुन्हा प्रयत्न करा वरवर क्लिक करा आणि तुमच्या काँप्युटरवर प्रॉम्प्ट स्वीकारा</translation>
@@ -1158,7 +1157,6 @@
 <translation id="2148892889047469596">टॅब कास्ट करा</translation>
 <translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
 <translation id="2150139952286079145">शोध गंतव्ये</translation>
-<translation id="2150491840563706000">तुम्हाला या डिस्प्लेवर कास्ट करण्याची परवानगी नाही</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" जोडायचे ?</translation>
 <translation id="2151576029659734873">चुकीची टॅब अनुक्रमणिका एंटर केली.</translation>
 <translation id="2152281589789213846">तुमच्या प्रोफाइलमध्ये प्रिंटर जोडा</translation>
@@ -2962,7 +2960,6 @@
 <translation id="3943582379552582368">&amp;मागील</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3945513714196326460">संक्षिप्त नाव वापरून पहा</translation>
-<translation id="3947643756376959257">Chromecast किंवा टीव्हीवर दाखवलेला अ‍ॅक्सेस कोड एंटर करा.</translation>
 <translation id="3948027458879361203">होस्ट नाव बदला</translation>
 <translation id="3948116654032448504">इमेज <ph name="SEARCH_ENGINE" /> वर शोधा</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> खालील फोल्डरमधील फाइल संपादित करू शकते</translation>
@@ -4741,13 +4738,11 @@
 <translation id="5862109781435984885">शेल्फमधील स्टायलस टूल दर्शवा</translation>
 <translation id="5862319196656206789">कनेक्ट केलेली डिव्हाइस सेट करा</translation>
 <translation id="5863445608433396414">डीबगिंग वैशिष्ट्ये सुरू करा</translation>
-<translation id="5864147196375746035">व्यवस्थापित केलेल्या डिव्हाइसवर कास्ट करा</translation>
 <translation id="5864195618110239517">मर्यादित कनेक्शन वापरा</translation>
 <translation id="5864754048328252126">चार्ज होत असताना निष्क्रिय कृती</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> लवकरच थांबेल</translation>
 <translation id="586567932979200359">तुम्ही <ph name="PRODUCT_NAME" /> त्याच्या डिस्क प्रतिमेवरून चालवत आहात. तुमच्या कॉंप्युटरवर ते इंस्टॉल केल्यामुळे तुम्हाला ते डिस्क प्रतिमेशिवाय चालवू देते आणि ते अपडेट ठेवले जाईल हे निश्चित करते.</translation>
 <translation id="5865733239029070421">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते</translation>
-<translation id="5865848066829891215">नेटवर्क कम्युनिकेशनसंबंधित समस्या</translation>
 <translation id="5867841422488265304">वेब पत्ता शोधा किंवा टाइप करा</translation>
 <translation id="5869029295770560994">ठीक आहे, समजले</translation>
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>

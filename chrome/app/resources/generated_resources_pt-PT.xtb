@@ -340,6 +340,7 @@
 <translation id="1340527397989195812">Fazer cópia de segurança de multimédia a partir do dispositivo com a aplicação Ficheiros.</translation>
 <translation id="1341988552785875222">A imagem de fundo atual é definida por "<ph name="APP_NAME" />". Pode ser necessário desinstalar "<ph name="APP_NAME" />" antes de selecionar uma imagem de fundo diferente.</translation>
 <translation id="1343865611738742294">Conceda às aplicações Linux autorização de acesso a dispositivos USB. O Linux não memoriza um dispositivo USB após a sua remoção.</translation>
+<translation id="1343920184519992513">Continue onde parou e abra um conjunto específico de páginas</translation>
 <translation id="1346630054604077329">Confirmar e reiniciar</translation>
 <translation id="1347256498747320987">Instale atualizações e aplicações. Ao continuar, aceita que este dispositivo também pode transferir e instalar automaticamente atualizações e aplicações da Google, do seu operador e do fabricante do dispositivo, possivelmente através de dados móveis. Algumas destas aplicações podem oferecer compras na aplicação. <ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" />.</translation>
 <translation id="1347512539447549782">Armazenamento do Linux</translation>
@@ -422,7 +423,6 @@
            • Eliminar cookies e outros dados temporários de sites.
             <ph name="LINE_BREAKS" />
            Os marcadores, o histórico e as palavras-passe guardadas não serão afetados.</translation>
-<translation id="1425233109861512854">Código de acesso não reconhecido</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="142655739075382478">A app <ph name="APP_NAME" /> está bloqueada</translation>
 <translation id="1426870617281699524">Clique em Tentar novamente e aceite o pedido no computador.</translation>
@@ -1148,7 +1148,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2148892889047469596">Transmitir separador</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2150139952286079145">Pesquisar destinos</translation>
-<translation id="2150491840563706000">Não tem autorização para transmitir para este ecrã</translation>
 <translation id="2150661552845026580">Adicionar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Introduzido índice de separador inválido.</translation>
 <translation id="2152281589789213846">Adicione impressoras ao seu perfil</translation>
@@ -2950,7 +2949,6 @@ Pretende pará-lo?</translation>
 <translation id="3943582379552582368">&amp;Anterior</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3945513714196326460">Tente utilizar um nome mais curto</translation>
-<translation id="3947643756376959257">Introduza o código de acesso apresentado no Chromecast ou na TV.</translation>
 <translation id="3948027458879361203">Alterar nome do anfitrião</translation>
 <translation id="3948116654032448504">Pe&amp;squisar Imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar ficheiros nas seguintes pastas</translation>
@@ -4731,13 +4729,11 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5862109781435984885">Mostrar ferramentas da caneta stylus na prateleira</translation>
 <translation id="5862319196656206789">Configurar dispositivos ligados</translation>
 <translation id="5863445608433396414">Ativar funcionalidades de depuração</translation>
-<translation id="5864147196375746035">Transmita para um dispositivo gerido</translation>
 <translation id="5864195618110239517">Utilizar ligação com acesso limitado</translation>
 <translation id="5864754048328252126">Ação de inatividade ao carregar</translation>
 <translation id="5865508026715185451">A app <ph name="APP_NAME" /> será colocada em pausa em breve</translation>
 <translation id="586567932979200359">Está a executar o <ph name="PRODUCT_NAME" /> a partir da respectiva imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e assegura que o mesmo é mantido atualizado.</translation>
 <translation id="5865733239029070421">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
-<translation id="5865848066829891215">Problema de comunicação de rede</translation>
 <translation id="5867841422488265304">Pesquise ou escreva o endereço Web</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
@@ -5392,6 +5388,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="654871471440386944">Pretende ativar a navegação por cursor?</translation>
 <translation id="6549038875972762904">Refazer configuração</translation>
 <translation id="6550675742724504774">Opções</translation>
+<translation id="65513682072153627">Verá este ícone Gerido quando uma definição ou uma funcionalidade for gerida pelo seu administrador.</translation>
 <translation id="6551508934388063976">Comando indisponível. Prima control-N para abrir uma nova janela.</translation>
 <translation id="6551612971599078809">O site está a utilizar um dispositivo USB</translation>
 <translation id="6551739526055143276">Gerida pelo Family Link</translation>

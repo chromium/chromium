@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1650222530560417226">I-tap ang button na "Simulang Mag-log" para kolektahin ang mga log ng JavaScript console at error mula sa lahat ng tab sa hinaharap. Kokolektahin (at iso-store lang sa memory) ang mga log hanggang sa isara ang page na ito o i-tap ang "Huminto sa Pag-log."</translation>
+<translation id="1654232554734641711">Pinapayagan ang access sa Mikropono</translation>
 <translation id="1657011748321897393">Nabigo ang pagbabahagi dahil hindi ka nakakonekta sa network.</translation>
 <translation id="1657641691196698092">Naka-block na Cookies</translation>
 <translation id="165877110639533037">Walang Mga Nakabukas na Tab</translation>
@@ -396,6 +397,7 @@ Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upa
 <translation id="4682686630151240767">1. Buksan ang Mga Setting ng iPhone</translation>
 <translation id="4689564913179979534">I-manage ang Payment Method...</translation>
 <translation id="470966556546083668">Huwag I-on ang Pag-sync</translation>
+<translation id="4731472194328757163">Pinapayagan ang access sa Camera at Mikopono</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4747097190499141774">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay. Ang tao lang na may alam ng iyong passphrase ang makakabasa sa naka-encrypt mong data. Hindi ipinapadala sa Google ang passphrase at hindi nito ito sino-store. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong i-reset ang pag-sync. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Bagong Tab na Incognito</translation>
@@ -547,6 +549,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
 <translation id="6064824697233747382">Hinihiling sa iyo ng organisasyon mo na i-off ang pag-sync.</translation>
 <translation id="6066301408025741299">Pindutin upang kanselahin.</translation>
+<translation id="6077126322656614846">Pinapayagan ang access sa Camera</translation>
 <translation id="60829778314739003">Tanggapin at Magpatuloy</translation>
 <translation id="6084848228346514841">Pumili ng Mga Tab</translation>
 <translation id="6103540626693881831">On-device na Pag-encrypt</translation>

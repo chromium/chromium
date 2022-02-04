@@ -146,6 +146,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1836215606488044471">Assistent (laster inn …)</translation>
 <translation id="1838895407229022812">Nattlys er av.</translation>
 <translation id="1864454756846565995">USB-C-enhet (porten på baksiden)</translation>
+<translation id="1879018240766558464">Inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås opp med fingeravtrykk</translation>
@@ -947,6 +948,7 @@ Nylig installert</translation>
 <translation id="7366890467478514168">Koble til <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Ta opp vinduet</translation>
 <translation id="7377169924702866686">Caps Lock er på.</translation>
+<translation id="7377481913241237033">Tilknytt med en kode</translation>
 <translation id="7378203170292176219">Dra for å velge området du vil ta opp</translation>
 <translation id="7378594059915113390">Mediekontroller</translation>
 <translation id="7378889811480108604">Batterisparing er av</translation>
@@ -974,6 +976,7 @@ Nylig installert</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux-apper og inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="7544300628205093162">Tastaturets bakgrunnsbelysning er på</translation>
 <translation id="7548434653388805669">Nå er det sengetid</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>

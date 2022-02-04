@@ -2604,6 +2604,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Permite mostrar las extensiones que están instaladas de forma automática en una sesión de demostración para dispositivos que se encuentren en modo comercial. Estas extensiones se guardan en el dispositivo y se pueden instalar sin conexión una vez que se ha completado el proceso de instalación.
 
       Cada entrada de la lista contiene un diccionario, que debe incluir el ID de la extensión en el campo "extension-id" y una URL de actualización en el campo "update-url".</translation>
+<translation id="3869180930654347954">Inhabilita First-Party Sets para todos los usuarios afectados</translation>
 <translation id="3870059789954671543">Habilitar la función de accesibilidad que permite destacar el foco del teclado en la pantalla de inicio de sesión.
 
           Esta función destaca el objeto donde está el foco del teclado.
@@ -2798,6 +2799,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si la política se desactiva o no se define, el servicio enviará a los usuarios a https://myaccount.google.com para cambiar su contraseña.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
+<translation id="4115501011761259824">Habilita First-Party Sets para todos los usuarios afectados</translation>
 <translation id="4121350739760194865">Evitar que las promociones de aplicaciones aparezcan en la página Nueva pestaña</translation>
 <translation id="4122473079291425973">La página Nueva pestaña mostrará tarjetas si hay contenido disponible, pero se permitirá que el usuario cambie este ajuste</translation>
 <translation id="4122565688998751716">Esta política está obsoleta. Usa la política <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" /> en su lugar.
@@ -2938,6 +2940,14 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si el dispositivo no está gestionado o solo hay un usuario, esta política se ignorará y siempre se mostrará la notificación.
 
       Si hay varias cuentas de usuario en un dispositivo gestionado, la notificación solo se mostrará si esta política está habilitada.</translation>
+<translation id="4293593564662654474">Esta política se proporciona como método para inhabilitar la función First-Party Sets.
+
+                  Si esta política se habilita o no se define, se habilitará la función First-Party Sets.
+
+                  Si esta política se inhabilita, se inhabilitará la función First-Party Sets.
+
+                  El estado de la función First-Party Sets determina si Chrome recupera la lista de First-Party Sets.
+                  También controla si Chrome admite funciones relacionadas con First-Party Sets (por ejemplo, el atributo de cookies SameParty).</translation>
 <translation id="4311195029067684288">Llena</translation>
 <translation id="4313767483634435271">Dirección MAC designada de la base del dispositivo</translation>
 <translation id="4314538398999793073">Inhabilitar la búsqueda de CNAME durante la autenticación Kerberos</translation>
@@ -3068,6 +3078,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Permite conceder permiso automáticamente a sitios para conectarse a todos los puertos serie.</translation>
 <translation id="450080746522343150">Bloquear todas las descargas.</translation>
+<translation id="4508728400492074981">Controla políticas para la función First-Party Sets.</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
 <translation id="4512407512989846472">Permitir bloquear la copia en el portapapeles en URLs especificadas</translation>
 <translation id="4513691822411041977">No forzar el uso de Búsqueda Segura en la Búsqueda de Google ni en el modo restringido de YouTube</translation>
@@ -3507,6 +3518,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="5075190314377370852">Si se asigna el valor "Verdadero" a esta política, <ph name="PRODUCT_NAME" /> siempre comprobará la revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente. Si <ph name="PRODUCT_NAME" /> no puede obtener información sobre el estado de la revocación, <ph name="PRODUCT_NAME" /> considerará que estos certificados están revocados (modo estricto).
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> usará la configuración que se esté aplicando en ese momento para comprobar la revocación online.</translation>
+<translation id="5076953589932162038">Configuración de First-Party Sets</translation>
 <translation id="5078623750797048009">Habilitar anotaciones en PDF</translation>
 <translation id="5081204761483900654">Sesiones de invitado administradas y restringidas</translation>
 <translation id="5082296146261894974">Permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
@@ -4555,6 +4567,28 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="631183702829488873">Si se habilita, esta función muestra un botón en las pantallas de inicio de sesión y bloqueo que permite mostrar la contraseña.
           Se representa con un icono de ojo en el campo de texto de la contraseña. No aparece ningún botón si la función está desactivada.
       </translation>
+<translation id="6313108604615108577">Esta política controla si la versión principal de la cadena
+      user-agent se debe bloquear en la 99.
+
+      El encabezado de solicitud de user-agent permite a los sitios web identificar la aplicación,
+      el sistema operativo, el proveedor o la versión del user-agent que realiza la solicitud.
+      Algunos sitios web hacen suposiciones sobre el formato de este encabezado y pueden
+      tener problemas con las cadenas de versión que incluyen 3 dígitos en la
+      posición principal (por ejemplo, 100.0.0.0).
+
+      Si esta política se define como Default o se deja sin definir, se asignará
+       el valor predeterminado de la configuración del navegador a la versión principal de la cadena user-agent.
+      Si se define como ForceDisabled, la cadena user-agent no bloqueará la
+      versión principal.
+      Si se define como ForceEnabled, la cadena user-agent siempre indicará que la
+      versión principal es la 99 e incluirá la versión principal del navegador en la posición
+      secundaria. Por ejemplo, la versión del navegador 101.0.0.0 enviaría un encabezado de solicitud de user-agent
+      que indicaría la versión 99.101.0.0.
+
+      Esta política es temporal y dejará de estar disponible en el futuro. Nota:
+      Si se habilitan tanto esta política como
+      <ph name="USER_AGENT_REDUCTION_POLICY_NAME" />,
+      la versión que indicará la cadena user-agent siempre será 99.0.0.0.</translation>
 <translation id="6313170479290171718">Esta política está obsoleta. Se debe usar la política <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> en su lugar.
 
       Si se asigna el valor "True" a esta política, el teclado en pantalla se activará al iniciar sesión. Si se le asigna el valor "False", el teclado en pantalla se desactivará al iniciar sesión.
@@ -4996,6 +5030,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       chrome://flags y cualquier otro medio de activar o desactivar las funciones del navegador se seguirán comportando como se espera independientemente de si esta política está habilitada o inhabilitada.</translation>
 <translation id="6794083666143216172">Permitir que los orígenes consulten los atributos del dispositivo</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
+<translation id="6796215185873669533">Asigna el valor predeterminado de la configuración del navegador a la versión de la cadena user-agent.</translation>
 <translation id="6800181452282128474">No realizar consultas a Quirks Servers</translation>
 <translation id="68031099365512050">Informar sobre el estado del audio</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
@@ -5317,6 +5352,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7070525176564511548">Es obligatorio introducir la contraseña cada semana (cada 168 horas)</translation>
 <translation id="7072208053150563108">Frecuencia de cambio de contraseña de dispositivo</translation>
 <translation id="7072567600438630966">Permite habilitar Mi teléfono.</translation>
+<translation id="7074437930865599190">Bloquea la versión principal de la cadena user-agent en la 99</translation>
 <translation id="7079519252486108041">Bloquear pop-ups en estos sitios</translation>
 <translation id="707988220162760379">Abrir siempre archivos PDF usando un lector de PDF externo</translation>
 <translation id="7081784525008938771">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca vídeo. Esto impide que se alcancen el retraso de inactividad, el retraso de atenuación de pantalla y el retraso de bloqueo de pantalla y que se lleven a cabo las acciones correspondientes.
@@ -6026,6 +6062,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       De forma predeterminada, una extensión o aplicación Android no puede utilizar una clave designada para uso corporativo, lo que equivale a asignar el valor "False" a allowCorporateKeyUsage en esa extensión. Solo si se le asigna el valor "True" a allowCorporateKeyUsage en una extensión o aplicación Android, esta podrá utilizar cualquier clave de plataforma marcada para uso corporativo para firmar datos arbitrarios. Este permiso solo se debe conceder si se tiene la certeza de que la extensión o la aplicación Android garantiza un acceso seguro a la clave y la protege de posibles ataques.</translation>
 <translation id="7933141401888114454">Habilitar la creación de usuarios supervisados</translation>
 <translation id="793473937901685727">Establecer la disponibilidad del certificado para las aplicaciones ARC</translation>
+<translation id="7936302526928951356">La cadena user-agent no bloqueará la versión principal.</translation>
 <translation id="7937766917976512374">Permitir o denegar captura de vídeo</translation>
 <translation id="7941975817681987555">No predecir las acciones de red en ninguna conexión de red</translation>
 <translation id="7946350455013548764">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los dispositivos HID. Si se le asigna el valor 2, se denegará el acceso a los dispositivos HID.
@@ -6174,6 +6211,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="8133152694354699657">Si se le asigna el valor True a esta política o no se le asigna ningún valor, Tocar para buscar estará disponible para los usuarios y podrán decidir cuándo activar o desactivar la función.
 
       Si se le asigna el valor False, Tocar para buscar se desactivará por completo.</translation>
+<translation id="8136345780578030573">Habilita First-Party Sets.</translation>
 <translation id="8136906469922284163">Si se asigna el valor "Verdadero" a esta política, las páginas podrán mostrar ventanas emergentes mientras se descargan.
 
       Si se le asigna el valor "Falso" o no se le asigna ningún valor, las páginas no podrán mostrar ventanas emergentes mientras se descargan.
@@ -6844,6 +6882,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Cada elemento de la lista de la política es una cadena que contiene un ID de extensión y, opcionalmente, una URL de actualización separados por punto y coma (;). El ID de extensión es la cadena de 32 letras que aparece, por ejemplo, en chrome://extensions cuando está habilitado el modo desarrollador. Si se especifica, la URL de actualización debe dirigir a un documento XML de un archivo de manifiesto de actualización (https://developer.chrome.com/extensions/autoupdate). De forma predeterminada, se utiliza la URL de actualización de Chrome Web Store. La URL de actualización definida en esta política solo se usará en la instalación inicial. Las actualizaciones posteriores de la extensión usarán la URL de actualización indicada en el archivo de manifiesto de la extensión.
 
        Nota: Esta política no se aplica al modo de incógnito. Para obtener más información sobre el alojamiento de extensiones, consulta https://developer.chrome.com/extensions/hosting.</translation>
+<translation id="8827275450034266143">La cadena user-agent bloqueará la versión principal en la 99 e incluirá la versión principal del navegador en la posición secundaria.</translation>
 <translation id="8827366480126575426">El protocolo del controlador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir tipos de consultas de DNS adicionales</translation>
 <translation id="8831911834413504983">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios pueden ejecutar JavaScript.

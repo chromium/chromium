@@ -423,7 +423,6 @@
            • Menghapus cookie dan data situs sementara lainnya
             <ph name="LINE_BREAKS" />
            Bookmark, histori, dan sandi yang disimpan tidak akan terpengaruh.</translation>
-<translation id="1425233109861512854">Kode akses tidak dikenal</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> diblokir</translation>
 <translation id="1426870617281699524">Klik Coba Lagi, dan terima perintah di komputer</translation>
@@ -1159,7 +1158,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2148892889047469596">Transmisikan tab</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2150139952286079145">Telusuri tujuan</translation>
-<translation id="2150491840563706000">Anda tidak memiliki izin untuk melakukan transmisi ke layar ini</translation>
 <translation id="2150661552845026580">Tambahkan "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Indeks tab yang dimasukkan tidak valid.</translation>
 <translation id="2152281589789213846">Tambahkan printer ke profil Anda</translation>
@@ -2963,7 +2961,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3943582379552582368">&amp;Mundur</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3945513714196326460">Coba nama yang lebih singkat</translation>
-<translation id="3947643756376959257">Masukkan kode akses yang ditampilkan di Chromecast atau TV.</translation>
 <translation id="3948027458879361203">Ubah nama host</translation>
 <translation id="3948116654032448504">&amp;Telusuri <ph name="SEARCH_ENGINE" /> untuk Gambar</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> dapat mengedit file dalam folder berikut ini</translation>
@@ -4744,13 +4741,11 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5862109781435984885">Tampilkan alat stilus di rak</translation>
 <translation id="5862319196656206789">Siapkan perangkat yang terhubung</translation>
 <translation id="5863445608433396414">Aktifkan fitur debug</translation>
-<translation id="5864147196375746035">Transmisikan ke perangkat terkelola</translation>
 <translation id="5864195618110239517">Gunakan koneksi berbayar</translation>
 <translation id="5864754048328252126">Tidak ada aktivitas saat mengisi daya</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> akan segera dijeda</translation>
 <translation id="586567932979200359">Anda menjalankan <ph name="PRODUCT_NAME" /> dari citra disknya. Dengan memasangnya di komputer, Anda dapat menjalankannya tanpa citra disk, dan memastikannya tetap mutakhir.</translation>
 <translation id="5865733239029070421">Secara otomatis mengirimkan statistik penggunaan dan laporan kerusakan ke Google</translation>
-<translation id="5865848066829891215">Masalah komunikasi jaringan</translation>
 <translation id="5867841422488265304">Telusuri atau ketik alamat web</translation>
 <translation id="5869029295770560994">Oke, Mengerti</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>

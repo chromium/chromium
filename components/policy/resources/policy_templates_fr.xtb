@@ -2583,6 +2583,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
        Elle répertorie les extensions qui sont automatiquement installées pour l'utilisateur de la démonstration sur les appareils en mode "point de vente". Celles-ci sont enregistrées dans l'appareil. Elles peuvent être installées hors connexion, une fois l'installation terminée.
 
        Chaque entrée de la liste contient un dictionnaire qui doit inclure l'identifiant d'extension dans le champ "extension-id", ainsi que son adresse URL dans le champ "update-url".</translation>
+<translation id="3869180930654347954">Désactiver les ensembles propriétaires pour tous les utilisateurs concernés</translation>
 <translation id="3870059789954671543">Permet d'activer la fonctionnalité d'accessibilité de mise en surbrillance au clavier sur l'écran de connexion.
 
           Cette fonctionnalité permet de mettre en surbrillance l'objet sélectionné à l'aide du clavier.
@@ -2776,6 +2777,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée ou si elle n'est pas configurée, les utilisateurs sont redirigés vers la page https://myaccount.google.com pour modifier leur mot de passe.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
+<translation id="4115501011761259824">Activer les ensembles propriétaires pour tous les utilisateurs concernés</translation>
 <translation id="4121350739760194865">Empêcher les promotions pour des applications de s'afficher sur la page Nouvel onglet</translation>
 <translation id="4122473079291425973">Fiches affichées sur la page Nouvel onglet si du contenu est disponible, avec toutefois la possibilité pour l'utilisateur de modifier ce paramètre</translation>
 <translation id="4122565688998751716">Cette règle est obsolète (veuillez utiliser la règle <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" /> à la place).
@@ -2916,6 +2918,14 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Elle est ignorée et la notification est toujours affichée si l'appareil n'est pas géré ou s'il n'y a qu'un seul utilisateur.
 
       Si plusieurs comptes utilisateur sont configurés sur un appareil géré, la notification ne s'affiche que lorsque cette règle est activée.</translation>
+<translation id="4293593564662654474">Cette règle permet de désactiver la fonctionnalité d'ensembles propriétaires.
+
+                  Si elle n'est pas configurée, ou si elle est activée, la fonctionnalité d'ensembles propriétaires est activée.
+
+                  Si elle est désactivée, la fonctionnalité l'est également.
+
+                  L'état de la fonctionnalité d'ensembles propriétaires détermine si Chrome récupère ou non la liste des ensembles propriétaires.
+                  Cela détermine également si Chrome accepte ou non les fonctionnalités liées aux ensembles propriétaires (attribut de cookie SameParty, par exemple).</translation>
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4313767483634435271">Adresse MAC de la station d'accueil désignée de l'appareil</translation>
 <translation id="4314538398999793073">Désactiver la recherche CNAME lors de l'authentification Kerberos</translation>
@@ -3046,6 +3056,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="449423975179525290">Configurer les règles liées à <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Autoriser automatiquement les sites à se connecter à tous les ports série.</translation>
 <translation id="450080746522343150">Bloquer tous les téléchargements.</translation>
+<translation id="4508728400492074981">Contrôle les règles pour la fonctionnalité d'ensembles propriétaires.</translation>
 <translation id="4510923771103268849">L'utilisateur est autorisé à accéder à la racine des conteneurs Crostini</translation>
 <translation id="4512407512989846472">Permettre de bloquer la copie dans le presse-papiers sur les URL spécifiées</translation>
 <translation id="4513691822411041977">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google ou du mode restreint sur YouTube</translation>
@@ -3482,6 +3493,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="5075190314377370852">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> vérifie toujours la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement. Si <ph name="PRODUCT_NAME" /> ne peut pas obtenir d'informations sur l'état de la révocation, <ph name="PRODUCT_NAME" /> considère ces certificats comme révoqués. Ils sont alors associés à la valeur "hard-fail" (échec).
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise les paramètres actuels de vérification en ligne de la révocation.</translation>
+<translation id="5076953589932162038">Paramètres des ensembles propriétaires</translation>
 <translation id="5078623750797048009">Activer les annotations des PDF</translation>
 <translation id="5081204761483900654">Sessions Invité gérées restreintes</translation>
 <translation id="5082296146261894974">Permet aux utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
@@ -4529,6 +4541,16 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="631183702829488873">Lorsque cette règle est activée, elle permet d'afficher le mot de passe via un clic sur un bouton situé sur l'écran de connexion et de verrouillage.
           Son icône représente un œil et se trouve dans le champ du mot de passe. Le bouton n'est pas affiché lorsque cette fonctionnalité est désactivée.
       </translation>
+<translation id="6313108604615108577">Cette règle permet de définir si la version principale de la chaîne user-agent doit être figée sur la version 99.
+
+      L'en-tête de requête du user-agent permet aux sites Web d'identifier l'application, le système d'exploitation, le fournisseur et/ou la version du user-agent dont émane la requête.
+      Certains sites Web émettent des hypothèses quant à la mise en forme de cet en-tête et peuvent donc renvoyer des erreurs si les chaînes de version comportent trois chiffres en première position (100.0.0.0, par exemple).
+
+      Si cette règle est définie sur "Default" ou si elle n'est pas configurée, les paramètres par défaut du navigateur sont appliqués à la version majeure de la chaîne user-agent.
+      Si elle est définie sur "ForceDisabled", la chaîne user-agent ne fige pas le version majeure.
+      Si elle est définie sur "ForceEnabled", la chaîne user-agent indique toujours la version 99 comme version majeure et spécifie la version majeure du navigateur en seconde position. Par exemple, si la version du navigateur est 101.0.0.0, l'en-tête de requête du user-agent renvoyé indique que la version est 99.101.0.0.
+
+      Cette règle est provisoire et sera abandonnée à l'avenir. Notez que si cette règle et la règle <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> sont toutes deux activées, la chaîne de version user-agent est toujours 99.0.0.0.</translation>
 <translation id="6313170479290171718">Cette règle est obsolète (veuillez utiliser la règle <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> à la place).
 
       Définissez cette règle sur "True" pour activer le clavier virtuel sur l'écran de connexion. Définissez-la sur "False" pour désactiver le clavier virtuel sur l'écran de connexion.
@@ -4970,6 +4992,7 @@ Si vous sélectionnez les options suivantes :
       L'activation ou la désactivation de cette règle ne change rien au fonctionnement de la page chrome://flags ni à celui de tout autre moyen d'activer ou désactiver des fonctionnalités du navigateur.</translation>
 <translation id="6794083666143216172">Autoriser les origines à interroger les attributs des appareils</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
+<translation id="6796215185873669533">Appliquez les paramètres par défaut du navigateur pour la version de la chaîne user-agent.</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>
 <translation id="68031099365512050">Signaler l'état audio</translation>
 <translation id="6810445994095397827">Bloquer JavaScript sur ces sites</translation>
@@ -5291,6 +5314,7 @@ Si vous sélectionnez les options suivantes :
 <translation id="7070525176564511548">La saisie du mot de passe est requise toutes les semaines (toutes les 168 heures)</translation>
 <translation id="7072208053150563108">Fréquence de modification du mot de passe machine</translation>
 <translation id="7072567600438630966">Autorisez l'activation de Phone Hub.</translation>
+<translation id="7074437930865599190">Figer la version majeure de la chaîne user-agent sur la version 99</translation>
 <translation id="7079519252486108041">Bloquer les fenêtres pop-up sur ces sites</translation>
 <translation id="707988220162760379">Toujours ouvrir les fichiers PDF dans une visionneuse de PDF externe</translation>
 <translation id="7081784525008938771">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur n'est pas considéré comme inactif pendant la lecture vidéo. Les délais d'inactivité, d'assombrissement, d'arrêt ou de verrouillage de l'écran ne peuvent donc pas être atteints, et aucune des actions correspondantes n'est effectuée.
@@ -6000,6 +6024,7 @@ au maximum si un utilisateur se sert de l'appareil.
       Par défaut, une extension ou une application Android ne peut pas utiliser une clé destinée à une utilisation en entreprise (ce qui équivaut à définir le paramètre allowCorporateKeyUsage sur "False" pour l'extension ou l'application concernée). Le paramètre allowCorporateKeyUsage doit être défini sur "True" pour qu'une extension ou une application Android puisse utiliser une clé de plate-forme destinée à une utilisation en entreprise pour signer des données arbitraires. N'accordez cette autorisation que si l'extension ou l'application Android offre des garanties de sécurité suffisantes pour empêcher des pirates informatiques d'accéder à la clé.</translation>
 <translation id="7933141401888114454">Autoriser la création de comptes utilisateurs supervisés</translation>
 <translation id="793473937901685727">Définir la disponibilité des certificats pour les applications ARC</translation>
+<translation id="7936302526928951356">La chaîne user-agent ne figera pas la version majeure.</translation>
 <translation id="7937766917976512374">Autoriser ou interdire la capture vidéo</translation>
 <translation id="7941975817681987555">Ne pas prédire d'actions réseau lors d'une connexion au réseau</translation>
 <translation id="7946350455013548764">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès aux appareils HID. Si cette règle est définie sur "2", l'accès aux appareils HID est refusé.
@@ -6148,6 +6173,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8133152694354699657">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, la fonctionnalité "Appuyer pour rechercher" est proposée aux utilisateurs, qui peuvent ensuite choisir de l'activer ou non.
 
       Si cette règle est définie sur "False", cette fonctionnalité est entièrement désactivée.</translation>
+<translation id="8136345780578030573">Activez les ensembles propriétaires.</translation>
 <translation id="8136906469922284163">Si cette règle est définie sur "True", les pages sont autorisées à afficher des pop-up pendant qu'elles se déchargent.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages ne peuvent pas afficher de pop-up pendant qu'elles se déchargent.
@@ -6809,6 +6835,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Chaque élément de la règle correspond à une chaîne constituée d'un identifiant d'extension et éventuellement d'une URL de mise à jour séparés par un point-virgule (;). L'identifiant d'extension est la chaîne de 32 lettres figurant, par exemple, sur la page chrome://extensions, lorsque le mode développeur est activé. Si elle est indiquée, l'URL de mise à jour doit renvoyer à un fichier manifeste au format XML (voir https://developer.chrome.com/extensions/autoupdate). Par défaut, l'URL de mise à jour du Chrome Web Store est utilisée. L'URL de mise à jour spécifiée dans cette règle ne sert que pour l'installation initiale. Toute mise à jour ultérieure de l'extension est effectuée avec l'URL indiquée dans le fichier manifeste de l'extension.
 
        Remarque : cette règle ne s'applique pas en mode navigation privée. Pour en savoir plus sur l'hébergement des extensions, consultez la page https://developer.chrome.com/extensions/hosting.</translation>
+<translation id="8827275450034266143">La chaîne user-agent figera la version principale sur la version 99 et indiquera la version majeure du navigateur en seconde position.</translation>
 <translation id="8827366480126575426">Protocole du gestionnaire de protocoles.</translation>
 <translation id="8827417642396462482">Autorise les autres types de requêtes DNS</translation>
 <translation id="8831911834413504983">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à exécuter JavaScript.

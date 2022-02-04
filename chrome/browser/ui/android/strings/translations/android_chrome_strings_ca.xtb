@@ -34,6 +34,7 @@
 <translation id="1171770572613082465">Toca el botó Llocs populars per veure les tendències en llocs web</translation>
 <translation id="1173894706177603556">Canvia el nom</translation>
 <translation id="1177863135347784049">Personalitzat</translation>
+<translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1197267115302279827">Mou les adreces d'interès</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1202892408424955784">Productes que segueixes</translation>
@@ -1174,6 +1175,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7663313374500954251"><ph name="PARENT_NAME" /> gestiona aquest navegador.</translation>
 <translation id="7665369617277396874">Afegeix un compte</translation>
 <translation id="766587987807204883">Els articles es mostren aquí i els pots llegir fins i tot sense connexió</translation>
+<translation id="768232549260819724">S'ha copiat el GIF</translation>
 <translation id="7682724950699840886">Segueix aquests consells: comprova que hi hagi prou espai al dispositiu i prova d'exportar les contrasenyes de nou.</translation>
 <translation id="768618399695552958">Algunes de les pàgines que visites estan precarregades. És possible que les pàgines es precarreguin a través dels servidors de Google quan s'enllacin des d'un lloc web de Google.</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
@@ -1352,6 +1354,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8570677896027847510">El fitxer no es pot baixar de manera segura</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
 <translation id="8572344201470131220">S'ha copiat la imatge</translation>
+<translation id="8580884231102452214">Copia el GIF</translation>
 <translation id="8583805026567836021">S'estan esborrant les dades del compte</translation>
 <translation id="859046281437143747">Fes un seguiment del preu des del botó Més opcions</translation>
 <translation id="860043288473659153">Nom del titular de la targeta</translation>

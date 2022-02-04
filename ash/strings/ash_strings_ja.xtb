@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">アシスタント（読み込み中...）</translation>
 <translation id="1838895407229022812">夜間モードはオフです。</translation>
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
+<translation id="1879018240766558464">シークレット ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="1882814835921407042">モバイル ネットワークに接続されていません</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> へミラーリング</translation>
 <translation id="1885785240814121742">指紋でロックを解除する</translation>
@@ -948,6 +949,7 @@
 <translation id="7371404428569700291">ウィンドウを録画</translation>
 <translation id="7377169924702866686">CapsLock 
 がオンになっています。</translation>
+<translation id="7377481913241237033">コードを使用して接続</translation>
 <translation id="7378203170292176219">録画する領域をドラッグして選択してください</translation>
 <translation id="7378594059915113390">メディアの操作</translation>
 <translation id="7378889811480108604">バッテリー セーバー モードがオフです</translation>
@@ -975,6 +977,7 @@
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux アプリとシークレット ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="7544300628205093162">キーボードのバックライトはオンです</translation>
 <translation id="7548434653388805669">おやすみの時間です</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>

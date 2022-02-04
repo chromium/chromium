@@ -113,6 +113,7 @@
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1570871743947603115">Bluetooth-г унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Энэ харилцан үйлдлийн бүх үйл ажиллагаандаа хандах</translation>
+<translation id="1610778689852195798">"Болих"</translation>
 <translation id="1611993646327628135">Асаалттай</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> төхөөрөмж</translation>
@@ -146,6 +147,7 @@
 <translation id="1836215606488044471">Туслах (ачаалж байна...)</translation>
 <translation id="1838895407229022812">Шөнийн гэрэл унтраалттай байна.</translation>
 <translation id="1864454756846565995">USB-C төхөөрөмж (ард талын порт)</translation>
+<translation id="1879018240766558464">Нууцлалтай цонхнуудыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="1882814835921407042">Мобайл сүлжээ алга</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> руу тусгаж байна</translation>
 <translation id="1885785240814121742">Түгжээг хурууны хээгээр тайлах</translation>
@@ -247,6 +249,7 @@
 <translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
 <translation id="2607678425161541573">Онлайнаар нэвтрэх шаардлагатай</translation>
 <translation id="2621713457727696555">Хамгаалалттай</translation>
+<translation id="263399434338050016">"Бүгдийг сонгох"</translation>
 <translation id="2653019840645008922">Цонхны зураг авах</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2658778018866295321">Товшоод чирэх</translation>
@@ -263,6 +266,7 @@
 <translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Устгах"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг</translation>
 <translation id="2782591952652094792">Зураг авах горимоос гарах</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
@@ -306,6 +310,7 @@
 <translation id="3038571455154067151">Нэвтрэхийн тулд Family Link-н эцэг эхийн хандалтын кодоо оруулна уу</translation>
 <translation id="3039939407102840004">Мэдрэгч үзгийн батарей <ph name="PERCENTAGE" /> хувьтай байна.</translation>
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
+<translation id="3047761520276763270">Дараахыг хэлж үзнэ үү:</translation>
 <translation id="3051189971848907985">Профайлын нэрийг өөрчилж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="3055162170959710888">Та энэ төхөөрөмжийг өнөөдөр <ph name="USED_TIME" /> ашигласан</translation>
 <translation id="3068711042108640621">Зүүн талын shelf</translation>
@@ -552,6 +557,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Нууц үгийг нуух</translation>
 <translation id="4570957409596482333">Ярихаар сонгох товчлуур</translation>
+<translation id="4573176682887762361">"[Үг / хэллэг] бичих"</translation>
 <translation id="4577274620589681794">Цаг дууслаа · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Урьдчилан үзэлтийг харуулах</translation>
 <translation id="4578196883126898996">Таны микрофон унтраалттай байна. Төхөөрөмжийнхөө микрофоны товчлуурыг асаана уу.</translation>
@@ -948,6 +954,7 @@
 <translation id="7366890467478514168"><ph name="NAME" />-д холбогдох</translation>
 <translation id="7371404428569700291">Цонхыг бичих</translation>
 <translation id="7377169924702866686">Caps Lock идэвхжсэн байна.</translation>
+<translation id="7377481913241237033">Кодоор холбогдох</translation>
 <translation id="7378203170292176219">Бичих хэсгийг сонгохын тулд чирнэ үү</translation>
 <translation id="7378594059915113390">Медиа хяналт</translation>
 <translation id="7378889811480108604">Батарей хэмнэгчийн горим унтраалттай байна</translation>
@@ -975,6 +982,7 @@
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux аппууд болон Нууцлалтай цонхнуудыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="7544300628205093162">Гарын арын гэрэл асаалттай байна</translation>
 <translation id="7548434653388805669">Унтах цаг</translation>
 <translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>
@@ -1167,6 +1175,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-д холбогдох</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Хавтас <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Тусламж"</translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
 <translation id="881757059229893486">Оруулах аргын тохиргоо</translation>
 <translation id="8818320199597151042">Профайлыг хасаж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>

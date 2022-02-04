@@ -420,7 +420,6 @@
            • 刪除 Cookie 和其他暫存網站資料
             <ph name="LINE_BREAKS" />
            書籤、歷史記錄及已儲存的密碼不會受到影響。</translation>
-<translation id="1425233109861512854">無法辨識存取碼</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="142655739075382478">「<ph name="APP_NAME" />」已遭封鎖</translation>
 <translation id="1426870617281699524">請點選 [再試一次] 並接受電腦顯示的提示</translation>
@@ -1146,7 +1145,6 @@
 <translation id="2148892889047469596">投放分頁</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2150139952286079145">搜尋目的地</translation>
-<translation id="2150491840563706000">你沒有權限，無法投放至這個螢幕</translation>
 <translation id="2150661552845026580">要新增「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="2151576029659734873">輸入的分頁索引無效。</translation>
 <translation id="2152281589789213846">在你的設定檔中新增印表機</translation>
@@ -2945,7 +2943,6 @@
 <translation id="3943582379552582368">上一頁(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3945513714196326460">請縮短名稱</translation>
-<translation id="3947643756376959257">輸入顯示在 Chromecast 或電視上的存取碼。</translation>
 <translation id="3948027458879361203">變更主機名稱</translation>
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可以編輯下列資料夾中的檔案</translation>
@@ -4725,13 +4722,11 @@
 <translation id="5862109781435984885">在檔案櫃中顯示觸控筆工具</translation>
 <translation id="5862319196656206789">設定已連結的裝置</translation>
 <translation id="5863445608433396414">啟用偵錯功能</translation>
-<translation id="5864147196375746035">投放到受管理的裝置</translation>
 <translation id="5864195618110239517">使用計量付費連線</translation>
 <translation id="5864754048328252126">充電時的閒置動作</translation>
 <translation id="5865508026715185451">「<ph name="APP_NAME" />」即將暫停</translation>
 <translation id="586567932979200359">你正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。你可以直接在電腦上安裝程式，往後無需透過磁碟映像即可直接執行，而且能隨時使用最新的版本。</translation>
 <translation id="5865733239029070421">自動將使用統計資料和當機報告傳送給 Google</translation>
-<translation id="5865848066829891215">網路通訊問題</translation>
 <translation id="5867841422488265304">搜尋或輸入網址</translation>
 <translation id="5869029295770560994">好，我知道了</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>

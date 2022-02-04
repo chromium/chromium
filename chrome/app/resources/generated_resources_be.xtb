@@ -388,6 +388,7 @@
 <translation id="1396259464226642517">Вынік быў нечаканым? <ph name="BEGIN_LINK" />Адпраўце водгук<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Уведзеныя імя карыстальніка і пароль не супадаюць</translation>
 <translation id="1397500194120344683">Няма прыдатных прылад. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Вы ўвайшлі ў Chrome на гэтых прыладах, таму можаце выкарыстоўваць іх як ключы бяспекі.</translation>
 <translation id="1398853756734560583">Разгарнуць</translation>
 <translation id="139911022479327130">Разблакіруйце тэлефон і пацвердзіце сваю асобу</translation>
 <translation id="1401308693935339022">Выкарыстанне геаданых. Дазвольце праграмам і сэрвісам з дазволам на вызначэнне месцазнаходжання карыстацца гэтымі данымі. Google можа перыядычна збіраць такія даныя і ананімна выкарыстоўваць іх, каб павысіць дакладнасць вызначэння месцазнаходжання і палепшыць службы геалакацыі.</translation>
@@ -423,7 +424,6 @@
            • выдалены файлы cookie і іншыя часовыя даныя сайтаў.
             <ph name="LINE_BREAKS" />
            Гэта дзеянне не закране закладкі, гісторыю і захаваныя паролі.</translation>
-<translation id="1425233109861512854">Код доступу не распазнаны</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="142655739075382478">Праграма "<ph name="APP_NAME" />" заблакіравана</translation>
 <translation id="1426870617281699524">Націсніце "Паўтарыць спробу" і прыміце запыт на камп'ютары</translation>
@@ -1149,7 +1149,6 @@
 <translation id="2148892889047469596">Укладка трансляцыі</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
 <translation id="2150139952286079145">Пошук пунктаў прызначэння</translation>
-<translation id="2150491840563706000">У вас няма дазволу трансліраваць на гэты дысплэй</translation>
 <translation id="2150661552845026580">Дадаць пашырэнне "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Уведзены няправільны індэкс укладкі.</translation>
 <translation id="2152281589789213846">Дадаць прынтары ў профіль</translation>
@@ -1172,6 +1171,7 @@
 <translation id="2163470535490402084">Каб увайсці на прыладу <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="2163937499206714165">Уключыць цёмны рэжым</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і яшчэ 1 пераключальнік</translation>
+<translation id="2165102982098084499">Вы звязалі гэтыя прылады шляхам сканіравання QR-кода.</translation>
 <translation id="2165177462441582039">Выберыце працягласць вылучэння аднаго аб'екта</translation>
 <translation id="2166369534954157698">абвгдеёжзійклмнопрстуўфхцчшыьэюя</translation>
 <translation id="2169062631698640254">Усё роўна ўвайсці</translation>
@@ -2947,7 +2947,6 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="3945513714196326460">Паспрабуйце ўвесці карацейшую назву</translation>
-<translation id="3947643756376959257">Увядзіце код доступу, паказаны на тэлевізары або прыладзе Chromecast.</translation>
 <translation id="3948027458879361203">Змяніць імя хоста</translation>
 <translation id="3948116654032448504">&amp;Пошук відарыса праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> можа змяняць файлы ў наступных папках</translation>
@@ -4725,13 +4724,11 @@
 <translation id="5862109781435984885">Паказваць інструменты стыла на паліцы</translation>
 <translation id="5862319196656206789">Наладзіць падключаныя прылады</translation>
 <translation id="5863445608433396414">Уключыць функцыі адладкі</translation>
-<translation id="5864147196375746035">Трансляцыя на прыладу пад кіраваннем</translation>
 <translation id="5864195618110239517">Выкарыстоўваць падключэнне з улікам трафіка</translation>
 <translation id="5864754048328252126">Пры бяздзейнасці падчас зарадкі</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> хутка прыпыніцца</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працуе з вобраза дыска. Калі ўсталяваць праграму на камп'ютар, вы зможаце запускаць яе без вобраза, і яна будзе рэгулярна абнаўляцца.</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
-<translation id="5865848066829891215">Праблемы з падключэннем да сеткі</translation>
 <translation id="5867841422488265304">Увядзіце пошукавы запыт або вэб-адрас</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
@@ -5688,6 +5685,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="6860097299815761905">Налады проксі-сервера...</translation>
 <translation id="6860427144121307915">Адкрыць ва ўкладцы</translation>
+<translation id="6863496016067551393">Усе пашырэнні дазволены</translation>
 <translation id="686366188661646310">Выдаліць пароль?</translation>
 <translation id="6865313869410766144">Даныя для аўтазапаўнення</translation>
 <translation id="6865598234501509159">Мова старонкі – не <ph name="LANGUAGE" /></translation>
@@ -5717,6 +5715,7 @@
 <translation id="6900532703269623216">Палепшаная абарона</translation>
 <translation id="6900651018461749106">Увайдзіце яшчэ раз, каб абнавіць <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Вы ўпэўненыя, што хочаце выдаліць гэту пошукавую сістэму?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" /> з <ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Голас для праслухоўвання</translation>
 <translation id="6902336033320348843">Раздзел не падтрымліваецца: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Далучэнне прылады да дамена</translation>
@@ -7367,6 +7366,7 @@
 <translation id="8610103157987623234">Няправільны фармат. Паўтарыце спробу</translation>
 <translation id="8611682088849615761">Працягваць дазваляць гэтаму сайту поўны кантроль над прыладамі MIDI</translation>
 <translation id="8613164732773110792">Толькі малыя літары, лічбы, сімвалы падкрэслівання і злучкі</translation>
+<translation id="8613645710357126807">Не маюць дазволу выкарыстоўваць пашырэнні</translation>
 <translation id="8613786722548417558">Файл "<ph name="FILE_NAME" />" занадта вялікі, каб прайсці праверку бяспекі. Вы можаце адкрываць файлы памерам да 50 МБ.</translation>
 <translation id="8615618338313291042">Праграма інкогніта: <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Дадаць у кантакты карыстальніка <ph name="CONTACT_NAME" />.</translation>

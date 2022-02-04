@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Okno aktualizowania oprogramowania układowego urządzeń zewnętrznych jest otwarte. Dostępne są aktualizacje (<ph name="NUM_UPDATES" />).</translation>
 <translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Przeciętna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Podejrzany portal przechwytujący</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Aktualizuję (ukończone <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Sieć <ph name="NETWORK_NAME" /> jest niedostępna</translation>
 <translation id="1314565355471455267">VPN na Androida</translation>
 <translation id="131461803491198646">Sieć macierzysta, nie w roamingu</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Oferty</translation>
 <translation id="1476467821656042872">Tym urządzeniem zarządza <ph name="MANAGER" />. Może też monitorować Twoją aktywność.</translation>
 <translation id="1478594628797167447">Skanery</translation>
+<translation id="1491076385728777984">Aktualizuję oprogramowanie układowe urządzenia: <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1565038567006703504">Nie można zaktualizować urządzenia: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Odśwież bieżący obraz tapety</translation>
 <translation id="2517472476991765520">Skanuj</translation>
+<translation id="253029298928638905">Uruchamiam ponownie…</translation>
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
+<translation id="3993704782688964914">Oprogramowanie urządzenia (<ph name="DEVICE_NAME" />) jest aktualne</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4034824040120875894">Drukarka</translation>
 <translation id="4044093238444069296">Nie udało się połączyć z bramą</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Nie wykonano</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">Ponownie uruchamiam urządzenie: <ph name="DEVICE_NAME" /></translation>
 <translation id="4418498623216225764">Aktualizowanie urządzeń peryferyjnych</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
 <translation id="4428374560396076622">Sieć <ph name="NETWORK_NAME" /> jest wyłączona</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Dopasowanie alternatywnej nazwy podmiotu</translation>
 <translation id="4536864596629708641">Konfiguracja IP</translation>
 <translation id="4548483925627140043">Nie znaleziono sygnału</translation>
+<translation id="4556753742174065117">Oprogramowanie układowe jest aktualne</translation>
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Karta SIM odblokowana</translation>
 <translation id="4562494484721939086">Brak usługi</translation>
@@ -434,6 +442,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
+<translation id="6889786074662672253">Podczas ponownego uruchamiania nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Ponowne uruchamianie potrwa kilka minut – w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="6905724422583748843">Powrót do aplikacji <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Pokrywa skanera jest otwarta. Zamknij ją i spróbuj ponownie.</translation>
 <translation id="6911383237894364323">Nie udało się połączyć z serwerami multimediów</translation>
