@@ -29,6 +29,8 @@
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/sct_reporting_service.h"
+#include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
@@ -784,11 +786,14 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->enable_certificate_reporting = true;
   network_context_params->enable_expect_ct_reporting = true;
 
-  // Initialize the network context to do SCT auditing only if the current
-  // profile is opted in to Safe Browsing Extended Reporting.
-  if (!profile_->IsOffTheRecord() &&
-      safe_browsing::IsExtendedReportingEnabled(*profile_->GetPrefs())) {
-    network_context_params->enable_sct_auditing = true;
+  SCTReportingService* sct_reporting_service =
+      SCTReportingServiceFactory::GetForBrowserContext(profile_);
+  if (sct_reporting_service) {
+    network_context_params->sct_auditing_mode =
+        sct_reporting_service->GetReportingMode();
+  } else {
+    network_context_params->sct_auditing_mode =
+        network::mojom::SCTAuditingMode::kDisabled;
   }
 
   network_context_params->ct_policy = GetCTPolicy();

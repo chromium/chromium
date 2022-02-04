@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/hash_value.h"
+#include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
@@ -95,8 +96,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
     return &pending_reporters_;
   }
 
-  void SetEnabled(bool enabled);
-  bool is_enabled() { return enabled_; }
+  void SetMode(mojom::SCTAuditingMode mode);
+  bool is_enabled() {
+    return mode_ == mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting;
+  }
 
   void SetURLLoaderFactoryForTesting(
       mojo::PendingRemote<mojom::URLLoaderFactory> factory) {
@@ -112,7 +115,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   void OnReporterStateUpdated();
   void OnReporterFinished(net::HashValue reporter_key);
   void ReportHWMMetrics();
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory();
+  mojom::URLLoaderFactory* GetURLLoaderFactory();
 
   // The NetworkContext which owns this SCTAuditingHandler.
   NetworkContext* owner_network_context_;
@@ -127,7 +130,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   // Tracks high-water-mark of `pending_reporters_.size()`.
   size_t pending_reporters_size_hwm_ = 0;
 
-  bool enabled_ = false;
+  mojom::SCTAuditingMode mode_ = mojom::SCTAuditingMode::kDisabled;
   base::RepeatingTimer histogram_timer_;
 
   // Helper for safely writing data to disk.

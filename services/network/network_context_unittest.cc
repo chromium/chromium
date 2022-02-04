@@ -7471,7 +7471,9 @@ TEST_F(NetworkContextTest, DisableSCTReportAuditing) {
     base::HistogramTester histograms;
     mojom::NetworkContextParamsPtr params =
         CreateNetworkContextParamsForTesting();
-    params->enable_sct_auditing = enabled;
+    params->sct_auditing_mode =
+        enabled ? mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting
+                : mojom::SCTAuditingMode::kDisabled;
     std::unique_ptr<NetworkContext> network_context =
         CreateContextWithParams(std::move(params));
     network_context->MaybeEnqueueSCTReport(kHostPortPair, chain.get(),

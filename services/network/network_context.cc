@@ -525,7 +525,7 @@ NetworkContext::NetworkContext(
   }
   sct_auditing_handler_ =
       std::make_unique<SCTAuditingHandler>(this, sct_auditing_path);
-  sct_auditing_handler()->SetEnabled(params_->enable_sct_auditing);
+  sct_auditing_handler()->SetMode(params_->sct_auditing_mode);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1476,8 +1476,8 @@ void NetworkContext::MaybeEnqueueSCTReport(
       signed_certificate_timestamps);
 }
 
-void NetworkContext::SetSCTAuditingEnabled(bool enabled) {
-  sct_auditing_handler()->SetEnabled(enabled);
+void NetworkContext::SetSCTAuditingMode(mojom::SCTAuditingMode mode) {
+  sct_auditing_handler()->SetMode(mode);
 }
 
 void NetworkContext::OnCTLogListUpdated(

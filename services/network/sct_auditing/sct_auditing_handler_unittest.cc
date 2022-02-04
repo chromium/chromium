@@ -52,7 +52,8 @@ class SCTAuditingHandlerTest : public testing::Test {
         CreateNetworkContextParamsForTesting();
     context_params->cert_verifier_params =
         FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
-    context_params->enable_sct_auditing = true;
+    context_params->sct_auditing_mode =
+        mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting;
     network_context_ = std::make_unique<NetworkContext>(
         network_service_.get(),
         network_context_remote_.BindNewPipeAndPassReceiver(),
@@ -137,7 +138,7 @@ TEST_F(SCTAuditingHandlerTest, PersistenceFeatureDisabled) {
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
   SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-  handler.SetEnabled(true);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
   handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
 
   // `file_writer` should not be created for this handler.
@@ -158,7 +159,7 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithoutPersistencePath) {
 
   // Set up a Handler with an empty `persistence_path`.
   SCTAuditingHandler handler(network_context_.get(), base::FilePath());
-  handler.SetEnabled(true);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
   handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
 
   // `file_writer` should not be created for this handler.
@@ -178,7 +179,7 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithPersistencePath) {
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
   SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-  handler.SetEnabled(true);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
   handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
 
   auto* file_writer = handler.GetFileWriterForTesting();
@@ -238,7 +239,7 @@ TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
   // Create a Handler, add a reporter, and wait for it to get persisted.
   {
     SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-    handler.SetEnabled(true);
+    handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
     handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
@@ -274,7 +275,7 @@ TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
   // the same data.
   {
     SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-    handler.SetEnabled(true);
+    handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
     handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
@@ -360,7 +361,7 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithExistingPersistedData) {
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
   SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-  handler.SetEnabled(true);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
   handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
 
   auto* file_writer = handler.GetFileWriterForTesting();
@@ -417,7 +418,7 @@ TEST_F(SCTAuditingHandlerTest, RetryUpdatesPersistedBackoffEntry) {
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
   SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-  handler.SetEnabled(true);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
   handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
 
   auto* file_writer = handler.GetFileWriterForTesting();
@@ -478,7 +479,7 @@ TEST_F(SCTAuditingHandlerTest, RestoringMaxRetries) {
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
   SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-  handler.SetEnabled(true);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
   handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
 
   auto* file_writer = handler.GetFileWriterForTesting();

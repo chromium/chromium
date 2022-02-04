@@ -628,6 +628,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSCTAuditing;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double> kSCTAuditingSamplingRate;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSCTAuditingHashdance;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSearchHistoryLink;

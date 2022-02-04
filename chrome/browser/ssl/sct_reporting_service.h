@@ -19,6 +19,10 @@ namespace safe_browsing {
 class SafeBrowsingService;
 }
 
+namespace network::mojom {
+enum class SCTAuditingMode;
+}  // namespace network::mojom
+
 // This class observes SafeBrowsing preference changes to enable/disable
 // reporting. It does this by subscribing to changes in SafeBrowsing and
 // extended reporting preferences. It also handles configuring SCT auditing in
@@ -35,8 +39,8 @@ class SCTReportingService : public KeyedService {
   SCTReportingService(const SCTReportingService&) = delete;
   const SCTReportingService& operator=(const SCTReportingService&) = delete;
 
-  // Enables or disables reporting.
-  void SetReportingEnabled(bool enabled);
+  // Returns the reporting mode for the current profile settings.
+  network::mojom::SCTAuditingMode GetReportingMode();
 
  private:
   void OnPreferenceChanged();

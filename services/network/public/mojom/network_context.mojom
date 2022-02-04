@@ -419,13 +419,11 @@ struct NetworkContextParams {
   [EnableIf=is_ct_supported]
   bool enable_expect_ct_reporting = false;
 
-  // Enables SCT auditing, which sends reports for SCTs found in connections
-  // made by this network context. Can also be dynamically configured via
-  // NetworkContext::SetSCTAuditingEnabled(). This must be set to true and
-  // auditing must be enabled and configured globally via
-  // NetworkService::ConfigureSCTAuditing().
+  // The SCT auditing mode. SCT auditing sends reports for SCTs found in
+  // connections made by this network context. Can also be dynamically
+  // configured via NetworkContext::SetSCTAuditingMode().
   [EnableIf=is_ct_supported]
-  bool enable_sct_auditing = false;
+  SCTAuditingMode sct_auditing_mode = SCTAuditingMode.kDisabled;
 
   // The initial CT policy to be used for requests. See
   // NetworkContext.SetCTPolicy() for more.
@@ -600,6 +598,20 @@ struct URLLoaderFactoryOverride {
 enum TrustTokenRedemptionPolicy {
   kForbid,
   kPotentiallyPermit,
+};
+
+[EnableIf=is_ct_supported]
+enum SCTAuditingMode {
+  // SCT auditing is completely disabled.
+  kDisabled,
+
+  // The user has opted-in to ESBR, so sampled SCTs are sent to Google.
+  kEnhancedSafeBrowsingReporting,
+
+  // The user is not opted-in to ESBR, and hashdance auditing is enabled.
+  // Perform a k-anonymous prefix query for sampled SCTs, and upload only if the
+  // SCT is not present in a log.
+  kHashdance,
 };
 
 struct URLLoaderFactoryParams {
@@ -1416,9 +1428,9 @@ interface NetworkContext {
   GetOriginPolicyManager(
       pending_receiver<OriginPolicyManager> origin_policy_manager);
 
-  // Set whether SCT auditing is enabled for this NetworkContext.
+  // Set the SCT auditing mode for this NetworkContext.
   [EnableIf=is_ct_supported]
-  SetSCTAuditingEnabled(bool enabled);
+  SetSCTAuditingMode(SCTAuditingMode mode);
 
   // Adds an observer that will receive Reporting Service callbacks. Generates
   // events for Reporting API reports currently stored in the reporting service.

@@ -63,7 +63,8 @@ class SCTAuditingCacheTest : public testing::Test {
     // these unittests don't need to test CertVerifier behavior.
     context_params->cert_verifier_params =
         FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
-    context_params->enable_sct_auditing = true;
+    context_params->sct_auditing_mode =
+        mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting;
 
     network_context_ = std::make_unique<NetworkContext>(
         network_service_.get(),

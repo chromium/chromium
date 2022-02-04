@@ -923,6 +923,13 @@ const base::Feature kSCTAuditing{"SCTAuditing",
 constexpr base::FeatureParam<double> kSCTAuditingSamplingRate{
     &kSCTAuditing, "sampling_rate", 0.0001};
 
+// SCT auditing hashdance allows Chrome clients who are not opted-in to Enhanced
+// Safe Browsing Reporting to perform a k-anonymous query to see if Google knows
+// about an SCT seen in the wild. If it hasn't been seen, then it is considered
+// a security incident and uploaded to Google.
+const base::Feature kSCTAuditingHashdance{"SCTAuditingHashdance",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSearchHistoryLink{"SearchHistoryLink",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 

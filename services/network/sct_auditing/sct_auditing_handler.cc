@@ -196,7 +196,8 @@ void SCTAuditingHandler::AddReporter(
     std::unique_ptr<sct_auditing::SCTClientReport> report,
     std::unique_ptr<net::BackoffEntry> backoff_entry) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
-  if (!enabled_) {
+  // For now, only report in ESBR mode.
+  if (mode_ != mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting) {
     return;
   }
 
@@ -255,14 +256,14 @@ void SCTAuditingHandler::ClearPendingReports() {
   }
 }
 
-void SCTAuditingHandler::SetEnabled(bool enabled) {
-  enabled_ = enabled;
+void SCTAuditingHandler::SetMode(mojom::SCTAuditingMode mode) {
+  mode_ = mode;
 
   // High-water-mark metrics get logged hourly (rather than once-per-session at
   // shutdown, as Network Service shutdown is not consistent and non-browser
   // processes can fail to report metrics during shutdown). The timer should
   // only be running if SCT auditing is enabled.
-  if (enabled) {
+  if (mode != mojom::SCTAuditingMode::kDisabled) {
     histogram_timer_.Start(FROM_HERE, base::Hours(1), this,
                            &SCTAuditingHandler::ReportHWMMetrics);
   } else {
@@ -299,7 +300,7 @@ void SCTAuditingHandler::OnReporterFinished(net::HashValue reporter_key) {
 }
 
 void SCTAuditingHandler::ReportHWMMetrics() {
-  if (!enabled_) {
+  if (mode_ == mojom::SCTAuditingMode::kDisabled) {
     return;
   }
   base::UmaHistogramCounts1000("Security.SCTAuditing.OptIn.ReportersHWM",

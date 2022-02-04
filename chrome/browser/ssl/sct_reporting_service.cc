@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ssl/sct_reporting_service.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -96,26 +97,36 @@ SCTReportingService::~SCTReportingService() = default;
 
 namespace {
 void SetSCTAuditingEnabledForStoragePartition(
-    bool enabled,
+    network::mojom::SCTAuditingMode mode,
     content::StoragePartition* storage_partition) {
-  storage_partition->GetNetworkContext()->SetSCTAuditingEnabled(enabled);
+  storage_partition->GetNetworkContext()->SetSCTAuditingMode(mode);
 }
 }  // namespace
 
-void SCTReportingService::SetReportingEnabled(bool enabled) {
-  // Iterate over StoragePartitions for this Profile, and for each get the
-  // NetworkContext and enable or disable SCT auditing.
-  profile_->ForEachStoragePartition(
-      base::BindRepeating(&SetSCTAuditingEnabledForStoragePartition, enabled));
-
-  if (!enabled)
-    content::GetNetworkService()->ClearSCTAuditingCache();
+network::mojom::SCTAuditingMode SCTReportingService::GetReportingMode() {
+  if (profile_->IsOffTheRecord() ||
+      !base::FeatureList::IsEnabled(features::kSCTAuditing)) {
+    return network::mojom::SCTAuditingMode::kDisabled;
+  }
+  if (safe_browsing::IsSafeBrowsingEnabled(pref_service_)) {
+    if (safe_browsing::IsExtendedReportingEnabled(pref_service_)) {
+      return network::mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting;
+    }
+    if (base::FeatureList::IsEnabled(features::kSCTAuditingHashdance)) {
+      return network::mojom::SCTAuditingMode::kHashdance;
+    }
+  }
+  return network::mojom::SCTAuditingMode::kDisabled;
 }
 
 void SCTReportingService::OnPreferenceChanged() {
-  const bool enabled = base::FeatureList::IsEnabled(features::kSCTAuditing) &&
-                       safe_browsing_service_ &&
-                       safe_browsing_service_->enabled_by_prefs() &&
-                       safe_browsing::IsExtendedReportingEnabled(pref_service_);
-  SetReportingEnabled(enabled);
+  network::mojom::SCTAuditingMode mode = GetReportingMode();
+
+  // Iterate over StoragePartitions for this Profile, and for each get the
+  // NetworkContext and set the SCT auditing mode.
+  profile_->ForEachStoragePartition(
+      base::BindRepeating(&SetSCTAuditingEnabledForStoragePartition, mode));
+
+  if (mode == network::mojom::SCTAuditingMode::kDisabled)
+    content::GetNetworkService()->ClearSCTAuditingCache();
 }
