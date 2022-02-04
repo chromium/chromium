@@ -45,6 +45,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -771,6 +772,41 @@ TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToApps) {
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
   EXPECT_FALSE(apps_grid_view->has_selected_view());
   EXPECT_FALSE(app_item->HasFocus());
+}
+
+// Exercises AssistantButtonFocusSkipper.
+TEST_F(AppListBubbleViewTest, DownAndUpArrowSkipsAssistantButton) {
+  SimulateAssistantEnabled();
+  // Add an app, but no "Continue" suggestions.
+  AddAppItems(1);
+  ShowAppList();
+
+  auto* apps_grid_view = GetAppListTestHelper()->GetScrollableAppsGridView();
+  AppListItemView* app_item = apps_grid_view->GetItemViewAt(0);
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+
+  // Pressing down arrow moves focus into apps.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
+  EXPECT_TRUE(app_item->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
+  EXPECT_FALSE(app_item->HasFocus());
+
+  // Tab key moves focus to assistant button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->assistant_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
 }
 
 TEST_F(AppListBubbleViewTest, DownArrowSelectsRecentsThenApps) {

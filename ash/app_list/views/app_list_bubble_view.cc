@@ -30,6 +30,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/highlight_border.h"
 #include "base/bind.h"
@@ -44,6 +45,8 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/events/event.h"
+#include "ui/events/event_handler.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
@@ -114,6 +117,45 @@ gfx::Rect GetShowHideAnimationBounds(bool is_side_shelf,
 }
 
 }  // namespace
+
+// Makes focus traversal skip the assistant button when pressing the down arrow
+// key or the up arrow key. Normally views would move focus from the search box
+// to the assistant button on arrow down. However, the assistant button is
+// visually to the right, so this feels weird. Likewise, on arrow up from
+// continue tasks it feels better to put focus directly in the search box.
+class AssistantButtonFocusSkipper : public ui::EventHandler {
+ public:
+  explicit AssistantButtonFocusSkipper(views::View* button) : button_(button) {
+    DCHECK(button_);
+    Shell::Get()->AddPreTargetHandler(this);
+  }
+
+  ~AssistantButtonFocusSkipper() override {
+    Shell::Get()->RemovePreTargetHandler(this);
+  }
+
+  // ui::EventHandler:
+  void OnEvent(ui::Event* event) override {
+    // Don't adjust focus behavior if the user already focused the button.
+    if (button_->HasFocus())
+      return;
+
+    bool skip_focus = false;
+    // This class overrides OnEvent() to examine all events so that focus
+    // behavior is restored by mouse events, gesture events, etc.
+    if (event->type() == ui::ET_KEY_PRESSED) {
+      ui::KeyboardCode key = event->AsKeyEvent()->key_code();
+      if (key == ui::VKEY_UP || key == ui::VKEY_DOWN) {
+        skip_focus = true;
+      }
+    }
+    button_->SetFocusBehavior(skip_focus ? views::View::FocusBehavior::NEVER
+                                         : views::View::FocusBehavior::ALWAYS);
+  }
+
+ private:
+  views::View* const button_;
+};
 
 AppListBubbleView::AppListBubbleView(
     AppListViewDelegate* view_delegate,
@@ -191,6 +233,10 @@ void AppListBubbleView::InitContentsView(
   params.create_background = false;
   params.animate_changing_search_icon = false;
   search_box_view_->Init(params);
+
+  assistant_button_focus_skipper_ =
+      std::make_unique<AssistantButtonFocusSkipper>(
+          search_box_view_->assistant_button());
 
   // The main view has a solid color layer, so the separator needs its own
   // layer to visibly paint.
@@ -508,7 +554,8 @@ void AppListBubbleView::CloseButtonPressed() {
 
 void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
   // Nothing to do. Search box starts focused, and FocusManager handles arrow
-  // key traversal from there.
+  // key traversal from there. AssistantButtonFocusSkipper above handles
+  // skipping the assistant button on arrow up and arrow down.
 }
 
 bool AppListBubbleView::CanSelectSearchResults() {
