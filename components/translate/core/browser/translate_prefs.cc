@@ -182,7 +182,7 @@ const base::Feature kTranslateRecentTarget{"TranslateRecentTarget",
 const base::Feature kTranslate{"Translate", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMigrateAlwaysTranslateLanguagesFix{
-    "MigrateAlwaysTranslateLanguagesFix", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MigrateAlwaysTranslateLanguagesFix", base::FEATURE_ENABLED_BY_DEFAULT};
 
 TranslateLanguageInfo::TranslateLanguageInfo() = default;
 
