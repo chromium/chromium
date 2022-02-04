@@ -221,6 +221,11 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
   std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
       const Mailbox& mailbox);
 
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<SharedImageRepresentationLegacyOverlay> ProduceLegacyOverlay(
+      const Mailbox& mailbox);
+#endif
+
  private:
   const raw_ptr<SharedImageManager> manager_;
   std::unique_ptr<MemoryTypeTracker> tracker_;

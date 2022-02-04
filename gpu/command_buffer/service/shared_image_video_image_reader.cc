@@ -528,13 +528,9 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
  protected:
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-    // A |CodecImage| is already in a SurfaceView, render content to the
-    // overlay.
-    if (!stream_image()->HasTextureOwner()) {
-      TRACE_EVENT0("media",
-                   "SharedImageRepresentationOverlayVideo::BeginReadAccess");
-      stream_image()->RenderToOverlay();
-    }
+    // A |CodecImage| must have TextureOwner() for SurfaceControl overlays.
+    // Legacy overlays are handled by SharedImageRepresentationLegacyOverlay.
+    DCHECK(stream_image()->HasTextureOwner());
     return true;
   }
 
@@ -584,12 +580,6 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
     return gl_image_.get();
   }
 
-  void NotifyOverlayPromotion(bool promotion,
-                              const gfx::Rect& bounds) override {
-    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-    stream_image()->NotifyOverlayPromotion(promotion, bounds);
-  }
-
  private:
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
@@ -602,10 +592,57 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
   }
 };
 
+// Representation of SharedImageVideoImageReader as an SurfaceView overlay
+// plane.
+class SharedImageVideoImageReader::SharedImageRepresentationLegacyOverlayVideo
+    : public gpu::SharedImageRepresentationLegacyOverlay,
+      public RefCountedLockHelperDrDc {
+ public:
+  SharedImageRepresentationLegacyOverlayVideo(
+      gpu::SharedImageManager* manager,
+      SharedImageVideoImageReader* backing,
+      gpu::MemoryTypeTracker* tracker,
+      scoped_refptr<RefCountedLock> drdc_lock)
+      : gpu::SharedImageRepresentationLegacyOverlay(manager, backing, tracker),
+        RefCountedLockHelperDrDc(std::move(drdc_lock)) {}
+
+  void RenderToOverlay() override {
+    TRACE_EVENT0(
+        "media",
+        "SharedImageRepresentationLegacyOverlayVideo::RenderToOverlay");
+
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    auto* stream_texture_sii = stream_image();
+    DCHECK(!stream_texture_sii->HasTextureOwner())
+        << "Image must be promoted to overlay first.";
+    stream_texture_sii->RenderToOverlay();
+  }
+
+  void NotifyOverlayPromotion(bool promotion,
+                              const gfx::Rect& bounds) override {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    stream_image()->NotifyOverlayPromotion(promotion, bounds);
+  }
+
+  StreamTextureSharedImageInterface* stream_image() {
+    auto* video_backing = static_cast<SharedImageVideoImageReader*>(backing());
+    DCHECK(video_backing);
+    return video_backing->stream_texture_sii_.get();
+  }
+};
+
 std::unique_ptr<gpu::SharedImageRepresentationOverlay>
 SharedImageVideoImageReader::ProduceOverlay(gpu::SharedImageManager* manager,
                                             gpu::MemoryTypeTracker* tracker) {
   return std::make_unique<SharedImageRepresentationOverlayVideo>(
+      manager, this, tracker, GetDrDcLock());
+}
+
+std::unique_ptr<gpu::SharedImageRepresentationLegacyOverlay>
+SharedImageVideoImageReader::ProduceLegacyOverlay(
+    gpu::SharedImageManager* manager,
+    gpu::MemoryTypeTracker* tracker) {
+  return std::make_unique<SharedImageRepresentationLegacyOverlayVideo>(
       manager, this, tracker, GetDrDcLock());
 }
 

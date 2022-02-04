@@ -685,4 +685,12 @@ SharedImageRepresentationFactory::ProduceRaster(const Mailbox& mailbox) {
   return manager_->ProduceRaster(mailbox, tracker_.get());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+SharedImageRepresentationFactory::ProduceLegacyOverlay(
+    const gpu::Mailbox& mailbox) {
+  return manager_->ProduceLegacyOverlay(mailbox, tracker_.get());
+}
+#endif
+
 }  // namespace gpu

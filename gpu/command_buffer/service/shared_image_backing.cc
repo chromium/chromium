@@ -114,6 +114,14 @@ SharedImageBacking::ProduceRaster(SharedImageManager* manager,
   return nullptr;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
+                                         MemoryTypeTracker* tracker) {
+  return nullptr;
+}
+#endif
+
 void SharedImageBacking::AddRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
 

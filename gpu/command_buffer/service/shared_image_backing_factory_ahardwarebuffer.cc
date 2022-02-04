@@ -230,11 +230,6 @@ class SharedImageRepresentationOverlayAHB
     return static_cast<SharedImageBackingAHB*>(backing());
   }
 
-  void NotifyOverlayPromotion(bool promotion,
-                              const gfx::Rect& bounds) override {
-    NOTREACHED();
-  }
-
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
     gl_image_ = ahb_backing()->BeginOverlayAccess();
     return !!gl_image_;

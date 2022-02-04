@@ -56,11 +56,6 @@ class SharedImageRepresentationOverlayScopedHardwareBufferFenceSync
         backing());
   }
 
-  void NotifyOverlayPromotion(bool promotion,
-                              const gfx::Rect& bounds) override {
-    NOTREACHED();
-  }
-
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
     gfx::GpuFenceHandle begin_read_handle;
     hardware_buffer_ = ahb_backing()->BeginOverlayAccess(begin_read_handle);

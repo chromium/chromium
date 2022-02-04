@@ -88,6 +88,12 @@ class GPU_GLES2_EXPORT SharedImageManager {
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<SharedImageRepresentationLegacyOverlay> ProduceLegacyOverlay(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref);
+#endif
+
   // Called by SharedImageRepresentation in the destructor.
   void OnRepresentationDestroyed(const Mailbox& mailbox,
                                  SharedImageRepresentation* representation);

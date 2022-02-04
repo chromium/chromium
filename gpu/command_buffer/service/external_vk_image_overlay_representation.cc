@@ -66,14 +66,6 @@ gl::GLImage* ExternalVkImageOverlayRepresentation::GetGLImage() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void ExternalVkImageOverlayRepresentation::NotifyOverlayPromotion(
-    bool promotion,
-    const gfx::Rect& bounds) {
-  NOTREACHED();
-}
-#endif
-
 void ExternalVkImageOverlayRepresentation::GetAcquireFences(
     std::vector<gfx::GpuFence>* fences) {
   const VkDevice& device = vk_image_backing_->context_provider()

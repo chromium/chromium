@@ -348,6 +348,33 @@ SharedImageManager::ProduceRaster(const Mailbox& mailbox,
   return (*found)->ProduceRaster(this, tracker);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,
+                                         MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR)
+        << "SharedImageManager::ProduceLegacyOverlay: Trying to Produce a "
+           "Legacy Overlay representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  auto representation = (*found)->ProduceLegacyOverlay(this, tracker);
+  if (!representation) {
+    LOG(ERROR)
+        << "SharedImageManager::ProduceLegacyOverlay: Trying to produce a "
+           "Legacy Overlay representation from an incompatible mailbox.";
+    return nullptr;
+  }
+
+  return representation;
+}
+#endif
+
 void SharedImageManager::OnRepresentationDestroyed(
     const Mailbox& mailbox,
     SharedImageRepresentation* representation) {
