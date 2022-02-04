@@ -72,10 +72,9 @@ class ImeDecoder {
   ImeDecoder(const ImeDecoder&) = delete;
   ImeDecoder& operator=(const ImeDecoder&) = delete;
 
-  bool IsReady() const;
-
-  // Returns entry points of the loaded decoder shared library.
-  EntryPoints GetEntryPoints();
+  // Returns entry points of the loaded IME shared library. Entry points are
+  // only available if the IME shared library has been successfully loaded.
+  absl::optional<EntryPoints> GetEntryPoints() const;
 
  private:
   friend class base::NoDestructor<ImeDecoder>;
@@ -84,12 +83,10 @@ class ImeDecoder {
   explicit ImeDecoder();
   ~ImeDecoder();
 
-  bool is_ready_;
-
   // Result of IME decoder DSO initialization.
   absl::optional<base::ScopedNativeLibrary> library_;
 
-  EntryPoints entry_points_;
+  absl::optional<EntryPoints> entry_points_;
 };
 
 // Only used in tests to set a fake `ImeDecoder::EntryPoints`.

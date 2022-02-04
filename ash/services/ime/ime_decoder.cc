@@ -53,10 +53,9 @@ void ImeLoggerBridge(int severity, const char* message) {
 
 }  // namespace
 
-ImeDecoder::ImeDecoder() : is_ready_(false) {
+ImeDecoder::ImeDecoder() {
   if (g_fake_decoder_entry_points_for_testing) {
-    entry_points_ = *g_fake_decoder_entry_points_for_testing;
-    is_ready_ = true;
+    entry_points_ = g_fake_decoder_entry_points_for_testing;
     return;
   }
 
@@ -70,27 +69,28 @@ ImeDecoder::ImeDecoder() : is_ready_(false) {
     return;
   }
 
-  entry_points_.init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
+  EntryPoints entry_points;
+  entry_points.init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
       library.GetFunctionPointer(kImeDecoderInitOnceFnName));
-  entry_points_.supports = reinterpret_cast<ImeDecoderSupportsFn>(
+  entry_points.supports = reinterpret_cast<ImeDecoderSupportsFn>(
       library.GetFunctionPointer(kImeDecoderSupportsFnName));
-  entry_points_.activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
+  entry_points.activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
       library.GetFunctionPointer(kImeDecoderActivateImeFnName));
-  entry_points_.process = reinterpret_cast<ImeDecoderProcessFn>(
+  entry_points.process = reinterpret_cast<ImeDecoderProcessFn>(
       library.GetFunctionPointer(kImeDecoderProcessFnName));
-  entry_points_.close = reinterpret_cast<ImeDecoderCloseFn>(
+  entry_points.close = reinterpret_cast<ImeDecoderCloseFn>(
       library.GetFunctionPointer(kImeDecoderCloseFnName));
-  entry_points_.connect_to_input_method =
+  entry_points.connect_to_input_method =
       reinterpret_cast<ConnectToInputMethodFn>(
           library.GetFunctionPointer(kConnectToInputMethodFnName));
-  entry_points_.is_input_method_connected =
+  entry_points.is_input_method_connected =
       reinterpret_cast<IsInputMethodConnectedFn>(
           library.GetFunctionPointer(kIsInputMethodConnectedFnName));
 
   // Checking if entry_points_ are loaded.
-  if (!entry_points_.init_once || !entry_points_.supports ||
-      !entry_points_.activate_ime || !entry_points_.process ||
-      !entry_points_.close) {
+  if (!entry_points.init_once || !entry_points.supports ||
+      !entry_points.activate_ime || !entry_points.process ||
+      !entry_points.close) {
     return;
   }
 
@@ -104,7 +104,7 @@ ImeDecoder::ImeDecoder() : is_ready_(false) {
   }
 
   library_ = std::move(library);
-  is_ready_ = true;
+  entry_points_ = entry_points;
 }
 
 ImeDecoder::~ImeDecoder() = default;
@@ -114,12 +114,7 @@ ImeDecoder* ImeDecoder::GetInstance() {
   return instance.get();
 }
 
-bool ImeDecoder::IsReady() const {
-  return is_ready_;
-}
-
-ImeDecoder::EntryPoints ImeDecoder::GetEntryPoints() {
-  DCHECK(is_ready_);
+absl::optional<ImeDecoder::EntryPoints> ImeDecoder::GetEntryPoints() const {
   return entry_points_;
 }
 

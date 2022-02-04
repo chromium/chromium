@@ -58,12 +58,14 @@ class ClientDelegate : public ImeClientDelegate {
 DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
   auto* decoder = ImeDecoder::GetInstance();
 
-  if (!decoder->IsReady()) {
+  absl::optional<ImeDecoder::EntryPoints> entry_points =
+      decoder->GetEntryPoints();
+  if (!entry_points) {
     LOG(WARNING) << "DecoderEngine INIT INCOMPLETE.";
     return;
   }
 
-  decoder_entry_points_ = decoder->GetEntryPoints();
+  decoder_entry_points_ = *entry_points;
   decoder_entry_points_->init_once(platform_);
 }
 
