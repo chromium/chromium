@@ -29,10 +29,33 @@ DocumentTransitionContentLayer::DocumentTransitionResourceId() const {
   return resource_id_;
 }
 
+void DocumentTransitionContentLayer::SetSourceOpacity(float opacity) {
+  source_opacity_ = opacity;
+  SetNeedsPushProperties();
+}
+
+void DocumentTransitionContentLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
+
+  auto* content_layer_impl =
+      static_cast<DocumentTransitionContentLayerImpl*>(layer);
+  PushLocalPropertiesTo(content_layer_impl);
+}
+
+void DocumentTransitionContentLayer::PushLocalPropertiesTo(
+    DocumentTransitionContentLayerImpl* layer_impl) const {
+  layer_impl->SetSourceOpacity(source_opacity_);
+}
+
 std::unique_ptr<LayerImpl> DocumentTransitionContentLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  return DocumentTransitionContentLayerImpl::Create(tree_impl, id(),
-                                                    resource_id_);
+  auto layer =
+      DocumentTransitionContentLayerImpl::Create(tree_impl, id(), resource_id_);
+  PushLocalPropertiesTo(layer.get());
+  return layer;
 }
 
 }  // namespace cc

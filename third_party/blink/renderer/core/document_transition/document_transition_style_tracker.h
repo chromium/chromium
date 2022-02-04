@@ -126,6 +126,11 @@ class DocumentTransitionStyleTracker
   viz::SharedElementResourceId old_root_snapshot_id_;
   viz::SharedElementResourceId new_root_snapshot_id_;
   absl::optional<String> ua_style_sheet_;
+
+  // If true, then we had a prepare call and did not yet have a
+  // RunPostLayoutSteps. This is tracked to determine whether we're in first
+  // post-layout steps after we started preparing.
+  bool has_had_first_post_layout_after_prepare_ = false;
 };
 
 }  // namespace blink

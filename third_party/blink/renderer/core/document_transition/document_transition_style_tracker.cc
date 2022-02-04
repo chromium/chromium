@@ -109,6 +109,7 @@ void DocumentTransitionStyleTracker::Prepare(
   DCHECK_EQ(state_, State::kIdle);
 
   state_ = State::kPreparing;
+  has_had_first_post_layout_after_prepare_ = true;
 
   // An id for each shared element + root.
   pseudo_document_transition_tags_.resize(old_elements.size() + 1);
@@ -311,6 +312,21 @@ void DocumentTransitionStyleTracker::RunPostLayoutSteps() {
       continue;
     }
 
+    if (state_ == State::kPreparing &&
+        has_had_first_post_layout_after_prepare_) {
+      auto* old_content_element =
+          DocumentTransitionUtils::FindOldContentElement(*document_, entry.key);
+      DCHECK(old_content_element);
+      old_content_element->UpdateFromSourceStyle(
+          element_data->target_element->GetComputedStyle());
+    }
+    if (auto* new_content_element =
+            DocumentTransitionUtils::FindNewContentElement(*document_,
+                                                           entry.key)) {
+      new_content_element->UpdateFromSourceStyle(
+          element_data->target_element->GetComputedStyle());
+    }
+
     const auto& viewport_matrix = layout_object->LocalToAbsoluteTransform();
 
     // ResizeObserverEntry is created to reuse the logic for parsing object size
@@ -346,6 +362,21 @@ void DocumentTransitionStyleTracker::RunPostLayoutSteps() {
 
   if (needs_style_invalidation)
     InvalidateStyle();
+
+  if (state_ == State::kPreparing && has_had_first_post_layout_after_prepare_) {
+    auto* old_content_element =
+        DocumentTransitionUtils::FindOldContentElement(*document_, RootTag());
+    DCHECK(old_content_element);
+    old_content_element->UpdateFromSourceStyle(
+        document_->documentElement()->GetComputedStyle());
+  }
+  if (auto* new_content_element =
+          DocumentTransitionUtils::FindNewContentElement(*document_,
+                                                         RootTag())) {
+    new_content_element->UpdateFromSourceStyle(
+        document_->documentElement()->GetComputedStyle());
+  }
+  has_had_first_post_layout_after_prepare_ = false;
 }
 
 bool DocumentTransitionStyleTracker::HasActiveAnimations() const {
