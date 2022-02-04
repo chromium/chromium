@@ -181,6 +181,17 @@ TEST(Suite, DISABLED_Test) {}
 void SomeFunctionWihTestInTheName() {}
 ''')
 
+  def test_ignore_comments_in_preprocessor_directive(self):
+    self.disabler_test(
+        '''
+#if /* something */ BUILDFLAG( /* something else */ IS_WIN) // comment ||
+#define MAYBE_Test DISABLED_Test // another one &&
+#else /* and another... */
+#define MAYBE_Test Test // you know the drill(
+#endif // one more!
+TEST(Suite, MAYBE_Test) {}
+''', 'Suite.Test', conditions.NEVER, 'TEST(Suite, Test) {}')
+
 
 if __name__ == '__main__':
   unittest.main()

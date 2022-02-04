@@ -345,6 +345,14 @@ def get_directive(lines: List[str], i: int) -> Optional[Tuple[str, Any]]:
     full_line = full_line[:-2] + lines[i]
 
   # TODO: Pre-compile regexes.
+  # Strip comments.
+  # C-style. Note that C-style comments don't nest, so we can just match them
+  # with a regex.
+  full_line = re.sub(r'/\*.*\*/', '', full_line)
+
+  # C++-style
+  full_line = re.sub('//.*$', '', full_line)
+
   # Preprocessor directives begin with a '#', which *must* be at the start of
   # the line, with only whitespace allowed to appear before them.
   match = re.match('^[ \t]*#[ \t]*(\\w*)(.*)', full_line)
