@@ -32,17 +32,15 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
     return;
   }
 
-  absl::optional<CoreAccountInfo> account =
-      ComputeUnconsentedPrimaryAccountInfo();
+  CoreAccountInfo account = ComputeUnconsentedPrimaryAccountInfo();
 
-  DCHECK(!account || !account->IsEmpty());
-  if (account) {
+  if (!account.IsEmpty()) {
     if (identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account->account_id, signin::ConsentLevel::kSignin);
+          account.account_id, signin::ConsentLevel::kSignin);
     }
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {
@@ -53,8 +51,7 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   }
 }
 
-absl::optional<CoreAccountInfo>
-SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
+CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   DCHECK(identity_manager_->AreRefreshTokensLoaded());
 
   // UPA is equal to the primary account with sync consent if it exists.
@@ -71,7 +68,7 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   // It was considered simpler to keep the logic to update the unconsented
   // primary account in a single place.
   if (!signin_allowed_.GetValue())
-    return absl::nullopt;
+    return CoreAccountInfo();
 
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager_->GetAccountsInCookieJar();
@@ -85,7 +82,7 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     // in cookies if it exists and has a refresh token.
     if (cookie_accounts.empty()) {
       // Cookies are empty, the UPA is empty.
-      return absl::nullopt;
+      return CoreAccountInfo();
     }
 
     AccountInfo account_info =
@@ -98,12 +95,11 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
         identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
             account_info.account_id);
 
-    return error_state ? absl::nullopt
-                       : absl::make_optional<CoreAccountInfo>(account_info);
+    return error_state ? CoreAccountInfo() : account_info;
   }
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
-    return absl::nullopt;
+    return CoreAccountInfo();
 
   // If cookies or tokens are not loaded, it is not possible to fully compute
   // the unconsented primary account. However, if the current unconsented
@@ -114,14 +110,14 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   if (!identity_manager_->HasAccountWithRefreshToken(current_account)) {
     // Tokens are loaded, but the current UPA doesn't have a refresh token.
     // Clear the current UPA.
-    return absl::nullopt;
+    return CoreAccountInfo();
   }
 
   if (cookie_info.accounts_are_fresh) {
     if (cookie_accounts.empty() || cookie_accounts[0].id != current_account) {
       // The current UPA is not the first in fresh cookies. It needs to be
       // cleared.
-      return absl::nullopt;
+      return CoreAccountInfo();
     }
   }
 

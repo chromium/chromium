@@ -37,9 +37,9 @@ class SigninManager : public KeyedService,
   // current UPA, the other cases are if tokens are not loaded but the current
   // UPA's refresh token has been rekoved or tokens are loaded but the current
   // UPA does not have a refresh token. If the UPA is invalid, it needs to be
-  // cleared, |absl::nullopt| is returned. If it is still valid, returns the
+  // cleared, an empty account is returned. If it is still valid, returns the
   // valid UPA.
-  absl::optional<CoreAccountInfo> ComputeUnconsentedPrimaryAccountInfo() const;
+  CoreAccountInfo ComputeUnconsentedPrimaryAccountInfo() const;
 
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
