@@ -195,12 +195,6 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
   // will improve the IME extension load latency a lot.
   // See http://b/192032670 for more details.
   if (extension_id == extension_ime_util::kXkbExtensionId) {
-    // Update manifest content inplace to load Mojo background page for ChromeOS
-    // IME extension when the feature 'ImeMojoDecoder' is enabled.
-    // See http://b/181170189 for more details.
-    // TODO(http://b/170278753): Remove this once NaCl decoder is removed.
-    base::ReplaceFirstSubstringAfterOffset(manifest_cp, 0, "background.html",
-                                           "background_mojo.html");
     DoLoadExtension(profile, extension_id, *manifest_cp, file_path);
     return;
   }
