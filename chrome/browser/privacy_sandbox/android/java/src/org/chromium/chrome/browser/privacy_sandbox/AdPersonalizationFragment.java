@@ -15,6 +15,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.ImageButtonPreference;
@@ -97,11 +98,13 @@ public class AdPersonalizationFragment
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof ImageButtonPreference) {
+            assert preference.getParent() == mTopicsCategory;
             blockTopic(preference.getTitle().toString());
             mTopicsCategory.removePreference(preference);
             mSnackbarManager.showSnackbar(Snackbar.make(
                     getResources().getString(R.string.privacy_sandbox_remove_interest_snackbar),
                     null, Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
+            RecordUserAction.record("Settings.PrivacySandbox.AdPersonalization.TopicRemoved");
         }
         return true;
     }

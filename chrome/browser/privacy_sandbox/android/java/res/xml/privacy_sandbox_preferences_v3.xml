@@ -17,24 +17,28 @@
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.LearnMoreFragment"
         android:key="privacy_sandbox_learn_more"
-        android:summary="@string/privacy_sandbox_learn_more_link" />
+        android:summary="@string/privacy_sandbox_learn_more_link"
+        app:userAction="Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment"
         android:title="@string/privacy_sandbox_ad_personalization_title"
         android:summary="@string/privacy_sandbox_ad_personalization_summary"
-        android:icon="@drawable/gm_ads_click_24"/>
+        android:icon="@drawable/gm_ads_click_24"
+        app:userAction="Settings.PrivacySandbox.AdPersonalization.Opened"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment"
         android:title="@string/privacy_sandbox_ad_measurement_title"
         android:summary="@string/privacy_sandbox_ad_measurement_summary"
-        android:icon="@drawable/gm_insert_chart_24"/>
+        android:icon="@drawable/gm_insert_chart_24"
+        app:userAction="Settings.PrivacySandbox.AdMeasurement.Opened"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.SpamFraudFragment"
         android:title="@string/privacy_sandbox_spam_fraud_title"
         android:summary="@string/privacy_sandbox_spam_fraud_summary"
-        android:icon="@drawable/ic_spam_reduction_24dp" />
+        android:icon="@drawable/ic_spam_reduction_24dp"
+        app:userAction="Settings.PrivacySandbox.SpamFraud.Opened"/>
 
 </PreferenceScreen>

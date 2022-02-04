@@ -18,6 +18,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,19 +30,25 @@ import android.view.View;
 import androidx.annotation.StringRes;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -53,10 +60,16 @@ import java.io.IOException;
 /** Tests {@link PrivacySandboxSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
 public final class PrivacySandboxSettingsFragmentV3Test {
     private static final String REFERRER_HISTOGRAM =
             "Settings.PrivacySandbox.PrivacySandboxReferrer";
+
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
     public SettingsActivityTestRule<PrivacySandboxSettingsFragmentV3> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySandboxSettingsFragmentV3.class);
@@ -73,6 +86,8 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
+    private UserActionTester mUserActionTester;
+
     @BeforeClass
     public static void beforeClass() {
         // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
@@ -83,6 +98,13 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+    }
+
+    @After
+    public void tearDown() {
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
     }
 
     private void openPrivacySandboxSettings() {
@@ -151,6 +173,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Test
     @SmallTest
     public void testAdPersonalizationView() throws IOException {
+        mUserActionTester = new UserActionTester();
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_remove_interest_title))
@@ -161,6 +184,9 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         assertThat(PrivacySandboxBridge.getBlockedTopics(), hasItem("Foo"));
         onView(withText(R.string.privacy_sandbox_remove_interest_snackbar))
                 .check(matches(isDisplayed()));
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.AdPersonalization.Opened",
+                        "Settings.PrivacySandbox.AdPersonalization.TopicRemoved"));
     }
 
     @Test
@@ -178,6 +204,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Test
     @SmallTest
     public void testRemovedInterestsView() throws IOException {
+        mUserActionTester = new UserActionTester();
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
@@ -186,6 +213,9 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         assertThat(PrivacySandboxBridge.getBlockedTopics(), not(hasItem("BlockedFoo")));
         onView(withText(R.string.privacy_sandbox_add_interest_snackbar))
                 .check(matches(isDisplayed()));
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.RemovedInterests.Opened",
+                        "Settings.PrivacySandbox.RemovedInterests.TopicAdded"));
     }
 
     @Test

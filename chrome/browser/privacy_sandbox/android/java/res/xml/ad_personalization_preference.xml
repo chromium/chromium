@@ -17,12 +17,14 @@
 
     <Preference
         android:key="empty_topics"
-        android:summary="@string/privacy_sandbox_topic_empty_state" />
+        android:summary="@string/privacy_sandbox_topic_empty_state"
+        android:selectable="false"/>
 
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="removed_topics"
         android:title="@string/privacy_sandbox_remove_interest_title"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"/>
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
+        app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"/>
 
     <PreferenceCategory
         android:title="@string/privacy_sandbox_fledge_interests_category" />

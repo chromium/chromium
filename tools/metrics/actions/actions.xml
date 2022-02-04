@@ -25865,6 +25865,34 @@ should be able to be added at any place in this file.
   <description>User starts the Privacy guide via the promo.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.AdMeasurement.Opened">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>User opened Ad measurement subpage.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User selected &quot;Learn more&quot; about Ad Personalization.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.AdPersonalization.Opened">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened Ad Personalization subpage from main sandbox settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.AdPersonalization.TopicRemoved">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>User removed a topic.</description>
+</action>
+
 <action name="Settings.PrivacySandbox.ApisDisabled">
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -25947,12 +25975,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.RemovedInterests.Opened">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User clicked on &quot;Interests you removed&quot;, to visit the blocked
+    interests subpage.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.RemovedInterests.TopicAdded">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>User added back a topic</description>
+</action>
+
 <action name="Settings.PrivacySandbox.ResetFloc">
   <owner>andzaytsev@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
     User clicks the reset group button to reset their FLoC cohor identifier.
   </description>
+</action>
+
+<action name="Settings.PrivacySandbox.SpamFraud.Opened">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>User opened Fraud prevention subpage.</description>
 </action>
 
 <action name="Settings.SafetyCheck.ChromeCleanerCaretNavigation">
