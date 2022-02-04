@@ -122,7 +122,7 @@
           on-iron-activate="onSelectorActivate_" selected-attribute="selected">
         <a id="history" role="menuitem" class="page-item cr-nav-menu-item"
             href="[[getHistoryItemHref_(selectedTab, showHistoryClusters_)]]"
-            path="[[getHistoryItemPath_(selectedTab, showHistoryClusters_)]]"
+            path$="[[getHistoryItemPath_(selectedTab, showHistoryClusters_)]]"
             on-click="onItemClick_">
           <iron-icon icon="cr:schedule"></iron-icon>
           $i18n{historyMenuItem}

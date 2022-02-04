@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://history/history.js';
+
+import {BrowserServiceImpl, ensureLazyLoaded, HistoryAppElement, HistoryEntry} from 'chrome://history/history.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo} from './test_util.js';
 
 suite('history-toolbar', function() {
-  let app;
-  let element;
-  let toolbar;
-  let testService;
-  const TEST_HISTORY_RESULTS =
+  let app: HistoryAppElement;
+  let testService: TestBrowserService;
+  const TEST_HISTORY_RESULTS: [HistoryEntry] =
       [createHistoryEntry('2016-03-15', 'https://google.com')];
 
   setup(function() {
@@ -24,8 +24,6 @@ suite('history-toolbar', function() {
 
     app = document.createElement('history-app');
     document.body.appendChild(app);
-    element = app.$.history;
-    toolbar = app.$.toolbar;
     return Promise
         .all([
           ensureLazyLoaded(),
@@ -37,38 +35,37 @@ suite('history-toolbar', function() {
   test('selecting checkbox causes toolbar to change', function() {
     testService.setQueryResult(
         {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
-    element.dispatchEvent(new CustomEvent(
+    app.$.history.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: true}));
     return testService.whenCalled('queryHistoryContinuation')
         .then(flushTasks)
         .then(function() {
-          const item = element.shadowRoot.querySelector('history-item');
+          const item = app.$.history.shadowRoot!.querySelector('history-item')!;
           item.$.checkbox.click();
+
+          const toolbar = app.$.toolbar;
 
           // Ensure that when an item is selected that the count held by the
           // toolbar increases.
           assertEquals(1, toolbar.count);
-          // Ensure that the toolbar boolean states that at least one item is
-          // selected.
-          assertTrue(toolbar.itemsSelected_);
+          assertTrue(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
 
           item.$.checkbox.click();
 
           // Ensure that when an item is deselected the count held by the
           // toolbar decreases.
           assertEquals(0, toolbar.count);
-          // Ensure that the toolbar boolean states that no items are selected.
-          assertFalse(toolbar.itemsSelected_);
+          assertFalse(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
         });
   });
 
   test('search term gathered correctly from toolbar', function() {
     testService.resetResolver('queryHistory');
+    const toolbar = app.$.toolbar;
     testService.setQueryResult(
         {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS});
-    toolbar.shadowRoot.querySelector('cr-toolbar')
-        .dispatchEvent(new CustomEvent(
-            'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
+    toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
+        'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
     return testService.whenCalled('queryHistory').then(query => {
       assertEquals('Test', query);
     });
@@ -81,10 +78,9 @@ suite('history-toolbar', function() {
       info: createHistoryInfo('Test2'),
       value: TEST_HISTORY_RESULTS,
     });
-    toolbar.shadowRoot.querySelector('cr-toolbar')
-        .dispatchEvent(new CustomEvent(
-            'search-changed',
-            {bubbles: true, composed: true, detail: 'Test2'}));
+    const toolbar = app.$.toolbar;
+    toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
+        'search-changed', {bubbles: true, composed: true, detail: 'Test2'}));
     return testService.whenCalled('queryHistory')
         .then(flushTasks)
         .then(() => {

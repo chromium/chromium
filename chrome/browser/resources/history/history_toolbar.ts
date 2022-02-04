@@ -17,7 +17,7 @@ import {getTemplate} from './history_toolbar.html.js';
 
 export interface HistoryToolbarElement {
   $: {
-    'main-toolbar': CrToolbarElement,
+    mainToolbar: CrToolbarElement,
   };
 }
 
@@ -80,6 +80,7 @@ export class HistoryToolbarElement extends PolymerElement {
 
   count: number = 0;
   searchTerm: string;
+  spinnerActive: boolean
   showMenuPromo: boolean;
   private itemsSelected_: boolean = false;
 
@@ -89,7 +90,7 @@ export class HistoryToolbarElement extends PolymerElement {
   }
 
   get searchField(): CrToolbarSearchFieldElement {
-    return this.$['main-toolbar'].getSearchField();
+    return this.$.mainToolbar.getSearchField();
   }
 
   deleteSelectedItems() {

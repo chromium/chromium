@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://history/history.js';
+
+import {HistorySearchedLabelElement} from 'chrome://history/history.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('<history-searched-label> unit test', function() {
-  /** @type {?HistorySearchedLabelElement} */
-  let label;
+  let label: HistorySearchedLabelElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -26,7 +28,7 @@ suite('<history-searched-label> unit test', function() {
     flush();
     const boldItems = document.querySelectorAll('b');
     assertEquals(1, boldItems.length);
-    assertEquals(label.searchTerm, boldItems[0].textContent);
+    assertEquals(label.searchTerm, boldItems[0]!.textContent);
 
     label.searchTerm = 'g';
     flush();

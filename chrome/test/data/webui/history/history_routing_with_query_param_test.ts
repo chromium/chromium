@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import 'chrome://history/history.js';
+
+import {BrowserServiceImpl, HistoryAppElement} from 'chrome://history/history.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryInfo} from './test_util.js';
 
 suite('routing-with-query-param', function() {
-  let app;
-  let toolbar;
-  let expectedQuery;
-  let testService;
+  let app: HistoryAppElement;
+  let expectedQuery: string;
+  let testService: TestBrowserService;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -29,7 +31,6 @@ suite('routing-with-query-param', function() {
     });
     app = document.createElement('history-app');
     document.body.appendChild(app);
-    toolbar = app.$['toolbar'];
     expectedQuery = 'query';
   });
 
@@ -42,7 +43,7 @@ suite('routing-with-query-param', function() {
         .then(function() {
           assertEquals(
               expectedQuery,
-              toolbar.$['main-toolbar'].getSearchField().getValue());
+              app.$.toolbar.$.mainToolbar.getSearchField().getValue());
         });
   });
 });

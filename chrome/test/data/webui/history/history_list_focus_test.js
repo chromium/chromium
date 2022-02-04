@@ -111,7 +111,7 @@ suite('<history-list>', function() {
 
   test('selection of all items using ctrl + a', async () => {
     const toolbar = app.$.toolbar;
-    const field = toolbar.$['main-toolbar'].getSearchField();
+    const field = toolbar.$.mainToolbar.getSearchField();
     field.blur();
     assertFalse(field.showingSearch);
 

@@ -345,5 +345,11 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-synced-device-manager': HistorySyncedDeviceManagerElement;
+  }
+}
+
 customElements.define(
     HistorySyncedDeviceManagerElement.is, HistorySyncedDeviceManagerElement);

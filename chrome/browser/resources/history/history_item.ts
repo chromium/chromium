@@ -363,6 +363,12 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-item': HistoryItemElement;
+  }
+}
+
 customElements.define(HistoryItemElement.is, HistoryItemElement);
 
 /**

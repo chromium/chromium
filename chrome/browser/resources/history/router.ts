@@ -142,6 +142,16 @@ export class HistoryRouterElement extends PolymerElement {
     this.debouncer_ = Debouncer.debounce(
         this.debouncer_, microTask, this.parseUrl_.bind(this));
   }
+
+  getDebouncerForTesting(): Debouncer|null {
+    return this.debouncer_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-router': HistoryRouterElement;
+  }
 }
 
 customElements.define(HistoryRouterElement.is, HistoryRouterElement);

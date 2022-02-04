@@ -17,6 +17,7 @@ import './shared_style.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -34,7 +35,11 @@ export type FooterInfo = {
 export interface HistorySideBarElement {
   $: {
     'cbd-ripple': PaperRippleElement,
+    'history': HTMLAnchorElement,
+    'menu': IronSelectorElement,
     'thc-ripple': PaperRippleElement,
+    'toggle-history-clusters': HTMLElement,
+    'syncedTabs': HTMLElement,
   };
 }
 

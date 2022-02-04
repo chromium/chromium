@@ -4,10 +4,13 @@
 
 import './app.js';
 
-export {ensureLazyLoaded, listenForPrivilegedLinkClicks} from './app.js';
+export {ensureLazyLoaded, HistoryAppElement, listenForPrivilegedLinkClicks} from './app.js';
 export {BrowserService, BrowserServiceImpl, QueryResult, RemoveVisitsRequest} from './browser_service.js';
 export {HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 export {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryEntry, HistoryQuery} from './externs.js';
 export {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
 export {PageCallbackRouter, PageHandlerRemote} from './history_clusters/history_clusters.mojom-webui.js';
-export {MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
+export {ClusterAction, RelatedSearchAction, VisitAction, VisitType} from './history_clusters/metrics_proxy.js';
+export {MetricsProxy, MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
+export {HistorySearchedLabelElement} from './searched_label.js';
+export {HistorySideBarElement} from './side_bar.js';

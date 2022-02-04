@@ -253,7 +253,7 @@ suite(history_list_test.suiteName, function() {
           return flushTasks();
         })
         .then(function() {
-          const field = toolbar.$['main-toolbar'].getSearchField();
+          const field = toolbar.$.mainToolbar.getSearchField();
           field.blur();
           assertFalse(field.showingSearch);
 
@@ -428,7 +428,7 @@ suite(history_list_test.suiteName, function() {
             .then(function() {
               assertEquals(
                   'www.google.com',
-                  toolbar.$['main-toolbar'].getSearchField().getValue());
+                  toolbar.$.mainToolbar.getSearchField().getValue());
 
               element.$.sharedMenu.get().close();
               items[0].$['menu-button'].click();

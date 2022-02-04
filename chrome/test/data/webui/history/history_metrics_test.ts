@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl, ensureLazyLoaded, HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
+import 'chrome://history/history.js';
+import 'chrome://history/lazy_load.js';
+
+import {BrowserServiceImpl, ensureLazyLoaded, HistoryAppElement, HistoryEntry, HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
-import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks, polymerSelectAll} from './test_util.js';
+import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks} from './test_util.js';
 
 suite('Metrics', function() {
-  let testService;
-  let app;
-  let histogramMap;
-  let actionMap;
+  let testService: TestBrowserService;
+  let app: HistoryAppElement;
+  let histogramMap: {[key: string]: {[key: string]: number}};
+  let actionMap: {[key: string]: number};
 
   suiteSetup(function() {
     disableLinkClicks();
@@ -23,8 +27,8 @@ suite('Metrics', function() {
   setup(async () => {
     document.body.innerHTML = '';
 
-    BrowserServiceImpl.setInstance(new TestBrowserService());
-    testService = BrowserServiceImpl.getInstance();
+    testService = new TestBrowserService();
+    BrowserServiceImpl.setInstance(testService);
 
     actionMap = testService.actionMap;
     histogramMap = testService.histogramMap;
@@ -33,12 +37,12 @@ suite('Metrics', function() {
   });
 
   /**
-   * @param {!Array<!HistoryEntry>} queryResults The query results to initialize
-   *     the page with.
-   * @param {string=} query The query to use in the QueryInfo.
-   * @return {!Promise} Promise that resolves when initialization is complete.
+   * @param queryResults The query results to initialize the page with.
+   * @param query The query to use in the QueryInfo.
+   * @return Promise that resolves when initialization is complete.
    */
-  function finishSetup(queryResults, query) {
+  function finishSetup(
+      queryResults: HistoryEntry[], query?: string): Promise<void> {
     testService.setQueryResult(
         {info: createHistoryInfo(query), value: queryResults});
     document.body.appendChild(app);
@@ -53,15 +57,22 @@ suite('Metrics', function() {
         });
   }
 
+  function navigateTo(route: string) {
+    window.history.replaceState({}, '', route);
+    window.dispatchEvent(new CustomEvent('location-changed'));
+    // Update from the URL synchronously.
+    app.shadowRoot!.querySelector(
+                       'history-router')!.getDebouncerForTesting()!.flush();
+  }
 
   test('History.HistoryPageView', async () => {
     await finishSetup([]);
-    app.grouped_ = true;
 
     const histogram = histogramMap['History.HistoryPageView'];
+    assertTrue(!!histogram);
     assertEquals(1, histogram[HistoryPageViewHistogram.HISTORY]);
 
-    app.selectedPage_ = 'syncedTabs';
+    navigateTo('/syncedTabs');
     assertEquals(1, histogram[HistoryPageViewHistogram.SIGNIN_PROMO]);
     await testService.whenCalled('otherDevicesInitialized');
 
@@ -70,7 +81,7 @@ suite('Metrics', function() {
     await testService.whenCalled('recordHistogram');
 
     assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
-    app.selectedPage_ = 'history';
+    navigateTo('/history');
     assertEquals(2, histogram[HistoryPageViewHistogram.HISTORY]);
   });
 
@@ -81,40 +92,46 @@ suite('Metrics', function() {
     const weekAgo =
         new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000 - 1);
 
-    const historyEntry = createHistoryEntry(weekAgo, 'http://www.google.com');
+    const historyEntry =
+        createHistoryEntry(weekAgo.getTime(), 'http://www.google.com');
     historyEntry.starred = true;
-    await finishSetup(
-        [createHistoryEntry(weekAgo, 'http://www.example.com'), historyEntry]);
+    await finishSetup([
+      createHistoryEntry(weekAgo.getTime(), 'http://www.example.com'),
+      historyEntry
+    ]);
     await flushTasks();
 
-    let items = polymerSelectAll(app.$.history, 'history-item');
-    items[1].$$('#bookmark-star').click();
+    let items = app.$.history.shadowRoot!.querySelectorAll('history-item');
+    assertTrue(!!items[1]);
+    items[1].shadowRoot!.querySelector<HTMLElement>('#bookmark-star')!.click();
     assertEquals(1, actionMap['BookmarkStarClicked']);
     items[1].$.link.click();
     assertEquals(1, actionMap['EntryLinkClick']);
-    assertEquals(1, histogramMap['HistoryPage.ClickPosition'][1]);
-    assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset'][1]);
+    assertEquals(1, histogramMap['HistoryPage.ClickPosition']![1]);
+    assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset']![1]);
 
     // TODO(https://crbug.com/1000573): Log the contents of this histogram
     // for debugging in case the flakiness reoccurs.
-    console.log(Object.keys(histogramMap['HistoryPage.ClickAgeInDays']));
+    console.log(Object.keys(histogramMap['HistoryPage.ClickAgeInDays']!));
 
     // The "age in days" histogram should record 8 days, since the history
     // entry was created between 7 and 8 days ago and we round the
     // recorded value up.
-    assertEquals(1, histogramMap['HistoryPage.ClickAgeInDays'][8]);
-    assertEquals(1, histogramMap['HistoryPage.ClickAgeInDaysSubset'][8]);
+    assertEquals(1, histogramMap['HistoryPage.ClickAgeInDays']![8]);
+    assertEquals(1, histogramMap['HistoryPage.ClickAgeInDaysSubset']![8]);
 
     testService.resetResolver('queryHistory');
     testService.setQueryResult({
       info: createHistoryInfo('goog'),
       value: [
-        createHistoryEntry(weekAgo, 'http://www.google.com'),
-        createHistoryEntry(weekAgo, 'http://www.google.com'),
-        createHistoryEntry(weekAgo, 'http://www.google.com'),
+        createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
+        createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
+        createHistoryEntry(weekAgo.getTime(), 'http://www.google.com'),
       ],
     });
-    app.fire('change-query', {search: 'goog'});
+    app.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'goog'}}));
     assertEquals(1, actionMap['Search']);
     app.set('queryState_.incremental', true);
     await Promise.all([
@@ -122,15 +139,17 @@ suite('Metrics', function() {
       flushTasks(),
     ]);
 
-    app.$.history.$$('iron-list').fire('iron-resize');
+    app.$.history.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
     await waitAfterNextRender(app.$.history);
     flush();
 
-    items = polymerSelectAll(app.$.history, 'history-item');
+    items = app.$.history.shadowRoot!.querySelectorAll('history-item');
+    assertTrue(!!items[0]);
+    assertTrue(!!items[4]);
     items[0].$.link.click();
     assertEquals(1, actionMap['SearchResultClick']);
-    assertEquals(1, histogramMap['HistoryPage.ClickPosition'][0]);
-    assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset'][0]);
+    assertEquals(1, histogramMap['HistoryPage.ClickPosition']![0]);
+    assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset']![0]);
     items[0].$.checkbox.click();
     items[4].$.checkbox.click();
     await flushTasks();
@@ -139,27 +158,31 @@ suite('Metrics', function() {
     assertEquals(1, actionMap['RemoveSelected']);
     await flushTasks();
 
-    app.$.history.$$('.cancel-button').click();
+    app.$.history.shadowRoot!.querySelector<HTMLElement>(
+                                 '.cancel-button')!.click();
     assertEquals(1, actionMap['CancelRemoveSelected']);
     app.$.toolbar.deleteSelectedItems();
     await flushTasks();
 
-    app.$.history.$$('.action-button').click();
+    app.$.history.shadowRoot!.querySelector<HTMLElement>(
+                                 '.action-button')!.click();
     assertEquals(1, actionMap['ConfirmRemoveSelected']);
     await flushTasks();
 
-    items = polymerSelectAll(app.$.history, 'history-item');
+    items = app.$.history.shadowRoot!.querySelectorAll('history-item');
+    assertTrue(!!items[0]);
     items[0].$['menu-button'].click();
     await flushTasks();
 
-    app.$.history.$$('#menuRemoveButton').click();
+    app.$.history.shadowRoot!.querySelector<HTMLElement>(
+                                 '#menuRemoveButton')!.click();
     await Promise.all([
       testService.whenCalled('removeVisits'),
       flushTasks(),
     ]);
 
-    assertEquals(1, histogramMap['HistoryPage.RemoveEntryPosition'][0]);
-    assertEquals(1, histogramMap['HistoryPage.RemoveEntryPositionSubset'][0]);
+    assertEquals(1, histogramMap['HistoryPage.RemoveEntryPosition']![0]);
+    assertEquals(1, histogramMap['HistoryPage.RemoveEntryPositionSubset']![0]);
   });
 
   test('synced-device-manager', async () => {
@@ -177,10 +200,11 @@ suite('Metrics', function() {
     testService.setForeignSessions(sessionList);
     await finishSetup([]);
 
-    app.selectedPage_ = 'syncedTabs';
+    navigateTo('/syncedTabs');
     await flushTasks();
 
     const histogram = histogramMap[SYNCED_TABS_HISTOGRAM_NAME];
+    assertTrue(!!histogram);
     assertEquals(1, histogram[SyncedTabsHistogram.INITIALIZED]);
 
     await testService.whenCalled('getForeignSessions');
@@ -189,26 +213,34 @@ suite('Metrics', function() {
     assertEquals(1, histogram[SyncedTabsHistogram.HAS_FOREIGN_DATA]);
     await flushTasks();
 
-    const cards = polymerSelectAll(
-        app.$$('#synced-devices'), 'history-synced-device-card');
+    const syncedDeviceManager =
+        app.shadowRoot!.querySelector('history-synced-device-manager');
+    assertTrue(!!syncedDeviceManager);
+
+    const cards = syncedDeviceManager.shadowRoot!.querySelectorAll(
+        'history-synced-device-card');
+    assertTrue(!!cards[0]);
     cards[0].$['card-heading'].click();
     assertEquals(1, histogram[SyncedTabsHistogram.COLLAPSE_SESSION]);
     cards[0].$['card-heading'].click();
     assertEquals(1, histogram[SyncedTabsHistogram.EXPAND_SESSION]);
-    polymerSelectAll(cards[0], '.website-link')[0].click();
+    cards[0].shadowRoot!.querySelectorAll<HTMLElement>(
+                            '.website-link')[0]!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.LINK_CLICKED]);
 
     const menuButton = cards[0].$['menu-button'];
     menuButton.click();
     await flushTasks();
 
-    app.$$('#synced-devices').$$('#menuOpenButton').click();
+    syncedDeviceManager.shadowRoot!
+        .querySelector<HTMLElement>('#menuOpenButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.OPEN_ALL]);
 
     menuButton.click();
     await flushTasks();
 
-    app.$$('#synced-devices').$$('#menuDeleteButton').click();
+    syncedDeviceManager!.shadowRoot!
+        .querySelector<HTMLElement>('#menuDeleteButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.HIDE_FOR_NOW]);
   });
 });

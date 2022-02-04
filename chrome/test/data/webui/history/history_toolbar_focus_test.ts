@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import 'chrome://history/history.js';
+
+import {BrowserServiceImpl, HistoryAppElement} from 'chrome://history/history.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 
 suite('<history-toolbar>', function() {
-  let app;
-  let toolbar;
+  let app: HistoryAppElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -20,40 +22,37 @@ suite('<history-toolbar>', function() {
 
     app = document.createElement('history-app');
     document.body.appendChild(app);
-
-    toolbar = app.$['toolbar'];
   });
 
   test('search bar is focused on load in wide mode', async () => {
-    toolbar.$['main-toolbar'].narrow = false;
+    app.$.toolbar.$.mainToolbar.narrow = false;
 
     await flushTasks();
 
     // Ensure the search bar is focused on load.
-    assertTrue(
-        app.$.toolbar.$['main-toolbar'].getSearchField().isSearchFocused());
+    assertTrue(app.$.toolbar.$.mainToolbar.getSearchField().isSearchFocused());
   });
 
   test('search bar is not focused on load in narrow mode', async () => {
-    toolbar.$['main-toolbar'].narrow = true;
+    app.$.toolbar.$.mainToolbar.narrow = true;
 
     await flushTasks();
     // Ensure the search bar is focused on load.
-    assertFalse(toolbar.$['main-toolbar'].getSearchField().isSearchFocused());
+    assertFalse(app.$.toolbar.$.mainToolbar.getSearchField().isSearchFocused());
   });
 
   test('shortcuts to open search field', function() {
-    const field = toolbar.$['main-toolbar'].getSearchField();
+    const field = app.$.toolbar.$.mainToolbar.getSearchField();
     field.blur();
     assertFalse(field.showingSearch);
 
     const modifier = isMac ? 'meta' : 'ctrl';
     pressAndReleaseKeyOn(document.body, 70, modifier, 'f');
     assertTrue(field.showingSearch);
-    assertEquals(field.$.searchInput, field.root.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
 
     pressAndReleaseKeyOn(field.$.searchInput, 27, '', 'Escape');
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
-    assertNotEquals(field.$.searchInput, field.root.activeElement);
+    assertNotEquals(field.$.searchInput, field.shadowRoot!.activeElement);
   });
 });

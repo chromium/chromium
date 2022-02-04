@@ -35,7 +35,7 @@ import {ForeignSession, QueryResult, QueryState} from './externs.js';
 import {HistoryListElement} from './history_list.js';
 import {HistoryToolbarElement} from './history_toolbar.js';
 import {Page, TABBED_PAGES} from './router.js';
-import {FooterInfo} from './side_bar.js';
+import {FooterInfo, HistorySideBarElement} from './side_bar.js';
 
 let lazyLoadPromise: Promise<void>|null = null;
 export function ensureLazyLoaded(): Promise<void> {
@@ -119,6 +119,7 @@ declare global {
 export interface HistoryAppElement {
   $: {
     'content': IronPagesElement,
+    'content-side-bar': HistorySideBarElement,
     'drawer': CrLazyRenderElement<CrDrawerElement>,
     'history': HistoryListElement,
     'tabs-container': Element,
@@ -565,6 +566,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
   // Override FindShortcutMixin methods.
   searchInputHasFocus(): boolean {
     return this.$.toolbar.searchField.isSearchFocused();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-app': HistoryAppElement;
   }
 }
 

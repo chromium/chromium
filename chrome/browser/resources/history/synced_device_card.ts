@@ -36,6 +36,7 @@ export interface HistorySyncedDeviceCardElement {
   $: {
     'card-heading': HTMLDivElement,
     'collapse': IronCollapseElement,
+    'menu-button': HTMLElement,
   };
 }
 
@@ -190,6 +191,12 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
     BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_RIGHT_CLICKED,
         SyncedTabsHistogram.LIMIT);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-synced-device-card': HistorySyncedDeviceCardElement;
   }
 }
 

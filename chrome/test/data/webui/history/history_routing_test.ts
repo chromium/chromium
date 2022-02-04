@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl, BrowserServiceImpl, MetricsProxyImpl} from 'chrome://history/history.js';
+import 'chrome://history/history.js';
+
+import {BrowserProxyImpl, BrowserServiceImpl, HistoryAppElement, HistorySideBarElement, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
@@ -13,16 +16,17 @@ import {TestBrowserService} from './test_browser_service.js';
 [true, false].forEach(isHistoryClustersEnabled => {
   const suitSuffix = isHistoryClustersEnabled ? 'enabled' : 'disabled';
   suite(`routing-test-with-history-clusters-${suitSuffix}`, function() {
-    let app;
-    let list;
-    let sidebar;
-    let toolbar;
+    let app: HistoryAppElement;
+    let sidebar: HistorySideBarElement;
+    let testBrowserProxy: TestBrowserProxy;
+    let testMetricsProxy: TestMetricsProxy;
 
-    function navigateTo(route) {
+    function navigateTo(route: string) {
       window.history.replaceState({}, '', route);
       window.dispatchEvent(new CustomEvent('location-changed'));
       // Update from the URL synchronously.
-      app.$$('history-router').debouncer_.flush();
+      app.shadowRoot!.querySelector(
+                         'history-router')!.getDebouncerForTesting()!.flush();
     }
 
     suiteSetup(() => {
@@ -38,14 +42,15 @@ import {TestBrowserService} from './test_browser_service.js';
       window.history.replaceState({}, '', '/');
       document.body.innerHTML = '';
       BrowserServiceImpl.setInstance(new TestBrowserService());
-      BrowserProxyImpl.setInstance(new TestBrowserProxy());
-      MetricsProxyImpl.setInstance(new TestMetricsProxy());
+      testBrowserProxy = new TestBrowserProxy();
+      BrowserProxyImpl.setInstance(testBrowserProxy);
+      testMetricsProxy = new TestMetricsProxy();
+      MetricsProxyImpl.setInstance(testMetricsProxy);
       app = document.createElement('history-app');
       document.body.appendChild(app);
 
       assertEquals('chrome://history/', window.location.href);
       sidebar = app.$['content-side-bar'];
-      toolbar = app.$['toolbar'];
       return flushTasks();
     });
 
@@ -69,37 +74,44 @@ import {TestBrowserService} from './test_browser_service.js';
 
     test('changing route changes active view', function() {
       assertEquals('history', app.$.content.selected);
-      assertEquals(app.$$('#history'), app.$['tabs-content'].selectedItem);
+      assertEquals(app.$.history, app.$['tabs-content'].selectedItem);
 
       navigateTo('/syncedTabs');
       return flushTasks().then(function() {
         assertEquals('chrome://history/syncedTabs', window.location.href);
 
         assertEquals('syncedTabs', app.$.content.selected);
-        assertEquals(app.$$('#synced-devices'), app.$.content.selectedItem);
+        assertEquals(
+            app.shadowRoot!.querySelector('#synced-devices'),
+            app.$.content.selectedItem);
       });
     });
 
     test('routing to /journeys may change active view', function() {
       assertEquals('history', app.$.content.selected);
-      assertEquals(app.$$('#history'), app.$['tabs-content'].selectedItem);
+      assertEquals(
+          app.shadowRoot!.querySelector('#history'),
+          app.$['tabs-content'].selectedItem);
 
       navigateTo('/journeys');
       return flushTasks().then(function() {
         assertEquals('chrome://history/journeys', window.location.href);
 
         assertEquals('history', app.$.content.selected);
-        assertEquals(!!app.$$('#history-clusters'), isHistoryClustersEnabled);
         assertEquals(
-            isHistoryClustersEnabled ? app.$$('#history-clusters') :
-                                       app.$$('#history'),
+            !!app.shadowRoot!.querySelector('#history-clusters'),
+            isHistoryClustersEnabled);
+        assertEquals(
+            isHistoryClustersEnabled ?
+                app.shadowRoot!.querySelector('#history-clusters') :
+                app.shadowRoot!.querySelector('#history'),
             app.$['tabs-content'].selectedItem);
       });
     });
 
     test('routing to /journeys may update sidebar menu item', function() {
       assertEquals('chrome://history/', sidebar.$.history.href);
-      assertEquals('history', sidebar.$.history.path);
+      assertEquals('history', sidebar.$.history.getAttribute('path'));
 
       navigateTo('/journeys');
       return flushTasks().then(function() {
@@ -110,7 +122,7 @@ import {TestBrowserService} from './test_browser_service.js';
             sidebar.$.history.href);
         assertEquals(
             isHistoryClustersEnabled ? 'journeys' : 'history',
-            sidebar.$.history.path);
+            sidebar.$.history.getAttribute('path'));
       });
     });
 
@@ -127,10 +139,11 @@ import {TestBrowserService} from './test_browser_service.js';
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
-      const historyTabs = app.$$('cr-tabs');
+      const historyTabs = app.shadowRoot!.querySelector('cr-tabs');
       assertEquals(!!historyTabs, isHistoryClustersEnabled);
 
       if (isHistoryClustersEnabled) {
+        assertTrue(!!historyTabs);
         historyTabs.selected = 1;
         assertEquals('journeys', sidebar.$.menu.selected);
         assertEquals('chrome://history/journeys', window.location.href);
@@ -155,30 +168,30 @@ import {TestBrowserService} from './test_browser_service.js';
         return;
       }
 
-      const handler = BrowserProxyImpl.getInstance().handler;
+      const handler = testBrowserProxy.handler;
 
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
       // Navigate to chrome://history/journeys.
-      app.$$('cr-tabs').selected = 1;
+      app.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
       assertEquals('journeys', sidebar.$.menu.selected);
       assertEquals('chrome://history/journeys', window.location.href);
       await flushTasks();
-      assertTrue(
-          app.$$('#history-clusters').classList.contains('iron-selected'));
+      assertTrue(app.shadowRoot!.querySelector('#history-clusters')!.classList
+                     .contains('iron-selected'));
 
       handler.setResultFor(
           'toggleVisibility', Promise.resolve({visible: false}));
 
       // Verify the menu item label and press it.
       assertEquals(
-          'Disable', sidebar.$['toggle-history-clusters'].textContent.trim());
+          'Disable', sidebar.$['toggle-history-clusters'].textContent!.trim());
       keyDownOn(sidebar.$['toggle-history-clusters'], 0, '', ' ');
 
       // Verify that the browser is notified and the histogram is recorded.
-      let visible = await MetricsProxyImpl.getInstance().whenCalled(
-          'recordToggledVisibility');
+      let visible =
+          await testMetricsProxy.whenCalled('recordToggledVisibility');
       assertFalse(visible);
       visible = await handler.whenCalled('toggleVisibility');
       assertFalse(visible);
@@ -186,23 +199,22 @@ import {TestBrowserService} from './test_browser_service.js';
       // Toggling history clusters off navigates to chrome://history/.
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
-      assertFalse(
-          app.$$('#history-clusters').classList.contains('iron-selected'));
+      assertFalse(app.shadowRoot!.querySelector('#history-clusters')!.classList
+                      .contains('iron-selected'));
 
       handler.reset();
-      MetricsProxyImpl.getInstance().reset();
+      testMetricsProxy.reset();
 
       handler.setResultFor(
           'toggleVisibility', Promise.resolve({visible: true}));
 
       // Verify the updated menu item label and press it again.
       assertEquals(
-          'Enable', sidebar.$['toggle-history-clusters'].textContent.trim());
+          'Enable', sidebar.$['toggle-history-clusters'].textContent!.trim());
       keyDownOn(sidebar.$['toggle-history-clusters'], 0, '', ' ');
 
       // Verify that the browser is notified and the histogram is recorded.
-      visible = await MetricsProxyImpl.getInstance().whenCalled(
-          'recordToggledVisibility');
+      visible = await testMetricsProxy.whenCalled('recordToggledVisibility');
       assertTrue(visible);
       visible = await handler.whenCalled('toggleVisibility');
       assertTrue(visible);
@@ -210,8 +222,8 @@ import {TestBrowserService} from './test_browser_service.js';
       // Toggling history clusters on navigates to chrome://history/journeys.
       assertEquals('journeys', sidebar.$.menu.selected);
       assertEquals('chrome://history/journeys', window.location.href);
-      assertTrue(
-          app.$$('#history-clusters').classList.contains('iron-selected'));
+      assertTrue(app.shadowRoot!.querySelector('#history-clusters')!.classList
+                     .contains('iron-selected'));
     });
 
     test('search updates from route', function() {
@@ -219,13 +231,15 @@ import {TestBrowserService} from './test_browser_service.js';
       const searchTerm = 'Mei';
       assertEquals('history', app.$.content.selected);
       navigateTo('/?q=' + searchTerm);
-      assertEquals(searchTerm, toolbar.searchTerm);
+      assertEquals(searchTerm, app.$.toolbar.searchTerm);
     });
 
     test('route updates from search', function() {
       const searchTerm = 'McCree';
       assertEquals('history', app.$.content.selected);
-      app.fire('change-query', {search: searchTerm});
+      app.dispatchEvent(new CustomEvent(
+          'change-query',
+          {bubbles: true, composed: true, detail: {search: searchTerm}}));
       assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
     });
 
@@ -236,19 +250,19 @@ import {TestBrowserService} from './test_browser_service.js';
 
       sidebar.$.syncedTabs.click();
       assertEquals('syncedTabs', sidebar.$.menu.selected);
-      assertEquals(searchTerm, toolbar.searchTerm);
+      assertEquals(searchTerm, app.$.toolbar.searchTerm);
       assertEquals(
           'chrome://history/syncedTabs?q=' + searchTerm, window.location.href);
 
       sidebar.$.history.click();
       assertEquals('history', sidebar.$.menu.selected);
-      assertEquals(searchTerm, toolbar.searchTerm);
+      assertEquals(searchTerm, app.$.toolbar.searchTerm);
       assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
 
       if (isHistoryClustersEnabled) {
-        app.$$('cr-tabs').selected = 1;
+        app.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
         assertEquals('journeys', sidebar.$.menu.selected);
-        assertEquals(searchTerm, toolbar.searchTerm);
+        assertEquals(searchTerm, app.$.toolbar.searchTerm);
         assertEquals(
             'chrome://history/journeys?q=' + searchTerm, window.location.href);
       }
