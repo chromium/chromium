@@ -131,6 +131,7 @@ bool IsNonNativeFileSystemType(storage::FileSystemType type) {
     case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeDriveFs:
     case storage::kFileSystemTypeSmbFs:
+    case storage::kFileSystemTypeFuseBox:
       return false;
     default:
       // The path indeed corresponds to a mount point not associated with a
