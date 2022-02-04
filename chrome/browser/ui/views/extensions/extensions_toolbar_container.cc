@@ -617,7 +617,7 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
     return false;
 
   // TODO(crbug.com/1275586): Force-pinned extensions are not draggable.
-  return model_->IsActionForcePinned(*it);
+  return !model_->IsActionForcePinned(*it);
 }
 
 bool ExtensionsToolbarContainer::GetDropFormats(
