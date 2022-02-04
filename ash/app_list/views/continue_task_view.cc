@@ -252,13 +252,15 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
       ContinueTaskCommandId::kOpenResult,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_OPEN),
-      ui::ImageModel::FromVectorIcon(kLaunchIcon));
+      ui::ImageModel::FromVectorIcon(kLaunchIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
 
   context_menu_model_->AddItemWithIcon(
       ContinueTaskCommandId::kRemoveResult,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
-      ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon));
+      ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
 
   return context_menu_model_.get();
 }

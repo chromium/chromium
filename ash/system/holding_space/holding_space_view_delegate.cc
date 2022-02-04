@@ -700,7 +700,8 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       context_menu_model_->AddItemWithIcon(
           static_cast<int>(menu_item.command_id),
           l10n_util::GetStringUTF16(menu_item.label_id),
-          ui::ImageModel::FromVectorIcon(menu_item.icon, ui::kColorMenuIcon,
+          ui::ImageModel::FromVectorIcon(menu_item.icon,
+                                         ui::kColorAshSystemUIMenuIcon,
                                          kHoldingSpaceIconSize));
     }
   }

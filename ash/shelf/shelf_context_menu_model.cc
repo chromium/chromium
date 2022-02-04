@@ -152,8 +152,9 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
                          : IDS_ASH_SHELF_CONTEXT_MENU_AUTO_HIDE;
     AddItemWithStringIdAndIcon(
         MENU_AUTO_HIDE, string_id,
-        ui::ImageModel::FromVectorIcon(is_autohide_set ? kAlwaysShowShelfIcon
-                                                       : kAutoHideIcon));
+        ui::ImageModel::FromVectorIcon(
+            is_autohide_set ? kAlwaysShowShelfIcon : kAutoHideIcon,
+            ui::kColorAshSystemUIMenuIcon));
   }
 
   // Only allow shelf alignment modifications by the logged in Gaia users
@@ -176,17 +177,20 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
     AddSubMenuWithStringIdAndIcon(
         MENU_ALIGNMENT_MENU, IDS_ASH_SHELF_CONTEXT_MENU_POSITION,
         alignment_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(kShelfPositionIcon));
+        ui::ImageModel::FromVectorIcon(kShelfPositionIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
   }
 
   if (ash::features::IsPersonalizationHubEnabled()) {
-    AddItemWithStringIdAndIcon(MENU_PERSONALIZATION_HUB,
-                               IDS_AURA_OPEN_PERSONALIZATION_HUB,
-                               ui::ImageModel::FromVectorIcon(kPaintBrushIcon));
+    AddItemWithStringIdAndIcon(
+        MENU_PERSONALIZATION_HUB, IDS_AURA_OPEN_PERSONALIZATION_HUB,
+        ui::ImageModel::FromVectorIcon(kPaintBrushIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
   } else if (Shell::Get()->wallpaper_controller()->CanOpenWallpaperPicker()) {
-    AddItemWithStringIdAndIcon(MENU_CHANGE_WALLPAPER,
-                               IDS_AURA_SET_DESKTOP_WALLPAPER,
-                               ui::ImageModel::FromVectorIcon(kWallpaperIcon));
+    AddItemWithStringIdAndIcon(
+        MENU_CHANGE_WALLPAPER, IDS_AURA_SET_DESKTOP_WALLPAPER,
+        ui::ImageModel::FromVectorIcon(kWallpaperIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
   }
 }
 

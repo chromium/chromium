@@ -211,7 +211,7 @@ void ExtensionShelfContextMenu::CreateOpenNewSubmenu(
       open_new_submenu_model_.get(),
       ui::ImageModel::FromVectorIcon(
           GetCommandIdVectorIcon(ash::MENU_OPEN_NEW, GetLaunchTypeStringId()),
-          ui::kColorMenuIcon, ash::kAppContextMenuIconSize));
+          ui::kColorAshSystemUIMenuIcon, ash::kAppContextMenuIconSize));
 }
 
 extensions::LaunchType ExtensionShelfContextMenu::GetLaunchType() const {

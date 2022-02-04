@@ -166,13 +166,14 @@ bool PopulateNewItemFromMojoMenuItems(
     return false;
   }
 
+  const ui::ColorId color_id = GetColorIdForMenuItemIcon();
   switch (item->type) {
     case apps::mojom::MenuItemType::kCommand: {
       const gfx::VectorIcon& icon =
           std::move(get_vector_icon).Run(item->command_id, item->string_id);
       model->AddItemWithStringIdAndIcon(
           item->command_id, item->string_id,
-          ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+          ui::ImageModel::FromVectorIcon(icon, color_id,
                                          ash::kAppContextMenuIconSize));
       break;
     }
@@ -183,7 +184,7 @@ bool PopulateNewItemFromMojoMenuItems(
             std::move(get_vector_icon).Run(item->command_id, item->string_id);
         model->AddActionableSubmenuWithStringIdAndIcon(
             item->command_id, item->string_id, submenu,
-            ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+            ui::ImageModel::FromVectorIcon(icon, color_id,
                                            ash::kAppContextMenuIconSize));
       }
       break;
@@ -264,6 +265,14 @@ mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
                  &menu_items);
 
   return menu_items;
+}
+
+ui::ColorId GetColorIdForMenuItemIcon() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ui::kColorAshSystemUIMenuIcon;
+#else
+  return ui::kColorMenuIcon;
+#endif
 }
 
 }  // namespace apps

@@ -33,9 +33,9 @@ namespace {
 
 // Create an appropriately sized ImageModel for a menu item icon.
 ui::ImageModel GetMenuItemIcon(const gfx::VectorIcon& icon) {
-  return ui::ImageModel::FromVectorIcon(icon,
-                                        /*color_id=*/ui::kColorMenuIcon,
-                                        ash::kAppContextMenuIconSize);
+  return ui::ImageModel::FromVectorIcon(
+      icon,
+      /*color_id=*/ui::kColorAshSystemUIMenuIcon, ash::kAppContextMenuIconSize);
 }
 
 }  // namespace

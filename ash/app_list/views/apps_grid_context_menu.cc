@@ -74,12 +74,14 @@ void AppsGridContextMenu::BuildMenuModel() {
       AppsGridCommandId::kReorderByNameAlphabetical,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
-      ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon));
+      ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
   context_menu_model_->AddItemWithIcon(
       AppsGridCommandId::kReorderByColor,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_COLOR),
-      ui::ImageModel::FromVectorIcon(kSortColorIcon));
+      ui::ImageModel::FromVectorIcon(kSortColorIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
 }
 
 void AppsGridContextMenu::OnMenuClosed() {

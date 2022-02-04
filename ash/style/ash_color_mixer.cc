@@ -23,6 +23,9 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshSystemUIMenuBackground] = {
       ash_color_provider->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80)};
+  mixer[ui::kColorAshSystemUIMenuIcon] = {
+      ash_color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)};
 
   auto [color, opacity] = ash_color_provider->GetInkDropBaseColorAndOpacity();
   mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {

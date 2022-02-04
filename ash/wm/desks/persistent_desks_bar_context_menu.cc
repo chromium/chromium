@@ -63,7 +63,8 @@ ui::SimpleMenuModel* PersistentDesksBarContextMenu::BuildMenuModel() {
       static_cast<int>(CommandId::kFeedBack),
       l10n_util::GetStringUTF16(
           IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
-      ui::ImageModel::FromVectorIcon(kPersistentDesksBarFeedbackIcon));
+      ui::ImageModel::FromVectorIcon(kPersistentDesksBarFeedbackIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
 
   auto* bar_controller = Shell::Get()->persistent_desks_bar_controller();
   const bool is_enabled = bar_controller->IsEnabled();
@@ -75,7 +76,8 @@ ui::SimpleMenuModel* PersistentDesksBarContextMenu::BuildMenuModel() {
               : IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_SHOW_DESKS_BAR),
       ui::ImageModel::FromVectorIcon(is_enabled
                                          ? kPersistentDesksBarNotVisibleIcon
-                                         : kPersistentDesksBarVisibleIcon));
+                                         : kPersistentDesksBarVisibleIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
 
   return context_menu_model_.get();
 }

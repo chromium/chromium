@@ -292,7 +292,7 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
   if (!icon.is_empty()) {
     menu_model->AddItemWithStringIdAndIcon(
         type, string_id,
-        ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+        ui::ImageModel::FromVectorIcon(icon, ui::kColorAshSystemUIMenuIcon,
                                        ash::kAppContextMenuIconSize));
     return;
   }

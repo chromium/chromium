@@ -391,25 +391,31 @@ void AppServiceContextMenu::OnGetMenuModel(
 
   if (add_sort_options_) {
     reorder_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
+    const ui::ColorId color_id = apps::GetColorIdForMenuItemIcon();
     // As all the options below are only for tests and are expected to change in
     // the future, the strings are directly written as the parameters.
     reorder_submenu_->AddItemWithIcon(
         ash::REORDER_BY_NAME_ALPHABETICAL,
         l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_NAME),
-        ui::ImageModel::FromVectorIcon(GetMenuItemVectorIcon(
-            ash::REORDER_BY_NAME_ALPHABETICAL, /*string_id=*/-1)));
+        ui::ImageModel::FromVectorIcon(
+            GetMenuItemVectorIcon(ash::REORDER_BY_NAME_ALPHABETICAL,
+                                  /*string_id=*/-1),
+            color_id));
     reorder_submenu_->AddItemWithIcon(
         ash::REORDER_BY_COLOR,
         l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_COLOR),
         ui::ImageModel::FromVectorIcon(
-            GetMenuItemVectorIcon(ash::REORDER_BY_COLOR, /*string_id=*/-1)));
+            GetMenuItemVectorIcon(ash::REORDER_BY_COLOR, /*string_id=*/-1),
+            color_id));
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+
     menu_model->AddSubMenuWithIcon(
         ash::REORDER_SUBMENU,
         l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_TITLE),
         reorder_submenu_.get(),
         ui::ImageModel::FromVectorIcon(
-            GetMenuItemVectorIcon(ash::REORDER_SUBMENU, /*string_id=*/-1)));
+            GetMenuItemVectorIcon(ash::REORDER_SUBMENU, /*string_id=*/-1),
+            color_id));
   }
 
   std::move(callback).Run(std::move(menu_model));

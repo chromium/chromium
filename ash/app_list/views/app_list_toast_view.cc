@@ -224,7 +224,8 @@ void AppListToastView::UpdateIconImage() {
       !features::IsDarkLightModeEnabled() ||
               AshColorProvider::Get()->IsDarkModeEnabled()
           ? *dark_icon_
-          : *light_icon_));
+          : *light_icon_,
+      ui::kColorAshSystemUIMenuIcon));
 }
 
 void AppListToastView::CreateIconView() {
