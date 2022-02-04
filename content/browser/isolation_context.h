@@ -70,9 +70,9 @@ class CONTENT_EXPORT IsolationContext {
 
  private:
   // When non-null, associates this context with a particular BrowsingInstance.
-  BrowsingInstanceId browsing_instance_id_;
+  const BrowsingInstanceId browsing_instance_id_;
 
-  BrowserOrResourceContext browser_or_resource_context_;
+  const BrowserOrResourceContext browser_or_resource_context_;
 
   // Specifies whether the BrowsingInstance associated with this context is for
   // a <webview> guest.
