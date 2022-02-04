@@ -18,6 +18,7 @@ include_rules = [
   "+components/ntp_snippets",
   "+components/password_manager/core/common",
   "+components/payments/core",
+  "+components/policy/core/common",
   "+components/prefs",
   "+components/previous_session_info/previous_session_info.h",
   "+components/reading_list/core",

@@ -5,18 +5,38 @@
 #import "ios/chrome/app/enterprise_app_agent.h"
 
 #include "base/check.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/policy_namespace.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
+#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#include "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
+#import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_observer_bridge.h"
+#import "ios/chrome/browser/policy/cloud_policy_client_observer_bridge.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface EnterpriseAppAgent () <SceneStateObserver>
+@interface EnterpriseAppAgent () <
+    ChromeBrowserCloudManagementControllerObserver,
+    CloudPolicyClientObserver,
+    SceneStateObserver> {
+  std::unique_ptr<ChromeBrowserCloudManagementControllerObserverBridge>
+      _cloudManagementControllerObserver;
+  std::unique_ptr<CloudPolicyClientObserverBridge> _cloudPolicyClientObserver;
+
+  BrowserPolicyConnectorIOS* _policyConnector;
+}
 
 // The app state for the app.
 @property(nonatomic, weak, readonly) AppState* appState;
+
+// Browser policy connector for iOS.
+@property(nonatomic, assign) BrowserPolicyConnectorIOS* policyConnector;
 
 @end
 
@@ -50,23 +70,24 @@
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
   if (appState.initStage == InitStageEnterprise) {
-    // TODO(crbug.com/1178818): When fully implemented, the transition to the
-    // next init stage will only happen when the policy is actually fetched.
     if ([self shouldShowEnterpriseLoadScreen]) {
+      _cloudManagementControllerObserver = std::make_unique<
+          ChromeBrowserCloudManagementControllerObserverBridge>(
+          self,
+          self.policyConnector->chrome_browser_cloud_management_controller());
+
+      policy::CloudPolicyClient* client =
+          self.policyConnector->machine_level_user_cloud_policy_manager()
+              ->core()
+              ->client();
+      _cloudPolicyClientObserver =
+          std::make_unique<CloudPolicyClientObserverBridge>(self, client);
+
       for (SceneState* scene in appState.connectedScenes) {
         if (scene.activationLevel > SceneActivationLevelBackground) {
           [self showUIInScene:scene];
         }
       }
-
-      // TODO(crbug.com/1178818): remove this when the fetching is implemented.
-      // This is just debug code to simulate a long fetch.
-      dispatch_after(
-          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(12 * NSEC_PER_SEC)),
-          dispatch_get_main_queue(), ^{
-            [self.appState queueTransitionToNextInitStage];
-          });
-
     } else {
       [self.appState queueTransitionToNextInitStage];
     }
@@ -74,6 +95,10 @@
 
   if (previousInitStage == InitStageEnterprise) {
     // Nothing left to do; clean up.
+    _cloudManagementControllerObserver = nullptr;
+    _cloudPolicyClientObserver = nullptr;
+
+    // Let the following line at the end of the block.
     [self.appState removeAgent:self];
   }
 }
@@ -86,6 +111,29 @@
       level > SceneActivationLevelBackground) {
     [self showUIInScene:sceneState];
   }
+}
+
+#pragma mark - ChromeBrowserCloudManagementControllerObserverBridge
+
+- (void)policyRegistrationDidCompleteSuccessfuly:(BOOL)succeeded {
+  if (!succeeded) {
+    [self.appState queueTransitionToNextInitStage];
+  }
+}
+
+#pragma mark - CloudPolicyClientObserverBridge
+
+- (void)cloudPolicyWasFetched:(policy::CloudPolicyClient*)client {
+  [self.appState queueTransitionToNextInitStage];
+}
+
+- (void)cloudPolicyDidError:(policy::CloudPolicyClient*)client {
+  [self.appState queueTransitionToNextInitStage];
+}
+
+- (void)cloudPolicyRegistrationChanged:(policy::CloudPolicyClient*)client {
+  // Ignored as for initialization, only registration and fetch completion
+  // results are needed.
 }
 
 #pragma mark - private
@@ -102,8 +150,24 @@
 }
 
 - (BOOL)shouldShowEnterpriseLoadScreen {
-  // TODO(crbug.com/1178818): add actual logic here
-  return NO;
+  self.policyConnector = GetApplicationContext()->GetBrowserPolicyConnector();
+  // |policyConnector| is nullptr if policy is not enabled.
+  if (!self.policyConnector) {
+    return NO;
+  }
+
+  // |machineLevelUserCloudPolicyManager| is nullptr if the DM token needed
+  // for fetch is explicitly invalid or if enrollment tokens and DM token are
+  // empty.
+  policy::MachineLevelUserCloudPolicyManager*
+      machineLevelUserCloudPolicyManager =
+          self.policyConnector->machine_level_user_cloud_policy_manager();
+
+  return self.policyConnector->chrome_browser_cloud_management_controller()
+             ->IsEnabled() &&
+         machineLevelUserCloudPolicyManager &&
+         !machineLevelUserCloudPolicyManager->IsFirstPolicyLoadComplete(
+             policy::POLICY_DOMAIN_CHROME);
 }
 
 @end
