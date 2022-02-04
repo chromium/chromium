@@ -133,11 +133,11 @@ public class PriceDropNotifier {
     }
 
     @VisibleForTesting
-    protected NotificationWrapperBuilder getNotificationBuilder(int notificationId) {
+    protected NotificationWrapperBuilder getNotificationBuilder(
+            @SystemNotificationType int notificationType, int notificationId) {
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                 ChannelId.PRICE_DROP,
-                new NotificationMetadata(SystemNotificationType.PRICE_DROP_ALERTS, NOTIFICATION_TAG,
-                        notificationId));
+                new NotificationMetadata(notificationType, NOTIFICATION_TAG, notificationId));
     }
 
     private void maybeFetchIcon(
@@ -154,7 +154,10 @@ public class PriceDropNotifier {
 
     private void showWithIcon(NotificationData notificationData, @Nullable Bitmap icon) {
         int notificationId = getNotificationId(notificationData.offerId);
-        NotificationWrapperBuilder notificationBuilder = getNotificationBuilder(notificationId);
+        @SystemNotificationType
+        int notificationType = getUmaNotificationType(notificationData);
+        NotificationWrapperBuilder notificationBuilder =
+                getNotificationBuilder(notificationType, notificationId);
         if (icon != null) {
             // Both the large icon and the expanded view use the bitmap fetched from icon URL.
             notificationBuilder.setLargeIcon(icon);
@@ -179,7 +182,9 @@ public class PriceDropNotifier {
         }
         NotificationWrapper notificationWrapper = notificationBuilder.buildNotificationWrapper();
         mNotificationManagerProxy.notify(notificationWrapper);
-        mPriceDropNotificationManager.onNotificationPosted(notificationWrapper.getNotification());
+        NotificationUmaTracker.getInstance().onNotificationShown(
+                notificationType, notificationWrapper.getNotification());
+        mPriceDropNotificationManager.updateNotificationTimestamps(notificationType, true);
     }
 
     private static @NotificationUmaTracker.ActionType int actionIdToUmaActionType(String actionId) {
@@ -210,5 +215,11 @@ public class PriceDropNotifier {
     private int getNotificationId(String offerId) {
         assert !TextUtils.isEmpty(offerId);
         return offerId.hashCode();
+    }
+
+    private @SystemNotificationType int getUmaNotificationType(NotificationData notificationData) {
+        return TextUtils.isEmpty(notificationData.productClusterId)
+                ? SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED
+                : SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
     }
 }

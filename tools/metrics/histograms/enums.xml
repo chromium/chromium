@@ -86631,6 +86631,8 @@ would be helpful to identify which type is being sent.
   <int value="28" label="Price Drop Alerts"/>
   <int value="30" label="WebAPK install in progress"/>
   <int value="31" label="WebAPK install complete"/>
+  <int value="32" label="Chrome Managed Price Drop Alerts"/>
+  <int value="33" label="User Managed Price Drop Alerts"/>
 </enum>
 
 <enum name="TabActivationTypes">

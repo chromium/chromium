@@ -21,6 +21,11 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <variant name="NavigationComplete" summary="completes a navigation."/>
 </variants>
 
+<variants name="ManagementTypes">
+  <variant name="ChromeManaged" summary="chrome-managed price tracking."/>
+  <variant name="UserManaged" summary="user-managed price tracking."/>
+</variants>
+
 <variants name="TabUsageStatuses">
   <variant name="ActiveTab"
       summary="Tabs between 0 and 1 day since last usage."/>
@@ -205,6 +210,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PriceDrops.{ManagementType}.NotificationCount"
+    units="notifications" expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    The number of price drop notifications shown in the given time interval (one
+    day by default) for the specified management type. Emitted for clients in
+    our experiment when Chrome is foregrounded. Recorded at most once in a
+    one-day moving window. Implemented for Android.
+  </summary>
+  <token key="ManagementType" variants="ManagementTypes"/>
+</histogram>
+
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPrice"
     enum="BooleanContainsPrice" expires_after="2022-06-07">
@@ -266,6 +285,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     initialize subscriptions when Chrome becomes foreground app but at most once
     in a one-day moving window). Implemented for Android.
   </summary>
+</histogram>
+
+<histogram name="Commerce.Subscriptions.{ManagementType}.Count"
+    units="subscriptions" expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    The number of price tracking subscriptions stored in local storage for the
+    specified management type. Emitted for clients in our experiment when Chrome
+    is foregrounded. Recorded at most once in a one-day moving window.
+    Implemented for Android.
+  </summary>
+  <token key="ManagementType" variants="ManagementTypes"/>
 </histogram>
 
 </histograms>

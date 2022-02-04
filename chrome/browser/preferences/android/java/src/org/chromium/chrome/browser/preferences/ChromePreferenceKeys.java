@@ -644,6 +644,13 @@ public final class ChromePreferenceKeys {
             "Chrome.PriceTracking.AnnotationsEnabledMetricsTimestamp";
 
     /**
+     * Save the serialized timestamps of the previously shown chrome-managed price drop
+     * notifications.
+     */
+    public static final String PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS =
+            "Chrome.PriceTracking.ChromeManagedNotificationsTimestamps";
+
+    /**
      * Whether the PriceAlertsMessageCard is enabled.
      */
     public static final String PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD =
@@ -668,6 +675,12 @@ public final class ChromePreferenceKeys {
      */
     public static final String PRICE_TRACKING_TRACK_PRICES_ON_TABS =
             "Chrome.PriceTracking.TrackPricesOnTabs";
+
+    /**
+     * Save the serialized timestamps of the previously shown user-managed price drop notifications.
+     */
+    public static final String PRICE_TRACKING_USER_MANAGED_NOTIFICATIONS_TIMESTAMPS =
+            "Chrome.PriceTracking.UserManagedNotificationsTimestamps";
 
     public static final String PRIVACY_METRICS_REPORTING = "metrics_reporting";
     public static final String PRIVACY_METRICS_IN_SAMPLE = "in_metrics_sample";
@@ -1064,11 +1077,13 @@ public final class ChromePreferenceKeys {
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
+                PRICE_TRACKING_USER_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRIMARY_ACCOUNT_SYNC,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),

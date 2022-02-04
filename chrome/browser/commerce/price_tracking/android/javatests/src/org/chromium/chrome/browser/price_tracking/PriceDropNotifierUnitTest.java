@@ -45,6 +45,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.ActionType;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.NotificationData;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -117,7 +118,8 @@ public class PriceDropNotifierUnitTest {
         }
 
         @Override
-        protected NotificationWrapperBuilder getNotificationBuilder(int notificationId) {
+        protected NotificationWrapperBuilder getNotificationBuilder(
+                @SystemNotificationType int notificationType, int notificationId) {
             return mMockNotificationBuilder;
         }
     }

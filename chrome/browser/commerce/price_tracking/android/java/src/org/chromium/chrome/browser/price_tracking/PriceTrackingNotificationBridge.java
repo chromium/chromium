@@ -111,7 +111,10 @@ public class PriceTrackingNotificationBridge {
 
         // Use UnsignedLongs to convert OfferId to avoid overflow.
         String offerId = UnsignedLongs.toString(priceDropPayload.getOfferId());
-        String clusterId = UnsignedLongs.toString(priceDropPayload.getProductClusterId());
+        String clusterId = null;
+        if (priceDropPayload.hasProductClusterId() && priceDropPayload.getProductClusterId() != 0) {
+            clusterId = UnsignedLongs.toString(priceDropPayload.getProductClusterId());
+        }
         ChromeMessage chromeMessage = chromeNotification.getChromeMessage();
         PriceDropNotifier.NotificationData notificationData =
                 new PriceDropNotifier.NotificationData(title, text,
