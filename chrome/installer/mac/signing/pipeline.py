@@ -564,9 +564,10 @@ def _intermediate_work_dir_name(dist):
     return '-'.join(customizations)
 
 
-def _filter_distributions(distributions, skip_brands):
-    """Filters |distributions| by whether the distribution has a brand code that
-    is indicated for skipping by |skip_brands|. Returns the filtered
+def _filter_distributions(distributions, skip_brands, channels):
+    """Filters |distributions| by filtering out those whose brand code is
+    indicated for skipping by |skip_brands|, and filtering in those whose
+    channel is indicated for inclusion by |channels|. Returns the filtered
     distribution list.
 
     Args:
@@ -574,50 +575,79 @@ def _filter_distributions(distributions, skip_brands):
         skip_brands: A list of brand code strings. If a distribution has a brand
             code in this list, or if a distribution has a brand code and
             |skip_brands| contains *, that distribution will be skipped.
+        channels: A list of channel names. If the list is non-empty, then only
+            distributions that match a channel name in this list will be
+            produced. The string 'stable' matches the None channel.
 
     Returns:
         The filtered list of |model.Distribution| objects.
 
     Raises:
-        ValueError: If any value provided in |skip_brands| does not cause at
-            least one distribution to be filtered out.
-        ValueError: If |skip_brands| contains both the wildcard '*' value as
-            well as any other individual values.
+        ValueError: If any value provided in |skip_brands| does not match at
+            least one distribution.
+        ValueError: If any value provided in |channels| does not match at least
+            one distribution.
+        ValueError: If no distribution matching a value provided in |channels|
+            can be returned due to brand filtering.
     """
-    # The requirement that all skips should filter at least one distribution is
-    # complicated with a wildcard, because both would match. Simplify things by
-    # allowing either explicitly listed skips, or a wildcard, but not both.
-    if '*' in skip_brands and len(skip_brands) > 1:
-        raise ValueError('It is invalid to both specify skipping all brands '
-                         'with * and also specify individual brands to skip')
+    all_distribution_brands = {dist.branding_code for dist in distributions}
+    invalid_brands = set(skip_brands) - all_distribution_brands
+    invalid_brands.discard('*')
+    if invalid_brands:
+        raise ValueError('Brand codes do not match any distribution: {}'.format(
+            invalid_brands))
 
-    for skip_brand in skip_brands:
+    all_distribution_channels = {
+        "stable" if dist.channel is None else dist.channel
+        for dist in distributions
+    }
+    invalid_channels = set(channels) - all_distribution_channels
+    if invalid_channels:
+        raise ValueError('Channels do not match any distribution: {}'.format(
+            invalid_channels))
 
-        def filter_brand(dist):
-            if not dist.branding_code:
-                return True
-            if dist.branding_code == skip_brand:
-                return False
-            if '*' == skip_brand:
-                return False
+    def include_brand(dist):
+        if not dist.branding_code:
+            return True
+        if '*' in skip_brands:
+            return False
+        if dist.branding_code in skip_brands:
+            return False
+        return True
+
+    def include_channel(dist):
+        if len(channels) == 0:
             return True
 
-        new_distributions = list(filter(filter_brand, distributions))
+        channel = dist.channel
+        if channel is None:
+            channel = 'stable'
+        return channel in channels
 
-        if len(new_distributions) == len(distributions):
-            raise ValueError('Brand code does not specify a distribution',
-                             skip_brand)
+    filtered_distributions = [
+        dist for dist in distributions
+        if include_brand(dist) and include_channel(dist)
+    ]
 
-        distributions = new_distributions
+    filtered_distribution_channels = {
+        "stable" if dist.channel is None else dist.channel
+        for dist in filtered_distributions
+    }
+    filtered_channels = set(channels) - filtered_distribution_channels
+    if filtered_channels:
+        raise ValueError(
+            'All distributions for channels were filtered out by brand: {}'
+            .format(filtered_channels))
 
-    return distributions
+    return filtered_distributions
 
 
 def sign_all(orig_paths,
              config,
              disable_packaging=False,
              do_notarization=True,
-             skip_brands=[]):
+             skip_brands=[],
+             channels=[]):
     """For each distribution in |config|, performs customization, signing, and
     DMG packaging and places the resulting signed DMG in |orig_paths.output|.
     The |paths.input| must contain the products to customize and sign.
@@ -637,6 +667,9 @@ def sign_all(orig_paths,
         skip_brands: A list of brand code strings. If a distribution has a brand
             code in this list, or if a distribution has a brand code and
             |skip_brands| contains *, that distribution will be skipped.
+        channels: A list of channel names. If the list is non-empty, then only
+            distributions that match a channel name in this list will be
+            produced. The string 'stable' matches the None channel.
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
         # First, sign all the distributions and optionally submit the
@@ -645,7 +678,8 @@ def sign_all(orig_paths,
         signed_frameworks = {}
         created_app_bundles = set()
 
-        distributions = _filter_distributions(config.distributions, skip_brands)
+        distributions = _filter_distributions(config.distributions, skip_brands,
+                                              channels)
 
         for dist in distributions:
             with commands.WorkDirectory(orig_paths) as paths:
