@@ -31,7 +31,6 @@ namespace metrics {
 
 namespace {
 
-const char kTestGpuProcessName[] = "content_gpu";
 const char kTestUtilityProcessName[] = "test_utility_process";
 
 class MockExtensionsHelper : public ExtensionsHelper {
@@ -73,38 +72,6 @@ class ContentStabilityMetricsProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(ContentStabilityMetricsProviderTest, BrowserChildProcessObserverGpu) {
-  base::HistogramTester histogram_tester;
-  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
-
-  content::ChildProcessData child_process_data(content::PROCESS_TYPE_GPU);
-  child_process_data.metrics_name = kTestGpuProcessName;
-
-  provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
-  content::ChildProcessTerminationInfo abnormal_termination_info;
-  abnormal_termination_info.status =
-      base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
-  abnormal_termination_info.exit_code = 1;
-  provider.BrowserChildProcessCrashed(child_process_data,
-                                      abnormal_termination_info);
-  provider.BrowserChildProcessCrashed(child_process_data,
-                                      abnormal_termination_info);
-
-  // Call ProvideStabilityMetrics to check that it will force pending tasks to
-  // be executed immediately.
-  metrics::SystemProfileProto system_profile;
-
-  provider.ProvideStabilityMetrics(&system_profile);
-
-  // Check current number of instances created.
-  const metrics::SystemProfileProto_Stability& stability =
-      system_profile.stability();
-
-  EXPECT_EQ(2, stability.child_process_crash_count());
-  EXPECT_TRUE(
-      histogram_tester.GetTotalCountsForPrefix("ChildProcess.").empty());
-}
-
 TEST_F(ContentStabilityMetricsProviderTest,
        BrowserChildProcessObserverUtility) {
   base::HistogramTester histogram_tester;
@@ -124,20 +91,7 @@ TEST_F(ContentStabilityMetricsProviderTest,
   provider.BrowserChildProcessCrashed(child_process_data,
                                       abnormal_termination_info);
 
-  // Call ProvideStabilityMetrics to check that it will force pending tasks to
-  // be executed immediately.
-  metrics::SystemProfileProto system_profile;
-
-  provider.ProvideStabilityMetrics(&system_profile);
-
-  // Check current number of instances created.
-  const metrics::SystemProfileProto_Stability& stability =
-      system_profile.stability();
-
-  EXPECT_EQ(2, stability.child_process_crash_count());
-
-  // Utility processes also log an entries for the hashed name of the process
-  // for launches and crashes.
+  // Verify metrics.
   histogram_tester.ExpectUniqueSample(
       "ChildProcess.Launched.UtilityProcessHash",
       variations::HashName(kTestUtilityProcessName), 1);
@@ -146,6 +100,8 @@ TEST_F(ContentStabilityMetricsProviderTest,
       variations::HashName(kTestUtilityProcessName), 2);
   histogram_tester.ExpectUniqueSample(
       "ChildProcess.Crashed.UtilityProcessExitCode", kExitCode, 2);
+  histogram_tester.ExpectUniqueSample("Stability.Counts2",
+                                      StabilityEventType::kUtilityCrash, 2);
 }
 
 TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {

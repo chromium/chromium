@@ -724,6 +724,10 @@ const char kDataReductionProxyWasEnabledBefore[] =
 const char kDataReductionProxyLastEnabledTime[] =
     "data_reduction.last_enabled_time";
 
+// Deprecated 02/2022.
+const char kStabilityChildProcessCrashCount[] =
+    "user_experience_metrics.stability.child_process_crash_count";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -761,6 +765,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
   registry->RegisterBooleanPref(kStabilitySessionEndCompleted, true);
+  registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).

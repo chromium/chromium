@@ -47,28 +47,6 @@ class StabilityMetricsHelperTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(StabilityMetricsHelperTest, BrowserChildProcessCrashed) {
-  StabilityMetricsHelper helper(prefs());
-  base::HistogramTester histogram_tester;
-
-  helper.BrowserChildProcessCrashed();
-  helper.BrowserChildProcessCrashed();
-
-  // Call ProvideStabilityMetrics to check that it will force pending tasks to
-  // be executed immediately.
-  metrics::SystemProfileProto system_profile;
-
-  helper.ProvideStabilityMetrics(&system_profile);
-
-  // Check current number of instances created.
-  const metrics::SystemProfileProto_Stability& stability =
-      system_profile.stability();
-
-  EXPECT_EQ(2, stability.child_process_crash_count());
-  histogram_tester.ExpectUniqueSample(
-      "Stability.Counts2", StabilityEventType::kChildProcessCrash, 2);
-}
-
 TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
   StabilityMetricsHelper helper(prefs());
   base::HistogramTester histogram_tester;

@@ -29,7 +29,7 @@ enum class StabilityEventType {
   kRendererCrash = 3,
   kRendererHang = 4,
   kExtensionCrash = 5,
-  kChildProcessCrash = 6,
+  // kChildProcessCrash = 6,  // Removed due to disuse and alternative metrics.
   kLaunch = 15,
   kBrowserCrash = 16,
   // kIncompleteShutdown = 17,  // Removed due to disuse and correctness issues.
@@ -79,9 +79,6 @@ class StabilityMetricsHelper {
                                          DWORD last_error
 #endif
   );
-
-  // Records a browser child process crash.
-  void BrowserChildProcessCrashed();
 
   // Logs the initiation of a page load.
   void LogLoadStarted();

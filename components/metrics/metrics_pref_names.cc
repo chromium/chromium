@@ -109,12 +109,6 @@ const char kLastClonedResetTimestamp[] = "cloned_install.last_timestamp";
 const char kStabilityBrowserLastLiveTimeStamp[] =
     "user_experience_metrics.stability.browser_last_live_timestamp";
 
-// Total number of child process crashes (other than renderer / extension
-// renderer ones, and plugin children, which are counted separately) since the
-// last report.
-const char kStabilityChildProcessCrashCount[] =
-    "user_experience_metrics.stability.child_process_crash_count";
-
 // Number of times the application exited uncleanly since the last report.
 // On Android this does not count the ones due to Gms Core updates (below).
 const char kStabilityCrashCount[] =

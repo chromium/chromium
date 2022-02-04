@@ -85,12 +85,6 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
     local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   }
 
-  count = local_state_->GetInteger(prefs::kStabilityChildProcessCrashCount);
-  if (count) {
-    stability_proto->set_child_process_crash_count(count);
-    local_state_->SetInteger(prefs::kStabilityChildProcessCrashCount, 0);
-  }
-
   count = local_state_->GetInteger(prefs::kStabilityGpuCrashCount);
   if (count) {
     stability_proto->set_gpu_crash_count(count);
@@ -140,7 +134,6 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
 
 void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
   // Clear all the prefs used in this class in UMA reports.
-  local_state_->SetInteger(prefs::kStabilityChildProcessCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityExtensionRendererCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityExtensionRendererFailedLaunchCount,
                            0);
@@ -154,7 +147,6 @@ void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
 
 // static
 void StabilityMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kStabilityChildProcessCrashCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityExtensionRendererCrashCount,
                                 0);
   registry->RegisterIntegerPref(
@@ -213,11 +205,6 @@ void StabilityMetricsHelper::BrowserUtilityProcessLaunchFailed(
 #endif
   // TODO(wfh): Decide if this utility process launch failure should also
   // trigger a Stability Event.
-}
-
-void StabilityMetricsHelper::BrowserChildProcessCrashed() {
-  IncrementPrefValue(prefs::kStabilityChildProcessCrashCount);
-  RecordStabilityEvent(StabilityEventType::kChildProcessCrash);
 }
 
 void StabilityMetricsHelper::LogLoadStarted() {

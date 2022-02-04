@@ -7,7 +7,6 @@
 
 #include "base/process/kill.h"
 #include "components/metrics/metrics_provider.h"
-#include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -25,12 +24,10 @@ class MetricsService;
 namespace chromecast {
 namespace metrics {
 
-// CastStabilityMetricsProvider gathers and logs stability-related metrics.
-// Loosely based on ChromeStabilityMetricsProvider from chrome/browser/metrics.
-class CastStabilityMetricsProvider
-    : public ::metrics::MetricsProvider,
-      public content::BrowserChildProcessObserver,
-      public content::NotificationObserver {
+// Responsible for gathering and logging stability-related metrics. Loosely
+// based on the ContentStabilityMetricsProvider in components/metrics/content.
+class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
+                                     public content::NotificationObserver {
  public:
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -42,7 +39,7 @@ class CastStabilityMetricsProvider
   CastStabilityMetricsProvider& operator=(const CastStabilityMetricsProvider&) =
       delete;
 
-  ~CastStabilityMetricsProvider() override;
+  ~CastStabilityMetricsProvider() override = default;
 
   // metrics::MetricsDataProvider implementation:
   void OnRecordingEnabled() override;
@@ -58,11 +55,6 @@ class CastStabilityMetricsProvider
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
-
-  // content::BrowserChildProcessObserver implementation:
-  void BrowserChildProcessCrashed(
-      const content::ChildProcessData& data,
-      const content::ChildProcessTerminationInfo& info) override;
 
   // Records a renderer process crash.
   void LogRendererCrash(content::RenderProcessHost* host,

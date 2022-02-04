@@ -22,15 +22,14 @@
 #endif
 
 namespace metrics {
-
 namespace {
+
+using content::RenderProcessHost;
 
 base::LazyInstance<std::vector<ContentStabilityMetricsProvider*>>::Leaky
     g_providers;
 
 }  // namespace
-
-using content::RenderProcessHost;
 
 ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
     PrefService* local_state,
@@ -75,18 +74,8 @@ void ContentStabilityMetricsProvider::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
   DCHECK(!data.metrics_name.empty());
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Exclude plugin crashes from the count below because we report them via
-  // a separate UMA metric.
-  if (data.process_type == content::PROCESS_TYPE_PPAPI_PLUGIN ||
-      data.process_type == content::PROCESS_TYPE_PPAPI_BROKER) {
-    return;
-  }
-#endif
-
   if (data.process_type == content::PROCESS_TYPE_UTILITY)
     helper_.BrowserUtilityProcessCrashed(data.metrics_name, info.exit_code);
-  helper_.BrowserChildProcessCrashed();
 }
 
 void ContentStabilityMetricsProvider::BrowserChildProcessLaunchedAndConnected(
