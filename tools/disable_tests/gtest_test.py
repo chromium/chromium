@@ -4,6 +4,7 @@
 """Tests for gtest.py"""
 
 import unittest
+from typing import Optional
 
 import conditions
 from conditions import Condition
@@ -11,8 +12,12 @@ import gtest
 
 
 class GtestTest(unittest.TestCase):
-  def disabler_test(self, input_file: str, test_name: str, new_cond,
-                    expected_result: str):
+  def disabler_test(self,
+                    input_file: str,
+                    test_name: str,
+                    new_cond,
+                    expected_result: str,
+                    message: Optional[str] = None):
     """Helper function for testing gtest.disabler."""
 
     self.maxDiff = None
@@ -22,7 +27,7 @@ class GtestTest(unittest.TestCase):
     else:
       assert isinstance(new_cond, conditions.BaseCondition)
 
-    resulting_file = gtest.disabler(test_name, input_file, new_cond)
+    resulting_file = gtest.disabler(test_name, input_file, new_cond, message)
 
     self.assertEqual(expected_result.strip(), resulting_file.strip())
 
@@ -191,6 +196,39 @@ void SomeFunctionWihTestInTheName() {}
 #endif // one more!
 TEST(Suite, MAYBE_Test) {}
 ''', 'Suite.Test', conditions.NEVER, 'TEST(Suite, Test) {}')
+
+  def test_disable_unconditionally_with_message(self):
+    # Also include some formatting that should be fixed up, to test that the
+    # correct line number is passed to clang-format.
+    self.disabler_test('''
+// existing comment
+TEST(Suite,   Test) {}
+// another comment''',
+                       'Suite.Test',
+                       conditions.ALWAYS,
+                       '''
+// existing comment
+// here is the message
+TEST(Suite, DISABLED_Test) {}
+// another comment''',
+                       message='here is the message')
+
+  def test_conditionally_disable_test_with_message(self):
+    # Also include some formatting that should be fixed up, to test that the
+    # correct line number is passed to clang-format.
+    self.disabler_test('TEST(Suite,     Test) {}',
+                       'Suite.Test', ['linux', 'mac'],
+                       '''
+#include "build/build_config.h"
+// we should really fix this
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+TEST(Suite, MAYBE_Test) {}
+''',
+                       message='we should really fix this')
 
 
 if __name__ == '__main__':

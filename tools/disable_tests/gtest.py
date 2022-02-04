@@ -27,7 +27,8 @@ TEST_MACROS = {
 }
 
 
-def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
+def disabler(full_test_name: str, source_file: str, new_cond: Condition,
+             message: Optional[str]) -> str:
   """Disable a GTest test within the given file.
 
   Args:
@@ -82,32 +83,14 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
 
   merged = conditions.merge(existing_cond, new_cond)
 
-  # If it's not conditionally disabled, we don't need a pre-processor block to
-  # conditionally define the name. We just change the name within the test macro
-  # to its appropriate value, and delete any existing preprocessor block.
-  if isinstance(merged, conditions.BaseCondition):
-    if merged == conditions.ALWAYS:
-      replacement_name = disabled
-    elif merged == conditions.NEVER:
-      replacement_name = test_name
-
-    lines[test_name_index] = \
-        lines[test_name_index].replace(current_name, replacement_name)
-    modified_line = test_name_index
-
-    if src_range:
-      del lines[src_range[0]:src_range[1] + 1]
-      modified_line -= src_range[1] - src_range[0] + 1
-
-    return clang_format('\n'.join(lines), [modified_line])
-
-  # => now conditionally disabled
-  lines[test_name_index] = lines[test_name_index].replace(current_name, maybe)
+  comment = None
+  if message:
+    comment = f'// {message}'
 
   # Keep track of the line numbers of the lines which have been modified. These
   # line numbers will be fed to clang-format to ensure any modified lines are
   # correctly formatted.
-  modified_lines = [test_name_index]
+  modified_lines = []
 
   # Ensure that we update modified_lines upon inserting new lines into the file,
   # as any lines after the insertion point will be shifted over.
@@ -137,6 +120,36 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   def insert_line(index, new_line):
     insert_lines(index, index, [new_line])
 
+  def replace_line(index, new_line):
+    insert_lines(index, index + 1, [new_line])
+
+  def delete_lines(start_index, end_index):
+    insert_lines(start_index, end_index, [])
+
+  # If it's not conditionally disabled, we don't need a pre-processor block to
+  # conditionally define the name. We just change the name within the test macro
+  # to its appropriate value, and delete any existing preprocessor block.
+  if isinstance(merged, conditions.BaseCondition):
+    if merged == conditions.ALWAYS:
+      replacement_name = disabled
+    elif merged == conditions.NEVER:
+      replacement_name = test_name
+
+    replace_line(test_name_index,
+                 lines[test_name_index].replace(current_name, replacement_name))
+
+    if src_range:
+      delete_lines(src_range[0], src_range[1] + 1)
+
+    if comment:
+      insert_line(test_name_index, comment)
+
+    return clang_format('\n'.join(lines), modified_lines)
+
+  # => now conditionally disabled
+  replace_line(test_name_index,
+               lines[test_name_index].replace(current_name, maybe))
+
   condition_impl = cc_format_condition(merged)
 
   condition_block = [
@@ -150,6 +163,7 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   if src_range:
     # Replace the existing condition.
     insert_lines(src_range[0], src_range[1] + 1, condition_block)
+    comment_index = src_range[0]
   else:
     # No existing condition, so find where to add a new one.
     for i in range(test_name_index, -1, -1):
@@ -159,6 +173,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
       raise Exception("Couldn't find where to insert test conditions")
 
     insert_lines(i, i, condition_block)
+    comment_index = i
+
+  if comment:
+    insert_line(comment_index, comment)
 
   # Insert includes.
   # First find the set of headers we need for the given condition.

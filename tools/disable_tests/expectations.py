@@ -46,7 +46,12 @@ def search_for_expectations(filename: str, test_name: str) -> str:
                              f"(expected to find it at {expectations_path})")
 
 
-def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
+def disabler(full_test_name: str, source_file: str, new_cond: Condition,
+             message: Optional[str]) -> str:
+  comment = None
+  if message:
+    comment = f"# {message}"
+
   existing_expectation: Optional[Expectation] = None
   condition = conditions.NEVER
   for expectation in TaggedTestListParser(source_file).expectations:
@@ -68,6 +73,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
 
     while not source_file.endswith('\n\n'):
       source_file += '\n'
+
+    if comment:
+      source_file += f"{comment}\n"
+
     source_file += ex.to_string()
     return source_file
 
@@ -82,6 +91,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   lines = source_file.split('\n')
   # Minus 1 as 'lineno' is 1-based.
   lines[existing_expectation.lineno - 1] = new_expectation.to_string()
+
+  if comment:
+    lines.insert(existing_expectation.lineno - 1, comment)
+
   return '\n'.join(lines)
 
 
