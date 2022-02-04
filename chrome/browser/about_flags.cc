@@ -3853,7 +3853,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"global-media-controls-cast-start-stop",
      flag_descriptions::kGlobalMediaControlsCastStartStopName,
      flag_descriptions::kGlobalMediaControlsCastStartStopDescription,
-     kOsWin | kOsMac | kOsLinux | kOsFuchsia,
+     kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kGlobalMediaControlsCastStartStop)},
     {"allow-all-sites-to-initiate-mirroring",
      flag_descriptions::kAllowAllSitesToInitiateMirroringName,

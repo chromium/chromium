@@ -32,14 +32,21 @@ const base::Feature kMediaRouter{"MediaRouter",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCastAllowAllIPsFeature{"CastAllowAllIPs",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kGlobalMediaControlsCastStartStop{
-    "GlobalMediaControlsCastStartStop", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kAllowAllSitesToInitiateMirroring{
     "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDialEnforceUrlIPAddress{"DialEnforceUrlIPAddress",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if BUILDFLAG(IS_CHROMEOS)
+const base::Feature kGlobalMediaControlsCastStartStop{
+    "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
+#else
+const base::Feature kGlobalMediaControlsCastStartStop{
+    "GlobalMediaControlsCastStartStop", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
