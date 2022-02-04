@@ -2,35 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_ANIMATION_H_
-#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_ANIMATION_H_
+#ifndef ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_RING_ANIMATION_H_
+#define ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_RING_ANIMATION_H_
 
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
+#include "ash/system/progress_indicator/progress_indicator_animation.h"
 
 namespace ash {
 
 // An animation for a `HoldingSpaceProgressIndicator` to be painted in lieu of
 // the determinate progress ring that would otherwise be painted.
-class ASH_EXPORT HoldingSpaceProgressRingAnimation
-    : public HoldingSpaceProgressIndicatorAnimation {
+class ASH_EXPORT ProgressRingAnimation : public ProgressIndicatorAnimation {
  public:
   enum class Type {
-    kIndeterminate,  // See `HoldingSpaceProgressRingIndeterminateAnimation`.
-    kPulse,          // See `HoldingSpaceProgressRingPulseAnimation`.
+    kIndeterminate,  // See `ProgressRingIndeterminateAnimation`.
+    kPulse,          // See `ProgressRingPulseAnimation`.
   };
 
-  HoldingSpaceProgressRingAnimation(const HoldingSpaceProgressRingAnimation&) =
-      delete;
-  HoldingSpaceProgressRingAnimation& operator=(
-      const HoldingSpaceProgressRingAnimation&) = delete;
-  ~HoldingSpaceProgressRingAnimation() override;
+  ProgressRingAnimation(const ProgressRingAnimation&) = delete;
+  ProgressRingAnimation& operator=(const ProgressRingAnimation&) = delete;
+  ~ProgressRingAnimation() override;
 
   // Returns a created progress ring animation of the specified `type`.
-  static std::unique_ptr<HoldingSpaceProgressRingAnimation> CreateOfType(
-      Type type);
+  static std::unique_ptr<ProgressRingAnimation> CreateOfType(Type type);
 
   // Returns the specific type of this animation.
   Type type() const { return type_; }
@@ -41,9 +37,7 @@ class ASH_EXPORT HoldingSpaceProgressRingAnimation
   float opacity() const { return opacity_; }
 
  protected:
-  HoldingSpaceProgressRingAnimation(Type type,
-                                    base::TimeDelta duration,
-                                    bool is_cyclic);
+  ProgressRingAnimation(Type type, base::TimeDelta duration, bool is_cyclic);
 
   // Implementing classes should update any desired animatable properties as
   // appropriate for the specified animation `fraction`.
@@ -53,7 +47,7 @@ class ASH_EXPORT HoldingSpaceProgressRingAnimation
                                           float* opacity) = 0;
 
  private:
-  // HoldingSpaceProgressIndicatorAnimation:
+  // ProgressIndicatorAnimation:
   void UpdateAnimatableProperties(double fraction) override;
 
   // The specific type of this animation.
@@ -67,4 +61,4 @@ class ASH_EXPORT HoldingSpaceProgressRingAnimation
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_ANIMATION_H_
+#endif  // ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_RING_ANIMATION_H_

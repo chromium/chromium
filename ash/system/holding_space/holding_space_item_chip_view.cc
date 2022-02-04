@@ -19,8 +19,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_indicator.h"
-#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -336,10 +336,9 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   progress_ring_animation_changed_subscription_ =
       HoldingSpaceAnimationRegistry::GetInstance()
           ->AddProgressRingAnimationChangedCallbackForKey(
-              item, IgnoreArgs<HoldingSpaceProgressRingAnimation*>(
-                        base::BindRepeating(
-                            &HoldingSpaceItemChipView::UpdateImageTransform,
-                            base::Unretained(this))));
+              item, IgnoreArgs<ProgressRingAnimation*>(base::BindRepeating(
+                        &HoldingSpaceItemChipView::UpdateImageTransform,
+                        base::Unretained(this))));
 
   UpdateImage();
   UpdateImageAndProgressIndicatorVisibility();
@@ -547,7 +546,7 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
   const bool is_item_visibly_in_progress =
       !item()->progress().IsHidden() && !item()->progress().IsComplete();
 
-  const HoldingSpaceProgressRingAnimation* progress_ring_animation =
+  const ProgressRingAnimation* progress_ring_animation =
       HoldingSpaceAnimationRegistry::GetInstance()
           ->GetProgressRingAnimationForKey(item());
 

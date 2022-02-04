@@ -157,7 +157,7 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
         HoldingSpaceAnimationRegistry::GetInstance()
             ->AddProgressRingAnimationChangedCallbackForKey(
                 /*animation_key=*/item_,
-                IgnoreArgs<HoldingSpaceProgressRingAnimation*>(
+                IgnoreArgs<ProgressRingAnimation*>(
                     base::BindRepeating(&ImageLayerOwner::UpdateTransform,
                                         base::Unretained(this))));
 

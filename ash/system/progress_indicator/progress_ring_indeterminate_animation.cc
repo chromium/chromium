@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_progress_ring_indeterminate_animation.h"
+#include "ash/system/progress_indicator/progress_ring_indeterminate_animation.h"
+
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/paint_throbber.h"
 
@@ -31,18 +32,17 @@ float ConvertFromAngleToPosition(float angle_in_degrees) {
 
 }  // namespace
 
-// HoldingSpaceProgressRingIndeterminateAnimation ------------------------------
+// ProgressRingIndeterminateAnimation ------------------------------------------
 
-HoldingSpaceProgressRingIndeterminateAnimation::
-    HoldingSpaceProgressRingIndeterminateAnimation()
-    : HoldingSpaceProgressRingAnimation(Type::kIndeterminate,
-                                        kAnimationDuration,
-                                        /*is_cyclic=*/true) {}
+ProgressRingIndeterminateAnimation::ProgressRingIndeterminateAnimation()
+    : ProgressRingAnimation(Type::kIndeterminate,
+                            kAnimationDuration,
+                            /*is_cyclic=*/true) {}
 
-HoldingSpaceProgressRingIndeterminateAnimation::
-    ~HoldingSpaceProgressRingIndeterminateAnimation() = default;
+ProgressRingIndeterminateAnimation::~ProgressRingIndeterminateAnimation() =
+    default;
 
-void HoldingSpaceProgressRingIndeterminateAnimation::UpdateAnimatableProperties(
+void ProgressRingIndeterminateAnimation::UpdateAnimatableProperties(
     double fraction,
     float* start_position,
     float* end_position,

@@ -18,9 +18,9 @@ namespace ash {
 
 class HoldingSpaceController;
 class HoldingSpaceItem;
-class HoldingSpaceProgressIconAnimation;
-class HoldingSpaceProgressRingAnimation;
+class ProgressIconAnimation;
 class ProgressIndicatorAnimationRegistry;
+class ProgressRingAnimation;
 
 // A class owning a `ui::Layer` which paints indication of progress.
 // NOTE: The owned `layer()` is not painted if progress == `1.f`.
@@ -111,14 +111,12 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // Invoked when the icon `animation` associated with this progress indicator's
   // `animation_key_` has changed in the `animation_registry_`.
   // NOTE: The specified `animation` may be `nullptr`.
-  void OnProgressIconAnimationChanged(
-      HoldingSpaceProgressIconAnimation* animation);
+  void OnProgressIconAnimationChanged(ProgressIconAnimation* animation);
 
   // Invoked when the ring `animation` associated with this progress indicator's
   // `animation_key_` has changed in the `animation_registry_`.
   // NOTE: The specified `animation` may be `nullptr`.
-  void OnProgressRingAnimationChanged(
-      HoldingSpaceProgressRingAnimation* animation);
+  void OnProgressRingAnimationChanged(ProgressRingAnimation* animation);
 
   // The animation registry in which to look up animations for the associated
   // `animation_key_`. When an animation exists, it will be painted in lieu of

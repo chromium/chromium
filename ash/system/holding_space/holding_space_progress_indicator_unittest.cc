@@ -84,7 +84,7 @@ TEST_F(HoldingSpaceProgressIndicatorTest, CreateDefaultInstance) {
   EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
   ASSERT_TRUE(registry->GetProgressRingAnimationForKey(key));
   EXPECT_EQ(registry->GetProgressRingAnimationForKey(key)->type(),
-            HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
+            ProgressRingAnimation::Type::kIndeterminate);
 
   // Update `progress` to 75%. Verify progress and animation states.
   progress = 0.75f;
@@ -100,11 +100,11 @@ TEST_F(HoldingSpaceProgressIndicatorTest, CreateDefaultInstance) {
   EXPECT_FALSE(registry->GetProgressIconAnimationForKey(key));
   ASSERT_TRUE(registry->GetProgressRingAnimationForKey(key));
   EXPECT_EQ(registry->GetProgressRingAnimationForKey(key)->type(),
-            HoldingSpaceProgressRingAnimation::Type::kPulse);
+            ProgressRingAnimation::Type::kPulse);
 
   // The pulse animation that runs on progress completion should be removed
   // automatically on animation completion.
-  base::test::RepeatingTestFuture<HoldingSpaceProgressRingAnimation*> future;
+  base::test::RepeatingTestFuture<ProgressRingAnimation*> future;
   auto subscription = registry->AddProgressRingAnimationChangedCallbackForKey(
       key, future.GetCallback());
   EXPECT_EQ(future.Take(), nullptr);

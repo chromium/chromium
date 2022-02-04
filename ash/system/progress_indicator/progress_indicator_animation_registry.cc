@@ -136,31 +136,31 @@ base::CallbackListSubscription ProgressIndicatorAnimationRegistry::
       &ring_animation_changed_callback_lists_by_key_, key, std::move(callback));
 }
 
-HoldingSpaceProgressIconAnimation*
+ProgressIconAnimation*
 ProgressIndicatorAnimationRegistry::GetProgressIconAnimationForKey(
     const void* key) {
   return GetAnimationForKey(&icon_animations_by_key_, key);
 }
 
-HoldingSpaceProgressRingAnimation*
+ProgressRingAnimation*
 ProgressIndicatorAnimationRegistry::GetProgressRingAnimationForKey(
     const void* key) {
   return GetAnimationForKey(&ring_animations_by_key_, key);
 }
 
-HoldingSpaceProgressIconAnimation*
+ProgressIconAnimation*
 ProgressIndicatorAnimationRegistry::SetProgressIconAnimationForKey(
     const void* key,
-    std::unique_ptr<HoldingSpaceProgressIconAnimation> animation) {
+    std::unique_ptr<ProgressIconAnimation> animation) {
   return SetAnimationForKey(&icon_animations_by_key_,
                             &icon_animation_changed_callback_lists_by_key_, key,
                             std::move(animation));
 }
 
-HoldingSpaceProgressRingAnimation*
+ProgressRingAnimation*
 ProgressIndicatorAnimationRegistry::SetProgressRingAnimationForKey(
     const void* key,
-    std::unique_ptr<HoldingSpaceProgressRingAnimation> animation) {
+    std::unique_ptr<ProgressRingAnimation> animation) {
   return SetAnimationForKey(&ring_animations_by_key_,
                             &ring_animation_changed_callback_lists_by_key_, key,
                             std::move(animation));

@@ -13,8 +13,8 @@
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
-#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
-#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
+#include "ash/system/progress_indicator/progress_icon_animation.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
 #include "base/memory/ptr_util.h"
@@ -101,8 +101,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     // If `item` has just progressed to completion, ensure that a pulse
     // animation is created and started.
     if (item->progress().IsComplete()) {
-      EnsureRingAnimationOfTypeForKey(
-          item, HoldingSpaceProgressRingAnimation::Type::kPulse);
+      EnsureRingAnimationOfTypeForKey(item,
+                                      ProgressRingAnimation::Type::kPulse);
     }
 
     UpdateAnimations(/*for_removal=*/false);
@@ -110,9 +110,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
 
   // Erases the ring animation for the specified `key` if it is not of the
   // desired `type`, notifying any animation changed callbacks.
-  void EraseRingAnimationIfNotOfTypeForKey(
-      const void* key,
-      HoldingSpaceProgressRingAnimation::Type type) {
+  void EraseRingAnimationIfNotOfTypeForKey(const void* key,
+                                           ProgressRingAnimation::Type type) {
     auto* ring_animation = registry_->GetProgressRingAnimationForKey(key);
     if (ring_animation && ring_animation->type() != type)
       registry_->SetProgressRingAnimationForKey(key, nullptr);
@@ -131,21 +130,20 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
 
     registry_
         ->SetProgressIconAnimationForKey(
-            key, std::make_unique<HoldingSpaceProgressIconAnimation>())
+            key, std::make_unique<ProgressIconAnimation>())
         ->Start();
   }
 
   // Ensures that the ring animation for the specified `key` is of the desired
   // `type`. If necessary, a new animation is created and started, notifying any
   // animation changed callbacks.
-  void EnsureRingAnimationOfTypeForKey(
-      const void* key,
-      HoldingSpaceProgressRingAnimation::Type type) {
+  void EnsureRingAnimationOfTypeForKey(const void* key,
+                                       ProgressRingAnimation::Type type) {
     auto* ring_animation = registry_->GetProgressRingAnimationForKey(key);
     if (ring_animation && ring_animation->type() == type)
       return;
 
-    auto animation = HoldingSpaceProgressRingAnimation::CreateOfType(type);
+    auto animation = ProgressRingAnimation::CreateOfType(type);
     animation->AddUnsafeAnimationUpdatedCallback(base::BindRepeating(
         &ProgressIndicatorAnimationDelegate::OnRingAnimationUpdatedForKey,
         base::Unretained(this), key, animation.get()));
@@ -197,7 +195,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       if (item->progress().IsComplete()) {
         registry_->SetProgressIconAnimationForKey(item.get(), nullptr);
         EraseRingAnimationIfNotOfTypeForKey(
-            item.get(), HoldingSpaceProgressRingAnimation::Type::kPulse);
+            item.get(), ProgressRingAnimation::Type::kPulse);
         continue;
       }
 
@@ -211,8 +209,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       // should be associated with it (if one does not already exist).
       if (item->progress().IsIndeterminate()) {
         EnsureRingAnimationOfTypeForKey(
-            item.get(),
-            HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
+            item.get(), ProgressRingAnimation::Type::kIndeterminate);
         continue;
       }
 
@@ -236,15 +233,15 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
           // If `cumulative_progress_` has just become complete and is *not* due
           // to the removal of one or more holding space items, ensure that a
           // pulse animation is created and started.
-          EnsureRingAnimationOfTypeForKey(
-              controller_, HoldingSpaceProgressRingAnimation::Type::kPulse);
+          EnsureRingAnimationOfTypeForKey(controller_,
+                                          ProgressRingAnimation::Type::kPulse);
         }
       } else {
         // If `cumulative_progress_` was already complete, it should be allowed
         // to continue a pulse animation if one was previously created and
         // started. Any other type of ring animation should be cleared.
         EraseRingAnimationIfNotOfTypeForKey(
-            controller_, HoldingSpaceProgressRingAnimation::Type::kPulse);
+            controller_, ProgressRingAnimation::Type::kPulse);
       }
       return;
     }
@@ -258,7 +255,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     // already exist).
     if (cumulative_progress_.IsIndeterminate()) {
       EnsureRingAnimationOfTypeForKey(
-          controller_, HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
+          controller_, ProgressRingAnimation::Type::kIndeterminate);
       return;
     }
 
@@ -269,9 +266,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
 
   // Invoked when the specified ring `animation` for the specified `key` has
   // been updated. This is used to clean up finished animations.
-  void OnRingAnimationUpdatedForKey(
-      const void* key,
-      HoldingSpaceProgressRingAnimation* animation) {
+  void OnRingAnimationUpdatedForKey(const void* key,
+                                    ProgressRingAnimation* animation) {
     if (animation->IsAnimating())
       return;
     // Once `animation` has finished, it can be removed from the registry. Note
@@ -282,7 +278,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
         base::BindOnce(
             [](const base::WeakPtr<ProgressIndicatorAnimationDelegate>&
                    delegate,
-               const void* key, HoldingSpaceProgressRingAnimation* animation) {
+               const void* key, ProgressRingAnimation* animation) {
               if (!delegate)
                 return;
               auto* registry = delegate->registry_;

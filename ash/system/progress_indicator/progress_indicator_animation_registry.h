@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
-#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
+#include "ash/system/progress_indicator/progress_icon_animation.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 
@@ -41,7 +41,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
   ~ProgressIndicatorAnimationRegistry();
 
   using ProgressIconAnimationChangedCallbackList =
-      base::RepeatingCallbackList<void(HoldingSpaceProgressIconAnimation*)>;
+      base::RepeatingCallbackList<void(ProgressIconAnimation*)>;
 
   // Adds the specified `callback` to be notified of changes to the progress
   // icon animation associated with the specified `key`. The `callback` will
@@ -52,7 +52,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
       ProgressIconAnimationChangedCallbackList::CallbackType callback);
 
   using ProgressRingAnimationChangedCallbackList =
-      base::RepeatingCallbackList<void(HoldingSpaceProgressRingAnimation*)>;
+      base::RepeatingCallbackList<void(ProgressRingAnimation*)>;
 
   // Adds the specified `callback` to be notified of changes to the progress
   // ring animation associated with the specified `key`. The `callback` will
@@ -64,25 +64,23 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
 
   // Returns the progress icon animation registered for the specified `key`.
   // NOTE: This may return `nullptr` if no such animation is registered.
-  HoldingSpaceProgressIconAnimation* GetProgressIconAnimationForKey(
-      const void* key);
+  ProgressIconAnimation* GetProgressIconAnimationForKey(const void* key);
 
   // Returns the progress ring animation registered for the specified `key`.
   // NOTE: This may return `nullptr` if no such animation is registered.
-  HoldingSpaceProgressRingAnimation* GetProgressRingAnimationForKey(
-      const void* key);
+  ProgressRingAnimation* GetProgressRingAnimationForKey(const void* key);
 
   // Sets and returns the progress icon animation registered for the specified
   // `key`. NOTE: `animation` may be `nullptr` to unregister `key`.
-  HoldingSpaceProgressIconAnimation* SetProgressIconAnimationForKey(
+  ProgressIconAnimation* SetProgressIconAnimationForKey(
       const void* key,
-      std::unique_ptr<HoldingSpaceProgressIconAnimation> animation);
+      std::unique_ptr<ProgressIconAnimation> animation);
 
   // Sets and returns the progress ring animation registered for the specified
   // `key`. NOTE: `animation` may be `nullptr` to unregister `key`.
-  HoldingSpaceProgressRingAnimation* SetProgressRingAnimationForKey(
+  ProgressRingAnimation* SetProgressRingAnimationForKey(
       const void* key,
-      std::unique_ptr<HoldingSpaceProgressRingAnimation> animation);
+      std::unique_ptr<ProgressRingAnimation> animation);
 
   // Erases all animations for all keys.
   void EraseAllAnimations();
@@ -97,7 +95,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
 
  private:
   // Mapping of keys to their associated progress icon animations.
-  std::map<const void*, std::unique_ptr<HoldingSpaceProgressIconAnimation>>
+  std::map<const void*, std::unique_ptr<ProgressIconAnimation>>
       icon_animations_by_key_;
 
   // Mapping of keys to their associated icon animation changed callback lists.
@@ -107,7 +105,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
       icon_animation_changed_callback_lists_by_key_;
 
   // Mapping of keys to their associated progress ring animations.
-  std::map<const void*, std::unique_ptr<HoldingSpaceProgressRingAnimation>>
+  std::map<const void*, std::unique_ptr<ProgressRingAnimation>>
       ring_animations_by_key_;
 
   // Mapping of keys to their associated ring animation changed callback lists.

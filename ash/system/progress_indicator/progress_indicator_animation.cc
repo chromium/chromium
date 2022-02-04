@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
+#include "ash/system/progress_indicator/progress_indicator_animation.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -10,40 +10,38 @@
 
 namespace ash {
 
-HoldingSpaceProgressIndicatorAnimation::HoldingSpaceProgressIndicatorAnimation(
-    base::TimeDelta duration,
-    bool is_cyclic)
+ProgressIndicatorAnimation::ProgressIndicatorAnimation(base::TimeDelta duration,
+                                                       bool is_cyclic)
     : duration_(duration), is_cyclic_(is_cyclic) {}
 
-HoldingSpaceProgressIndicatorAnimation::
-    ~HoldingSpaceProgressIndicatorAnimation() = default;
+ProgressIndicatorAnimation::~ProgressIndicatorAnimation() = default;
 
 base::CallbackListSubscription
-HoldingSpaceProgressIndicatorAnimation::AddAnimationUpdatedCallback(
+ProgressIndicatorAnimation::AddAnimationUpdatedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return animation_updated_callback_list_.Add(std::move(callback));
 }
 
-void HoldingSpaceProgressIndicatorAnimation::AddUnsafeAnimationUpdatedCallback(
+void ProgressIndicatorAnimation::AddUnsafeAnimationUpdatedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   animation_updated_callback_list_.AddUnsafe(std::move(callback));
 }
 
-void HoldingSpaceProgressIndicatorAnimation::Start() {
+void ProgressIndicatorAnimation::Start() {
   StartInternal(/*is_cyclic_restart=*/false);
 }
 
-bool HoldingSpaceProgressIndicatorAnimation::IsAnimating() const {
+bool ProgressIndicatorAnimation::IsAnimating() const {
   return animator_ && animator_->is_animating();
 }
 
-void HoldingSpaceProgressIndicatorAnimation::AnimationProgressed(
+void ProgressIndicatorAnimation::AnimationProgressed(
     const gfx::Animation* animation) {
   UpdateAnimatableProperties(animation->GetCurrentValue());
   animation_updated_callback_list_.Notify();
 }
 
-void HoldingSpaceProgressIndicatorAnimation::AnimationEnded(
+void ProgressIndicatorAnimation::AnimationEnded(
     const gfx::Animation* animation) {
   if (!is_cyclic_) {
     animation_updated_callback_list_.Notify();
@@ -57,7 +55,7 @@ void HoldingSpaceProgressIndicatorAnimation::AnimationEnded(
   if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() == 0.f) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(&HoldingSpaceProgressIndicatorAnimation::StartInternal,
+        base::BindOnce(&ProgressIndicatorAnimation::StartInternal,
                        weak_factory_.GetWeakPtr(), /*is_cyclic_restart=*/true));
     return;
   }
@@ -65,8 +63,7 @@ void HoldingSpaceProgressIndicatorAnimation::AnimationEnded(
   StartInternal(/*is_cyclic_restart=*/true);
 }
 
-void HoldingSpaceProgressIndicatorAnimation::StartInternal(
-    bool is_cyclic_restart) {
+void ProgressIndicatorAnimation::StartInternal(bool is_cyclic_restart) {
   animator_ = std::make_unique<gfx::SlideAnimation>(this);
   animator_->SetSlideDuration(
       ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration_);

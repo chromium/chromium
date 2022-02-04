@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_progress_ring_pulse_animation.h"
+#include "ash/system/progress_indicator/progress_ring_pulse_animation.h"
+
 #include "base/cxx17_backports.h"
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
@@ -37,13 +38,12 @@ constexpr AnimationKeyFrame kAnimationKeyFrames[] = {
 
 }  // namespace
 
-// HoldingSpaceProgressRingPulseAnimation --------------------------------------
+// ProgressRingPulseAnimation --------------------------------------------------
 
-HoldingSpaceProgressRingPulseAnimation::HoldingSpaceProgressRingPulseAnimation()
-    : HoldingSpaceProgressRingAnimation(
-          Type::kPulse,
-          base::Milliseconds(kAnimationDurationInMs),
-          /*is_cyclic=*/false) {
+ProgressRingPulseAnimation::ProgressRingPulseAnimation()
+    : ProgressRingAnimation(Type::kPulse,
+                            base::Milliseconds(kAnimationDurationInMs),
+                            /*is_cyclic=*/false) {
 #if DCHECK_IS_ON()
   constexpr size_t kAnimationKeyFramesCount = base::size(kAnimationKeyFrames);
   DCHECK_GE(kAnimationKeyFramesCount, 2u);
@@ -65,10 +65,9 @@ HoldingSpaceProgressRingPulseAnimation::HoldingSpaceProgressRingPulseAnimation()
 #endif  // DCHECK_IS_ON()
 }
 
-HoldingSpaceProgressRingPulseAnimation::
-    ~HoldingSpaceProgressRingPulseAnimation() = default;
+ProgressRingPulseAnimation::~ProgressRingPulseAnimation() = default;
 
-void HoldingSpaceProgressRingPulseAnimation::UpdateAnimatableProperties(
+void ProgressRingPulseAnimation::UpdateAnimatableProperties(
     double fraction,
     float* start_position,
     float* end_position,

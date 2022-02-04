@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
-#include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
-#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
+#include "ash/system/progress_indicator/progress_icon_animation.h"
+#include "ash/system/progress_indicator/progress_indicator_animation.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -120,29 +120,27 @@ TEST_P(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
       // Count progress icon animation changed events for `key`.
       subscriptions.push_back(
           registry()->AddProgressIconAnimationChangedCallbackForKey(
-              key, base::BindLambdaForTesting(
-                       [&](HoldingSpaceProgressIconAnimation*) {
-                         ++icon_callback_call_count;
-                       })));
+              key, base::BindLambdaForTesting([&](ProgressIconAnimation*) {
+                ++icon_callback_call_count;
+              })));
 
       // Count progress ring animation changed events for `key`.
       subscriptions.push_back(
           registry()->AddProgressRingAnimationChangedCallbackForKey(
-              key, base::BindLambdaForTesting(
-                       [&](HoldingSpaceProgressRingAnimation*) {
-                         ++ring_callback_call_count;
-                       })));
+              key, base::BindLambdaForTesting([&](ProgressRingAnimation*) {
+                ++ring_callback_call_count;
+              })));
 
       // Create a progress icon animation for `key`.
       registry()->SetProgressIconAnimationForKey(
-          key, std::make_unique<HoldingSpaceProgressIconAnimation>());
+          key, std::make_unique<ProgressIconAnimation>());
       EXPECT_TRUE(registry()->GetProgressIconAnimationForKey(key));
       EXPECT_EQ(icon_callback_call_count, index + 1u);
 
       // Create a progress ring animation for `key`.
       registry()->SetProgressRingAnimationForKey(
-          key, HoldingSpaceProgressRingAnimation::CreateOfType(
-                   HoldingSpaceProgressRingAnimation::Type::kPulse));
+          key, ProgressRingAnimation::CreateOfType(
+                   ProgressRingAnimation::Type::kPulse));
       EXPECT_TRUE(registry()->GetProgressRingAnimationForKey(key));
       EXPECT_EQ(ring_callback_call_count, index + 1u);
     }
@@ -180,9 +178,8 @@ TEST_P(ProgressIndicatorAnimationRegistryTest, SetProgressIconAnimationForKey) {
   // Count progress icon animation changed events.
   size_t callback_call_count = 0u;
   auto subscription = registry()->AddProgressIconAnimationChangedCallbackForKey(
-      &key, base::BindLambdaForTesting([&](HoldingSpaceProgressIconAnimation*) {
-        ++callback_call_count;
-      }));
+      &key, base::BindLambdaForTesting(
+                [&](ProgressIconAnimation*) { ++callback_call_count; }));
 
   // Unset progress icon animation for `key`.
   EXPECT_FALSE(registry()->SetProgressIconAnimationForKey(&key, nullptr));
@@ -190,7 +187,7 @@ TEST_P(ProgressIndicatorAnimationRegistryTest, SetProgressIconAnimationForKey) {
   EXPECT_EQ(callback_call_count, 0u);
 
   // Create a progress icon `animation`.
-  auto animation = std::make_unique<HoldingSpaceProgressIconAnimation>();
+  auto animation = std::make_unique<ProgressIconAnimation>();
   auto* animation_ptr = animation.get();
 
   // Set progress icon `animation` for `key`.
@@ -214,9 +211,8 @@ TEST_P(ProgressIndicatorAnimationRegistryTest, SetProgressRingAnimationForKey) {
   // Count progress ring animation changed events.
   size_t callback_call_count = 0u;
   auto subscription = registry()->AddProgressRingAnimationChangedCallbackForKey(
-      &key, base::BindLambdaForTesting([&](HoldingSpaceProgressRingAnimation*) {
-        ++callback_call_count;
-      }));
+      &key, base::BindLambdaForTesting(
+                [&](ProgressRingAnimation*) { ++callback_call_count; }));
 
   // Unset progress ring animation for `key`.
   EXPECT_FALSE(registry()->SetProgressRingAnimationForKey(&key, nullptr));
@@ -224,8 +220,8 @@ TEST_P(ProgressIndicatorAnimationRegistryTest, SetProgressRingAnimationForKey) {
   EXPECT_EQ(callback_call_count, 0u);
 
   // Create a progress ring `animation`.
-  auto animation = HoldingSpaceProgressRingAnimation::CreateOfType(
-      HoldingSpaceProgressRingAnimation::Type::kPulse);
+  auto animation =
+      ProgressRingAnimation::CreateOfType(ProgressRingAnimation::Type::kPulse);
   auto* animation_ptr = animation.get();
 
   // Set progress ring `animation` for `key`.

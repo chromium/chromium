@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_ANIMATION_H_
-#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_ANIMATION_H_
+#ifndef ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_ANIMATION_H_
+#define ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_ANIMATION_H_
 
 #include <memory>
 
@@ -19,14 +19,12 @@ class SlideAnimation;
 namespace ash {
 
 // An animation for a `HoldingSpaceProgressIndicator`.
-class ASH_EXPORT HoldingSpaceProgressIndicatorAnimation
-    : public gfx::AnimationDelegate {
+class ASH_EXPORT ProgressIndicatorAnimation : public gfx::AnimationDelegate {
  public:
-  HoldingSpaceProgressIndicatorAnimation(
-      const HoldingSpaceProgressIndicatorAnimation&) = delete;
-  HoldingSpaceProgressIndicatorAnimation& operator=(
-      const HoldingSpaceProgressIndicatorAnimation&) = delete;
-  ~HoldingSpaceProgressIndicatorAnimation() override;
+  ProgressIndicatorAnimation(const ProgressIndicatorAnimation&) = delete;
+  ProgressIndicatorAnimation& operator=(const ProgressIndicatorAnimation&) =
+      delete;
+  ~ProgressIndicatorAnimation() override;
 
   // Adds the specified `callback` to be notified of animation updates. The
   // `callback` will continue to receive events so long as both `this` and the
@@ -52,8 +50,7 @@ class ASH_EXPORT HoldingSpaceProgressIndicatorAnimation
   base::TimeTicks start_time() const { return start_time_; }
 
  protected:
-  HoldingSpaceProgressIndicatorAnimation(base::TimeDelta duration,
-                                         bool is_cyclic);
+  ProgressIndicatorAnimation(base::TimeDelta duration, bool is_cyclic);
 
   // Implementing classes should update any desired animatable properties as
   // appropriate for the specified animation `fraction`.
@@ -83,10 +80,9 @@ class ASH_EXPORT HoldingSpaceProgressIndicatorAnimation
   // The list of callbacks for which to notify animation updates.
   base::RepeatingClosureList animation_updated_callback_list_;
 
-  base::WeakPtrFactory<HoldingSpaceProgressIndicatorAnimation> weak_factory_{
-      this};
+  base::WeakPtrFactory<ProgressIndicatorAnimation> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_ANIMATION_H_
+#endif  // ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_ANIMATION_H_

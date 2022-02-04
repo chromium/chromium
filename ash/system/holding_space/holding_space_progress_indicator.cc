@@ -14,9 +14,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
-#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
-#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
+#include "ash/system/progress_indicator/progress_icon_animation.h"
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -181,7 +181,7 @@ class DefaultProgressIndicatorAnimationRegistry
       // Progress is indeterminate.
       EnsureProgressIconAnimation();
       EnsureProgressRingAnimationOfType(
-          HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
+          ProgressRingAnimation::Type::kIndeterminate);
     } else if (progress != HoldingSpaceProgressIndicator::kProgressComplete) {
       // Progress is determinate.
       EnsureProgressIconAnimation();
@@ -190,15 +190,13 @@ class DefaultProgressIndicatorAnimationRegistry
                HoldingSpaceProgressIndicator::kProgressComplete) {
       // Progress is complete.
       EraseProgressIconAnimation();
-      EnsureProgressRingAnimationOfType(
-          HoldingSpaceProgressRingAnimation::Type::kPulse);
+      EnsureProgressRingAnimationOfType(ProgressRingAnimation::Type::kPulse);
     }
     previous_progress_ = progress;
   }
 
   // Invoked on update of the specified `animation`.
-  void OnProgressRingAnimationUpdated(
-      HoldingSpaceProgressRingAnimation* animation) {
+  void OnProgressRingAnimationUpdated(ProgressRingAnimation* animation) {
     if (animation->IsAnimating())
       return;
 
@@ -210,7 +208,7 @@ class DefaultProgressIndicatorAnimationRegistry
         base::BindOnce(
             [](const base::WeakPtr<DefaultProgressIndicatorAnimationRegistry>&
                    registry,
-               HoldingSpaceProgressRingAnimation* animation) {
+               ProgressRingAnimation* animation) {
               if (!registry)
                 return;
               auto* key = registry->progress_indicator_;
@@ -228,22 +226,20 @@ class DefaultProgressIndicatorAnimationRegistry
       return;
 
     if (!GetProgressIconAnimationForKey(progress_indicator_)) {
-      SetProgressIconAnimationForKey(
-          progress_indicator_,
-          std::make_unique<HoldingSpaceProgressIconAnimation>())
+      SetProgressIconAnimationForKey(progress_indicator_,
+                                     std::make_unique<ProgressIconAnimation>())
           ->Start();
     }
   }
 
   // Ensures that a progress ring animation of the specified `type` exists and
   // is started.
-  void EnsureProgressRingAnimationOfType(
-      HoldingSpaceProgressRingAnimation::Type type) {
+  void EnsureProgressRingAnimationOfType(ProgressRingAnimation::Type type) {
     auto* ring_animation = GetProgressRingAnimationForKey(progress_indicator_);
     if (ring_animation && ring_animation->type() == type)
       return;
 
-    auto animation = HoldingSpaceProgressRingAnimation::CreateOfType(type);
+    auto animation = ProgressRingAnimation::CreateOfType(type);
 
     // NOTE: `animation` is owned by `this` so it is safe to use a raw pointer
     // and subscription-less callback.
@@ -491,7 +487,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
 
   // If an `icon_animation` is already registered, perform additional
   // initialization.
-  HoldingSpaceProgressIconAnimation* icon_animation =
+  ProgressIconAnimation* icon_animation =
       animation_registry_->GetProgressIconAnimationForKey(animation_key_);
   if (icon_animation)
     OnProgressIconAnimationChanged(icon_animation);
@@ -508,7 +504,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
 
   // If `ring_animation` is already registered, perform additional
   // initialization.
-  HoldingSpaceProgressRingAnimation* ring_animation =
+  ProgressRingAnimation* ring_animation =
       animation_registry_->GetProgressRingAnimationForKey(animation_key_);
   if (ring_animation)
     OnProgressRingAnimationChanged(ring_animation);
@@ -587,7 +583,7 @@ void HoldingSpaceProgressIndicator::OnDeviceScaleFactorChanged(
 void HoldingSpaceProgressIndicator::OnPaintLayer(
     const ui::PaintContext& context) {
   // Look up the associated `ring_animation` (if one exists).
-  HoldingSpaceProgressRingAnimation* ring_animation =
+  ProgressRingAnimation* ring_animation =
       animation_registry_
           ? animation_registry_->GetProgressRingAnimationForKey(animation_key_)
           : nullptr;
@@ -667,7 +663,7 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
     return;
 
   // Look up the associated `icon_animation` (if one exists).
-  HoldingSpaceProgressIconAnimation* icon_animation =
+  ProgressIconAnimation* icon_animation =
       animation_registry_
           ? animation_registry_->GetProgressIconAnimationForKey(animation_key_)
           : nullptr;
@@ -726,7 +722,7 @@ void HoldingSpaceProgressIndicator::UpdateVisualState() {
 }
 
 void HoldingSpaceProgressIndicator::OnProgressIconAnimationChanged(
-    HoldingSpaceProgressIconAnimation* animation) {
+    ProgressIconAnimation* animation) {
   // Trigger repaint of this progress indicator on `animation` updates. Note
   // that it is safe to use a raw pointer here since `this` owns the
   // subscription.
@@ -740,7 +736,7 @@ void HoldingSpaceProgressIndicator::OnProgressIconAnimationChanged(
 }
 
 void HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged(
-    HoldingSpaceProgressRingAnimation* animation) {
+    ProgressRingAnimation* animation) {
   // Trigger repaint of this progress indicator on `animation` updates. Note
   // that it is safe to use a raw pointer here since `this` owns the
   // subscription.

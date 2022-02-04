@@ -15,9 +15,9 @@
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
-#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
-#include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
-#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
+#include "ash/system/progress_indicator/progress_icon_animation.h"
+#include "ash/system/progress_indicator/progress_indicator_animation.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "ash/test/ash_test_base.h"
 #include "base/barrier_closure.h"
 #include "base/strings/strcat.h"
@@ -90,7 +90,7 @@ class HoldingSpaceAnimationRegistryTest : public AshTestBase,
 
   void ExpectProgressRingAnimationOfTypeForKey(
       const void* key,
-      const absl::optional<HoldingSpaceProgressRingAnimation::Type>& type) {
+      const absl::optional<ProgressRingAnimation::Type>& type) {
     auto* animation = registry()->GetProgressRingAnimationForKey(key);
     EXPECT_EQ(!!animation, type.has_value());
     if (animation && type.has_value())
@@ -129,7 +129,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Tests -----------------------------------------------------------------------
 
 TEST_P(HoldingSpaceAnimationRegistryTest, ProgressIndicatorAnimations) {
-  using Type = HoldingSpaceProgressRingAnimation::Type;
+  using Type = ProgressRingAnimation::Type;
 
   StartSession();
 
@@ -220,14 +220,14 @@ TEST_P(HoldingSpaceAnimationRegistryTest, ProgressIndicatorAnimations) {
 
     std::array<base::CallbackListSubscription, 3u> subscriptions = {
         registry()->AddProgressRingAnimationChangedCallbackForKey(
-            controller(), IgnoreArgs<HoldingSpaceProgressRingAnimation*>(
-                              pulse_animation_complete)),
+            controller(),
+            IgnoreArgs<ProgressRingAnimation*>(pulse_animation_complete)),
         registry()->AddProgressRingAnimationChangedCallbackForKey(
-            item_1, IgnoreArgs<HoldingSpaceProgressRingAnimation*>(
-                        pulse_animation_complete)),
+            item_1,
+            IgnoreArgs<ProgressRingAnimation*>(pulse_animation_complete)),
         registry()->AddProgressRingAnimationChangedCallbackForKey(
-            item_2, IgnoreArgs<HoldingSpaceProgressRingAnimation*>(
-                        pulse_animation_complete))};
+            item_2,
+            IgnoreArgs<ProgressRingAnimation*>(pulse_animation_complete))};
 
     run_loop.Run();
   }

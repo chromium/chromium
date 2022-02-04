@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
+#include "ash/system/progress_indicator/progress_icon_animation.h"
 
 #include "ui/gfx/animation/tween.h"
 
 namespace ash {
 
-HoldingSpaceProgressIconAnimation::HoldingSpaceProgressIconAnimation()
-    : HoldingSpaceProgressIndicatorAnimation(
+ProgressIconAnimation::ProgressIconAnimation()
+    : ProgressIndicatorAnimation(
           /*duration=*/base::Milliseconds(400),
           /*is_cyclic=*/false) {}
 
-HoldingSpaceProgressIconAnimation::~HoldingSpaceProgressIconAnimation() =
-    default;
+ProgressIconAnimation::~ProgressIconAnimation() = default;
 
-void HoldingSpaceProgressIconAnimation::UpdateAnimatableProperties(
-    double fraction) {
+void ProgressIconAnimation::UpdateAnimatableProperties(double fraction) {
   // Tween.
   fraction = gfx::Tween::CalculateValue(gfx::Tween::Type::ACCEL_20_DECEL_100,
                                         fraction);
