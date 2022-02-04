@@ -1919,6 +1919,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStore.OnLoginsRetained"
+    enum="LoginsChangedTrigger" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Android only. |OnLoginsRetained| replaces |OnLoginsChanged| and this metric
+    records potential calls of |OnLoginsRetained| to measure differences in
+    volume after switching. The metrics is recorded whenever the PasswordStore
+    (potentially) requests all logins to notify consumers because data may have
+    changed. Changes can occur within Chrome (e.g. after saving/updating a
+    password) or externally.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
     units="count" expires_after="2022-06-30">

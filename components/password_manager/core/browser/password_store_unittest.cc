@@ -1097,6 +1097,9 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfUpdateProvidesChanges) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
+  base::HistogramTester histogram_tester;
+  const char kOnLoginRetainedMetric[] =
+      "PasswordManager.PasswordStore.OnLoginsRetained";
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   all_credentials.push_back(FillPasswordFormWithData(
       CreateTestPasswordFormDataByOrigin(kTestWebRealm1)));
@@ -1127,6 +1130,41 @@ TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
                                UnorderedElementsAre(kTestForm, kOtherForm)));
   store->UpdateLogin(kTestForm);
   WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+  histogram_tester.ExpectUniqueSample(kOnLoginRetainedMetric, /*Update*/ 2, 1);
+  histogram_tester.ExpectTotalCount(kOnLoginRetainedMetric, 1);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
+  base::HistogramTester histogram_tester;
+  const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
+  MockPasswordStoreObserver mock_observer;
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->AddObserver(&mock_observer);
+
+  // A changelist will be returned, so `OnLoginsRetained` call is not issued.
+  // But the changelist is empty, so `OnLoginsChanged` is not issued either.
+  // Regardless, this is a case where `OnLoginsRetained` would be called if the
+  // GMS backend was active — therefore record the potential call.
+  EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
+      .WillOnce(
+          WithArg<1>(Invoke([](PasswordStoreChangeListReply reply) -> void {
+            std::move(reply).Run(PasswordStoreChangeList());
+          })));
+  EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
+  EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
+  store->UpdateLogin(kTestForm);
+  WaitForPasswordStore();
+
+  const char kOnLoginRetainedMetric[] =
+      "PasswordManager.PasswordStore.OnLoginsRetained";
+  histogram_tester.ExpectUniqueSample(kOnLoginRetainedMetric, /*Update*/ 2, 1);
+  histogram_tester.ExpectTotalCount(kOnLoginRetainedMetric, 1);
 
   store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();

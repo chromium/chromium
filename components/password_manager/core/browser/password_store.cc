@@ -97,7 +97,7 @@ bool PasswordStore::Init(
         "passwords", "PasswordStore::InitOnBackgroundSequence", this);
     backend_->InitBackend(
         base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
-                            this),
+                            this, LoginsChangedTrigger::ExternalUpdate),
         base::BindPostTask(
             main_task_runner_,
             base::BindRepeating(
@@ -113,8 +113,8 @@ void PasswordStore::AddLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->AddLoginAsync(
-      form,
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
+      form, base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
+                           this, LoginsChangedTrigger::Addition));
 }
 
 void PasswordStore::UpdateLogin(const PasswordForm& form) {
@@ -122,8 +122,8 @@ void PasswordStore::UpdateLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->UpdateLoginAsync(
-      form,
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
+      form, base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
+                           this, LoginsChangedTrigger::Update));
 }
 
 void PasswordStore::UpdateLoginWithPrimaryKey(
@@ -148,7 +148,8 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
       base::BarrierCallback<absl::optional<PasswordStoreChangeList>>(
           2, base::BindOnce(&JoinPasswordStoreChanges)
                  .Then(base::BindOnce(
-                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this)));
+                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                     LoginsChangedTrigger::Update)));
 
   backend_->RemoveLoginAsync(old_primary_key, barrier_callback);
   backend_->AddLoginAsync(new_form_with_correct_password_issues,
@@ -160,8 +161,8 @@ void PasswordStore::RemoveLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->RemoveLoginAsync(
-      form,
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
+      form, base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
+                           this, LoginsChangedTrigger::Deletion));
 }
 
 void PasswordStore::RemoveLoginsByURLAndTime(
@@ -177,7 +178,8 @@ void PasswordStore::RemoveLoginsByURLAndTime(
   }
   backend_->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, std::move(sync_completion),
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this)
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                     LoginsChangedTrigger::BatchDeletion)
           .Then(std::move(completion)));
 }
 
@@ -191,7 +193,8 @@ void PasswordStore::RemoveLoginsCreatedBetween(
     return;  // Once the shutdown started, ignore new requests.
   }
   auto callback =
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this);
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                     LoginsChangedTrigger::BatchDeletion);
   backend_->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
       base::BindOnce(&InvokeCallbacksForSuspectedChanges, std::move(callback),
@@ -362,6 +365,7 @@ void PasswordStore::OnInitCompleted(bool success) {
 }
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
+    LoginsChangedTrigger logins_changed_trigger,
     absl::optional<PasswordStoreChangeList> changes) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
@@ -371,6 +375,10 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
+  // Record that an OnLoginsRetained call may be required here already since
+  // issuing the list call seems to be the most relevant and expensive step.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordStore.OnLoginsRetained", logins_changed_trigger);
   if (!changes.has_value()) {
     // If the changes aren't provided, the store propagates the latest logins.
     backend_->GetAllLoginsAsync(base::BindOnce(
@@ -444,7 +452,8 @@ void PasswordStore::UnblocklistInternal(
   }
 
   auto notify_callback =
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this);
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                     LoginsChangedTrigger::Unblocklisting);
   if (completion)
     notify_callback = std::move(notify_callback).Then(std::move(completion));
 

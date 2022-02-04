@@ -57217,6 +57217,39 @@ from previous Chrome versions.
   </int>
 </enum>
 
+<enum name="LoginsChangedTrigger">
+  <summary>
+    Triggers that may indirectly cause PasswordStore observers notifications
+    because logins *may* have changed.
+  </summary>
+  <int value="0" label="ExternalUpdate">
+    Chrome either was notified about external changes (e.g. via subscription
+    notification) or started a new foregrounding session and needs to refresh
+    data that may have changed due to external credential management.
+  </int>
+  <int value="1" label="Addition">
+    A credential was saved by Chrome. Update observers with all credentials
+    because the addition may conflict with an existing credential.
+  </int>
+  <int value="2" label="Update">
+    A credential was updated by Chrome. Update observers with all credentials
+    because updates may have caused implicit removals (e.g. due to primary key
+    changes) or the update may have failed (e.g. because of a prior deletion).
+  </int>
+  <int value="3" label="Deletion">
+    A single credential was removed by Chrome. Update observers with all
+    credentials because removal might fail (i.e. credential was already gone).
+  </int>
+  <int value="4" label="BatchDeletion">
+    Multiple credentials where removed by Chrome. Update observers with all
+    credentials because removals might fail.
+  </int>
+  <int value="5" label="Unblocklisting">
+    Chrome removed blocklisting entries. Update observers with all credentials
+    to confirm the remaining saving exceptions.
+  </int>
+</enum>
+
 <enum name="LoginScreenUserClickTarget">
   <int value="0" label="Shut down button"/>
   <int value="1" label="Restart button"/>

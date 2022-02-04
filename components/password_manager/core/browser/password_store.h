@@ -148,6 +148,21 @@ class PasswordStore : public PasswordStoreInterface {
   using InsecureCredentialsTask =
       base::OnceCallback<std::vector<InsecureCredential>()>;
 
+  // Represents different triggers that may require requesting all logins from
+  // the password store. Entries should not be renumbered and numeric values
+  // should never be reused. Always keep this enum in sync with the
+  // corresponding LoginsChangedTrigger in enums.xml.
+  enum class LoginsChangedTrigger {
+    ExternalUpdate = 0,
+    Addition = 1,
+    Update = 2,
+    Deletion = 3,
+    BatchDeletion = 4,
+    Unblocklisting = 5,
+    // Must be last.
+    kMaxValue = Unblocklisting,
+  };
+
   // Called on the main thread after initialization is completed.
   // |success| is true if initialization was successful. Sets the
   // |init_status_|.
@@ -157,6 +172,7 @@ class PasswordStore : public PasswordStoreInterface {
   // available, it forwards the changes to observers. Otherwise, all logins are
   // requested and forwarded to `NotifyLoginsRetainedOnMainSequence`.
   void NotifyLoginsChangedOnMainSequence(
+      LoginsChangedTrigger change_event,
       absl::optional<PasswordStoreChangeList> changes);
 
   // Notifies observers with all logins remaining after a modifying operation.
