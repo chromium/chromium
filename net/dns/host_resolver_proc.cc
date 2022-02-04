@@ -39,6 +39,20 @@ HostResolverProc::HostResolverProc(HostResolverProc* previous,
 
 HostResolverProc::~HostResolverProc() = default;
 
+int HostResolverProc::Resolve(const std::string& host,
+                              AddressFamily address_family,
+                              HostResolverFlags host_resolver_flags,
+                              AddressList* addrlist,
+                              int* os_error,
+                              NetworkChangeNotifier::NetworkHandle network) {
+  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+    return Resolve(host, address_family, host_resolver_flags, addrlist,
+                   os_error);
+
+  NOTIMPLEMENTED();
+  return ERR_NOT_IMPLEMENTED;
+}
+
 int HostResolverProc::ResolveUsingPrevious(
     const std::string& host,
     AddressFamily address_family,
@@ -114,7 +128,8 @@ int SystemHostResolverCall(const std::string& host,
                            AddressFamily address_family,
                            HostResolverFlags host_resolver_flags,
                            AddressList* addrlist,
-                           int* os_error_opt) {
+                           int* os_error_opt,
+                           NetworkChangeNotifier::NetworkHandle network) {
   // |host| should be a valid domain name. HostResolverImpl::Resolve has checks
   // to fail early if this is not the case.
   DCHECK(IsValidDNSDomain(host));
@@ -180,7 +195,7 @@ int SystemHostResolverCall(const std::string& host,
     !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_ANDROID))
   DnsReloaderMaybeReload();
 #endif
-  auto [ai, err, os_error] = AddressInfo::Get(host, hints);
+  auto [ai, err, os_error] = AddressInfo::Get(host, hints, nullptr, network);
   bool should_retry = false;
   // If the lookup was restricted (either by address family, or address
   // detection), and the results where all localhost of a single family,
@@ -198,7 +213,8 @@ int SystemHostResolverCall(const std::string& host,
     }
   }
   if (should_retry) {
-    std::tie(ai, err, os_error) = AddressInfo::Get(host, hints);
+    std::tie(ai, err, os_error) =
+        AddressInfo::Get(host, hints, nullptr, network);
   }
 
   if (os_error_opt)
@@ -213,16 +229,24 @@ int SystemHostResolverCall(const std::string& host,
 
 SystemHostResolverProc::SystemHostResolverProc() : HostResolverProc(nullptr) {}
 
+int SystemHostResolverProc::Resolve(
+    const std::string& hostname,
+    AddressFamily address_family,
+    HostResolverFlags host_resolver_flags,
+    AddressList* addr_list,
+    int* os_error,
+    NetworkChangeNotifier::NetworkHandle network) {
+  return SystemHostResolverCall(hostname, address_family, host_resolver_flags,
+                                addr_list, os_error, network);
+}
+
 int SystemHostResolverProc::Resolve(const std::string& hostname,
                                     AddressFamily address_family,
                                     HostResolverFlags host_resolver_flags,
                                     AddressList* addr_list,
                                     int* os_error) {
-  return SystemHostResolverCall(hostname,
-                                address_family,
-                                host_resolver_flags,
-                                addr_list,
-                                os_error);
+  return Resolve(hostname, address_family, host_resolver_flags, addr_list,
+                 os_error, NetworkChangeNotifier::kInvalidNetworkHandle);
 }
 
 SystemHostResolverProc::~SystemHostResolverProc() = default;
