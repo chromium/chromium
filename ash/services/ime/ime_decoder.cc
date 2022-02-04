@@ -90,7 +90,8 @@ ImeDecoder::ImeDecoder() {
   // Checking if entry_points_ are loaded.
   if (!entry_points.init_once || !entry_points.supports ||
       !entry_points.activate_ime || !entry_points.process ||
-      !entry_points.close) {
+      !entry_points.close || !entry_points.connect_to_input_method ||
+      !entry_points.is_input_method_connected) {
     return;
   }
 
