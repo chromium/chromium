@@ -32,6 +32,7 @@ source_set("unit_tests") {
   deps = [
     ":fwupd",
     "//ash",
+    "//ash:test_support",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/mojom",

@@ -310,6 +310,12 @@ void FirmwareUpdateManager::FetchInProgressUpdate(
 
 // Query all updates for all devices.
 void FirmwareUpdateManager::RequestAllUpdates() {
+  if (should_show_notification_for_test_) {
+    // Short circuit to immediately display notification.
+    NotifyCriticalFirmwareUpdateReceived();
+    return;
+  }
+
   if (is_fetching_updates_) {
     return;
   }
@@ -649,4 +655,5 @@ void FirmwareUpdateManager::AddObserver(
   update_progress_observer_.reset();
   update_progress_observer_.Bind(std::move(observer));
 }
+
 }  // namespace ash

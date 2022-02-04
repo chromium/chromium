@@ -8,10 +8,12 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -54,6 +56,28 @@ void OnFirmwareUpdateAvailableNotificationClicked(
       break;
   }
   RemoveNotification(kFirmwareUpdateNotificationId);
+}
+
+bool ShouldShowNotification() {
+  const absl::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  if (!user_type) {
+    return false;
+  }
+
+  switch (*user_type) {
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::NUM_USER_TYPES:
+      return false;
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+      return true;
+  }
 }
 
 }  // namespace
@@ -104,7 +128,9 @@ void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
 }
 
 void FirmwareUpdateNotificationController::OnFirmwareUpdateReceived() {
-  NotifyFirmwareUpdateAvailable();
+  if (ShouldShowNotification()) {
+    NotifyFirmwareUpdateAvailable();
+  }
 }
 
 }  // namespace ash

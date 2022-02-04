@@ -108,6 +108,10 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
           pending_receiver);
 
+  void set_should_show_notification_for_test(bool show_notification) {
+    should_show_notification_for_test_ = show_notification;
+  }
+
  protected:
   friend class FirmwareUpdateManagerTest;
   // Temporary auxiliary variables for testing.
@@ -208,6 +212,9 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
   // Whether or not fetching updates in inflight.
   bool is_fetching_updates_ = false;
+
+  // Used only for testing to force notification to appear.
+  bool should_show_notification_for_test_ = false;
 
   // Remotes for tracking observers that will be notified of changes to the
   // list of firmware updates.

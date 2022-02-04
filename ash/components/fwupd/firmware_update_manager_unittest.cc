@@ -12,7 +12,9 @@
 #include "ash/components/fwupd/fake_fwupd_download_client.h"
 #include "ash/components/fwupd/histogram_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom-test-utils.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/files/file.h"
@@ -24,6 +26,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "components/user_manager/user_type.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -34,6 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/fake_message_center.h"
+#include "ui/message_center/message_center.h"
 
 using chromeos::FwupdClient;
 using message_center::MessageCenter;
@@ -66,6 +70,8 @@ const char kVersionKey[] = "Version";
 const char kDownloadDir[] = "firmware-updates";
 const char kCacheDir[] = "cache";
 const char kCabExtension[] = ".cab";
+const char kFirmwareUpdateNotificationId[] =
+    "cros_firmware_update_notification_id";
 
 void RunResponseCallback(dbus::ObjectProxy::ResponseOrErrorCallback callback,
                          std::unique_ptr<dbus::Response> response) {
@@ -123,31 +129,11 @@ class FakeUpdateProgressObserver
       this};
 };
 
-class MockMessageCenter : public message_center::FakeMessageCenter {
- public:
-  MockMessageCenter() = default;
-
-  MockMessageCenter(const MockMessageCenter&) = delete;
-  MockMessageCenter& operator=(const MockMessageCenter&) = delete;
-
-  ~MockMessageCenter() override = default;
-
-  int notification_count() const { return notification_count_; }
-
-  // message_center::FakeMessageCenter overrides:
-  void AddNotification(std::unique_ptr<Notification> notification) override {
-    notification_count_++;
-  }
-
- private:
-  int notification_count_ = 0;
-};
-
 }  // namespace
 
 namespace ash {
 
-class FirmwareUpdateManagerTest : public testing::Test {
+class FirmwareUpdateManagerTest : public AshTestBase {
  public:
   FirmwareUpdateManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -174,13 +160,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
     firmware_update_manager_->BindInterface(
         update_provider_remote_.BindNewPipeAndPassReceiver());
-    message_center_ = std::make_unique<MockMessageCenter>();
-    firmware_update_notification_controller_ =
-        std::make_unique<FirmwareUpdateNotificationController>(
-            message_center_.get());
-    firmware_update_notification_controller_
-        ->OnFirmwareUpdateManagerInitialized();
   }
+
   FirmwareUpdateManagerTest(const FirmwareUpdateManagerTest&) = delete;
   FirmwareUpdateManagerTest& operator=(const FirmwareUpdateManagerTest&) =
       delete;
@@ -191,13 +172,21 @@ class FirmwareUpdateManagerTest : public testing::Test {
                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
     ASSERT_FALSE(dbus_responses_.empty());
     auto response = std::move(dbus_responses_.front());
-    task_environment_.GetMainThreadTaskRunner()->PostTask(
+    task_environment()->GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
                                   std::move(response)));
     dbus_responses_.pop_front();
   }
 
  protected:
+  void InitializeNotificationController() {
+    firmware_update_notification_controller_ =
+        std::make_unique<FirmwareUpdateNotificationController>(
+            message_center());
+    firmware_update_notification_controller_
+        ->OnFirmwareUpdateManagerInitialized();
+  }
+
   void StartInstall(const std::string& device_id,
                     const base::FilePath& filepath) {
     base::RunLoop loop;
@@ -219,6 +208,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
   void SetFakeUrlForTesting(const std::string& fake_url) {
     firmware_update_manager_->SetFakeUrlForTesting(fake_url);
+  }
+
+  message_center::MessageCenter* message_center() const {
+    return message_center::MessageCenter::Get();
   }
 
   std::unique_ptr<dbus::Response> CreateEmptyDeviceResponse() {
@@ -463,7 +456,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
   std::unique_ptr<FwupdClient> dbus_client_;
   std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
-  std::unique_ptr<MockMessageCenter> message_center_;
   // `FirmwareUpdateNotificationController` must be be after
   // `FirmwareUpdateManager` to ensure that
   // `FirmwareUpdateNotificationController` is removed as an observer before
@@ -482,7 +474,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
   // Fake responses.
   std::deque<std::unique_ptr<dbus::Response>> dbus_responses_;
 
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -790,14 +781,17 @@ TEST_F(FirmwareUpdateManagerTest, InvalidFile) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, NotificationShownForCriticalUpdate) {
+  InitializeNotificationController();
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-  EXPECT_EQ(0, message_center_->notification_count());
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneCriticalUpdateResponse());
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
-  EXPECT_EQ(1, message_center_->notification_count());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
+  message_center()->RemoveNotification(kFirmwareUpdateNotificationId,
+                                       /*by_user=*/true);
 
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneCriticalUpdateResponse());
@@ -805,18 +799,22 @@ TEST_F(FirmwareUpdateManagerTest, NotificationShownForCriticalUpdate) {
   base::RunLoop().RunUntilIdle();
   // Request updates again and verify that the notification is not being
   // shown multiple times for the same update.
-  EXPECT_EQ(1, message_center_->notification_count());
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
 }
 
 TEST_F(FirmwareUpdateManagerTest, NotificationNotShownIfNoCriticalUpdates) {
+  InitializeNotificationController();
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-  EXPECT_EQ(0, message_center_->notification_count());
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
-  EXPECT_EQ(0, message_center_->notification_count());
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
 }
 
 TEST_F(FirmwareUpdateManagerTest, DeviceCountMetric) {
@@ -856,6 +854,92 @@ TEST_F(FirmwareUpdateManagerTest, UpdateCountMetric) {
       "ChromeOS.FirmwareUpdateUi.OnRefresh.CriticalUpdateCount", 0, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.FirmwareUpdateUi.OnRefresh.UpdateCount", 1, 1);
+}
+
+class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
+ public:
+  FirmwareUpdateStartupNotificationTest() = default;
+
+  ~FirmwareUpdateStartupNotificationTest() override = default;
+
+  void SetUp() override {
+    dbus_client_ = FwupdClient::Create();
+    firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
+    EXPECT_TRUE(FirmwareUpdateManager::IsInitialized());
+    SetShouldShowNotificationForTest(true);
+    NoSessionAshTestBase::SetUp();
+  }
+
+ protected:
+  void InitializeNotificationController() {
+    firmware_update_notification_controller_ =
+        std::make_unique<FirmwareUpdateNotificationController>(
+            message_center());
+    firmware_update_notification_controller_
+        ->OnFirmwareUpdateManagerInitialized();
+  }
+
+  message_center::MessageCenter* message_center() const {
+    return message_center::MessageCenter::Get();
+  }
+
+  message_center::Notification* FindShortcutsChangedNotification() {
+    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+        kFirmwareUpdateNotificationId);
+  }
+
+  void SetShouldShowNotificationForTest(bool show_notification) {
+    FirmwareUpdateManager::Get()->set_should_show_notification_for_test(
+        show_notification);
+  }
+
+  void SimulateFetchingUpdates() {
+    FirmwareUpdateManager::Get()->RequestAllUpdates();
+  }
+
+  std::unique_ptr<FwupdClient> dbus_client_;
+  std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
+  std::unique_ptr<FirmwareUpdateNotificationController>
+      firmware_update_notification_controller_;
+};
+
+TEST_F(FirmwareUpdateStartupNotificationTest,
+       StartupNotificationShownRegularUser) {
+  // Notification should be shown at login.
+  SimulateUserLogin("user1@email.com");
+  InitializeNotificationController();
+  SimulateFetchingUpdates();
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
+}
+
+TEST_F(FirmwareUpdateStartupNotificationTest,
+       StartupNotificationShownGuestUser) {
+  // Notification should not be shown at login if the user is a guest.
+  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_GUEST);
+  InitializeNotificationController();
+  SimulateFetchingUpdates();
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
+}
+
+TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
+  // Notification should not be shown at login if the user is in kiosk mode.
+  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_KIOSK_APP);
+  InitializeNotificationController();
+  SimulateFetchingUpdates();
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
+}
+
+TEST_F(FirmwareUpdateStartupNotificationTest,
+       StartupNotificationShownKioskPWA) {
+  // Notification should not be shown at login if the user is in kiosk mode.
+  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_WEB_KIOSK_APP);
+  InitializeNotificationController();
+  SimulateFetchingUpdates();
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      kFirmwareUpdateNotificationId));
 }
 
 }  // namespace ash
