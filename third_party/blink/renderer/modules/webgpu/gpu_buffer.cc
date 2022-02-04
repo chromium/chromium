@@ -110,7 +110,9 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
     buffer->setLabel(webgpu_desc->label());
 
   if (is_mappable) {
-    device->adapter()->gpu()->TrackMappableBuffer(buffer);
+    GPU* gpu = device->adapter()->gpu();
+    gpu->TrackMappableBuffer(buffer);
+    buffer->mappable_buffer_handles_ = gpu->mappable_buffer_handles();
   }
 
   return buffer;
@@ -120,6 +122,12 @@ GPUBuffer::GPUBuffer(GPUDevice* device,
                      uint64_t size,
                      WGPUBuffer buffer)
     : DawnObject<WGPUBuffer>(device, buffer), size_(size) {
+}
+
+GPUBuffer::~GPUBuffer() {
+  if (mappable_buffer_handles_) {
+    mappable_buffer_handles_->erase(GetHandle());
+  }
 }
 
 void GPUBuffer::Trace(Visitor* visitor) const {
@@ -163,12 +171,13 @@ void GPUBuffer::unmap(ScriptState* script_state) {
 }
 
 void GPUBuffer::destroy(ScriptState* script_state) {
-  Destroy(script_state->GetIsolate());
-}
-
-void GPUBuffer::Destroy(v8::Isolate* isolate) {
-  ResetMappingState(isolate);
+  ResetMappingState(script_state->GetIsolate());
   GetProcs().bufferDestroy(GetHandle());
+  // Destroyed, so it can never be mapped again. Stop tracking.
+  device_->adapter()->gpu()->UntrackMappableBuffer(this);
+  // Drop the reference to the mapped buffer handles. No longer
+  // need to remove the WGPUBuffer from this set in ~GPUBuffer.
+  mappable_buffer_handles_ = nullptr;
 }
 
 ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
@@ -347,7 +356,10 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(
 
 void GPUBuffer::ResetMappingState(v8::Isolate* isolate) {
   mapped_ranges_.clear();
+  DetachMappedArrayBuffers(isolate);
+}
 
+void GPUBuffer::DetachMappedArrayBuffers(v8::Isolate* isolate) {
   for (Member<GPUMappedDOMArrayBuffer>& mapped_array_buffer :
        mapped_array_buffers_) {
     GPUMappedDOMArrayBuffer* array_buffer = mapped_array_buffer.Release();

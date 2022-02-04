@@ -128,7 +128,9 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 
 GPU::GPU(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()) {}
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      mappable_buffer_handles_(
+          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
 
 GPU::~GPU() = default;
 
@@ -140,18 +142,26 @@ void GPU::Trace(Visitor* visitor) const {
 }
 
 void GPU::ContextDestroyed() {
-  if (!mappable_buffers_.IsEmpty()) {
-    // Destroy all mappable buffers. This ensures all mappings backed by
-    // shared memory are detached before the WebGPU command buffer and
-    // transfer buffers are destroyed.
-    v8::Isolate* isolate = ThreadState::Current()->GetIsolate();
-    for (GPUBuffer* buffer : mappable_buffers_) {
-      buffer->Destroy(isolate);
-    }
-  }
   if (!dawn_control_client_) {
     return;
   }
+  // Ensure all DOMArrayBuffers backed by shared memory are detached before
+  // the WebGPU command buffer and transfer buffers are destroyed.
+  // This is necessary because we will free the shmem backings, and some
+  // short amount of JS can still execute after the ContextDestroyed event
+  // is received.
+  for (GPUBuffer* buffer : mappable_buffers_) {
+    buffer->DetachMappedArrayBuffers(ThreadState::Current()->GetIsolate());
+  }
+  // GPUBuffer::~GPUBuffer and GPUBuffer::destroy will remove WGPUBuffers from
+  // |mappable_buffer_handles_|.
+  // However, there may be GPUBuffers that were removed from mappable_buffers_
+  // for which ~GPUBuffer has not run yet. These GPUBuffers and their
+  // DOMArrayBuffer mappings are no longer reachable from JS, so we don't need
+  // to detach them, but we do need to eagerly destroy the WGPUBuffer so that
+  // its shared memory is freed before the context is completely destroyed.
+  mappable_buffer_handles_->ClearAndDestroyAll(
+      dawn_control_client_->GetProcs());
   dawn_control_client_->Destroy();
 }
 
@@ -261,6 +271,20 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
 
 void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.insert(buffer);
+  mappable_buffer_handles_->insert(buffer->GetHandle());
+}
+
+void GPU::UntrackMappableBuffer(GPUBuffer* buffer) {
+  mappable_buffers_.erase(buffer);
+  mappable_buffer_handles_->erase(buffer->GetHandle());
+}
+
+void BoxedMappableWGPUBufferHandles::ClearAndDestroyAll(
+    const DawnProcTable& procs) {
+  for (void* p : contents_) {
+    procs.bufferDestroy(static_cast<WGPUBuffer>(p));
+  }
+  contents_.clear();
 }
 
 }  // namespace blink
