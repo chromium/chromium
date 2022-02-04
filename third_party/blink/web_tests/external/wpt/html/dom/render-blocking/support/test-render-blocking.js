@@ -119,25 +119,29 @@ function test_render_blocked_apis(optional_element, finalTest, finalTestTitle) {
       createAutofocusTarget(), 'focus',
       'Should not flush autofocus candidates when render-blocked');
 
-  // requestFullscreen() below will trigger viewport resize.
-  test_event_blocked(
-      window, 'resize',
-      'Should not run the resize steps when render-blocked');
-
   const scrollTarget = createScrollTarget();
   test_event_blocked(
       scrollTarget, 'scroll',
       'Should not run the scroll steps when render-blocked',
       () => scrollTarget.scrollTop = 100);
 
+  test_event_blocked(
+      createAnimationTarget(), ['animationstart', 'animationend'],
+      'Should not run the update animations and send events steps when render-blocked');
+
+  /* TODO(xiaochengh): requestFullscreen() with test driver currently causes
+   * memory leak in Blink web test runner. Fix it and re-enable these tests.
+   * See https://crbug.com/1293987 for details
+   *
+  // requestFullscreen() below will trigger viewport resize.
+  test_event_blocked(
+      window, 'resize',
+      'Should not run the resize steps when render-blocked');
+
   // requestFullscreen() below will change the matches state
   test_event_blocked(
       matchMedia('all and (display-mode: fullscreen)'), 'change',
       'Should not run the evaluate media queries and report changes steps when render-blocked');
-
-  test_event_blocked(
-      createAnimationTarget(), ['animationstart', 'animationend'],
-      'Should not run the update animations and send events steps when render-blocked');
 
   test_event_blocked(
       document, ['fullscreenchange', 'fullscreenerror'],
@@ -149,6 +153,7 @@ function test_render_blocked_apis(optional_element, finalTest, finalTestTitle) {
               .then(() => document.exitFullscreen()));
         }
       });
+   */
 
   // We should also verify that the context lost steps for canvas are not run,
   // but there's currently no way to reliably trigger a context lost in WPT.
