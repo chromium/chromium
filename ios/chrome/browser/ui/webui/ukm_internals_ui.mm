@@ -47,7 +47,7 @@ class UkmMessageHandler : public web::WebUIIOSMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleRequestUkmData(const base::ListValue* args);
+  void HandleRequestUkmData(const base::Value::ConstListView args);
 
   const ukm::UkmService* ukm_service_;
 };
@@ -58,20 +58,20 @@ UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)
 UkmMessageHandler::~UkmMessageHandler() {}
 
 void UkmMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestUkmData",
       base::BindRepeating(&UkmMessageHandler::HandleRequestUkmData,
                           base::Unretained(this)));
 }
 
-void UkmMessageHandler::HandleRequestUkmData(const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetListDeprecated();
+void UkmMessageHandler::HandleRequestUkmData(
+    const base::Value::ConstListView args) {
   base::Value ukm_debug_data =
       ukm::debug::UkmDebugDataExtractor::GetStructuredData(ukm_service_);
 
   std::string callback_id;
-  if (!args_list.empty() && args_list[0].is_string())
-    callback_id = args_list[0].GetString();
+  if (!args.empty() && args[0].is_string())
+    callback_id = args[0].GetString();
 
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
                                       std::move(ukm_debug_data));

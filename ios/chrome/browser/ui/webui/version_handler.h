@@ -5,11 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_H_
 
+#include "base/values.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 // Handler class for Version page operations.
 class VersionHandler : public web::WebUIIOSMessageHandler {
@@ -26,7 +23,7 @@ class VersionHandler : public web::WebUIIOSMessageHandler {
 
   // Callback for the "requestVariationInfo" message. This responds immediately
   // with the list of variations.
-  void HandleRequestVariationInfo(const base::ListValue* args);
+  void HandleRequestVariationInfo(const base::Value::ConstListView args);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_H_

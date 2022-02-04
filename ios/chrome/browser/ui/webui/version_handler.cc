@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/values.h"
 #include "components/version_ui/version_handler_helper.h"
 #include "components/version_ui/version_ui_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -17,16 +16,17 @@ VersionHandler::VersionHandler() {}
 VersionHandler::~VersionHandler() {}
 
 void VersionHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       version_ui::kRequestVariationInfo,
       base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
                           base::Unretained(this)));
 }
 
-void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestVariationInfo(
+    const base::Value::ConstListView args) {
   // Respond with the variations info immediately.
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(2U, args.size());
+  std::string callback_id = args[0].GetString();
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetKey(version_ui::kKeyVariationsList,

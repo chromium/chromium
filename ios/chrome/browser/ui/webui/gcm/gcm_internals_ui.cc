@@ -48,10 +48,10 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
                      const gcm::GCMClient::GCMStatistics* stats) const;
 
   // Request all of the GCM related infos through gcm profile service.
-  void RequestAllInfo(const base::ListValue* args);
+  void RequestAllInfo(const base::Value::ConstListView args);
 
   // Enables/disables GCM activity recording through gcm profile service.
-  void SetRecording(const base::ListValue* args);
+  void SetRecording(const base::Value::ConstListView args);
 
   // Callback function of the request for all gcm related infos.
   void RequestGCMStatisticsFinished(
@@ -78,13 +78,13 @@ void GcmInternalsUIMessageHandler::ReturnResults(
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
-void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
-  auto args_list = args->GetListDeprecated();
-  if (args_list.size() != 1 || !args_list[0].is_bool()) {
+void GcmInternalsUIMessageHandler::RequestAllInfo(
+    const base::Value::ConstListView args) {
+  if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool clear_logs = args_list[0].GetBool();
+  bool clear_logs = args[0].GetBool();
 
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
@@ -105,13 +105,13 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
   }
 }
 
-void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  auto args_list = args->GetListDeprecated();
-  if (args_list.size() != 1 || !args_list[0].is_bool()) {
+void GcmInternalsUIMessageHandler::SetRecording(
+    const base::Value::ConstListView args) {
+  if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool recording = args_list[0].GetBool();
+  bool recording = args[0].GetBool();
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
@@ -143,11 +143,11 @@ void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
 }
 
 void GcmInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       gcm_driver::kGetGcmInternalsInfo,
       base::BindRepeating(&GcmInternalsUIMessageHandler::RequestAllInfo,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       gcm_driver::kSetGcmInternalsRecording,
       base::BindRepeating(&GcmInternalsUIMessageHandler::SetRecording,
                           weak_ptr_factory_.GetWeakPtr()));
