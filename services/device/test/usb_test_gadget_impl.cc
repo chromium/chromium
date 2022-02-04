@@ -184,10 +184,10 @@ int SimplePOSTRequest(
     const GURL& url,
     const std::string& form_data) {
   net::TestDelegate delegate;
-  net::TestURLRequestContext request_context;
+  auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
 
   std::unique_ptr<net::URLRequest> request =
-      CreateSimpleRequest(request_context, &delegate, url,
+      CreateSimpleRequest(*request_context, &delegate, url,
                           "application/x-www-form-urlencoded", form_data);
   request->set_method("POST");
 
@@ -202,7 +202,8 @@ class UsbGadgetFactory : public UsbService::Observer {
   // TODO(crbug.com/1010491): Remove `io_task_runner` parameter.
   UsbGadgetFactory(UsbService* usb_service,
                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-      : usb_service_(usb_service) {
+      : usb_service_(usb_service),
+        request_context_(net::CreateTestURLRequestContextBuilder()->Build()) {
     // Gadget tests shouldn't be enabled without available |usb_service|.
     DCHECK(usb_service_);
 
@@ -279,7 +280,7 @@ class UsbGadgetFactory : public UsbService::Observer {
         "session_id=%s", net::EscapeUrlEncodedData(session_id_, true).c_str());
 
     std::unique_ptr<net::URLRequest> request =
-        CreateSimpleRequest(request_context_, &delegate_, url,
+        CreateSimpleRequest(*request_context_, &delegate_, url,
                             "application/x-www-form-urlencoded", form_data);
     request->set_method("POST");
     request->Start();
@@ -292,7 +293,7 @@ class UsbGadgetFactory : public UsbService::Observer {
     GURL url("http://" + serial_number_ + "/version");
 
     std::unique_ptr<net::URLRequest> request = CreateSimpleRequest(
-        request_context_, &delegate_, url, std::string(), std::string());
+        *request_context_, &delegate_, url, std::string(), std::string());
     request->set_method("GET");
     request->Start();
     delegate_.set_on_complete(
@@ -320,7 +321,7 @@ class UsbGadgetFactory : public UsbService::Observer {
     }
 
     std::unique_ptr<net::URLRequest> request = CreateSimpleRequest(
-        request_context_, &delegate_, url, "multipart/form-data; boundary=foo",
+        *request_context_, &delegate_, url, "multipart/form-data; boundary=foo",
         mime_header + package + mime_footer);
     request->set_method("POST");
     request->Start();
@@ -405,7 +406,7 @@ class UsbGadgetFactory : public UsbService::Observer {
 
   raw_ptr<UsbService> usb_service_ = nullptr;
   net::TestDelegate delegate_;
-  net::TestURLRequestContext request_context_;
+  std::unique_ptr<net::URLRequestContext> request_context_;
   std::string session_id_;
   scoped_refptr<UsbDevice> device_;
   std::string serial_number_;
