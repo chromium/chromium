@@ -43,6 +43,11 @@ bool FakeFastPairRepository::HasKeyForDevice(const std::string& mac_address) {
 void FakeFastPairRepository::GetDeviceMetadata(
     const std::string& hex_model_id,
     DeviceMetadataCallback callback) {
+  if (!is_network_connected_) {
+    std::move(callback).Run(/*device=*/nullptr, /*has_retryable_error=*/true);
+    return;
+  }
+
   std::string normalized_id = base::ToUpperASCII(hex_model_id);
   if (data_.contains(normalized_id)) {
     std::move(callback).Run(data_[normalized_id].get(),

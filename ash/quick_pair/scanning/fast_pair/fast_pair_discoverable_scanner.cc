@@ -25,6 +25,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,9 +51,14 @@ FastPairDiscoverableScanner::FastPairDiscoverableScanner(
       found_callback_(std::move(found_callback)),
       lost_callback_(std::move(lost_callback)) {
   observation_.Observe(scanner_.get());
+  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
+      this, FROM_HERE);
 }
 
-FastPairDiscoverableScanner::~FastPairDiscoverableScanner() = default;
+FastPairDiscoverableScanner::~FastPairDiscoverableScanner() {
+  chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+      this, FROM_HERE);
+}
 
 void FastPairDiscoverableScanner::OnDeviceFound(
     device::BluetoothDevice* device) {
@@ -116,17 +123,25 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
     const std::string model_id,
     DeviceMetadata* device_metadata,
     bool has_retryable_error) {
+  if (has_retryable_error) {
+    pending_devices_address_to_model_id_[address] = model_id;
+    QP_LOG(WARNING) << __func__
+                    << ": Could not retrieve metadata for id: " << model_id
+                    << ". Waiting for network change before retry.";
+    return;
+  }
+
   if (!device_metadata) {
     QP_LOG(WARNING) << __func__
-                    << ": Could not get metadata for id: " << model_id
+                    << ": No metadata available for id: " << model_id
                     << ". Ignoring this advertisement";
     return;
   }
 
-  QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
-
   auto device = base::MakeRefCounted<Device>(model_id, address,
                                              Protocol::kFastPairInitial);
+
+  QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
 
   // Anti-spoofing keys were introduced in Fast Pair v2, so if this isn't
   // available then the device is v1.
@@ -182,6 +197,9 @@ void FastPairDiscoverableScanner::OnDeviceLost(
     device::BluetoothDevice* device) {
   QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
 
+  // No need to retry fetching metadata for devices that are no longer in range.
+  pending_devices_address_to_model_id_.erase(device->GetAddress());
+
   // If we have an in-progress attempt to parse for this device, removing it
   // from this map will ensure the result is ignored.
   model_id_parse_attempts_.erase(device->GetAddress());
@@ -229,6 +247,26 @@ void FastPairDiscoverableScanner::OnUtilityProcessStopped(
                      weak_pointer_factory_.GetWeakPtr(), address),
       base::BindOnce(&FastPairDiscoverableScanner::OnUtilityProcessStopped,
                      weak_pointer_factory_.GetWeakPtr(), address));
+}
+
+void FastPairDiscoverableScanner::DefaultNetworkChanged(
+    const chromeos::NetworkState* network) {
+  // Only retry when we have an active connected network.
+  if (!network || !network->IsConnectedState()) {
+    return;
+  }
+
+  auto it = pending_devices_address_to_model_id_.begin();
+  while (it != pending_devices_address_to_model_id_.end()) {
+    FastPairRepository::Get()->GetDeviceMetadata(
+        /*model_id=*/it->second,
+        base::BindOnce(&FastPairDiscoverableScanner::OnDeviceMetadataRetrieved,
+                       weak_pointer_factory_.GetWeakPtr(),
+                       /*address=*/it->first,
+                       /*model_id=*/it->second));
+
+    pending_devices_address_to_model_id_.erase(it);
+  }
 }
 
 }  // namespace quick_pair

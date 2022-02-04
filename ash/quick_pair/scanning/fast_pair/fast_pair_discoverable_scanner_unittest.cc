@@ -27,6 +27,9 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_state_test_helper.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -45,6 +48,7 @@ namespace quick_pair {
 class FastPairDiscoverableScannerTest : public testing::Test {
  public:
   void SetUp() override {
+    chromeos::NetworkHandler::Initialize();
     repository_ = std::make_unique<FakeFastPairRepository>();
 
     nearby::fastpair::Device metadata;
@@ -79,6 +83,12 @@ class FastPairDiscoverableScannerTest : public testing::Test {
     discoverable_scanner_ = std::make_unique<FastPairDiscoverableScanner>(
         scanner_, adapter_, found_device_callback_.Get(),
         lost_device_callback_.Get());
+  }
+
+  void TearDown() override {
+    testing::Test::TearDown();
+    discoverable_scanner_.reset();
+    chromeos::NetworkHandler::Shutdown();
   }
 
   MockQuickPairProcessManager* mock_process_manager() {
@@ -119,6 +129,7 @@ class FastPairDiscoverableScannerTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_enviornment_;
+  chromeos::NetworkStateTestHelper helper_{/*use_defaults=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;
   std::unique_ptr<FakeFastPairRepository> repository_;
   std::unique_ptr<FastPairDiscoverableScanner> discoverable_scanner_;
@@ -176,6 +187,38 @@ TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound_v1) {
   EXPECT_CALL(lost_device_callback_, Run).Times(1);
   scanner_->NotifyDeviceLost(device);
 
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerTest,
+       InvokesFoundCallback_AfterNetworkAvailable) {
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  repository_->set_is_network_connected(false);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(found_device_callback_, Run).Times(1);
+  repository_->set_is_network_connected(true);
+  discoverable_scanner_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerTest,
+       NoFoundCallback_AfterDeviceLostAndNetworkAvailable) {
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  repository_->set_is_network_connected(false);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+
+  scanner_->NotifyDeviceLost(device);
+  repository_->set_is_network_connected(true);
+  discoverable_scanner_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
   base::RunLoop().RunUntilIdle();
 }
 

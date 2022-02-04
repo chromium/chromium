@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -35,7 +36,9 @@ using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 // and invokes the |found_callback| when it finds a device within the
 // appropriate range.  |lost_callback| will be invoked when that device is lost
 // to the bluetooth adapter.
-class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
+class FastPairDiscoverableScanner final
+    : public FastPairScanner::Observer,
+      public chromeos::NetworkStateHandlerObserver {
  public:
   FastPairDiscoverableScanner(scoped_refptr<FastPairScanner> scanner,
                               scoped_refptr<device::BluetoothAdapter> adapter,
@@ -49,6 +52,9 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
   // FastPairScanner::Observer
   void OnDeviceFound(device::BluetoothDevice* device) override;
   void OnDeviceLost(device::BluetoothDevice* device) override;
+
+  // chromeos::NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
 
  private:
   void OnModelIdRetrieved(const std::string& address,
@@ -68,6 +74,7 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
   scoped_refptr<device::BluetoothAdapter> adapter_;
   DeviceCallback found_callback_;
   DeviceCallback lost_callback_;
+  base::flat_map<std::string, std::string> pending_devices_address_to_model_id_;
   base::flat_map<std::string, scoped_refptr<Device>> notified_devices_;
   base::flat_map<std::string, int> model_id_parse_attempts_;
   base::ScopedObservation<FastPairScanner, FastPairScanner::Observer>

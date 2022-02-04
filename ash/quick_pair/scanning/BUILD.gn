@@ -29,6 +29,7 @@ source_set("scanning") {
     "//ash/services/quick_pair",
     "//ash/services/quick_pair/public/cpp",
     "//base",
+    "//chromeos/network",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
   ]
@@ -76,6 +77,8 @@ source_set("unit_tests") {
     "//ash/services/quick_pair",
     "//ash/services/quick_pair:test_support",
     "//base/test:test_support",
+    "//chromeos/network:test_support",
+    "//dbus:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
