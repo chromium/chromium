@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -979,7 +980,11 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
         layout_invalidation_reason::kAncestorMoved, kMarkOnlyThis);
   }
 
-  positioned_object->LayoutIfNeeded();
+  bool did_update_layout = false;
+  if (positioned_object->NeedsLayout()) {
+    positioned_object->UpdateLayout();
+    did_update_layout = true;
+  }
 
   LayoutObject* parent = positioned_object->Parent();
   bool layout_changed = false;
@@ -997,12 +1002,20 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
     // reposition?
     positioned_object->ForceLayout();
     layout_changed = true;
+    did_update_layout = true;
   }
 
   // Lay out again if our estimate was wrong.
   if (!layout_changed && needs_block_direction_location_set_before_layout &&
-      logical_top_estimate != LogicalTopForChild(*positioned_object))
+      logical_top_estimate != LogicalTopForChild(*positioned_object)) {
     positioned_object->ForceLayout();
+    did_update_layout = true;
+  }
+
+  if (did_update_layout) {
+    GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(
+        *positioned_object);
+  }
 
   if (is_paginated)
     UpdateFragmentationInfoForChild(*positioned_object);
