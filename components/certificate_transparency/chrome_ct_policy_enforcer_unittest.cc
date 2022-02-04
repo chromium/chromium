@@ -134,15 +134,41 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     return result;
   }
 
+  void FillOperatorHistoryWithDiverseOperators(
+      SCTList scts,
+      std::map<std::string, OperatorHistoryEntry>* operator_history) {
+    for (size_t i = 0; i < scts.size(); i++) {
+      OperatorHistoryEntry entry;
+      entry.current_operator_ = "Operator " + base::NumberToString(i);
+      (*operator_history)[scts[i]->log_id] = entry;
+    }
+  }
+
  protected:
   base::SimpleTestClock clock_;
-  std::unique_ptr<net::CTPolicyEnforcer> policy_enforcer_;
+  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer_;
   scoped_refptr<X509Certificate> chain_;
   std::string google_log_id_;
   std::string non_google_log_id_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeCTPolicyEnforcerTest,
+// Subclass of ChromeCTPolicyEnforcerTest that tests using only the pre-2022
+// policy.
+class ChromeCTPolicyEnforcerTestPre2022Policy
+    : public ChromeCTPolicyEnforcerTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features*/ {},
+        /*disabled_features*/ {
+            features::kCertificateTransparency2022Policy,
+            features::kCertificateTransparency2022PolicyAllCerts});
+    ChromeCTPolicyEnforcerTest::SetUp();
+  }
+};
+
+TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
        DoesNotConformToCTPolicyNotEnoughDiverseSCTsAllGoogle) {
   SCTList scts;
   std::vector<std::string> desired_log_ids(2, google_log_id_);
@@ -156,7 +182,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest,
+TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
        DoesNotConformToCTPolicyNotEnoughDiverseSCTsAllNonGoogle) {
   SCTList scts;
   std::vector<std::string> desired_log_ids(2, non_google_log_id_);
@@ -170,7 +196,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest,
+TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
        ConformsToCTPolicyIfSCTBeforeEnforcementDate) {
   SCTList scts;
   // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
@@ -183,212 +209,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithNonEmbeddedSCTs) {
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           2, &scts);
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest, EnforcementDisabledByBinaryAge) {
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           2, &scts);
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-
-  clock_.Advance(base::Days(71));
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithEmbeddedSCTs) {
-  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest,
-       ConformsToCTPolicyWithPooledNonEmbeddedSCTs) {
-  SCTList scts;
-  std::vector<std::string> desired_logs;
-
-  // One Google log, delivered via OCSP.
-  desired_logs.clear();
-  desired_logs.push_back(google_log_id_);
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
-                           desired_logs.size(), desired_logs, true, &scts);
-
-  // One non-Google log, delivered via TLS.
-  desired_logs.clear();
-  desired_logs.push_back(non_google_log_id_);
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           desired_logs.size(), desired_logs, true, &scts);
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithPooledEmbeddedSCTs) {
-  SCTList scts;
-  std::vector<std::string> desired_logs;
-
-  // One Google log, delivered embedded.
-  desired_logs.clear();
-  desired_logs.push_back(google_log_id_);
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
-
-  // One non-Google log, delivered via OCSP.
-  desired_logs.clear();
-  desired_logs.push_back(non_google_log_id_);
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
-                           desired_logs.size(), desired_logs, true, &scts);
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughSCTs) {
-  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 2, &scts);
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
-  SCTList scts;
-
-  // The results should be the same before and after disqualification,
-  // regardless of the delivery method.
-
-  // SCT from before disqualification.
-  scts.clear();
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                        false, &scts);
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-
-  // SCT from after disqualification.
-  scts.clear();
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                        true, &scts);
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-
-  // Embedded SCT from before disqualification.
-  scts.clear();
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false, &scts);
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-
-  // Embedded SCT from after disqualification.
-  scts.clear();
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest,
-       ConformsWithDisqualifiedLogBeforeDisqualificationDate) {
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 4, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false, &scts);
-
-  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest,
-       DoesNotConformWithDisqualifiedLogAfterDisqualificationDate) {
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 4, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
-
-  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest,
-       DoesNotConformWithIssuanceDateAfterDisqualificationDate) {
-  SCTList scts;
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 4, &scts);
-  // Make sure all SCTs are after the disqualification date.
-  for (size_t i = 1; i < scts.size(); ++i)
-    scts[i]->timestamp = scts[0]->timestamp;
-
-  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest,
-       DoesNotConformToCTPolicyNotEnoughUniqueEmbeddedLogs) {
-  SCTList scts;
-  std::vector<std::string> desired_logs;
-
-  // One Google Log.
-  desired_logs.clear();
-  desired_logs.push_back(google_log_id_);
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
-
-  // Two distinct non-Google logs.
-  desired_logs.clear();
-  desired_logs.push_back(std::string(crypto::kSHA256Length, 'A'));
-  desired_logs.push_back(std::string(crypto::kSHA256Length, 'B'));
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
-
-  // Two unique SCTs from the same non-Google log.
-  desired_logs.clear();
-  desired_logs.push_back(std::string(crypto::kSHA256Length, 'C'));
-  desired_logs.push_back(std::string(crypto::kSHA256Length, 'C'));
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
-
-  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
-  // However, there are only 4 SCTs are from distinct logs.
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest,
+TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
        ConformsToPolicyExactNumberOfSCTsForValidityPeriod) {
   std::unique_ptr<crypto::RSAPrivateKey> private_key(
       crypto::RSAPrivateKey::Create(1024));
@@ -477,75 +298,360 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   }
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
+       DoesNotConformToCTPolicyNotEnoughUniqueEmbeddedLogs) {
+  SCTList scts;
+  std::vector<std::string> desired_logs;
+
+  // One Google Log.
+  desired_logs.clear();
+  desired_logs.push_back(google_log_id_);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                           desired_logs.size(), desired_logs, true, &scts);
+
+  // Two distinct non-Google logs.
+  desired_logs.clear();
+  desired_logs.emplace_back(crypto::kSHA256Length, 'A');
+  desired_logs.emplace_back(crypto::kSHA256Length, 'B');
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                           desired_logs.size(), desired_logs, true, &scts);
+
+  // Two unique SCTs from the same non-Google log.
+  desired_logs.clear();
+  desired_logs.emplace_back(crypto::kSHA256Length, 'C');
+  desired_logs.emplace_back(crypto::kSHA256Length, 'C');
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                           desired_logs.size(), desired_logs, true, &scts);
+
+  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
+  // However, there are only 4 SCTs are from distinct logs.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
+       DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
+  SCTList scts;
+
+  // The results should be the same before and after disqualification,
+  // regardless of the delivery method.
+
+  // SCT from before disqualification.
+  scts.clear();
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           1, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                        false, &scts);
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+
+  // SCT from after disqualification.
+  scts.clear();
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           1, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                        true, &scts);
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+
+  // Embedded SCT from before disqualification.
+  scts.clear();
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           1, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false, &scts);
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+
+  // Embedded SCT from after disqualification.
+  scts.clear();
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           1, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+// Subclass of ChromeCTPolicyEnforcerTest that tests both with the pre-2022
+// policy and the 2022 policy.
+class ChromeCTPolicyEnforcerTestBothPolicies
+    : public ChromeCTPolicyEnforcerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kCertificateTransparency2022PolicyAllCerts);
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features*/ {},
+          /*disabled_features*/ {
+              features::kCertificateTransparency2022Policy,
+              features::kCertificateTransparency2022PolicyAllCerts});
+    }
+    ChromeCTPolicyEnforcerTest::SetUp();
+  }
+};
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       ConformsToCTPolicyWithNonEmbeddedSCTs) {
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           2, &scts);
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, EnforcementDisabledByBinaryAge) {
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           2, &scts);
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+
+  clock_.Advance(base::Days(71));
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       ConformsToCTPolicyWithEmbeddedSCTs) {
+  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       ConformsToCTPolicyWithPooledNonEmbeddedSCTs) {
+  SCTList scts;
+  std::vector<std::string> desired_logs;
+
+  // One Google log, delivered via OCSP.
+  desired_logs.clear();
+  desired_logs.push_back(google_log_id_);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
+                           desired_logs.size(), desired_logs, true, &scts);
+
+  // One non-Google log, delivered via TLS.
+  desired_logs.clear();
+  desired_logs.push_back(non_google_log_id_);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           desired_logs.size(), desired_logs, true, &scts);
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       ConformsToCTPolicyWithPooledEmbeddedSCTs) {
+  SCTList scts;
+  std::vector<std::string> desired_logs;
+
+  // One Google log, delivered embedded.
+  desired_logs.clear();
+  desired_logs.push_back(google_log_id_);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                           desired_logs.size(), desired_logs, true, &scts);
+
+  // One non-Google log, delivered via OCSP.
+  desired_logs.clear();
+  desired_logs.push_back(non_google_log_id_);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
+                           desired_logs.size(), desired_logs, true, &scts);
+
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       DoesNotConformToCTPolicyNotEnoughSCTs) {
+  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 2, &scts);
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       ConformsWithDisqualifiedLogBeforeDisqualificationDate) {
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 4, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false, &scts);
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       DoesNotConformWithDisqualifiedLogAfterDisqualificationDate) {
+  SCTList scts;
+  // Add required - 1 valid SCTs (with the old policy 5 are required, with the
+  // new policy 3).
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                           GetParam() ? 2 : 4, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       DoesNotConformWithIssuanceDateAfterDisqualificationDate) {
+  SCTList scts;
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
+  // Add required - 1 valid SCTs (with the old policy 5 are required, with the
+  // new policy 3).
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                           GetParam() ? 2 : 4, &scts);
+  // Make sure all SCTs are after the disqualification date.
+  for (size_t i = 1; i < scts.size(); ++i)
+    scts[i]->timestamp = scts[0]->timestamp;
+
+  if (GetParam()) {
+    std::map<std::string, OperatorHistoryEntry> operator_history;
+    FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+    policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
+  }
+
+  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, UpdateCTLogList) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, &scts);
 
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs,
-                                          /*log_operator_history=*/{});
+  std::map<std::string, OperatorHistoryEntry> operator_history;
+  for (auto sct : scts) {
+    OperatorHistoryEntry entry;
+    entry.current_operator_ = "Operator";
+    operator_history[sct->log_id] = entry;
+  }
 
-  // The check should fail since the Google Aviator log is no longer in the
-  // list after the update with an empty list.
+  policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                    operated_by_google_logs, operator_history);
+
+  // The check should fail with the old policy since the Google Aviator log is
+  // no longer in the list after the update with an empty list, and with the new
+  // policy since all logs have the same operator.
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
-                                                    NetLogWithSource()));
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
 
   // Update the list again, this time including all the known operated by Google
-  // logs.
+  // logs, and setting operators to different values.
   operated_by_google_logs = certificate_transparency::GetLogsOperatedByGoogle();
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs,
-                                          /*log_operator_history=*/{});
+  FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+  policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                    operated_by_google_logs, operator_history);
 
   // The check should now succeed.
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
-                                                    NetLogWithSource()));
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, TimestampUpdates) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           2, &scts);
+                           1, &scts);
 
   // Clear the log list and set the last updated time to more than 10 weeks ago.
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
-  chrome_policy_enforcer->UpdateCTLogList(
-      base::Time::Now() - base::Days(71), disqualified_logs,
-      operated_by_google_logs, log_operator_history);
+  FillOperatorHistoryWithDiverseOperators(scts, &log_operator_history);
 
-  // The check should return build not timely even though the Google Aviator log
-  // is no longer in the list, since the last update time is greater than 10
-  // weeks.
+  policy_enforcer_->UpdateCTLogList(base::Time::Now() - base::Days(71),
+                                    disqualified_logs, operated_by_google_logs,
+                                    log_operator_history);
+
+  // The check should return build not timely even though there are not enough
+  // SCTs.
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
-            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
-                                                    NetLogWithSource()));
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
 
   // Update the last update time value again, this time with a recent time.
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs,
-                                          log_operator_history);
+  policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                    operated_by_google_logs,
+                                    log_operator_history);
 
   // The check should now fail
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
-                                                    NetLogWithSource()));
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
-
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, IsLogDisqualifiedTimestamp) {
   // Clear the log list and add 2 disqualified logs, one with a disqualification
   // date in the past and one in the future.
   // The actual logs are irrelevant for this test, so we use Aviator for the one
@@ -562,23 +668,21 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
   disqualified_logs.emplace_back(kModifiedGoogleAviatorLogID,
                                  future_disqualification);
   disqualified_logs.emplace_back(kGoogleAviatorLogID, past_disqualification);
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs,
-                                          log_operator_history);
+  policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                    operated_by_google_logs,
+                                    log_operator_history);
 
   base::Time disqualification_time;
-  EXPECT_TRUE(chrome_policy_enforcer->IsLogDisqualified(
-      kGoogleAviatorLogID, &disqualification_time));
+  EXPECT_TRUE(policy_enforcer_->IsLogDisqualified(kGoogleAviatorLogID,
+                                                  &disqualification_time));
   EXPECT_EQ(disqualification_time, past_disqualification);
-  EXPECT_FALSE(chrome_policy_enforcer->IsLogDisqualified(
-      kModifiedGoogleAviatorLogID, &disqualification_time));
+  EXPECT_FALSE(policy_enforcer_->IsLogDisqualified(kModifiedGoogleAviatorLogID,
+                                                   &disqualification_time));
   EXPECT_EQ(disqualification_time, future_disqualification);
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
-
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
+       IsLogDisqualifiedReturnsFalseOnUnknownLog) {
   // Clear the log list and add a single disqualified log, with a
   // disqualification date in the past;
   const char kModifiedGoogleAviatorLogID[] =
@@ -589,27 +693,26 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
   disqualified_logs.emplace_back(kModifiedGoogleAviatorLogID,
                                  base::Time::Now() - base::Days(1));
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs,
-                                          log_operator_history);
+  policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                    operated_by_google_logs,
+                                    log_operator_history);
 
   base::Time unused;
   // IsLogDisqualified should return false for a log that is not in the
   // disqualified list.
   EXPECT_FALSE(
-      chrome_policy_enforcer->IsLogDisqualified(kGoogleAviatorLogID, &unused));
+      policy_enforcer_->IsLogDisqualified(kGoogleAviatorLogID, &unused));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest,
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        ConformsWithCTPolicyFutureRetirementDateLogs) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
 
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs = {google_log_id_};
   std::map<std::string, OperatorHistoryEntry> log_operator_history;
+  FillOperatorHistoryWithDiverseOperators(scts, &log_operator_history);
 
   // Set all the log operators for these SCTs as disqualified, with a timestamp
   // one hour from now.
@@ -623,9 +726,9 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   }
   std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
 
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs,
-                                          log_operator_history);
+  policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                    operated_by_google_logs,
+                                    log_operator_history);
 
   // SCTs should comply since retirement date is in the future.
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
@@ -633,10 +736,8 @@ TEST_F(ChromeCTPolicyEnforcerTest,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest,
+TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        DoesNotConformWithCTPolicyPastRetirementDateLogs) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
 
@@ -656,21 +757,21 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   }
   std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
 
-  for (size_t i = 0; i < scts.size(); i++) {
-    OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator " + base::NumberToString(i);
-    log_operator_history[scts[i]->log_id] = entry;
-  }
+  FillOperatorHistoryWithDiverseOperators(scts, &log_operator_history);
 
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs,
-                                          log_operator_history);
+  policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                    operated_by_google_logs,
+                                    log_operator_history);
 
   // SCTs should not comply since retirement date is in the past.
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeCTPolicyEnforcerTestBothPolicies,
+                         testing::Bool());
 
 class ChromeCTPolicyEnforcerTest2022Policy : public ChromeCTPolicyEnforcerTest {
  public:
@@ -679,29 +780,22 @@ class ChromeCTPolicyEnforcerTest2022Policy : public ChromeCTPolicyEnforcerTest {
         features::kCertificateTransparency2022Policy);
     ChromeCTPolicyEnforcerTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
        2022PolicyNotInEffectBeforeTargetDate) {
   // Old policy should enforce one Google log requirement.
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
   std::map<std::string, OperatorHistoryEntry> operator_history;
-  for (size_t i = 0; i < scts.size(); i++) {
-    OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator " + base::NumberToString(i);
-    operator_history[scts[i]->log_id] = entry;
+  FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+  for (auto sct : scts) {
     // Set timestamp to 1 day before new policy comes in effect.
     EXPECT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 14, 0, 0, 0, 0},
-                                            &scts[i]->timestamp));
+                                            &sct->timestamp));
   }
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -712,21 +806,17 @@ TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
        2022PolicyInEffectAfterTargetDate) {
   // New policy should allow SCTs from all non-Google operators to comply as
   // long as diversity requirement is fulfilled.
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
   std::map<std::string, OperatorHistoryEntry> operator_history;
-  for (size_t i = 0; i < scts.size(); i++) {
-    OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator " + base::NumberToString(i);
-    operator_history[scts[i]->log_id] = entry;
+  FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+  for (auto sct : scts) {
     // Set timestamp to the day new policy comes in effect.
     EXPECT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 15, 0, 0, 0, 0},
-                                            &scts[i]->timestamp));
+                                            &sct->timestamp));
   }
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -741,15 +831,9 @@ class ChromeCTPolicyEnforcerTest2022PolicyAllCerts
         features::kCertificateTransparency2022PolicyAllCerts);
     ChromeCTPolicyEnforcerTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
-
   std::unique_ptr<crypto::RSAPrivateKey> private_key(
       crypto::RSAPrivateKey::Create(1024));
   ASSERT_TRUE(private_key);
@@ -802,12 +886,8 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
                                std::vector<std::string>(), false, &scts);
       // Add different operators to the logs so the SCTs comply with operator
       // diversity.
-      for (size_t k = 0; k < scts.size(); k++) {
-        OperatorHistoryEntry entry;
-        entry.current_operator_ = "Operator " + base::NumberToString(k);
-        operator_history[scts[k]->log_id] = entry;
-      }
-      chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+      FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+      policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
       CTPolicyCompliance expected;
       if (j == scts_required) {
         // If the scts provided are as many as are required, the cert should be
@@ -830,18 +910,16 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
 
 TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
        DoesNotConformToCTPolicyAllLogsSameOperator) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
   std::map<std::string, OperatorHistoryEntry> operator_history;
-  for (size_t i = 0; i < scts.size(); i++) {
+  for (auto sct : scts) {
     OperatorHistoryEntry entry;
     entry.current_operator_ = "Operator";
-    operator_history[scts[i]->log_id] = entry;
+    operator_history[sct->log_id] = entry;
   }
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -850,18 +928,12 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
 
 TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
        ConformsToCTPolicyDifferentOperators) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
   std::map<std::string, OperatorHistoryEntry> operator_history;
-  for (size_t i = 0; i < scts.size(); i++) {
-    OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator " + base::NumberToString(i);
-    operator_history[scts[i]->log_id] = entry;
-  }
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -870,8 +942,6 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
 
 TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
        ConformsToPolicyDueToOperatorSwitch) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
@@ -886,7 +956,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
   // end time after the SCT timestamp.
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Different Operator", scts[1]->timestamp + base::Seconds(1));
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -895,23 +965,18 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
 
 TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
        DoesNotConformToPolicyDueToOperatorSwitch) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
   std::map<std::string, OperatorHistoryEntry> operator_history;
   // Set logs to different operators
-  for (size_t i = 0; i < scts.size(); i++) {
-    OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator " + base::NumberToString(i);
-    operator_history[scts[i]->log_id] = entry;
-  }
+  FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
+
   // Set the previous operator of one of the logs to the same as the other log,
   // with an end time after the SCT timestamp.
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -919,25 +984,19 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, MultipleOperatorSwitches) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
   std::map<std::string, OperatorHistoryEntry> operator_history;
   // Set logs to different operators
-  for (size_t i = 0; i < scts.size(); i++) {
-    OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator " + base::NumberToString(i);
-    operator_history[scts[i]->log_id] = entry;
-  }
+  FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   // Set multiple previous operators, the first should be ignored since it
   // stopped operating before the SCT timestamp.
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Different Operator", scts[1]->timestamp - base::Seconds(1));
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
@@ -946,8 +1005,6 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, MultipleOperatorSwitches) {
 
 TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
        MultipleOperatorSwitchesBeforeSCTTimestamp) {
-  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
-      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
@@ -964,7 +1021,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
       "Different Operator", scts[1]->timestamp - base::Seconds(2));
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Yet Another Different Operator", scts[1]->timestamp - base::Seconds(1));
-  chrome_policy_enforcer->SetOperatorHistoryForTesting(operator_history);
+  policy_enforcer_->SetOperatorHistoryForTesting(operator_history);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,

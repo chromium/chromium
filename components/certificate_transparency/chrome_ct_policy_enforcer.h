@@ -96,9 +96,9 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTest,
+  FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTestBothPolicies,
                            IsLogDisqualifiedTimestamp);
-  FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTest,
+  FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTestBothPolicies,
                            IsLogDisqualifiedReturnsFalseOnUnknownLog);
   // Returns true if the log identified by |log_id| (the SHA-256 hash of the
   // log's DER-encoded SPKI) has been disqualified, and sets
