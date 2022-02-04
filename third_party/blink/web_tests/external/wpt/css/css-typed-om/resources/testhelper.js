@@ -64,6 +64,11 @@ function assert_style_value_equals(a, b) {
     case 'CSSMathMax':
       assert_style_value_array_equals(a.values, b.values);
       break;
+    case 'CSSMathClamp':
+      assert_style_value_equals(a.lower, b.lower);
+      assert_style_value_equals(a.value, b.value);
+      assert_style_value_equals(a.upper, b.upper);
+      break;
     case 'CSSMathInvert':
     case 'CSSMathNegate':
       assert_style_value_equals(a.value, b.value);

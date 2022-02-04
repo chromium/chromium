@@ -29,6 +29,12 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter value
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     setter value
+CONSOLE MESSAGE: interface CSSMathClamp : CSSMathValue
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter lower
+CONSOLE MESSAGE:     getter upper
+CONSOLE MESSAGE:     getter value
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathInvert : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter value
@@ -422,6 +428,12 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter value
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     setter value
+CONSOLE MESSAGE: interface CSSMathClamp : CSSMathValue
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter lower
+CONSOLE MESSAGE:     getter upper
+CONSOLE MESSAGE:     getter value
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathInvert : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter value

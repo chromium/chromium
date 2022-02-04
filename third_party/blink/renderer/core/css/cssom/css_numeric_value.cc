@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_math_clamp.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_max.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_min.h"
@@ -144,13 +145,10 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     if (node.OperatorType() == CSSMathOperator::kMax)
       return CSSMathMax::Create(std::move(values));
     DCHECK_EQ(CSSMathOperator::kClamp, node.OperatorType());
-    // TODO(pjh0718): Add CSSMathClamp according to
-    // https://drafts.css-houdini.org/css-typed-om-1/#cssmathclamp.
     auto& min = values[0];
     auto& val = values[1];
     auto& max = values[2];
-    return CSSMathMax::Create(
-        {std::move(min), CSSMathMin::Create({std::move(val), std::move(max)})});
+    return CSSMathClamp::Create(std::move(min), std::move(val), std::move(max));
   }
 
   DCHECK_EQ(To<CSSMathExpressionOperation>(root).GetOperands().size(), 2u);

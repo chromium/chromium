@@ -791,6 +791,12 @@ interface CSSLayerStatementRule : CSSRule
     attribute @@toStringTag
     getter nameList
     method constructor
+interface CSSMathClamp : CSSMathValue
+    attribute @@toStringTag
+    getter lower
+    getter upper
+    getter value
+    method constructor
 interface CSSMathInvert : CSSMathValue
     attribute @@toStringTag
     getter value
