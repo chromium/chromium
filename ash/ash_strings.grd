@@ -3402,6 +3402,10 @@ This file contains the strings for ash.
       <message name="IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar bubble and the information in it.">
         Calendar, <ph name="current_month_year">$1<ex>August 2021</ex></ph>
       </message>
+      
+      <message name="IDS_ASH_CALENDAR_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar entry button.">
+       <ph name="current_time">$1<ex>Aug 2021 11:25AM</ex></ph>, Press enter key to open Calendar view
+      </message>
 
       <message name="IDS_ASH_CALENDAR_TITLE" desc="The label used as the title of the unified system tray calendar view.">
         Calendar
@@ -3453,6 +3457,10 @@ This file contains the strings for ash.
 
       <message name="IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP" desc="The tooltip of a calendar date cell, which is with more than 1 event.">
         <ph name="date">$1<ex>August 31, 2021</ex></ph>, <ph name="number">$2<ex>8</ex></ph> events
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_DATE_CELL_ON_FOCUS_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar date cell, which is on focused for the first time.">
+        <ph name="date_cell_tool_tip">$1<ex>August 31, 2021, 2 events</ex></ph>. Use arrow keys to navigate between dates.
       </message>
 
       <message name="IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION" desc="The accessible label of the selected calendar date cell.">

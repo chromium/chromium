@@ -138,7 +138,13 @@ void DateView::Update() {
   base::Time now = base::Time::Now();
   label_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DATE, FormatDayOfWeek(now), FormatDate(now)));
-  SetAccessibleName(TimeFormatFriendlyDateAndTime(now));
+  if (features::IsCalendarViewEnabled()) {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_CALENDAR_ENTRY_ACCESSIBLE_DESCRIPTION,
+        TimeFormatFriendlyDateAndTime(now)));
+  } else {
+    SetAccessibleName(TimeFormatFriendlyDateAndTime(now));
+  }
   label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }

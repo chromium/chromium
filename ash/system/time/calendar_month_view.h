@@ -52,6 +52,10 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // Schedule paint the cell to show the event dot.
   void MaybeSchedulePaint();
 
+  // When focusing on the date cell for the first time, it shows "Use arrow keys
+  // to navigate between dates" as instructions.
+  void SetFirstOnFocusedAccessibilityLabel();
+
   // The row index in the date's month view.
   int row_index() const { return row_index_; }
 
@@ -82,6 +86,10 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
   // If the current cell is selected.
   bool is_selected_ = false;
+
+  // The tool tip for this view. Before events data is back, only show date.
+  // After the events date is back, show date and event numbers.
+  std::u16string tool_tip_;
 
   // Owned by UnifiedCalendarViewController.
   CalendarViewController* const calendar_view_controller_;

@@ -88,6 +88,7 @@ CalendarDateCellView::CalendarDateCellView(
       date_(date),
       grayed_out_(is_grayed_out_date),
       row_index_(row_index),
+      tool_tip_(base::TimeFormatWithPattern(date, "MMMMdyyyy")),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
@@ -102,7 +103,10 @@ CalendarDateCellView::CalendarDateCellView(
                 gfx::Insets(kFocusCirclePadding)));
 
   DisableFocus();
-
+  if (!grayed_out_) {
+    SetTooltipText(tool_tip_);
+    SetAccessibleName(tool_tip_);
+  }
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
 }
 
@@ -224,6 +228,11 @@ void CalendarDateCellView::MaybeSchedulePaint() {
   SchedulePaint();
 }
 
+void CalendarDateCellView::SetFirstOnFocusedAccessibilityLabel() {
+  SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_DATE_CELL_ON_FOCUS_ACCESSIBLE_DESCRIPTION, tool_tip_));
+}
+
 gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
   const gfx::Rect content = GetContentsBounds();
   return gfx::Point(
@@ -239,16 +248,15 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   const int event_number =
       calendar_view_controller_->EventsNumberOfDay(date_,
                                                    /*events =*/nullptr);
+
   const int tooltip_id = (event_number <= 1)
                              ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
                              : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
-
-  SetTooltipText(l10n_util::GetStringFUTF16(
+  tool_tip_ = l10n_util::GetStringFUTF16(
       tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
-      base::UTF8ToUTF16(base::NumberToString(event_number))));
-  SetAccessibleName(l10n_util::GetStringFUTF16(
-      tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
-      base::UTF8ToUTF16(base::NumberToString(event_number))));
+      base::UTF8ToUTF16(base::NumberToString(event_number)));
+  SetTooltipText(tool_tip_);
+  SetAccessibleName(tool_tip_);
 
   if (event_number == 0)
     return;

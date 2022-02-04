@@ -582,7 +582,7 @@ void CalendarView::OnViewFocused(View* observed_view) {
     return;
   }
 
-  // When focusing on the `content_view_`, we decide which is the to-be-focued
+  // When focusing on the `content_view_`, we decide which is the to-be-focused
   // cell based on the current position.
   const int position = scroll_view_->GetVisibleRect().y();
   const int row_height = calendar_view_controller_->row_height();
@@ -596,12 +596,14 @@ void CalendarView::OnViewFocused(View* observed_view) {
     while (position > (PositionOfCurrentMonth() + row_index * row_height))
       ++row_index;
 
+    CalendarDateCellView* focused_cell;
     if (current_month_->has_today() && row_index <= today_index) {
-      focus_manager->SetFocusedView(
-          current_month_->focused_cells()[today_index]);
+      focused_cell = current_month_->focused_cells()[today_index];
     } else {
-      focus_manager->SetFocusedView(current_month_->focused_cells()[row_index]);
+      focused_cell = current_month_->focused_cells()[row_index];
     }
+    focused_cell->SetFirstOnFocusedAccessibilityLabel();
+    focus_manager->SetFocusedView(focused_cell);
   } else {
     // If there's no visible row of the current month on the screen, focus on
     // the first visible non-grayed-out date of the next month.
