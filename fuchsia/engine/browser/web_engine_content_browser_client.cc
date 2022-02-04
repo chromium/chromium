@@ -35,6 +35,7 @@
 #include "fuchsia/engine/switches.h"
 #include "media/base/media_switches.h"
 #include "net/cert/x509_certificate.h"
+#include "net/http/http_util.h"
 #include "net/ssl/ssl_private_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"

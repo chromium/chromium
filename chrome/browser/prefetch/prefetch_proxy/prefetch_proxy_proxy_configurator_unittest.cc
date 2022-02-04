@@ -21,6 +21,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

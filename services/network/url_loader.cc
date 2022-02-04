@@ -46,6 +46,7 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/client_cert_store.h"

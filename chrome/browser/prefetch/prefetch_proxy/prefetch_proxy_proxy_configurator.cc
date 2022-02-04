@@ -14,6 +14,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "url/gurl.h"
 

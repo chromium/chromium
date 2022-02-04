@@ -37,6 +37,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_util.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

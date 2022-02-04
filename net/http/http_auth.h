@@ -11,7 +11,6 @@
 
 #include "net/base/auth.h"
 #include "net/base/net_export.h"
-#include "net/http/http_util.h"
 
 template <class T> class scoped_refptr;
 

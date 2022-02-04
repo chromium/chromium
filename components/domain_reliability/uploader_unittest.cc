@@ -22,6 +22,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"

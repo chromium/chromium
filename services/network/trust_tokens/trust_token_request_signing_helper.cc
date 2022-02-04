@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"

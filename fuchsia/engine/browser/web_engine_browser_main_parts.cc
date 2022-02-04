@@ -43,6 +43,7 @@
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "net/http/http_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/screen_ozone.h"
 #include "ui/base/resource/resource_bundle.h"

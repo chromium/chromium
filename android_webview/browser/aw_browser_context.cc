@@ -61,6 +61,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
+#include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"

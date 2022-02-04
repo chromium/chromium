@@ -27,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log_source.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
