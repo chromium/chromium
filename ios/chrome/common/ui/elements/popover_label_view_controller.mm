@@ -59,7 +59,8 @@ constexpr CGFloat kIconSize = 16;
 - (instancetype)initWithMessage:(NSString*)message {
   NSDictionary* generalAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
-    NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
   };
 
   NSAttributedString* attributedString =
