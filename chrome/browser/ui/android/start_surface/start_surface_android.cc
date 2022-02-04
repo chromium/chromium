@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/android/features/start_surface/jni_headers/StartSurfaceConfiguration_jni.h"

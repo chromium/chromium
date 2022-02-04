@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"

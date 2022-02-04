@@ -7,6 +7,7 @@
 #include <list>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_image.h"

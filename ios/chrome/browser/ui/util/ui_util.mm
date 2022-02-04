@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/util/ui_util.h"
 
 #import <UIKit/UIKit.h>
+#include <cmath>
 #include <limits>
 
 #include "base/feature_list.h"

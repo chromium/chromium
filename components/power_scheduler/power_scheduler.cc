@@ -10,6 +10,7 @@
 #include "base/cpu_affinity_posix.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
