@@ -194,9 +194,11 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // sanitize this input.
   ALWAYS_INLINE static uintptr_t ToSlotSpanStart(
       const SlotSpanMetadata* slot_span);
-  ALWAYS_INLINE static SlotSpanMetadata* FromSlotInnerAddr(uintptr_t address);
+  ALWAYS_INLINE static SlotSpanMetadata* FromAddr(uintptr_t address);
   ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
   ALWAYS_INLINE static SlotSpanMetadata* FromObject(void* object);
+  ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerAddr(uintptr_t address);
+  ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(void* ptr);
 
   ALWAYS_INLINE PartitionSuperPageExtentEntry<thread_safe>* ToSuperPageExtent()
       const;
@@ -535,19 +537,19 @@ ALWAYS_INLINE uintptr_t SlotSpanMetadata<thread_safe>::ToSlotSpanStart(
   return super_page_base + (partition_page_index << PartitionPageShift());
 }
 
-// Converts an address inside a slot into a pointer to the SlotSpanMetadata
-// (within super pages's metadata) that describes the slot span containing that
-// slot.
+// Converts an address inside a slot span into a pointer to the SlotSpanMetadata
+// object (within super pages's metadata) that describes the slot span
+// containing that slot.
 //
 // CAUTION! For direct-mapped allocation, |address| has to be within the first
 // partition page.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
-SlotSpanMetadata<thread_safe>::FromSlotInnerAddr(uintptr_t address) {
+SlotSpanMetadata<thread_safe>::FromAddr(uintptr_t address) {
   address = ::partition_alloc::internal::UnmaskPtr(address);
   auto* page = PartitionPage<thread_safe>::FromAddr(address);
   PA_DCHECK(page->is_valid);
-  // Partition pages in the same slot span share the same slot span metadata
+  // Partition pages in the same slot span share the same SlotSpanMetadata
   // object (located in the first PartitionPage object of that span). Adjust
   // for that.
   page -= page->slot_span_metadata_offset;
@@ -563,12 +565,14 @@ SlotSpanMetadata<thread_safe>::FromSlotInnerAddr(uintptr_t address) {
   return slot_span;
 }
 
-// Like |FromSlotInnerAddr|, but asserts that |slot_start| indeed points to the
-// beginning of the slot. This works on direct maps too.
+// Like |FromAddr|, but asserts that |slot_start| indeed points to the
+// beginning of a slot. It doesn't check if the slot is actually allocated.
+//
+// This works on direct maps too.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotStart(uintptr_t slot_start) {
-  auto* slot_span = FromSlotInnerAddr(slot_start);
+  auto* slot_span = FromAddr(slot_start);
 #if DCHECK_IS_ON()
   // Checks that the pointer is a multiple of slot size.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
@@ -579,16 +583,18 @@ SlotSpanMetadata<thread_safe>::FromSlotStart(uintptr_t slot_start) {
   return slot_span;
 }
 
-// Like |FromSlotInnerAddr|, but asserts that |object| indeed points to the
-// beginning of the object. This works on direct maps too.
+// Like |FromAddr|, but asserts that |object| indeed points to the beginning of
+// an object. It doesn't check if the object is actually allocated.
+//
+// This works on direct maps too.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromObject(void* object) {
   uintptr_t object_addr = PartitionRoot<thread_safe>::ObjectPtr2Addr(object);
-  auto* slot_span = FromSlotInnerAddr(object_addr);
+  auto* slot_span = FromAddr(object_addr);
 #if DCHECK_IS_ON()
   // Checks that the object is exactly |extras_offset| away from a multiple of
-  // slot size.
+  // slot size (i.e. from a slot start).
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   PA_DCHECK((::partition_alloc::internal::UnmaskPtr(object_addr) -
@@ -597,6 +603,35 @@ SlotSpanMetadata<thread_safe>::FromObject(void* object) {
             root->extras_offset);
 #endif  // DCHECK_IS_ON()
   return slot_span;
+}
+
+// Like |FromAddr|, but asserts that |address| indeed points within an object.
+// It doesn't check if the object is actually allocated.
+//
+// CAUTION! For direct-mapped allocation, |address| has to be within the first
+// partition page.
+template <bool thread_safe>
+ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+SlotSpanMetadata<thread_safe>::FromObjectInnerAddr(uintptr_t address) {
+  auto* slot_span = FromAddr(address);
+#if DCHECK_IS_ON()
+  // Checks that the address is within the expected object boundaries.
+  uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
+  auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
+  uintptr_t shift_from_slot_start =
+      (address - slot_span_start) % slot_span->bucket->slot_size;
+  PA_DCHECK(shift_from_slot_start >= root->extras_offset);
+  // Use <= to allow an address immediately past the object.
+  PA_DCHECK(shift_from_slot_start <=
+            root->extras_offset + slot_span->GetUsableSize(root));
+#endif  // DCHECK_IS_ON()
+  return slot_span;
+}
+template <bool thread_safe>
+ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+SlotSpanMetadata<thread_safe>::FromObjectInnerPtr(void* ptr) {
+  return FromObjectInnerAddr(
+      PartitionRoot<thread_safe>::ObjectInnerPtr2Addr(ptr));
 }
 
 template <bool thread_safe>

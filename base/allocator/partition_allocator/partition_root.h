@@ -623,10 +623,13 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
     // TODO(bartekn): Check that the result is indeed a slot start.
   }
 
-  static ALWAYS_INLINE uintptr_t ObjectPtr2Addr(void* object) {
+  static ALWAYS_INLINE uintptr_t ObjectInnerPtr2Addr(void* object) {
     // TODO(bartekn): Add MTE untagging here.
-    // TODO(bartekn): Check that |object| is indeed an object start.
     return reinterpret_cast<uintptr_t>(object);
+  }
+  static ALWAYS_INLINE uintptr_t ObjectPtr2Addr(void* object) {
+    // TODO(bartekn): Check that |object| is indeed an object start.
+    return ObjectInnerPtr2Addr(object);
   }
   static ALWAYS_INLINE void* SlotStartAddr2Ptr(uintptr_t slot_start) {
     // TODO(bartekn): Move MTE tagging here.
@@ -815,7 +818,7 @@ ALWAYS_INLINE uintptr_t PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
       PartitionAllocGetDirectMapSlotStartInBRPPool(address);
   if (UNLIKELY(directmap_slot_start))
     return directmap_slot_start;
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerAddr(address);
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromObjectInnerAddr(address);
   auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->brp_enabled());
@@ -1401,13 +1404,18 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
 // Returns the size available to the app. It can be equal or higher than the
 // requested size. If higher, the overage won't exceed what's actually usable
 // by the app without a risk of running out of an allocated region or into
-// PartitionAlloc's internal data. Used as malloc_usable_size.
+// PartitionAlloc's internal data. Used as malloc_usable_size and malloc_size.
+//
+// |ptr| should preferably point to the beginning of an object returned from
+// malloc() et al., but it doesn't have to. crbug.com/1292646 shows an example
+// where this isn't the case. Note, an inner object pointer won't work for
+// direct map, unless it is within the first partition page.
 template <bool thread_safe>
-ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* object) {
+ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
   // malloc_usable_size() is expected to handle NULL gracefully and return 0.
-  if (!object)
+  if (!ptr)
     return 0;
-  auto* slot_span = SlotSpan::FromObject(object);
+  auto* slot_span = SlotSpan::FromObjectInnerPtr(ptr);
   auto* root = FromSlotSpan(slot_span);
   return slot_span->GetUsableSize(root);
 }
