@@ -280,12 +280,14 @@ void AshNotificationView::NotificationTitleRow::
     message_center_utils::FadeInView(
         title_row_divider_, kTitleRowTimestampFadeInAnimationDelayMs,
         kTitleRowTimestampFadeInAnimationDurationMs,
-        gfx::Tween::ACCEL_20_DECEL_100);
+        gfx::Tween::ACCEL_20_DECEL_100,
+        "Ash.NotificationView.TitleRowDivider.FadeIn.AnimationSmoothness");
     DCHECK(timestamp_in_collapsed_view_->GetVisible());
     message_center_utils::FadeInView(
         timestamp_in_collapsed_view_, kTitleRowTimestampFadeInAnimationDelayMs,
         kTitleRowTimestampFadeInAnimationDurationMs,
-        gfx::Tween::ACCEL_20_DECEL_100);
+        gfx::Tween::ACCEL_20_DECEL_100,
+        "Ash.NotificationView.TimestampInTitle.FadeIn.AnimationSmoothness");
   }
 }
 
@@ -507,9 +509,10 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
             },
             weak_factory_.GetWeakPtr(), collapsed_summary_view_),
         0, kCollapsedSummaryViewAnimationDurationMs);
-    message_center_utils::FadeInView(main_view_,
-                                     kCollapsedSummaryViewAnimationDurationMs,
-                                     kChildMainViewFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(
+        main_view_, kCollapsedSummaryViewAnimationDurationMs,
+        kChildMainViewFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.MainView.FadeIn.AnimationSmoothness");
     return;
   }
 
@@ -525,9 +528,10 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
           },
           weak_factory_.GetWeakPtr(), main_view_),
       0, kChildMainViewFadeOutAnimationDurationMs);
-  message_center_utils::FadeInView(collapsed_summary_view_,
-                                   kChildMainViewFadeOutAnimationDurationMs,
-                                   kCollapsedSummaryViewAnimationDurationMs);
+  message_center_utils::FadeInView(
+      collapsed_summary_view_, kChildMainViewFadeOutAnimationDurationMs,
+      kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
+      "Ash.NotificationView.CollapsedSummaryView.FadeIn.AnimationSmoothness");
 }
 
 void AshNotificationView::ToggleExpand() {
@@ -972,9 +976,10 @@ void AshNotificationView::ActionButtonPressed(size_t index,
 
     // Delay for the action buttons to fade out, then fade in inline reply.
     message_center_utils::InitLayerForAnimations(inline_reply());
-    message_center_utils::FadeInView(inline_reply(),
-                                     kActionButtonsFadeOutAnimationDurationMs,
-                                     kInlineReplyFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(
+        inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
+        kInlineReplyFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.InlineReply.FadeIn.AnimationSmoothness");
   }
 }
 
@@ -1143,9 +1148,10 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
 
   // Fade in `header row()` if this is not a grouped parent view.
   if (header_row() && header_row()->GetVisible() && !is_grouped_parent_view_) {
-    message_center_utils::FadeInView(header_row(),
-                                     kHeaderRowFadeInAnimationDelayMs,
-                                     kHeaderRowFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(
+        header_row(), kHeaderRowFadeInAnimationDelayMs,
+        kHeaderRowFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.HeaderRow.FadeIn.AnimationSmoothness");
   }
 
   // Fade in `message_label()`. We only do fade in for both message view in
@@ -1153,9 +1159,10 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
   // when `message_label()` is truncated).
   if (message_label() && message_label()->GetVisible() &&
       IsMessageLabelTruncated()) {
-    message_center_utils::FadeInView(message_label(),
-                                     kMessageLabelFadeInAnimationDelayMs,
-                                     kMessageLabelFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(
+        message_label(), kMessageLabelFadeInAnimationDelayMs,
+        kMessageLabelFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.MessageLabel.FadeIn.AnimationSmoothness");
   }
 
   // Fade in `message_label_in_expanded_state_`.
@@ -1165,7 +1172,9 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     message_center_utils::FadeInView(
         message_label_in_expanded_state_,
         kMessageLabelInExpandedStateFadeInAnimationDelayMs,
-        kMessageLabelInExpandedStateFadeInAnimationDurationMs);
+        kMessageLabelInExpandedStateFadeInAnimationDurationMs,
+        gfx::Tween::LINEAR,
+        "Ash.NotificationView.ExpandedMessageLabel.FadeIn.AnimationSmoothness");
   }
 
   if (!image_container_view()->children().empty()) {
@@ -1173,9 +1182,10 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
   }
 
   if (actions_row() && actions_row()->GetVisible()) {
-    message_center_utils::FadeInView(actions_row(),
-                                     kActionsRowFadeInAnimationDelayMs,
-                                     kActionsRowFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(
+        actions_row(), kActionsRowFadeInAnimationDelayMs,
+        kActionsRowFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.ActionsRow.FadeIn.AnimationSmoothness");
   }
 
   if (total_grouped_notifications_) {
@@ -1211,9 +1221,10 @@ void AshNotificationView::PerformLargeImageAnimation() {
     // (a.k.a hide_icon_on_expanded() is false), fade in
     // `image_container_view()`.
     if (!hide_icon_on_expanded()) {
-      message_center_utils::FadeInView(image_container_view(),
-                                       kLargeImageFadeInAnimationDelayMs,
-                                       kLargeImageFadeInAnimationDurationMs);
+      message_center_utils::FadeInView(
+          image_container_view(), kLargeImageFadeInAnimationDelayMs,
+          kLargeImageFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+          "Ash.NotificationView.ImageContainerView.FadeIn.AnimationSmoothness");
     }
     return;
   }
@@ -1361,9 +1372,10 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
   }
 
   // Fade in views.
-  message_center_utils::FadeInView(main_right_view_,
-                                   kToggleInlineSettingsFadeInDelayMs,
-                                   kToggleInlineSettingsFadeInDurationMs);
+  message_center_utils::FadeInView(
+      main_right_view_, kToggleInlineSettingsFadeInDelayMs,
+      kToggleInlineSettingsFadeInDurationMs, gfx::Tween::LINEAR,
+      "Ash.NotificationView.MainRightView.FadeIn.AnimationSmoothness");
 }
 
 int AshNotificationView::CalculateMaxHeightForGroupedNotifications() {

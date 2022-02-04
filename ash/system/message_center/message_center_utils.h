@@ -46,7 +46,8 @@ void InitLayerForAnimations(views::View* view);
 void FadeInView(views::View* view,
                 int delay_in_ms,
                 int duration_in_ms,
-                gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+                gfx::Tween::Type tween_type = gfx::Tween::LINEAR,
+                const std::string& animation_histogram_name = std::string());
 
 // Fade out animation using AnimationBuilder.
 void FadeOutView(views::View* view,

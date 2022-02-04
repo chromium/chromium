@@ -139,8 +139,10 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
     }
 
     // Fade in animation when label is visible.
-    message_center_utils::FadeInView(label_, kExpandButtonFadeInLabelDelayMs,
-                                     kExpandButtonFadeInLabelDurationMs);
+    message_center_utils::FadeInView(
+        label_, kExpandButtonFadeInLabelDelayMs,
+        kExpandButtonFadeInLabelDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.ExpandButtonLabel.FadeIn.AnimationSmoothness");
 
     bounds_animation_duration = kExpandButtonShowLabelBoundsChangeDurationMs;
     bounds_animation_tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;

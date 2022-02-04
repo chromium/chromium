@@ -2142,6 +2142,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationView.{ChildView}.FadeIn.AnimationSmoothness"
+    units="%" expires_after="2023-01-28">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the fade in animation of {ChildView} inside a
+    notification view. 100% represents ideally smooth 60 frames per second.
+    Emitted when the fade in animation is completed.
+  </summary>
+  <token key="ChildView">
+    <variant name="ActionsRow"/>
+    <variant name="CollapsedSummaryView"/>
+    <variant name="ExpandButtonLabel"/>
+    <variant name="ExpandedMessageLabel"/>
+    <variant name="HeaderRow"/>
+    <variant name="ImageContainerView"/>
+    <variant name="InlineReply"/>
+    <variant name="MainRightView"/>
+    <variant name="MainView"/>
+    <variant name="MessageLabel"/>
+    <variant name="TimestampInTitle"/>
+    <variant name="TitleRowDivider"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.NumberOfVisibleWindowsInPrimaryDisplay" units="Windows"
     expires_after="2022-04-24">
   <owner>jamescook@chromium.org</owner>
