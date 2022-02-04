@@ -291055,7 +291055,7 @@
         []
        ],
        "test-render-blocking.js": [
-        "bc87aef65023971510b2ffa5460b44bebaeaf1a1",
+        "5d193a4ab211931fae656e8851845beff879e4a2",
         []
        ]
       }
@@ -447698,6 +447698,13 @@
       ]
      ],
      "render-blocking": {
+      "parser-inserted-preload-link.tentative.html": [
+       "827985d71a8a92e64a3bded1463e6d247d3d0f79",
+       [
+        null,
+        {}
+       ]
+      ],
       "parser-inserted-style-element.tentative.html": [
        "9a358aa4938e762b31b43fb38381a763c2222c33",
        [
@@ -447719,6 +447726,27 @@
         {
          "testdriver": true
         }
+       ]
+      ],
+      "script-inserted-preload-link.tentative.html": [
+       "a96e223d623cd89b2c907fed6d52f0b30552fedf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "script-inserted-style-element.tentative.html": [
+       "683706af50d97cd4163845adf954f214b636d9b3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "script-inserted-stylesheet-link.tentative.html": [
+       "46755387d712adc23582c80c61e06b0bb61c400e",
+       [
+        null,
+        {}
        ]
       ]
      },
@@ -506804,26 +506832,14 @@
      ]
     ],
     "queuing-strategies.any.js": [
-     "82235ae95b12e661a5e92431406cbaa998f147ca",
-     [
-      null,
-      {
-       "jsshell": true,
-       "script_metadata": [
-        [
-         "global",
-         "window,worker,jsshell"
-        ]
-       ]
-      }
-     ],
+     "fa959ebba283388cdd13a626a41de7f4323bfcfc",
      [
       "streams/queuing-strategies.any.html",
       {
        "script_metadata": [
         [
          "global",
-         "window,worker,jsshell"
+         "window,worker"
         ]
        ]
       }
@@ -506834,7 +506850,7 @@
        "script_metadata": [
         [
          "global",
-         "window,worker,jsshell"
+         "window,worker"
         ]
        ]
       }
@@ -506845,7 +506861,7 @@
        "script_metadata": [
         [
          "global",
-         "window,worker,jsshell"
+         "window,worker"
         ]
        ]
       }
@@ -506856,7 +506872,7 @@
        "script_metadata": [
         [
          "global",
-         "window,worker,jsshell"
+         "window,worker"
         ]
        ]
       }
@@ -507367,38 +507383,14 @@
     },
     "readable-streams": {
      "async-iterator.any.js": [
-      "7669a35d9a7a0c21b4b30a32292992e06084d6fb",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "3ccaca17bc1ac705f488d7f20e19c400d79d098c",
       [
        "streams/readable-streams/async-iterator.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507421,7 +507413,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507444,7 +507436,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507467,7 +507459,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507486,26 +507478,14 @@
       ]
      ],
      "bad-strategies.any.js": [
-      "b795360fb7c7bb979a6495884ad0e0219a1a3183",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "521fbffe3ab479bc276495398f935343df674110",
       [
        "streams/readable-streams/bad-strategies.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507516,7 +507496,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507527,7 +507507,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507538,33 +507518,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "bad-underlying-sources.any.js": [
-      "6f59197a49b18bdcc047834cb1b2c45bf743790a",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "e9cf4c924930b2f209d5fdb4c1c6b9a65f096038",
       [
        "streams/readable-streams/bad-underlying-sources.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507575,7 +507543,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507586,7 +507554,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507597,41 +507565,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "cancel.any.js": [
-      "c3723a465c9988b7095f20b419be08686de9987e",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ]
-        ]
-       }
-      ],
+      "800bd9944172416638d9792ccbeaa2bcd136db15",
       [
        "streams/readable-streams/cancel.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507650,7 +507598,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507669,7 +507617,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507688,7 +507636,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507703,26 +507651,14 @@
       ]
      ],
      "constructor.any.js": [
-      "dcfd9e9c33861f7ecf83d4e6f5d787810ab8475f",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "608dc48cfa39d7068d1364a0e1b629571c1782e6",
       [
        "streams/readable-streams/constructor.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507733,7 +507669,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507744,7 +507680,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507755,33 +507691,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "count-queuing-strategy-integration.any.js": [
-      "78a25318b2dd5af9857854dcd8ae6a1ff089d262",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "02ac5bae5c2f8ac6bae0606ac0a584b1b61b50c5",
       [
        "streams/readable-streams/count-queuing-strategy-integration.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507792,7 +507716,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507803,7 +507727,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507814,7 +507738,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507828,30 +507752,14 @@
       ]
      ],
      "default-reader.any.js": [
-      "664853e28cfb9f432631ac444dab9836f869bdec",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ]
-        ]
-       }
-      ],
+      "59d7ab2f74db63f734030df99d74a8e21bc4a57a",
       [
        "streams/readable-streams/default-reader.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507866,7 +507774,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507881,7 +507789,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507896,7 +507804,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -507907,26 +507815,14 @@
       ]
      ],
      "floating-point-total-queue-size.any.js": [
-      "400482a450cad29fe2bc0515e22544e37c0aed7f",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "50cca3d951a9424d4fb9e45597434912ef94ec52",
       [
        "streams/readable-streams/floating-point-total-queue-size.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507937,7 +507833,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507948,7 +507844,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -507959,37 +507855,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "garbage-collection.any.js": [
-      "dad0ad1535a5bf10245bf292d5fa3be3e4b89f5d",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "622b3ff74bfa0deb385eb69397fc63f60725651f",
       [
        "streams/readable-streams/garbage-collection.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508004,7 +507884,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508019,7 +507899,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508034,7 +507914,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508045,34 +507925,14 @@
       ]
      ],
      "general.any.js": [
-      "4e54990823ab0173656a5ba14930299ee096ae7a",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ]
-        ]
-       }
-      ],
+      "2a32b27943c82f3e5701a0ed5fa05d7f16bb9c72",
       [
        "streams/readable-streams/general.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508091,7 +507951,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508110,7 +507970,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508129,7 +507989,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508151,26 +508011,14 @@
       ]
      ],
      "patched-global.any.js": [
-      "576a39f6777e2b4970eaec74b88e6ee7f82d3b70",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "a64a054a97f1f5f133ec961a02f75207b2cb4eee",
       [
        "streams/readable-streams/patched-global.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -508181,7 +508029,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -508192,7 +508040,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -508203,45 +508051,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "reentrant-strategies.any.js": [
-      "a02d08b0acc50a43dbe987d23d839440a5212036",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "b4988bc2433fd56c6527f0546ab47fa14b4c9f54",
       [
        "streams/readable-streams/reentrant-strategies.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508264,7 +508088,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508287,7 +508111,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508310,7 +508134,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508329,42 +508153,14 @@
       ]
      ],
      "tee.any.js": [
-      "d6f506120e1b5c4a3847ca7002a1d2ac315ec825",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/rs-test-templates.js"
-         ]
-        ]
-       }
-      ],
+      "00397932f4b6e346a16b019e5d299af0e65afac6",
       [
        "streams/readable-streams/tee.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508391,7 +508187,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508418,7 +508214,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508445,7 +508241,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508468,34 +508264,14 @@
       ]
      ],
      "templated.any.js": [
-      "4d524e69fee19e82a5607c123689558674017d20",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/rs-test-templates.js"
-         ]
-        ]
-       }
-      ],
+      "ecae3f4d8b129f760536564ab7d18e1a18bb3ef1",
       [
        "streams/readable-streams/templated.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508514,7 +508290,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508533,7 +508309,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -508552,7 +508328,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
