@@ -23,13 +23,16 @@ class MockAddrInfoGetter : public AddrInfoGetter {
  public:
   addrinfo* getaddrinfo(const std::string& host,
                         const addrinfo* hints,
-                        int* out_os_error) override;
+                        int* out_os_error,
+                        NetworkChangeNotifier::NetworkHandle network) override;
   void freeaddrinfo(addrinfo* ai) override;
 };
 
-addrinfo* MockAddrInfoGetter::getaddrinfo(const std::string& host,
-                                          const addrinfo* /* hints */,
-                                          int* out_os_error) {
+addrinfo* MockAddrInfoGetter::getaddrinfo(
+    const std::string& host,
+    const addrinfo* /* hints */,
+    int* out_os_error,
+    NetworkChangeNotifier::NetworkHandle) {
   // Presume success
   *out_os_error = 0;
 

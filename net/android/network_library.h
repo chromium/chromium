@@ -5,6 +5,7 @@
 #ifndef NET_ANDROID_NETWORK_LIBRARY_H_
 #define NET_ANDROID_NETWORK_LIBRARY_H_
 
+#include <android/multinetwork.h>
 #include <jni.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -123,6 +124,17 @@ NET_EXPORT_PRIVATE void TagSocket(SocketDescriptor socket,
 NET_EXPORT_PRIVATE int BindToNetwork(
     SocketDescriptor socket,
     NetworkChangeNotifier::NetworkHandle network);
+
+// Perform hostname resolution via the DNS servers associated with `network`.
+// All arguments are used identically as those passed to Android NDK API
+// android_getaddrinfofornetwork:
+// https://developer.android.com/ndk/reference/group/networking#group___networking_1ga0ae9e15612e6411855e295476a98ceee
+NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
+    NetworkChangeNotifier::NetworkHandle network,
+    const char* node,
+    const char* service,
+    const struct addrinfo* hints,
+    struct addrinfo** res);
 
 }  // namespace android
 }  // namespace net

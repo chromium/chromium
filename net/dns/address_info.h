@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/sys_addrinfo.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,13 +48,18 @@ class NET_EXPORT_PRIVATE AddressInfo {
   // Constructors
   using AddressInfoAndResult = std::
       tuple<absl::optional<AddressInfo>, int /* err */, int /* os_error */>;
-  // Invokes AddrInfoGetter with provided |host| and |hints|. If |getter| is
-  // null, the system's getaddrinfo will be invoked. (A non-null |getter| is
+  // Invokes AddrInfoGetter with provided `host` and `hints`. If `getter` is
+  // null, the system's getaddrinfo will be invoked. (A non-null `getter` is
   // primarily for tests).
+  // `network` is an optional parameter, when specified (!=
+  // kInvalidNetworkHandle) the lookup will be performed specifically for
+  // `network` (currently only supported on Android platforms).
   static AddressInfoAndResult Get(
       const std::string& host,
       const addrinfo& hints,
-      std::unique_ptr<AddrInfoGetter> getter = nullptr);
+      std::unique_ptr<AddrInfoGetter> getter = nullptr,
+      NetworkChangeNotifier::NetworkHandle network =
+          NetworkChangeNotifier::kInvalidNetworkHandle);
 
   AddressInfo(const AddressInfo&) = delete;
   AddressInfo& operator=(const AddressInfo&) = delete;
@@ -93,7 +99,8 @@ class NET_EXPORT_PRIVATE AddrInfoGetter {
   virtual ~AddrInfoGetter();
   virtual addrinfo* getaddrinfo(const std::string& host,
                                 const addrinfo* hints,
-                                int* out_os_error);
+                                int* out_os_error,
+                                NetworkChangeNotifier::NetworkHandle network);
   virtual void freeaddrinfo(addrinfo* ai);
 };
 

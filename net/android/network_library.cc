@@ -250,5 +250,53 @@ int BindToNetwork(SocketDescriptor socket,
   return MapSystemError(rv);
 }
 
+namespace {
+
+using MarshmallowGetAddrInfoForNetwork = int (*)(int64_t network,
+                                                 const char* node,
+                                                 const char* service,
+                                                 const struct addrinfo* hints,
+                                                 struct addrinfo** res);
+
+MarshmallowGetAddrInfoForNetwork GetMarshmallowGetAddrInfoForNetwork() {
+  // On Android M and newer releases use supported NDK API.
+  base::FilePath file(base::GetNativeLibraryName("android"));
+  // See declaration of android_getaddrinfofornetwork() here:
+  // https://developer.android.com/ndk/reference/group/networking#android_getaddrinfofornetwork
+  // Function cannot be called directly as it will cause app to fail to load on
+  // pre-marshmallow devices.
+  void* dl = dlopen(file.value().c_str(), RTLD_NOW);
+  return reinterpret_cast<MarshmallowGetAddrInfoForNetwork>(
+      dlsym(dl, "android_getaddrinfofornetwork"));
+}
+
+}  // namespace
+
+NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
+    NetworkChangeNotifier::NetworkHandle network,
+    const char* node,
+    const char* service,
+    const struct addrinfo* hints,
+    struct addrinfo** res) {
+  if (network == NetworkChangeNotifier::kInvalidNetworkHandle) {
+    errno = EINVAL;
+    return EAI_SYSTEM;
+  }
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    errno = ENOSYS;
+    return EAI_SYSTEM;
+  }
+
+  static MarshmallowGetAddrInfoForNetwork get_addrinfo_for_network =
+      GetMarshmallowGetAddrInfoForNetwork();
+  if (!get_addrinfo_for_network) {
+    errno = ENOSYS;
+    return EAI_SYSTEM;
+  }
+
+  return get_addrinfo_for_network(network, node, service, hints, res);
+}
+
 }  // namespace android
 }  // namespace net
