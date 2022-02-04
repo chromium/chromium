@@ -69,8 +69,7 @@ void HighlightRegistry::ValidateHighlightMarkers() {
       if (abstract_range->OwnerDocument() == document &&
           !abstract_range->collapsed()) {
         auto* static_range = DynamicTo<StaticRange>(*abstract_range);
-        if (static_range && (!static_range->IsValid() ||
-                             static_range->CrossesContainBoundary()))
+        if (static_range && !static_range->IsValid())
           continue;
 
         EphemeralRange eph_range(abstract_range);

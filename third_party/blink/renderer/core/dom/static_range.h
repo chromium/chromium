@@ -51,7 +51,6 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
   Range* toRange(ExceptionState& = ASSERT_NO_EXCEPTION) const;
 
   bool IsValid() const;
-  bool CrossesContainBoundary() const;
   bool IsStaticRange() const override { return true; }
   Document& OwnerDocument() const override { return *owner_document_.Get(); }
 
@@ -64,10 +63,7 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
   Member<Node> end_container_;
   unsigned end_offset_ = 0;
   mutable bool is_valid_ = false;
-  mutable bool crosses_contain_boundary_ = false;
   mutable uint64_t dom_tree_version_for_is_valid_ = 0;
-  mutable uint64_t style_version_for_crosses_contain_boundary_ =
-      static_cast<uint64_t>(-1);
 };
 
 using StaticRangeVector = HeapVector<Member<StaticRange>>;
