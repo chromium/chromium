@@ -1203,8 +1203,10 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
   bool pps_remainder_unencrypted = true;
   if (encrypted_ranges_.size()) {
     Ranges<const uint8_t*> pps_range;
-    pps_range.Add(previous_nalu_range_.end(0) - br_.NumBitsLeft() / 8,
-                  previous_nalu_range_.end(0));
+    // Only check that the next byte is unencrypted, not the rest of the NALU.
+    const uint8_t* next_byte =
+        previous_nalu_range_.end(0) - br_.NumBitsLeft() / 8;
+    pps_range.Add(next_byte, next_byte + 1);
     pps_remainder_unencrypted =
         (encrypted_ranges_.IntersectionWith(pps_range).size() == 0);
   }
