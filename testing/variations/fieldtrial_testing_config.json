@@ -3166,24 +3166,6 @@
             ]
         }
     ],
-    "GlobalMediaControlsForChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithDefaultPinnedv1",
-                    "params": {
-                        "CrosGlobalMediaControlsPinParam": "default-pinned"
-                    },
-                    "enable_features": [
-                        "GlobalMediaControlsForChromeOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleLensDesktopContextMenuSearch": [
         {
             "platforms": [
