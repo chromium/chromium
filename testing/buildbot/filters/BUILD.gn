@@ -141,6 +141,7 @@ source_set("content_shell_test_apk_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter",
   ]
 }
