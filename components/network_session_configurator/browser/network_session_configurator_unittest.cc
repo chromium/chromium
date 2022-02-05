@@ -32,6 +32,47 @@
 
 namespace network_session_configurator {
 
+namespace {
+
+// TODO(haoyuewang) Move this method to third_party/quic/core/quic_versions.h.
+// Compare two sets of QUIC versions, considering versions with identical ALPN
+// string to be equal, ignoring duplicates and ordering.
+bool QuicVersionVectorsEqual(const quic::ParsedQuicVersionVector& versions1,
+                             const quic::ParsedQuicVersionVector& versions2) {
+  // Collect ALPN tokens.
+  std::vector<std::string> alpn1;
+  for (const auto& version : versions1) {
+    alpn1.push_back(quic::AlpnForVersion(version));
+  }
+  // Sort and deduplicate.
+  std::sort(alpn1.begin(), alpn1.end());
+  auto last = std::unique(alpn1.begin(), alpn1.end());
+  if (last != alpn1.end()) {
+    alpn1.erase(last, alpn1.end());
+  }
+
+  // Collect ALPN tokens.
+  std::vector<std::string> alpn2;
+  for (const auto& version : versions2) {
+    alpn2.push_back(quic::AlpnForVersion(version));
+  }
+  // Sort and deduplicate.
+  std::sort(alpn2.begin(), alpn2.end());
+  last = std::unique(alpn2.begin(), alpn2.end());
+  if (last != alpn2.end()) {
+    alpn2.erase(last, alpn2.end());
+  }
+
+  // Compare.
+  if (alpn1.size() != alpn2.size()) {
+    return false;
+  }
+
+  return std::equal(alpn1.begin(), alpn1.end(), alpn2.begin());
+}
+
+}  // namespace
+
 class NetworkSessionConfiguratorTest : public testing::Test {
  public:
   NetworkSessionConfiguratorTest()
@@ -563,7 +604,8 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   quic::ParsedQuicVersionVector supported_versions = {version1, version2};
-  EXPECT_EQ(supported_versions, quic_params_.supported_versions);
+  EXPECT_TRUE(QuicVersionVectorsEqual(supported_versions,
+                                      quic_params_.supported_versions));
 }
 
 TEST_F(NetworkSessionConfiguratorTest,
@@ -940,7 +982,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, QuicVersionAlpn) {
                                  quic::AlpnForVersion(version_));
   ParseCommandLineAndFieldTrials(command_line);
   quic::ParsedQuicVersionVector expected_versions = {version_};
-  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
+  EXPECT_TRUE(QuicVersionVectorsEqual(expected_versions,
+                                      quic_params_.supported_versions));
 }
 
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
@@ -986,7 +1029,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
   ParseFieldTrials();
   quic::ParsedQuicVersionVector expected_versions = {version_};
-  EXPECT_EQ(expected_versions, quic_params_.supported_versions);
+  EXPECT_TRUE(QuicVersionVectorsEqual(expected_versions,
+                                      quic_params_.supported_versions));
 }
 
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, ObsoleteQuicVersion) {

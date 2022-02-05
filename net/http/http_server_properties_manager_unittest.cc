@@ -3036,12 +3036,13 @@ TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
     AlternativeServiceInfoVector alternative_service_info_vector_out =
         server_info.alternative_services.value();
     ASSERT_EQ(1u, alternative_service_info_vector_out.size());
-    EXPECT_EQ(
-        kProtoQUIC,
-        alternative_service_info_vector_out[0].alternative_service().protocol);
+    const auto& altsvc_info = alternative_service_info_vector_out[0];
+    EXPECT_EQ(kProtoQUIC, altsvc_info.alternative_service().protocol);
     // Ensure we correctly parsed the version.
-    EXPECT_EQ(advertised_versions,
-              alternative_service_info_vector_out[0].advertised_versions());
+    // (Versions with identical ALPN string are considered equal.)
+    ASSERT_EQ(1u, altsvc_info.advertised_versions().size());
+    EXPECT_EQ(quic::AlpnForVersion(version),
+              quic::AlpnForVersion(altsvc_info.advertised_versions()[0]));
   }
 }
 
