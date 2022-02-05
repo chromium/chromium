@@ -18,6 +18,8 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/socket/socket_test_util.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -33,8 +35,10 @@ const char FAKE_ID[] = "abcdefghijklmnopqrst";
 
 class TLSSocketTestBase : public extensions::ExtensionServiceTestBase {
  public:
-  TLSSocketTestBase() : url_request_context_(true) {}
-  ~TLSSocketTestBase() override {}
+  TLSSocketTestBase()
+      : url_request_context_builder_(
+            net::CreateTestURLRequestContextBuilder()) {}
+  ~TLSSocketTestBase() override = default;
 
   // Creates a TCP socket.
   std::unique_ptr<TCPSocket> CreateTCPSocket() {
@@ -90,19 +94,20 @@ class TLSSocketTestBase : public extensions::ExtensionServiceTestBase {
   void SetUp() override { InitializeEmptyExtensionService(); }
 
   void Initialize() {
-    url_request_context_.Init();
+    url_request_context_ = url_request_context_builder_->Build();
     network_context_ = std::make_unique<network::NetworkContext>(
         nullptr, network_context_remote_.BindNewPipeAndPassReceiver(),
-        &url_request_context_,
+        url_request_context_.get(),
         /*cors_exempt_header_list=*/std::vector<std::string>());
     partition_.set_network_context(network_context_remote_.get());
   }
 
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContextBuilder> url_request_context_builder_;
 
  private:
   static const int kPort = 1234;
   TestingProfile profile_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   content::TestStoragePartition partition_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
@@ -115,7 +120,7 @@ class TLSSocketTest : public TLSSocketTestBase,
  public:
   TLSSocketTest() : TLSSocketTestBase() {
     mock_client_socket_factory_.set_enable_read_if_ready(true);
-    url_request_context_.set_client_socket_factory(
+    url_request_context_builder_->set_client_socket_factory_for_testing(
         &mock_client_socket_factory_);
     Initialize();
   }

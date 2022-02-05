@@ -114,7 +114,6 @@ class MostVisitedIframeSourceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  net::TestURLRequestContext test_url_request_context_;
   TestingProfile profile_;
   std::unique_ptr<TestMostVisitedIframeSource> source_;
   scoped_refptr<base::RefCountedMemory> response_;
