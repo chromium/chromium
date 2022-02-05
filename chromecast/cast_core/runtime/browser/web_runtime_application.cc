@@ -25,7 +25,7 @@ WebRuntimeApplication::WebRuntimeApplication(
                              mojom::RendererType::MOJO_RENDERER,
                              web_service,
                              std::move(task_runner)),
-      app_url_(app_config().cast_web_app_config().url()) {}
+      app_url_(GetAppConfig().cast_web_app_config().url()) {}
 
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,7 +92,7 @@ void WebRuntimeApplication::InnerContentsCreated(
   // Bind inner CastWebContents with the same session id and app id as the
   // root CastWebContents so that the same url rewrites are applied.
   inner_contents->SetAppProperties(
-      app_config().app_id(), cast_session_id(), false /*is_audio_app*/,
+      GetAppConfig().app_id(), GetCastSessionId(), false /*is_audio_app*/,
       GetApplicationUrl(), false /*enforce_feature_permissions*/,
       feature_permissions, additional_feature_permission_origins);
 

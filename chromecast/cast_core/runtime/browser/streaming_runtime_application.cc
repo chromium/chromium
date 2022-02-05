@@ -119,7 +119,7 @@ void StreamingRuntimeApplication::InitializeApplication(
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), network_context_getter_, std::move(server_port),
       GetCastWebContents(), this,
-      /* supports_audio= */ app_config().app_id() !=
+      /* supports_audio= */ GetAppConfig().app_id() !=
           openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync();

@@ -24,17 +24,14 @@ class RuntimeApplication {
  public:
   using StatusCallback = base::OnceCallback<void(grpc::Status)>;
 
-  RuntimeApplication(std::string cast_session_id,
-                     cast::common::ApplicationConfig app_config);
+  RuntimeApplication() = default;
   virtual ~RuntimeApplication() = 0;
 
   // NOTE: These fields are the empty string until after Load().
-  const cast::common::ApplicationConfig& app_config() const {
-    return app_config_;
-  }
+  virtual const cast::common::ApplicationConfig& GetAppConfig() const = 0;
 
   // NOTE: These fields are the empty string until after Load().
-  const std::string& cast_session_id() const { return cast_session_id_; }
+  virtual const std::string& GetCastSessionId() const = 0;
 
   // Returns the Cast application URL.
   virtual const GURL& GetApplicationUrl() const = 0;
@@ -62,10 +59,6 @@ class RuntimeApplication {
 
   // Returns whether this instance is associated with cast streaming.
   virtual bool IsStreamingApplication() const = 0;
-
- private:
-  const std::string cast_session_id_;
-  const cast::common::ApplicationConfig app_config_;
 };
 
 std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app);

@@ -6,18 +6,12 @@
 
 namespace chromecast {
 
-RuntimeApplication::RuntimeApplication(
-    std::string cast_session_id,
-    cast::common::ApplicationConfig app_config)
-    : cast_session_id_(std::move(cast_session_id)),
-      app_config_(std::move(app_config)) {}
-
 RuntimeApplication::~RuntimeApplication() = default;
 
 std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app) {
-  return os << "app_id=" << app.app_config().app_id() << " ("
-            << app.app_config().display_name()
-            << "), session_id=" << app.cast_session_id()
+  return os << "app_id=" << app.GetAppConfig().app_id() << " ("
+            << app.GetAppConfig().display_name()
+            << "), session_id=" << app.GetCastSessionId()
             << ", url=" << app.GetApplicationUrl();
 }
 

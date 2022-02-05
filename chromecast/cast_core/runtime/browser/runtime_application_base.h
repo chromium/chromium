@@ -75,13 +75,15 @@ class RuntimeApplicationBase : public RuntimeApplication {
   virtual cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
   HandlePortMessage(cast::web::Message message) = 0;
 
- private:
   // RuntimeApplication implementation:
+  const cast::common::ApplicationConfig& GetAppConfig() const override;
+  const std::string& GetCastSessionId() const override;
   void Load(cast::runtime::LoadApplicationRequest request,
             StatusCallback callback) final;
   void Launch(cast::runtime::LaunchApplicationRequest request,
               StatusCallback callback) final;
 
+ private:
   // RuntimeApplicationService handlers:
   void HandleSetUrlRewriteRules(
       cast::v2::SetUrlRewriteRulesRequest request,
@@ -98,6 +100,9 @@ class RuntimeApplicationBase : public RuntimeApplication {
 
   // Notifies that the application has been initialized.
   void OnApplicationInitialized();
+
+  const std::string cast_session_id_;
+  const cast::common::ApplicationConfig app_config_;
 
   // The |web_service_| used to create |cast_web_view_|.
   CastWebService* const web_service_;

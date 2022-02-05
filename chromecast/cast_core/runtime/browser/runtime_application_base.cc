@@ -19,7 +19,8 @@ RuntimeApplicationBase::RuntimeApplicationBase(
     mojom::RendererType renderer_type_used,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : RuntimeApplication(std::move(cast_session_id), std::move(app_config)),
+    : cast_session_id_(std::move(cast_session_id)),
+      app_config_(std::move(app_config)),
       web_service_(web_service),
       task_runner_(std::move(task_runner)),
       renderer_type_(renderer_type_used) {
@@ -40,6 +41,15 @@ CastWebContents* RuntimeApplicationBase::GetCastWebContents() {
 const std::string& RuntimeApplicationBase::GetCastMediaServiceEndpoint() const {
   DCHECK(cast_media_service_grpc_endpoint_);
   return *cast_media_service_grpc_endpoint_;
+}
+
+const cast::common::ApplicationConfig& RuntimeApplicationBase::GetAppConfig()
+    const {
+  return app_config_;
+}
+
+const std::string& RuntimeApplicationBase::GetCastSessionId() const {
+  return cast_session_id_;
 }
 
 void RuntimeApplicationBase::Load(cast::runtime::LoadApplicationRequest request,
@@ -136,7 +146,7 @@ void RuntimeApplicationBase::OnApplicationInitialized() {
   const std::vector<std::string> additional_feature_permission_origins;
   // TODO(b/203580094): Currently we assume the app is not audio only.
   GetCastWebContents()->SetAppProperties(
-      app_config().app_id(), cast_session_id(), false /*is_audio_app*/,
+      GetAppConfig().app_id(), GetCastSessionId(), false /*is_audio_app*/,
       GetApplicationUrl(), false /*enforce_feature_permissions*/,
       feature_permissions, additional_feature_permission_origins);
   GetCastWebContents()->LoadUrl(GetApplicationUrl());
@@ -196,7 +206,7 @@ void RuntimeApplicationBase::SetApplicationState(
 
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreApplicationServiceStub::SetApplicationStatus>();
-  call.request().set_cast_session_id(cast_session_id());
+  call.request().set_cast_session_id(GetCastSessionId());
   call.request().set_state(state);
   if (state == cast::v2::ApplicationStatusRequest::STOPPED) {
     call.request().set_stop_reason(
@@ -214,7 +224,7 @@ void RuntimeApplicationBase::CreateCastWebView() {
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
   params->renderer_type = renderer_type_;
   params->handle_inner_contents = true;
-  params->session_id = cast_session_id();
+  params->session_id = GetCastSessionId();
 #if DCHECK_IS_ON()
   params->enabled_for_dev = true;
 #endif
