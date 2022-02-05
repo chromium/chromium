@@ -1,30 +1,30 @@
-# WebID Browser side
+# FedCM Browser side
 
 This folder contains the implementation of the browser side logic for the
-[WebID](https://wicg.github.io/WebID/README.html) feature. It is responsible for making all of the
-network requests needed to implement a WebID request and also controls what UI and at which point in
+[FedCM](https://github.com/fedidcg/FedCM/blob/main/explainer/README.md) feature. It is responsible for making all of the
+network requests needed to implement a FedCM request and also controls what UI and at which point in
 the process is shown to the user.
 
-## Anatomy of a WebID request
+## Anatomy of a FedCM request
 
-A WebID request is initiated by a [Relying
-Party](https://wicg.github.io/WebID/glossary.html#relying-party-rp) (RP) in order to perform a
+A FedCM request is initiated by a [Relying
+Party](https://github.com/fedidcg/FedCM/blob/main/explainer/glossary.md#relying-party-rp) (RP) in order to perform a
 federated identity related operation e.g., authenticate, logout etc., with an [Identity
-Provider](https://wicg.github.io/WebID/glossary.html#identity-provider-idp) (IDP).
+Provider](https://github.com/fedidcg/FedCM/blob/main/explainer/glossary.md#identity-provider-idp) (IDP).
 
 While RP and IDP could belong to the same site (or origin) the most interesting and common case
 is when the RP and IDP belong to different sites and thus this operation is a cross-site
 communication and subject to additional scrutiny by the browser.
 
 
-Here is the basic process in Chromium for a WebID request:
+Here is the basic process in Chromium for a FedCM request:
 
 1. The RP renderer process creates a new request via async JavaScript APIs which return a promise.
       - See [WebID.idl](../../../third_party/blink/renderer/modules/webid/web_id.idl) for supported
         methods.
       - The logic for handling and validation of these request lives in
         [`web_id.cc`](../../../third_party/blink/renderer/modules/webid/web_id.cc)
-      - Also in certain situations WebID can be activated passively by a navigation throttle that
+      - Also in certain situations FedCM can be activated passively by a navigation throttle that
         identifies an OAuth request being passed over a top-level navigation.
 
 1. Renderer process passes this request to the browser process via the
@@ -43,9 +43,9 @@ Here is the basic process in Chromium for a WebID request:
 
 ## Network Fetches
 
-As explained before, the cross-site nature of WebID communication means that there is additional
+As explained before, the cross-site nature of FedCM communication means that there is additional
 scrutiny and enforcement for them by the browser. These enforcements occur in the browser process so
-that they cannot be side-stepped by a malicious renderer process. This is why all of WebID network
+that they cannot be side-stepped by a malicious renderer process. This is why all of FedCM network
 requests occur in the browser process.
 
 **TODO**: Explain various fetches that occur in
@@ -55,7 +55,7 @@ processing.
 
 ## Permission Grants
 
-As part of the WebID request flow the user often has to grant the RP and IDP special permissions to
+As part of the FedCM request flow the user often has to grant the RP and IDP special permissions to
 allow cross-site communications. This exact UX for granting of these permissions depends on the
 mode that is used.
 
@@ -93,9 +93,9 @@ be relied upon.
 
 ## UI
 
-There are currently two different modes supported for WebID with their own specific UX and UI:
-[permission-oriented mode](https://wicg.github.io/WebID/README.html#the-permission-oriented-api),
-and [mediation-oriented mode](https://wicg.github.io/WebID/README.html#the-mediation-oriented-api).
+There are currently two different modes supported for FedCM with their own specific UX and UI:
+[permission-oriented mode](https://github.com/fedidcg/FedCM/blob/main/explainer/proposal.md#the-permission-oriented-api),
+and [mediation-oriented mode](https://github.com/fedidcg/FedCM/blob/main/explainer/proposal.md#the-mediated-oriented-api).
 
 At the moment the mediation UI is only implemented on
 [Android](../../../chrome/browser/ui/android/webid/README.md) and on Desktop platforms no UI is shown and
@@ -107,10 +107,10 @@ platforms](../../../chrome/browser/ui/views/webid/) but not on Android.
 
 ## Key Classes
 
-- `FederatedAuthRequestImpl`: Concrete implementation of the mojo interface to initiate a WebID
-   request. It contains most of the business logic and state necessary for WebID requests.
-- `IdPNetworkRequestManager`: Handles all fetches needed for WebID. It ensures we use the right
+- `FederatedAuthRequestImpl`: Concrete implementation of the mojo interface to initiate a FedCM
+   request. It contains most of the business logic and state necessary for FedCM requests.
+- `IdPNetworkRequestManager`: Handles all fetches needed for FedCM. It ensures we use the right
   storage partition and cookie jar for each request. This class is stateless itself.
-- `FederatedAuthResponseImpl`: Concrete implementation of the mojo interface to provide a WebID
+- `FederatedAuthResponseImpl`: Concrete implementation of the mojo interface to provide a FedCM
    response. This is to be used by the IDP login page to complete its process by providing
    an id token.
