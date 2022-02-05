@@ -1077,6 +1077,10 @@ void WebViewImpl::Close() {
   DCHECK(AllInstances().Contains(this));
   AllInstances().erase(this);
 
+  // Ensure if we have a page popup we cancel it immediately as we do not
+  // want page popups to re-enter WebViewImpl during our shutdown.
+  CancelPagePopup();
+
   // Invalidate any weak ptrs as we are starting to shutdown.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
