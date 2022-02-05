@@ -2050,7 +2050,7 @@
   {
     "name": "enable-force-dark",
     "owners": [ "pdr", "khorimoto@chromium.org", "jessejames@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "enable-fre-default-browser-screen-testing",
