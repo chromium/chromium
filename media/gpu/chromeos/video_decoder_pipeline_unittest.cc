@@ -628,15 +628,13 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
       // Easy cases: one candidate that is supported, should be chosen.
       {{PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
        PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
-      {{PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
-       PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
       {{PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
        PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
       // Two candidates, both supported: pick as per implementation.
       {{PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier},
-        PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
+        PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
        PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
-      {{PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier},
         PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
        PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
       {{PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier},
@@ -646,9 +644,6 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
       {{PixelLayoutCandidate{Fourcc(Fourcc::YU16), kSize, kModifier},
         PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
        PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
-      {{PixelLayoutCandidate{Fourcc(Fourcc::YU16), kSize, kModifier},
-        PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
-       PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
       {{PixelLayoutCandidate{Fourcc(Fourcc::YU16), kSize, kModifier},
         PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
        PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}}};

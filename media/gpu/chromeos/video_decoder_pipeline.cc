@@ -49,7 +49,6 @@ constexpr size_t kNumFramesForImageProcessor = limits::kMaxVideoFrames + 1;
 // TODO(mcasas): query the platform for its preferred formats and modifiers.
 constexpr Fourcc::Value kPreferredRenderableFourccs[] = {
     Fourcc::NV12,
-    Fourcc::YV12,
     Fourcc::P010,
 };
 
