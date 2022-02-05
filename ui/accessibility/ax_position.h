@@ -2568,6 +2568,14 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance text_position = AsTextPosition();
+    // The following situation should not be possible but there are existing
+    // crashes in the field.
+    //
+    // TODO(nektar): Remove this workaround as soon as the source of the bug
+    // is identified.
+    if (text_position->text_offset_ > text_position->MaxTextOffset())
+      return CreateNullPosition();
+
     // In case the input affinity is upstream, reset it to downstream.
     //
     // This is to ensure that when we find the equivalent leaf text position, it

@@ -9106,6 +9106,48 @@ TEST_F(AXPositionTest,
 }
 
 TEST_F(AXPositionTest,
+       AsLeafTextPositionBeforeAndAfterCharacterWithInvalidPosition) {
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData text_data;
+  text_data.id = 2;
+  text_data.role = ax::mojom::Role::kStaticText;
+  text_data.SetName("some text");
+
+  root_data.child_ids = {text_data.id};
+  SetTree(CreateAXTree({root_data, text_data}));
+
+  // Create a text position at MaxTextOffset.
+  TestPositionType text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), text_data.id, 9 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsTextPosition());
+  EXPECT_TRUE(text_position->IsValid());
+  EXPECT_EQ(9, text_position->text_offset());
+
+  // Now make a change to shorten MaxTextOffset. Ensure that this position is
+  // invalid.
+  text_data.SetName("some tex");
+  AXTreeUpdate shorten_text_update;
+  shorten_text_update.nodes = {text_data};
+  ASSERT_TRUE(GetTree()->Unserialize(shorten_text_update));
+  EXPECT_FALSE(text_position->IsValid());
+
+  // Ensure that |AsLeafTextPositionBeforeCharacter| returns a null position.
+  TestPositionType text_position_before =
+      text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_TRUE(text_position_before->IsNullPosition());
+
+  // Likewise for |AsLeafTextPositionAfterCharacter|.
+  TestPositionType text_position_after =
+      text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_TRUE(text_position_after->IsNullPosition());
+}
+
+TEST_F(AXPositionTest,
        AsLeafTextPositionBeforeAndAfterCharacterAtInvalidGraphemeBoundary) {
   std::vector<int> text_offsets;
   SetTree(CreateMultilingualDocument(&text_offsets));
