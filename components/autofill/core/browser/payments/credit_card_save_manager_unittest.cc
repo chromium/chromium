@@ -5212,7 +5212,7 @@ TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
           upload_card_response_details;
       upload_card_response_details.card_art_url =
           GURL("https://www.example.com/");
-      upload_card_response_details.instrument_id = 3;
+      upload_card_response_details.instrument_id = 9223372036854775807;
       upload_card_response_details.virtual_card_enrollment_state =
           enrollment_state;
 

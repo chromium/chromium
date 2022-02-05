@@ -339,11 +339,10 @@ void CreditCardSaveManager::OnDidUploadCard(
 
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-      // After a card is successfully saved to the server, we can now offer
-      // the user to enroll it as a virtual card. |upload_card_response_details|
-      // has fields in the response that will be required for server requests in
-      // the virtual card enrollment flow, so we set them here and start the
-      // flow.
+      // After a card is successfully saved to the server, offer virtual card
+      // enrollment if the card is eligible. |upload_card_response_details| has
+      // fields in the response that will be required for server requests in the
+      // virtual card enrollment flow, so we set them here and start the flow.
       if (upload_card_response_details.virtual_card_enrollment_state ==
           CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
         DCHECK(!upload_card_response_details.card_art_url.is_empty());

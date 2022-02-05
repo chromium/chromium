@@ -699,11 +699,14 @@ class UploadCardRequest : public PaymentsRequest {
     upload_card_response_details_.server_id =
         credit_card_id ? *credit_card_id : std::string();
 
-    const absl::optional<int> instrument_id =
-        response.FindIntKey("instrument_id");
-    if (instrument_id.has_value()) {
-      upload_card_response_details_.instrument_id =
-          static_cast<int64_t>(instrument_id.value());
+    const std::string* response_instrument_id =
+        response.FindStringKey("instrument_id");
+    if (response_instrument_id) {
+      int64_t instrument_id;
+      if (base::StringToInt64(base::StringPiece(*response_instrument_id),
+                              &instrument_id)) {
+        upload_card_response_details_.instrument_id = instrument_id;
+      }
     }
 
     const auto* virtual_card_metadata = response.FindKeyOfType(

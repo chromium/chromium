@@ -287,8 +287,9 @@ class PaymentsClient {
     // |instrument_id| is used by the server as an identifier for the card that
     // was uploaded. Currently, we have it in the UploadCardResponseDetails so
     // that we can send it in the GetDetailsForEnrollRequest in the virtual card
-    // enrollment flow. Should never be empty, if using this field use DCHECKs
-    // to ensure it is populated.
+    // enrollment flow. Will only not be populated in the case of an imperfect
+    // conversion from string to int64_t, or if the server does not return an
+    // instrument id.
     absl::optional<int64_t> instrument_id;
     // |virtual_card_enrollment_state| is used to determine whether we want to
     // pursue further action with the credit card that was uploaded regarding

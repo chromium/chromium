@@ -1176,9 +1176,13 @@ TEST_F(PaymentsClientTest, UploadSuccessServerIdPresent) {
 TEST_F(PaymentsClientTest, UploadSuccessInstrumentIdPresent) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
-  ReturnResponse(net::HTTP_OK, "{ \"instrument_id\": 3 }");
+  upload_card_response_details_.instrument_id = absl::nullopt;
+
+  // Test the conversion from string to int64_t using the max value for int64_t.
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"instrument_id\": \"9223372036854775807\" }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ(upload_card_response_details_.instrument_id, 3);
+  EXPECT_EQ(upload_card_response_details_.instrument_id, 9223372036854775807);
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
