@@ -262,4 +262,19 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
             scroll_hit_test_chunk.hit_test_data->scroll_translation);
 }
 
+// crbug.com/1256990
+TEST_P(BoxPainterTest, ScrollerUnderInlineTransform3DSceneLeafCrash) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="transform-style: preserve-3d">
+      <div style="display:inline">
+        <div style="display: inline-block; overflow: scroll;
+                    width: 100px; height: 100px">
+          <div style="height: 200px"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  // This should not crash.
+}
+
 }  // namespace blink

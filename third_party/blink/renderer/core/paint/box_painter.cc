@@ -320,8 +320,15 @@ void BoxPainter::RecordScrollHitTestData(
     // instead of the contents properties so that the scroll hit test is not
     // clipped or scrolled.
     auto& paint_controller = paint_info.context.GetPaintController();
-    DCHECK_EQ(fragment->LocalBorderBoxProperties(),
-              paint_controller.CurrentPaintChunkProperties());
+    // TODO(crbug.com/1256990): This should be
+    // DCHECK_EQ(fragment->LocalBorderBoxProperties(),
+    //           paint_controller.CurrentPaintChunkProperties());
+    // but we have problems about the effect node with CompositingReason::
+    // kTransform3DSceneLeaf on non-stacking-context elements.
+    DCHECK_EQ(&fragment->LocalBorderBoxProperties().Transform(),
+              &paint_controller.CurrentPaintChunkProperties().Transform());
+    DCHECK_EQ(&fragment->LocalBorderBoxProperties().Clip(),
+              &paint_controller.CurrentPaintChunkProperties().Clip());
     paint_controller.RecordScrollHitTestData(
         background_client, DisplayItem::kScrollHitTest,
         properties->ScrollTranslation(), VisualRect(fragment->PaintOffset()));
