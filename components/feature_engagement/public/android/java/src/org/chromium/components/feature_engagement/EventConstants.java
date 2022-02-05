@@ -192,6 +192,8 @@ public final class EventConstants {
 
     public static final String TAB_SWITCHER_BUTTON_CLICKED = "tab_switcher_button_clicked";
 
+    public static final String FOREGROUND_SESSION_DESTROYED = "foreground_session_destroyed";
+
     /** Read later related events. */
     public static final String APP_MENU_BOOKMARK_STAR_ICON_PRESSED =
             "app_menu_bookmark_star_icon_pressed";

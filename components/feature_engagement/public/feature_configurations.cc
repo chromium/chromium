@@ -400,6 +400,24 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHLowUserEngagementDetectorFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->trigger = EventConfig("low_user_engagement_detector_trigger",
+                                  Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("low_user_engagement_detector_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(EventConfig("foreground_session_destroyed",
+                                             Comparator(LESS_THAN_OR_EQUAL, 3),
+                                             14, 14));
+    return config;
+  }
+
   if (kIPHFeedHeaderMenuFeature.name == feature->name) {
     // A config that allows the feed header menu IPH to be shown only once when
     // the user starts using a version of the feed that uploads click and view

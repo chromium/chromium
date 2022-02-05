@@ -20,6 +20,7 @@
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/public/schedule_params.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/config.h"
@@ -75,6 +76,25 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
   if (!init_success)
     return;
 
+  // Skip low engagement check if enabled. For testing only.
+  if (base::FeatureList::IsEnabled(
+          feature_guide::features::kSkipCheckForLowEngagedUsers)) {
+    StartCheckingForEligibleFeatures();
+    return;
+  }
+
+  // Use tracker instead of segmentation if enabled.
+  if (base::FeatureList::IsEnabled(
+          feature_guide::features::kUseFeatureEngagementForUserTargeting)) {
+#if BUILDFLAG(IS_ANDROID)
+    if (tracker_->ShouldTriggerHelpUI(
+            feature_engagement::kIPHLowUserEngagementDetectorFeature)) {
+      StartCheckingForEligibleFeatures();
+    }
+#endif
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(
           feature_guide::features::kSegmentationModelLowEngagedUsers)) {
     return;
@@ -105,12 +125,6 @@ void FeatureNotificationGuideServiceImpl::CloseRedundantNotifications() {
 
 void FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform(
     const segmentation_platform::SegmentSelectionResult& result) {
-  if (base::FeatureList::IsEnabled(
-          feature_guide::features::kSkipCheckForLowEngagedUsers)) {
-    StartCheckingForEligibleFeatures();
-    return;
-  }
-
   bool is_low_engaged_user =
       result.is_ready && result.segment.has_value() &&
       result.segment.value() ==

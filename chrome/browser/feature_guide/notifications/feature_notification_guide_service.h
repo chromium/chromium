@@ -32,6 +32,10 @@ extern const base::Feature kSegmentationModelLowEngagedUsers;
 // Feature flag to determine whether to skip check for the low engaged users.
 extern const base::Feature kSkipCheckForLowEngagedUsers;
 
+// Feature flag to determine whether feature engagement tracker should be used
+// instead of segmentation platform.
+extern const base::Feature kUseFeatureEngagementForUserTargeting;
+
 }  // namespace features
 
 // The central class responsible for managing feature notification guide in
