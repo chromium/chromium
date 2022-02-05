@@ -94,6 +94,7 @@ constexpr char kDriveSlidesIconResourceName[] =
 constexpr char kDriveVideoIconResourceName[] = "realbox/icons/drive_video.svg";
 constexpr char kExtensionAppIconResourceName[] =
     "realbox/icons/extension_app.svg";
+constexpr char kGoogleGIconResourceName[] = "realbox/icons/google_g.svg";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] = "realbox/icons/calendar.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
@@ -305,7 +306,7 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
-          ? "realbox/icons/google_g.svg"
+          ? kGoogleGIconResourceName
           : kSearchIconResourceName);
   source->AddString("realboxHint", l10n_util::GetStringUTF8(
                                        IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD));

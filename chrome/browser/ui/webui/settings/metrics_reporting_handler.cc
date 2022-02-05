@@ -57,9 +57,9 @@ void MetricsReportingHandler::OnJavascriptDisallowed() {
 void MetricsReportingHandler::HandleGetMetricsReporting(
     base::Value::ConstListView args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-  ResolveJavascriptCallback(*callback_id, *CreateMetricsReportingDict());
+  CHECK_GT(args.size(), 0u);
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, *CreateMetricsReportingDict());
 }
 
 std::unique_ptr<base::DictionaryValue>
