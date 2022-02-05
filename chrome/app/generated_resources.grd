@@ -5175,7 +5175,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <message name="IDS_WEB_APP_SETTINGS_TITLE" desc="Title of web app settings page">
-        Apps
+        App Settings
       </message>
 
       <if expr="chromeos_ash or chromeos_lacros">
