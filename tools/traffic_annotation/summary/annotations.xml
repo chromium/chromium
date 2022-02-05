@@ -225,7 +225,7 @@ Refer to README.md for content description and update process.
  <item id="safe_browsing_v4_update" added_in_milestone="70" content_hash_code="00501369" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/db/v4_update_protocol_manager.cc" />
  <item id="safe_search_service" added_in_milestone="70" content_hash_code="07995c17" os_list="linux,windows,chromeos,android" file_path="components/policy/content/safe_search_service.cc" />
  <item id="safety_check_update_connectivity" added_in_milestone="84" content_hash_code="01d8ad59" os_list="linux,windows,chromeos,android" file_path="components/safety_check/update_check_helper.cc" />
- <item id="sanitized_image_source" added_in_milestone="86" content_hash_code="025ed93b" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/sanitized_image_source.cc" />
+ <item id="sanitized_image_source" added_in_milestone="86" content_hash_code="039309ce" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/sanitized_image_source.cc" />
  <item id="save_file_manager" added_in_milestone="62" content_hash_code="03610e73" os_list="linux,windows,chromeos,android" file_path="content/browser/download/save_file_manager.cc" />
  <item id="sct_auditing" added_in_milestone="87" content_hash_code="0298c98f" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
  <item id="search_prefetch_service" added_in_milestone="88" content_hash_code="077746c6" os_list="windows,linux,chromeos,android" file_path="chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.cc" />

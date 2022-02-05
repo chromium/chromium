@@ -38,6 +38,9 @@ class SimpleURLLoader;
 //
 //   chrome://image?<external image URL>
 //
+// If the image source needs to be requested with cookies, you can instead reach
+// it via:
+//   chrome://image?url=<external image URL>&withCookies=true
 class SanitizedImageSource : public content::URLDataSource {
  public:
   explicit SanitizedImageSource(Profile* profile);

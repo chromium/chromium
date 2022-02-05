@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 
+#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/mock_callback.h"
@@ -19,6 +20,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -164,4 +166,51 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+// Verifies that the image source sends cookies with its data request if and
+// only if asked to by URL specification.
+TEST_F(SanitizedImageSourceTest, CookiesInclusion) {
+  constexpr char kImageUrl[] = "https://foo.com/img.png";
+  base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+
+  // Verify that by default, requests are sent without cookies.
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?", kImageUrl})),
+      content::WebContents::Getter(), callback.Get());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_FALSE(
+      test_url_loader_factory_.GetPendingRequest(0)->request.SendsCookies());
+
+  // Encode a URL so that it can be used as a param value.
+  url::RawCanonOutputT<char> encoded_url;
+  url::EncodeURIComponent(kImageUrl, base::size(kImageUrl), &encoded_url);
+  EXPECT_GT(encoded_url.length(), 0);
+  auto encoded_url_str =
+      base::StringPiece(encoded_url.data(), encoded_url.length());
+
+  // Verify that param-formatted requests can be sent with cookies.
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
+                         "&withCookies=true"})),
+      content::WebContents::Getter(), callback.Get());
+  ASSERT_EQ(2, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(
+      test_url_loader_factory_.GetPendingRequest(1)->request.SendsCookies());
+
+  // Verify that param-formatted requests can be sent without cookies.
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
+                         "&withCookies=false"})),
+      content::WebContents::Getter(), callback.Get());
+  ASSERT_EQ(3, test_url_loader_factory_.NumPending());
+  EXPECT_FALSE(
+      test_url_loader_factory_.GetPendingRequest(2)->request.SendsCookies());
+
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str})),
+      content::WebContents::Getter(), callback.Get());
+  ASSERT_EQ(4, test_url_loader_factory_.NumPending());
+  EXPECT_FALSE(
+      test_url_loader_factory_.GetPendingRequest(3)->request.SendsCookies());
 }
