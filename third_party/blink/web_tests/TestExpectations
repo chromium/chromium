@@ -7579,6 +7579,11 @@ crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-b
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/render-blocked-apis-by-preload-link.tentative.html [ Skip ]
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-preload-link.tentative.html [ Skip ]
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-stylesheet-link.tentative.html [ Skip ]
+crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/parser-inserted-async-script.tentative.html [ Skip ]
+crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/parser-inserted-defer-script.tentative.html [ Skip ]
+crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/parser-inserted-module-script.tentative.html [ Skip ]
+crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-module-script.tentative.html [ Skip ]
+crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-script.html [ Skip ]
 
 # Sheriff 2022-02-03
 crbug.com/1293878 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Skip ]
