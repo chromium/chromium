@@ -10,10 +10,6 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace chromeos {
 namespace settings {
 
@@ -58,13 +54,13 @@ class KeyboardHandler
 
  private:
   // Initializes the page with the current keyboard information.
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(base::Value::ConstListView args);
 
   // Shows the Ash keyboard shortcut viewer.
-  void HandleShowKeyboardShortcutViewer(const base::ListValue* args) const;
+  void HandleShowKeyboardShortcutViewer(base::Value::ConstListView args) const;
 
   // Determines what types of keyboards are attached.
-  void HandleKeyboardChange(const base::ListValue* args);
+  void HandleKeyboardChange(base::Value::ConstListView args);
 
   // Shows or hides the Caps Lock and Diamond key settings based on whether the
   // system status.

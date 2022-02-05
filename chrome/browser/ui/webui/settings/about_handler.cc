@@ -268,77 +268,77 @@ AboutHandler::~AboutHandler() {
 }
 
 void AboutHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "aboutPageReady", base::BindRepeating(&AboutHandler::HandlePageReady,
                                             base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "refreshUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openFeedbackDialog",
       base::BindRepeating(&AboutHandler::HandleOpenFeedbackDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openHelpPage", base::BindRepeating(&AboutHandler::HandleOpenHelpPage,
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openFirmwareUpdatesPage",
       base::BindRepeating(&AboutHandler::HandleOpenFirmwareUpdates,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setChannel", base::BindRepeating(&AboutHandler::HandleSetChannel,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestUpdate", base::BindRepeating(&AboutHandler::HandleRequestUpdate,
                                            base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestUpdateOverCellular",
       base::BindRepeating(&AboutHandler::HandleRequestUpdateOverCellular,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getVersionInfo", base::BindRepeating(&AboutHandler::HandleGetVersionInfo,
                                             base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getRegulatoryInfo",
       base::BindRepeating(&AboutHandler::HandleGetRegulatoryInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getChannelInfo", base::BindRepeating(&AboutHandler::HandleGetChannelInfo,
                                             base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "canChangeChannel",
       base::BindRepeating(&AboutHandler::HandleCanChangeChannel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "refreshTPMFirmwareUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshTPMFirmwareUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getEndOfLifeInfo",
       base::BindRepeating(&AboutHandler::HandleGetEndOfLifeInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "launchReleaseNotes",
       base::BindRepeating(&AboutHandler::HandleLaunchReleaseNotes,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "checkInternetConnection",
       base::BindRepeating(&AboutHandler::HandleCheckInternetConnection,
                           base::Unretained(this)));
 #endif
 #if BUILDFLAG(IS_MAC)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "promoteUpdater", base::BindRepeating(&AboutHandler::PromoteUpdater,
                                             base::Unretained(this)));
 #endif
@@ -399,11 +399,11 @@ void AboutHandler::OnDeviceAutoUpdatePolicyChanged(
   }
 }
 
-void AboutHandler::HandlePageReady(const base::ListValue* args) {
+void AboutHandler::HandlePageReady(base::Value::ConstListView args) {
   AllowJavascript();
 }
 
-void AboutHandler::HandleRefreshUpdateStatus(const base::ListValue* args) {
+void AboutHandler::HandleRefreshUpdateStatus(base::Value::ConstListView args) {
   RefreshUpdateStatus();
 }
 
@@ -419,40 +419,41 @@ void AboutHandler::RefreshUpdateStatus() {
 }
 
 #if BUILDFLAG(IS_MAC)
-void AboutHandler::PromoteUpdater(const base::ListValue* args) {
+void AboutHandler::PromoteUpdater(base::Value::ConstListView args) {
   version_updater_->PromoteUpdater();
 }
 #endif
 
-void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+void AboutHandler::HandleOpenFeedbackDialog(base::Value::ConstListView args) {
+  DCHECK(args.empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
                              chrome::kFeedbackSourceMdSettingsAboutPage);
 }
 
-void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+void AboutHandler::HandleOpenHelpPage(base::Value::ConstListView args) {
+  DCHECK(args.empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+void AboutHandler::HandleOpenDiagnostics(base::Value::ConstListView args) {
+  DCHECK(args.empty());
   chrome::ShowDiagnosticsApp(profile_);
 }
 
-void AboutHandler::HandleOpenFirmwareUpdates(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+void AboutHandler::HandleOpenFirmwareUpdates(base::Value::ConstListView args) {
+  DCHECK(args.empty());
   chrome::ShowFirmwareUpdatesApp(profile_);
 }
 
-void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+void AboutHandler::HandleCheckInternetConnection(
+    base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
@@ -462,8 +463,8 @@ void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
                             base::Value(network && network->IsOnline()));
 }
 
-void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+void AboutHandler::HandleLaunchReleaseNotes(base::Value::ConstListView args) {
+  DCHECK(args.empty());
   // We can always show the release notes since the Help app caches it, or can
   // show an appropriate error state (e.g. No internet connection).
   base::RecordAction(base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
@@ -471,28 +472,27 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
                              apps::mojom::LaunchSource::kFromOtherApp);
 }
 
-void AboutHandler::HandleOpenOsHelpPage(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+void AboutHandler::HandleOpenOsHelpPage(base::Value::ConstListView args) {
+  DCHECK(args.empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI_CHROME_OS);
 }
 
-void AboutHandler::HandleSetChannel(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().size() == 2);
+void AboutHandler::HandleSetChannel(base::Value::ConstListView args) {
+  DCHECK(args.size() == 2);
 
   if (!CanChangeChannel(profile_)) {
     LOG(WARNING) << "Non-owner tried to change release track.";
     return;
   }
 
-  if (!args->GetListDeprecated()[0].is_string() ||
-      !args->GetListDeprecated()[1].is_bool()) {
+  if (!args[0].is_string() || !args[1].is_bool()) {
     LOG(ERROR) << "Can't parse SetChannel() args";
     return;
   }
-  const std::string& channel = args->GetListDeprecated()[0].GetString();
-  const bool& is_powerwash_allowed = args->GetListDeprecated()[1].GetBool();
+  const std::string& channel = args[0].GetString();
+  const bool& is_powerwash_allowed = args[1].GetBool();
 
   version_updater_->SetChannel(channel, is_powerwash_allowed);
   if (user_manager::UserManager::Get()->IsCurrentUserOwner()) {
@@ -504,9 +504,9 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
   }
 }
 
-void AboutHandler::HandleGetVersionInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+void AboutHandler::HandleGetVersionInfo(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetVersionInfo),
@@ -520,9 +520,9 @@ void AboutHandler::OnGetVersionInfoReady(
   ResolveJavascriptCallback(base::Value(callback_id), *version_info);
 }
 
-void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+void AboutHandler::HandleGetRegulatoryInfo(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -531,18 +531,18 @@ void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+void AboutHandler::HandleGetChannelInfo(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
   version_updater_->GetChannel(
       true /* get current channel */,
       base::BindOnce(&AboutHandler::OnGetCurrentChannel,
                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void AboutHandler::HandleCanChangeChannel(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+void AboutHandler::HandleCanChangeChannel(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(CanChangeChannel(profile_)));
 }
@@ -573,17 +573,16 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), *channel_info);
 }
 
-void AboutHandler::HandleRequestUpdate(const base::ListValue* args) {
+void AboutHandler::HandleRequestUpdate(base::Value::ConstListView args) {
   RequestUpdate();
 }
 
 void AboutHandler::HandleRequestUpdateOverCellular(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
 
-  const std::string& update_version = args->GetListDeprecated()[0].GetString();
-  const std::string& update_size_string =
-      args->GetListDeprecated()[1].GetString();
+  const std::string& update_version = args[0].GetString();
+  const std::string& update_size_string = args[1].GetString();
   int64_t update_size;
   CHECK(base::StringToInt64(update_size_string, &update_size));
 
@@ -599,7 +598,7 @@ void AboutHandler::RequestUpdateOverCellular(const std::string& update_version,
 }
 
 void AboutHandler::HandleRefreshTPMFirmwareUpdateStatus(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   ash::tpm_firmware_update::GetAvailableUpdateModes(
       base::BindOnce(&AboutHandler::RefreshTPMFirmwareUpdateStatus,
                      weak_factory_.GetWeakPtr()),
@@ -613,9 +612,9 @@ void AboutHandler::RefreshTPMFirmwareUpdateStatus(
   FireWebUIListener("tpm-firmware-update-status-changed", *event);
 }
 
-void AboutHandler::HandleGetEndOfLifeInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+void AboutHandler::HandleGetEndOfLifeInfo(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
   version_updater_->GetEolInfo(base::BindOnce(&AboutHandler::OnGetEndOfLifeInfo,
                                               weak_factory_.GetWeakPtr(),
                                               callback_id));

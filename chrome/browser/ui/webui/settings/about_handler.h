@@ -26,7 +26,6 @@
 namespace base {
 class DictionaryValue;
 class FilePath;
-class ListValue;
 class Clock;
 }  // namespace base
 
@@ -66,52 +65,52 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Called once the JS page is ready to be called, serves as a signal to the
   // handler to register C++ observers.
-  void HandlePageReady(const base::ListValue* args);
+  void HandlePageReady(base::Value::ConstListView args);
 
   // Called once when the page has loaded. On ChromeOS, this gets the current
   // update status. On other platforms, it will request and perform an update
   // (if one is available).
-  void HandleRefreshUpdateStatus(const base::ListValue* args);
+  void HandleRefreshUpdateStatus(base::Value::ConstListView args);
   void RefreshUpdateStatus();
 
 #if BUILDFLAG(IS_MAC)
   // Promotes the updater for all users.
-  void PromoteUpdater(const base::ListValue* args);
+  void PromoteUpdater(base::Value::ConstListView args);
 #endif
 
   // Opens the feedback dialog. |args| must be empty.
-  void HandleOpenFeedbackDialog(const base::ListValue* args);
+  void HandleOpenFeedbackDialog(base::Value::ConstListView args);
 
   // Opens the help page. |args| must be empty.
-  void HandleOpenHelpPage(const base::ListValue* args);
+  void HandleOpenHelpPage(base::Value::ConstListView args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Checks if ReleaseNotes is enabled.
-  void HandleGetEnabledReleaseNotes(const base::ListValue* args);
+  void HandleGetEnabledReleaseNotes(base::Value::ConstListView args);
 
   // Checks if system is connected to internet.
-  void HandleCheckInternetConnection(const base::ListValue* args);
+  void HandleCheckInternetConnection(base::Value::ConstListView args);
 
   // Opens the release notes app. |args| must be empty.
-  void HandleLaunchReleaseNotes(const base::ListValue* args);
+  void HandleLaunchReleaseNotes(base::Value::ConstListView args);
 
   // Opens the help page. |args| must be empty.
-  void HandleOpenOsHelpPage(const base::ListValue* args);
+  void HandleOpenOsHelpPage(base::Value::ConstListView args);
 
   // Sets the release track version.
-  void HandleSetChannel(const base::ListValue* args);
+  void HandleSetChannel(base::Value::ConstListView args);
 
   // Retrieves OS, ARC and firmware versions.
-  void HandleGetVersionInfo(const base::ListValue* args);
+  void HandleGetVersionInfo(base::Value::ConstListView args);
   void OnGetVersionInfoReady(
       std::string callback_id,
       std::unique_ptr<base::DictionaryValue> version_info);
 
   // Retrieves channel info.
-  void HandleGetChannelInfo(const base::ListValue* args);
+  void HandleGetChannelInfo(base::Value::ConstListView args);
 
   // Checks whether we can change the current channel.
-  void HandleCanChangeChannel(const base::ListValue* args);
+  void HandleCanChangeChannel(base::Value::ConstListView args);
 
   // Callbacks for version_updater_->GetChannel calls.
   void OnGetCurrentChannel(std::string callback_id,
@@ -121,11 +120,11 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                           const std::string& target_channel);
 
   // Checks for and applies update, triggered by JS.
-  void HandleRequestUpdate(const base::ListValue* args);
+  void HandleRequestUpdate(base::Value::ConstListView args);
 
   // Checks for and applies update over cellular connection, triggered by JS.
   // Update version and size should be included in the list of arguments.
-  void HandleRequestUpdateOverCellular(const base::ListValue* args);
+  void HandleRequestUpdateOverCellular(base::Value::ConstListView args);
 
   // Checks for and applies update over cellular connection.
   void RequestUpdateOverCellular(const std::string& update_version,
@@ -133,7 +132,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Called once when the page has loaded to retrieve the TPM firmware update
   // status.
-  void HandleRefreshTPMFirmwareUpdateStatus(const base::ListValue* args);
+  void HandleRefreshTPMFirmwareUpdateStatus(base::Value::ConstListView args);
   void RefreshTPMFirmwareUpdateStatus(
       const std::set<ash::tpm_firmware_update::Mode>& modes);
 #endif
@@ -156,11 +155,11 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleOpenDiagnostics(const base::ListValue* args);
+  void HandleOpenDiagnostics(base::Value::ConstListView args);
 
-  void HandleOpenFirmwareUpdates(const base::ListValue* args);
+  void HandleOpenFirmwareUpdates(base::Value::ConstListView args);
 
-  void HandleGetRegulatoryInfo(const base::ListValue* args);
+  void HandleGetRegulatoryInfo(base::Value::ConstListView args);
 
   // Callback for when the directory with the regulatory label image and alt
   // text has been found.
@@ -176,7 +175,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // date. Will asynchronously resolve the provided callback with an object
   // containing a boolean indicating whether the device has reached/passed End
   // of Life, and an End Of Life description formatted with the month and year.
-  void HandleGetEndOfLifeInfo(const base::ListValue* args);
+  void HandleGetEndOfLifeInfo(base::Value::ConstListView args);
 
   // Callbacks for version_updater_->GetEolInfo calls.
   void OnGetEndOfLifeInfo(std::string callback_id,

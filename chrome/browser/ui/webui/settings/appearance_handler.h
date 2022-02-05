@@ -11,10 +11,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace content {
 class WebUI;
 }
@@ -40,13 +36,13 @@ class AppearanceHandler : public SettingsPageUIHandler {
 
  private:
   // Changes the UI theme of the browser to the default theme.
-  void HandleUseDefaultTheme(const base::ListValue* args);
+  void HandleUseDefaultTheme(base::Value::ConstListView args);
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Changes the UI theme of the browser to the system (GTK+) theme.
-  void HandleUseSystemTheme(const base::ListValue* args);
+  void HandleUseSystemTheme(base::Value::ConstListView args);
 #endif
 
   raw_ptr<Profile> profile_;  // Weak pointer.

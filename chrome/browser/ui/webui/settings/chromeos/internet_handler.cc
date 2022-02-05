@@ -78,24 +78,24 @@ InternetHandler::~InternetHandler() {
 }
 
 void InternetHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kAddThirdPartyVpnMessage,
       base::BindRepeating(&InternetHandler::AddThirdPartyVpn,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kConfigureThirdPartyVpnMessage,
       base::BindRepeating(&InternetHandler::ConfigureThirdPartyVpn,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kRequestGmsCoreNotificationsDisabledDeviceNames,
       base::BindRepeating(
           &InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kShowCarrierAccountDetail,
       base::BindRepeating(&InternetHandler::ShowCarrierAccountDetail,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kShowCellularSetupUI,
       base::BindRepeating(&InternetHandler::ShowCellularSetupUI,
                           base::Unretained(this)));
@@ -109,13 +109,12 @@ void InternetHandler::OnGmsCoreNotificationStateChanged() {
   SetGmsCoreNotificationsDisabledDeviceNames();
 }
 
-void InternetHandler::AddThirdPartyVpn(const base::ListValue* args) {
-  if (args->GetListDeprecated().size() < 1 ||
-      !args->GetListDeprecated()[0].is_string()) {
+void InternetHandler::AddThirdPartyVpn(base::Value::ConstListView args) {
+  if (args.size() < 1 || !args[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kAddThirdPartyVpnMessage;
     return;
   }
-  const std::string& app_id = args->GetListDeprecated()[0].GetString();
+  const std::string& app_id = args[0].GetString();
   if (app_id.empty()) {
     NET_LOG(ERROR) << "Empty app id for " << kAddThirdPartyVpnMessage;
     return;
@@ -146,13 +145,12 @@ void InternetHandler::AddThirdPartyVpn(const base::ListValue* args) {
       ->SendShowAddDialogToExtension(app_id);
 }
 
-void InternetHandler::ConfigureThirdPartyVpn(const base::ListValue* args) {
-  if (args->GetListDeprecated().size() < 1 ||
-      !args->GetListDeprecated()[0].is_string()) {
+void InternetHandler::ConfigureThirdPartyVpn(base::Value::ConstListView args) {
+  if (args.size() < 1 || !args[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
     return;
   }
-  const std::string& guid = args->GetListDeprecated()[0].GetString();
+  const std::string& guid = args[0].GetString();
   if (profile_ != GetProfileForPrimaryUser()) {
     NET_LOG(ERROR) << "Only the primary user can configure VPNs";
     return;
@@ -202,28 +200,27 @@ void InternetHandler::ConfigureThirdPartyVpn(const base::ListValue* args) {
 }
 
 void InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   SetGmsCoreNotificationsDisabledDeviceNames();
 }
 
-void InternetHandler::ShowCarrierAccountDetail(const base::ListValue* args) {
-  if (args->GetListDeprecated().size() < 1 ||
-      !args->GetListDeprecated()[0].is_string()) {
+void InternetHandler::ShowCarrierAccountDetail(
+    base::Value::ConstListView args) {
+  if (args.size() < 1 || !args[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kShowCarrierAccountDetail;
     return;
   }
-  const std::string& guid = args->GetListDeprecated()[0].GetString();
+  const std::string& guid = args[0].GetString();
   chromeos::NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
 }
 
-void InternetHandler::ShowCellularSetupUI(const base::ListValue* args) {
-  if (args->GetListDeprecated().size() < 1 ||
-      !args->GetListDeprecated()[0].is_string()) {
+void InternetHandler::ShowCellularSetupUI(base::Value::ConstListView args) {
+  if (args.size() < 1 || !args[0].is_string()) {
     NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
     return;
   }
-  const std::string& guid = args->GetListDeprecated()[0].GetString();
+  const std::string& guid = args[0].GetString();
   chromeos::NetworkConnect::Get()->ShowMobileSetup(guid);
 }
 

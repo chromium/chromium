@@ -208,12 +208,12 @@ void UrlHandlersHandler::OnJavascriptDisallowed() {
 }
 
 void UrlHandlersHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getUrlHandlers",
       base::BindRepeating(&UrlHandlersHandler::HandleGetUrlHandlers,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "resetUrlHandlerSavedChoice",
       base::BindRepeating(&UrlHandlersHandler::HandleResetUrlHandlerSavedChoice,
                           base::Unretained(this)));
@@ -233,9 +233,9 @@ void UrlHandlersHandler::UpdateModel() {
                     disabled_handlers_list);
 }
 
-void UrlHandlersHandler::HandleGetUrlHandlers(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+void UrlHandlersHandler::HandleGetUrlHandlers(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
   AllowJavascript();
 
   base::Value result(base::Value::Type::DICTIONARY);
@@ -245,14 +245,14 @@ void UrlHandlersHandler::HandleGetUrlHandlers(const base::ListValue* args) {
 }
 
 void UrlHandlersHandler::HandleResetUrlHandlerSavedChoice(
-    const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetListDeprecated().size());
-  const std::string& origin = args->GetListDeprecated()[0].GetString();
-  bool has_origin_wildcard = args->GetListDeprecated()[1].GetBool();
-  const std::string& path = args->GetListDeprecated()[2].GetString();
+    base::Value::ConstListView args) {
+  CHECK_EQ(4U, args.size());
+  const std::string& origin = args[0].GetString();
+  bool has_origin_wildcard = args[1].GetBool();
+  const std::string& path = args[2].GetString();
   // If app_id is an empty string, reset saved choices for all applicable
   // entries regardless of app_id.
-  const std::string& app_id = args->GetListDeprecated()[3].GetString();
+  const std::string& app_id = args[3].GetString();
   absl::optional<std::string> app_id_opt =
       app_id.empty() ? absl::nullopt : absl::make_optional(app_id);
 

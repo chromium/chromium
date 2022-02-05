@@ -63,30 +63,30 @@ BrowserLifetimeHandler::BrowserLifetimeHandler() {}
 BrowserLifetimeHandler::~BrowserLifetimeHandler() {}
 
 void BrowserLifetimeHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "restart", base::BindRepeating(&BrowserLifetimeHandler::HandleRestart,
                                      base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "relaunch", base::BindRepeating(&BrowserLifetimeHandler::HandleRelaunch,
                                       base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "signOutAndRestart",
       base::BindRepeating(&BrowserLifetimeHandler::HandleSignOutAndRestart,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "factoryReset",
       base::BindRepeating(&BrowserLifetimeHandler::HandleFactoryReset,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "shouldShowRelaunchConfirmationDialog",
       base::BindRepeating(
           &BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getRelaunchConfirmationDialogDescription",
       base::BindRepeating(&BrowserLifetimeHandler::
                               HandleGetRelaunchConfirmationDialogDescription,
@@ -94,25 +94,23 @@ void BrowserLifetimeHandler::RegisterMessages() {
 #endif
 }
 
-void BrowserLifetimeHandler::HandleRestart(
-    const base::ListValue* args) {
+void BrowserLifetimeHandler::HandleRestart(base::Value::ConstListView args) {
   chrome::AttemptRestart();
 }
 
-void BrowserLifetimeHandler::HandleRelaunch(
-    const base::ListValue* args) {
+void BrowserLifetimeHandler::HandleRelaunch(base::Value::ConstListView args) {
   chrome::AttemptRelaunch();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BrowserLifetimeHandler::HandleSignOutAndRestart(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   chrome::AttemptUserExit();
 }
 
 void BrowserLifetimeHandler::HandleFactoryReset(
-    const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetListDeprecated();
+    base::Value::ConstListView args) {
+  base::Value::ConstListView args_list = args;
   CHECK_EQ(1U, args_list.size());
   bool tpm_firmware_update_requested = args_list[0].GetBool();
 
@@ -143,9 +141,9 @@ void BrowserLifetimeHandler::HandleFactoryReset(
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   size_t incognito_count = BrowserList::GetIncognitoBrowserCount();
   base::Value description;
   if (incognito_count > 0) {
@@ -156,9 +154,9 @@ void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
 }
 
 void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   base::Value result = base::Value(BrowserList::GetIncognitoBrowserCount() > 0);
   ResolveJavascriptCallback(callback_id, result);
 }

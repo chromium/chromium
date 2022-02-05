@@ -10,10 +10,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace chromeos {
 namespace settings {
 
@@ -31,8 +27,8 @@ class DisplayHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void HandleHighlightDisplay(const base::ListValue* args);
-  void HandleDragDisplayDelta(const base::ListValue* args);
+  void HandleHighlightDisplay(base::Value::ConstListView args);
+  void HandleDragDisplayDelta(base::Value::ConstListView args);
 
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 };

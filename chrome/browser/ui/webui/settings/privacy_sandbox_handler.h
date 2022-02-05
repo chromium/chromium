@@ -23,9 +23,9 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTest, GetFlocId);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTest, ResetFlocId);
 
-  void HandleGetFlocId(const base::ListValue* args);
+  void HandleGetFlocId(base::Value::ConstListView args);
 
-  void HandleResetFlocId(const base::ListValue* args);
+  void HandleResetFlocId(base::Value::ConstListView args);
 
   // SettingsPageUIHandler:
   void OnJavascriptAllowed() override {}

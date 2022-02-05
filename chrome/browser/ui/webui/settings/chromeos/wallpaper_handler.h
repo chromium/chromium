@@ -7,10 +7,6 @@
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace chromeos {
 namespace settings {
 
@@ -31,13 +27,13 @@ class WallpaperHandler : public ::settings::SettingsPageUIHandler {
 
  private:
   // Whether the wallpaper setting should be shown.
-  void HandleIsWallpaperSettingVisible(const base::ListValue* args);
+  void HandleIsWallpaperSettingVisible(base::Value::ConstListView args);
 
   // Whether the wallpaper is policy controlled.
-  void HandleIsWallpaperPolicyControlled(const base::ListValue* args);
+  void HandleIsWallpaperPolicyControlled(base::Value::ConstListView args);
 
   // Open the wallpaper manager app.
-  void HandleOpenWallpaperManager(const base::ListValue* args);
+  void HandleOpenWallpaperManager(base::Value::ConstListView args);
 
   // Helper function to resolve the Javascript callback.
   void ResolveCallback(const base::Value& callback_id, bool result);

@@ -13,10 +13,6 @@
 
 class RegistryKeyWatcher;
 
-namespace base {
-class ListValue;
-}
-
 namespace settings {
 
 // Incompatible Applications settings page UI handler.
@@ -38,15 +34,17 @@ class IncompatibleApplicationsHandler : public SettingsPageUIHandler {
 
  private:
   // Sends the list of incompatible applications to the caller via a promise.
-  void HandleRequestIncompatibleApplicationsList(const base::ListValue* args);
+  void HandleRequestIncompatibleApplicationsList(
+      base::Value::ConstListView args);
 
   // Initiates the uninstallation of the application passed using |args|.
-  void HandleStartApplicationUninstallation(const base::ListValue* args);
+  void HandleStartApplicationUninstallation(base::Value::ConstListView args);
 
-  void HandleGetSubtitlePluralString(const base::ListValue* args);
-  void HandleGetSubtitleNoAdminRightsPluralString(const base::ListValue* args);
-  void HandleGetListTitlePluralString(const base::ListValue* args);
-  void GetPluralString(int id, const base::ListValue* args);
+  void HandleGetSubtitlePluralString(base::Value::ConstListView args);
+  void HandleGetSubtitleNoAdminRightsPluralString(
+      base::Value::ConstListView args);
+  void HandleGetListTitlePluralString(base::Value::ConstListView args);
+  void GetPluralString(int id, base::Value::ConstListView args);
 
   // Callback for the registry key watchers.
   void OnApplicationRemoved(

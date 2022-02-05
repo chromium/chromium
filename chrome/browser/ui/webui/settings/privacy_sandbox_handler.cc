@@ -42,27 +42,27 @@ base::Value GetFlocIdInformation(Profile* profile) {
 }  // namespace
 
 void PrivacySandboxHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getFlocId", base::BindRepeating(&PrivacySandboxHandler::HandleGetFlocId,
                                        base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "resetFlocId",
       base::BindRepeating(&PrivacySandboxHandler::HandleResetFlocId,
                           base::Unretained(this)));
 }
 
-void PrivacySandboxHandler::HandleGetFlocId(const base::ListValue* args) {
+void PrivacySandboxHandler::HandleGetFlocId(base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(callback_id,
                             GetFlocIdInformation(Profile::FromWebUI(web_ui())));
 }
 
-void PrivacySandboxHandler::HandleResetFlocId(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetListDeprecated().size());
+void PrivacySandboxHandler::HandleResetFlocId(base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
   AllowJavascript();
 
   auto* privacy_sandbox_service =

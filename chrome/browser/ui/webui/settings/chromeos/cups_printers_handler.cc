@@ -276,81 +276,81 @@ std::unique_ptr<CupsPrintersHandler> CupsPrintersHandler::CreateForTesting(
 CupsPrintersHandler::~CupsPrintersHandler() = default;
 
 void CupsPrintersHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getCupsSavedPrintersList",
       base::BindRepeating(&CupsPrintersHandler::HandleGetCupsSavedPrintersList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getCupsEnterprisePrintersList",
       base::BindRepeating(
           &CupsPrintersHandler::HandleGetCupsEnterprisePrintersList,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "updateCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleUpdateCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleRemoveCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "addCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleAddCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "reconfigureCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleReconfigureCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPrinterInfo",
       base::BindRepeating(&CupsPrintersHandler::HandleGetPrinterInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getCupsPrinterManufacturersList",
       base::BindRepeating(
           &CupsPrintersHandler::HandleGetCupsPrinterManufacturers,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getCupsPrinterModelsList",
       base::BindRepeating(&CupsPrintersHandler::HandleGetCupsPrinterModels,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "selectPPDFile",
       base::BindRepeating(&CupsPrintersHandler::HandleSelectPPDFile,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startDiscoveringPrinters",
       base::BindRepeating(&CupsPrintersHandler::HandleStartDiscovery,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "stopDiscoveringPrinters",
       base::BindRepeating(&CupsPrintersHandler::HandleStopDiscovery,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPrinterPpdManufacturerAndModel",
       base::BindRepeating(
           &CupsPrintersHandler::HandleGetPrinterPpdManufacturerAndModel,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "addDiscoveredPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleAddDiscoveredPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cancelPrinterSetUp",
       base::BindRepeating(&CupsPrintersHandler::HandleSetUpCancel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getEulaUrl", base::BindRepeating(&CupsPrintersHandler::HandleGetEulaUrl,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "queryPrintServer",
       base::BindRepeating(&CupsPrintersHandler::HandleQueryPrintServer,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openPrintManagementApp",
       base::BindRepeating(&CupsPrintersHandler::HandleOpenPrintManagementApp,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openScanningApp",
       base::BindRepeating(&CupsPrintersHandler::HandleOpenScanningApp,
                           base::Unretained(this)));
@@ -370,11 +370,11 @@ void CupsPrintersHandler::SetWebUIForTest(content::WebUI* web_ui) {
 }
 
 void CupsPrintersHandler::HandleGetCupsSavedPrintersList(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   std::vector<Printer> printers =
       printers_manager_->GetPrinters(PrinterClass::kSaved);
@@ -384,11 +384,11 @@ void CupsPrintersHandler::HandleGetCupsSavedPrintersList(
 }
 
 void CupsPrintersHandler::HandleGetCupsEnterprisePrintersList(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  std::string callback_id = args[0].GetString();
 
   std::vector<Printer> printers =
       printers_manager_->GetPrinters(PrinterClass::kEnterprise);
@@ -397,11 +397,12 @@ void CupsPrintersHandler::HandleGetCupsEnterprisePrintersList(
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void CupsPrintersHandler::HandleUpdateCupsPrinter(const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& printer_id = args->GetListDeprecated()[1].GetString();
-  const std::string& printer_name = args->GetListDeprecated()[2].GetString();
+void CupsPrintersHandler::HandleUpdateCupsPrinter(
+    base::Value::ConstListView args) {
+  CHECK_EQ(3U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& printer_id = args[1].GetString();
+  const std::string& printer_name = args[2].GetString();
 
   Printer printer(printer_id);
   printer.set_display_name(printer_name);
@@ -423,10 +424,11 @@ void CupsPrintersHandler::HandleUpdateCupsPrinter(const base::ListValue* args) {
                                   PrinterSetupResult::kEditSuccess);
 }
 
-void CupsPrintersHandler::HandleRemoveCupsPrinter(const base::ListValue* args) {
+void CupsPrintersHandler::HandleRemoveCupsPrinter(
+    base::Value::ConstListView args) {
   PRINTER_LOG(USER) << "Removing printer";
   // Printer name also expected in 2nd parameter.
-  const std::string& printer_id = args->GetListDeprecated()[0].GetString();
+  const std::string& printer_id = args[0].GetString();
   auto printer = printers_manager_->GetPrinter(printer_id);
   if (!printer)
     return;
@@ -445,21 +447,20 @@ void CupsPrintersHandler::HandleRemoveCupsPrinter(const base::ListValue* args) {
                             base::DoNothing());
 }
 
-void CupsPrintersHandler::HandleGetPrinterInfo(const base::ListValue* args) {
-  DCHECK(args);
-  if (args->GetListDeprecated().empty() ||
-      !args->GetListDeprecated()[0].is_string()) {
+void CupsPrintersHandler::HandleGetPrinterInfo(
+    base::Value::ConstListView args) {
+  if (args.empty() || !args[0].is_string()) {
     NOTREACHED() << "Expected request for a promise";
     return;
   }
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
-  if (args->GetListDeprecated().size() < 2u) {
+  if (args.size() < 2u) {
     NOTREACHED() << "Dictionary missing";
     return;
   }
 
-  const base::Value& printer_value = args->GetListDeprecated()[1];
+  const base::Value& printer_value = args[1];
   if (!printer_value.is_dict()) {
     NOTREACHED() << "Dictionary missing";
     return;
@@ -618,22 +619,24 @@ void CupsPrintersHandler::OnPpdResolved(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), info);
 }
 
-void CupsPrintersHandler::HandleAddCupsPrinter(const base::ListValue* args) {
+void CupsPrintersHandler::HandleAddCupsPrinter(
+    base::Value::ConstListView args) {
   AllowJavascript();
   AddOrReconfigurePrinter(args, false /* is_printer_edit */);
 }
 
 void CupsPrintersHandler::HandleReconfigureCupsPrinter(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   AddOrReconfigurePrinter(args, true /* is_printer_edit */);
 }
 
-void CupsPrintersHandler::AddOrReconfigurePrinter(const base::ListValue* args,
-                                                  bool is_printer_edit) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
-  const base::Value& printer_value = args->GetListDeprecated()[1];
+void CupsPrintersHandler::AddOrReconfigurePrinter(
+    base::Value::ConstListView args,
+    bool is_printer_edit) {
+  CHECK_EQ(2U, args.size());
+  std::string callback_id = args[0].GetString();
+  const base::Value& printer_value = args[1];
   CHECK(printer_value.is_dict());
   const base::DictionaryValue& printer_dict =
       base::Value::AsDictionaryValue(printer_value);
@@ -837,21 +840,21 @@ void CupsPrintersHandler::OnAddOrEditPrinterError(
 }
 
 void CupsPrintersHandler::HandleGetCupsPrinterManufacturers(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
   ppd_provider_->ResolveManufacturers(
       base::BindOnce(&CupsPrintersHandler::ResolveManufacturersDone,
                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void CupsPrintersHandler::HandleGetCupsPrinterModels(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& manufacturer = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& manufacturer = args[1].GetString();
 
   // Empty manufacturer queries may be triggered as a part of the ui
   // initialization, and should just return empty results.
@@ -869,9 +872,9 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
                      weak_factory_.GetWeakPtr(), manufacturer, callback_id));
 }
 
-void CupsPrintersHandler::HandleSelectPPDFile(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  webui_callback_id_ = args->GetListDeprecated()[0].GetString();
+void CupsPrintersHandler::HandleSelectPPDFile(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  webui_callback_id_ = args[0].GetString();
 
   base::FilePath downloads_path =
       DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
@@ -956,7 +959,8 @@ void CupsPrintersHandler::VerifyPpdContents(const base::FilePath& path,
   webui_callback_id_.clear();
 }
 
-void CupsPrintersHandler::HandleStartDiscovery(const base::ListValue* args) {
+void CupsPrintersHandler::HandleStartDiscovery(
+    base::Value::ConstListView args) {
   PRINTER_LOG(DEBUG) << "Start printer discovery";
   AllowJavascript();
   discovery_active_ = true;
@@ -972,7 +976,7 @@ void CupsPrintersHandler::HandleStartDiscovery(const base::ListValue* args) {
   FireWebUIListener("on-printer-discovery-done");
 }
 
-void CupsPrintersHandler::HandleStopDiscovery(const base::ListValue* args) {
+void CupsPrintersHandler::HandleStopDiscovery(base::Value::ConstListView args) {
   PRINTER_LOG(DEBUG) << "Stop printer discovery";
   discovered_printers_.clear();
   automatic_printers_.clear();
@@ -983,9 +987,9 @@ void CupsPrintersHandler::HandleStopDiscovery(const base::ListValue* args) {
   discovery_active_ = false;
 }
 
-void CupsPrintersHandler::HandleSetUpCancel(const base::ListValue* args) {
+void CupsPrintersHandler::HandleSetUpCancel(base::Value::ConstListView args) {
   PRINTER_LOG(DEBUG) << "Printer setup cancelled";
-  const base::Value& printer_value = args->GetListDeprecated()[0];
+  const base::Value& printer_value = args[0];
   CHECK(printer_value.is_dict());
 
   std::unique_ptr<Printer> printer =
@@ -1046,11 +1050,11 @@ void CupsPrintersHandler::UpdateDiscoveredPrinters() {
 }
 
 void CupsPrintersHandler::HandleAddDiscoveredPrinter(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& printer_id = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& printer_id = args[1].GetString();
 
   PRINTER_LOG(USER) << "Adding discovered printer";
   absl::optional<Printer> printer = printers_manager_->GetPrinter(printer_id);
@@ -1110,11 +1114,11 @@ void CupsPrintersHandler::HandleAddDiscoveredPrinter(
 }
 
 void CupsPrintersHandler::HandleGetPrinterPpdManufacturerAndModel(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& printer_id = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& printer_id = args[1].GetString();
 
   auto printer = printers_manager_->GetPrinter(printer_id);
   if (!printer) {
@@ -1143,11 +1147,11 @@ void CupsPrintersHandler::OnGetPrinterPpdManufacturerAndModel(
   ResolveJavascriptCallback(base::Value(callback_id), info);
 }
 
-void CupsPrintersHandler::HandleGetEulaUrl(const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetListDeprecated().size());
-  const std::string callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string ppd_manufacturer = args->GetListDeprecated()[1].GetString();
-  const std::string ppd_model = args->GetListDeprecated()[2].GetString();
+void CupsPrintersHandler::HandleGetEulaUrl(base::Value::ConstListView args) {
+  CHECK_EQ(3U, args.size());
+  const std::string callback_id = args[0].GetString();
+  const std::string ppd_manufacturer = args[1].GetString();
+  const std::string ppd_model = args[2].GetString();
 
   auto resolved_printers_it = resolved_printers_.find(ppd_manufacturer);
   if (resolved_printers_it == resolved_printers_.end()) {
@@ -1221,10 +1225,11 @@ void CupsPrintersHandler::OnIpResolved(const std::string& callback_id,
                            GetCupsPrinterInfo(printer));
 }
 
-void CupsPrintersHandler::HandleQueryPrintServer(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& server_url = args->GetListDeprecated()[1].GetString();
+void CupsPrintersHandler::HandleQueryPrintServer(
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& server_url = args[1].GetString();
 
   absl::optional<GURL> converted_server_url =
       GenerateServerPrinterUrlWithValidScheme(server_url);
@@ -1302,13 +1307,14 @@ void CupsPrintersHandler::OnQueryPrintServerCompleted(
 }
 
 void CupsPrintersHandler::HandleOpenPrintManagementApp(
-    const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+    base::Value::ConstListView args) {
+  DCHECK(args.empty());
   chrome::ShowPrintManagementApp(profile_);
 }
 
-void CupsPrintersHandler::HandleOpenScanningApp(const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+void CupsPrintersHandler::HandleOpenScanningApp(
+    base::Value::ConstListView args) {
+  DCHECK(args.empty());
   chrome::ShowScanningApp(profile_);
 }
 

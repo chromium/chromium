@@ -30,11 +30,11 @@ MetricsReportingHandler::MetricsReportingHandler() {}
 MetricsReportingHandler::~MetricsReportingHandler() {}
 
 void MetricsReportingHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getMetricsReporting",
       base::BindRepeating(&MetricsReportingHandler::HandleGetMetricsReporting,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setMetricsReportingEnabled",
       base::BindRepeating(
           &MetricsReportingHandler::HandleSetMetricsReportingEnabled,
@@ -55,7 +55,7 @@ void MetricsReportingHandler::OnJavascriptDisallowed() {
 }
 
 void MetricsReportingHandler::HandleGetMetricsReporting(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
@@ -85,7 +85,7 @@ std::unique_ptr<base::DictionaryValue>
 }
 
 void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   if (IsMetricsReportingPolicyManaged()) {
     NOTREACHED();
     // NOTE: ChangeMetricsReportingState() already checks whether metrics
@@ -96,7 +96,7 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
     return;
   }
 
-  bool enabled = args->GetListDeprecated()[0].GetBool();
+  bool enabled = args[0].GetBool();
   ChangeMetricsReportingState(enabled);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

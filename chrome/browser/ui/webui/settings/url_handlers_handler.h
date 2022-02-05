@@ -47,13 +47,13 @@ class UrlHandlersHandler : public SettingsPageUIHandler {
 
   // Handles calls from WebUI to update the model data of URL handlers settings.
   // Takes no args.
-  void HandleGetUrlHandlers(const base::ListValue* args);
+  void HandleGetUrlHandlers(base::Value::ConstListView args);
 
   // Handles calls from WebUI to reset the user's saved choice for one or more
   // URL handler entries.
   // When reset, the choice becomes kNone and the timestamp is updated.
   // |args| is a list of [app_id, origin_key, has_origin_wildcard, url_path].
-  void HandleResetUrlHandlerSavedChoice(const base::ListValue* args);
+  void HandleResetUrlHandlerSavedChoice(base::Value::ConstListView args);
 
   // Reads and formats data from UrlHandlerPrefs then sends it to the WebUI
   // frontend.

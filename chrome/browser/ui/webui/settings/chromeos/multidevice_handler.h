@@ -102,20 +102,20 @@ class MultideviceHandler
   // update (e.g., not due to a getPageContent() request).
   void UpdatePageContent();
 
-  void HandleShowMultiDeviceSetupDialog(const base::ListValue* args);
-  void HandleGetPageContent(const base::ListValue* args);
-  void HandleSetFeatureEnabledState(const base::ListValue* args);
-  void HandleRemoveHostDevice(const base::ListValue* args);
-  void HandleRetryPendingHostSetup(const base::ListValue* args);
-  void HandleSetUpAndroidSms(const base::ListValue* args);
-  void HandleGetSmartLockSignInEnabled(const base::ListValue* args);
-  void HandleSetSmartLockSignInEnabled(const base::ListValue* args);
-  void HandleGetSmartLockSignInAllowed(const base::ListValue* args);
-  void HandleGetAndroidSmsInfo(const base::ListValue* args);
-  void HandleAttemptNotificationSetup(const base::ListValue* args);
-  void HandleCancelNotificationSetup(const base::ListValue* args);
-  void HandleAttemptAppsSetup(const base::ListValue* args);
-  void HandleCancelAppsSetup(const base::ListValue* args);
+  void HandleShowMultiDeviceSetupDialog(base::Value::ConstListView args);
+  void HandleGetPageContent(base::Value::ConstListView args);
+  void HandleSetFeatureEnabledState(base::Value::ConstListView args);
+  void HandleRemoveHostDevice(base::Value::ConstListView args);
+  void HandleRetryPendingHostSetup(base::Value::ConstListView args);
+  void HandleSetUpAndroidSms(base::Value::ConstListView args);
+  void HandleGetSmartLockSignInEnabled(base::Value::ConstListView args);
+  void HandleSetSmartLockSignInEnabled(base::Value::ConstListView args);
+  void HandleGetSmartLockSignInAllowed(base::Value::ConstListView args);
+  void HandleGetAndroidSmsInfo(base::Value::ConstListView args);
+  void HandleAttemptNotificationSetup(base::Value::ConstListView args);
+  void HandleCancelNotificationSetup(base::Value::ConstListView args);
+  void HandleAttemptAppsSetup(base::Value::ConstListView args);
+  void HandleCancelAppsSetup(base::Value::ConstListView args);
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);

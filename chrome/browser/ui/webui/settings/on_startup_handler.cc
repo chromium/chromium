@@ -39,11 +39,11 @@ void OnStartupHandler::OnJavascriptDisallowed() {
 }
 
 void OnStartupHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getNtpExtension",
       base::BindRepeating(&OnStartupHandler::HandleGetNtpExtension,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "validateStartupPage",
       base::BindRepeating(&OnStartupHandler::HandleValidateStartupPage,
                           base::Unretained(this)));
@@ -79,17 +79,18 @@ base::Value OnStartupHandler::GetNtpExtension() {
   return dict;
 }
 
-void OnStartupHandler::HandleGetNtpExtension(const base::ListValue* args) {
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+void OnStartupHandler::HandleGetNtpExtension(base::Value::ConstListView args) {
+  const base::Value& callback_id = args[0];
   AllowJavascript();
 
   ResolveJavascriptCallback(callback_id, GetNtpExtension());
 }
 
-void OnStartupHandler::HandleValidateStartupPage(const base::ListValue* args) {
-  CHECK_EQ(args->GetListDeprecated().size(), 2U);
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& url_string = args->GetListDeprecated()[1].GetString();
+void OnStartupHandler::HandleValidateStartupPage(
+    base::Value::ConstListView args) {
+  CHECK_EQ(args.size(), 2U);
+  const base::Value& callback_id = args[0];
+  const std::string& url_string = args[1].GetString();
   AllowJavascript();
 
   bool valid = settings_utils::FixupAndValidateStartupPage(url_string, nullptr);

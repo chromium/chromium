@@ -41,11 +41,11 @@ CaptionsHandler::~CaptionsHandler() {
 }
 
 void CaptionsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openSystemCaptionsDialog",
       base::BindRepeating(&CaptionsHandler::HandleOpenSystemCaptionsDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "liveCaptionSectionReady",
       base::BindRepeating(&CaptionsHandler::HandleLiveCaptionSectionReady,
                           base::Unretained(this)));
@@ -62,12 +62,12 @@ void CaptionsHandler::OnJavascriptDisallowed() {
 }
 
 void CaptionsHandler::HandleLiveCaptionSectionReady(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 }
 
 void CaptionsHandler::HandleOpenSystemCaptionsDialog(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   captions::CaptionSettingsDialog::ShowCaptionSettingsDialog();
 #endif

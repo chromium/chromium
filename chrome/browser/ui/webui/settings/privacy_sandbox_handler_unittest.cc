@@ -87,7 +87,7 @@ class PrivacySandboxHandlerTest : public testing::Test {
 TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId);
-  handler()->HandleGetFlocId(&base::Value::AsListValue(args));
+  handler()->HandleGetFlocId(args.GetListDeprecated());
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
@@ -104,7 +104,7 @@ TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
   EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true));
 
   base::Value args(base::Value::Type::LIST);
-  handler()->HandleResetFlocId(&base::Value::AsListValue(args));
+  handler()->HandleResetFlocId(args.GetListDeprecated());
 
   // Resetting the FLoC ID should also fire the appropriate WebUI listener.
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();

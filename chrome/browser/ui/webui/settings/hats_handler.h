@@ -24,7 +24,7 @@ class HatsHandler : public SettingsPageUIHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  void HandleTrustSafetyInteractionOccurred(const base::ListValue* args);
+  void HandleTrustSafetyInteractionOccurred(base::Value::ConstListView args);
 
  private:
   friend class HatsHandlerTest;

@@ -62,26 +62,26 @@ SecureDnsHandler::SecureDnsHandler() = default;
 SecureDnsHandler::~SecureDnsHandler() = default;
 
 void SecureDnsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSecureDnsResolverList",
       base::BindRepeating(&SecureDnsHandler::HandleGetSecureDnsResolverList,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSecureDnsSetting",
       base::BindRepeating(&SecureDnsHandler::HandleGetSecureDnsSetting,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "isValidConfig",
       base::BindRepeating(&SecureDnsHandler::HandleIsValidConfig,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "probeConfig", base::BindRepeating(&SecureDnsHandler::HandleProbeConfig,
                                          base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordUserDropdownInteraction",
       base::BindRepeating(
           &SecureDnsHandler::HandleRecordUserDropdownInteraction,
@@ -156,32 +156,33 @@ void SecureDnsHandler::SetProvidersForTesting(
 }
 
 void SecureDnsHandler::HandleGetSecureDnsResolverList(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string callback_id = args[0].GetString();
 
   ResolveJavascriptCallback(base::Value(callback_id),
                             GetSecureDnsResolverList());
 }
 
-void SecureDnsHandler::HandleGetSecureDnsSetting(const base::ListValue* args) {
+void SecureDnsHandler::HandleGetSecureDnsSetting(
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(1u, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  CHECK_EQ(1u, args.size());
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, *CreateSecureDnsSettingDict());
 }
 
-void SecureDnsHandler::HandleIsValidConfig(const base::ListValue* args) {
+void SecureDnsHandler::HandleIsValidConfig(base::Value::ConstListView args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& custom_entry = args->GetListDeprecated()[1].GetString();
+  const base::Value& callback_id = args[0];
+  const std::string& custom_entry = args[1].GetString();
 
   bool valid = net::DnsOverHttpsConfig::FromString(custom_entry).has_value();
   secure_dns::UpdateValidationHistogram(valid);
   ResolveJavascriptCallback(callback_id, base::Value(valid));
 }
 
-void SecureDnsHandler::HandleProbeConfig(const base::ListValue* args) {
+void SecureDnsHandler::HandleProbeConfig(base::Value::ConstListView args) {
   AllowJavascript();
 
   if (!probe_callback_id_.empty()) {
@@ -193,9 +194,8 @@ void SecureDnsHandler::HandleProbeConfig(const base::ListValue* args) {
                               base::Value(true));
   }
 
-  probe_callback_id_ = args->GetListDeprecated()[0].GetString();
-  const std::string& server_templates =
-      args->GetListDeprecated()[1].GetString();
+  probe_callback_id_ = args[0].GetString();
+  const std::string& server_templates = args[1].GetString();
 
   net::DnsConfigOverrides overrides;
   overrides.search = std::vector<std::string>();
@@ -210,10 +210,10 @@ void SecureDnsHandler::HandleProbeConfig(const base::ListValue* args) {
 }
 
 void SecureDnsHandler::HandleRecordUserDropdownInteraction(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& old_provider = args->GetListDeprecated()[0].GetString();
-  const std::string& new_provider = args->GetListDeprecated()[1].GetString();
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+  const std::string& old_provider = args[0].GetString();
+  const std::string& new_provider = args[1].GetString();
 
   secure_dns::UpdateDropdownHistograms(providers_, old_provider, new_provider);
 }

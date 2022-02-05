@@ -7,10 +7,6 @@
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace content {
 class WebUIDataSource;
 }
@@ -36,7 +32,7 @@ class SystemHandler : public SettingsPageUIHandler {
 
  private:
   // Handler for the "showProxySettings" message. No args.
-  void HandleShowProxySettings(const base::ListValue* /*args*/);
+  void HandleShowProxySettings(base::Value::ConstListView args);
 };
 
 }  // namespace settings

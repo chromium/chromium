@@ -14,10 +14,6 @@
 
 class Profile;
 
-namespace base {
-class ListValue;
-}
-
 namespace settings {
 
 class OnStartupHandler : public SettingsPageUIHandler,
@@ -48,11 +44,11 @@ class OnStartupHandler : public SettingsPageUIHandler,
   base::Value GetNtpExtension();
 
   // Handler for the "getNtpExtension" message. No arguments.
-  void HandleGetNtpExtension(const base::ListValue* /*args*/);
+  void HandleGetNtpExtension(base::Value::ConstListView args);
 
   // Handles the "validateStartupPage" message. Passed a URL that might be a
   // valid startup page.
-  void HandleValidateStartupPage(const base::ListValue* args);
+  void HandleValidateStartupPage(base::Value::ConstListView args);
 
   // extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

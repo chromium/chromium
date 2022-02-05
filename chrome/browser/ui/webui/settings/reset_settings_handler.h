@@ -15,10 +15,6 @@
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 class BrandcodeConfigFetcher;
 class Profile;
 class ProfileResetter;
@@ -54,26 +50,26 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   virtual ProfileResetter* GetResetter();
 
   // Javascript callback to start clearing data.
-  void HandleResetProfileSettings(const base::ListValue* args);
+  void HandleResetProfileSettings(base::Value::ConstListView args);
 
  private:
   // Retrieves the settings that will be reported, called from Javascript.
-  void HandleGetReportedSettings(const base::ListValue* args);
+  void HandleGetReportedSettings(base::Value::ConstListView args);
 
   // Called once the settings that will be reported have been retrieved.
   void OnGetReportedSettingsDone(std::string callback_id);
 
   // Called when the reset profile dialog is shown.
-  void OnShowResetProfileDialog(const base::ListValue* args);
+  void OnShowResetProfileDialog(base::Value::ConstListView args);
 
   // Called when the reset profile dialog is hidden.
-  void OnHideResetProfileDialog(const base::ListValue* args);
+  void OnHideResetProfileDialog(base::Value::ConstListView args);
 
   // Called when the reset profile banner is shown.
-  void OnHideResetProfileBanner(const base::ListValue* args);
+  void OnHideResetProfileBanner(base::Value::ConstListView args);
 
   // Retrieve the triggered reset tool name, called from Javascript.
-  void HandleGetTriggeredResetToolName(const base::ListValue* args);
+  void HandleGetTriggeredResetToolName(base::Value::ConstListView args);
 
   // Called when BrandcodeConfigFetcher completed fetching settings.
   void OnSettingsFetched();
@@ -93,7 +89,7 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Will be called when powerwash dialog is shown.
-  void OnShowPowerwashDialog(const base::ListValue* args);
+  void OnShowPowerwashDialog(base::Value::ConstListView args);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const raw_ptr<Profile> profile_;

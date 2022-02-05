@@ -42,12 +42,12 @@ class MediaDevicesSelectionHandler
   };
 
   // Fetches the list of default capture devices.
-  void GetDefaultCaptureDevices(const base::ListValue* args);
+  void GetDefaultCaptureDevices(base::Value::ConstListView args);
 
   // Sets the default audio/video capture device for media. |args| includes the
   // media type (kAuudio/kVideo) and the unique id of the new default device
   // that the user has chosen.
-  void SetDefaultCaptureDevice(const base::ListValue* args);
+  void SetDefaultCaptureDevice(base::Value::ConstListView args);
 
   // Helpers methods to update the device menus.
   void UpdateDevicesMenuForType(DeviceType type);

@@ -85,22 +85,22 @@ StorageHandler::~StorageHandler() {
 void StorageHandler::RegisterMessages() {
   DCHECK(web_ui());
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "updateAndroidEnabled",
       base::BindRepeating(&StorageHandler::HandleUpdateAndroidEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "updateStorageInfo",
       base::BindRepeating(&StorageHandler::HandleUpdateStorageInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openMyFiles", base::BindRepeating(&StorageHandler::HandleOpenMyFiles,
                                          base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openArcStorage",
       base::BindRepeating(&StorageHandler::HandleOpenArcStorage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "updateExternalStorages",
       base::BindRepeating(&StorageHandler::HandleUpdateExternalStorages,
                           base::Unretained(this)));
@@ -161,12 +161,12 @@ int64_t StorageHandler::RoundByteSize(int64_t bytes) {
 }
 
 void StorageHandler::HandleUpdateAndroidEnabled(
-    const base::ListValue* unused_args) {
+    base::Value::ConstListView unused_args) {
   // OnJavascriptAllowed() calls ArcSessionManager::AddObserver() later.
   AllowJavascript();
 }
 
-void StorageHandler::HandleUpdateStorageInfo(const base::ListValue* args) {
+void StorageHandler::HandleUpdateStorageInfo(base::Value::ConstListView args) {
   AllowJavascript();
   total_disk_space_calculator_.StartCalculation();
   free_disk_space_calculator_.StartCalculation();
@@ -177,7 +177,7 @@ void StorageHandler::HandleUpdateStorageInfo(const base::ListValue* args) {
   other_users_size_calculator_.StartCalculation();
 }
 
-void StorageHandler::HandleOpenMyFiles(const base::ListValue* unused_args) {
+void StorageHandler::HandleOpenMyFiles(base::Value::ConstListView unused_args) {
   const base::FilePath my_files_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   platform_util::OpenItem(profile_, my_files_path, platform_util::OPEN_FOLDER,
@@ -185,7 +185,7 @@ void StorageHandler::HandleOpenMyFiles(const base::ListValue* unused_args) {
 }
 
 void StorageHandler::HandleOpenArcStorage(
-    const base::ListValue* unused_args) {
+    base::Value::ConstListView unused_args) {
   auto* arc_storage_manager =
       arc::ArcStorageManager::GetForBrowserContext(profile_);
   if (arc_storage_manager)
@@ -193,7 +193,7 @@ void StorageHandler::HandleOpenArcStorage(
 }
 
 void StorageHandler::HandleUpdateExternalStorages(
-    const base::ListValue* unused_args) {
+    base::Value::ConstListView unused_args) {
   UpdateExternalStorages();
 }
 

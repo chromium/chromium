@@ -16,7 +16,7 @@ PointerHandler::PointerHandler() {}
 PointerHandler::~PointerHandler() {}
 
 void PointerHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializePointerSettings",
       base::BindRepeating(&PointerHandler::HandleInitialize,
                           base::Unretained(this)));
@@ -52,7 +52,7 @@ void PointerHandler::PointingStickExists(bool exists) {
   FireWebUIListener("has-pointing-stick-changed", base::Value(exists));
 }
 
-void PointerHandler::HandleInitialize(const base::ListValue* args) {
+void PointerHandler::HandleInitialize(base::Value::ConstListView args) {
   AllowJavascript();
 
   // CheckDevices() results in TouchpadExists() and MouseExists() being called.

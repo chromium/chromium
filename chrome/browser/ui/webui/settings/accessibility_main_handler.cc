@@ -26,11 +26,11 @@ AccessibilityMainHandler::AccessibilityMainHandler() = default;
 AccessibilityMainHandler::~AccessibilityMainHandler() = default;
 
 void AccessibilityMainHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "a11yPageReady",
       base::BindRepeating(&AccessibilityMainHandler::HandleA11yPageReady,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "confirmA11yImageLabels",
       base::BindRepeating(
           &AccessibilityMainHandler::HandleCheckAccessibilityImageLabels,
@@ -53,13 +53,13 @@ void AccessibilityMainHandler::OnJavascriptDisallowed() {
 }
 
 void AccessibilityMainHandler::HandleA11yPageReady(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   SendScreenReaderStateChanged();
 }
 
 void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   // When the user tries to enable the feature, show the modal dialog. The
   // dialog will disable the feature again if it is not accepted.
   content::WebContents* web_contents = web_ui()->GetWebContents();

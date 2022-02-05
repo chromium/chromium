@@ -11,10 +11,6 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace content {
 class WebUI;
 }
@@ -46,10 +42,10 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   std::string check_default_callback_id_;
 
   // Called from WebUI to request the current state.
-  void RequestDefaultBrowserState(const base::ListValue* args);
+  void RequestDefaultBrowserState(base::Value::ConstListView args);
 
   // Makes this the default browser. Called from WebUI.
-  void SetAsDefaultBrowser(const base::ListValue* args);
+  void SetAsDefaultBrowser(base::Value::ConstListView args);
 
   // Called with the default browser state when the DefaultBrowserWorker is
   // done.

@@ -13,10 +13,6 @@
 
 class Profile;
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace settings {
 
 // Handle OS font list and font preference settings.
@@ -36,7 +32,7 @@ class FontHandler : public SettingsPageUIHandler {
 
  private:
   // Handler for script asking for font information.
-  void HandleFetchFontsData(const base::ListValue* args);
+  void HandleFetchFontsData(base::Value::ConstListView args);
 
   // Callback to handle fonts loading.
   void FontListHasLoaded(std::string callback_id,

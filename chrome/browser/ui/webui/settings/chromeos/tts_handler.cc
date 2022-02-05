@@ -31,13 +31,13 @@ TtsHandler::~TtsHandler() {
   RemoveTtsControllerDelegates();
 }
 
-void TtsHandler::HandleGetAllTtsVoiceData(const base::ListValue* args) {
+void TtsHandler::HandleGetAllTtsVoiceData(base::Value::ConstListView args) {
   OnVoicesChanged();
 }
 
-void TtsHandler::HandleGetTtsExtensions(const base::ListValue* args) {
+void TtsHandler::HandleGetTtsExtensions(base::Value::ConstListView args) {
   // Ensure the built in tts engine is loaded to be able to respond to messages.
-  WakeTtsEngine(nullptr);
+  WakeTtsEngine(base::Value::ConstListView());
 
   base::ListValue responses;
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -107,7 +107,7 @@ void TtsHandler::OnVoicesChanged() {
   FireWebUIListener("all-voice-data-updated", responses);
 
   // Also refresh the TTS extensions in case they have changed.
-  HandleGetTtsExtensions(nullptr);
+  HandleGetTtsExtensions(base::Value::ConstListView());
 }
 
 void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
@@ -123,10 +123,10 @@ void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
   }
 }
 
-void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string& text = args->GetListDeprecated()[0].GetString();
-  const std::string& voice_id = args->GetListDeprecated()[1].GetString();
+void TtsHandler::HandlePreviewTtsVoice(base::Value::ConstListView args) {
+  DCHECK_EQ(2U, args.size());
+  const std::string& text = args[0].GetString();
+  const std::string& voice_id = args[1].GetString();
 
   if (text.empty() || voice_id.empty())
     return;
@@ -154,18 +154,18 @@ void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
 }
 
 void TtsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAllTtsVoiceData",
       base::BindRepeating(&TtsHandler::HandleGetAllTtsVoiceData,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getTtsExtensions",
       base::BindRepeating(&TtsHandler::HandleGetTtsExtensions,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "previewTtsVoice", base::BindRepeating(&TtsHandler::HandlePreviewTtsVoice,
                                              base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "wakeTtsEngine",
       base::BindRepeating(&TtsHandler::WakeTtsEngine, base::Unretained(this)));
 }
@@ -190,7 +190,7 @@ int TtsHandler::GetVoiceLangMatchScore(const content::VoiceData* voice,
              : 0;
 }
 
-void TtsHandler::WakeTtsEngine(const base::ListValue* args) {
+void TtsHandler::WakeTtsEngine(base::Value::ConstListView args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   TtsExtensionEngine::GetInstance()->LoadBuiltInTtsEngine(profile);
   extensions::ProcessManager::Get(profile)->WakeEventPage(

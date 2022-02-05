@@ -15,10 +15,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace user_manager {
 class User;
 }
@@ -79,25 +75,25 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   void SetCameraPresent(bool present);
 
   // Opens a file selection dialog to choose user image from file.
-  void HandleChooseFile(const base::ListValue* args);
+  void HandleChooseFile(base::Value::ConstListView args);
 
   // Handles photo taken with WebRTC UI.
-  void HandlePhotoTaken(const base::ListValue* args);
+  void HandlePhotoTaken(base::Value::ConstListView args);
 
   // Handles 'discard-photo' button click.
-  void HandleDiscardPhoto(const base::ListValue* args);
+  void HandleDiscardPhoto(base::Value::ConstListView args);
 
   // Gets the list of available user images and sends it to the page.
-  void HandleGetAvailableImages(const base::ListValue* args);
+  void HandleGetAvailableImages(base::Value::ConstListView args);
 
   // Handles page initialized event.
-  void HandlePageInitialized(const base::ListValue* args);
+  void HandlePageInitialized(base::Value::ConstListView args);
 
   // Selects one of the available images as user's.
-  void HandleSelectImage(const base::ListValue* args);
+  void HandleSelectImage(base::Value::ConstListView args);
 
   // Requests the currently selected image.
-  void HandleRequestSelectedImage(const base::ListValue* args);
+  void HandleRequestSelectedImage(base::Value::ConstListView args);
 
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,

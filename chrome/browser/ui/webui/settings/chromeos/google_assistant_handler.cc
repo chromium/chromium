@@ -51,49 +51,50 @@ void GoogleAssistantHandler::OnAudioNodesChanged() {
 }
 
 void GoogleAssistantHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "showGoogleAssistantSettings",
       base::BindRepeating(
           &GoogleAssistantHandler::HandleShowGoogleAssistantSettings,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "retrainAssistantVoiceModel",
       base::BindRepeating(&GoogleAssistantHandler::HandleRetrainVoiceModel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "syncVoiceModelStatus",
       base::BindRepeating(&GoogleAssistantHandler::HandleSyncVoiceModelStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeGoogleAssistantPage",
       base::BindRepeating(&GoogleAssistantHandler::HandleInitialized,
                           base::Unretained(this)));
 }
 
 void GoogleAssistantHandler::HandleShowGoogleAssistantSettings(
-    const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetListDeprecated().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
   ash::AssistantController::Get()->OpenAssistantSettings();
 }
 
 void GoogleAssistantHandler::HandleRetrainVoiceModel(
-    const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetListDeprecated().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
   chromeos::AssistantOptInDialog::Show(ash::FlowType::kSpeakerIdRetrain,
                                        base::DoNothing());
 }
 
 void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
-    const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetListDeprecated().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
 
   auto* settings = assistant::AssistantSettings::Get();
   if (settings)
     settings->SyncSpeakerIdEnrollmentStatus();
 }
 
-void GoogleAssistantHandler::HandleInitialized(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetListDeprecated().size());
+void GoogleAssistantHandler::HandleInitialized(
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
   AllowJavascript();
 }
 

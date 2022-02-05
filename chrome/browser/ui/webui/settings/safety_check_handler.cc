@@ -358,7 +358,8 @@ SafetyCheckHandler::SafetyCheckHandler(
       extension_service_(extension_service),
       timestamp_delegate_(std::move(timestamp_delegate)) {}
 
-void SafetyCheckHandler::HandlePerformSafetyCheck(const base::ListValue* args) {
+void SafetyCheckHandler::HandlePerformSafetyCheck(
+    base::Value::ConstListView args) {
   SendSafetyCheckStartedWebUiUpdates();
 
   // Run safety check after a delay. This ensures that the "running" state is
@@ -372,8 +373,8 @@ void SafetyCheckHandler::HandlePerformSafetyCheck(const base::ListValue* args) {
 }
 
 void SafetyCheckHandler::HandleGetParentRanDisplayString(
-    const base::ListValue* args) {
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+    base::Value::ConstListView args) {
+  const base::Value& callback_id = args[0];
 
   // Send updated timestamp-based display strings to all SC children who have
   // such strings.
@@ -1055,11 +1056,11 @@ void SafetyCheckHandler::OnJavascriptDisallowed() {
 void SafetyCheckHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kPerformSafetyCheck,
       base::BindRepeating(&SafetyCheckHandler::HandlePerformSafetyCheck,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kGetParentRanDisplayString,
       base::BindRepeating(&SafetyCheckHandler::HandleGetParentRanDisplayString,
                           base::Unretained(this)));

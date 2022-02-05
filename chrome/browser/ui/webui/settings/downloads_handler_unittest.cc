@@ -168,7 +168,7 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
     expected_init_callback_count += param.connection_init_enabled;
 
     base::ListValue args;
-    handler()->HandleInitialize(&args);
+    handler()->HandleInitialize(args.GetListDeprecated());
 
     EXPECT_TRUE(handler()->IsJavascriptAllowed());
     ASSERT_EQ(web_ui_call_data().size(), expected_init_callback_count);

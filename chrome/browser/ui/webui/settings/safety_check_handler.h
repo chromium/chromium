@@ -189,11 +189,11 @@ class SafetyCheckHandler
 
   // Handles triggering the safety check from the frontend (by user pressing a
   // button).
-  void HandlePerformSafetyCheck(const base::ListValue* args);
+  void HandlePerformSafetyCheck(base::Value::ConstListView args);
 
   // Handles updating the safety check parent display string to show how long
   // ago the safety check last ran.
-  void HandleGetParentRanDisplayString(const base::ListValue* args);
+  void HandleGetParentRanDisplayString(base::Value::ConstListView args);
 
   // Triggers an update check and invokes OnUpdateCheckResult once results
   // are available.

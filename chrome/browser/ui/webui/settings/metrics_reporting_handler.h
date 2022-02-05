@@ -43,7 +43,7 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
  protected:
   // Handler for "getMetricsReporting" message. No arguments. Protected for
   // testing.
-  void HandleGetMetricsReporting(const base::ListValue* args);
+  void HandleGetMetricsReporting(base::Value::ConstListView args);
 
  private:
   // Describes the state of metrics reporting in a base::DictionaryValue.
@@ -52,7 +52,7 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
 
   // Handler for "setMetricsReportingEnabled" message. Passed a single,
   // |enabled| boolean argument.
-  void HandleSetMetricsReportingEnabled(const base::ListValue* args);
+  void HandleSetMetricsReportingEnabled(base::Value::ConstListView args);
 
   // Called when the local state pref controlling metrics reporting changes.
   void OnPrefChanged(const std::string& pref_name);

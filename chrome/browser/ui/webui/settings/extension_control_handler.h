@@ -7,10 +7,6 @@
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace settings {
 
 class ExtensionControlHandler : public SettingsPageUIHandler {
@@ -30,7 +26,7 @@ class ExtensionControlHandler : public SettingsPageUIHandler {
  private:
   // Handler for the "disableExtension" message. Extension ID is passed as the
   // single string argument.
-  void HandleDisableExtension(const base::ListValue* args);
+  void HandleDisableExtension(base::Value::ConstListView args);
 };
 
 }  // namespace settings

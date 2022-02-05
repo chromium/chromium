@@ -22,11 +22,11 @@ QuickUnlockHandler::QuickUnlockHandler(Profile* profile,
 QuickUnlockHandler::~QuickUnlockHandler() = default;
 
 void QuickUnlockHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "RequestPinLoginState",
       base::BindRepeating(&QuickUnlockHandler::HandleRequestPinLoginState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "RequestQuickUnlockDisabledByPolicy",
       base::BindRepeating(
           &QuickUnlockHandler::HandleQuickUnlockDisabledByPolicy,
@@ -47,7 +47,7 @@ void QuickUnlockHandler::OnJavascriptDisallowed() {
 }
 
 void QuickUnlockHandler::HandleRequestPinLoginState(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(
       base::BindOnce(&QuickUnlockHandler::OnPinLoginAvailable,
@@ -55,9 +55,9 @@ void QuickUnlockHandler::HandleRequestPinLoginState(
 }
 
 void QuickUnlockHandler::HandleQuickUnlockDisabledByPolicy(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(0U, args->GetListDeprecated().size());
+  CHECK_EQ(0U, args.size());
 
   UpdateQuickUnlockDisabledByPolicy();
 }

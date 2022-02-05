@@ -55,14 +55,14 @@ ImportDataHandler::~ImportDataHandler() {
 void ImportDataHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeImportDialog",
       base::BindRepeating(&ImportDataHandler::HandleInitializeImportDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "importData", base::BindRepeating(&ImportDataHandler::HandleImportData,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "importFromBookmarksFile",
       base::BindRepeating(&ImportDataHandler::HandleImportFromBookmarksFile,
                           base::Unretained(this)));
@@ -103,9 +103,9 @@ void ImportDataHandler::StartImport(
                                     source_profile.importer_type);
 }
 
-void ImportDataHandler::HandleImportData(const base::ListValue* args) {
+void ImportDataHandler::HandleImportData(base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const auto& list = args->GetListDeprecated();
+  const auto& list = args;
   CHECK_GE(list.size(), 2u);
 
   int browser_index = list[0].GetInt();
@@ -145,11 +145,11 @@ void ImportDataHandler::HandleImportData(const base::ListValue* args) {
 }
 
 void ImportDataHandler::HandleInitializeImportDialog(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   importer_list_ = std::make_unique<ImporterList>();
   importer_list_->DetectSourceProfiles(
@@ -160,13 +160,13 @@ void ImportDataHandler::HandleInitializeImportDialog(
 }
 
 void ImportDataHandler::HandleImportFromBookmarksFile(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (select_file_dialog_)
     return;
 
-  DCHECK(args && args->GetListDeprecated().empty());
+  DCHECK(args.empty());
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));

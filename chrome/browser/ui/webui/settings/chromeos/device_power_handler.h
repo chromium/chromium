@@ -19,7 +19,6 @@ class PrefChangeRegistrar;
 class PrefService;
 
 namespace base {
-class ListValue;
 class TimeTicks;
 }  // namespace base
 
@@ -120,18 +119,18 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   };
 
   // Handler to request updating the power status.
-  void HandleUpdatePowerStatus(const base::ListValue* args);
+  void HandleUpdatePowerStatus(base::Value::ConstListView args);
 
   // Handler to change the power source.
-  void HandleSetPowerSource(const base::ListValue* args);
+  void HandleSetPowerSource(base::Value::ConstListView args);
 
   // Handler to request the current power management settings. Just calls
   // SendPowerManagementSettings().
-  void HandleRequestPowerManagementSettings(const base::ListValue* args);
+  void HandleRequestPowerManagementSettings(base::Value::ConstListView args);
 
   // Handlers to change the idle and lid-closed behaviors.
-  void HandleSetIdleBehavior(const base::ListValue* args);
-  void HandleSetLidClosedBehavior(const base::ListValue* args);
+  void HandleSetIdleBehavior(base::Value::ConstListView args);
+  void HandleSetLidClosedBehavior(base::Value::ConstListView args);
 
   // Updates the UI with the current battery status.
   void SendBatteryStatus();

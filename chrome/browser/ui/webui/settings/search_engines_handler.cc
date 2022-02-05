@@ -57,37 +57,37 @@ SearchEnginesHandler::~SearchEnginesHandler() {
 }
 
 void SearchEnginesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSearchEnginesList",
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setDefaultSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetDefaultSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setIsActiveSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetIsActiveSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleRemoveSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "validateSearchEngineInput",
       base::BindRepeating(
           &SearchEnginesHandler::HandleValidateSearchEngineInput,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "searchEngineEditStarted",
       base::BindRepeating(&SearchEnginesHandler::HandleSearchEngineEditStarted,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "searchEngineEditCancelled",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCancelled,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "searchEngineEditCompleted",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCompleted,
@@ -252,15 +252,15 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
 }
 
 void SearchEnginesHandler::HandleGetSearchEnginesList(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+    base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, *GetSearchEnginesList());
 }
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   int index;
   if (!ExtractIntegerValue(args, &index)) {
     NOTREACHED();
@@ -275,10 +275,10 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
 }
 
 void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const int index = args->GetListDeprecated()[0].GetInt();
-  const bool is_active = args->GetListDeprecated()[1].GetBool();
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+  const int index = args[0].GetInt();
+  const bool is_active = args[1].GetBool();
 
   if (index < 0 || index >= list_controller_.table_model()->RowCount())
     return;
@@ -287,7 +287,7 @@ void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
 }
 
 void SearchEnginesHandler::HandleRemoveSearchEngine(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   int index;
   if (!ExtractIntegerValue(args, &index)) {
     NOTREACHED();
@@ -303,7 +303,7 @@ void SearchEnginesHandler::HandleRemoveSearchEngine(
 }
 
 void SearchEnginesHandler::HandleSearchEngineEditStarted(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   int index;
   if (!ExtractIntegerValue(args, &index)) {
     NOTREACHED();
@@ -336,12 +336,12 @@ void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
 }
 
 void SearchEnginesHandler::HandleValidateSearchEngineInput(
-    const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetListDeprecated().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(3U, args.size());
 
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const std::string& field_name = args->GetListDeprecated()[1].GetString();
-  const std::string& field_value = args->GetListDeprecated()[2].GetString();
+  const base::Value& callback_id = args[0];
+  const std::string& field_name = args[1].GetString();
+  const std::string& field_value = args[2].GetString();
   ResolveJavascriptCallback(
       callback_id, base::Value(CheckFieldValidity(field_name, field_value)));
 }
@@ -365,7 +365,7 @@ bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
 }
 
 void SearchEnginesHandler::HandleSearchEngineEditCancelled(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   if (!edit_controller_.get())
     return;
   edit_controller_->CleanUpCancelledAdd();
@@ -373,12 +373,12 @@ void SearchEnginesHandler::HandleSearchEngineEditCancelled(
 }
 
 void SearchEnginesHandler::HandleSearchEngineEditCompleted(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   if (!edit_controller_.get())
     return;
-  const std::string& search_engine = args->GetListDeprecated()[0].GetString();
-  const std::string& keyword = args->GetListDeprecated()[1].GetString();
-  const std::string& query_url = args->GetListDeprecated()[2].GetString();
+  const std::string& search_engine = args[0].GetString();
+  const std::string& keyword = args[1].GetString();
+  const std::string& query_url = args[2].GetString();
 
   // Recheck validity. It's possible to get here with invalid input if e.g. the
   // user calls the right JS functions directly from the web inspector.

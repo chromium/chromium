@@ -44,12 +44,12 @@ void MediaDevicesSelectionHandler::OnJavascriptDisallowed() {
 }
 
 void MediaDevicesSelectionHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getDefaultCaptureDevices",
       base::BindRepeating(
           &MediaDevicesSelectionHandler::GetDefaultCaptureDevices,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setDefaultCaptureDevice",
       base::BindRepeating(
           &MediaDevicesSelectionHandler::SetDefaultCaptureDevice,
@@ -67,13 +67,13 @@ void MediaDevicesSelectionHandler::OnUpdateVideoDevices(
 }
 
 void MediaDevicesSelectionHandler::GetDefaultCaptureDevices(
-    const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetListDeprecated().size());
-  if (!args->GetListDeprecated()[0].is_string()) {
+    base::Value::ConstListView args) {
+  DCHECK_EQ(1U, args.size());
+  if (!args[0].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& type = args->GetListDeprecated()[0].GetString();
+  const std::string& type = args[0].GetString();
   DCHECK(!type.empty());
 
   if (type == kAudio)
@@ -83,15 +83,14 @@ void MediaDevicesSelectionHandler::GetDefaultCaptureDevices(
 }
 
 void MediaDevicesSelectionHandler::SetDefaultCaptureDevice(
-    const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetListDeprecated().size());
-  if (!args->GetListDeprecated()[0].is_string() ||
-      !args->GetListDeprecated()[1].is_string()) {
+    base::Value::ConstListView args) {
+  DCHECK_EQ(2U, args.size());
+  if (!args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& type = args->GetListDeprecated()[0].GetString();
-  const std::string& device = args->GetListDeprecated()[1].GetString();
+  const std::string& type = args[0].GetString();
+  const std::string& device = args[1].GetString();
 
   DCHECK(!type.empty());
   DCHECK(!device.empty());

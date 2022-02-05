@@ -38,7 +38,7 @@ FontHandler::FontHandler(Profile* profile) {
 FontHandler::~FontHandler() {}
 
 void FontHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "fetchFontsData", base::BindRepeating(&FontHandler::HandleFetchFontsData,
                                             base::Unretained(this)));
 }
@@ -47,9 +47,9 @@ void FontHandler::OnJavascriptAllowed() {}
 
 void FontHandler::OnJavascriptDisallowed() {}
 
-void FontHandler::HandleFetchFontsData(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+void FontHandler::HandleFetchFontsData(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   AllowJavascript();
   content::GetFontListAsync(base::BindOnce(&FontHandler::FontListHasLoaded,
