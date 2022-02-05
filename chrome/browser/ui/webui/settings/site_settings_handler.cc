@@ -1139,7 +1139,7 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
   CHECK_EQ(3U, args.size());
   const base::Value& callback_id = args[0];
   std::string origin = args[1].GetString();
-  base::Value::ConstListView types = args[2].GetList();
+  base::Value::ConstListView types = args[2].GetListDeprecated();
 
   // Note: Invalid URLs will just result in default settings being shown.
   const GURL origin_url(origin);

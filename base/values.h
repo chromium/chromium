@@ -93,14 +93,21 @@ class ListValue;
 //   void AlwaysTakesList(std::unique_ptr<base::ListValue> list);
 //   void AlwaysTakesDict(std::unique_ptr<base::DictionaryValue> dict);
 //
-// NEW WAY:
+// DEPRECATED WAY:
 //
 //   void AlwaysTakesList(std::vector<base::Value> list);
 //   void AlwaysTakesDict(base::flat_map<std::string, base::Value> dict);
 //
 // Migrating code will require conversions on API boundaries. This can be done
 // cheaply by making use of overloaded base::Value constructors and the
-// `Value::TakeList()` and `Value::TakeDict()` APIs.
+// `Value::TakeListDeprecated()` and `Value::TakeDictDeprecated()` APIs.
+//
+// NEW WAY:
+//
+// Proposed API:
+// https://docs.google.com/document/d/13M-yE39fQxjXOXJIfezkcqnZoc4OyCBIit2-yfmt9yE/edit?usp=sharing
+//
+// Not yet implemented.
 class BASE_EXPORT Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
@@ -220,18 +227,16 @@ class BASE_EXPORT Value {
 
   // Returns the Values in a list as a view. The mutable overload allows for
   // modification of the underlying values, but does not allow changing the
-  // structure of the list. If this is desired, use `TakeList()`, perform the
-  // operations, and return the list back to the Value via move assignment.
+  // structure of the list. If this is desired, use `TakeListDeprecated()`,
+  // perform the operations, and return the list back to the Value via move
+  // assignment.
   DeprecatedListView GetListDeprecated();
   DeprecatedConstListView GetListDeprecated() const;
-  DeprecatedListView GetList() { return GetListDeprecated(); }
-  DeprecatedConstListView GetList() const { return GetListDeprecated(); }
 
   // Transfers ownership of the underlying list to the caller. Subsequent
-  // calls to `GetList()` will return an empty list.
+  // calls to `GetListDeprecated()` will return an empty list.
   // Note: This requires that `type()` is Type::LIST.
   DeprecatedListStorage TakeListDeprecated() &&;
-  ListStorage TakeList() && { return std::move(*this).TakeListDeprecated(); }
 
   // Appends `value` to the end of the list.
   // Note: These CHECK that `type()` is Type::LIST.
@@ -520,9 +525,6 @@ class BASE_EXPORT Value {
   // calls to DictItems() will return an empty dict.
   // Note: This requires that `type()` is Type::DICTIONARY.
   DeprecatedDictStorage TakeDictDeprecated() &&;
-  DeprecatedDictStorage TakeDict() && {
-    return std::move(*this).TakeDictDeprecated();
-  }
 
   // Returns the size of the dictionary, if the dictionary is empty, and clears
   // the dictionary. Note: These CHECK that `type()` is Type::DICTIONARY.
@@ -723,10 +725,10 @@ class BASE_EXPORT DictionaryValue : public Value {
   // and Value's Dictionary API instead.
   bool GetDictionary(StringPiece path, DictionaryValue** out_value);
   // DEPRECATED, use `Value::FindListKey(key)` or `Value::FindListPath(path)`,
-  // and `Value::GetList()` instead.
+  // and `Value::GetListDeprecated()` instead.
   bool GetList(StringPiece path, const ListValue** out_value) const;
   // DEPRECATED, use `Value::FindListKey(key)` or `Value::FindListPath(path)`,
-  // and `Value::GetList()` instead.
+  // and `Value::GetListDeprecated()` instead.
   bool GetList(StringPiece path, ListValue** out_value);
 
   // Like `Get()`, but without special treatment of '.'.  This allows e.g. URLs
@@ -797,7 +799,7 @@ class BASE_EXPORT ListValue : public Value {
   // only if the index falls within the current list range.
   // Note that the list always owns the Value passed out via `out_value`.
   // `out_value` is optional and will only be set if non-NULL.
-  // DEPRECATED, use `GetList()::operator[] instead.
+  // DEPRECATED, use `GetListDeprecated()::operator[] instead.
   bool Get(size_t index, const Value** out_value) const;
   bool Get(size_t index, Value** out_value);
 
@@ -815,13 +817,13 @@ class BASE_EXPORT ListValue : public Value {
   void Append(std::unique_ptr<Value> in_value);
 
   // Swaps contents with the `other` list.
-  // DEPRECATED, use `GetList()::swap()` instead.
+  // DEPRECATED, use `GetListDeprecated()::swap()` instead.
   void Swap(ListValue* other);
 
   // Iteration.
   //
-  // ListValue no longer supports iteration. Instead, use GetList() to get the
-  // underlying list:
+  // ListValue no longer supports iteration. Instead, use GetListDeprecated() to
+  // get the underlying list:
   //
   // for (const auto& entry : list_value.GetListDeprecated()) {
   //   ...

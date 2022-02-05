@@ -42,7 +42,7 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
   if (!assets)
     return image_asset_sizes;
 
-  for (const base::Value& asset : assets->GetList()) {
+  for (const base::Value& asset : assets->GetListDeprecated()) {
     const std::string* id = asset.FindStringKey(kIdKey);
     absl::optional<int> width = asset.FindIntKey(kWidthKey);
     absl::optional<int> height = asset.FindIntKey(kHeightKey);

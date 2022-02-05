@@ -49,13 +49,13 @@ bool WebHidDevicePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
 
   int item_index = 0;
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     int url_index = 0;
     auto* urls_list = item.FindKeyOfType(kUrlsKey, base::Value::Type::LIST);
     if (!urls_list)
       continue;
 
-    for (const auto& url_value : urls_list->GetList()) {
+    for (const auto& url_value : urls_list->GetListDeprecated()) {
       DCHECK(url_value.is_string());
       GURL url(url_value.GetString());
       // If `url` is invalid, emit an error but do not prevent the policy from

@@ -162,13 +162,13 @@ std::vector<AttributionSimulationEvent> ParseAttributionSimulationInputOrExit(
   std::vector<AttributionSimulationEvent> events;
 
   if (const base::Value* items = input.FindListKey("sources")) {
-    for (const base::Value& item : items->GetList()) {
+    for (const base::Value& item : items->GetListDeprecated()) {
       events.push_back(ParseSource(item, offset_time));
     }
   }
 
   if (const base::Value* items = input.FindListKey("triggers")) {
-    for (const base::Value& item : items->GetList()) {
+    for (const base::Value& item : items->GetListDeprecated()) {
       events.push_back(ParseTrigger(item, offset_time));
     }
   }

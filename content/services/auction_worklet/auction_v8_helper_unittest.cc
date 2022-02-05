@@ -524,16 +524,18 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
     EXPECT_EQ("debug", *type);
     const base::Value* args = message.value.FindListPath("params.args");
     ASSERT_TRUE(args);
-    ASSERT_EQ(1u, args->GetList().size());
-    EXPECT_EQ("string", *args->GetList()[0].FindStringKey("type"));
-    EXPECT_EQ("debug is there", *args->GetList()[0].FindStringKey("value"));
+    ASSERT_EQ(1u, args->GetListDeprecated().size());
+    EXPECT_EQ("string", *args->GetListDeprecated()[0].FindStringKey("type"));
+    EXPECT_EQ("debug is there",
+              *args->GetListDeprecated()[0].FindStringKey("value"));
     const base::Value* stack_trace =
         message.value.FindListPath("params.stackTrace.callFrames");
-    ASSERT_EQ(1u, stack_trace->GetList().size());
-    EXPECT_EQ("", *stack_trace->GetList()[0].FindStringKey("functionName"));
+    ASSERT_EQ(1u, stack_trace->GetListDeprecated().size());
+    EXPECT_EQ(
+        "", *stack_trace->GetListDeprecated()[0].FindStringKey("functionName"));
     EXPECT_EQ("https://foo.test/",
-              *stack_trace->GetList()[0].FindStringKey("url"));
-    EXPECT_EQ(1, *stack_trace->GetList()[0].FindIntKey("lineNumber"));
+              *stack_trace->GetListDeprecated()[0].FindStringKey("url"));
+    EXPECT_EQ(1, *stack_trace->GetListDeprecated()[0].FindIntKey("lineNumber"));
   }
 
   {
@@ -544,25 +546,26 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
     EXPECT_EQ("log", *type);
     const base::Value* args = message.value.FindListPath("params.args");
     ASSERT_TRUE(args);
-    ASSERT_EQ(5u, args->GetList().size());
-    EXPECT_EQ("string", *args->GetList()[0].FindStringKey("type"));
-    EXPECT_EQ("can", *args->GetList()[0].FindStringKey("value"));
-    EXPECT_EQ("string", *args->GetList()[1].FindStringKey("type"));
-    EXPECT_EQ("log", *args->GetList()[1].FindStringKey("value"));
-    EXPECT_EQ("string", *args->GetList()[2].FindStringKey("type"));
-    EXPECT_EQ("multiple", *args->GetList()[2].FindStringKey("value"));
-    EXPECT_EQ("string", *args->GetList()[3].FindStringKey("type"));
-    EXPECT_EQ("things", *args->GetList()[3].FindStringKey("value"));
-    EXPECT_EQ("boolean", *args->GetList()[4].FindStringKey("type"));
-    EXPECT_EQ(true, *args->GetList()[4].FindBoolKey("value"));
+    ASSERT_EQ(5u, args->GetListDeprecated().size());
+    EXPECT_EQ("string", *args->GetListDeprecated()[0].FindStringKey("type"));
+    EXPECT_EQ("can", *args->GetListDeprecated()[0].FindStringKey("value"));
+    EXPECT_EQ("string", *args->GetListDeprecated()[1].FindStringKey("type"));
+    EXPECT_EQ("log", *args->GetListDeprecated()[1].FindStringKey("value"));
+    EXPECT_EQ("string", *args->GetListDeprecated()[2].FindStringKey("type"));
+    EXPECT_EQ("multiple", *args->GetListDeprecated()[2].FindStringKey("value"));
+    EXPECT_EQ("string", *args->GetListDeprecated()[3].FindStringKey("type"));
+    EXPECT_EQ("things", *args->GetListDeprecated()[3].FindStringKey("value"));
+    EXPECT_EQ("boolean", *args->GetListDeprecated()[4].FindStringKey("type"));
+    EXPECT_EQ(true, *args->GetListDeprecated()[4].FindBoolKey("value"));
 
     const base::Value* stack_trace =
         message.value.FindListPath("params.stackTrace.callFrames");
-    ASSERT_EQ(1u, stack_trace->GetList().size());
-    EXPECT_EQ("foo", *stack_trace->GetList()[0].FindStringKey("functionName"));
+    ASSERT_EQ(1u, stack_trace->GetListDeprecated().size());
+    EXPECT_EQ("foo", *stack_trace->GetListDeprecated()[0].FindStringKey(
+                         "functionName"));
     EXPECT_EQ("https://foo.test/",
-              *stack_trace->GetList()[0].FindStringKey("url"));
-    EXPECT_EQ(4, *stack_trace->GetList()[0].FindIntKey("lineNumber"));
+              *stack_trace->GetListDeprecated()[0].FindStringKey("url"));
+    EXPECT_EQ(4, *stack_trace->GetListDeprecated()[0].FindIntKey("lineNumber"));
   }
 
   {
@@ -573,16 +576,18 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
     EXPECT_EQ("table", *type);
     const base::Value* args = message.value.FindListPath("params.args");
     ASSERT_TRUE(args);
-    ASSERT_EQ(1u, args->GetList().size());
-    EXPECT_EQ("string", *args->GetList()[0].FindStringKey("type"));
-    EXPECT_EQ("even table!", *args->GetList()[0].FindStringKey("value"));
+    ASSERT_EQ(1u, args->GetListDeprecated().size());
+    EXPECT_EQ("string", *args->GetListDeprecated()[0].FindStringKey("type"));
+    EXPECT_EQ("even table!",
+              *args->GetListDeprecated()[0].FindStringKey("value"));
     const base::Value* stack_trace =
         message.value.FindListPath("params.stackTrace.callFrames");
-    ASSERT_EQ(1u, stack_trace->GetList().size());
-    EXPECT_EQ("foo", *stack_trace->GetList()[0].FindStringKey("functionName"));
+    ASSERT_EQ(1u, stack_trace->GetListDeprecated().size());
+    EXPECT_EQ("foo", *stack_trace->GetListDeprecated()[0].FindStringKey(
+                         "functionName"));
     EXPECT_EQ("https://foo.test/",
-              *stack_trace->GetList()[0].FindStringKey("url"));
-    EXPECT_EQ(5, *stack_trace->GetList()[0].FindIntKey("lineNumber"));
+              *stack_trace->GetListDeprecated()[0].FindStringKey("url"));
+    EXPECT_EQ(5, *stack_trace->GetListDeprecated()[0].FindIntKey("lineNumber"));
   }
 
   id->AbortDebuggerPauses();

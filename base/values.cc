@@ -1000,7 +1000,7 @@ void Value::WriteIntoTrace(perfetto::TracedValue context) const {
     }
     case Type::LIST: {
       perfetto::TracedArray array = std::move(context).WriteArray();
-      for (const auto& item : GetList())
+      for (const auto& item : GetListDeprecated())
         array.Append(item);
       return;
     }

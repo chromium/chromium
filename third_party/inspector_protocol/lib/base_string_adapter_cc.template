@@ -52,7 +52,7 @@ std::unique_ptr<protocol::Value> toProtocolValue(
     return protocol::StringValue::create(value.GetString());
   if (value.is_list()) {
     auto result = protocol::ListValue::create();
-    for (const base::Value& item : value.GetList()) {
+    for (const base::Value& item : value.GetListDeprecated()) {
       if (auto converted = toProtocolValue(item, depth - 1)) {
         result->pushValue(std::move(converted));
       }

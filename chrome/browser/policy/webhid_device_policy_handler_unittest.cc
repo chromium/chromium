@@ -201,14 +201,14 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithDevicePolicy) {
   ASSERT_TRUE(pref_value->is_list());
 
   // Ensure that the kManagedWebHidAllowDevicesForUrls pref is set correctly.
-  const auto& list = pref_value->GetList();
+  const auto& list = pref_value->GetListDeprecated();
   ASSERT_EQ(2ul, list.size());
 
   // Check the first item's devices list.
   const base::Value* devices = list[0].FindKey(kDevicesKey);
   ASSERT_TRUE(devices);
 
-  const auto& first_devices_list = devices->GetList();
+  const auto& first_devices_list = devices->GetListDeprecated();
   ASSERT_EQ(2ul, first_devices_list.size());
 
   const base::Value* vendor_id = first_devices_list[0].FindKey(kVendorIdKey);
@@ -229,15 +229,15 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithDevicePolicy) {
   // Check the first item's urls list.
   const base::Value* urls = list[0].FindKey(kUrlsKey);
   ASSERT_TRUE(urls);
-  ASSERT_EQ(2ul, urls->GetList().size());
-  EXPECT_EQ(base::Value("https://origin1"), urls->GetList()[0]);
-  EXPECT_EQ(base::Value("https://origin2"), urls->GetList()[1]);
+  ASSERT_EQ(2ul, urls->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("https://origin1"), urls->GetListDeprecated()[0]);
+  EXPECT_EQ(base::Value("https://origin2"), urls->GetListDeprecated()[1]);
 
   // Check the second item's devices list.
   devices = list[1].FindKey(kDevicesKey);
   ASSERT_TRUE(devices);
 
-  const auto& second_devices_list = devices->GetList();
+  const auto& second_devices_list = devices->GetListDeprecated();
   ASSERT_EQ(1ul, second_devices_list.size());
 
   vendor_id = second_devices_list[0].FindKey(kVendorIdKey);
@@ -250,8 +250,8 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithDevicePolicy) {
   // Check the second item's urls list.
   urls = list[1].FindKey(kUrlsKey);
   ASSERT_TRUE(urls);
-  ASSERT_EQ(1ul, urls->GetList().size());
-  EXPECT_EQ(base::Value("https://origin3"), urls->GetList()[0]);
+  ASSERT_EQ(1ul, urls->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("https://origin3"), urls->GetListDeprecated()[0]);
 }
 
 TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithUsagePolicy) {
@@ -276,14 +276,14 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithUsagePolicy) {
 
   // Ensure that the kManagedWebHidAllowDevicesWithHidUsagesForUrls pref is set
   // correctly.
-  const auto& list = pref_value->GetList();
+  const auto& list = pref_value->GetListDeprecated();
   ASSERT_EQ(2ul, list.size());
 
   // Check the first item's usages list.
   const base::Value* usages = list[0].FindKey(kUsagesKey);
   ASSERT_TRUE(usages);
 
-  const auto& first_usages_list = usages->GetList();
+  const auto& first_usages_list = usages->GetListDeprecated();
   ASSERT_EQ(2ul, first_usages_list.size());
 
   const base::Value* usage_page = first_usages_list[0].FindKey(kUsagePageKey);
@@ -304,15 +304,15 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithUsagePolicy) {
   // Check the first item's urls list.
   const base::Value* urls = list[0].FindKey(kUrlsKey);
   ASSERT_TRUE(urls);
-  ASSERT_EQ(2ul, urls->GetList().size());
-  EXPECT_EQ(base::Value("https://origin1"), urls->GetList()[0]);
-  EXPECT_EQ(base::Value("https://origin2"), urls->GetList()[1]);
+  ASSERT_EQ(2ul, urls->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("https://origin1"), urls->GetListDeprecated()[0]);
+  EXPECT_EQ(base::Value("https://origin2"), urls->GetListDeprecated()[1]);
 
   // Check the second item's usages list.
   usages = list[1].FindKey(kUsagesKey);
   ASSERT_TRUE(usages);
 
-  const auto& second_usages_list = usages->GetList();
+  const auto& second_usages_list = usages->GetListDeprecated();
   ASSERT_EQ(1ul, second_usages_list.size());
 
   usage_page = second_usages_list[0].FindKey(kUsagePageKey);
@@ -325,8 +325,8 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithUsagePolicy) {
   // Check the second item's urls list.
   urls = list[1].FindKey(kUrlsKey);
   ASSERT_TRUE(urls);
-  ASSERT_EQ(1ul, urls->GetList().size());
-  EXPECT_EQ(base::Value("https://origin3"), urls->GetList()[0]);
+  ASSERT_EQ(1ul, urls->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("https://origin3"), urls->GetListDeprecated()[0]);
 }
 
 struct WebHidInvalidPolicyTestData {

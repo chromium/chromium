@@ -1196,7 +1196,7 @@ void PrintPreviewHandler::OnPrintPreviewCancelled(int request_id) {
 
 void PrintPreviewHandler::OnPrintRequestCancelled() {
   base::Value empty(base::Value::Type::LIST);
-  HandleCancelPendingPrintRequest(empty.GetList());
+  HandleCancelPendingPrintRequest(empty.GetListDeprecated());
 }
 
 void PrintPreviewHandler::ClearInitiatorDetails() {

@@ -125,9 +125,9 @@ bool WasUserSiteSettingsChangedEventDispatched(
 
   const Event& event = *iter->second;
   CHECK(event.event_args);
-  CHECK_GE(1u, event.event_args->GetList().size());
+  CHECK_GE(1u, event.event_args->GetListDeprecated().size());
   auto site_settings = api::developer_private::UserSiteSettings::FromValue(
-      event.event_args->GetList()[0]);
+      event.event_args->GetListDeprecated()[0]);
   if (!site_settings)
     return false;
 
