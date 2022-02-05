@@ -124,13 +124,12 @@ AC_ARG_WITH(html,
 [  --with-html             add the HTML support (on)])
 dnl Specific dir for HTML output ?
 AC_ARG_WITH(html-dir, AS_HELP_STRING([--with-html-dir=path],
-            [path to base html directory, default $datadir/doc/html]),
-            [HTML_DIR=$withval], [HTML_DIR='$(datadir)/doc'])
+            [path to base html directory, default $docdir/html]),
+            [HTML_DIR=$withval], [HTML_DIR='$(docdir)/html'])
 
 AC_ARG_WITH(html-subdir, AS_HELP_STRING([--with-html-subdir=path],
-            [directory used under html-dir, default $PACKAGE-$VERSION/html]),
-            [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"],
-            [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
+            [directory used under html-dir, default '']),
+            [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"])
 AC_SUBST(HTML_DIR)
 AC_ARG_WITH(http,
 [  --with-http             add the HTTP support (on)])
@@ -475,7 +474,6 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_HEADERS([ctype.h])
-AC_CHECK_HEADERS([dirent.h])
 AC_CHECK_HEADERS([errno.h])
 AC_CHECK_HEADERS([malloc.h])
 AC_CHECK_HEADERS([stdarg.h])
@@ -740,13 +738,6 @@ if test $enable_ipv6 = yes; then
 fi 
 
 dnl ******************************End IPv6 checks******************************
-
-dnl Checks for isnan in libm if not in libc
-AC_CHECK_FUNC(isnan, AC_DEFINE([HAVE_ISNAN],[], [Define if isnan is there]) , AC_CHECK_LIB(m, isnan,
-  [AC_DEFINE([HAVE_ISNAN],[], [Define if isnan is there])]))
-
-AC_CHECK_FUNC(isinf, AC_DEFINE([HAVE_ISINF], [], [Define if isinf is there]) , AC_CHECK_LIB(m, isinf,
-  [AC_DEFINE([HAVE_ISINF], [], [Define if isinf is there])]))
 
 XML_LIBDIR='-L${libdir}'
 XML_INCLUDEDIR='-I${includedir}/libxml2'
@@ -1063,7 +1054,6 @@ else
             AC_CHECK_HEADER(pthread.h,
                 AC_CHECK_LIB(pthread, pthread_join,[
                 THREAD_LIBS="-lpthread"
-                AC_DEFINE([HAVE_LIBPTHREAD], [], [Define if pthread library is there (-lpthread)])
                 AC_DEFINE([HAVE_PTHREAD_H], [], [Define if <pthread.h> is there])
                 WITH_THREADS="1"]))
         fi
@@ -1701,8 +1691,6 @@ AC_SUBST(ICONV_LIBS)
 AC_SUBST(ICU_LIBS)
 AC_SUBST(XML_INCLUDEDIR)
 AC_SUBST(HTML_DIR)
-AC_SUBST(HAVE_ISNAN)
-AC_SUBST(HAVE_ISINF)
 AC_SUBST(PYTHON)
 AC_SUBST(PYTHON_VERSION)
 AC_SUBST(PYTHON_INCLUDES)
