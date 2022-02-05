@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <string>
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
@@ -169,6 +170,10 @@ class TestRunner {
   bool disable_csrss_;
   bool kill_on_destruction_;
   bool release_policy_in_run_ = false;
+#if DCHECK_IS_ON()
+  // We only allow the policy to be applied to a target once.
+  bool policy_applied_ = false;
+#endif
   base::win::ScopedHandle target_process_;
   DWORD target_process_id_;
 };

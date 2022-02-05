@@ -491,7 +491,8 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
       ::CreateEvent(nullptr, false, false, event_name.c_str()));
   ASSERT_TRUE(event.IsValid());
 
-  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(L"AppContainerEvent_Open test"));
+  TestRunner runner2(JOB_UNPROTECTED, USER_UNPROTECTED, USER_UNPROTECTED);
+  EXPECT_EQ(SBOX_TEST_DENIED, runner2.RunTest(L"AppContainerEvent_Open test"));
 }
 
 TEST_F(AppContainerTest, CheckIncompatibleOptions) {

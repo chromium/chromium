@@ -180,11 +180,13 @@ TEST(PolicyTargetTest, SetInformationThread) {
   runner.SetTestState(BEFORE_REVERT);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"PolicyTargetTest_token"));
 
-  runner.SetTestState(AFTER_REVERT);
-  EXPECT_EQ(ERROR_NO_TOKEN, runner.RunTest(L"PolicyTargetTest_token"));
+  TestRunner runner1;
+  runner1.SetTestState(AFTER_REVERT);
+  EXPECT_EQ(ERROR_NO_TOKEN, runner1.RunTest(L"PolicyTargetTest_token"));
 
-  runner.SetTestState(EVERY_STATE);
-  EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"PolicyTargetTest_steal"));
+  TestRunner runner2;
+  runner2.SetTestState(EVERY_STATE);
+  EXPECT_EQ(SBOX_TEST_FAILED, runner2.RunTest(L"PolicyTargetTest_steal"));
 }
 
 TEST(PolicyTargetTest, OpenThreadToken) {
@@ -192,18 +194,19 @@ TEST(PolicyTargetTest, OpenThreadToken) {
   runner.SetTestState(BEFORE_REVERT);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"PolicyTargetTest_token2"));
 
-  runner.SetTestState(AFTER_REVERT);
-  EXPECT_EQ(ERROR_NO_TOKEN, runner.RunTest(L"PolicyTargetTest_token2"));
+  TestRunner runner2;
+  runner2.SetTestState(AFTER_REVERT);
+  EXPECT_EQ(ERROR_NO_TOKEN, runner2.RunTest(L"PolicyTargetTest_token2"));
 }
 
 TEST(PolicyTargetTest, OpenThreadTokenEx) {
   TestRunner runner;
-
   runner.SetTestState(BEFORE_REVERT);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"PolicyTargetTest_token3"));
 
-  runner.SetTestState(AFTER_REVERT);
-  EXPECT_EQ(ERROR_NO_TOKEN, runner.RunTest(L"PolicyTargetTest_token3"));
+  TestRunner runner2;
+  runner2.SetTestState(AFTER_REVERT);
+  EXPECT_EQ(ERROR_NO_TOKEN, runner2.RunTest(L"PolicyTargetTest_token3"));
 }
 
 TEST(PolicyTargetTest, OpenThread) {
@@ -211,7 +214,8 @@ TEST(PolicyTargetTest, OpenThread) {
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"PolicyTargetTest_thread"))
       << "Opens the current thread";
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"PolicyTargetTest_thread2"))
+  TestRunner runner2;
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(L"PolicyTargetTest_thread2"))
       << "Creates a new thread and opens it";
 }
 

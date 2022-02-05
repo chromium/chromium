@@ -244,6 +244,15 @@ class DynamicCodeOptOutThread {
   int return_code_;
 };
 
+// Helpers to set up rules for dynamic code tests, needed as policy
+// (from the TestRunner) can only be applied to a single process.
+std::unique_ptr<sandbox::TestRunner> RunnerWithMitigation(
+    sandbox::MitigationFlags mitigations) {
+  auto runner = std::make_unique<sandbox::TestRunner>();
+  runner->GetPolicy()->SetDelayedProcessMitigations(mitigations);
+  return runner;
+}
+
 //------------------------------------------------------------------------------
 // DisableDynamicCode test harness helper function.  Tests numerous APIs.
 // - APIs fail with ERROR_DYNAMIC_CODE_BLOCKED if this mitigation is
@@ -265,14 +274,6 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
     return;
   }
 
-  sandbox::TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
-
-  if (enable_mitigation) {
-    EXPECT_EQ(policy->SetDelayedProcessMitigations(which_mitigation),
-              sandbox::SBOX_ALL_OK);
-  }
-
   std::wstring shared =
       (which_mitigation == sandbox::MITIGATION_DYNAMIC_CODE_DISABLE)
           ? L"TestWin81DynamicCode "
@@ -283,32 +284,34 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
   }
 
   // Test 1:
+  auto runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
+                                  : std::make_unique<sandbox::TestRunner>();
   std::wstring test =
       base::StringPrintf(L"%ls %u", shared.c_str(), VIRTUALALLOC);
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
-            runner.RunTest(test.c_str()));
+            runner->RunTest(test.c_str()));
 
   // Test 2:
+  runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
+                             : std::make_unique<sandbox::TestRunner>();
   test = base::StringPrintf(L"%ls %u", shared.c_str(), VIRTUALPROTECT);
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
-            runner.RunTest(test.c_str()));
+            runner->RunTest(test.c_str()));
 
   // Test 3:
   // Need token level >= USER_LIMITED to be able to successfully run test 3.
-  policy->SetTokenLevel(sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS,
-                        sandbox::TokenLevel::USER_LIMITED);
+  runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
+                             : std::make_unique<sandbox::TestRunner>();
+  runner->GetPolicy()->SetTokenLevel(
+      sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS,
+      sandbox::TokenLevel::USER_LIMITED);
 
   test = base::StringPrintf(L"%ls %u", shared.c_str(), MAPVIEWCUSTOM);
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
-            runner.RunTest(test.c_str()));
-
-  // Test 4:
-  // Set token levels back to default.
-  policy->SetTokenLevel(sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS,
-                        sandbox::TokenLevel::USER_LOCKDOWN);
+            runner->RunTest(test.c_str()));
 
   // Ensure sandbox access to the file on disk.
   base::FilePath dll_path;
@@ -322,14 +325,16 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
       temp_dir.GetPath().Append(hooking_dll::g_hook_dll_file);
   ASSERT_TRUE(base::CopyFile(dll_path, temp_dll_path));
 
-  EXPECT_TRUE(runner.AddFsRule(sandbox::TargetPolicy::FILES_ALLOW_ANY,
-                               temp_dll_path.value().c_str()));
+  runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
+                             : std::make_unique<sandbox::TestRunner>();
+  EXPECT_TRUE(runner->AddFsRule(sandbox::TargetPolicy::FILES_ALLOW_ANY,
+                                temp_dll_path.value().c_str()));
 
   test = base::StringPrintf(L"%ls %u \"%ls\"", shared.c_str(), MAPVIEWFILE,
                             temp_dll_path.value().c_str());
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
-            runner.RunTest(test.c_str()));
+            runner->RunTest(test.c_str()));
 }
 
 }  // namespace

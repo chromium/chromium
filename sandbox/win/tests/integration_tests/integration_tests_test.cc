@@ -223,8 +223,12 @@ TEST(IntegrationTestsTest, ForwardsArguments) {
   runner.SetTimeout(TestTimeouts::action_timeout());
   runner.SetTestState(BEFORE_INIT);
   ASSERT_EQ(1, runner.RunTest(L"IntegrationTestsTest_args first"));
-  ASSERT_EQ(4, runner.RunTest(L"IntegrationTestsTest_args first second third "
-                              L"fourth"));
+
+  TestRunner runner2;
+  runner2.SetTimeout(TestTimeouts::action_timeout());
+  runner2.SetTestState(BEFORE_INIT);
+  ASSERT_EQ(4, runner2.RunTest(L"IntegrationTestsTest_args first second third "
+                               L"fourth"));
 }
 
 TEST(IntegrationTestsTest, WaitForStuckChild) {
@@ -306,37 +310,40 @@ TEST(IntegrationTestsTest, TwoStuckChildrenFirstOneHasNoJob) {
   ::TerminateProcess(runner2.process(), 0);
 }
 
-TEST(IntegrationTestsTest, MultipleStuckChildrenSequential) {
-  TestRunner runner;
-  runner.SetTimeout(TestTimeouts::action_timeout());
-  runner.SetAsynchronous(true);
-  runner.SetKillOnDestruction(false);
-  TestRunner runner2(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  runner2.SetTimeout(TestTimeouts::action_timeout());
-  runner2.SetAsynchronous(true);
-  runner2.SetKillOnDestruction(false);
+std::unique_ptr<TestRunner> StuckChildrenRunner() {
+  auto runner = std::make_unique<TestRunner>(
+      JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
+  runner->SetTimeout(TestTimeouts::action_timeout());
+  runner->SetAsynchronous(true);
+  runner->SetKillOnDestruction(false);
+  return runner;
+}
 
+TEST(IntegrationTestsTest, MultipleStuckChildrenSequential) {
+  auto runner = StuckChildrenRunner();
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"IntegrationTestsTest_stuck 100"));
-  // Actually both runners share the same singleton broker.
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+            runner->RunTest(L"IntegrationTestsTest_stuck 100"));
+  // All runners share the same singleton broker.
+  auto* broker = runner->broker();
+  ASSERT_EQ(SBOX_ALL_OK, broker->WaitForAllTargets());
+
+  runner = StuckChildrenRunner();
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
-            runner2.RunTest(L"IntegrationTestsTest_stuck 2000"));
-  // Actually both runners share the same singleton broker.
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+            runner->RunTest(L"IntegrationTestsTest_stuck 2000"));
+  ASSERT_EQ(SBOX_ALL_OK, broker->WaitForAllTargets());
 
   DWORD exit_code;
   // Checking the exit code for |runner| is flaky on the slow bots but at
   // least we know that the wait above has succeeded if we are here.
-  ASSERT_TRUE(::GetExitCodeProcess(runner2.process(), &exit_code));
+  ASSERT_TRUE(::GetExitCodeProcess(runner->process(), &exit_code));
   ASSERT_EQ(STILL_ACTIVE, exit_code);
   // Terminate the test process now.
-  ::TerminateProcess(runner2.process(), 0);
+  ::TerminateProcess(runner->process(), 0);
 
+  runner = StuckChildrenRunner();
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"IntegrationTestsTest_stuck 100"));
-  // Actually both runners share the same singleton broker.
-  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+            runner->RunTest(L"IntegrationTestsTest_stuck 100"));
+  ASSERT_EQ(SBOX_ALL_OK, broker->WaitForAllTargets());
 }
 
 // Running from inside job that allows us to escape from it should be ok.

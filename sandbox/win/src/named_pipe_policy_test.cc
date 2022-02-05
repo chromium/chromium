@@ -52,39 +52,52 @@ SBOX_TESTS_COMMAND int NamedPipe_Create(int argc, wchar_t** argv) {
   return SBOX_TEST_SUCCEEDED;
 }
 
-// Tests if we can create a pipe in the sandbox.
-TEST(NamedPipePolicyTest, CreatePipe) {
-  TestRunner runner;
+std::unique_ptr<TestRunner> CreatePipeRunner() {
+  auto runner = std::make_unique<TestRunner>();
   // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
   // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
-                             TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                             L"\\\\.\\pipe\\test*"));
+  runner->AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
+                  TargetPolicy::NAMEDPIPES_ALLOW_ANY, L"\\\\.\\pipe\\test*");
+  return runner;
+}
 
+// Tests if we can create a pipe in the sandbox.
+TEST(NamedPipePolicyTest, CreatePipe) {
+  auto runner = CreatePipeRunner();
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\testbleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\testbleh"));
 
+  runner = CreatePipeRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\bleh"));
+}
+
+std::unique_ptr<TestRunner> PipeTraversalRunner() {
+  auto runner = std::make_unique<TestRunner>();
+  // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
+  // namedpipe name. Here we apply it like a wildcard. http://b/893603
+  runner->AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
+                  TargetPolicy::NAMEDPIPES_ALLOW_ANY, L"\\\\.\\pipe\\test*");
+  return runner;
 }
 
 // Tests if we can create a pipe with a path traversal in the sandbox.
 TEST(NamedPipePolicyTest, CreatePipeTraversal) {
-  TestRunner runner;
-  // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
-  // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
-                             TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                             L"\\\\.\\pipe\\test*"));
+  auto runner = PipeTraversalRunner();
+  EXPECT_EQ(SBOX_TEST_DENIED,
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\..\\bleh"));
 
+  runner = PipeTraversalRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\..\\bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/../bleh"));
+
+  runner = PipeTraversalRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/../bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\../bleh"));
+
+  runner = PipeTraversalRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test\\../bleh"));
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/..\\bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\test/..\\bleh"));
 }
 
 // This tests that path canonicalization is actually disabled if we use \\?\
@@ -100,22 +113,25 @@ TEST(NamedPipePolicyTest, CreatePipeCanonicalization) {
             NamedPipe_Create(2, const_cast<wchar_t**>(argv)));
 }
 
-// The same test as CreatePipe but this time using strict interceptions.
-TEST(NamedPipePolicyTest, CreatePipeStrictInterceptions) {
-  TestRunner runner;
-  runner.GetPolicy()->SetStrictInterceptions();
-
+std::unique_ptr<TestRunner> StrictInterceptionsRunner() {
+  auto runner = std::make_unique<TestRunner>();
+  runner->GetPolicy()->SetStrictInterceptions();
   // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
   // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
-                             TargetPolicy::NAMEDPIPES_ALLOW_ANY,
-                             L"\\\\.\\pipe\\test*"));
+  runner->AddRule(TargetPolicy::SUBSYS_NAMED_PIPES,
+                  TargetPolicy::NAMEDPIPES_ALLOW_ANY, L"\\\\.\\pipe\\test*");
+  return runner;
+}
 
+// The same test as CreatePipe but this time using strict interceptions.
+TEST(NamedPipePolicyTest, CreatePipeStrictInterceptions) {
+  auto runner = StrictInterceptionsRunner();
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\testbleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\testbleh"));
 
+  runner = StrictInterceptionsRunner();
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner.RunTest(L"NamedPipe_Create \\\\.\\pipe\\bleh"));
+            runner->RunTest(L"NamedPipe_Create \\\\.\\pipe\\bleh"));
 }
 
 }  // namespace sandbox
