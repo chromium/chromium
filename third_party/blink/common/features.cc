@@ -890,16 +890,6 @@ const base::Feature kSendCnameAliasesToSubresourceFilterFromRenderer{
     "SendCnameAliasesToSubresourceFilterFromRenderer",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Kill switch for the InterestCohort API origin trial, i.e. if disabled, the
-// API exposure will be disabled regardless of the OT config.
-// (See https://github.com/WICG/floc.)
-const base::Feature kInterestCohortAPIOriginTrial{
-    "InterestCohortAPIOriginTrial", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable the availability of the "interest-cohort" permissions policy.
-const base::Feature kInterestCohortFeaturePolicy{
-    "InterestCohortFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDisableDocumentDomainByDefault{
     "DisableDocumentDomainByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 

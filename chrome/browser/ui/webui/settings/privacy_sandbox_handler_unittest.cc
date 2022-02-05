@@ -5,12 +5,10 @@
 #include "chrome/browser/ui/webui/settings/privacy_sandbox_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/federated_learning/floc_id.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -87,11 +85,6 @@ class PrivacySandboxHandlerTest : public testing::Test {
 };
 
 TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
-  federated_learning::FlocId floc_id = federated_learning::FlocId::CreateValid(
-      123456, base::Time(), base::Time::Now(),
-      /*sorting_lsh_version=*/0);
-  floc_id.SaveToPrefs(profile()->GetTestingPrefService());
-
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId);
   handler()->HandleGetFlocId(&base::Value::AsListValue(args));
@@ -104,11 +97,6 @@ TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
 }
 
 TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
-  federated_learning::FlocId floc_id = federated_learning::FlocId::CreateValid(
-      123456, base::Time(), base::Time::Now(),
-      /*sorting_lsh_version=*/0);
-  floc_id.SaveToPrefs(profile()->GetTestingPrefService());
-
   // Observers of the PrivacySandboxSettings service should be informed that
   // the FLoC ID was reset.
   privacy_sandbox_test_util::MockPrivacySandboxObserver observer;

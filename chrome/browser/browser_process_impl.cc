@@ -97,8 +97,6 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/federated_learning/floc_constants.h"
-#include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -1036,14 +1034,6 @@ BrowserProcessImpl::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
 }
 
-federated_learning::FlocSortingLshClustersService*
-BrowserProcessImpl::floc_sorting_lsh_clusters_service() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!floc_sorting_lsh_clusters_service_)
-    CreateFlocSortingLshClustersService();
-  return floc_sorting_lsh_clusters_service_.get();
-}
-
 StartupData* BrowserProcessImpl::startup_data() {
   return startup_data_;
 }
@@ -1308,12 +1298,6 @@ void BrowserProcessImpl::CreateSubresourceFilterRulesetService() {
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   subresource_filter_ruleset_service_ =
       subresource_filter::RulesetService::Create(local_state(), user_data_dir);
-}
-
-void BrowserProcessImpl::CreateFlocSortingLshClustersService() {
-  DCHECK(!floc_sorting_lsh_clusters_service_);
-  floc_sorting_lsh_clusters_service_ =
-      std::make_unique<federated_learning::FlocSortingLshClustersService>();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

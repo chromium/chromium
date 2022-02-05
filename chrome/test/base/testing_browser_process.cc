@@ -28,7 +28,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
-#include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -281,11 +280,6 @@ TestingBrowserProcess::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
 }
 
-federated_learning::FlocSortingLshClustersService*
-TestingBrowserProcess::floc_sorting_lsh_clusters_service() {
-  return floc_sorting_lsh_clusters_service_.get();
-}
-
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
@@ -522,12 +516,6 @@ void TestingBrowserProcess::SetSafeBrowsingService(
 void TestingBrowserProcess::SetRulesetService(
     std::unique_ptr<subresource_filter::RulesetService> ruleset_service) {
   subresource_filter_ruleset_service_.swap(ruleset_service);
-}
-
-void TestingBrowserProcess::SetFlocSortingLshClustersService(
-    std::unique_ptr<federated_learning::FlocSortingLshClustersService>
-        service) {
-  floc_sorting_lsh_clusters_service_.swap(service);
 }
 
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {

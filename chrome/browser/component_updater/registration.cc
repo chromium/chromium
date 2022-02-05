@@ -20,7 +20,6 @@
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
-#include "chrome/browser/component_updater/floc_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
@@ -127,8 +126,6 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_ANDROID)
 
   RegisterSubresourceFilterComponent(cus);
-  RegisterFlocComponent(cus,
-                        g_browser_process->floc_sorting_lsh_clusters_service());
   RegisterOnDeviceHeadSuggestComponent(
       cus, g_browser_process->GetApplicationLocale());
   RegisterOptimizationHintsComponent(cus);

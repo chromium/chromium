@@ -13,7 +13,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/aborts_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/ad_metrics/floc_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
@@ -141,7 +140,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));
 
-    tracker->AddObserver(std::make_unique<FlocPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<ThirdPartyMetricsObserver>());
     tracker->AddObserver(std::make_unique<FormfillPageLoadMetricsObserver>());
 

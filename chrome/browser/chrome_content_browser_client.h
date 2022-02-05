@@ -665,11 +665,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool user_gesture,
       blink::NavigationDownloadPolicy* download_policy) override;
 
-  blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
-      content::WebContents* web_contents,
-      const GURL& url,
-      const absl::optional<url::Origin>& top_frame_origin) override;
-
   bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
                                   const url::Origin& requesting_origin,
                                   const url::Origin& embedding_origin) override;

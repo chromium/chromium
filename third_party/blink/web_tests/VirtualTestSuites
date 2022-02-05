@@ -789,11 +789,6 @@
     "args": [ "--enable-features=BackForwardCache" ]
   },
   {
-    "prefix": "interest-cohort-api-origin-trial",
-    "bases": [ "http/tests/origin_trials/webexposed/interest-cohort-origin-trial-interfaces.html" ],
-    "args": [ "--enable-features=InterestCohortAPIOriginTrial" ]
-  },
-  {
     "prefix": "third-party-storage-partitioning",
     "bases": [
       "external/wpt/web-locks/partitioned-web-locks.tentative.https.html",

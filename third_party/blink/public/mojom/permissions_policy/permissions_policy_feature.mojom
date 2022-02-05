@@ -125,10 +125,8 @@ enum PermissionsPolicyFeature {
   // Controls access to screen capture via getDisplayMedia().
   kDisplayCapture = 81,
 
-  // Controls the access to the interest cohort as well as the eligibility for
-  // the navigation history entry to be included in the interest cohort
-  // computation. (https://github.com/WICG/floc)
-  kInterestCohort = 82,
+  // [Deprecated]
+  // kInterestCohort = 82,
 
   // Controls whether Autofill may fill fields in that frame when triggered on
   // a field with the main frame's origin.

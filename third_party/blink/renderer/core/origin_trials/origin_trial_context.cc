@@ -502,10 +502,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "TrustTokens")
     return base::FeatureList::IsEnabled(network::features::kTrustTokens);
 
-  if (trial_name == "InterestCohortAPI") {
-    return base::FeatureList::IsEnabled(
-        features::kInterestCohortAPIOriginTrial);
-  }
   if (trial_name == "SpeculationRulesPrefetch") {
     return base::FeatureList::IsEnabled(
         features::kSpeculationRulesPrefetchProxy);

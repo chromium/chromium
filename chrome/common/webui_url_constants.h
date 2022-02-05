@@ -95,7 +95,6 @@ extern const char kChromeUIFeedbackURL[];
 extern const char kChromeUIFileiconURL[];
 extern const char kChromeUIFlagsHost[];
 extern const char kChromeUIFlagsURL[];
-extern const char kChromeUIFlocInternalsHost[];
 extern const char kChromeUIGCMInternalsHost[];
 extern const char kChromeUIHangUIHost[];
 extern const char kChromeUIHelpHost[];

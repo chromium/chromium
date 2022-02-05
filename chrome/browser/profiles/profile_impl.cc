@@ -64,8 +64,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_manager_utils.h"
-#include "chrome/browser/federated_learning/floc_id_provider.h"
-#include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
@@ -823,10 +821,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   SharingServiceFactory::GetForBrowserContext(this);
 
   HttpsFirstModeServiceFactory::GetForProfile(this);
-
-  // The creation of FlocIdProvider should align with the start of a browser
-  // profile session, so initialize it here.
-  federated_learning::FlocIdProviderFactory::GetForProfile(this);
 
   // The Privacy Metrics service should start alongside each profile session.
   PrivacyMetricsServiceFactory::GetForProfile(this);

@@ -102,8 +102,6 @@ class TestingBrowserProcess : public BrowserProcess {
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
-  federated_learning::FlocSortingLshClustersService*
-  floc_sorting_lsh_clusters_service() override;
   BrowserProcessPlatformPart* platform_part() override;
 
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
@@ -158,9 +156,6 @@ class TestingBrowserProcess : public BrowserProcess {
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
   void SetRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
-  void SetFlocSortingLshClustersService(
-      std::unique_ptr<federated_learning::FlocSortingLshClustersService>
-          service);
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
@@ -213,8 +208,6 @@ class TestingBrowserProcess : public BrowserProcess {
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
-  std::unique_ptr<federated_learning::FlocSortingLshClustersService>
-      floc_sorting_lsh_clusters_service_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 

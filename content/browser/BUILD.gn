@@ -844,8 +844,6 @@ source_set("browser") {
     "eye_dropper_chooser_impl.h",
     "feature_observer.cc",
     "feature_observer.h",
-    "federated_learning/floc_service_impl.cc",
-    "federated_learning/floc_service_impl.h",
     "fenced_frame/fenced_frame.cc",
     "fenced_frame/fenced_frame.h",
     "fenced_frame/fenced_frame_url_mapping.cc",

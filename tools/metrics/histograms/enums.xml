@@ -36516,7 +36516,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3684" label="XRFrameGetDepthInformation"/>
   <int value="3685" label="XRCPUDepthInformationGetDepth"/>
   <int value="3686" label="XRCPUDepthInformationDataAttribute"/>
-  <int value="3687" label="InterestCohortAPI_interestCohort_Method"/>
+  <int value="3687" label="OBSOLETE_InterestCohortAPI_interestCohort_Method"/>
   <int value="3688"
       label="OBSOLETE_AddressSpaceLocalEmbeddedInPrivateSecureContext"/>
   <int value="3689"
@@ -37119,7 +37119,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="79" label="Gamepad"/>
   <int value="80" label="OTPCredentials"/>
   <int value="81" label="DisplayCapture"/>
-  <int value="82" label="InterestCohort"/>
+  <int value="82" label="Deprecated: InterestCohort"/>
   <int value="83" label="SharedAutofill"/>
   <int value="84" label="DirectSockets"/>
   <int value="85" label="ClientHintPrefersColorScheme"/>

@@ -46,7 +46,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/federated_learning/features/features.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"

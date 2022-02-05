@@ -13,10 +13,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/federated_learning/features/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -115,7 +113,6 @@ PrivacySandboxService::PrivacySandboxService(
     policy::PolicyService* policy_service,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
-    federated_learning::FlocIdProvider* floc_id_provider,
     content::InterestGroupManager* interest_group_manager,
     profile_metrics::BrowserProfileType profile_type)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
@@ -124,7 +121,6 @@ PrivacySandboxService::PrivacySandboxService(
       policy_service_(policy_service),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
-      floc_id_provider_(floc_id_provider),
       interest_group_manager_(interest_group_manager),
       profile_type_(profile_type) {
   DCHECK(privacy_sandbox_settings_);
@@ -180,52 +176,24 @@ void PrivacySandboxService::DialogActionOccurred(
 std::u16string PrivacySandboxService::GetFlocDescriptionForDisplay() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION,
-      GetNumberOfDaysRoundedAboveOne(
-          federated_learning::kFlocIdScheduledUpdateInterval.Get()));
+      GetNumberOfDaysRoundedAboveOne(base::Days(7)));
 }
 
 std::u16string PrivacySandboxService::GetFlocIdForDisplay() const {
-  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
-      blink::features::kInterestCohortAPIOriginTrial);
-  auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
-
-  if (!privacy_sandbox_settings_->IsFlocAllowed() || !floc_feature_enabled ||
-      !floc_id.IsValid())
-    return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
-
-  return base::NumberToString16(floc_id.ToUint64());
+  return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
 }
 
 std::u16string PrivacySandboxService::GetFlocIdNextUpdateForDisplay(
     const base::Time& current_time) {
-  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
-      blink::features::kInterestCohortAPIOriginTrial);
-
-  if (!floc_id_provider_ || !floc_feature_enabled ||
-      !privacy_sandbox_settings_->IsFlocAllowed()) {
-    return l10n_util::GetStringUTF16(
-        IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID);
-  }
-
-  auto next_compute_time = floc_id_provider_->GetApproximateNextComputeTime();
-
-  // There are no guarantee that the next compute time is in the future. This
-  // should only occur when a compute is soon to occur, so assuming the current
-  // time is suitable.
-  if (next_compute_time < current_time)
-    next_compute_time = current_time;
-
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE,
-      GetNumberOfDaysRoundedAboveOne(next_compute_time - current_time));
+  return l10n_util::GetStringUTF16(
+      IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID);
 }
 
 std::u16string PrivacySandboxService::GetFlocResetExplanationForDisplay()
     const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION,
-      GetNumberOfDaysRoundedAboveOne(
-          federated_learning::kFlocIdScheduledUpdateInterval.Get()));
+      GetNumberOfDaysRoundedAboveOne(base::Days(7)));
 }
 
 std::u16string PrivacySandboxService::GetFlocStatusForDisplay() const {
@@ -235,9 +203,7 @@ std::u16string PrivacySandboxService::GetFlocStatusForDisplay() const {
 }
 
 bool PrivacySandboxService::IsFlocIdResettable() const {
-  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
-      blink::features::kInterestCohortAPIOriginTrial);
-  return floc_feature_enabled && privacy_sandbox_settings_->IsFlocAllowed();
+  return false;
 }
 
 void PrivacySandboxService::ResetFlocId(bool user_initiated) const {

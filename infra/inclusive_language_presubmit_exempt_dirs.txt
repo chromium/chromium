@@ -43,7 +43,6 @@ chrome/browser/download 1 1
 chrome/browser/extensions 2 2
 chrome/browser/extensions/api/commands 3 1
 chrome/browser/extensions/api/identity 1 1
-chrome/browser/federated_learning 1 1
 chrome/browser/feed/android 1 1
 chrome/browser/first_run 1 1
 chrome/browser/mac 1 1
@@ -108,7 +107,6 @@ components/cast/named_message_port_connector 2 2
 components/cbor 2 2
 components/certificate_transparency 1 1
 components/domain_reliability 4 2
-components/federated_learning 1 1
 components/infobars/android/java/src/org/chromium/components/infobars 1 1
 components/metrics 1 1
 components/page_info 2 2

@@ -359,10 +359,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature
     kSendCnameAliasesToSubresourceFilterFromRenderer;
 
-BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortAPIOriginTrial;
-
-BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortFeaturePolicy;
-
 BLINK_COMMON_EXPORT extern const base::Feature kDisableDocumentDomainByDefault;
 
 BLINK_COMMON_EXPORT extern const base::Feature kScopeMemoryCachePerContext;

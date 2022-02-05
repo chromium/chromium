@@ -1264,15 +1264,6 @@
       status: "stable",
     },
     {
-      name: "InterestCohortAPI",
-      origin_trial_feature_name: "InterestCohortAPI",
-      origin_trial_allows_third_party: true,
-    },
-    {
-      name: "InterestCohortFeaturePolicy",
-      status: "experimental",
-    },
-    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
     },

@@ -61,10 +61,6 @@ namespace subresource_filter {
 class RulesetService;
 }
 
-namespace federated_learning {
-class FlocSortingLshClustersService;
-}
-
 namespace variations {
 class VariationsService;
 }
@@ -220,11 +216,6 @@ class BrowserProcess {
   // Browsing subresource filter.
   virtual subresource_filter::RulesetService*
   subresource_filter_ruleset_service() = 0;
-
-  // Returns the service providing versioned storage for a list of limit values
-  // for calculating the floc based on SortingLSH.
-  virtual federated_learning::FlocSortingLshClustersService*
-  floc_sorting_lsh_clusters_service() = 0;
 
   // Returns the StartupData which owns any pre-created objects in //chrome
   // before the full browser starts.

@@ -192,8 +192,6 @@ class BrowserProcessImpl : public BrowserProcess,
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
-  federated_learning::FlocSortingLshClustersService*
-  floc_sorting_lsh_clusters_service() override;
 
   StartupData* startup_data() override;
 
@@ -243,8 +241,6 @@ class BrowserProcessImpl : public BrowserProcess,
   void CreateBackgroundPrintingManager();
   void CreateSafeBrowsingService();
   void CreateSubresourceFilterRulesetService();
-  void CreateFlocBlocklistService();
-  void CreateFlocSortingLshClustersService();
   void CreateOptimizationGuideService();
   void CreateStatusTray();
   void CreateBackgroundModeManager();
@@ -345,9 +341,6 @@ class BrowserProcessImpl : public BrowserProcess,
   bool created_subresource_filter_ruleset_service_ = false;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
-
-  std::unique_ptr<federated_learning::FlocSortingLshClustersService>
-      floc_sorting_lsh_clusters_service_;
 
   bool shutting_down_ = false;
 

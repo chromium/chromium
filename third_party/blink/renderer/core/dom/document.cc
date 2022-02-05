@@ -78,7 +78,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_interest_cohort.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
@@ -6003,68 +6002,6 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
                 resolver);
           },
           WrapWeakPersistent(resolver), WrapWeakPersistent(this)));
-
-  return promise;
-}
-
-mojom::blink::FlocService* Document::GetFlocService(
-    ExecutionContext* execution_context) {
-  if (!data_->floc_service_.is_bound()) {
-    execution_context->GetBrowserInterfaceBroker().GetInterface(
-        data_->floc_service_.BindNewPipeAndPassReceiver(
-            execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  }
-  return data_->floc_service_.get();
-}
-
-ScriptPromise Document::interestCohort(ScriptState* script_state,
-                                       ExceptionState& exception_state) {
-  if (!GetFrame()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "A browsing context is required when calling document.interestCohort.");
-    return ScriptPromise();
-  }
-
-  if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kInterestCohort)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The \"interest-cohort\" Permissions Policy denied the use of "
-        "document.interestCohort.");
-    return ScriptPromise();
-  }
-
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  ScriptPromise promise = resolver->Promise();
-
-  GetFlocService(ExecutionContext::From(script_state))
-      ->GetInterestCohort(WTF::Bind(
-          [](ScriptPromiseResolver* resolver, Document* document,
-             mojom::blink::InterestCohortPtr interest_cohort) {
-            DCHECK(resolver);
-            DCHECK(document);
-
-            if (interest_cohort->version.IsEmpty()) {
-              ScriptState* state = resolver->GetScriptState();
-              ScriptState::Scope scope(state);
-
-              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                  state->GetIsolate(), DOMExceptionCode::kDataError,
-                  "Failed to get the interest cohort: either it is "
-                  "unavailable, or preferences or content settings have "
-                  "denied access."));
-            } else {
-              InterestCohort* result = InterestCohort::Create();
-              result->setId(interest_cohort->id);
-              result->setVersion(interest_cohort->version);
-
-              resolver->Resolve(result);
-            }
-          },
-          WrapPersistent(resolver), WrapPersistent(this)));
 
   return promise;
 }

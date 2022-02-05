@@ -23,7 +23,6 @@
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/eye_dropper_chooser_impl.h"
-#include "content/browser/federated_learning/floc_service_impl.h"
 #include "content/browser/handwriting/handwriting_recognition_service_factory.h"
 #include "content/browser/image_capture/image_capture_impl.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
@@ -1092,8 +1091,6 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&ContentIndexServiceImpl::CreateForFrame));
   map->Add<blink::mojom::KeyboardLockService>(
       base::BindRepeating(&KeyboardLockServiceImpl::CreateMojoService));
-  map->Add<blink::mojom::FlocService>(
-      base::BindRepeating(&FlocServiceImpl::CreateMojoService));
   if (base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
     map->Add<blink::mojom::AdAuctionService>(
         base::BindRepeating(&AdAuctionServiceImpl::CreateMojoService));

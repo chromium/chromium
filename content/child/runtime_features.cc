@@ -359,8 +359,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching},
           {"ForceSynchronousHTMLParsing",
            blink::features::kForceSynchronousHTMLParsing},
-          {"InterestCohortFeaturePolicy",
-           blink::features::kInterestCohortFeaturePolicy},
           {"LateFormNewlineNormalization",
            blink::features::kLateFormNewlineNormalization},
           {"LayoutNG", blink::features::kLayoutNG},

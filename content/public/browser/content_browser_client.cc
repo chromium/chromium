@@ -67,7 +67,6 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
@@ -1122,13 +1121,6 @@ void ContentBrowserClient::AugmentNavigationDownloadPolicy(
     RenderFrameHost* frame_host,
     bool user_gesture,
     blink::NavigationDownloadPolicy* download_policy) {}
-
-blink::mojom::InterestCohortPtr ContentBrowserClient::GetInterestCohortForJsApi(
-    WebContents* web_contents,
-    const GURL& url,
-    const absl::optional<url::Origin>& top_frame_origin) {
-  return blink::mojom::InterestCohort::New();
-}
 
 bool ContentBrowserClient::IsBluetoothScanningBlocked(
     content::BrowserContext* browser_context,

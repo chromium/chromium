@@ -203,8 +203,6 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_input_device_capabilities_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_input_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_input_event_init.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_interest_cohort.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_interest_cohort.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_result_options.cc",

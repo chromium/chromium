@@ -308,7 +308,6 @@ test("components_unittests") {
       "//components/embedder_support:unit_tests",
       "//components/enterprise/content:unit_tests",
       "//components/favicon/content:unit_tests",
-      "//components/federated_learning:unit_tests",
       "//components/feed:unit_tests",
       "//components/gcm_driver/instance_id:unit_tests",
       "//components/heavy_ad_intervention:unit_tests",

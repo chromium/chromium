@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_service.h"
@@ -85,7 +84,6 @@ class PrivacySandboxService : public KeyedService,
                         policy::PolicyService* policy_service,
                         syncer::SyncService* sync_service,
                         signin::IdentityManager* identity_manager,
-                        federated_learning::FlocIdProvider* floc_id_provider,
                         content::InterestGroupManager* interest_group_manager,
                         profile_metrics::BrowserProfileType profile_type);
   ~PrivacySandboxService() override;
@@ -277,7 +275,6 @@ class PrivacySandboxService : public KeyedService,
   raw_ptr<policy::PolicyService> policy_service_;
   raw_ptr<syncer::SyncService> sync_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<federated_learning::FlocIdProvider> floc_id_provider_;
   raw_ptr<content::InterestGroupManager> interest_group_manager_;
   profile_metrics::BrowserProfileType profile_type_;
 

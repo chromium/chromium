@@ -255,12 +255,6 @@
       depends_on: ["IdleDetection"],
     },
     {
-      name: "InterestCohort",
-      permissions_policy_name: "interest-cohort",
-      feature_default: "EnableForAll",
-      depends_on: ["InterestCohortFeaturePolicy"],
-    },
-    {
       name: "JoinAdInterestGroup",
       permissions_policy_name: "join-ad-interest-group",
       feature_default: "EnableForAll",

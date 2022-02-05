@@ -99,7 +99,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
-#include "components/federated_learning/floc_id.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
@@ -456,6 +455,21 @@
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 namespace {
+
+// Deprecated 02/2022
+const char kFlocIdValuePrefKey[] = "federated_learning.floc_id.value";
+const char kFlocIdStatusPrefKey[] = "federated_learning.floc_id.status";
+const char kFlocIdHistoryBeginTimePrefKey[] =
+    "federated_learning.floc_id.history_begin_time";
+const char kFlocIdHistoryEndTimePrefKey[] =
+    "federated_learning.floc_id.history_end_time";
+const char kFlocIdFinchConfigVersionPrefKey[] =
+    "federated_learning.floc_id.finch_config_version";
+const char kFlocIdSortingLshVersionPrefKey[] =
+    "federated_learning.floc_id.sorting_lsh_version";
+const char kFlocIdComputeTimePrefKey[] =
+    "federated_learning.floc_id.compute_time";
+
 // Deprecated 10/2021
 const char kTabStripStackedLayout[] = "tab-strip-stacked-layout";
 
@@ -955,6 +969,14 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kDataSaverEnabled, false);
   registry->RegisterBooleanPref(kDataReductionProxyWasEnabledBefore, false);
   registry->RegisterInt64Pref(kDataReductionProxyLastEnabledTime, 0L);
+
+  registry->RegisterUint64Pref(kFlocIdValuePrefKey, 0);
+  registry->RegisterIntegerPref(kFlocIdStatusPrefKey, 0);
+  registry->RegisterTimePref(kFlocIdHistoryBeginTimePrefKey, base::Time());
+  registry->RegisterTimePref(kFlocIdHistoryEndTimePrefKey, base::Time());
+  registry->RegisterUint64Pref(kFlocIdFinchConfigVersionPrefKey, 0);
+  registry->RegisterUint64Pref(kFlocIdSortingLshVersionPrefKey, 0);
+  registry->RegisterTimePref(kFlocIdComputeTimePrefKey, base::Time());
 }
 
 }  // namespace
@@ -1215,7 +1237,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   dom_distiller::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
-  federated_learning::FlocId::RegisterPrefs(registry);
   history_clusters::prefs::RegisterProfilePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);
@@ -1862,6 +1883,15 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 02/2022.
   web_app::WebAppProvider::MigrateProfilePrefs(profile);
 #endif
+
+  // Added 02/2022
+  profile_prefs->ClearPref(kFlocIdValuePrefKey);
+  profile_prefs->ClearPref(kFlocIdStatusPrefKey);
+  profile_prefs->ClearPref(kFlocIdHistoryBeginTimePrefKey);
+  profile_prefs->ClearPref(kFlocIdHistoryEndTimePrefKey);
+  profile_prefs->ClearPref(kFlocIdFinchConfigVersionPrefKey);
+  profile_prefs->ClearPref(kFlocIdSortingLshVersionPrefKey);
+  profile_prefs->ClearPref(kFlocIdComputeTimePrefKey);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

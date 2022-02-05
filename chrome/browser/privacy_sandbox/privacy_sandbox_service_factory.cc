@@ -6,7 +6,6 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -38,7 +37,6 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(federated_learning::FlocIdProviderFactory::GetInstance());
 }
 
 KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
@@ -50,7 +48,6 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       profile->GetProfilePolicyConnector()->policy_service(),
       SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      federated_learning::FlocIdProviderFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
       profile_metrics::GetBrowserProfileType(profile));
 }

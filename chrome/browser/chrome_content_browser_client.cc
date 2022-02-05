@@ -51,9 +51,6 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/federated_learning/floc_eligibility_observer.h"
-#include "chrome/browser/federated_learning/floc_id_provider.h"
-#include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/first_party_sets/first_party_sets_util.h"
 #include "chrome/browser/font_family_cache.h"
@@ -307,7 +304,6 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/switches.h"
-#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -5920,25 +5916,6 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
       }
     }
   }
-}
-
-blink::mojom::InterestCohortPtr
-ChromeContentBrowserClient::GetInterestCohortForJsApi(
-    content::WebContents* web_contents,
-    const GURL& url,
-    const absl::optional<url::Origin>& top_frame_origin) {
-  federated_learning::FlocEligibilityObserver::GetOrCreateForCurrentDocument(
-      web_contents->GetMainFrame())
-      ->OnInterestCohortApiUsed();
-
-  federated_learning::FlocIdProvider* floc_id_provider =
-      federated_learning::FlocIdProviderFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-
-  if (!floc_id_provider)
-    return blink::mojom::InterestCohort::New();
-
-  return floc_id_provider->GetInterestCohortForJsApi(url, top_frame_origin);
 }
 
 bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(
