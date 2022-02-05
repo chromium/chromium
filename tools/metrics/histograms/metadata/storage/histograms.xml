@@ -484,6 +484,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Database.Destruction"
+    units="BooleanDestroyed" expires_after="2023-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether destruction was successful after a catastrophic error that occurred
+    in Shared Storage. Recorded by
+    SharedStorageDatabase::DatabaseErrorCallback() just after the SQLite
+    database called RazeAndClose() and then, if it was file-backed,
+    SharedStorageDatabase attempted to delete the file.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.Error" enum="SqliteErrorCode"
+    expires_after="2023-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Errors that occur in Shared Storage. Recorded by
+    SharedStorageDatabase::DatabaseErrorCallback() just before the SQLite
+    database determines whether the error is catastrophic and handles it
+    accordingly.
+  </summary>
+</histogram>
+
 <histogram name="Storage.StoragePressure.Bubble"
     enum="StoragePressureBubbleUserAction" expires_after="2022-03-12">
   <owner>jarrydg@chromium.org</owner>

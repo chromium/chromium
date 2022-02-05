@@ -77,6 +77,12 @@ source_set("storage") {
     "service_worker/service_worker_storage.h",
     "service_worker/service_worker_storage_control_impl.cc",
     "service_worker/service_worker_storage_control_impl.h",
+    "shared_storage/async_shared_storage_database.cc",
+    "shared_storage/async_shared_storage_database.h",
+    "shared_storage/shared_storage_database.cc",
+    "shared_storage/shared_storage_database.h",
+    "shared_storage/shared_storage_options.cc",
+    "shared_storage/shared_storage_options.h",
     "storage_service_impl.cc",
     "storage_service_impl.h",
   ]
@@ -90,6 +96,7 @@ source_set("storage") {
     "//components/services/storage/service_worker:service_worker_proto",
     "//mojo/public/cpp/bindings",
     "//sql",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/common",
     "//third_party/leveldatabase",
     "//url",
@@ -101,6 +108,7 @@ source_set("storage") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//storage/browser",
     "//storage/common",
   ]
 }
@@ -136,6 +144,18 @@ component("test_api_stubs") {
   defines = [ "IS_STORAGE_SERVICE_TEST_API_STUBS_IMPL" ]
 }
 
+bundle_data("tests_bundle_data") {
+  visibility = [ ":tests" ]
+  testonly = true
+  sources = [
+    "//components/test/data/storage/shared_storage.v0.init_too_old.sql",
+    "//components/test/data/storage/shared_storage.v1.init_too_new.sql",
+    "//components/test/data/storage/shared_storage.v1.sql",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 source_set("tests") {
   testonly = true
 
@@ -164,12 +184,15 @@ source_set("tests") {
     "service_worker/service_worker_storage_test_utils.cc",
     "service_worker/service_worker_storage_test_utils.h",
     "service_worker/service_worker_storage_unittest.cc",
+    "shared_storage/async_shared_storage_database_unittest.cc",
+    "shared_storage/shared_storage_database_unittest.cc",
     "storage_service_impl_unittest.cc",
   ]
 
   deps = [
     ":storage",
     ":test_support",
+    ":tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//components/services/storage/public/cpp",
@@ -180,8 +203,13 @@ source_set("tests") {
     "//mojo/public/cpp/system",
     "//net",
     "//net:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//storage/browser:browser",
+    "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/sqlite",
   ]
 
   data = [ "//components/services/storage/test_data/" ]
@@ -201,11 +229,14 @@ source_set("test_support") {
     "indexed_db/leveldb/mock_level_db.h",
     "indexed_db/scopes/leveldb_scopes_test_utils.cc",
     "indexed_db/scopes/leveldb_scopes_test_utils.h",
+    "shared_storage/shared_storage_test_utils.cc",
+    "shared_storage/shared_storage_test_utils.h",
   ]
 
   deps = [
     ":storage",
     "//base/test:test_support",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/leveldatabase",

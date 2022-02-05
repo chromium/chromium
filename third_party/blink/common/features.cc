@@ -208,6 +208,32 @@ const base::Feature kSharedStorageAPI{"SharedStorageAPI",
 const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit{
         &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 5};
+const base::FeatureParam<int> kMaxSharedStorageStringLength = {
+    &kSharedStorageAPI, "MaxSharedStorageStringLength", 1024};
+const base::FeatureParam<int> kMaxSharedStorageEntriesPerOrigin = {
+    &kSharedStorageAPI, "MaxSharedStorageEntriesPerOrigin", 10000};
+const base::FeatureParam<int> kMaxSharedStoragePageSize = {
+    &kSharedStorageAPI, "MaxSharedStoragePageSize", 4096};
+const base::FeatureParam<int> kMaxSharedStorageCacheSize = {
+    &kSharedStorageAPI, "MaxSharedStorageCacheSize", 1024};
+const base::FeatureParam<int> kMaxSharedStorageInitTries = {
+    &kSharedStorageAPI, "MaxSharedStorageInitTries", 2};
+const base::FeatureParam<int>
+    kMaxSharedStorageConsecutiveOperationErrorsAllowed = {
+        &kSharedStorageAPI, "MaxSharedStorageConsecutiveOperationErrorsAllowed",
+        8};
+const base::FeatureParam<base::TimeDelta>
+    kSharedStorageStaleOriginPurgeInitialInterval = {
+        &kSharedStorageAPI, "SharedStorageStaleOriginPurgeInitialInterval",
+        base::Minutes(15)};
+const base::FeatureParam<base::TimeDelta>
+    kSharedStorageStaleOriginPurgeRecurringInterval = {
+        &kSharedStorageAPI, "SharedStorageStaleOriginPurgeRecurringInterval",
+        base::Hours(2)};
+const base::FeatureParam<base::TimeDelta>
+    kSharedStorageOriginStalenessThreshold = {
+        &kSharedStorageAPI, "SharedStorageOriginStalenessThreshold",
+        base::Days(60)};
 
 // Enables the Prerender2 feature: https://crbug.com/1126305
 // Note that default enabling this does not enable the Prerender2 features

@@ -70,8 +70,48 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     kFencedFramesImplementationTypeParam;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSharedStorageAPI;
+// Maximum number of URLs allowed to be included in the input parameter for
+// runURLSelectionOperation().
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit;
+// Maximum length of Shared Storage script key and script value.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxSharedStorageStringLength;
+// Maximum number of database entries at a time that any single origin is
+// permitted.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxSharedStorageEntriesPerOrigin;
+// Maximum database page size in bytes. Must be a power of two between
+// 512 and 65536, inclusive.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxSharedStoragePageSize;
+// Maximum database in-memory cache size, in pages.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxSharedStorageCacheSize;
+// Maximum number of tries to initialize the database.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxSharedStorageInitTries;
+// Maximum number of consecutive database errors allowed before the database is
+// razed. Consecutive errors are tallied, and if the next database operation
+// returns successfully, the consecutive error count is reset back to zero. If
+// the consecutive error count exceeds the threshold, then the database is
+// destroyed and recreated.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxSharedStorageConsecutiveOperationErrorsAllowed;
+// The length of the initial interval from service startup after which
+// SharedStorageManager first checks for any stale origins, purging any that it
+// finds.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSharedStorageStaleOriginPurgeInitialInterval;
+// The length of the second and subsequent intervals from service startup after
+// which SharedStorageManager checks for any stale origins, purging any that it
+// finds.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSharedStorageStaleOriginPurgeRecurringInterval;
+// The length of time that an origin must be inactive for it to be deemed stale
+// and hence necessary to auto-purge.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSharedStorageOriginStalenessThreshold;
 
 // Prerender2:
 // Enables the Prerender2 feature: https://crbug.com/1126305
