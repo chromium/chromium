@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -23,8 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -99,8 +98,6 @@ public final class WebFeedFollowIntroControllerTest {
     private PrefService mPrefService;
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
-    @Captor
-    private ArgumentCaptor<WebFeedBridge.WebFeedPageInformation> mPageInformationCaptor;
 
     private Activity mActivity;
     private EmptyTabObserver mEmptyTabObserver;
@@ -459,13 +456,18 @@ public final class WebFeedFollowIntroControllerTest {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl, subscriptionStatus,
                         WebFeedAvailabilityStatus.ACTIVE, isRecommended, sFaviconUrl);
+
         doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
+            assertEquals("Incorrect WebFeedPageInformationRequestReason was used.",
+                    WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION,
+                    invocation.<Integer>getArgument(1).intValue());
+            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2).onResult(
                     webFeedMetadata);
             return null;
         })
                 .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForPage(mPageInformationCaptor.capture(), any(Callback.class));
+                .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
+                        any(Callback.class));
 
         mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
         mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);

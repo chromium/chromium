@@ -93073,6 +93073,18 @@ others/histograms.xml -->
   <int value="3" label="Transferred WebContents"/>
 </enum>
 
+<enum name="WebFeedPageInformationRequestReason">
+  <int value="0" label="User Requested Follow">
+    The user requested to Follow the current web page.
+  </int>
+  <int value="1" label="Follow Recommendation">
+    A Follow recommendation is being considered the current web page.
+  </int>
+  <int value="2" label="Menu Item Presentation">
+    The Follow menu item state needs to reflect the current web page.
+  </int>
+</enum>
+
 <enum name="WebFeedPostFollowDialogPresentation">
   <int value="0"
       label="Available - Post-follow dialog for an available web feed"/>

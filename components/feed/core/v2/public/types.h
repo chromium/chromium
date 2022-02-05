@@ -225,6 +225,27 @@ std::ostream& operator<<(std::ostream& out,
 
 using NetworkRequestId = base::IdTypeU32<class NetworkRequestIdClass>;
 
+// Values for the UMA
+// ContentSuggestions.Feed.WebFeed.PageInformationRequested histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This must be kept in sync with
+// WebFeedPageInformationRequestReason in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
+enum class WebFeedPageInformationRequestReason : int {
+  // The user requested to Follow the current web page.
+  kUserRequestedFollow = 0,
+  // A Follow recommendation is being considered the current web page.
+  kFollowRecommendation = 1,
+  // The Follow menu item state needs to reflect the current web page.
+  kMenuItemPresentation = 2,
+
+  kMaxValue = kMenuItemPresentation,
+};
+
+// For testing and debugging only.
+std::ostream& operator<<(std::ostream& out,
+                         WebFeedPageInformationRequestReason value);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_

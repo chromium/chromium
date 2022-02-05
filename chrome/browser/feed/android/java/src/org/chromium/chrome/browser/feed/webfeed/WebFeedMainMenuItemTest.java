@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed.webfeed;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
@@ -107,12 +108,16 @@ public final class WebFeedMainMenuItemTest {
 
         // Add requests for web feed information to mWaitingMetadataCallbacks.
         doAnswer(invocation -> {
+            assertEquals("Incorrect WebFeedPageInformationRequestReason was used.",
+                    WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION,
+                    invocation.<Integer>getArgument(1).intValue());
             mWaitingMetadataCallbacks.add(
-                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1));
+                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2));
             return null;
         })
                 .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForPage(any(), any(Callback.class));
+                .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
+                        any(Callback.class));
 
         mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
                 R.layout.web_feed_main_menu_item, null));

@@ -154,4 +154,16 @@ std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value) {
   return out << " }";
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         WebFeedPageInformationRequestReason value) {
+  switch (value) {
+    case WebFeedPageInformationRequestReason::kUserRequestedFollow:
+      return out << "kUserRequestedFollow";
+    case WebFeedPageInformationRequestReason::kFollowRecommendation:
+      return out << "kFollowRecommendation";
+    case WebFeedPageInformationRequestReason::kMenuItemPresentation:
+      return out << "kMenuItemPresentation";
+  }
+}
+
 }  // namespace feed

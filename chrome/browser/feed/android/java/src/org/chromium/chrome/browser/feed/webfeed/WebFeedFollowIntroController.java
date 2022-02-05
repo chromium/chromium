@@ -416,9 +416,9 @@ public class WebFeedFollowIntroController {
                 return;
             }
 
-            WebFeedBridge.getWebFeedMetadataForPage(request.tab, request.url, result -> {
-                // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it
-                // is already followed.
+            Callback<WebFeedBridge.WebFeedMetadata> metadata_callback = result -> {
+                // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it is
+                // already followed.
                 if (result != null && result.id != null && result.id.length > 0
                         && result.isRecommended
                         && result.subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
@@ -440,7 +440,10 @@ public class WebFeedFollowIntroController {
 
                     sendResult(request, null);
                 }
-            });
+            };
+
+            WebFeedBridge.getWebFeedMetadataForPage(request.tab, request.url,
+                    WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION, metadata_callback);
         }
         private void sendResult(Request request, RecommendedWebFeedInfo result) {
             if (mRequest == request) {

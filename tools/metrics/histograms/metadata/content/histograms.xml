@@ -1287,6 +1287,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.PageInformationRequested"
+    enum="WebFeedPageInformationRequestReason" expires_after="2023-03-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Records the reason why the web feeds system is requesting information from
+    the renderer process about a loaded web page.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.PostFollowDialog.Show"
     enum="WebFeedPostFollowDialogPresentation" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
