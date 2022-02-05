@@ -419,7 +419,7 @@ const base::Feature kIdleDetection{"IdleDetection",
 // Note that navigation_start does not take into account the amount of time the
 // renderer spends processing the IPC (that is, executing script).
 const base::Feature kIncludeIpcOverheadInNavigationStart{
-    "IncludeIpcOverheadInNavigationStart", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IncludeIpcOverheadInNavigationStart", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Kill switch for the GetInstalledRelatedApps API.
 const base::Feature kInstalledApp{"InstalledApp",
