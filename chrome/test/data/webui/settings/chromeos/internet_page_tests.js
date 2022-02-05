@@ -311,6 +311,31 @@ suite('InternetPage', function() {
       }
 
       test(
+          'should show add VPN button when allow only policy WiFi networks ' +
+              'to connect is enabled',
+          async function() {
+            await init();
+            internetPage.globalPolicy_ = {
+              allowOnlyPolicyWifiNetworksToConnect: true,
+            };
+            clickAddConnectionsButton();
+
+            const mojom = chromeos.networkConfig.mojom;
+            setNetworksForTest([
+              OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
+            ]);
+            mojoApi_.setDeviceStateForTest({
+              type: mojom.NetworkType.kVPN,
+              deviceState: mojom.DeviceStateType.kEnabled
+            });
+
+            return flushAsync().then(() => {
+              assertTrue(
+                  test_util.isVisible(internetPage.$$('#add-vpn-label')));
+            });
+          });
+
+      test(
           'should show VPN policy indicator when VPN is disabled',
           async function() {
             await init();
