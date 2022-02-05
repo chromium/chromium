@@ -24,6 +24,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -238,6 +239,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1293942")
     public void signinWhenChildAccountIsFirstAccount() {
         final CoreAccountInfo childAccount = mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
