@@ -32,10 +32,12 @@
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
@@ -99,6 +101,34 @@ GetReorderUndoContainerViewFromFullscreenAppList() {
       ->apps_container_view()
       ->reorder_undo_container_for_test();
 }
+
+// AppListVisibilityChangedWaiter ----------------------------------------------
+
+// Waits until the app list visibility changes.
+class AppListVisibilityChangedWaiter : public AppListControllerObserver {
+ public:
+  AppListVisibilityChangedWaiter() = default;
+  AppListVisibilityChangedWaiter(const AppListVisibilityChangedWaiter&) =
+      delete;
+  AppListVisibilityChangedWaiter& operator=(
+      const AppListVisibilityChangedWaiter&) = delete;
+  ~AppListVisibilityChangedWaiter() override {
+    AppListController::Get()->RemoveObserver(this);
+  }
+
+  void Wait() {
+    AppListController::Get()->AddObserver(this);
+    run_loop_.Run();
+  }
+
+  // AppListControllerObserver:
+  void OnAppListVisibilityChanged(bool shown, int64_t display_id) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
 
 // WindowAddedWaiter -----------------------------------------------------------
 
@@ -187,9 +217,18 @@ void AppListTestApi::WaitForBubbleWindow(bool wait_for_opening_animation) {
 }
 
 void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
+  // Ensure that the app list is visible before waiting for animations.
+  AppListController* controller = AppListControllerImpl::Get();
+  if (!controller->IsVisible()) {
+    AppListVisibilityChangedWaiter waiter;
+    waiter.Wait();
+    if (!controller->IsVisible()) {
+      ADD_FAILURE() << "Launcher is not visible.";
+    }
+  }
+
   // Wait for the app list window animation.
-  aura::Window* app_list_window =
-      Shell::Get()->app_list_controller()->GetWindow();
+  aura::Window* app_list_window = controller->GetWindow();
   DCHECK(app_list_window);
   LayerAnimationStoppedWaiter().Wait(app_list_window->layer());
 
@@ -204,7 +243,17 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
   if (!scrollable_apps_grid_view->layer())
     return;
 
-  // Wait for the apps grid animation.
+  // Wait for the animation to show the bubble view.
+  LayerAnimationStoppedWaiter().Wait(GetAppListBubbleView()->layer());
+
+  // Wait for the animation to show the apps page.
+  LayerAnimationStoppedWaiter().Wait(GetAppListBubbleView()
+                                         ->apps_page_for_test()
+                                         ->scroll_view()
+                                         ->contents()
+                                         ->layer());
+
+  // Wait for the apps grid slide animation.
   LayerAnimationStoppedWaiter().Wait(scrollable_apps_grid_view->layer());
 }
 
@@ -242,8 +291,8 @@ std::string AppListTestApi::CreateFolderWithApps(
   DCHECK_GE(apps.size(), 2u);
 
   AppListModel* model = GetAppListModel();
-  // Create a folder using the first two apps, and add the others to the folder
-  // iteratively.
+  // Create a folder using the first two apps, and add the others to the
+  // folder iteratively.
   std::string folder_id = model->MergeItems(apps[0], apps[1]);
   // Return early if MergeItems failed.
   if (folder_id.empty())
