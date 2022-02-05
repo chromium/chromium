@@ -517,7 +517,7 @@ void AnimationTimelinesTest::TickAnimationsTransferEvents(
 
 KeyframeEffect* AnimationTimelinesTest::GetKeyframeEffectForElementId(
     ElementId element_id) {
-  const scoped_refptr<ElementAnimations> element_animations =
+  const scoped_refptr<const ElementAnimations> element_animations =
       host_->GetElementAnimationsForElementId(element_id);
   return element_animations
              ? element_animations->FirstKeyframeEffectForTesting()
@@ -526,7 +526,7 @@ KeyframeEffect* AnimationTimelinesTest::GetKeyframeEffectForElementId(
 
 KeyframeEffect* AnimationTimelinesTest::GetImplKeyframeEffectForLayerId(
     ElementId element_id) {
-  const scoped_refptr<ElementAnimations> element_animations =
+  const scoped_refptr<const ElementAnimations> element_animations =
       host_impl_->GetElementAnimationsForElementId(element_id);
   return element_animations
              ? element_animations->FirstKeyframeEffectForTesting()

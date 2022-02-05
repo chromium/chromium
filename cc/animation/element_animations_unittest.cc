@@ -174,7 +174,7 @@ TEST_F(ElementAnimationsTest, AddRemoveAnimations) {
   timeline_->AttachAnimation(animation_);
   animation_->AttachElement(element_id_);
 
-  scoped_refptr<ElementAnimations> element_animations =
+  scoped_refptr<const ElementAnimations> element_animations =
       animation_->keyframe_effect()->element_animations();
   EXPECT_TRUE(element_animations);
 
@@ -198,7 +198,7 @@ TEST_F(ElementAnimationsTest, AddRemoveAnimations) {
   PushProperties();
   GetImplTimelineAndAnimationByID();
 
-  scoped_refptr<ElementAnimations> element_animations_impl =
+  scoped_refptr<const ElementAnimations> element_animations_impl =
       animation_impl_->keyframe_effect()->element_animations();
   EXPECT_TRUE(element_animations_impl);
 
@@ -3982,7 +3982,8 @@ TEST_F(ElementAnimationsTest, ClientAnimationState) {
 
   // The client should call this function which should refresh all data of the
   // client.
-  element_animations_->InitClientAnimationState();
+  const_cast<ElementAnimations*>(element_animations_.get())
+      ->InitClientAnimationState();
   EXPECT_TRUE(layer->is_currently_animating(TargetProperty::TRANSFORM));
   EXPECT_EQ(1.f, layer->maximum_animation_scale());
 }

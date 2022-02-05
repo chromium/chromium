@@ -87,7 +87,7 @@ class CC_ANIMATION_EXPORT AnimationTimeline
 
   void EraseAnimation(scoped_refptr<Animation> animation);
 
-  int id_;
+  const int id_;
   raw_ptr<AnimationHost> animation_host_;
   bool needs_push_properties_;
 

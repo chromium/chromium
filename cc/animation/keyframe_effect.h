@@ -49,7 +49,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   KeyframeEffect& operator=(const KeyframeEffect&) = delete;
 
   // ElementAnimations object where this controller is listed.
-  scoped_refptr<ElementAnimations> element_animations() const {
+  scoped_refptr<const ElementAnimations> element_animations() const {
     return element_animations_;
   }
 

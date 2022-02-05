@@ -77,9 +77,15 @@ std::unique_ptr<MutatorHost> AnimationHost::CreateImplInstance() const {
   return mutator_host_impl;
 }
 
-AnimationTimeline* AnimationHost::GetTimelineById(int timeline_id) const {
+const AnimationTimeline* AnimationHost::GetTimelineById(int timeline_id) const {
   auto f = id_to_timeline_map_.Read(*this).find(timeline_id);
   return f == id_to_timeline_map_.Read(*this).end() ? nullptr : f->second.get();
+}
+
+AnimationTimeline* AnimationHost::GetTimelineById(int timeline_id) {
+  auto f = id_to_timeline_map_.Write(*this).find(timeline_id);
+  return f == id_to_timeline_map_.Write(*this).end() ? nullptr
+                                                     : f->second.get();
 }
 
 void AnimationHost::ClearMutators() {
@@ -165,7 +171,7 @@ bool AnimationHost::NextFrameHasPendingRAF() const {
 }
 
 void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
-  for (auto map_entry : element_to_animations_map_.Read(*this)) {
+  for (auto map_entry : element_to_animations_map_.Write(*this)) {
     // kReservedElementId is reserved for a paint worklet element that animates
     // a custom property. This element is assumed to always be present as no
     // element is needed to tick this animation.
@@ -180,7 +186,7 @@ void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
 }
 
 void AnimationHost::InitClientAnimationState() {
-  for (auto map_entry : element_to_animations_map_.Read(*this))
+  for (auto map_entry : element_to_animations_map_.Write(*this))
     map_entry.second->InitClientAnimationState();
 }
 
@@ -338,7 +344,7 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
 void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {
   for (auto& kv : id_to_timeline_map_.Read(*this)) {
     auto& timeline = kv.second;
-    AnimationTimeline* timeline_impl =
+    const AnimationTimeline* timeline_impl =
         host_impl->GetTimelineById(timeline->id());
     if (timeline_impl)
       continue;
@@ -389,8 +395,8 @@ void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
   }
 
   // Update the impl-only scroll offset animations.
-  scroll_offset_animations_.Read(*this)->PushPropertiesTo(
-      host_impl->scroll_offset_animations_impl_.Read(*host_impl).get());
+  scroll_offset_animations_.Write(*this)->PushPropertiesTo(
+      host_impl->scroll_offset_animations_impl_.Write(*host_impl).get());
 
   // The pending info list is cleared in LayerTreeHostImpl::CommitComplete
   // and should be empty when pushing properties.
@@ -399,13 +405,22 @@ void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
       TakePendingThroughputTrackerInfos();
 }
 
-scoped_refptr<ElementAnimations>
+scoped_refptr<const ElementAnimations>
 AnimationHost::GetElementAnimationsForElementId(ElementId element_id) const {
   if (!element_id)
     return nullptr;
   auto iter = element_to_animations_map_.Read(*this).find(element_id);
   return iter == element_to_animations_map_.Read(*this).end() ? nullptr
                                                               : iter->second;
+}
+
+scoped_refptr<ElementAnimations>
+AnimationHost::GetElementAnimationsForElementId(ElementId element_id) {
+  if (!element_id)
+    return nullptr;
+  auto iter = element_to_animations_map_.Write(*this).find(element_id);
+  return iter == element_to_animations_map_.Write(*this).end() ? nullptr
+                                                               : iter->second;
 }
 
 gfx::PointF AnimationHost::GetScrollOffsetForAnimation(
@@ -739,7 +754,7 @@ void AnimationHost::ImplOnlyAutoScrollAnimationCreate(
     float autoscroll_velocity,
     base::TimeDelta animation_start_offset) {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
-  scroll_offset_animations_impl_.Read(*this)->AutoScrollAnimationCreate(
+  scroll_offset_animations_impl_.Write(*this)->AutoScrollAnimationCreate(
       element_id, target_offset, current_offset, autoscroll_velocity,
       animation_start_offset);
 }
@@ -751,7 +766,7 @@ void AnimationHost::ImplOnlyScrollAnimationCreate(
     base::TimeDelta delayed_by,
     base::TimeDelta animation_start_offset) {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
-  scroll_offset_animations_impl_.Read(*this)->MouseWheelScrollAnimationCreate(
+  scroll_offset_animations_impl_.Write(*this)->MouseWheelScrollAnimationCreate(
       element_id, target_offset, current_offset, delayed_by,
       animation_start_offset);
 }
@@ -762,19 +777,19 @@ bool AnimationHost::ImplOnlyScrollAnimationUpdateTarget(
     base::TimeTicks frame_monotonic_time,
     base::TimeDelta delayed_by) {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
-  return scroll_offset_animations_impl_.Read(*this)
+  return scroll_offset_animations_impl_.Write(*this)
       ->ScrollAnimationUpdateTarget(scroll_delta, max_scroll_offset,
                                     frame_monotonic_time, delayed_by);
 }
 
-ScrollOffsetAnimations& AnimationHost::scroll_offset_animations() const {
+ScrollOffsetAnimations& AnimationHost::scroll_offset_animations() {
   DCHECK(scroll_offset_animations_.Read(*this));
-  return *scroll_offset_animations_.Read(*this).get();
+  return *scroll_offset_animations_.Write(*this).get();
 }
 
 void AnimationHost::ScrollAnimationAbort() {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
-  scroll_offset_animations_impl_.Read(*this)->ScrollAnimationAbort(
+  scroll_offset_animations_impl_.Write(*this)->ScrollAnimationAbort(
       false /* needs_completion */);
 }
 
@@ -811,7 +826,7 @@ AnimationHost::element_animations_for_testing() const {
 void AnimationHost::SetLayerTreeMutator(
     std::unique_ptr<LayerTreeMutator> mutator) {
   mutator_.Write(*this) = std::move(mutator);
-  mutator_.Read(*this)->SetClient(this);
+  mutator_.Write(*this)->SetClient(this);
 }
 
 WorkletAnimation* AnimationHost::FindWorkletAnimation(WorkletAnimationId id) {

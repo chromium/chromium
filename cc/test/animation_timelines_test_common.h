@@ -322,11 +322,11 @@ class AnimationTimelinesTest : public testing::Test {
 
   scoped_refptr<AnimationTimeline> timeline_;
   scoped_refptr<Animation> animation_;
-  scoped_refptr<ElementAnimations> element_animations_;
+  scoped_refptr<const ElementAnimations> element_animations_;
 
   scoped_refptr<AnimationTimeline> timeline_impl_;
   scoped_refptr<Animation> animation_impl_;
-  scoped_refptr<ElementAnimations> element_animations_impl_;
+  scoped_refptr<const ElementAnimations> element_animations_impl_;
 };
 
 }  // namespace cc

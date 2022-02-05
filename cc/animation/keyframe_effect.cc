@@ -68,7 +68,7 @@ void KeyframeEffect::SetNeedsPushProperties() {
   // TODO(smcgruer): We only need the below calls when needs_push_properties_
   // goes from false to true - see http://crbug.com/764405
   DCHECK(element_animations());
-  element_animations()->SetNeedsPushProperties();
+  element_animations_->SetNeedsPushProperties();
 
   animation_->SetNeedsPushProperties();
 }

@@ -63,14 +63,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void AddAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
   void RemoveAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
-  AnimationTimeline* GetTimelineById(int timeline_id) const;
+  const AnimationTimeline* GetTimelineById(int timeline_id) const;
+  AnimationTimeline* GetTimelineById(int timeline_id);
 
   void RegisterAnimationForElement(ElementId element_id, Animation* animation);
   void UnregisterAnimationForElement(ElementId element_id,
                                      Animation* animation);
 
-  scoped_refptr<ElementAnimations> GetElementAnimationsForElementId(
+  scoped_refptr<const ElementAnimations> GetElementAnimationsForElementId(
       ElementId element_id) const;
+  scoped_refptr<ElementAnimations> GetElementAnimationsForElementId(
+      ElementId element_id);
 
   gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const;
 
@@ -198,7 +201,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ElementId ImplOnlyScrollAnimatingElement() const override;
 
   // This should only be called from the main thread.
-  ScrollOffsetAnimations& scroll_offset_animations() const;
+  ScrollOffsetAnimations& scroll_offset_animations();
 
   // Registers the given animation as ticking. A ticking animation is one that
   // has a running keyframe model.
@@ -284,7 +287,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // will be non-null for a given AnimationHost instance (the former if
   // thread_instance_ == ThreadInstance::MAIN, the latter if thread_instance_ ==
   // ThreadInstance::IMPL).
-  ProtectedSequenceReadable<std::unique_ptr<ScrollOffsetAnimations>>
+  ProtectedSequenceWritable<std::unique_ptr<ScrollOffsetAnimations>>
       scroll_offset_animations_;
   ProtectedSequenceReadable<std::unique_ptr<ScrollOffsetAnimationsImpl>>
       scroll_offset_animations_impl_;

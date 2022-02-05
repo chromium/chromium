@@ -370,9 +370,9 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
       return;
     first_animation_frame_ = false;
 
-    scoped_refptr<AnimationTimeline> timeline_impl =
+    scoped_refptr<const AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<Animation> animation_child_impl =
+    scoped_refptr<const Animation> animation_child_impl =
         timeline_impl->GetAnimationById(animation_child_id_);
 
     KeyframeModel* keyframe_model =
@@ -436,7 +436,7 @@ class LayerTreeHostAnimationTestSynchronizeAnimationStartTimes
 
   void UpdateAnimationState(LayerTreeHostImpl* impl_host,
                             bool has_unfinished_animation) override {
-    scoped_refptr<AnimationTimeline> timeline_impl =
+    scoped_refptr<const AnimationTimeline> timeline_impl =
         GetImplAnimationHost(impl_host)->GetTimelineById(timeline_id_);
     scoped_refptr<Animation> animation_child_impl =
         timeline_impl->GetAnimationById(animation_child_id_);
@@ -512,7 +512,7 @@ class LayerTreeHostAnimationTestDoNotSkipLayersWithAnimatedOpacity
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
-    scoped_refptr<AnimationTimeline> timeline_impl =
+    scoped_refptr<const AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
     scoped_refptr<Animation> animation_impl =
         timeline_impl->GetAnimationById(animation_id_);
@@ -1172,7 +1172,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
     if (!host_impl->active_tree()->root_layer())
       return false;
 
-    scoped_refptr<AnimationTimeline> timeline_impl =
+    scoped_refptr<const AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
     scoped_refptr<Animation> animation_impl =
         timeline_impl->GetAnimationById(animation_child_id_);
@@ -1458,7 +1458,7 @@ class LayerTreeHostAnimationTestPendingTreeAnimatesFirstCommit
     if (sync_tree->source_frame_number() != 0)
       return;
 
-    scoped_refptr<AnimationTimeline> timeline_impl =
+    scoped_refptr<const AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
     scoped_refptr<Animation> animation_impl =
         timeline_impl->GetAnimationById(animation_id_);
@@ -1545,7 +1545,7 @@ class LayerTreeHostAnimationTestAnimatedLayerRemovedAndAdded
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
-    scoped_refptr<AnimationTimeline> timeline_impl =
+    scoped_refptr<const AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
     scoped_refptr<Animation> animation_impl =
         timeline_impl->GetAnimationById(animation_id_);
