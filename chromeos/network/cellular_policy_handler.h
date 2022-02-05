@@ -30,7 +30,8 @@ enum class HermesResponseStatus;
 // When installing policy eSIM profiles, the activation code is constructed from
 // the SM-DP+ address in the policy configuration. Install requests are queued
 // and installation is performed one by one. Install attempts are retried for
-// fixed number of tries.
+// fixed number of tries and the request queue doesn't get blocked by the
+// requests that are waiting for retry attempt.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
  public:
   CellularPolicyHandler();
@@ -69,6 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
 
     const std::string smdp_address;
     base::Value onc_config;
+    net::BackoffEntry retry_backoff;
   };
 
   void ProcessRequests();
@@ -79,8 +81,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
       absl::optional<std::string> service_path);
-  void PopRequestAndProcessNext();
-  void InvalidateCurrentRequest();
+  void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
+  void PopRequest();
 
   CellularESimInstaller* cellular_esim_installer_ = nullptr;
   NetworkProfileHandler* network_profile_handler_ = nullptr;
@@ -90,10 +92,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
   bool is_installing_ = false;
   base::circular_deque<std::unique_ptr<InstallPolicyESimRequest>>
       remaining_install_requests_;
-  base::OneShotTimer retry_timer_;
-
-  // Provides us the backoff timers for AttemptInstallESim().
-  net::BackoffEntry retry_backoff_;
 
   base::WeakPtrFactory<CellularPolicyHandler> weak_ptr_factory_{this};
 };
