@@ -225,6 +225,7 @@ void DeriveCommandLine(const GURL& start_url,
     switches::kNaturalScrollDefault,
     switches::kRlzPingDelay,
     chromeos::switches::kSystemInDevMode,
+    switches::kTouchscreenUsableWhileScreenOff,
     policy::switches::kDeviceManagementUrl,
     wm::switches::kWindowAnimationsDisabled,
   };
