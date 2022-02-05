@@ -5760,7 +5760,7 @@
   {
     "name": "web-feed",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 110
   },
   {
     "name": "web-feed-ios",
@@ -5770,7 +5770,7 @@
   {
     "name": "web-feed-sort",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "web-midi",
