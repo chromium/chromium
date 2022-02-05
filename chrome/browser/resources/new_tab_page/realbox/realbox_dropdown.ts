@@ -42,6 +42,13 @@ export class RealboxDropdownElement extends PolymerElement {
         type: Object,
       },
 
+      /** Whether the realbox should have rounded corners. */
+      roundCorners: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('roundCorners'),
+        reflectToAttribute: true,
+      },
+
       /** Index of the selected match. */
       selectedMatchIndex: {
         type: Number,
@@ -79,6 +86,7 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   result: AutocompleteResult;
+  roundCorners: boolean;
   selectedMatchIndex: number;
   theme: SearchBoxTheme;
   private groupIds_: number[];

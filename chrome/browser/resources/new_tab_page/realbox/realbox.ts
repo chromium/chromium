@@ -63,6 +63,13 @@ class RealboxElement extends I18nMixin
         observer: 'onThemeChange_',
       },
 
+      /** Whether the realbox should match the searchbox. */
+      matchSearchbox: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxMatchSearchboxTheme'),
+        reflectToAttribute: true,
+      },
+
       //========================================================================
       // Private properties
       //========================================================================
@@ -161,6 +168,7 @@ class RealboxElement extends I18nMixin
   }
 
   matchesAreVisible: boolean;
+  matchSearchbox: boolean;
   theme: SearchBoxTheme;
   private charTypedTime_: number;
   private isDeletingInput_: boolean;

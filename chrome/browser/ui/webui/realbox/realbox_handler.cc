@@ -296,6 +296,14 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
   source->AddBoolean(
       "realboxMatchOmniboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme));
+  source->AddBoolean(
+      "roundCorners",
+      base::GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kRealboxMatchSearchboxTheme,
+          ntp_features::kRealboxMatchSearchboxThemeParam, 0) == 1);
+  source->AddBoolean(
+      "realboxMatchSearchboxTheme",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)

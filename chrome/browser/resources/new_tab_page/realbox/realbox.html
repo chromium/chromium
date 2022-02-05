@@ -1,8 +1,9 @@
 <style>
   :host {
+    --ntp-realbox-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
     --ntp-realbox-height: 44px;
     border-radius: calc(0.5 * var(--ntp-realbox-height));
-    box-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    box-shadow: var(--ntp-realbox-shadow);
     font-size: 16px;
     height: var(--ntp-realbox-height);
   }
@@ -15,6 +16,21 @@
 
   :host([matches-are-visible]) {
     box-shadow: none;
+  }
+
+  :host([match-searchbox]) {
+    box-shadow: none;
+    --ntp-realbox-height: 46px;
+    box-sizing: border-box;
+  }
+
+  :host([match-searchbox]:not([matches-are-visible])) {
+    border: 1px solid var(--ntp-border-color);
+  }
+
+  :host([match-searchbox]:not([matches-are-visible]):hover)  {
+    border: 1px solid var(--search-box-bg-hovered, white);
+    box-shadow: var(--ntp-realbox-shadow);
   }
 
   #inputWrapper {

@@ -13,6 +13,10 @@
     padding-top: var(--ntp-realbox-height);
   }
 
+  :host([round-corners]) #selector {
+    border-radius: calc(0.5 * var(--ntp-realbox-height));
+  }
+
   @media (forced-colors: active) {
     #selector {
       border: 1px solid ActiveBorder;
