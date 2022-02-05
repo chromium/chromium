@@ -105,8 +105,16 @@ process_version("uninstall.cmd") {
 }
 
 process_version_rc_template("version_resources") {
+  _product_fullname = "$updater_product_full_name " + "($current_cpu)"
+  if (is_debug) {
+    _product_fullname += " (debug)"
+  }
   sources = [ "updater.ver" ]
   output = "$target_gen_dir/updater_exe.rc"
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$_product_fullname\"",
+  ]
 }
 
 source_set("tag_extractor") {

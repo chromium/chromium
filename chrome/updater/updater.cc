@@ -207,6 +207,24 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
                                                               : "";
 }
 
+constexpr const char* BuildFlavor() {
+#if defined(NBEDUG)
+  return "opt";
+#else
+  return "debug";
+#endif
+}
+
+constexpr const char* BuildArch() {
+#if defined(ARCH_CPU_64_BITS)
+  return "64 bits";
+#elif defined(ARCH_CPU_32_BITS)
+  return "32 bits";
+#else
+#error CPU architecture is unknown.
+#endif
+}
+
 }  // namespace
 
 int UpdaterMain(int argc, const char* const* argv) {
@@ -220,7 +238,8 @@ int UpdaterMain(int argc, const char* const* argv) {
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
 
-  VLOG(1) << "Version " << kUpdaterVersion
+  VLOG(1) << "Version " << kUpdaterVersion << ", " << BuildFlavor() << ", "
+          << BuildArch()
           << ", command line: " << command_line->GetCommandLineString();
   const int retval = HandleUpdaterCommands(updater_scope, command_line);
   VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
