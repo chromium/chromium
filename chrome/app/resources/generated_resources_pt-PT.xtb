@@ -331,7 +331,7 @@
 <translation id="1338631221631423366">A sincronizar…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> pretende abrir esta aplicação.</translation>
 <translation id="1338950911836659113">A eliminar...</translation>
-<translation id="1339009753652684748">Aceda ao Assistente ao dizer "Ok Google". Para poupar bateria, escolha a opção "Ativado (recomendado)". O Assistente responderá apenas quando o dispositivo estiver ligado a uma fonte de alimentação ou a carregar.</translation>
+<translation id="1339009753652684748">Aceda ao Assistente ao dizer "OK Google". Para poupar bateria, escolha a opção "Ativado (recomendado)". O Assistente responderá apenas quando o dispositivo estiver ligado a uma fonte de alimentação ou a carregar.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Fazer cópia de segurança de multimédia a partir do dispositivo com a aplicação Ficheiros.</translation>
 <translation id="1341988552785875222">A imagem de fundo atual é definida por "<ph name="APP_NAME" />". Pode ser necessário desinstalar "<ph name="APP_NAME" />" antes de selecionar uma imagem de fundo diferente.</translation>
@@ -899,7 +899,7 @@
 <translation id="1885106732301550621">Espaço em disco</translation>
 <translation id="1886996562706621347">Permitir que os Web sites peçam para se tornarem os processadores de protocolos predefinidos (recomendado)</translation>
 <translation id="1887442540531652736">Erro de início de sessão</translation>
-<translation id="1887597546629269384">Diga "Ok Google" novamente</translation>
+<translation id="1887597546629269384">Diga "OK Google" novamente</translation>
 <translation id="189035593835762169">Termos de Utilização</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
 <translation id="1891362123137972260">O espaço em disco é criticamente baixo. Liberte espaço em disco.</translation>
@@ -1297,7 +1297,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
 <translation id="23055578400314116">Selecione um nome de utilizador.</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
-<translation id="2307553512430195144">Se concordar, o Assistente Google aguarda em modo de espera para detetar o comando "Ok Google" e pode reconhecer que <ph name="SUPERVISED_USER_NAME" /> está a falar através do Voice Match.
+<translation id="2307553512430195144">Se concordar, o Assistente Google aguarda em modo de espera para detetar o comando "OK Google" e pode reconhecer que <ph name="SUPERVISED_USER_NAME" /> está a falar através do Voice Match.
     <ph name="BR" />
     O Voice Match ajuda o Assistente Google a identificar a voz de <ph name="SUPERVISED_USER_NAME" /> no <ph name="DEVICE_TYPE" /> e a distingui-la da de outras pessoas.
     <ph name="BR" />
@@ -2205,7 +2205,7 @@ Pretende pará-lo?</translation>
 <translation id="3244294424315804309">Manter o som desativado</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – erro de rede</translation>
 <translation id="3248902735035392926">A segurança é importante. Dedique algum tempo a <ph name="BEGIN_LINK" />verificar as extensões agora<ph name="END_LINK" />.</translation>
-<translation id="3251714896659475029">Permita que <ph name="SUPERVISED_USER_NAME" /> aceda ao Assistente Google com "Ok Google"</translation>
+<translation id="3251714896659475029">Permita que <ph name="SUPERVISED_USER_NAME" /> aceda ao Assistente Google com "OK Google"</translation>
 <translation id="3251759466064201842">&lt;Não faz parte do certificado&gt;</translation>
 <translation id="325238099842880997">Defina regras digitais básicas para ajudar as crianças a brincar, explorar e fazer os trabalhos de casa.</translation>
 <translation id="3253448572569133955">Conta desconhecida</translation>
@@ -3266,7 +3266,7 @@ Pretende pará-lo?</translation>
 <translation id="4348766275249686434">Recolher erros</translation>
 <translation id="4349828822184870497">Útil</translation>
 <translation id="4350230709416545141">Impedir sempre que <ph name="HOST" /> aceda à sua localização</translation>
-<translation id="4350782034419308508">Ok Google</translation>
+<translation id="4350782034419308508">OK Google</translation>
 <translation id="4354073718307267720">Perguntar quando um site pretender criar um mapa 3D do ambiente à sua volta ou monitorizar a posição da câmara</translation>
 <translation id="4354344420232759511">Os sites que visitar aparecem aqui</translation>
 <translation id="435527878592612277">Selecionar a sua foto</translation>
@@ -3638,7 +3638,7 @@ Pretende pará-lo?</translation>
 <translation id="4742970037960872810">Remover realce</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saiba como atualizar aplicações<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Reativar o som do site}one{Reativar o som do(s) site(s)}other{Reativar o som dos sites}}</translation>
-<translation id="474609389162964566">Aceda ao Assistente com "Ok Google"</translation>
+<translation id="474609389162964566">Aceda ao Assistente com "OK Google"</translation>
 <translation id="4746351372139058112">Mensagens</translation>
 <translation id="4748783296226936791">Normalmente, os sites estabelecem ligação a dispositivos HID para funcionalidades que utilizam teclados, comandos de jogos e outros dispositivos pouco comuns</translation>
 <translation id="4750394297954878236">Sugestões</translation>
@@ -3726,7 +3726,7 @@ Pretende pará-lo?</translation>
 <translation id="4844333629810439236">Outros teclados</translation>
 <translation id="4846680374085650406">Está a seguir a recomendação do gestor para esta definição.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecionado. Prima Enter para selecionar álbuns do <ph name="TOPIC_SOURCE" />.</translation>
-<translation id="4848191975108266266">Comando "Ok Google" do Assistente Google</translation>
+<translation id="4848191975108266266">Comando "OK Google" do Assistente Google</translation>
 <translation id="4849286518551984791">Tempo universal coordenado (UTC/GMT)</translation>
 <translation id="4849517651082200438">Não instalar</translation>
 <translation id="485053257961878904">Não foi possível configurar a sincronização de notificações</translation>
@@ -4865,7 +4865,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6059276912018042191">Separadores do Chrome recentes</translation>
 <translation id="6059652578941944813">Hierarquia de certificados</translation>
 <translation id="6061882183774845124">Enviar link para os dispositivos</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos resultados pessoais de <ph name="SUPERVISED_USER_NAME" />. Para poupar bateria, nas Definições do Assistente de <ph name="SUPERVISED_USER_NAME" />, pode optar por ativar o comando "Ok Google" apenas quando este dispositivo estiver ligado a uma fonte de alimentação.</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos resultados pessoais de <ph name="SUPERVISED_USER_NAME" />. Para poupar bateria, nas Definições do Assistente de <ph name="SUPERVISED_USER_NAME" />, pode optar por ativar o comando "OK Google" apenas quando este dispositivo estiver ligado a uma fonte de alimentação.</translation>
 <translation id="6064217302520318294">Bloqueio de ecrã</translation>
 <translation id="6065289257230303064">Atributos de directório do requerente do certificado</translation>
 <translation id="6065691521254183160">Prima |<ph name="ACCELERATOR" />| para alternar o foco entre este balão de ajuda e o elemento para o qual o mesmo está a apontar.</translation>
@@ -5367,7 +5367,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6582274660680936615">Está a navegar como convidado</translation>
 <translation id="6584878029876017575">Assinatura vitalícia Microsoft</translation>
 <translation id="6586099239452884121">Navegação como convidado</translation>
-<translation id="6586213706115310390">Aceda ao Assistente ao dizer "Ok Google".</translation>
+<translation id="6586213706115310390">Aceda ao Assistente ao dizer "OK Google".</translation>
 <translation id="6586451623538375658">Trocar botão principal do rato</translation>
 <translation id="6586604979641883411">É necessário, pelo menos, <ph name="REQUIRED_SPACE" /> de espaço livre no disco para atualizar o Linux. Liberte algum espaço no dispositivo e tente novamente.</translation>
 <translation id="6588043302623806746">Utilizar o DNS seguro</translation>
@@ -5574,7 +5574,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6808039367995747522">Para continuar, insira e toque na chave de segurança.</translation>
 <translation id="6808193438228982088">Raposa</translation>
 <translation id="6809470175540814047">Abra na janela de navegação anónima</translation>
-<translation id="6809656734323672573">Se concordar, o Assistente Google aguarda em modo de espera para detetar o comando "Ok Google" e pode reconhecer que está a falar através do Voice Match.
+<translation id="6809656734323672573">Se concordar, o Assistente Google aguarda em modo de espera para detetar o comando "OK Google" e pode reconhecer que está a falar através do Voice Match.
     <ph name="BR" />
     O Voice Match permite ao Assistente identificar a sua voz e distingui-la da de outras pessoas. O Assistente grava clipes da sua voz para formar um modelo de voz único, que apenas é armazenado no seu dispositivo. O seu modelo de voz pode ser enviado temporariamente para a Google para identificar melhor a sua voz.
     <ph name="BR" />
@@ -5619,7 +5619,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6842136130964845393">Para se certificar de que pode sempre aceder às suas palavras-passe guardadas, valide a sua identidade</translation>
 <translation id="6842868554183332230">Geralmente, os sites detetam quando está a utilizar ativamente o dispositivo para definir a sua disponibilidade em apps de chat</translation>
 <translation id="6843264316370513305">Depuração de rede</translation>
-<translation id="6843423766595476978">O Ok Google está pronto</translation>
+<translation id="6843423766595476978">O OK Google está pronto</translation>
 <translation id="6845038076637626672">Abrir Maximizada</translation>
 <translation id="6846178040388691741">A extensão "<ph name="EXTENSION_NAME" />" pretende imprimir o ficheiro <ph name="FILE_NAME" /> com a impressora <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Liberte espaço para continuar</translation>
@@ -5695,7 +5695,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6923633482430812883">Erro ao montar a partilha. Verifique se o servidor de ficheiros ao qual está a ligar suporta o SMBv2 ou posterior.</translation>
 <translation id="6925127338315966709">Está a adicionar um perfil gerido a este navegador. O administrador controla o perfil e consegue aceder aos respetivos dados. Os marcadores, o histórico, as palavras-passe e outras definições podem ser sincronizados com a sua conta e geridos pelo seu administrador.</translation>
 <translation id="6929126689972602640">O controlo parental não é suportado para contas escolares. Para adicionar uma conta escolar para aceder ao Google Classroom e outros Websites para fazer os trabalhos de casa, inicie sessão com a conta pessoal da criança primeiro. Pode adicionar a conta escolar posteriormente nas definições.</translation>
-<translation id="6929760895658557216">Ok Google</translation>
+<translation id="6929760895658557216">OK Google</translation>
 <translation id="6930036377490597025">Chave de segurança externa ou sensor incorporado</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Uma extensão foi rejeitada}one{# extensão(ões) foi(ram) rejeitada(s)}other{# extensões foram rejeitadas}}</translation>
 <translation id="6930321203306643451">Atualização concluída</translation>
@@ -5792,7 +5792,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="701080569351381435">Ver origem</translation>
 <translation id="7014174261166285193">A instalação falhou.</translation>
 <translation id="7014480873681694324">Remover realce</translation>
-<translation id="7017004637493394352">Diga "Ok Google" novamente</translation>
+<translation id="7017004637493394352">Diga "OK Google" novamente</translation>
 <translation id="7017219178341817193">Adicionar uma nova página</translation>
 <translation id="7017354871202642555">Não é possível definir o modo uma vez definida a janela.</translation>
 <translation id="7018275672629230621">Ler e alterar o histórico de navegação</translation>
@@ -6038,7 +6038,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299337219131431707">Ativar Navegação como convidado</translation>
 <translation id="7299515639584427954">Pretende alterar a app predefinida para os links suportados?</translation>
-<translation id="7301470816294041580">Pode perguntar "Ok Google, que música é esta?" ou "Ok Google, o que está no meu ecrã?"</translation>
+<translation id="7301470816294041580">Pode perguntar "OK Google, que música é esta?" ou "OK Google, o que está no meu ecrã?"</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Esta aplicação pode impedir o funcionamento correto do Chrome.}one{These applications could prevent Chrome from working properly.}other{Estas aplicações podem impedir o funcionamento correto do Chrome.}}</translation>
 <translation id="7303281435234579599">Ups! Ocorreu um erro ao configurar o modo de demonstração.</translation>
 <translation id="7303900363563182677">Este site foi impedido de ver o texto e as imagens copiados para a área de transferência.</translation>
@@ -6252,7 +6252,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431">A app <ph name="APP_NAME" /> foi colocada em pausa</translation>
 <translation id="7520766081042531487">Portal de Navegação anónima: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="7522255036471229694">Diga "Ok Google"</translation>
+<translation id="7522255036471229694">Diga "OK Google"</translation>
 <translation id="7523585675576642403">Mude o nome do perfil</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7525625923260515951">Ouça o texto selecionado.</translation>
@@ -6433,7 +6433,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7690853182226561458">Adicionar &amp;pasta...</translation>
 <translation id="7691073721729883399">Não foi possível montar o cryptohome para a app de quiosque.</translation>
 <translation id="7691077781194517083">Não é possível repor esta chave de segurança. Erro <ph name="ERROR_CODE" />.</translation>
-<translation id="7691163173018300413">"Ok Google"</translation>
+<translation id="7691163173018300413">"OK Google"</translation>
 <translation id="7691698019618282776">Atualização do Crostini</translation>
 <translation id="7696063401938172191">No seu "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Os detalhes estão ocultos durante a partilha do ecrã.</translation>
@@ -6606,7 +6606,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7847212883280406910">Prima Ctrl + Alt + S para mudar para <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Abrir &amp;imagem num novo separador</translation>
 <translation id="784934925303690534">Intervalo de tempo</translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos seus resultados pessoais ou ao Assistente. Para poupar bateria, nas Definições do Assistente, pode optar por ativar o comando "Ok Google" apenas quando este dispositivo estiver ligado a uma fonte de alimentação.</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos seus resultados pessoais ou ao Assistente. Para poupar bateria, nas Definições do Assistente, pode optar por ativar o comando "OK Google" apenas quando este dispositivo estiver ligado a uma fonte de alimentação.</translation>
 <translation id="7851457902707056880">O início de sessão foi restringido apenas ao proprietário da conta. Reinicie e inicie sessão com a conta de proprietário. A máquina reiniciará automaticamente dentro de 30 segundos.</translation>
 <translation id="7851716364080026749">Impedir sempre o acesso à câmara e microfone</translation>
 <translation id="7851720427268294554">Analisador de IPP</translation>
@@ -7948,7 +7948,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="936646668635477464">Câmara e microfone</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensão</translation>
-<translation id="938568644810664664">Experimente "Ok Google, que música é esta?" ou "Ok Google, o que está no meu ecrã?"</translation>
+<translation id="938568644810664664">Experimente "OK Google, que música é esta?" ou "OK Google, o que está no meu ecrã?"</translation>
 <translation id="939252827960237676">Não foi possível guardar a captura de ecrã</translation>
 <translation id="939598580284253335">Introduzir frase de acesso</translation>
 <translation id="939736085109172342">Nova pasta</translation>
