@@ -18,4 +18,12 @@ TEST(FeatureNotificationUtilsTest, FeatureToCustomData) {
   EXPECT_EQ(FeatureType::kVoiceSearch, FeatureFromCustomData(custom_data));
 }
 
+TEST(FeatureNotificationUtilsTest, LowEngagedUsersCheck) {
+  EXPECT_EQ(true, ShouldTargetLowEngagedUsers(FeatureType::kIncognitoTab));
+  EXPECT_EQ(true, ShouldTargetLowEngagedUsers(FeatureType::kVoiceSearch));
+  EXPECT_EQ(true, ShouldTargetLowEngagedUsers(FeatureType::kNTPSuggestionCard));
+  EXPECT_EQ(false, ShouldTargetLowEngagedUsers(FeatureType::kDefaultBrowser));
+  EXPECT_EQ(false, ShouldTargetLowEngagedUsers(FeatureType::kSignIn));
+}
+
 }  // namespace feature_guide

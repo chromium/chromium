@@ -33,6 +33,9 @@ const base::Feature* GetUsedIphFeatureForFeature(FeatureType& feature);
 
 #endif
 
+// Whether the feature should only target low engaged users.
+bool ShouldTargetLowEngagedUsers(FeatureType feature);
+
 }  // namespace feature_guide
 
 #endif  // CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_INTERNAL_UTILS_H_

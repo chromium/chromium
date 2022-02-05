@@ -76,4 +76,17 @@ const base::Feature* GetUsedIphFeatureForFeature(FeatureType& feature) {
 }
 #endif
 
+bool ShouldTargetLowEngagedUsers(FeatureType feature) {
+  switch (feature) {
+    case FeatureType::kIncognitoTab:
+    case FeatureType::kVoiceSearch:
+    case FeatureType::kNTPSuggestionCard:
+      return true;
+    case FeatureType::kDefaultBrowser:
+    case FeatureType::kSignIn:
+    default:
+      return false;
+  }
+}
+
 }  // namespace feature_guide

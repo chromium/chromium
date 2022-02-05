@@ -58,6 +58,7 @@ class FeatureNotificationGuideServiceImpl
   void StartCheckingForEligibleFeatures();
   void ScheduleNotification(FeatureType feature, bool schedule_immediately);
   void CloseRedundantNotifications();
+  void CheckForLowEnagedUser();
 
   std::unique_ptr<FeatureNotificationGuideService::Delegate> delegate_;
   raw_ptr<notifications::NotificationScheduleService> notification_scheduler_;
@@ -69,6 +70,7 @@ class FeatureNotificationGuideServiceImpl
 
   std::set<std::string> scheduled_feature_guids_;
   absl::optional<base::Time> last_notification_schedule_time_;
+  bool is_low_engaged_user_{false};
 
   base::WeakPtrFactory<FeatureNotificationGuideServiceImpl> weak_ptr_factory_{
       this};

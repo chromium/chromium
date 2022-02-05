@@ -76,10 +76,15 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
   if (!init_success)
     return;
 
+  CheckForLowEnagedUser();
+  StartCheckingForEligibleFeatures();
+}
+
+void FeatureNotificationGuideServiceImpl::CheckForLowEnagedUser() {
   // Skip low engagement check if enabled. For testing only.
   if (base::FeatureList::IsEnabled(
           feature_guide::features::kSkipCheckForLowEngagedUsers)) {
-    StartCheckingForEligibleFeatures();
+    is_low_engaged_user_ = false;
     return;
   }
 
@@ -89,7 +94,7 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
 #if BUILDFLAG(IS_ANDROID)
     if (tracker_->ShouldTriggerHelpUI(
             feature_engagement::kIPHLowUserEngagementDetectorFeature)) {
-      StartCheckingForEligibleFeatures();
+      is_low_engaged_user_ = false;
     }
 #endif
     return;
@@ -97,14 +102,18 @@ void FeatureNotificationGuideServiceImpl::OnTrackerInitialized(
 
   if (!base::FeatureList::IsEnabled(
           feature_guide::features::kSegmentationModelLowEngagedUsers)) {
+    is_low_engaged_user_ = false;
     return;
   }
 
-  segmentation_platform_service_->GetSelectedSegment(
-      segmentation_platform::kChromeLowUserEngagementSegmentationKey,
-      base::BindOnce(
-          &FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform,
-          weak_ptr_factory_.GetWeakPtr()));
+  // Check segmentation model result.
+  auto result = segmentation_platform_service_->GetCachedSegmentResult(
+      segmentation_platform::kChromeLowUserEngagementSegmentationKey);
+  is_low_engaged_user_ =
+      result.is_ready && result.segment.has_value() &&
+      result.segment.value() ==
+          optimization_guide::proto::OptimizationTarget::
+              OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 }
 
 void FeatureNotificationGuideServiceImpl::CloseRedundantNotifications() {
@@ -123,24 +132,14 @@ void FeatureNotificationGuideServiceImpl::CloseRedundantNotifications() {
   }
 }
 
-void FeatureNotificationGuideServiceImpl::OnQuerySegmentationPlatform(
-    const segmentation_platform::SegmentSelectionResult& result) {
-  bool is_low_engaged_user =
-      result.is_ready && result.segment.has_value() &&
-      result.segment.value() ==
-          optimization_guide::proto::OptimizationTarget::
-              OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
-  if (!is_low_engaged_user)
-    return;
-
-  StartCheckingForEligibleFeatures();
-}
-
 void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
   bool schedule_immediately = true;
   for (auto feature : config_.enabled_features) {
     std::string guid = delegate_->GetNotificationParamGuidForFeature(feature);
     if (base::Contains(scheduled_feature_guids_, guid))
+      continue;
+
+    if (!is_low_engaged_user_ && ShouldTargetLowEngagedUsers(feature))
       continue;
 
     if (delegate_->ShouldSkipFeature(feature))
