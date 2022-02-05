@@ -27,7 +27,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/painter.h"
 #include "ui/views/widget/widget.h"
@@ -39,7 +38,7 @@ namespace {
 constexpr int kSizeInDip = 32;
 constexpr int kIconSizeInDip = 24;
 constexpr int kIconOffset = 4;
-constexpr int kInkDropInset = 2;
+constexpr int kFocusRingStrokeWidth = 2;
 
 SkBitmap CreateExpectedImageWithFocus(SkColor icon_color, SkColor focus_color) {
   gfx::Canvas expected(gfx::Size(kSizeInDip, kSizeInDip), /*image_scale=*/1.0f,
@@ -47,9 +46,15 @@ SkBitmap CreateExpectedImageWithFocus(SkColor icon_color, SkColor focus_color) {
   expected.DrawImageInt(
       gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip, icon_color),
       kIconOffset, kIconOffset);
-  views::Painter::CreateSolidRoundRectPainter(
-      focus_color, kSizeInDip / 2 - kInkDropInset, gfx::Insets(kInkDropInset))
-      ->Paint(&expected, gfx::Size(kSizeInDip, kSizeInDip));
+
+  cc::PaintFlags circle_flags;
+  circle_flags.setAntiAlias(true);
+  circle_flags.setColor(focus_color);
+  circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  circle_flags.setStrokeWidth(kFocusRingStrokeWidth);
+  expected.DrawCircle(gfx::Point(kSizeInDip / 2, kSizeInDip / 2),
+                      kSizeInDip / 2 - kFocusRingStrokeWidth, circle_flags);
+
   return expected.GetBitmap();
 }
 
@@ -157,10 +162,9 @@ TEST_F(AssistantButtonTest, FocusAndHoverColor) {
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       CreateExpectedImageWithFocus(
           /*icon_color=*/gfx::kGoogleGrey900,
-          /*focus_color=*/SkColorSetA(SK_ColorBLACK, 0xff * 0.06f)),
+          /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
+              ColorProvider::ControlsLayerType::kFocusRingColor)),
       canvas.GetBitmap()));
-  EXPECT_EQ(views::InkDrop::Get(button)->GetBaseColor(), SK_ColorBLACK);
-  EXPECT_EQ(views::InkDrop::Get(button)->GetVisibleOpacity(), 0.06f);
 }
 
 TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
@@ -192,10 +196,9 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       CreateExpectedImageWithFocus(
           /*icon_color=*/gfx::kGoogleGrey900,
-          /*focus_color=*/SkColorSetA(SK_ColorBLACK, 0xff * 0.06f)),
+          /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
+              ColorProvider::ControlsLayerType::kFocusRingColor)),
       canvas.GetBitmap()));
-  EXPECT_EQ(views::InkDrop::Get(button)->GetBaseColor(), SK_ColorBLACK);
-  EXPECT_EQ(views::InkDrop::Get(button)->GetVisibleOpacity(), 0.06f);
 
   // Switch to dark mode
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -208,9 +211,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       CreateExpectedImageWithFocus(
           /*icon_color=*/gfx::kGoogleGrey200,
-          /*focus_color=*/SkColorSetA(SK_ColorWHITE, 0xff * 0.08f)),
+          /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
+              ColorProvider::ControlsLayerType::kFocusRingColor)),
       canvas.GetBitmap()));
-  EXPECT_EQ(views::InkDrop::Get(button)->GetBaseColor(), SK_ColorWHITE);
-  EXPECT_EQ(views::InkDrop::Get(button)->GetVisibleOpacity(), 0.08f);
 }
 }  // namespace ash

@@ -26,6 +26,7 @@ class ImageButton;
 
 namespace ash {
 
+class AssistantButton;
 class AssistantButtonListener;
 enum class AssistantButtonId;
 
@@ -76,15 +77,16 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
   AssistantButtonId GetAssistantButtonId() const { return id_; }
 
   // views::ImageButton:
+  void OnBlur() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnFocus() override;
 
   // views::View:
+  void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
  private:
   void OnButtonPressed();
-  void UpdateFocusPainter();
-  void UpdateInkDropColors();
 
   AssistantButtonListener* listener_;
   const AssistantButtonId id_;
