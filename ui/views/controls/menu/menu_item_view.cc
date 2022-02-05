@@ -113,7 +113,11 @@ VerticalSeparator::VerticalSeparator() {
 
 void VerticalSeparator::OnThemeChanged() {
   Separator::OnThemeChanged();
-  SetColor(GetColorProvider()->GetColor(ui::kColorMenuSeparator));
+  ui::ColorId id = ui::kColorMenuSeparator;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  id = ui::kColorAshSystemUIMenuSeparator;
+#endif
+  SetColor(GetColorProvider()->GetColor(id));
 }
 
 BEGIN_METADATA(VerticalSeparator, Separator)

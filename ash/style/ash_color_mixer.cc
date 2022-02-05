@@ -30,6 +30,9 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   auto [color, opacity] = ash_color_provider->GetInkDropBaseColorAndOpacity();
   mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {
       SkColorSetA(color, opacity * SK_AlphaOPAQUE)};
+  mixer[ui::kColorAshSystemUIMenuSeparator] = {
+      ash_color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kSeparatorColor)};
 }
 
 }  // namespace ash
