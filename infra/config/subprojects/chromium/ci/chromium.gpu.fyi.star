@@ -59,10 +59,10 @@ def gpu_fyi_windows_builder(*, name, **kwargs):
 ci.thin_tester(
     name = "Android FYI Release (NVIDIA Shield TV)",
     console_view_entry = consoles.console_view_entry(
-        category = "Android|N64|NVDA",
+        category = "Android|P32|NVDA",
         short_name = "STV",
     ),
-    triggered_by = ["GPU FYI Android arm64 Builder"],
+    triggered_by = ["GPU FYI Android arm Builder"],
 )
 
 ci.thin_tester(

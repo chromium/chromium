@@ -68,7 +68,7 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
-    name = "gpu-fyi-try-android-n-nvidia-shield-tv-64",
+    name = "gpu-fyi-try-android-nvidia-shield-tv",
     pool = "luci.chromium.gpu.android.nvidia.shield.tv.try",
 )
 

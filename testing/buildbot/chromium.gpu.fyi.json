@@ -770,9 +770,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -810,9 +810,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -857,9 +857,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -904,9 +904,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -960,9 +960,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1004,9 +1004,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1048,9 +1048,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1096,9 +1096,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1149,9 +1149,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1202,9 +1202,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1247,9 +1247,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1291,9 +1291,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }
@@ -1336,9 +1336,9 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "N",
-              "device_os_type": "user",
-              "device_type": "foster",
+              "device_os": "P",
+              "device_os_type": "userdebug",
+              "device_type": "mdarcy",
               "os": "Android",
               "pool": "chromium.tests.gpu"
             }

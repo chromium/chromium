@@ -1235,7 +1235,7 @@
       "use_static_angle": true
     }
   },
-  "gpu-fyi-try-android-n-nvidia-shield-tv-64": {
+  "gpu-fyi-try-android-nvidia-shield-tv": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
@@ -1244,7 +1244,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "target_cpu": "arm64",
       "target_os": "android",
       "use_goma": true,
       "use_static_angle": true

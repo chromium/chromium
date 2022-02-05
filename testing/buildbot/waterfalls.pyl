@@ -4009,9 +4009,9 @@
         'skip_merge_script': True,
         'mixins': [
           'has_native_resultdb_integration',
-          'foster',
+          'mdarcy',
           'gpu-swarming-pool',
-          'nougat_generic',
+          'pie_generic',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_shieldtv_gtests',

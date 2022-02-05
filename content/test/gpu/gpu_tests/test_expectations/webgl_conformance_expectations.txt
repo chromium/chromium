@@ -613,6 +613,8 @@ crbug.com/606096 [ android android-nexus-9 ] conformance/glsl/bugs/multiplicatio
 crbug.com/478572 [ android android-nexus-9 ] deqp/data/gles2/shaders/functions.html [ Failure ]
 # Texture tests found to generate intermittent GL errors in the GPU process
 crbug.com/1090407 [ android android-nexus-9 ] conformance/textures/* [ RetryOnFailure ]
+crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/1294340 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 
 # Pixel 4
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]

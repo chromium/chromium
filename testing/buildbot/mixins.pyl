@@ -415,16 +415,6 @@
       },
     },
   },
-  'foster': {
-    # NVIDIA SHIELD TV
-    'swarming': {
-      'dimensions': {
-        'device_os_type': 'user',
-        'device_type': 'foster',
-        'os': 'Android',
-      },
-    },
-  },
   'fuchsia-code-coverage': {
     '$mixin_append': {
       'args': [
@@ -904,6 +894,15 @@
       },
     },
   },
+  'mdarcy': {
+    # NVIDIA Shield TV 2019
+    'swarming': {
+      'dimensions': {
+        'device_type': 'mdarcy',
+        'os': 'Android',
+      },
+    },
+  },
   'no_gpu': {
     'swarming': {
       'dimensions': {
@@ -1002,6 +1001,13 @@
       'dimensions': {
         'device_os': 'PQ3A.190801.002',
         'device_os_flavor': 'google',
+      },
+    },
+  },
+  'pie_generic': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'P',
       },
     },
   },
