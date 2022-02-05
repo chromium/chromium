@@ -11174,12 +11174,28 @@ Please help our engineers fix this problem. Tell us what happened right before y
         "<ph name="CHROME_EXTENSION_NAME">$1<ex>Chrome Extension Name</ex></ph>" wants to connect to a HID device
       </message>
       <message name="IDS_HID_CHOOSER_ITEM_WITHOUT_NAME" desc="User option displaying the device IDs for a Human Interface Device (HID) without a device name.">
-        Unknown Device (<ph name="DEVICE_ID">$1<ex>1234:abcd</ex></ph>) </message>
+        Unknown Device (<ph name="DEVICE_ID">$1<ex>1234:abcd</ex></ph>)
+      </message>
       <message name="IDS_HID_CHOOSER_LOADING_LABEL" desc="Text on label that the browser is loading the list of HID devices.">
         Finding devices...
       </message>
       <message name="IDS_HID_CHOOSER_LOADING_LABEL_TOOLTIP" desc="Tooltip for the label that the browser is loading the list of HID devices.">
         Finding HID devices...
+      </message>
+      <message name="IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID_AND_PRODUCT_ID" desc="String describing a HID device permission granted by enterprise policy to a site when only the numeric product ID and vendor ID are available">
+        HID device (<ph name="VENDOR_ID">$1<ex>1234</ex></ph>:<ph name="PRODUCT_ID">$2<ex>1234</ex></ph>)
+      </message>
+      <message name="IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID" desc="String describing a HID device permission granted by enterprise policy to a site for all devices from a single vendor when only the numeric vendor ID is available.">
+        HID devices from vendor <ph name="VENDOR_ID">$1<ex>1234</ex></ph>
+      </message>
+      <message name="IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_AND_USAGE_PAGE" desc="String describing a HID device permission granted by permission policy to a site for all devices containing a top-level collection with a single HID usage when only the numeric HID usage value is available.">
+        HID devices with usage <ph name="USAGE">$1<ex>1234</ex></ph> from usage page <ph name="USAGE_PAGE">$2<ex>1234</ex></ph>
+      </message>
+      <message name="IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_PAGE" desc="String describing a HID device permission granted by permission policy to a site for all devices containing a top-level collection with any usage from a HID usage page when only the numeric HID usage page value is available.">
+        HID devices with usages from usage page <ph name="USAGE_PAGE">$1<ex>1234</ex></ph>
+      </message>
+      <message name="IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE" desc="String describing a HID device permission granted by permission policy to a site for all devices.">
+        Any HID device
       </message>
     </if>
 
