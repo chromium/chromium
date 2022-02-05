@@ -329,8 +329,8 @@ public class AccountSelectionViewTest {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
         properties.mFormattedIdpUrl = idpUrl;
-        properties.mTermsOfServiceUrl = "https://idp.com/tos";
-        properties.mPrivacyPolicyUrl = "https://idp.com/privacy";
+        properties.mTermsOfServiceUrl = "https://rp.com/tos";
+        properties.mPrivacyPolicyUrl = "https://rp.com/privacy";
 
         return new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
                 new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
