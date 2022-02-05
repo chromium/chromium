@@ -307,14 +307,10 @@ Polymer({
       }
     },
 
-    /**
-     * TODO(crbug.com/1247299): This support page does not exist. Make sure to
-     * get the correct URL before launch.
-     * @private
-     */
+    /** @private */
     dictationLearnMoreUrl_: {
       type: String,
-      value: 'https://support.google.com/chromebook?p=dictation',
+      value: 'https://support.google.com/chromebook?p=text_dictation_m100',
     },
 
     /**
