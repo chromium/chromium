@@ -27,24 +27,6 @@ PendingTask::~PendingTask() = default;
 
 PendingTask& PendingTask::operator=(PendingTask&& other) = default;
 
-bool PendingTask::operator>(const PendingTask& other) const {
-  if (delayed_run_time != other.delayed_run_time)
-    return delayed_run_time > other.delayed_run_time;
-
-  // If the times happen to match, then we use the sequence number to decide.
-  // Compare the difference to support integer roll-over.
-  return (sequence_num - other.sequence_num) > 0;
-}
-
-bool PendingTask::operator<(const PendingTask& other) const {
-  if (delayed_run_time != other.delayed_run_time)
-    return delayed_run_time < other.delayed_run_time;
-
-  // If the times happen to match, then we use the sequence number to decide.
-  // Compare the difference to support integer roll-over.
-  return (sequence_num - other.sequence_num) < 0;
-}
-
 TimeTicks PendingTask::GetDesiredExecutionTime() const {
   if (!delayed_run_time.is_null())
     return delayed_run_time;

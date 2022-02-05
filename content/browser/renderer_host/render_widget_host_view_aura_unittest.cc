@@ -703,7 +703,8 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     view->TextInputStateChanged(state_with_type_text);
   }
 
-  BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<WebContents> web_contents_;
@@ -1787,8 +1788,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
 
   // Let the MouseWheelPhaseHandler::mouse_wheel_end_dispatch_timer_ fire. A
   // synthetic wheel event with zero deltas and kPhaseEnded will be sent.
-  base::PlatformThread::Sleep(base::Milliseconds(100));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(100));
 
   events = GetAndResetDispatchedMessages();
   const WebMouseWheelEvent* wheel_end_event =
@@ -4262,8 +4262,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
   // enough overscroll to complete the gesture, the overscroll controller
   // will reset the state. The scroll-end should therefore be dispatched to the
   // renderer, and the gesture-event-filter should await an ACK for it.
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
@@ -4387,8 +4386,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollWithTouchEvents) {
 
   SimulateGestureEvent(blink::WebInputEvent::Type::kGestureScrollEnd,
                        blink::WebGestureDevice::kTouchscreen);
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ("GestureScrollEnd", GetMessageNames(events));
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
@@ -4443,8 +4441,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
                        blink::WebGestureDevice::kTouchscreen);
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(0U, events.size());
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
@@ -4487,8 +4484,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
                        blink::WebGestureDevice::kTouchscreen);
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(0U, events.size());
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());

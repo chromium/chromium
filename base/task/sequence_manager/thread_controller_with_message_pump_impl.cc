@@ -135,22 +135,23 @@ void ThreadControllerWithMessagePumpImpl::ScheduleWork() {
 
 void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     LazyNow* lazy_now,
-    TimeTicks run_time) {
+    absl::optional<WakeUp> wake_up) {
+  DCHECK(!wake_up || !wake_up->is_immediate());
+  TimeTicks run_time = wake_up.has_value() ? wake_up->time : TimeTicks::Max();
   DCHECK_LT(lazy_now->Now(), run_time);
 
   if (main_thread_only().next_delayed_do_work == run_time)
     return;
-
-  // Cap at one day but remember the exact time for the above equality check on
-  // the next round.
   main_thread_only().next_delayed_do_work = run_time;
-  if (!run_time.is_max())
-    run_time = CapAtOneDay(run_time, lazy_now);
 
   // It's very rare for PostDelayedTask to be called outside of a DoWork in
   // production, so most of the time this does nothing.
   if (work_deduplicator_.OnDelayedWorkRequested() ==
       ShouldScheduleWork::kScheduleImmediate) {
+    // Cap at one day but remember the exact time for the above equality check
+    // on the next round.
+    if (!run_time.is_max())
+      run_time = CapAtOneDay(run_time, lazy_now);
     // |pump_| can't be null as all postTasks are cross-thread before binding,
     // and delayed cross-thread postTasks do the thread hop through an immediate
     // task.
@@ -258,7 +259,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   work_deduplicator_.OnWorkStarted();
   LazyNow continuation_lazy_now(time_source_);
-  TimeTicks next_task_time = DoWorkImpl(&continuation_lazy_now);
+  absl::optional<WakeUp> next_wake_up = DoWorkImpl(&continuation_lazy_now);
 
   // If we are yielding after DoWorkImpl (a work batch) set the flag boolean.
   // This will inform the MessagePump to schedule a new continuation based on
@@ -271,8 +272,9 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   }
   // Schedule a continuation.
   WorkDeduplicator::NextTask next_task =
-      next_task_time.is_null() ? WorkDeduplicator::NextTask::kIsImmediate
-                               : WorkDeduplicator::NextTask::kIsDelayed;
+      (next_wake_up && next_wake_up->is_immediate())
+          ? WorkDeduplicator::NextTask::kIsImmediate
+          : WorkDeduplicator::NextTask::kIsDelayed;
   if (work_deduplicator_.DidCheckForMoreWork(next_task) ==
       ShouldScheduleWork::kScheduleImmediate) {
     // Need to run new work immediately, but due to the contract of DoWork
@@ -280,9 +282,8 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
     return next_work_info;
   }
 
-  // While the math below would saturate when |delay_till_next_task.is_max()|;
-  // special-casing here avoids unnecessarily sampling Now() when out of work.
-  if (next_task_time.is_max()) {
+  // Special-casing here avoids unnecessarily sampling Now() when out of work.
+  if (!next_wake_up) {
     main_thread_only().next_delayed_do_work = TimeTicks::Max();
     next_work_info.delayed_run_time = TimeTicks::Max();
     return next_work_info;
@@ -290,7 +291,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   // The MessagePump will schedule the wake up on our behalf, so we need to
   // update |main_thread_only().next_delayed_do_work|.
-  main_thread_only().next_delayed_do_work = next_task_time;
+  main_thread_only().next_delayed_do_work = next_wake_up->time;
 
   // Don't request a run time past |main_thread_only().quit_runloop_after|.
   if (main_thread_only().next_delayed_do_work >
@@ -310,7 +311,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   return next_work_info;
 }
 
-TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
+absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     LazyNow* continuation_lazy_now) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "ThreadControllerImpl::DoWork");
@@ -320,8 +321,8 @@ TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // helps spot nested loops that intentionally starve application tasks.
     TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
     if (main_thread_only().quit_runloop_after == TimeTicks::Max())
-      return TimeTicks::Max();
-    return main_thread_only().quit_runloop_after;
+      return absl::nullopt;
+    return WakeUp{main_thread_only().quit_runloop_after};
   }
 
   DCHECK(main_thread_only().task_source);
@@ -372,7 +373,7 @@ TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
   }
 
   if (main_thread_only().quit_pending)
-    return TimeTicks::Max();
+    return absl::nullopt;
 
   work_deduplicator_.WillCheckForMoreWork();
 
@@ -384,8 +385,8 @@ TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
           : SequencedTaskSource::SelectTaskOption::kDefault;
   main_thread_only().task_source->RemoveAllCanceledDelayedTasksFromFront(
       continuation_lazy_now);
-  return main_thread_only().task_source->GetNextTaskTime(continuation_lazy_now,
-                                                         select_task_option);
+  return main_thread_only().task_source->GetPendingWakeUp(continuation_lazy_now,
+                                                          select_task_option);
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {

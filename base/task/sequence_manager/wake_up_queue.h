@@ -37,7 +37,7 @@ class BASE_EXPORT WakeUpQueue {
   // Returns a wake-up for the next pending delayed task (pending delayed tasks
   // that are ripe may be ignored). If there are no such tasks (immediate tasks
   // don't count) or queues are disabled it returns nullopt.
-  absl::optional<WakeUp> GetNextWakeUp() const;
+  absl::optional<WakeUp> GetNextDelayedWakeUp() const;
 
   // Debug info.
   Value AsValue(TimeTicks now) const;
@@ -65,7 +65,7 @@ class BASE_EXPORT WakeUpQueue {
   virtual void UnregisterQueue(internal::TaskQueueImpl* queue) = 0;
 
   // Removes all canceled delayed tasks from the front of the queue. After
-  // calling this, GetNextWakeUp() is guaranteed to return a wake up time
+  // calling this, GetNextDelayedWakeUp() is guaranteed to return a wake up time
   // for a non-canceled task.
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
 
@@ -89,7 +89,7 @@ class BASE_EXPORT WakeUpQueue {
     internal::TaskQueueImpl* queue;
 
     bool operator>(const ScheduledWakeUp& other) const {
-      return wake_up > other.wake_up;
+      return wake_up.latest_time() > other.wake_up.latest_time();
     }
 
     void SetHeapHandle(HeapHandle handle) {

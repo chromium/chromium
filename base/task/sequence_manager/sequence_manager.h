@@ -178,9 +178,9 @@ class BASE_EXPORT SequenceManager {
   virtual TimeTicks NowTicks() const = 0;
 
   // Returns a wake-up for the next delayed task which is not ripe for
-  // execution. If there are no such tasks (immediate tasks don't count), it
+  // execution. If there are no such tasks (immediate tasks don't count),
   // returns nullopt.
-  virtual absl::optional<WakeUp> GetNextWakeUp() const = 0;
+  virtual absl::optional<WakeUp> GetNextDelayedWakeUp() const = 0;
 
   // Sets the SingleThreadTaskRunner that will be returned by
   // ThreadTaskRunnerHandle::Get on the main thread.

@@ -29,9 +29,9 @@ class Fence;
 //    wake-up have the same `enqueue_order_` and their order is decided by
 //    `delayed_run_time_` and `sequence_num_`.
 //
-//  - `delayed_run_time_`: The time at which a delayed task's delay expires;
-//    only non-zero for delayed tasks. Delayed tasks enqueued as part of the
-//    same wake-up are ordered by `delayed_run_time`.
+//  - `delayed_run_time_`: The latest time at which a delayed task should run;
+//    only non-zero for delayed tasks. Before they become ripe, delayed tasks
+//    are maintained in a heap ordered by `latest_delayed_run_time`.
 //
 //  - `sequence_num_`: a strictly increasing number assigned at posting time for
 //    all tasks. This is used to order delayed tasks if their `enqueue_order_`
@@ -56,6 +56,7 @@ class BASE_EXPORT TaskOrder {
 
   int sequence_num() const { return sequence_num_; }
 
+  // TODO(1153139): Rename to latest_delayed_run_time() for clarity.
   TimeTicks delayed_run_time() const { return delayed_run_time_; }
 
   static TaskOrder CreateForTesting(EnqueueOrder enqueue_order,

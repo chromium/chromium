@@ -188,7 +188,8 @@ TEST_F(AutoAdvancingVirtualTimeDomainTest, GetNextWakeUpHandlesPastRunTime) {
                                                        base::Milliseconds(100));
 
   // Task at t+10ms should be run immediately.
-  EXPECT_GE(base::TimeTicks::Now(), sequence_manager_->GetNextWakeUp()->time);
+  EXPECT_GE(base::TimeTicks::Now(),
+            sequence_manager_->GetNextDelayedWakeUp()->time);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(task_run);

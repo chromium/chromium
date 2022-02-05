@@ -28,6 +28,7 @@
 #include "base/task/sequence_manager/wake_up_queue.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
+#include "base/task/task_features.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_local.h"
 #include "base/time/default_tick_clock.h"
@@ -150,6 +151,7 @@ char* PrependHexAddress(char* output, const void* address) {
 // Note: An atomic is used here because some tests can initialize two different
 //       sequence managers on different threads (e.g. by using base::Thread).
 std::atomic_bool g_no_wake_ups_for_canceled_tasks{false};
+std::atomic<TimeDelta> g_task_leeway{WakeUp::kDefaultLeeway};
 
 }  // namespace
 
@@ -321,6 +323,7 @@ std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(
 void SequenceManagerImpl::InitializeFeatures() {
   ApplyNoWakeUpsForCanceledTasks();
   TaskQueueImpl::InitializeFeatures();
+  g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
 }
 
 // static
@@ -528,11 +531,11 @@ void SequenceManagerImpl::ScheduleWork() {
 
 void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
                                         absl::optional<WakeUp> wake_up) {
-  TimeTicks wake_up_time = AdjustWakeUp(wake_up, lazy_now);
-  if (wake_up_time.is_null()) {
+  auto next_wake_up = AdjustWakeUp(wake_up, lazy_now);
+  if (next_wake_up && next_wake_up->is_immediate()) {
     ScheduleWork();
   } else {
-    controller_->SetNextDelayedDoWork(lazy_now, wake_up_time);
+    controller_->SetNextDelayedDoWork(lazy_now, next_wake_up);
   }
 }
 
@@ -743,8 +746,9 @@ void SequenceManagerImpl::RemoveAllCanceledDelayedTasksFromFront(
           lazy_now);
 }
 
-TimeTicks SequenceManagerImpl::GetNextTaskTime(LazyNow* lazy_now,
-                                               SelectTaskOption option) const {
+absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
+    LazyNow* lazy_now,
+    SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
   if (auto priority =
@@ -753,8 +757,8 @@ TimeTicks SequenceManagerImpl::GetNextTaskTime(LazyNow* lazy_now,
     // work to be done. However we may want to yield to native work if it is
     // more important.
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return AdjustWakeUp(GetNextWakeUpWithOption(option), lazy_now);
-    return TimeTicks();
+      return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
+    return WakeUp{};
   }
 
   // There may be some incoming immediate work which we haven't accounted for.
@@ -765,47 +769,52 @@ TimeTicks SequenceManagerImpl::GetNextTaskTime(LazyNow* lazy_now,
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return AdjustWakeUp(GetNextWakeUpWithOption(option), lazy_now);
-    return TimeTicks();
+      return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
+    return WakeUp{};
   }
 
   // Otherwise we need to find the shortest delay, if any.  NB we don't need to
   // call MoveReadyDelayedTasksToWorkQueues because it's assumed
   // DelayTillNextTask will return TimeDelta>() if the delayed task is due to
   // run now.
-  return AdjustWakeUp(GetNextWakeUpWithOption(option), lazy_now);
+  return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
 }
 
-absl::optional<WakeUp> SequenceManagerImpl::GetNextWakeUp() const {
+absl::optional<WakeUp> SequenceManagerImpl::GetNextDelayedWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-
-  return main_thread_only().wake_up_queue->GetNextWakeUp();
+  return main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
 }
 
-absl::optional<WakeUp> SequenceManagerImpl::GetNextWakeUpWithOption(
+absl::optional<WakeUp> SequenceManagerImpl::GetNextDelayedWakeUpWithOption(
     SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
   if (option == SelectTaskOption::kSkipDelayedTask)
     return absl::nullopt;
-  return GetNextWakeUp();
+  return GetNextDelayedWakeUp();
 }
 
-TimeTicks SequenceManagerImpl::AdjustWakeUp(absl::optional<WakeUp> wake_up,
-                                            LazyNow* lazy_now) const {
+absl::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
+    absl::optional<WakeUp> wake_up,
+    LazyNow* lazy_now) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!wake_up)
-    return TimeTicks::Max();
+    return absl::nullopt;
   // Overdue work needs to be run immediately.
-  if (lazy_now->Now() >= wake_up->time)
-    return TimeTicks();
+  if (lazy_now->Now() >= wake_up->earliest_time())
+    return WakeUp{};
   // If |time_domain| is present, we don't want an actual OS level delayed wake
   // up scheduled, so pretend we have no more work. This will result in
   // appearing idle and |time_domain| will decide what to do in
   // MaybeFastForwardToWakeUp().
   if (main_thread_only().time_domain)
-    return TimeTicks::Max();
-  return wake_up->time;
+    return absl::nullopt;
+  return *wake_up;
+}
+
+void SequenceManagerImpl::MaybeAddLeewayToTask(Task& task) const {
+  if (!main_thread_only().time_domain)
+    task.leeway = g_task_leeway.load(std::memory_order_relaxed);
 }
 
 bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
@@ -815,7 +824,7 @@ bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
 }
 
 bool SequenceManagerImpl::OnSystemIdle() {
-  auto wakeup = main_thread_only().wake_up_queue->GetNextWakeUp();
+  auto wakeup = main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
   bool have_work_to_do = false;
   if (main_thread_only().time_domain) {
     have_work_to_do = main_thread_only().time_domain->MaybeFastForwardToWakeUp(

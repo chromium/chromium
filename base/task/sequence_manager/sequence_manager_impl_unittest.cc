@@ -103,6 +103,8 @@ void PrintTo(const TestType type, std::ostream* os) {
   *os << ToString(type);
 }
 
+constexpr TimeDelta kLeeway = sequence_manager::WakeUp::kDefaultLeeway;
+
 using MockTask = MockCallback<base::RepeatingCallback<void()>>;
 
 // This class abstracts the details of how the SequenceManager runs tasks.
@@ -343,7 +345,7 @@ class SequenceManagerTest : public testing::TestWithParam<TestType>,
       // Advance time if we've run out of immediate work to do.
       if (!sequence_manager()->HasImmediateWork()) {
         LazyNow lazy_now(mock_tick_clock());
-        auto wake_up = sequence_manager()->GetNextWakeUp();
+        auto wake_up = sequence_manager()->GetNextDelayedWakeUp();
         if (wake_up.has_value()) {
           AdvanceMockTickClock(wake_up->time - lazy_now.Now());
           per_run_time_callback.Run();
@@ -849,6 +851,68 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting) {
   // After the delay has completed, the task runs normally.
   FastForwardBy(Milliseconds(1));
   EXPECT_THAT(run_order, ElementsAre(1u));
+  EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
+}
+
+TEST_P(SequenceManagerTest, DelayedTaskAtPosting_FlexiblePreferEarly) {
+  auto queue = CreateTaskQueue();
+
+  TimeTicks start_time = sequence_manager()->NowTicks();
+  std::vector<EnqueueOrder> run_order;
+  constexpr TimeDelta kDelay(Milliseconds(10));
+  auto handle = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 1, &run_order),
+      sequence_manager()->NowTicks() + kDelay,
+      subtle::DelayPolicy::kFlexiblePreferEarly);
+  EXPECT_EQ(kDelay, NextPendingTaskDelay());
+  EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
+  EXPECT_TRUE(run_order.empty());
+  LazyNow lazy_now(mock_tick_clock());
+  EXPECT_EQ((WakeUp{start_time + kDelay, kLeeway, WakeUpResolution::kLow,
+                    subtle::DelayPolicy::kFlexiblePreferEarly}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
+
+  // The task doesn't run before the delay has completed.
+  FastForwardBy(kDelay - WakeUp::kDefaultLeeway - Milliseconds(1));
+  EXPECT_TRUE(run_order.empty());
+
+  // After the delay has completed, the task runs normally.
+  FastForwardBy(WakeUp::kDefaultLeeway + Milliseconds(1));
+  EXPECT_THAT(run_order, ElementsAre(1u));
+  EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
+}
+
+TEST_P(SequenceManagerTest, DelayedTaskAtPosting_MixedDelayPolicy) {
+  auto queue = CreateTaskQueue();
+
+  TimeTicks start_time = sequence_manager()->NowTicks();
+  std::vector<EnqueueOrder> run_order;
+  auto handle1 = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 2, &run_order),
+      sequence_manager()->NowTicks() + Milliseconds(8),
+      subtle::DelayPolicy::kFlexibleNoSooner);
+  auto handle2 = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 1, &run_order),
+      sequence_manager()->NowTicks() + Milliseconds(10),
+      subtle::DelayPolicy::kPrecise);
+  EXPECT_EQ(Milliseconds(10), NextPendingTaskDelay());
+  EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
+  EXPECT_TRUE(run_order.empty());
+  LazyNow lazy_now(mock_tick_clock());
+  EXPECT_EQ((WakeUp{start_time + Milliseconds(10), kLeeway,
+                    WakeUpResolution::kLow, subtle::DelayPolicy::kPrecise}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
+
+  // The task doesn't run before the delay has completed.
+  FastForwardBy(Milliseconds(10) - Milliseconds(1));
+  EXPECT_TRUE(run_order.empty());
+
+  // After the delay has completed, the task runs normally.
+  FastForwardBy(Milliseconds(1));
+  EXPECT_THAT(run_order, ElementsAre(1u, 2u));
   EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
 }
 
@@ -1777,47 +1841,47 @@ TEST_P(SequenceManagerTest, ThreadCheckAfterTermination) {
   EXPECT_TRUE(queue->task_runner()->RunsTasksInCurrentSequence());
 }
 
-TEST_P(SequenceManagerTest, GetNextWakeUp) {
+TEST_P(SequenceManagerTest, GetNextDelayedWakeUp) {
   auto queues = CreateTaskQueues(2u);
   AdvanceMockTickClock(Microseconds(10000));
   LazyNow lazy_now_1(mock_tick_clock());
 
   // With no delayed tasks.
-  EXPECT_FALSE(sequence_manager()->GetNextWakeUp());
+  EXPECT_FALSE(sequence_manager()->GetNextDelayedWakeUp());
 
   // With a non-delayed task.
   queues[0]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
-  EXPECT_FALSE(sequence_manager()->GetNextWakeUp());
+  EXPECT_FALSE(sequence_manager()->GetNextDelayedWakeUp());
 
   // With a delayed task.
   TimeDelta expected_delay = Milliseconds(50);
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             expected_delay);
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextWakeUp()->time);
+            sequence_manager()->GetNextDelayedWakeUp()->time);
 
   // With another delayed task in the same queue with a longer delay.
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             Milliseconds(100));
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextWakeUp()->time);
+            sequence_manager()->GetNextDelayedWakeUp()->time);
 
   // With another delayed task in the same queue with a shorter delay.
   expected_delay = Milliseconds(20);
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             expected_delay);
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextWakeUp()->time);
+            sequence_manager()->GetNextDelayedWakeUp()->time);
 
   // With another delayed task in a different queue with a shorter delay.
   expected_delay = Milliseconds(10);
   queues[1]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             expected_delay);
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextWakeUp()->time);
+            sequence_manager()->GetNextDelayedWakeUp()->time);
 }
 
-TEST_P(SequenceManagerTest, GetNextWakeUp_MultipleQueues) {
+TEST_P(SequenceManagerTest, GetNextDelayedWakeUp_MultipleQueues) {
   auto queues = CreateTaskQueues(3u);
 
   TimeDelta delay1 = Milliseconds(50);
@@ -1832,7 +1896,8 @@ TEST_P(SequenceManagerTest, GetNextWakeUp_MultipleQueues) {
   queues[0]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(lazy_now.Now() + delay2, sequence_manager()->GetNextWakeUp()->time);
+  EXPECT_EQ(lazy_now.Now() + delay2,
+            sequence_manager()->GetNextDelayedWakeUp()->time);
 }
 
 TEST(SequenceManagerWithTaskRunnerTest, DeleteSequenceManagerInsideATask) {
@@ -2270,12 +2335,12 @@ TEST_P(SequenceManagerTest, TimeDomainDoesNotCauseWakeUp) {
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 1, &run_order), Milliseconds(10));
   LazyNow lazy_now1(domain.get());
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now1));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now1));
   EXPECT_EQ(TimeDelta::Max(), NextPendingTaskDelay());
 
   domain->SetNowTicks(sequence_manager()->NowTicks() + Milliseconds(10));
   LazyNow lazy_now2(domain.get());
-  EXPECT_EQ(TimeTicks(), sequence_manager()->GetNextTaskTime(&lazy_now2));
+  EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 
   queue->ShutdownTaskQueue();
 }
@@ -2478,13 +2543,13 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_ResetThrottler) {
   Mock::VerifyAndClearExpectations(&throttler);
   // Expect throttled wake up.
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(start_time + delay10s,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  WakeUp expected_wake_up{start_time + delay10s};
+  EXPECT_EQ(expected_wake_up, sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   queue->ResetThrottler();
   // Next wake up should be back to normal.
-  EXPECT_EQ(start_time + delay1s,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{start_time + delay1s, kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Tidy up.
   queue->ShutdownTaskQueue();
@@ -3370,10 +3435,10 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   auto queue = CreateTaskQueue();
   constexpr TimeDelta kDelay(Milliseconds(10));
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
   EXPECT_EQ(
-      TimeTicks::Max(),
-      sequence_manager()->GetNextTaskTime(
+      absl::nullopt,
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), kDelay);
@@ -3384,11 +3449,11 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
       SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
-  EXPECT_EQ(lazy_now.Now() + kDelay,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay, kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
   EXPECT_EQ(
-      TimeTicks::Max(),
-      sequence_manager()->GetNextTaskTime(
+      absl::nullopt,
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   AdvanceMockTickClock(kDelay);
@@ -3399,15 +3464,15 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
       SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
-      TimeTicks::Max(),
-      sequence_manager()->GetNextTaskTime(
+      absl::nullopt,
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   // Execute the delayed task.
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
       SequencedTaskSource::SelectTaskOption::kDefault));
   sequence_manager()->DidRunTask();
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now2));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 
   // Tidy up.
   queue->ShutdownTaskQueue();
@@ -3418,20 +3483,20 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
   constexpr TimeDelta kDelay(Milliseconds(10));
   LazyNow lazy_now(mock_tick_clock());
 
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
   EXPECT_EQ(
-      TimeTicks::Max(),
-      sequence_manager()->GetNextTaskTime(
+      absl::nullopt,
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   // Post an immediate task.
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), kDelay);
 
-  EXPECT_EQ(TimeTicks(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now));
   EXPECT_EQ(
-      TimeTicks(),
-      sequence_manager()->GetNextTaskTime(
+      WakeUp{},
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   AdvanceMockTickClock(kDelay);
@@ -3439,8 +3504,8 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
 
   // An immediate task is present, even if we skip the delayed tasks.
   EXPECT_EQ(
-      TimeTicks(),
-      sequence_manager()->GetNextTaskTime(
+      WakeUp{},
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   // Immediate task should be ready to execute, execute it.
@@ -3456,16 +3521,16 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
       SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
-      TimeTicks::Max(),
-      sequence_manager()->GetNextTaskTime(
+      absl::nullopt,
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   // Execute the delayed task.
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
       SequencedTaskSource::SelectTaskOption::kDefault));
   EXPECT_EQ(
-      TimeTicks::Max(),
-      sequence_manager()->GetNextTaskTime(
+      absl::nullopt,
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   sequence_manager()->DidRunTask();
 
@@ -3495,16 +3560,16 @@ TEST_P(SequenceManagerTest,
   LazyNow lazy_now(mock_tick_clock());
 
   EXPECT_EQ(
-      TimeTicks(),
-      sequence_manager()->GetNextTaskTime(
+      WakeUp{},
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   AdvanceMockTickClock(kDelay);
   LazyNow lazy_now2(mock_tick_clock());
 
   EXPECT_EQ(
-      TimeTicks(),
-      sequence_manager()->GetNextTaskTime(
+      WakeUp{},
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   // Immediate tasks should be ready to execute, execute them.
@@ -3519,8 +3584,8 @@ TEST_P(SequenceManagerTest,
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
       SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
-      TimeTicks::Max(),
-      sequence_manager()->GetNextTaskTime(
+      absl::nullopt,
+      sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   // Execute delayed tasks.
@@ -3531,7 +3596,7 @@ TEST_P(SequenceManagerTest,
 
   // No delayed tasks can be executed anymore.
   EXPECT_FALSE(sequence_manager()->SelectNextTask());
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now2));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 
   // Tidy up.
   queues[0]->ShutdownTaskQueue();
@@ -3540,36 +3605,36 @@ TEST_P(SequenceManagerTest,
   queues[3]->ShutdownTaskQueue();
 }
 
-TEST_P(SequenceManagerTest, GetNextTaskTime) {
+TEST_P(SequenceManagerTest, GetPendingWakeUp) {
   auto queues = CreateTaskQueues(2u);
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             Seconds(10));
 
-  EXPECT_EQ(lazy_now.Now() + Seconds(10),
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + Seconds(10), kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   queues[1]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             Seconds(15));
 
-  EXPECT_EQ(lazy_now.Now() + Seconds(10),
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + Seconds(10), kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   queues[1]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             Seconds(5));
 
-  EXPECT_EQ(lazy_now.Now() + Seconds(5),
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + Seconds(5), kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   queues[0]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
-  EXPECT_EQ(TimeTicks(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
-TEST_P(SequenceManagerTest, GetNextTaskTime_Disabled) {
+TEST_P(SequenceManagerTest, GetPendingWakeUp_Disabled) {
   auto queue = CreateTaskQueue();
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
@@ -3578,20 +3643,20 @@ TEST_P(SequenceManagerTest, GetNextTaskTime_Disabled) {
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
-TEST_P(SequenceManagerTest, GetNextTaskTime_Fence) {
+TEST_P(SequenceManagerTest, GetPendingWakeUp_Fence) {
   auto queue = CreateTaskQueue();
 
   queue->InsertFence(TaskQueue::InsertFencePosition::kNow);
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
-TEST_P(SequenceManagerTest, GetNextTaskTime_FenceUnblocking) {
+TEST_P(SequenceManagerTest, GetPendingWakeUp_FenceUnblocking) {
   auto queue = CreateTaskQueue();
 
   queue->InsertFence(TaskQueue::InsertFencePosition::kNow);
@@ -3599,10 +3664,10 @@ TEST_P(SequenceManagerTest, GetNextTaskTime_FenceUnblocking) {
   queue->InsertFence(TaskQueue::InsertFencePosition::kNow);
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(TimeTicks(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
-TEST_P(SequenceManagerTest, GetNextTaskTime_DelayedTaskReady) {
+TEST_P(SequenceManagerTest, GetPendingWakeUp_DelayedTaskReady) {
   auto queue = CreateTaskQueue();
 
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
@@ -3611,7 +3676,7 @@ TEST_P(SequenceManagerTest, GetNextTaskTime_DelayedTaskReady) {
   AdvanceMockTickClock(Seconds(10));
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(TimeTicks(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
@@ -3627,19 +3692,19 @@ TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
 
   // Ensure it is picked to calculate the next task time.
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(lazy_now.Now() + kDelay,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay, kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Canceling the task is not sufficient to ensure it is not considered for the
   // next task time.
   cancelable_closure.Cancel();
-  EXPECT_EQ(lazy_now.Now() + kDelay,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay, kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Removing the canceled task means it can't be considered for the next task
   // time.
   sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 TEST_P(SequenceManagerTest,
@@ -3662,22 +3727,22 @@ TEST_P(SequenceManagerTest,
 
   // The task from the first queue is picked to calculate the next task time.
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(lazy_now.Now() + kDelay1,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay1, kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Test that calling RemoveAllCanceledDelayedTasksFromFront() works (and does
   // nothing) when no task is canceled.
   sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
-  EXPECT_EQ(lazy_now.Now() + kDelay1,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay1, kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Canceling the first task which comes from the first queue.
   cancelable_closure_1.Cancel();
   sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
 
   // Now the only task remaining is the one from the second queue.
-  EXPECT_EQ(lazy_now.Now() + kDelay2,
-            sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay2, kLeeway}),
+            sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Cancel the remaining task.
   cancelable_closure_2.Cancel();
@@ -3685,12 +3750,12 @@ TEST_P(SequenceManagerTest,
 
   // No more valid tasks in any queues.
   sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // Test that calling RemoveAllCanceledDelayedTasksFromFront() works (and does
   // nothing) when all queues are empty.
   sequence_manager()->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
-  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now));
+  EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now));
 }
 
 namespace {

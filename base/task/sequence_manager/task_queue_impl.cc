@@ -485,8 +485,10 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask posted_task,
 
   if (current_thread == CurrentThread::kMainThread) {
     LazyNow lazy_now(sequence_manager_->main_thread_clock());
+    Task pending_task = MakeDelayedTask(std::move(posted_task), &lazy_now);
+    sequence_manager_->MaybeAddLeewayToTask(pending_task);
     PushOntoDelayedIncomingQueueFromMainThread(
-        MakeDelayedTask(std::move(posted_task), &lazy_now), &lazy_now,
+        std::move(pending_task), &lazy_now,
         /* notify_task_annotator */ true);
   } else {
     LazyNow lazy_now(sequence_manager_->any_thread_clock());
@@ -534,10 +536,12 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueue(Task pending_task) {
 
 void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  TimeTicks delayed_run_time = pending_task.delayed_run_time;
+  sequence_manager_->MaybeAddLeewayToTask(pending_task);
   TimeTicks now = sequence_manager_->main_thread_clock()->NowTicks();
   LazyNow lazy_now(now);
-  if (delayed_run_time <= now) {
+  // A delayed task is ready to run as soon as earliest_delayed_run_time() is
+  // reached.
+  if (pending_task.earliest_delayed_run_time() <= now) {
     // If |delayed_run_time| is in the past then push it onto the work queue
     // immediately. To ensure the right task ordering we need to temporarily
     // push it onto the |delayed_incoming_queue|.
@@ -655,7 +659,8 @@ absl::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
           : WakeUpResolution::kLow;
 
   const auto& top_task = main_thread_only().delayed_incoming_queue.top();
-  return WakeUp{top_task.delayed_run_time, resolution};
+  return WakeUp{top_task.delayed_run_time, top_task.leeway, resolution,
+                top_task.delay_policy};
 }
 
 void TaskQueueImpl::OnWakeUp(LazyNow* lazy_now, EnqueueOrder enqueue_order) {
@@ -708,7 +713,7 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(
 
     // Leave the top task alone if it hasn't been canceled and it is not ready.
     const bool is_cancelled = task.task.IsCancelled();
-    if (!is_cancelled && task.delayed_run_time > lazy_now->Now())
+    if (!is_cancelled && task.earliest_delayed_run_time() > lazy_now->Now())
       break;
 
     Task ready_task = main_thread_only().delayed_incoming_queue.take_top();
@@ -1089,6 +1094,7 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
     resolution = WakeUpResolution::kHigh;
   }
 #endif  // BUILDFLAG(IS_WIN)
+  // leeway isn't specified yet since this may be called from any thread.
   return Task(std::move(delayed_task), sequence_number, EnqueueOrder(),
               lazy_now->Now(), resolution);
 }
@@ -1538,7 +1544,7 @@ void TaskQueueImpl::DelayedIncomingQueue::remove(HeapHandle heap_handle) {
 
 Task TaskQueueImpl::DelayedIncomingQueue::take_top() {
   DCHECK(!empty());
-  if (top().is_high_res) {
+  if (queue_.top().is_high_res) {
     pending_high_res_tasks_--;
     DCHECK_GE(pending_high_res_tasks_, 0);
   }
@@ -1571,6 +1577,19 @@ Value TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {
   for (const Task& task : queue_)
     state.Append(TaskAsValue(task, now));
   return state;
+}
+
+bool TaskQueueImpl::DelayedIncomingQueue::Compare::operator()(
+    const Task& lhs,
+    const Task& rhs) const {
+  // Delayed tasks are ordered by latest_delayed_run_time(). The top task may
+  // not be the first task eligible to run, but tasks will always become ripe
+  // before their latest_delayed_run_time().
+  const TimeTicks lhs_latest_delayed_run_time = lhs.latest_delayed_run_time();
+  const TimeTicks rhs_latest_delayed_run_time = rhs.latest_delayed_run_time();
+  if (lhs_latest_delayed_run_time == rhs_latest_delayed_run_time)
+    return lhs.sequence_num > rhs.sequence_num;
+  return lhs_latest_delayed_run_time > rhs_latest_delayed_run_time;
 }
 
 TaskQueueImpl::OnTaskPostedCallbackHandleImpl::OnTaskPostedCallbackHandleImpl(

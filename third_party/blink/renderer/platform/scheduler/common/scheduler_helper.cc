@@ -123,7 +123,7 @@ absl::optional<base::sequence_manager::WakeUp> SchedulerHelper::GetNextWakeUp()
     const {
   CheckOnValidThread();
   DCHECK(sequence_manager_);
-  return sequence_manager_->GetNextWakeUp();
+  return sequence_manager_->GetNextDelayedWakeUp();
 }
 
 void SchedulerHelper::SetTimeDomain(
