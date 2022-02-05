@@ -18,7 +18,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -34,18 +33,16 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Tests for {@link DisplayCutoutController} class.
- */
+/** Tests for {@link DisplayCutoutController} class. */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Ignore("https://crbug.com/1216298")
 public class DisplayCutoutControllerTest {
     @Mock
     private TabImpl mTab;
@@ -79,15 +76,15 @@ public class DisplayCutoutControllerTest {
 
         mActivityRef = new WeakReference<>(mChromeActivity);
 
-        // Mock dependency on InsetObserverView.
-
         when(mChromeActivity.getWindow()).thenReturn(mWindow);
         when(mWindow.getAttributes()).thenReturn(new LayoutParams());
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
-        when(mChromeActivity.getInsetObserverView()).thenReturn(mInsetObserver);
+
+        InsetObserverViewSupplier.setInstanceForTesting(mInsetObserver);
+        ActivityDisplayCutoutModeSupplier.setInstanceForTesting(0);
 
         mDisplayCutoutTabHelper = spy(new DisplayCutoutTabHelper(mTab));
         mController = spy(mDisplayCutoutTabHelper.mCutoutController);

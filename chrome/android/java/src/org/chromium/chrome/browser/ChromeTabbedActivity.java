@@ -1619,7 +1619,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this::isInOverviewMode, this::isWarmOnResume, /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, mEphemeralTabCoordinatorSupplier,
                 getIntentRequestTracker(), getControlContainerHeightResource(),
-                this::getInsetObserverView, this::backShouldCloseTab,
+                mInsetObserverViewSupplier, this::backShouldCloseTab,
                 getTabReparentingControllerSupplier(), new OmniboxPedalDelegateImpl(this),
                 // TODO(sinansahin): This currently only checks for incognito extras in the intent.
                 // We should make it more robust by using more signals.

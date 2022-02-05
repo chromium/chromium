@@ -18,6 +18,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/FadingShadow.java",
     "java/src/org/chromium/components/browser_ui/widget/FadingShadowView.java",
     "java/src/org/chromium/components/browser_ui/widget/InsetObserverView.java",
+    "java/src/org/chromium/components/browser_ui/widget/InsetObserverViewSupplier.java",
     "java/src/org/chromium/components/browser_ui/widget/MaterialCardViewNoShadow.java",
     "java/src/org/chromium/components/browser_ui/widget/MaterialProgressBar.java",
     "java/src/org/chromium/components/browser_ui/widget/MenuOrKeyboardActionController.java",
