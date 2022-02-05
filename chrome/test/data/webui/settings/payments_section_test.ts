@@ -42,6 +42,7 @@ suite('PaymentsSection', function() {
     document.body.innerHTML = '';
     loadTimeData.overrideValues({
       migrationEnabled: true,
+      virtualCardEnrollmentEnabled: true,
     });
   });
 
@@ -265,6 +266,23 @@ suite('PaymentsSection', function() {
     assertTrue(!!outlinkButton);
   });
 
+  test(
+      'verifyCreditCardRowButtonIsDropdownWhenVirtualCardEnrollEligible',
+      function() {
+        const creditCard = createCreditCardEntry();
+        creditCard.metadata!.isLocal = false;
+        creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+        creditCard.metadata!.isVirtualCardEnrolled = false;
+        const section = createPaymentsSection(
+            [creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+        assertTrue(!!menuButton);
+        const outlinkButton =
+            rowShadowRoot.querySelector('cr-icon-button.icon-external');
+        assertFalse(!!outlinkButton);
+      });
+
   test('verifyAddVsEditCreditCardTitle', function() {
     const newCreditCard = createEmptyCreditCardEntry();
     const newCreditCardDialog = createCreditCardDialog(newCreditCard);
@@ -420,6 +438,8 @@ suite('PaymentsSection', function() {
     // When credit card is local, |isCached| will be undefined.
     creditCard.metadata!.isLocal = true;
     creditCard.metadata!.isCached = undefined;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
@@ -432,13 +452,15 @@ suite('PaymentsSection', function() {
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
 
-    menuButton!.click();
+    menuButton.click();
     flush();
 
     // Menu should have 2 options.
     assertFalse(section.$.menuEditCreditCard.hidden);
     assertFalse(section.$.menuRemoveCreditCard.hidden);
     assertTrue(section.$.menuClearCreditCard.hidden);
+    assertTrue(section.$.menuAddVirtualCard.hidden);
+    assertTrue(section.$.menuRemoveVirtualCard.hidden);
 
     section.$.creditCardSharedMenu.close();
     flush();
@@ -449,6 +471,8 @@ suite('PaymentsSection', function() {
 
     creditCard.metadata!.isLocal = false;
     creditCard.metadata!.isCached = true;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
@@ -461,13 +485,15 @@ suite('PaymentsSection', function() {
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
 
-    menuButton!.click();
+    menuButton.click();
     flush();
 
     // Menu should have 2 options.
     assertFalse(section.$.menuEditCreditCard.hidden);
     assertTrue(section.$.menuRemoveCreditCard.hidden);
     assertFalse(section.$.menuClearCreditCard.hidden);
+    assertTrue(section.$.menuAddVirtualCard.hidden);
+    assertTrue(section.$.menuRemoveVirtualCard.hidden);
 
     section.$.creditCardSharedMenu.close();
     flush();
@@ -478,6 +504,8 @@ suite('PaymentsSection', function() {
 
     creditCard.metadata!.isLocal = false;
     creditCard.metadata!.isCached = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
@@ -487,6 +515,74 @@ suite('PaymentsSection', function() {
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     assertTrue(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     assertFalse(!!rowShadowRoot.querySelector('#creditCardMenu'));
+  });
+
+  test('verifyVirtualCardEligibleCreditCardMenu', function() {
+    const creditCard = createCreditCardEntry();
+
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isCached = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
+
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+
+    // Server cards that are eligible for virtual card enrollment should show
+    // the overflow menu.
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+    assertTrue(!!menuButton);
+
+    menuButton.click();
+    flush();
+
+    // Menu should have 2 options.
+    assertFalse(section.$.menuEditCreditCard.hidden);
+    assertTrue(section.$.menuRemoveCreditCard.hidden);
+    assertTrue(section.$.menuClearCreditCard.hidden);
+    assertFalse(section.$.menuAddVirtualCard.hidden);
+    assertTrue(section.$.menuRemoveVirtualCard.hidden);
+
+    section.$.creditCardSharedMenu.close();
+    flush();
+  });
+
+  test('verifyVirtualCardEnrolledCreditCardMenu', function() {
+    const creditCard = createCreditCardEntry();
+
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isCached = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+    creditCard.metadata!.isVirtualCardEnrolled = true;
+
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+
+    // Server cards that are eligible for virtual card enrollment should show
+    // the overflow menu.
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+    assertTrue(!!menuButton);
+
+    menuButton.click();
+    flush();
+
+    // Menu should have 2 options.
+    assertFalse(section.$.menuEditCreditCard.hidden);
+    assertTrue(section.$.menuRemoveCreditCard.hidden);
+    assertTrue(section.$.menuClearCreditCard.hidden);
+    assertTrue(section.$.menuAddVirtualCard.hidden);
+    assertFalse(section.$.menuRemoveVirtualCard.hidden);
+
+    section.$.creditCardSharedMenu.close();
+    flush();
   });
 
   test('verifyMigrationButtonNotShownIfMigrationNotEnabled', function() {

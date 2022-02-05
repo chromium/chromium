@@ -298,6 +298,18 @@
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_CARD_DESCRIPTION" desc="The (accessibility) credit card description from the network of the card and last 4 digits of the card number.">
     <ph name="NETWORK_NAME">$1<ex>Visa</ex></ph> ending in <ph name="LAST_FOUR_DIGITS">$2<ex>1234</ex></ph>
   </message>
+  <message name="IDS_AUTOFILL_ADD_VIRTUAL_CARD" desc="The text shown in the secondary action menu button to enroll a card in the virtual card feature. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    Add virtual card
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_VIRTUAL_CARD" desc="The text shown in the secondary action menu button to unenroll a card from the virtual card feature. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    Remove virtual card
+  </message>
+  <message name="IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD" desc="The text shown in the secondary action menu button to direct users to pay.google.com to edit the information of credit cards stored in Google Payments.">
+    Edit in Google Pay
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENABLED_LABEL" desc="The text shown next to the card summary to indicate that a virtual card has been generated for the credit card and is enabled. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    (Virtual card enabled)
+  </message>
   <message name="IDS_SETTINGS_ADDRESS_REMOVE" desc="Label for a context menu item that removes the selected address." meaning="Remove selected address.">
     Remove
   </message>

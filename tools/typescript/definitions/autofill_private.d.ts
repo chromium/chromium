@@ -30,6 +30,8 @@ declare global {
         isLocal?: boolean;
         isCached?: boolean;
         isMigratable?: boolean;
+        isVirtualCardEnrollmentEligible?: boolean;
+        isVirtualCardEnrolled?: boolean;
       }
 
       export interface AddressEntry {

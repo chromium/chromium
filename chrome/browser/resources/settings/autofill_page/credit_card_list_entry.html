@@ -13,10 +13,18 @@
         color: var(--cr-secondary-text-color);
         margin-inline-start: 16px;
       }
+
+      #virtualCardLabel {
+        margin-inline-start: 8px;
+      }
     </style>
     <div class="list-item">
       <div class="type-column">
         <span id="creditCardLabel">[[creditCard.metadata.summaryLabel]]</span>
+        <span id="virtualCardLabel"
+            hidden$="[[!isVirtualCardEnrolled_(creditCard.metadata)]]">
+          $i18n{virtualCardEnabled}
+        </span>
         <span class="payments-label"
             hidden$="[[creditCard.metadata.isLocal]]">
           <span hidden$="[[creditCard.metadata.isCached]]">

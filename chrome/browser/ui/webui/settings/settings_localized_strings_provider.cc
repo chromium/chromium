@@ -1114,7 +1114,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"searchResultsPlural", IDS_SEARCH_RESULTS_PLURAL},
       {"searchResultsSingular", IDS_SEARCH_RESULTS_SINGULAR},
       {"showPasswordLabel", IDS_SETTINGS_PASSWORD_SHOW_PASSWORD_A11Y},
-      {"hidePasswordLabel", IDS_SETTINGS_PASSWORD_HIDE_PASSWORD_A11Y}};
+      {"hidePasswordLabel", IDS_SETTINGS_PASSWORD_HIDE_PASSWORD_A11Y},
+      {"addVirtualCard", IDS_AUTOFILL_ADD_VIRTUAL_CARD},
+      {"removeVirtualCard", IDS_AUTOFILL_REMOVE_VIRTUAL_CARD},
+      {"editServerCard", IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD},
+      {"virtualCardEnabled", IDS_AUTOFILL_VIRTUAL_CARD_ENABLED_LABEL}};
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
       password_manager::ManagePasswordsReferrer::kChromeSettings);
@@ -1221,6 +1225,14 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "addPasswordsInSettingsEnabled",
       base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings));
+
+  html_source->AddBoolean(
+      "virtualCardEnrollmentEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment) &&
+          base::FeatureList::IsEnabled(
+              autofill::features::
+                  kAutofillEnableVirtualCardManagementInDesktopSettingsPage));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

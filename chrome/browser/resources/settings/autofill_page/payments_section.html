@@ -78,7 +78,10 @@
 
     <cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
       <button id="menuEditCreditCard" class="dropdown-item"
-          on-click="onMenuEditCreditCardTap_">$i18n{edit}</button>
+          on-click="onMenuEditCreditCardTap_">
+        [[getMenuEditCardText_(activeCreditCard_.metadata.isLocal)]]
+      </button>
+
       <button id="menuRemoveCreditCard" class="dropdown-item"
           hidden$="[[!activeCreditCard_.metadata.isLocal]]"
           on-click="onMenuRemoveCreditCardTap_">$i18n{removeCreditCard}</button>
@@ -86,6 +89,15 @@
           on-click="onMenuClearCreditCardTap_"
           hidden$="[[!activeCreditCard_.metadata.isCached]]">
         $i18n{clearCreditCard}
+      </button>
+
+      <button id="menuAddVirtualCard" class="dropdown-item"
+          hidden$="[[!shouldShowAddVirtualCardButton_(activeCreditCard_)]]">
+        $i18n{addVirtualCard}
+      </button>
+      <button id="menuRemoveVirtualCard" class="dropdown-item"
+          hidden$="[[!shouldShowRemoveVirtualCardButton_(activeCreditCard_)]]">
+        $i18n{removeVirtualCard}
       </button>
     </cr-action-menu>
     <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>

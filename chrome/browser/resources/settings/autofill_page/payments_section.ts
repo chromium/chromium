@@ -55,6 +55,8 @@ export interface SettingsPaymentsSectionElement {
     menuClearCreditCard: HTMLElement,
     menuEditCreditCard: HTMLElement,
     menuRemoveCreditCard: HTMLElement,
+    menuAddVirtualCard: HTMLElement,
+    menuRemoveVirtualCard: HTMLElement,
     migrateCreditCards: HTMLElement,
     paymentsList: HTMLElement,
   };
@@ -121,6 +123,17 @@ export class SettingsPaymentsSectionElement extends
         },
         readOnly: true,
       },
+
+      /**
+       * Whether virtual card enroll management on settings page is enabled.
+       */
+      virtualCardEnrollmentEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('virtualCardEnrollmentEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -132,6 +145,7 @@ export class SettingsPaymentsSectionElement extends
   private showCreditCardDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
+  private virtualCardEnrollmentEnabled_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -351,6 +365,32 @@ export class SettingsPaymentsSectionElement extends
         this.i18n('migratableCardsInfoMultiple');
 
     return true;
+  }
+
+  private getMenuEditCardText_(isLocalCard: boolean): string {
+    return this.i18n(isLocalCard ? 'edit' : 'editServerCard');
+  }
+
+  private shouldShowAddVirtualCardButton_(): boolean {
+    if (!this.virtualCardEnrollmentEnabled_ ||
+        this.activeCreditCard_ === null ||
+        this.activeCreditCard_.metadata === null) {
+      return false;
+    }
+    return !!this.activeCreditCard_!.metadata!
+                 .isVirtualCardEnrollmentEligible &&
+        !this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
+  }
+
+  private shouldShowRemoveVirtualCardButton_(): boolean {
+    if (!this.virtualCardEnrollmentEnabled_ ||
+        this.activeCreditCard_ === null ||
+        this.activeCreditCard_.metadata === null) {
+      return false;
+    }
+    return !!this.activeCreditCard_!.metadata!
+                 .isVirtualCardEnrollmentEligible &&
+        !!this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
   }
 }
 

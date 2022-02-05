@@ -15,6 +15,7 @@ import './passwords_shared_css.js';
 
 import {I18nMixin} from '//resources/js/i18n_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 const SettingsCreditCardListEntryElementBase = I18nMixin(PolymerElement);
 
@@ -32,10 +33,22 @@ class SettingsCreditCardListEntryElement extends
     return {
       /** A saved credit card. */
       creditCard: Object,
+
+      /**
+       * Whether virtual card enrollment management on settings page is enabled.
+       */
+      virtualCardEnrollmentEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('virtualCardEnrollmentEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
   creditCard: chrome.autofillPrivate.CreditCardEntry;
+  private virtualCardEnrollmentEnabled_: boolean;
 
   /**
    * Opens the credit card action menu.
@@ -86,12 +99,24 @@ class SettingsCreditCardListEntryElement extends
   }
 
   /**
-   * The 3-dot menu should not be shown if the card is entirely remote.
+   * The 3-dot menu should be shown if the card is not a masked server card or
+   * if the card is eligble for virtual card enrollment.
    */
   private showDots_(): boolean {
     return !!(
         this.creditCard.metadata!.isLocal ||
-        this.creditCard.metadata!.isCached);
+        this.creditCard.metadata!.isCached ||
+        this.isVirtualCardEnrollmentEligible_());
+  }
+
+  private isVirtualCardEnrollmentEligible_(): boolean {
+    return this.virtualCardEnrollmentEnabled_ &&
+        this.creditCard.metadata!.isVirtualCardEnrollmentEligible!;
+  }
+
+  private isVirtualCardEnrolled_(): boolean {
+    return this.virtualCardEnrollmentEnabled_ &&
+        this.creditCard.metadata!.isVirtualCardEnrolled!;
   }
 }
 

@@ -169,6 +169,16 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   // |personal_data|.
   metadata->is_migratable = std::make_unique<bool>(
       credit_card.IsValid() && !personal_data.IsServerCard(&credit_card));
+  metadata->is_virtual_card_enrollment_eligible = std::make_unique<bool>(
+      credit_card.virtual_card_enrollment_state() ==
+          autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED ||
+      credit_card.virtual_card_enrollment_state() ==
+          autofill::CreditCard::VirtualCardEnrollmentState::
+              UNENROLLED_AND_ELIGIBLE);
+  metadata->is_virtual_card_enrolled = std::make_unique<bool>(
+      credit_card.virtual_card_enrollment_state() ==
+      autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED);
+
   card.metadata = std::move(metadata);
 
   return card;
