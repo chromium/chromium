@@ -246,3 +246,15 @@ TEST(ChromeCommandLinePrefStoreTest, ExplicitlyAllowedPorts) {
     ++i;
   }
 }
+
+TEST(ChromeCommandLinePrefStoreTest, AcceptLanguage) {
+  base::CommandLine cl(base::CommandLine::NO_PROGRAM);
+  cl.AppendSwitchASCII(switches::kAcceptLang, "de,en,fr,jp");
+  auto store = base::MakeRefCounted<ChromeCommandLinePrefStore>(&cl);
+
+  const base::Value* actual = nullptr;
+  EXPECT_TRUE(store->GetValue(language::prefs::kSelectedLanguages, &actual));
+  std::string result;
+  EXPECT_TRUE(actual->GetAsString(&result));
+  EXPECT_EQ("de,en,fr,jp", result);
+}
