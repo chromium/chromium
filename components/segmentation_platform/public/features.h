@@ -17,6 +17,8 @@ extern const base::Feature kSegmentationPlatformFeature;
 // experimental models and data collection.
 extern const base::Feature kSegmentationPlatformDummyFeature;
 
+// Feature flag for allowing structured metrics to be collected.
+extern const base::Feature kSegmentationStructuredMetricsFeature;
 }  // namespace features
 }  // namespace segmentation_platform
 

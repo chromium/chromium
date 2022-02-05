@@ -179,6 +179,10 @@ enum class SegmentationModelAvailability {
 void RecordModelAvailability(OptimizationTarget segment_id,
                              SegmentationModelAvailability availability);
 
+// Records the number of input tensor that's causing a failure to upload
+// structured metrics.
+void RecordTooManyInputTensors(int tensor_size);
+
 }  // namespace stats
 }  // namespace segmentation_platform
 

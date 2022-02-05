@@ -29,6 +29,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -362,6 +363,11 @@ void ModelExecutionManagerImpl::OnModelExecutionComplete(
   if (result.has_value()) {
     VLOG(1) << "Segmentation model result: " << *result;
     stats::RecordModelExecutionResult(state->segment_id, result.value());
+    if (state->model_handler->GetModelInfo()) {
+      SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
+          state->segment_id, state->model_handler->GetModelInfo()->GetVersion(),
+          state->input_tensor, result.value());
+    }
     RunModelExecutionCallback(std::move(state), *result,
                               ModelExecutionStatus::kSuccess);
   } else {

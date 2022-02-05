@@ -527,5 +527,11 @@ void RecordModelAvailability(OptimizationTarget segment_id,
       availability);
 }
 
+void RecordTooManyInputTensors(int tensor_size) {
+  UMA_HISTOGRAM_COUNTS_100(
+      "SegmentationPlatform.StructuredMetrics.TooManyTensors.Count",
+      tensor_size);
+}
+
 }  // namespace stats
 }  // namespace segmentation_platform

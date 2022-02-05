@@ -451,6 +451,17 @@ chromium-metrics-reviews@google.com.
   <token key="SignalType" variants="SignalType"/>
 </histogram>
 
+<histogram name="SegmentationPlatform.StructuredMetrics.TooManyTensors.Count"
+    units="tensors" expires_after="2022-10-01">
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the number of input tensors that are causing structured metrics to
+    fail to upload due to input size. Recorded immediately after the failure
+    when an ML model is reporting structured metrics.
+  </summary>
+</histogram>
+
 <histogram name="SegmentationPlatform.{BooleanModel}.SegmentSwitched"
     enum="SegmentationBooleanSegmentSwitch" expires_after="2022-08-01">
   <owner>shaktisahu@chromium.org</owner>

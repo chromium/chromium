@@ -51,6 +51,8 @@ static_library("internal") {
     "scheduler/model_execution_scheduler_impl.h",
     "segmentation_platform_service_impl.cc",
     "segmentation_platform_service_impl.h",
+    "segmentation_ukm_helper.cc",
+    "segmentation_ukm_helper.h",
     "selection/segment_score_provider.cc",
     "selection/segment_score_provider.h",
     "selection/segment_selector.h",
@@ -77,6 +79,8 @@ static_library("internal") {
     "//components/prefs",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 
   public_deps = [
@@ -137,6 +141,7 @@ source_set("unit_tests") {
     "execution/model_execution_manager_factory_unittest.cc",
     "scheduler/model_execution_scheduler_unittest.cc",
     "segmentation_platform_service_impl_unittest.cc",
+    "segmentation_ukm_helper_unittest.cc",
     "selection/segment_score_provider_unittest.cc",
     "selection/segment_selector_unittest.cc",
     "selection/segmentation_result_prefs_unittest.cc",
@@ -157,6 +162,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
   ]

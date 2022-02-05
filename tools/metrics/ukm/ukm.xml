@@ -16796,6 +16796,203 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Segmentation.ModelExecution">
+  <owner>nyquist@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Input and output tensors for executing the ML model identified by
+    optimization targets and version. The input tensors can come from UMA or
+    UKM, with or without aggregation. Check model metadata for more information
+    about each tensor. Since all the ML tensors are floats, they are encoded
+    into int64 and will be decoded later during model training. This metric is
+    recorded after an ML model is executed, and the actual result is collected.
+  </summary>
+  <metric name="ActualResult">
+    <summary>
+      UMA or UKM metrics related to the features affected by the ML model, with
+      or without aggregation, after running the features as instructed by the ML
+      model. For example, this can be the 7 day total button clicks after an ML
+      model decides to show it. No encoding is used as this is normally a count
+      or sum of a UMA/UKM metric.
+    </summary>
+  </metric>
+  <metric name="Input0">
+    <summary>
+      The input tensor at index 0 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input1">
+    <summary>
+      The input tensor at index 1 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input10">
+    <summary>
+      The input tensor at index 10 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input11">
+    <summary>
+      The input tensor at index 11 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input12">
+    <summary>
+      The input tensor at index 12 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input13">
+    <summary>
+      The input tensor at index 13 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input14">
+    <summary>
+      The input tensor at index 14 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input15">
+    <summary>
+      The input tensor at index 15 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input16">
+    <summary>
+      The input tensor at index 16 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input17">
+    <summary>
+      The input tensor at index 17 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input18">
+    <summary>
+      The input tensor at index 18 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input19">
+    <summary>
+      The input tensor at index 19 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input2">
+    <summary>
+      The input tensor at index 2 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input20">
+    <summary>
+      The input tensor at index 20 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input21">
+    <summary>
+      The input tensor at index 21 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input22">
+    <summary>
+      The input tensor at index 22 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input23">
+    <summary>
+      The input tensor at index 23 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input24">
+    <summary>
+      The input tensor at index 24 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input25">
+    <summary>
+      The input tensor at index 25 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input26">
+    <summary>
+      The input tensor at index 26 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input27">
+    <summary>
+      The input tensor at index 27 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input28">
+    <summary>
+      The input tensor at index 28 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input29">
+    <summary>
+      The input tensor at index 29 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input3">
+    <summary>
+      The input tensor at index 3 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input4">
+    <summary>
+      The input tensor at index 4 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input5">
+    <summary>
+      The input tensor at index 5 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input6">
+    <summary>
+      The input tensor at index 6 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input7">
+    <summary>
+      The input tensor at index 7 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input8">
+    <summary>
+      The input tensor at index 8 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input9">
+    <summary>
+      The input tensor at index 9 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="ModelVersion">
+    <summary>
+      The version of the ML model used for execution. May not be a counter int.
+    </summary>
+  </metric>
+  <metric name="OptimizationTarget">
+    <summary>
+      The OptimizationTarget associated with the ML model. This is an enum for
+      classifying different ML models. It represents what an model is trying to
+      optimize.
+    </summary>
+  </metric>
+  <metric name="OutputDelaySec">
+    <summary>
+      The time from executing the model to when the UKM is recorded, in seconds.
+    </summary>
+  </metric>
+  <metric name="PredictionResult">
+    <summary>
+      Predicted result from executing the ML model. This is normally a score for
+      determining whether to show a particular feature. The value is a floating
+      number between 0 to 1 and encoded into IEEE 754 double precision here.
+    </summary>
+  </metric>
+</event>
+
 <event name="SharedHighlights.LinkGenerated">
   <owner>seblalancette@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
