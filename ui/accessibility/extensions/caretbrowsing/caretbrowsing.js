@@ -122,28 +122,29 @@ function isDescendantOfNode(node, ancestor) {
 class CaretBrowsing {
   constructor() {
     /**
-     * Keep it enabled even when flipped off (for the options page)?
+     * Tracks whether to keep caret browsing enabled on this page even when it's
+     * flipped off. This is used on the options page.
      * @type {boolean}
      */
     this.forceEnabled = false;
 
     /**
-     * Is this window / iframe focused? We won't show the caret if not,
-     * especially so that carets aren't shown in two iframes of the same
-     * tab.
+     * Tracks whether this window / iframe is focused. The caret isn't shown on
+     * pages that are not focused, which is especially important so that carets
+     * aren't shown in two iframes of the same tab.
      * @type {boolean}
      */
     this.isWindowFocused = false;
 
     /**
-     * Is the caret actually visible? This is true only if Storage.enabled and
-     * isWindowFocused are both true.
+     * Tracks whether the caret is actually visible. This is true only if
+     * Storage.enabled and this.isWindowFocused are both true.
      * @type {boolean}
      */
     this.isCaretVisible = false;
 
     /**
-     * The actual caret element, an absolute-positioned flashing line.
+     * The actual caret HTML element, an absolute-positioned flashing line.
      * @type {Element}
      */
     this.caretElement;
@@ -173,20 +174,20 @@ class CaretBrowsing {
     this.caretHeight = 0;
 
     /**
-     * The foreground color.
+     * The caret's foreground color.
      * @type {string}
      */
     this.caretForeground = '#000';
 
     /**
-     * The background color.
+     * The caret's background color.
      * @type {string}
      */
     this.caretBackground = '#fff';
 
     /**
-     * Is the selection collapsed, i.e. are the start and end locations
-     * the same? If so, our blinking caret image is shown; otherwise
+     * Tracks whether the selection is collapsed, i.e. are the start and end
+     * locations the same? If so, our blinking caret image is shown; otherwise
      * the Chrome selection is shown.
      * @type {boolean}
      */
@@ -195,7 +196,7 @@ class CaretBrowsing {
     /**
      * The id returned by window.setInterval for our blink function, so
      * we can cancel it when caret browsing is disabled.
-     * @type {number?}
+     * @type {?number}
      */
     this.blinkFunctionId = null;
 
@@ -207,7 +208,7 @@ class CaretBrowsing {
      * so that the x position doesn't drift as you move throughout lines, but
      * stays as close as possible to the initial position. This is reset when
      * moving left or right or clicking.
-     * @type {number?}
+     * @type {?number}
      */
     this.targetX = null;
 
@@ -218,7 +219,7 @@ class CaretBrowsing {
     this.blinkFlag = true;
 
     /**
-     * Whether or not we're on a Mac - affects modifier keys.
+     * Whether or not we're on a Mac - which affects modifier keys.
      * @type {boolean}
      */
     this.isMac = (navigator.appVersion.indexOf("Mac") != -1);
