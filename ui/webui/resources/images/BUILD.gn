@@ -44,7 +44,6 @@ generate_grd("build_grdp") {
 
   if (!is_android && !is_ios) {
     input_files += [
-      "200-logo_googleg.png",
       "arrow_down.svg",
       "arrow_right.svg",
       "business.svg",

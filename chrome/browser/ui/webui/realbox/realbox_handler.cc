@@ -64,7 +64,6 @@
 
 namespace {
 
-constexpr char kGoogleGIconResourceName[] = "google_g.png";
 constexpr char kSearchIconResourceName[] = "search.svg";
 
 constexpr char kAnswerCurrencyIconResourceName[] = "realbox/icons/currency.svg";
@@ -276,7 +275,6 @@ realbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
 // static
 void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
   static constexpr webui::ResourcePath kImages[] = {
-      {kGoogleGIconResourceName, IDR_WEBUI_IMAGES_200_LOGO_GOOGLEG_PNG},
       {kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG}};
   source->AddResourcePaths(kImages);
 
@@ -307,7 +305,7 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
-          ? kGoogleGIconResourceName
+          ? "realbox/icons/google_g.svg"
           : kSearchIconResourceName);
   source->AddString("realboxHint", l10n_util::GetStringUTF8(
                                        IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD));

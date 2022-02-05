@@ -24,6 +24,7 @@ generate_grd("build_grdp") {
     "drive_video.svg",
     "extension_app.svg",
     "finance.svg",
+    "google_g.svg",
     "note.svg",
     "page.svg",
     "sites.svg",

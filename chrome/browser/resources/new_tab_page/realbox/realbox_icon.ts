@@ -105,7 +105,7 @@ class RealboxIconElement extends PolymerElement {
       } else {
         return '';
       }
-    } else if (this.defaultIcon === 'google_g.png') {
+    } else if (this.defaultIcon === 'realbox/icons/google_g.svg') {
       return this.defaultIcon;
     } else {
       return '';

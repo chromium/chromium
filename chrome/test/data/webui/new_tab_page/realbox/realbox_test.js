@@ -355,14 +355,14 @@ suite('NewTabPageRealboxTest', () => {
   test('realbox default Google G icon', async () => {
     // Arrange.
     loadTimeData.overrideValues({
-      realboxDefaultIcon: 'google_g.png',
+      realboxDefaultIcon: 'realbox/icons/google_g.svg',
     });
     PolymerTest.clearBody();
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);
 
     // Assert.
-    assertIconBackgroundImageUrl(realbox.$.icon, 'google_g.png');
+    assertIconBackgroundImageUrl(realbox.$.icon, 'realbox/icons/google_g.svg');
 
     // Restore.
     loadTimeData.overrideValues({
