@@ -87,8 +87,15 @@ AuthFactorType SmartLockAuthFactorModel::GetType() const {
 
 int SmartLockAuthFactorModel::GetLabelId() const {
   if (auth_result_.has_value()) {
-    return auth_result_.value() ? IDS_SMART_LOCK_LABEL_PHONE_LOCKED
-                                : IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK;
+    if (auth_result_.value()) {
+      return IDS_SMART_LOCK_LABEL_PHONE_LOCKED;
+    }
+
+    // Once the Smart Lock error message has timed out, prompt the
+    // user to enter their password (since Smart Lock has permanently failed).
+    return has_permanent_error_display_timed_out_
+               ? IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED
+               : IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK;
   }
 
   switch (state_) {

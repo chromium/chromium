@@ -231,4 +231,13 @@ TEST_F(SmartLockAuthFactorModelUnittest, GetLabelAndAccessibleName) {
   }
 }
 
+TEST_F(SmartLockAuthFactorModelUnittest, GetLabelAfterPermanentErrorTimeout) {
+  smart_lock_model_->NotifySmartLockAuthResult(/*result=*/false);
+  EXPECT_TRUE(on_state_changed_called_);
+  EXPECT_EQ(AuthFactorState::kErrorPermanent, model_->GetAuthFactorState());
+  EXPECT_EQ(IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK, model_->GetLabelId());
+  model_->HandleErrorTimeout();
+  EXPECT_EQ(IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED, model_->GetLabelId());
+}
+
 }  // namespace ash
