@@ -3766,8 +3766,9 @@ class AutofillChromeVoxTest : public AutofillInteractiveTestBase {
 
 // Ensure that autofill suggestions are properly read out via ChromeVox.
 // This is a regressions test for crbug.com/1208913.
+// Disabled due to flakiness. crbug.com/1294266
 IN_PROC_BROWSER_TEST_F(AutofillChromeVoxTest,
-                       TestNotificationOfAutofillDropdown) {
+                       DISABLED_TestNotificationOfAutofillDropdown) {
   CreateTestProfile();
 
   // Load the test page.
