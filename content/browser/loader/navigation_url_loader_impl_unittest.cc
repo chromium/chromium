@@ -45,6 +45,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
+#include "services/network/test/url_loader_context_for_tests.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_owner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,16 +66,24 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   explicit TestNavigationLoaderInterceptor(
       absl::optional<network::ResourceRequest>* most_recent_resource_request)
       : most_recent_resource_request_(most_recent_resource_request) {
-    net::URLRequestContextBuilder context_builder;
-    context_builder.set_proxy_resolution_service(
+    net::URLRequestContextBuilder url_request_context_builder;
+    url_request_context_builder.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateDirect());
-    context_ = context_builder.Build();
+    url_request_context_ = url_request_context_builder.Build();
+    url_loader_context_.set_url_request_context(url_request_context_.get());
+
     constexpr int child_id = 4;
     constexpr int route_id = 8;
     resource_scheduler_client_ =
         base::MakeRefCounted<network::ResourceSchedulerClient>(
             child_id, route_id, &resource_scheduler_,
-            context_->network_quality_estimator());
+            url_request_context_->network_quality_estimator());
+    url_loader_context_.set_resource_scheduler_client(
+        resource_scheduler_client_);
+
+    url_loader_context_.mutable_factory_params().process_id =
+        network::mojom::kBrowserProcessId;
+    url_loader_context_.mutable_factory_params().is_corb_enabled = false;
   }
 
   ~TestNavigationLoaderInterceptor() override {
@@ -96,23 +105,16 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
     *most_recent_resource_request_ = resource_request;
-    static network::mojom::URLLoaderFactoryParams params;
-    params.process_id = network::mojom::kBrowserProcessId;
-    params.is_corb_enabled = false;
     url_loader_ = std::make_unique<network::URLLoader>(
-        context_.get(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_context_client */,
+        url_loader_context_,
         base::BindOnce(&TestNavigationLoaderInterceptor::DeleteURLLoader,
                        base::Unretained(this)),
         std::move(receiver), 0 /* options */, resource_request,
         std::move(client), nullptr /* sync_url_loader_client */,
-        TRAFFIC_ANNOTATION_FOR_TESTS, &params,
-        /*coep_reporter=*/nullptr, 0, /* request_id */
+        TRAFFIC_ANNOTATION_FOR_TESTS, 0, /* request_id */
         0 /* keepalive_request_size */,
-        false /* require_network_isolation_key */, resource_scheduler_client_,
         nullptr /* keepalive_statistics_recorder */,
-        nullptr /* header_client */, nullptr /* origin_policy_manager */,
-        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
+        nullptr /* trust_token_helper */,
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
@@ -140,7 +142,8 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   raw_ptr<absl::optional<network::ResourceRequest>>
       most_recent_resource_request_;  // NOT OWNED.
   network::ResourceScheduler resource_scheduler_;
-  std::unique_ptr<net::URLRequestContext> context_;
+  network::URLLoaderContextForTests url_loader_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   scoped_refptr<network::ResourceSchedulerClient> resource_scheduler_client_;
   std::unique_ptr<network::URLLoader> url_loader_;
 

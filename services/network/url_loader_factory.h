@@ -16,6 +16,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "services/network/url_loader_context.h"
 
 namespace network {
 
@@ -39,7 +40,8 @@ class CorsURLLoaderFactory;
 // Note that the CORS related part is implemented in CorsURLLoader[Factory]
 // and NetworkContext::CreateURLLoaderFactory returns a CorsURLLoaderFactory,
 // instead of a URLLoaderFactory.
-class URLLoaderFactory : public mojom::URLLoaderFactory {
+class URLLoaderFactory : public mojom::URLLoaderFactory,
+                         public URLLoaderContext {
  public:
   // NOTE: |context| must outlive this instance.
   URLLoaderFactory(
@@ -63,6 +65,24 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
                                 traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
+  // URLLoaderContext implementation.
+  bool ShouldRequireNetworkIsolationKey() const override;
+  const cors::OriginAccessList& GetOriginAccessList() const override;
+  const mojom::URLLoaderFactoryParams& GetFactoryParams() const override;
+  mojom::CookieAccessObserver* GetCookieAccessObserver() const override;
+  mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const override;
+  mojom::DevToolsObserver* GetDevToolsObserver() const override;
+  mojom::NetworkContextClient* GetNetworkContextClient() const override;
+  mojom::OriginPolicyManager* GetOriginPolicyManager() const override;
+  mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
+      const override;
+  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
+      const override;
+  net::URLRequestContext* GetUrlRequestContext() const override;
+  scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
+      const override;
+  uintptr_t GetFactoryId() const override;
+
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.
   void CreateLoaderAndStartWithSyncClient(
@@ -73,11 +93,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       base::WeakPtr<mojom::URLLoaderClient> sync_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
-
-  mojom::DevToolsObserver* GetDevToolsObserver() const;
-  mojom::CookieAccessObserver* GetCookieAccessObserver() const;
-  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
-      const;
 
   static constexpr int kMaxKeepaliveConnections = 2048;
   static constexpr int kMaxKeepaliveConnectionsPerTopLevelFrame = 256;

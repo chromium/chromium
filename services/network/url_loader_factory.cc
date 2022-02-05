@@ -126,6 +126,50 @@ void URLLoaderFactory::Clone(
   NOTREACHED();
 }
 
+net::URLRequestContext* URLLoaderFactory::GetUrlRequestContext() const {
+  return context_->url_request_context();
+}
+
+mojom::NetworkContextClient* URLLoaderFactory::GetNetworkContextClient() const {
+  return context_->client();
+}
+
+const mojom::URLLoaderFactoryParams& URLLoaderFactory::GetFactoryParams()
+    const {
+  return *params_;
+}
+
+mojom::CrossOriginEmbedderPolicyReporter* URLLoaderFactory::GetCoepReporter()
+    const {
+  return cors_url_loader_factory_->coep_reporter();
+}
+
+bool URLLoaderFactory::ShouldRequireNetworkIsolationKey() const {
+  return context_->require_network_isolation_key();
+}
+
+scoped_refptr<ResourceSchedulerClient>
+URLLoaderFactory::GetResourceSchedulerClient() const {
+  return resource_scheduler_client_;
+}
+
+mojom::TrustedURLLoaderHeaderClient*
+URLLoaderFactory::GetUrlLoaderHeaderClient() const {
+  return header_client_.is_bound() ? header_client_.get() : nullptr;
+}
+
+mojom::OriginPolicyManager* URLLoaderFactory::GetOriginPolicyManager() const {
+  return context_->origin_policy_manager();
+}
+
+const cors::OriginAccessList& URLLoaderFactory::GetOriginAccessList() const {
+  return context_->cors_origin_access_list();
+}
+
+uintptr_t URLLoaderFactory::GetFactoryId() const {
+  return reinterpret_cast<uintptr_t>(reinterpret_cast<const void*>(this));
+}
+
 void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     int32_t request_id,
@@ -275,20 +319,16 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   }
 
   auto loader = std::make_unique<URLLoader>(
-      context_->url_request_context(), this, context_->client(),
+      *this,
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
                      base::Unretained(cors_url_loader_factory_)),
       std::move(receiver), options, url_request, std::move(client),
       std::move(sync_client),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
-      params_.get(), cors_url_loader_factory_->coep_reporter(), request_id,
-      keepalive_request_size, context_->require_network_isolation_key(),
-      resource_scheduler_client_, std::move(keepalive_statistics_recorder),
-      header_client_.is_bound() ? header_client_.get() : nullptr,
-      context_->origin_policy_manager(), std::move(trust_token_factory),
-      context_->cors_origin_access_list(), std::move(cookie_observer),
-      std::move(url_loader_network_observer), std::move(devtools_observer),
-      std::move(accept_ch_frame_observer));
+      request_id, keepalive_request_size,
+      std::move(keepalive_statistics_recorder), std::move(trust_token_factory),
+      std::move(cookie_observer), std::move(url_loader_network_observer),
+      std::move(devtools_observer), std::move(accept_ch_frame_observer));
 
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }
@@ -352,7 +392,7 @@ void URLLoaderFactory::UpdateLoadInfo() {
   } else {
     for (auto* request : *context_->url_request_context()->url_requests()) {
       auto* loader = URLLoader::ForRequest(*request);
-      if (!loader || loader->url_loader_factory() != this)
+      if (!loader || loader->url_loader_factory_id() != GetFactoryId())
         continue;
       mojom::LoadInfoPtr load_info = loader->CreateLoadInfo();
       if (!most_interesting ||

@@ -161,6 +161,7 @@ component("network_service") {
     "upload_progress_tracker.h",
     "url_loader.cc",
     "url_loader.h",
+    "url_loader_context.h",
     "url_loader_factory.cc",
     "url_loader_factory.h",
     "url_request_context_builder_mojo.cc",
@@ -520,6 +521,8 @@ source_set("test_support") {
     "test/test_utils.h",
     "test/udp_socket_test_util.cc",
     "test/udp_socket_test_util.h",
+    "test/url_loader_context_for_tests.cc",
+    "test/url_loader_context_for_tests.h",
   ]
 
   if (is_chromeos_ash) {
