@@ -591,4 +591,22 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
+                       ScriptAccessibilityApiWithSELArgument) {
+  TestScript(
+      R"~~(<input id="s" type="range" min="0" max="100">)~~",
+      {"s.isAccessibilitySelectorAllowed(@SEL:setAccessibilityValue:)"},
+      R"~~(s.isAccessibilitySelectorAllowed(@SEL:setAccessibilityValue:)=0
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
+                       ScriptAccessibilityApiWithInvalidSELArgument) {
+  TestScript(
+      R"~~(<input id="s" type="range" min="0" max="100">)~~",
+      {"s.isAccessibilitySelectorAllowed(@SELInvalid)"},
+      R"~~(s.isAccessibilitySelectorAllowed(@SELInvalid)=ERROR:FAILED_TO_PARSE
+)~~");
+}
+
 }  // namespace content

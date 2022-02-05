@@ -211,7 +211,7 @@ example:
   input.AXName
 ```
 
-Calls can be chained, for example:
+Calls can be chained. For example:
 
 `input.AXFocusableAncestor.AXRole`
 
@@ -229,7 +229,7 @@ attribute has been provided by the web author.
   input.accessibilityAttributeNames.has(AXInvalid)
 ```
 
-Parameterized attributes are also supported, for example:
+Parameterized attributes are also supported. For example:
 
 `paragraph.AXTextMarkerForIndex(0)`
 
@@ -249,14 +249,20 @@ for example:
 You can also use array operator[] to refer to an array element at a given index,
 for example `paragraph.AXChildren[0]` will refer to the first child of the paragraph.
 
-To set a settable attribute you can assign a value to the attribute, for example:
+To set a settable attribute you can assign a value to the attribute. For example:
 ```
 textarea_range:= textarea.AXTextMarkerRangeForUIElement(textarea)
 textarea.AXSelectedTextMarkerRange = textarea_range
 ```
 
+To pass a SEL as argument, you need to use the "@SEL:" prefix. For example:
+```
+@SCRIPT:
+  slider.isAccessibilitySelectorAllowed(@SEL:setAccessibilityValue:)
+```
+
 You can use `waitfor` instruction to wait for a specific event before the script
-continues, for example:
+continues. For example:
 
 ```
 @MAC-SCRIPT:
@@ -266,7 +272,7 @@ continues, for example:
 
 will trigger `AXPress` action on a button and will wait for
 `AXFocusedUIElementChanged` event. You can also be more specific if you want to
-and provide the event target, for example:
+and provide the event target. For example:
 `wait for AXFocusedUIElementChanged on AXButton`
 
 ### Advanced directives
@@ -319,11 +325,11 @@ Invokes default action on an accessible object defined by the directive.
 #### @NO_DUMP and @NO_CHILDREN_DUMP
 
 To skip dumping a particular element, add `@NO_DUMP` to a property that will
-be exposed as an ax::mojom::StringAttribute, for example
+be exposed as an ax::mojom::StringAttribute. For example
 `<div class="@NO_DUMP"></div>`.
 
 To skip dumping all children of a particular element, add `@NO_CHILDREN_DUMP`
-to a property that will be exposed as an ax::mojom::StringAttribute, for example
+to a property that will be exposed as an ax::mojom::StringAttribute. For example
 `<div class="@NO_CHILDREN_DUMP"></div>`.
 
 Note that setting the `aria-label` value to `@NO_DUMP` or `@NO_CHILDREN_DUMP`
@@ -331,7 +337,7 @@ is not guaranteed to work due to certain roles no longer supporting author-
 provided naming in ARIA 1.2.
 
 To load an iframe from a different site, forcing it into a different process,
-use `/cross-site/HOSTNAME/` in the url, for example:
+use `/cross-site/HOSTNAME/` in the url. For example:
 `<iframe src="cross-site/1.com/accessibility/html/frame.html"></iframe>`
 
 ## Generating expectations and rebaselining:
@@ -339,7 +345,7 @@ use `/cross-site/HOSTNAME/` in the url, for example:
 If you want to populate the expectation file directly rather than typing it
 or copying-and-pasting it, first make sure the file exists (it can be empty),
 then run the test with the `--generate-accessibility-test-expectations`
-argument, for example:
+argument. For example:
 ```
   out/Debug/content_browsertests \
     --generate-accessibility-test-expectations \

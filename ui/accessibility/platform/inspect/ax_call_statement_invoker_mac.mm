@@ -221,10 +221,45 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
   // protocols if the object responds to a corresponding selector. Ignore all
   // other selectors the object may respond to because it exposes unwanted
   // NSAccessibility attributes listed in default filters as a side effect.
-  if (base::StartsWith(property_node.name_or_value, "accessibility") ||
-      base::StartsWith(property_node.name_or_value, "isAccessibility")) {
+  //
+  // Methods whose names start with "isAccessibility" returns a BOOL, so we
+  // need to handle the returned value differently than methods whose return
+  // types are id.
+  if (base::StartsWith(property_node.name_or_value, "isAccessibility")) {
+    absl::optional<SEL> optional_arg_selector;
+    std::string selector_string = property_node.name_or_value;
+    // In some cases, we might want to pass a SEL as argument instead of an id.
+    // When an argument is prefixed with "@SEL:", transform the string into a
+    // valid SEL to pass to the main selector.
+    if (property_node.arguments.size() == 1 &&
+        base::StartsWith(property_node.arguments[0].name_or_value, "@SEL:")) {
+      optional_arg_selector = NSSelectorFromString(base::SysUTF8ToNSString(
+          property_node.arguments[0].name_or_value.substr(5)));
+      selector_string += ":";
+    }
+
+    SEL selector =
+        NSSelectorFromString(base::SysUTF8ToNSString(selector_string));
+    if (![target respondsToSelector:selector])
+      return AXOptionalNSObject::Error();
+
+    NSInvocation* invocation = [NSInvocation
+        invocationWithMethodSignature:
+            [[target class] instanceMethodSignatureForSelector:selector]];
+    [invocation setSelector:selector];
+    [invocation setTarget:target];
+    if (optional_arg_selector) {
+      // The target is at index 0 and the selector at index 1, so arguments
+      // start at index 2.
+      [invocation setArgument:&*optional_arg_selector atIndex:2];
+    }
+    [invocation invoke];
+    BOOL return_value;
+    [invocation getReturnValue:&return_value];
+    return AXOptionalNSObject([NSNumber numberWithBool:return_value]);
+  } else if (base::StartsWith(property_node.name_or_value, "accessibility")) {
     if (property_node.arguments.size() == 1) {
-      auto optional_id =
+      absl::optional<id> optional_id =
           PerformAXSelector(target, property_node.name_or_value,
                             property_node.arguments[0].name_or_value);
       if (optional_id) {

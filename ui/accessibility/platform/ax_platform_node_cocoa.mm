@@ -1539,12 +1539,42 @@ bool IsAXSetter(SEL selector) {
   if (selector == @selector(setAccessibilityFocused:))
     return _node->HasState(ax::mojom::State::kFocusable);
 
-  if (selector == @selector(setAccessibilityValue:) &&
-      _node->GetRole() == ax::mojom::Role::kTab) {
-    // Tabs use the radio button role on Mac, so they are selected by calling
-    // setSelected on an individual tab, rather than by setting the selected
-    // element on the tabstrip as a whole.
-    return !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  if (selector == @selector(setAccessibilityValue:)) {
+    switch (_node->GetRole()) {
+      case ax::mojom::Role::kSlider:
+        // When VoiceOver performs an increment/decrement action, it immediately
+        // calls upon success of the action the selector setAccessibilityValue
+        // on the slider that was just updated. The value passed to this
+        // function is always equals to 5% of the slider's value range, so
+        // actually setting that value to our slider would:
+        //   1. render the increment/decrement action performed a moment before
+        //      useless as it would override the modified value;
+        //   2. make the slider value stuck in place, at 5% of its range.
+        //
+        // I haven't found much on the topic online, so the following is at best
+        // a conjecture: I believe that VoiceOver "suggests" us to
+        // increment/decrement the value by 5%. There might be a setting I'm not
+        // aware of that allows the VO users to modify this value by a different
+        // one, which would allow them to always increment/decrement sliders by
+        // the same amount on all apps.
+        //
+        // However, in Chromium, we handle the increment and decrement actions
+        // on the blink side and the step value is computed over there. That
+        // way, the experience for changing the value of a slider by increments
+        // is the same for all different inputs: whether it's the keyboard arrow
+        // keys, an AT, etc.
+        //
+        // TL;DR: setAccessibilityValue, when called on sliders, is breaking our
+        // increment and decrement AX actions, so don't allow it.
+        return NO;
+      case ax::mojom::Role::kTab:
+        // Tabs use the radio button role on Mac, so they are selected by
+        // calling setSelected on an individual tab, rather than by setting the
+        // selected element on the tabstrip as a whole.
+        return !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+      default:
+        break;
+    }
   }
 
   // Don't allow calling AX setters on disabled elements.
