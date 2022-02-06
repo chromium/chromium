@@ -401,18 +401,16 @@ CommandHandler.onCommand = function(command) {
   let skipSync = false;
   let didNavigate = false;
   let tryScrolling = true;
-  let shouldSetSelection = false;
+  let skipSettingSelection = false;
   let skipInitialAncestry = true;
   switch (command) {
     case 'nextCharacter':
-      shouldSetSelection = true;
       didNavigate = true;
       speechProps['phoneticCharacters'] = true;
       unit = cursors.Unit.CHARACTER;
       current = current.move(cursors.Unit.CHARACTER, Dir.FORWARD);
       break;
     case 'previousCharacter':
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       didNavigate = true;
       speechProps['phoneticCharacters'] = true;
@@ -430,13 +428,11 @@ CommandHandler.onCommand = function(command) {
       }
       return true;
     case 'nextWord':
-      shouldSetSelection = true;
       didNavigate = true;
       unit = cursors.Unit.WORD;
       current = current.move(cursors.Unit.WORD, Dir.FORWARD);
       break;
     case 'previousWord':
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       didNavigate = true;
       unit = cursors.Unit.WORD;
@@ -496,33 +492,39 @@ CommandHandler.onCommand = function(command) {
       predErrorMsg = 'no_previous_combo_box';
       break;
     case 'nextEditText':
+      skipSettingSelection = true;
       pred = AutomationPredicate.editText;
       predErrorMsg = 'no_next_edit_text';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'previousEditText':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
       pred = AutomationPredicate.editText;
       predErrorMsg = 'no_previous_edit_text';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'nextFormField':
+      skipSettingSelection = true;
       pred = AutomationPredicate.formField;
       predErrorMsg = 'no_next_form_field';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'previousFormField':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
       pred = AutomationPredicate.formField;
       predErrorMsg = 'no_previous_form_field';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'previousGraphic':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
       pred = AutomationPredicate.image;
       predErrorMsg = 'no_previous_graphic';
       break;
     case 'nextGraphic':
+      skipSettingSelection = true;
       pred = AutomationPredicate.image;
       predErrorMsg = 'no_next_graphic';
       break;
@@ -627,10 +629,12 @@ CommandHandler.onCommand = function(command) {
       break;
     case 'left':
     case 'previousObject':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
       // Falls through.
     case 'right':
     case 'nextObject':
+      skipSettingSelection = true;
       didNavigate = true;
       unit = cursors.Unit.NODE;
       current = current.move(cursors.Unit.NODE, dir);
@@ -886,7 +890,6 @@ CommandHandler.onCommand = function(command) {
       output.withString(target.docUrl || '').go();
       return false;
     case 'toggleSelection':
-      shouldSetSelection = true;
       if (!ChromeVoxState.instance.pageSel_) {
         ChromeVoxState.instance.pageSel_ = ChromeVoxState.instance.currentRange;
         DesktopAutomationHandler.instance.ignoreDocumentSelectionFromAction(
@@ -923,7 +926,6 @@ CommandHandler.onCommand = function(command) {
     // Table commands.
     case 'previousRow': {
       skipSync = true;
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       const tableOpts = {row: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
@@ -934,7 +936,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'previousCol': {
       skipSync = true;
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       const tableOpts = {col: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
@@ -945,7 +946,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'nextRow': {
       skipSync = true;
-      shouldSetSelection = true;
       const tableOpts = {row: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
           current.start.node, tableOpts);
@@ -955,7 +955,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'nextCol': {
       skipSync = true;
-      shouldSetSelection = true;
       const tableOpts = {col: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
           current.start.node, tableOpts);
@@ -966,7 +965,6 @@ CommandHandler.onCommand = function(command) {
     case 'goToRowFirstCell':
     case 'goToRowLastCell': {
       skipSync = true;
-      shouldSetSelection = true;
       while (node && node.role !== RoleType.ROW) {
         node = node.parent;
       }
@@ -982,7 +980,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToColFirstCell': {
       skipSync = true;
-      shouldSetSelection = true;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -1000,7 +997,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToColLastCell': {
       skipSync = true;
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
@@ -1030,7 +1026,6 @@ CommandHandler.onCommand = function(command) {
     case 'goToFirstCell':
     case 'goToLastCell': {
       skipSync = true;
-      shouldSetSelection = true;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -1277,7 +1272,7 @@ CommandHandler.onCommand = function(command) {
     }
 
     ChromeVoxState.instance.navigateToRange(
-        current, undefined, speechProps, shouldSetSelection);
+        current, undefined, speechProps, skipSettingSelection);
   }
 
   CommandHandler.onFinishCommand();

@@ -2352,3 +2352,39 @@ TEST_F('ChromeVoxEditingTest', 'NonbreakingSpaceNewLineOrSpace', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxEditingTest', 'JumpCommandsSyncSelection', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable="true" role="textbox">
+      <p>first</p>
+      <h1>second</h1>
+      <p>third <a href="#">fourth</a></p>
+      <table border=1><r><td>fifth</td></tr></table>
+    </div>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    await this.focusFirstTextField(root);
+
+    const textField = root.find({role: RoleType.TEXT_FIELD});
+    mockFeedback.expectSpeech('Text area')
+        .call(doCmd('nextTable'))
+        .expectSpeech('fifth', 'row 1 column 1', 'Table , 1 by 1')
+
+        // Verifies selection is where we expect.
+        .call(this.press(KeyCode.RIGHT, {shift: true, ctrl: true}))
+        .expectSpeech('fifth', 'row 1 column 1', 'Table , 1 by 1', 'selected')
+
+        .call(doCmd('previousHeading'))
+        .expectSpeech('second', 'Heading 1')
+        .call(this.press(KeyCode.RIGHT, {shift: true, ctrl: true}))
+        .expectSpeech('second', 'Heading 1', 'selected')
+
+        .call(doCmd('nextLink'))
+        .expectSpeech('fourth', 'Internal link')
+        .call(this.press(KeyCode.RIGHT, {shift: true, ctrl: true}))
+        .expectSpeech('fourth', 'Link', 'selected')
+
+        .replay();
+  });
+});

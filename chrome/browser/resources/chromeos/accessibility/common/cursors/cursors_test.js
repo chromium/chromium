@@ -458,37 +458,6 @@ TEST_F(
           });
     });
 
-TEST_F(
-    'AccessibilityExtensionCursorsTest', 'MultiLineOffsetSelection',
-    function() {
-      this.runWithLoadedTree(this.multiInlineDoc, function(root) {
-        const secondLine = root.firstChild.firstChild.firstChild.nextSibling;
-        assertEquals('inlineTextBox', secondLine.role);
-        assertEquals('diff ', secondLine.name);
-
-        let secondLineCursor = new cursors.Cursor(secondLine, -1);
-        // The selected node moves to the static text node.
-        assertEquals(
-            secondLineCursor.node.parent, secondLineCursor.selectionNode);
-
-        // This selects the entire node via a character offset.
-        assertEquals(6, secondLineCursor.selectionIndex);
-
-        // Index into the characters.
-        secondLineCursor = new cursors.Cursor(secondLine, 1);
-        assertEquals(7, secondLineCursor.selectionIndex);
-
-        // Now, try selecting via node offsets.
-        let cursor = new cursors.Cursor(root.firstChild, -1);
-        assertEquals(root, cursor.selectionNode);
-        assertEquals(0, cursor.selectionIndex);
-
-        cursor = new cursors.Cursor(root.firstChild.nextSibling, -1);
-        assertEquals(root, cursor.selectionNode);
-        assertEquals(1, cursor.selectionIndex);
-      });
-    });
-
 TEST_F('AccessibilityExtensionCursorsTest', 'InlineElementOffset', function() {
   this.runWithLoadedTree(
       `
@@ -634,94 +603,6 @@ TEST_F(
             const deep = cursor.deepEquivalent;
             assertEquals(RoleType.STATIC_TEXT, deep.node.role);
             assertEquals(4, deep.index);
-          });
-    });
-
-TEST_F(
-    'AccessibilityExtensionCursorsTest', 'SelectionAdjustmentsRichText',
-    function() {
-      this.runWithLoadedTree(
-          `
-    <div contenteditable><p>test</p><p>123</p></div>
-  `,
-          function(root) {
-            const textField = root.firstChild;
-            const paragraph = textField.firstChild;
-            const otherParagraph = textField.lastChild;
-            const staticText = paragraph.firstChild;
-            const otherStaticText = otherParagraph.firstChild;
-
-            // Ranges by default surround a node. Ensure it results in a
-            // collapsed selection.
-            let range = cursors.Range.fromNode(staticText);
-            assertEquals(0, range.start.selectionIndex);
-            assertEquals(0, range.end.selectionIndex);
-            assertEquals(paragraph, range.start.selectionNode);
-            assertEquals(paragraph, range.end.selectionNode);
-
-            // Text selection.
-            range = new cursors.Range(
-                new cursors.Cursor(staticText, 2),
-                new cursors.Cursor(staticText, 4));
-            assertEquals(2, range.start.selectionIndex);
-            assertEquals(4, range.end.selectionIndex);
-            assertEquals(staticText, range.start.selectionNode);
-            assertEquals(staticText, range.end.selectionNode);
-
-            // Tree selection.
-            range = cursors.Range.fromNode(paragraph);
-            assertEquals(0, range.start.selectionIndex);
-            assertEquals(0, range.end.selectionIndex);
-            assertEquals(textField, range.start.selectionNode);
-            assertEquals(textField, range.end.selectionNode);
-
-            range = cursors.Range.fromNode(otherStaticText);
-            assertEquals(0, range.start.selectionIndex);
-            assertEquals(0, range.end.selectionIndex);
-            assertEquals(otherParagraph, range.start.selectionNode);
-            assertEquals(otherParagraph, range.end.selectionNode);
-
-            range = cursors.Range.fromNode(otherParagraph);
-            assertEquals(1, range.start.selectionIndex);
-            assertEquals(1, range.end.selectionIndex);
-            assertEquals(textField, range.start.selectionNode);
-            assertEquals(textField, range.end.selectionNode);
-          });
-    });
-
-TEST_F(
-    'AccessibilityExtensionCursorsTest', 'SelectionAdjustmentsNonRichText',
-    function() {
-      this.runWithLoadedTree(
-          `
-    <input type="text"></input>
-    <textarea></textarea>
-  `,
-          function(root) {
-            const testEditable = function(edit) {
-              // Occurs as part of ordinary (non-text) navigation.
-              let range = cursors.Range.fromNode(edit);
-              assertEquals(-1, range.start.selectionIndex);
-              assertEquals(-1, range.end.selectionIndex);
-              assertEquals(edit, range.start.selectionNode);
-              assertEquals(edit, range.end.selectionNode);
-
-              // Occurs as a result of explicit text nav e.g. nextCharacter
-              // command.
-              range = new cursors.Range(
-                  new cursors.Cursor(edit, 2), new cursors.Cursor(edit, 3));
-              assertEquals(2, range.start.selectionIndex);
-              assertEquals(3, range.end.selectionIndex);
-              assertEquals(edit, range.start.selectionNode);
-              assertEquals(edit, range.end.selectionNode);
-            };
-
-            const textField = root.firstChild.firstChild;
-            const textArea = root.lastChild.lastChild;
-
-            // Both of these should behave in the same way.
-            testEditable(textField);
-            testEditable(textArea);
           });
     });
 
