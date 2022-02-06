@@ -4423,6 +4423,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/NonThreadSafeTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",
       "android/junit/src/org/chromium/base/PromiseTest.java",
+      "android/junit/src/org/chromium/base/TraceEventTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataKeyTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsListenerTest.java",
