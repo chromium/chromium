@@ -379,13 +379,8 @@ base::Value GetHandlesToClose(const HandleMap& handle_map) {
 PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   DCHECK(policy);
   // TODO(crbug/997273) Add more fields once webui plumbing is complete.
-  {
-    base::AutoLock lock(policy->lock_);
-    for (auto&& target_process : policy->targets_) {
-      process_ids_.push_back(
-          base::strict_cast<uint32_t>(target_process->ProcessId()));
-    }
-  }
+  process_ids_.push_back(
+      base::strict_cast<uint32_t>(policy->target_->ProcessId()));
   lockdown_level_ = policy->lockdown_level_;
   job_level_ = policy->job_level_;
 
