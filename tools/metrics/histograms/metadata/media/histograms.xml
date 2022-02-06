@@ -2883,7 +2883,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundation.VideoColorSpace.PrimaryID"
-    enum="VideoColorSpace.PrimaryID" expires_after="M98">
+    enum="VideoColorSpace.PrimaryID" expires_after="2022-08-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>macrabil@microsoft.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2894,7 +2894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundation.VideoColorSpace.TransferID"
-    enum="VideoColorSpace.TransferID" expires_after="M98">
+    enum="VideoColorSpace.TransferID" expires_after="2022-08-30">
   <owner>dalecurtis@chromium.org</owner>
   <owner>macrabil@microsoft.com</owner>
   <owner>media-dev@chromium.org</owner>
