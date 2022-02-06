@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
@@ -122,7 +121,6 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
       device::mojom::HidManager::GetDevicesCallback callback,
       std::vector<device::mojom::HidDeviceInfoPtr> devices);
   void OnHidManagerConnectionError();
-  bool CanApplyPolicy();
 
   // HID-specific interface for revoking device permissions.
   void RevokePersistentDevicePermission(
@@ -132,11 +130,7 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
       const url::Origin& origin,
       const device::mojom::HidDeviceInfo& device);
 
-  // This raw pointer is safe because instances of this class are created by
-  // HidChooserContextFactory as KeyedServices that will be destroyed when the
-  // Profile object is destroyed.
-  const raw_ptr<Profile> profile_;
-
+  const bool is_incognito_;
   bool is_initialized_ = false;
   base::queue<device::mojom::HidManager::GetDevicesCallback>
       pending_get_devices_requests_;

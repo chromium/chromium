@@ -12,11 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -25,12 +21,8 @@
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_piece.h"
 #include "extensions/common/constants.h"
@@ -43,11 +35,6 @@ constexpr char kHidGuidKey[] = "guid";
 constexpr char kHidVendorIdKey[] = "vendor-id";
 constexpr char kHidProductIdKey[] = "product-id";
 constexpr char kHidSerialNumberKey[] = "serial-number";
-
-bool IsPolicyGrantedObject(const base::Value& object) {
-  return object.is_dict() && object.DictSize() == 1 &&
-         object.FindStringKey(kHidDeviceNameKey);
-}
 
 base::Value DeviceInfoToValue(const device::mojom::HidDeviceInfo& device) {
   base::Value value(base::Value::Type::DICTIONARY);
@@ -66,55 +53,7 @@ base::Value DeviceInfoToValue(const device::mojom::HidDeviceInfo& device) {
     // and must be granted again each time the device is connected.
     value.SetStringKey(kHidGuidKey, device.guid);
   }
-  DCHECK(!IsPolicyGrantedObject(value));
   return value;
-}
-
-base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
-                                       uint16_t product_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
-  object.SetStringKey(
-      kHidDeviceNameKey,
-      l10n_util::GetStringFUTF16(
-          IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID_AND_PRODUCT_ID,
-          base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id)),
-          base::ASCIIToUTF16(base::StringPrintf("%04X", product_id))));
-  DCHECK(IsPolicyGrantedObject(object));
-  return object;
-}
-
-base::Value VendorIdToValue(uint16_t vendor_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
-  object.SetStringKey(
-      kHidDeviceNameKey,
-      l10n_util::GetStringFUTF16(
-          IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID,
-          base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
-  DCHECK(IsPolicyGrantedObject(object));
-  return object;
-}
-
-base::Value UsagePageAndUsageToValue(uint16_t usage_page, uint16_t usage) {
-  base::Value object(base::Value::Type::DICTIONARY);
-  object.SetStringKey(
-      kHidDeviceNameKey,
-      l10n_util::GetStringFUTF16(
-          IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_AND_USAGE_PAGE,
-          base::ASCIIToUTF16(base::StringPrintf("%04X", usage)),
-          base::ASCIIToUTF16(base::StringPrintf("%04X", usage_page))));
-  DCHECK(IsPolicyGrantedObject(object));
-  return object;
-}
-
-base::Value UsagePageToValue(uint16_t usage_page) {
-  base::Value object(base::Value::Type::DICTIONARY);
-  object.SetStringKey(
-      kHidDeviceNameKey,
-      l10n_util::GetStringFUTF16(
-          IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_PAGE,
-          base::ASCIIToUTF16(base::StringPrintf("%04X", usage_page))));
-  DCHECK(IsPolicyGrantedObject(object));
-  return object;
 }
 
 }  // namespace
@@ -135,9 +74,7 @@ HidChooserContext::HidChooserContext(Profile* profile)
           ContentSettingsType::HID_GUARD,
           ContentSettingsType::HID_CHOOSER_DATA,
           HostContentSettingsMapFactory::GetForProfile(profile)),
-      profile_(profile) {
-  DCHECK(profile_);
-}
+      is_incognito_(profile->IsOffTheRecord()) {}
 
 HidChooserContext::~HidChooserContext() {
   // Notify observers that the chooser context is about to be destroyed.
@@ -185,11 +122,6 @@ std::string HidChooserContext::GetKeyForObject(const base::Value& object) {
 }
 
 bool HidChooserContext::IsValidObject(const base::Value& object) {
-  if (IsPolicyGrantedObject(object))
-    return true;
-
-  // Other objects must have name, vendor, product, and either a GUID or a
-  // serial number.
   if (!object.is_dict() || object.DictSize() != 4 ||
       !object.FindStringKey(kHidDeviceNameKey) ||
       !object.FindIntKey(kHidProductIdKey) ||
@@ -198,11 +130,8 @@ bool HidChooserContext::IsValidObject(const base::Value& object) {
   }
 
   const std::string* guid = object.FindStringKey(kHidGuidKey);
-  if (guid && !guid->empty())
-    return true;
-
   const std::string* serial_number = object.FindStringKey(kHidSerialNumberKey);
-  return serial_number && !serial_number->empty();
+  return (guid && !guid->empty()) || (serial_number && !serial_number->empty());
 }
 
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
@@ -224,65 +153,12 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
             content_settings::SettingSource::SETTING_SOURCE_USER,
-            IsOffTheRecord()));
+            is_incognito_));
       }
     }
   }
 
-  if (CanApplyPolicy()) {
-    auto* policy = g_browser_process->hid_policy_allowed_devices();
-    for (const auto& entry : policy->device_policy()) {
-      if (!base::Contains(entry.second, origin))
-        continue;
-
-      auto object =
-          VendorAndProductIdsToValue(entry.first.first, entry.first.second);
-      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
-    }
-
-    for (const auto& entry : policy->vendor_policy()) {
-      if (!base::Contains(entry.second, origin))
-        continue;
-
-      auto object = VendorIdToValue(entry.first);
-      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
-    }
-
-    for (const auto& entry : policy->usage_policy()) {
-      if (!base::Contains(entry.second, origin))
-        continue;
-
-      auto object =
-          UsagePageAndUsageToValue(entry.first.first, entry.first.second);
-      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
-    }
-
-    for (const auto& entry : policy->usage_page_policy()) {
-      if (!base::Contains(entry.second, origin))
-        continue;
-
-      auto object = UsagePageToValue(entry.first);
-      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
-    }
-
-    if (base::Contains(policy->all_devices_policy(), origin)) {
-      base::Value object(base::Value::Type::DICTIONARY);
-      object.SetStringKey(
-          kHidDeviceNameKey,
-          l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));
-      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
-    }
-  }
+  // TODO(crbug.com/1049825): Include policy-granted objects.
 
   return objects;
 }
@@ -302,61 +178,11 @@ HidChooserContext::GetAllGrantedObjects() {
       DCHECK(base::Contains(devices_, guid));
       objects.push_back(std::make_unique<Object>(
           origin, DeviceInfoToValue(*devices_[guid]),
-          content_settings::SettingSource::SETTING_SOURCE_USER,
-          IsOffTheRecord()));
+          content_settings::SettingSource::SETTING_SOURCE_USER, is_incognito_));
     }
   }
 
-  if (CanApplyPolicy()) {
-    auto* policy = g_browser_process->hid_policy_allowed_devices();
-    for (const auto& entry : policy->device_policy()) {
-      auto object =
-          VendorAndProductIdsToValue(entry.first.first, entry.first.second);
-      for (const auto& origin : entry.second) {
-        objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
-      }
-    }
-
-    for (const auto& entry : policy->vendor_policy()) {
-      auto object = VendorIdToValue(entry.first);
-      for (const auto& origin : entry.second) {
-        objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
-      }
-    }
-
-    for (const auto& entry : policy->usage_policy()) {
-      auto object =
-          UsagePageAndUsageToValue(entry.first.first, entry.first.second);
-      for (const auto& origin : entry.second) {
-        objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
-      }
-    }
-
-    for (const auto& entry : policy->usage_page_policy()) {
-      auto object = UsagePageToValue(entry.first);
-      for (const auto& origin : entry.second) {
-        objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
-      }
-    }
-
-    base::Value object(base::Value::Type::DICTIONARY);
-    object.SetStringKey(
-        kHidDeviceNameKey,
-        l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));
-    for (const auto& origin : policy->all_devices_policy()) {
-      objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
-    }
-  }
+  // TODO(crbug.com/1049825): Include policy-granted objects.
 
   return objects;
 }
@@ -453,12 +279,6 @@ bool HidChooserContext::HasDevicePermission(
   if (device::HidBlocklist::IsDeviceExcluded(device))
     return false;
 
-  if (CanApplyPolicy() &&
-      g_browser_process->hid_policy_allowed_devices()->HasDevicePermission(
-          origin, device)) {
-    return true;
-  }
-
   if (!CanRequestObjectPermission(origin))
     return false;
 
@@ -468,11 +288,9 @@ bool HidChooserContext::HasDevicePermission(
     return true;
   }
 
-  for (const auto& object :
-       ObjectPermissionContextBase::GetGrantedObjects(origin)) {
+  std::vector<std::unique_ptr<Object>> object_list = GetGrantedObjects(origin);
+  for (const auto& object : object_list) {
     const base::Value& device_value = object->value;
-
-    // Objects provided by the parent class can be assumed valid.
     DCHECK(IsValidObject(device_value));
 
     if (device.vendor_id != *device_value.FindIntKey(kHidVendorIdKey) ||
@@ -688,16 +506,4 @@ void HidChooserContext::OnHidManagerConnectionError() {
     for (const auto& origin : revoked_origins)
       observer.OnPermissionRevoked(origin);
   }
-}
-
-bool HidChooserContext::CanApplyPolicy() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* profile_helper = chromeos::ProfileHelper::Get();
-  DCHECK(profile_helper);
-  user_manager::User* user = profile_helper->GetUserByProfile(profile_);
-  DCHECK(user);
-  return user->IsAffiliated();
-#else
-  return true;
-#endif
 }
