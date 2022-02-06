@@ -44,66 +44,66 @@ class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
 
  private:
   // Delete selected list of page ids from the store.
-  void HandleDeleteSelectedPages(base::Value::ConstListView args);
+  void HandleDeleteSelectedPages(const base::ListValue* args);
 
   // Delete selected list of requests from the request queue.
-  void HandleDeleteSelectedRequests(base::Value::ConstListView args);
+  void HandleDeleteSelectedRequests(const base::ListValue* args);
 
   // Load Request Queue info.
-  void HandleGetRequestQueue(base::Value::ConstListView args);
+  void HandleGetRequestQueue(const base::ListValue* args);
 
   // Load Stored pages info.
-  void HandleGetStoredPages(base::Value::ConstListView args);
+  void HandleGetStoredPages(const base::ListValue* args);
 
   // Set whether to record offline page model events.
-  void HandleSetRecordPageModel(base::Value::ConstListView args);
+  void HandleSetRecordPageModel(const base::ListValue* args);
 
   // Set whether to record request queue events.
-  void HandleSetRecordRequestQueue(base::Value::ConstListView args);
+  void HandleSetRecordRequestQueue(const base::ListValue* args);
 
   // Set whether to record prefetch service events.
-  void HandleSetRecordPrefetchService(base::Value::ConstListView args);
+  void HandleSetRecordPrefetchService(const base::ListValue* args);
 
   // Set whether to enable limitless prefetching.
-  void HandleSetLimitlessPrefetchingEnabled(base::Value::ConstListView args);
+  void HandleSetLimitlessPrefetchingEnabled(const base::ListValue* args);
 
   // Get whether limitless prefetching is enabled.
-  void HandleGetLimitlessPrefetchingEnabled(base::Value::ConstListView args);
+  void HandleGetLimitlessPrefetchingEnabled(const base::ListValue* args);
 
   // Set whether to enable sending the testing header when making
   // GeneratePageBundle requests.
-  void HandleSetPrefetchTestingHeader(base::Value::ConstListView args);
+  void HandleSetPrefetchTestingHeader(const base::ListValue* args);
 
   // Get whether we are sending the testing header for GeneratePageBundle
   // requests.
-  void HandleGetPrefetchTestingHeader(base::Value::ConstListView args);
+  void HandleGetPrefetchTestingHeader(const base::ListValue* args);
 
   // Load all offline services' event logs.
-  void HandleGetEventLogs(base::Value::ConstListView args);
+  void HandleGetEventLogs(const base::ListValue* args);
 
   // Load whether logs are being recorded.
-  void HandleGetLoggingState(base::Value::ConstListView args);
+  void HandleGetLoggingState(const base::ListValue* args);
 
   // Adds a url to the background loader queue.
-  void HandleAddToRequestQueue(base::Value::ConstListView args);
+  void HandleAddToRequestQueue(const base::ListValue* args);
 
   // Load whether device is currently offline.
-  void HandleGetNetworkStatus(base::Value::ConstListView args);
+  void HandleGetNetworkStatus(const base::ListValue* args);
 
   // Schedules an NWake signal.
-  void HandleScheduleNwake(base::Value::ConstListView args);
+  void HandleScheduleNwake(const base::ListValue* args);
 
   // Cancels an NWake signal.
-  void HandleCancelNwake(base::Value::ConstListView args);
+  void HandleCancelNwake(const base::ListValue* args);
 
   // Sends and processes the request to generate page bundle.
-  void HandleGeneratePageBundle(base::Value::ConstListView args);
+  void HandleGeneratePageBundle(const base::ListValue* args);
 
   // Sends and processes a request to get the info about an operation.
-  void HandleGetOperation(base::Value::ConstListView args);
+  void HandleGetOperation(const base::ListValue* args);
 
   // Downloads an archive.
-  void HandleDownloadArchive(base::Value::ConstListView args);
+  void HandleDownloadArchive(const base::ListValue* args);
 
   // Callback for async GetAllPages calls.
   void HandleStoredPagesCallback(
