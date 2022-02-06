@@ -1071,15 +1071,16 @@ void FillMiscNavigationParams(
     navigation_params->http_status_code = commit_params.http_response_code;
 
   // Populate the arrays of non-current entries for the appHistory API.
+  auto& entry_arrays = commit_params.app_history_entry_arrays;
   navigation_params->app_history_back_entries.reserve(
-      commit_params.app_history_back_entries.size());
-  for (const auto& entry : commit_params.app_history_back_entries) {
+      entry_arrays->back_entries.size());
+  for (const auto& entry : entry_arrays->back_entries) {
     navigation_params->app_history_back_entries.emplace_back(
         AppHistoryEntryPtrToWebHistoryItem(*entry));
   }
   navigation_params->app_history_forward_entries.reserve(
-      commit_params.app_history_forward_entries.size());
-  for (const auto& entry : commit_params.app_history_forward_entries) {
+      entry_arrays->forward_entries.size());
+  for (const auto& entry : entry_arrays->forward_entries) {
     navigation_params->app_history_forward_entries.emplace_back(
         AppHistoryEntryPtrToWebHistoryItem(*entry));
   }

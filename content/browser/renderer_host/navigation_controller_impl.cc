@@ -3703,11 +3703,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
           -1 /* http_response_code */,
-          std::vector<blink::mojom::
-                          AppHistoryEntryPtr>() /* app_history_back_entries */,
-          std::vector<
-              blink::mojom::
-                  AppHistoryEntryPtr>() /* app_history_forward_entries */,
+          blink::mojom::AppHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
@@ -4348,7 +4344,8 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
   return entries;
 }
 
-void NavigationControllerImpl::PopulateAppHistoryEntryVectors(
+blink::mojom::AppHistoryEntryArraysPtr
+NavigationControllerImpl::GetAppHistoryEntryVectors(
     NavigationRequest* request) {
   url::Origin pending_origin =
       request->commit_params().origin_to_commit
@@ -4384,18 +4381,19 @@ void NavigationControllerImpl::PopulateAppHistoryEntryVectors(
     }
   }
 
-  request->set_app_history_back_entries(PopulateSingleAppHistoryEntryVector(
+  auto entry_arrays = blink::mojom::AppHistoryEntryArrays::New();
+  entry_arrays->back_entries = PopulateSingleAppHistoryEntryVector(
       Direction::kBack, entry_index, pending_origin, node, site_instance.get(),
-      pending_item_sequence_number, pending_document_sequence_number));
+      pending_item_sequence_number, pending_document_sequence_number);
 
   // Don't populate forward entries if they will be truncated by a new entry.
   if (!will_create_new_entry) {
-    request->set_app_history_forward_entries(
-        PopulateSingleAppHistoryEntryVector(
-            Direction::kForward, entry_index, pending_origin, node,
-            site_instance.get(), pending_item_sequence_number,
-            pending_document_sequence_number));
+    entry_arrays->forward_entries = PopulateSingleAppHistoryEntryVector(
+        Direction::kForward, entry_index, pending_origin, node,
+        site_instance.get(), pending_item_sequence_number,
+        pending_document_sequence_number);
   }
+  return entry_arrays;
 }
 
 NavigationControllerImpl::HistoryNavigationAction

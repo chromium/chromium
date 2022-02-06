@@ -21,6 +21,7 @@ import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
@@ -262,19 +263,6 @@ struct OldPageInfo {
   blink.mojom.PageLifecycleState new_lifecycle_state_for_old_page;
 };
 
-// AppHistoryEntry contains a subset of a session history item that is used by
-// the appHistory API to represent a non-current history entry. The browser
-// ensures that an AppHistoryEntry is only sent to the renderer if its |url| is
-// same-origin to the navigation being committed.
-struct AppHistoryEntry {
-  mojo_base.mojom.String16 key;
-  mojo_base.mojom.String16 id;
-  mojo_base.mojom.String16 url;
-  int64 item_sequence_number;
-  int64 document_sequence_number;
-  mojo_base.mojom.String16 state;
-};
-
 // Used by commit IPC messages. Holds the parameters needed by the renderer to
 // commit a navigation besides those in CommonNavigationParams.
 struct CommitNavigationParams {
@@ -467,8 +455,7 @@ struct CommitNavigationParams {
 
   // A same-origin subset of the back/forward list exposed by the appHistory
   // API.
-  array<AppHistoryEntry> app_history_back_entries;
-  array<AppHistoryEntry> app_history_forward_entries;
+  AppHistoryEntryArrays app_history_entry_arrays;
 
   array<url.mojom.Url> early_hints_preloaded_resources;
 

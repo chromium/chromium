@@ -32,6 +32,7 @@
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 
 namespace blink {
@@ -392,9 +393,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Called just before sending the commit to the renderer. Walks the
   // session history entries for the committing FrameTreeNode, forward and
   // backward from the pending entry. All contiguous and same-origin
-  // FrameNavigationEntries are serialized and added to |request|'s commit
-  // params.
-  void PopulateAppHistoryEntryVectors(NavigationRequest* request);
+  // FrameNavigationEntries are serialized and returned.
+  blink::mojom::AppHistoryEntryArraysPtr GetAppHistoryEntryVectors(
+      NavigationRequest* request);
 
   // The appHistory API exposes the urls of some non-current same-origin
   // FrameNavigationEntries to the renderer. This helper checks whether the

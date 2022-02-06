@@ -130,6 +130,7 @@ mojom("mojom_platform") {
     "mediastream/media_stream.mojom",
     "mime/mime_registry.mojom",
     "native_io/native_io.mojom",
+    "navigation/app_history_entry_arrays.mojom",
     "navigation/navigation_policy.mojom",
     "navigation/prefetched_signed_exchange_info.mojom",
     "navigation/renderer_eviction_reason.mojom",

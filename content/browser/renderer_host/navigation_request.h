@@ -404,16 +404,6 @@ class CONTENT_EXPORT NavigationRequest
         is_cross_site_cross_browsing_context_group;
   }
 
-  void set_app_history_back_entries(
-      std::vector<blink::mojom::AppHistoryEntryPtr> entries) {
-    commit_params_->app_history_back_entries = std::move(entries);
-  }
-
-  void set_app_history_forward_entries(
-      std::vector<blink::mojom::AppHistoryEntryPtr> entries) {
-    commit_params_->app_history_forward_entries = std::move(entries);
-  }
-
   NavigationURLLoader* loader_for_testing() const { return loader_.get(); }
 
   NavigationState state() const { return state_; }

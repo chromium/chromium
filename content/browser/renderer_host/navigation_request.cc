@@ -1088,11 +1088,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_browsing_instance=*/false,
           /*old_page_info=*/nullptr, /*http_response_code=*/-1,
-          std::vector<blink::mojom::
-                          AppHistoryEntryPtr>() /* app_history_back_entries */,
-          std::vector<
-              blink::mojom::
-                  AppHistoryEntryPtr>() /* app_history_forward_entries */,
+          blink::mojom::AppHistoryEntryArrays::New(),
           /*early_hints_preloaded_resources=*/
           std::vector<GURL>(), absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
@@ -1214,12 +1210,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
-          http_response_code,
-          std::vector<blink::mojom::
-                          AppHistoryEntryPtr>() /* app_history_back_entries */,
-          std::vector<
-              blink::mojom::
-                  AppHistoryEntryPtr>() /* app_history_forward_entries */,
+          http_response_code, blink::mojom::AppHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
@@ -4438,8 +4429,10 @@ void NavigationRequest::CommitNavigation() {
         pending_ad_components_map_->GetURNs();
   }
 
-  if (!IsSameDocument())
-    GetNavigationController()->PopulateAppHistoryEntryVectors(this);
+  if (!IsSameDocument()) {
+    commit_params_->app_history_entry_arrays =
+        GetNavigationController()->GetAppHistoryEntryVectors(this);
+  }
 
   if (early_hints_manager_) {
     commit_params_->early_hints_preloaded_resources =
