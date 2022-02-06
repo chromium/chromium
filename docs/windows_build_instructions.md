@@ -34,7 +34,7 @@ C++" component and the "MFC/ATL support" sub-components. This can be done from
 the command line by passing these arguments to the Visual Studio installer (see
 below for ARM64 instructions):
 ```shell
-$ PATH_TO_INSTALLER.EXE ^
+$ PATH_TO_INSTALLER.EXE modify ^
 --add Microsoft.VisualStudio.Workload.NativeDesktop ^
 --add Microsoft.VisualStudio.Component.VC.ATLMFC ^
 --includeRecommended
@@ -43,7 +43,7 @@ $ PATH_TO_INSTALLER.EXE ^
 If you want to build for ARM64 Win32 then some extra arguments are needed. The
 full set for that case is:
 ```shell
-$ PATH_TO_INSTALLER.EXE ^
+$ PATH_TO_INSTALLER.EXE modify ^
 --add Microsoft.VisualStudio.Workload.NativeDesktop ^
 --add Microsoft.VisualStudio.Component.VC.ATLMFC ^
 --add Microsoft.VisualStudio.Component.VC.Tools.ARM64 ^
