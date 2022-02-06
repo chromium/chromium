@@ -7047,7 +7047,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңы билдирме}other{# жаңы билдирме}}</translation>
-<translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Жүктөп алуу аткарылууда}other{Жүктөп алуулар аткарылууда}}</translation>
+<translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Жүктөлүп алынууда}other{Жүктөлүп алынууда}}</translation>
 <translation id="8213449224684199188">Сүрөт режими киргизилди</translation>
 <translation id="8214489666383623925">Төмөнкү файлды ачуу…</translation>
 <translation id="8215129063232901118">Телефонуңуздагы функцияларды <ph name="DEVICE_TYPE" /> түзмөгүндө колдонуңуз</translation>
