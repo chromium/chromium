@@ -101,7 +101,10 @@ DragOperation DropHelper::OnDrop(const OSExchangeData& data,
   View::ConvertPointToTarget(root_view, drop_view, &view_location);
   ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
                                  gfx::PointF(view_location), drag_operation);
-  return drop_view->OnPerformDrop(drop_event);
+  auto output_drag_op = ui::mojom::DragOperation::kNone;
+  auto drop_cb = drop_view->GetDropCallback(drop_event);
+  std::move(drop_cb).Run(drop_event, output_drag_op);
+  return output_drag_op;
 }
 
 DropHelper::DropCallback DropHelper::GetDropCallback(
