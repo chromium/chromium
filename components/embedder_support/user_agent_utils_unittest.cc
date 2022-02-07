@@ -308,25 +308,6 @@ bool ContainsBrandVersion(const blink::UserAgentBrandList& brand_list,
 class UserAgentUtilsTest : public testing::Test,
                            public testing::WithParamInterface<bool> {
  public:
-  void SetUp() override {
-    if (ForceMajorVersionTo100())
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kForceMajorVersion100InUserAgent);
-  }
-
-  bool ForceMajorVersionTo100() { return GetParam(); }
-
-  std::string M100VersionNumber() {
-    const base::Version version = version_info::GetVersion();
-    std::string m100_version("100");
-    // The rest of the version after the major version string is the same.
-    for (size_t i = 1; i < version.components().size(); ++i) {
-      m100_version.append(".");
-      m100_version.append(base::NumberToString(version.components()[i]));
-    }
-    return m100_version;
-  }
-
   std::string MajorToMinorVersionNumber() {
     const base::Version version = version_info::GetVersion();
     std::string version_str;
@@ -348,11 +329,7 @@ class UserAgentUtilsTest : public testing::Test,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserAgentUtilsTest,
-                         /*force_major_version_to_M100*/ testing::Bool());
-
-TEST_P(UserAgentUtilsTest, UserAgentStringOrdering) {
+TEST_F(UserAgentUtilsTest, UserAgentStringOrdering) {
 #if BUILDFLAG(IS_ANDROID)
   const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
@@ -372,7 +349,7 @@ TEST_P(UserAgentUtilsTest, UserAgentStringOrdering) {
 #endif
 }
 
-TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
+TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
 
@@ -385,8 +362,7 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   command_line->InitFromArgv(1, kArguments);
   const std::string major_version_number =
       version_info::GetMajorVersionNumber();
-  const char* const major_version =
-      ForceMajorVersionTo100() ? "100" : major_version_number.c_str();
+  const char* const major_version = major_version_number.c_str();
 
   // Verify the mobile user agent string is not returned when not using a mobile
   // user agent.
@@ -433,19 +409,6 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       {blink::features::kReduceUserAgent,
-       blink::features::kForceMajorVersion100InUserAgent},
-      {blink::features::kForceMajorVersionInMinorPositionInUserAgent});
-  {
-    std::string buffer = GetReducedUserAgent(kForceEnabled);
-    std::string device_compat = "Mobile ";
-    EXPECT_EQ(buffer,
-              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
-                                 content::GetUnifiedPlatform().c_str(), "99",
-                                 device_compat.c_str()));
-  }
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgent,
        blink::features::kForceMajorVersionInMinorPositionInUserAgent},
       {});
   {
@@ -462,9 +425,7 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
     EXPECT_EQ(buffer, base::StringPrintf(
                           content::frozen_user_agent_strings::kDesktop,
                           content::GetUnifiedPlatform().c_str(),
-                          ForceMajorVersionTo100()
-                              ? "100"
-                              : version_info::GetMajorVersionNumber().c_str()));
+                          version_info::GetMajorVersionNumber().c_str()));
   }
 
   // Verify that the reduced user agent string respects
@@ -485,17 +446,6 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       {blink::features::kReduceUserAgent,
-       blink::features::kForceMajorVersion100InUserAgent},
-      {blink::features::kForceMajorVersionInMinorPositionInUserAgent});
-  {
-    std::string buffer = GetReducedUserAgent(kForceEnabled);
-    EXPECT_EQ(buffer,
-              base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
-                                 content::GetUnifiedPlatform().c_str(), "99"));
-  }
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgent,
        blink::features::kForceMajorVersionInMinorPositionInUserAgent},
       {});
   {
@@ -509,14 +459,11 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());
 }
 
-TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
+TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   auto metadata = GetUserAgentMetadata();
 
-  const std::string major_version =
-      ForceMajorVersionTo100() ? "100" : version_info::GetMajorVersionNumber();
-  const std::string full_version = ForceMajorVersionTo100()
-                                       ? M100VersionNumber()
-                                       : version_info::GetVersionNumber();
+  const std::string major_version = version_info::GetMajorVersionNumber();
+  const std::string full_version = version_info::GetVersionNumber();
   const std::string major_to_minor_full_version = MajorToMinorVersionNumber();
 
   // According to spec, Sec-CH-UA should contain what project the browser is
@@ -629,7 +576,7 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.wow64, content::IsWoW64());
 }
 
-TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
+TEST_F(UserAgentUtilsTest, GenerateBrandVersionList) {
   blink::UserAgentMetadata metadata;
 
   metadata.brand_version_list = GenerateBrandVersionList(
@@ -743,7 +690,7 @@ TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
       blink::UserAgentBrandVersionType::kFullVersion));
 }
 
-TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
+TEST_F(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Test to ensure the old algorithm is respected when the flag is not set.
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -910,7 +857,7 @@ TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
   }
 }
 
-TEST_P(UserAgentUtilsTest, GetProduct) {
+TEST_F(UserAgentUtilsTest, GetProduct) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       blink::features::kForceMajorVersionInMinorPositionInUserAgent);
@@ -919,20 +866,7 @@ TEST_P(UserAgentUtilsTest, GetProduct) {
   std::string major_version;
   EXPECT_TRUE(
       re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
-  // Whether the force M100 experiment is on or not, the product value should
-  // contain the actual major version number which is 0.
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-
-  // Allow overrides in the product version.
-  product = GetProduct(/*allow_override=*/true);
-  major_version.clear();
-  EXPECT_TRUE(
-      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
-  if (ForceMajorVersionTo100()) {
-    EXPECT_EQ(major_version, "100");
-  } else {
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  }
 
   // Ensure the policy is ignored if allow_override is false
   product = GetProduct(/*allow_override=*/false,
@@ -941,8 +875,7 @@ TEST_P(UserAgentUtilsTest, GetProduct) {
       re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
 
-  // Ensure policy is respected if ForcemajorToMinor enabled, possibly
-  // ignoring ForceMajorVersion100.
+  // Ensure policy is respected if ForceMajorToMinor is force enabled
   product = GetProduct(/*allow_override=*/true,
                        /*force_major_to_minor=*/kForceEnabled);
   EXPECT_TRUE(
@@ -961,16 +894,13 @@ TEST_P(UserAgentUtilsTest, GetProduct) {
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
 }
 
-TEST_P(UserAgentUtilsTest, GetUserAgent) {
+TEST_F(UserAgentUtilsTest, GetUserAgent) {
   const std::string ua = GetUserAgent();
   std::string major_version;
   std::string minor_version;
   EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
                                      &major_version, &minor_version));
-  if (ForceMajorVersionTo100())
-    EXPECT_EQ(major_version, "100");
-  else
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   // Minor version should contain the actual minor version number.
   EXPECT_EQ(minor_version, "0");
 }
@@ -990,66 +920,5 @@ class UserAgentUtilsMinorVersionTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserAgentUtilsMinorVersionTest,
-                         /*force_major_version_in_minor*/ testing::Bool());
-
-TEST_P(UserAgentUtilsMinorVersionTest, GetUserAgent) {
-  const std::string ua = GetUserAgent();
-  std::string major_version;
-  std::string minor_version;
-  EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
-                                     &major_version, &minor_version));
-  if (ForceMajorInMinorVersion()) {
-    // When enabled major versions should be locked at 99 and minor version
-    // should hold the major version number.
-    EXPECT_EQ(major_version, "99");
-    EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
-  } else {
-    // When disabled major version should hold major version number and minor
-    // version should be the minor version number which is 0.
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-    EXPECT_EQ(minor_version, "0");
-  }
-}
-
-class UserAgentUtilsMinorVersionM100Test
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (ForceMinorVersion100InUserAgent())
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kForceMinorVersion100InUserAgent);
-  }
-
-  bool ForceMinorVersion100InUserAgent() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserAgentUtilsMinorVersionM100Test,
-                         /*force_minor_version_to_M100*/ testing::Bool());
-
-TEST_P(UserAgentUtilsMinorVersionM100Test, GetUserAgent) {
-  const std::string ua = GetUserAgent();
-  std::string major_version;
-  std::string minor_version;
-  EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
-                                     &major_version, &minor_version));
-  if (ForceMinorVersion100InUserAgent()) {
-    // When enabled minor version should be hardcoded to 100.
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-    EXPECT_EQ(minor_version, "100");
-  } else {
-    // When disabled major version should hold major version number and minor
-    // version should be the minor version number which is 0.
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-    EXPECT_EQ(minor_version, "0");
-  }
-}
 
 }  // namespace embedder_support

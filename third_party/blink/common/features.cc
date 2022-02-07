@@ -1098,12 +1098,6 @@ const base::FeatureParam<double> kCostReductionOfMultiplexedRequests{
     &kDelayLowPriorityRequestsAccordingToNetworkState,
     "CostReductionOfMultiplexedRequests", 0.5};
 
-const base::Feature kForceMajorVersion100InUserAgent{
-    "ForceMajorVersion100InUserAgent", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kForceMinorVersion100InUserAgent{
-    "ForceMinorVersion100InUserAgent", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kForceMajorVersionInMinorPositionInUserAgent{
     "ForceMajorVersionInMinorPositionInUserAgent",
     base::FEATURE_DISABLED_BY_DEFAULT};

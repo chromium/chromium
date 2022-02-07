@@ -256,13 +256,6 @@ const char kForceDisableExtendedSyncPromosName[] =
 const char kForceDisableExtendedSyncPromosDescription[] =
     "When enabled, will not display any extended sync promos";
 
-const char kForceMajorVersion100InUserAgentName[] =
-    "Force major version to 100 in User-Agent";
-const char kForceMajorVersion100InUserAgentDescription[] =
-    "Force the Chrome major version in the User-Agent string to 100, which "
-    "allows testing the 3-digit major version number before the actual M100 "
-    "release. This flag is only available from M96-M99.";
-
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "

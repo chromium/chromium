@@ -15,7 +15,4 @@ const base::Feature kWebPageAlternativeTextZoom{
 const base::Feature kRestoreSessionFromCache{"RestoreSessionFromCache",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kForceMajorVersion100InUserAgent{
-    "ForceMajorVersion100InUserAgent", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace web

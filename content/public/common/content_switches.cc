@@ -472,12 +472,6 @@ const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
 // file:///alias/some/path.html into file:///replacement/some/path.html.
 const char kFileUrlPathAlias[] = "file-url-path-alias";
 
-// Forces the Chrome major version to 100 in the User-Agent string.
-const char kForceMajorVersionTo100[] = "force-major-version-to-100";
-
-// Forces the Chrome minor version to 100 in the User-Agent string.
-const char kForceMinorVersionTo100[] = "force-minor-version-to-100";
-
 // Forces the Chrome major version to the minor position in the User-Agent
 // string. Locks major version to 99.
 const char kForceMajorVersionToMinorPosition[] = "force-major-version-to-minor";

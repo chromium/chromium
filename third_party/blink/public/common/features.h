@@ -549,19 +549,6 @@ extern const base::FeatureParam<double> kCostReductionOfMultiplexedRequests;
 BLINK_COMMON_EXPORT extern const base::Feature
     kForceMajorVersionInMinorPositionInUserAgent;
 
-// If enabled, the minor version number returned by Chrome will be forced to
-// 100.  This feature is only applicable for M96-M99 and will be removed after
-// M99.  The purpose of this feature is to allow testing of mitigation
-// strategies for conveying the major version number in the minor version string
-// if we decide to freeze the major version at 99.
-BLINK_COMMON_EXPORT extern const base::Feature kForceMinorVersion100InUserAgent;
-
-// If enabled, the major version number returned by Chrome will be forced to
-// 100.  This feature is only applicable for M96-M99 and will be removed after
-// M99.  The purpose of this feature is to allow users to test and proactively
-// fix any issues as we approach a 3-digit major version number.
-BLINK_COMMON_EXPORT extern const base::Feature kForceMajorVersion100InUserAgent;
-
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDeviceMemory;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDPR;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsResourceWidth;

@@ -7676,14 +7676,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kForceMajorVersionInMinorPositionInUserAgent)},
-    {"force-major-version-to-100",
-     flag_descriptions::kForceMajorVersion100InUserAgentName,
-     flag_descriptions::kForceMajorVersion100InUserAgentDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kForceMajorVersion100InUserAgent)},
-    {"force-minor-version-to-100",
-     flag_descriptions::kForceMinorVersion100InUserAgentName,
-     flag_descriptions::kForceMinorVersion100InUserAgentDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kForceMinorVersion100InUserAgent)},
     {"autofill-enable-offer-notification-for-promo-codes",
      flag_descriptions::kAutofillEnableOfferNotificationForPromoCodesName,
      flag_descriptions::
