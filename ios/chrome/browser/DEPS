@@ -47,7 +47,6 @@ include_rules = [
   "+components/leveldb_proto",
   "+components/lookalikes/core",
   "+components/metrics",
-  "+components/ntp_tiles",
   "+components/user_prefs",
   "+components/metrics_services_manager",
   "+components/navigation_metrics",

@@ -36,7 +36,6 @@
 #include "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
-#import "ios/chrome/app/content_suggestions_scheduler_app_state_agent.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
@@ -666,7 +665,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)addPostSafeModeAgents {
-  [self.appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
   [self.appState addAgent:[[EnterpriseAppAgent alloc] init]];
   [self.appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
   [self.appState addAgent:[[FirstRunAppAgent alloc] init]];
