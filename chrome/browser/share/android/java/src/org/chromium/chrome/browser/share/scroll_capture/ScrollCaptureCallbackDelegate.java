@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager.BitmapGeneratorObserver;
@@ -35,7 +34,6 @@ import org.chromium.content_public.browser.WebContents;
  * An delegate to provide an Android API level independent implementation Scroll Capture.
  */
 public class ScrollCaptureCallbackDelegate {
-    private static final String IN_MEMORY_CAPTURE = "in_memory_capture";
     private static final int BITMAP_HEIGHT_THRESHOLD = 20;
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -54,9 +52,7 @@ public class ScrollCaptureCallbackDelegate {
      */
     public static class EntryManagerWrapper {
         EntryManager create(Tab tab) {
-            return new EntryManager(tab.getContext(), tab,
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.SCROLL_CAPTURE, IN_MEMORY_CAPTURE, true));
+            return new EntryManager(tab.getContext(), tab, /*inMemory=*/true);
         }
     }
 

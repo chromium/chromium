@@ -3485,10 +3485,6 @@ const char kRequestDesktopSiteForTabletsDescription[] =
     " On tablets with small screens a mobile site will be requested by "
     "default.";
 
-const char kScrollCaptureName[] = "Scroll Capture";
-const char kScrollCaptureDescription[] =
-    "Enables scrolling screenshot capture for web contents.";
-
 const char kSecurePaymentConfirmationAndroidName[] =
     "Secure Payment Confirmation on Android";
 const char kSecurePaymentConfirmationAndroidDescription[] =

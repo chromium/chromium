@@ -1997,9 +1997,6 @@ extern const char kSwapAndroidShareHubRowsDescription[];
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];
 
-extern const char kScrollCaptureName[];
-extern const char kScrollCaptureDescription[];
-
 extern const char kSecurePaymentConfirmationAndroidName[];
 extern const char kSecurePaymentConfirmationAndroidDescription[];
 

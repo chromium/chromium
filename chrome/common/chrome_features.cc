@@ -906,11 +906,6 @@ const base::Feature kSchedulerConfiguration{"SchedulerConfiguration",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-const base::Feature kScrollCapture{"ScrollCapture",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // Controls whether SCT audit reports are queued and the rate at which they
 // should be sampled. Default sampling rate is 1/10,000 certificates.
 #if BUILDFLAG(IS_ANDROID)

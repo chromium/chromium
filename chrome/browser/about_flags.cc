@@ -2623,13 +2623,6 @@ const FeatureEntry::FeatureVariation kBookmarksRefreshVariations[] = {
      base::size(kBookmarksRefreshAppMenu), nullptr},
     {"(everything)", kBookmarksRefreshWithEverything,
      base::size(kBookmarksRefreshWithEverything), nullptr}};
-
-const FeatureEntry::FeatureParam kScrollCaptureInMemory[] = {
-    {"in_memory_capture", "true"}};
-
-const FeatureEntry::FeatureVariation kScrollCaptureVariations[] = {
-    {"(in memory capture)", kScrollCaptureInMemory,
-     base::size(kScrollCaptureInMemory), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kLargeFaviconFromGoogle96[] = {
@@ -7026,12 +7019,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kContinuousSearch,
                                     kContinuousSearchFeatureVariations,
                                     "ContinuousSearchNavigation")},
-
-    {"scroll-capture", flag_descriptions::kScrollCaptureName,
-     flag_descriptions::kScrollCaptureDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollCapture,
-                                    kScrollCaptureVariations,
-                                    "AndroidScrollCapture")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,

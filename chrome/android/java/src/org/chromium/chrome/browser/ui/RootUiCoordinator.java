@@ -673,10 +673,7 @@ public class RootUiCoordinator
     }
 
     private void initScrollCapture() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.SCROLL_CAPTURE)) {
-            return;
-        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
 
         mScrollCaptureManager = new ScrollCaptureManager(mActivityTabProvider);
     }
