@@ -141,12 +141,10 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_RelatedSearches) {
       "https://high-score-2", 0, {"one", "three", "four", "five", "six"}));
   // Visits without related searches shouldn't interrupt the coalescing.
   cluster.visits.push_back(CreateVisit("https://high-score-3", 0));
-  // Should include all related searches of a visit even if doing so surpasses
-  // the max related searches (8).
+  // Should not include more related searches once the max related searches has
+  // been met (5).
   cluster.visits.push_back(
       CreateVisit("https://high-score-4", 0, {"seven", "eight", "nine"}));
-  // Should not include related searches of more visits once the max related
-  // searches has been met.
   cluster.visits.push_back(CreateVisit("https://high-score-5", 0, {"ten"}));
 
   clusters.push_back(cluster);
@@ -157,16 +155,12 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_RelatedSearches) {
   ASSERT_EQ(mojom_result->clusters.size(), 1u);
   EXPECT_EQ(mojom_result->clusters[0]->id, 4);
   const auto& top_visit = mojom_result->clusters[0]->visit;
-  ASSERT_EQ(top_visit->related_searches.size(), 9u);
+  ASSERT_EQ(top_visit->related_searches.size(), 5u);
   EXPECT_EQ(top_visit->related_searches[0]->query, "one");
   EXPECT_EQ(top_visit->related_searches[1]->query, "two");
   EXPECT_EQ(top_visit->related_searches[2]->query, "three");
   EXPECT_EQ(top_visit->related_searches[3]->query, "four");
   EXPECT_EQ(top_visit->related_searches[4]->query, "five");
-  EXPECT_EQ(top_visit->related_searches[5]->query, "six");
-  EXPECT_EQ(top_visit->related_searches[6]->query, "seven");
-  EXPECT_EQ(top_visit->related_searches[7]->query, "eight");
-  EXPECT_EQ(top_visit->related_searches[8]->query, "nine");
 }
 
 // TODO(manukh) Add a test case for `VisitToMojom`.

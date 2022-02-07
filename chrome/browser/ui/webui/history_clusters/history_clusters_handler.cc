@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,6 +37,8 @@
 namespace history_clusters {
 
 namespace {
+
+constexpr size_t kMaxRelatedSearches = 5;
 
 // Creates a `mojom::VisitPtr` from a `history_clusters::Visit`.
 mojom::URLVisitPtr VisitToMojom(Profile* profile,
@@ -134,7 +137,6 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
   for (const auto& cluster : clusters_batch) {
     auto cluster_mojom = mojom::Cluster::New();
     cluster_mojom->id = cluster.cluster_id;
-    std::set<std::string> related_searches;  // Keeps track of unique searches.
     for (const auto& visit : cluster.visits) {
       mojom::URLVisitPtr visit_mojom = VisitToMojom(profile, visit);
       if (!cluster_mojom->visit) {
@@ -157,24 +159,26 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
         top_visit_mojom->related_visits.push_back(std::move(visit_mojom));
       }
 
-      // Coalesce the related searches of this visit into the top visit, but
-      // only if the top visit's related searches count is still under the cap.
-      // Note we coalesce a whole visit's worth of searches at a time, so we
-      // can exceed the cap, but we ignore further visits' searches after that.
-      constexpr size_t kMaxRelatedSearches = 8;
+      // Coalesce the unique related searches of this visit into the top visit
+      // until the cap is reached.
       const auto& top_visit_mojom = cluster_mojom->visit;
-      if (top_visit_mojom->related_searches.size() < kMaxRelatedSearches) {
-        for (const auto& search_query :
-             visit.annotated_visit.content_annotations.related_searches) {
-          if (!related_searches.insert(search_query).second) {
-            continue;
-          }
+      for (const auto& search_query :
+           visit.annotated_visit.content_annotations.related_searches) {
+        if (top_visit_mojom->related_searches.size() >= kMaxRelatedSearches) {
+          break;
+        }
 
-          auto search_query_mojom = SearchQueryToMojom(profile, search_query);
-          if (search_query_mojom) {
-            top_visit_mojom->related_searches.emplace_back(
-                std::move(*search_query_mojom));
-          }
+        if (base::Contains(top_visit_mojom->related_searches, search_query,
+                           [](const mojom::SearchQueryPtr& search_query_mojom) {
+                             return search_query_mojom->query;
+                           })) {
+          continue;
+        }
+
+        auto search_query_mojom = SearchQueryToMojom(profile, search_query);
+        if (search_query_mojom) {
+          top_visit_mojom->related_searches.emplace_back(
+              std::move(*search_query_mojom));
         }
       }
     }
