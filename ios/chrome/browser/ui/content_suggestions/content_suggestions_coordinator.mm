@@ -100,7 +100,6 @@
 // Redefined as readwrite.
 @property(nonatomic, strong, readwrite)
     ContentSuggestionsHeaderViewController* headerController;
-@property(nonatomic, strong) PrefBackedBoolean* contentSuggestionsExpanded;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
@@ -137,18 +136,6 @@
   self.contentSuggestionsEnabled =
       prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
       prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
-  self.contentSuggestionsExpanded = [[PrefBackedBoolean alloc]
-      initWithPrefService:prefs
-                 prefName:feed::prefs::kArticlesListVisible];
-  if (self.contentSuggestionsEnabled) {
-    if ([self.contentSuggestionsExpanded value]) {
-      ntp_home::RecordNTPImpression(ntp_home::REMOTE_SUGGESTIONS);
-    } else {
-      ntp_home::RecordNTPImpression(ntp_home::REMOTE_COLLAPSED);
-    }
-  } else {
-    ntp_home::RecordNTPImpression(ntp_home::LOCAL_SUGGESTIONS);
-  }
 
   self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
@@ -277,7 +264,6 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   self.headerController = nil;
-  self.contentSuggestionsExpanded = nil;
   _started = NO;
 }
 
