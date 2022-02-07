@@ -29,7 +29,7 @@ static bool Contains(const remoting::ChromotingEvent& actual,
     const base::Value* out_value = nullptr;
 
     if (!actual_dict->Get(key, &out_value) ||
-        !expected_it.value().Equals(out_value)) {
+        expected_it.value() != *out_value) {
       return false;
     }
     expected_it.Advance();

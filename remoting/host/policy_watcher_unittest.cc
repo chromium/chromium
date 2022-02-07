@@ -28,7 +28,7 @@ namespace key = ::policy::key;
 using testing::_;
 
 MATCHER_P(IsPolicies, dict, "") {
-  bool equal = arg->Equals(dict);
+  bool equal = (*arg == *dict);
   if (!equal) {
     std::string actual_value;
     base::JSONWriter::WriteWithOptions(

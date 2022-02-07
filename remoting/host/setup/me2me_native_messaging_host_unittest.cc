@@ -96,7 +96,7 @@ void VerifyGetDaemonConfigResponse(
   EXPECT_EQ("getDaemonConfigResponse", value);
   const base::DictionaryValue* config = nullptr;
   EXPECT_TRUE(response->GetDictionary("config", &config));
-  EXPECT_TRUE(base::DictionaryValue().Equals(config));
+  EXPECT_EQ(base::DictionaryValue(), *config);
 }
 
 void VerifyGetUsageStatsConsentResponse(
