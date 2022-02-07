@@ -2,48 +2,79 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/web/selector_observer.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
-#include <chrono>
-#include <thread>
+#include <stddef.h>
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/memory/ref_counted.h"
-#include "base/strings/strcat.h"
+#include "base/containers/checked_range.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/numerics/clamped_math.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
+#include "base/values.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill_assistant/browser/action_strategy.pb.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/wait_for_dom_action.h"
+#include "components/autofill_assistant/browser/base_browsertest.h"
+#include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/devtools/devtools/domains/runtime.h"
+#include "components/autofill_assistant/browser/devtools/devtools_client.h"
+#include "components/autofill_assistant/browser/dom_action.pb.h"
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/mock_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/model.pb.h"
+#include "components/autofill_assistant/browser/rectf.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor.h"
+#include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/switches.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace autofill_assistant {
 namespace {
@@ -87,11 +118,7 @@ class FakeAnnotateDomModelService : public AnnotateDomModelService {
 
 }  // namespace
 
-// Flag to enable site per process to enforce OOPIFs.
-const char* kSitePerProcess = "site-per-process";
-const char* kTargetWebsitePath = "/autofill_assistant_target_website.html";
-
-class WebControllerBrowserTest : public content::ContentBrowserTest,
+class WebControllerBrowserTest : public autofill_assistant::BaseBrowserTest,
                                  public content::WebContentsObserver {
  public:
   WebControllerBrowserTest() {}
@@ -101,31 +128,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   ~WebControllerBrowserTest() override {}
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(kSitePerProcess);
-    // Necessary to avoid flakiness or failure due to input arriving
-    // before the first compositor commit.
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-
   void SetUpOnMainThread() override {
-    ContentBrowserTest::SetUpOnMainThread();
-
-    // Start a mock server for hosting an OOPIF.
-    http_server_iframe_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTP);
-    http_server_iframe_->ServeFilesFromSourceDirectory(
-        "components/test/data/autofill_assistant/html_iframe");
-    ASSERT_TRUE(http_server_iframe_->Start(8081));
-
-    // Start the main server hosting the test page.
-    http_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTP);
-    http_server_->ServeFilesFromSourceDirectory(
-        "components/test/data/autofill_assistant/html");
-    ASSERT_TRUE(http_server_->Start(8080));
-    ASSERT_TRUE(
-        NavigateToURL(shell(), http_server_->GetURL(kTargetWebsitePath)));
+    BaseBrowserTest::SetUpOnMainThread();
 
     // Register the same agent on all frames, such that the callback can be
     // mocked.
@@ -918,86 +922,6 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
         /* node_frame_id= */ std::string());
   }
 
-  static ElementConditionProto AllOfConditions(
-      std::vector<ElementConditionProto> conditions) {
-    ElementConditionProto proto;
-    for (auto& condition : conditions) {
-      proto.mutable_any_of()->mutable_conditions()->Add(std::move(condition));
-    }
-    return proto;
-  }
-
-  static ElementConditionProto AnyOfConditions(
-      std::vector<ElementConditionProto> conditions) {
-    ElementConditionProto proto;
-    for (auto& condition : conditions) {
-      proto.mutable_any_of()->mutable_conditions()->Add(std::move(condition));
-    }
-    return proto;
-  }
-
-  static ElementConditionProto NoneOfConditions(
-      std::vector<ElementConditionProto> conditions) {
-    ElementConditionProto proto;
-    for (auto& condition : conditions) {
-      proto.mutable_none_of()->mutable_conditions()->Add(std::move(condition));
-    }
-    return proto;
-  }
-
-  static ElementConditionProto Match(Selector selector, bool strict = false) {
-    ElementConditionProto proto;
-    *proto.mutable_match() = selector.proto;
-    proto.set_require_unique_element(strict);
-    return proto;
-  }
-
-  // Run Observer BatchElementChecker on the provided conditions. The second
-  // value in the pairs (bool) is the match expectation.
-  void RunObserverBatchElementChecker(
-      const std::vector<std::pair<ElementConditionProto, bool>>& conditions) {
-    base::RunLoop run_loop;
-    BatchElementChecker checker;
-    std::vector<bool> actual_results(conditions.size(), false);
-    std::vector<bool> expected_results(conditions.size(), false);
-
-    for (size_t i = 0; i < conditions.size(); ++i) {
-      expected_results[i] = conditions[i].second;
-      checker.AddElementConditionCheck(
-          conditions[i].first,
-          base::BindOnce(&WebControllerBrowserTest::
-                             ObserverBatchElementCheckerElementCallback,
-                         &actual_results, i));
-    }
-    checker.AddAllDoneCallback(base::BindOnce(
-        &WebControllerBrowserTest::ObserverBatchElementCheckerAllDoneCallback,
-        run_loop.QuitClosure(), &expected_results, &actual_results));
-
-    checker.EnableObserver(base::Milliseconds(30000), base::Milliseconds(1000));
-    checker.Run(web_controller_.get());
-    run_loop.Run();
-    EXPECT_EQ(web_controller_->pending_workers_.size(), 0u);
-  }
-
-  static void ObserverBatchElementCheckerElementCallback(
-      std::vector<bool>* res,
-      size_t i,
-      const ClientStatus& status,
-      const std::vector<std::string>& payloads,
-      const base::flat_map<std::string, DomObjectFrameStack>& elms) {
-    (*res)[i] = status.ok();
-  }
-
-  static void ObserverBatchElementCheckerAllDoneCallback(
-      base::OnceClosure on_done,
-      const std::vector<bool>* expected,
-      const std::vector<bool>* actual) {
-    for (size_t i = 0; i < expected->size(); ++i) {
-      EXPECT_EQ(actual->at(i), expected->at(i)) << "condition number " << i;
-    }
-    std::move(on_done).Run();
-  }
-
   ClientStatus RunWaitForDom(
       const ActionProto& wait_for_dom_action,
       bool use_observers,
@@ -1040,10 +964,6 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
   ProcessedActionStatusDetailsProto log_info_;
   MockAutofillAssistantAgent autofill_assistant_agent_;
   FakeAnnotateDomModelService annotate_dom_model_service_;
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> http_server_;
-  std::unique_ptr<net::EmbeddedTestServer> http_server_iframe_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementExistenceCheck) {
@@ -3217,258 +3137,6 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
   EXPECT_EQ(ACTION_APPLIED, js_click_status.proto_status());
 
   WaitForElementRemove(Selector({"#iframeExternal", "#div"}));
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       ObserverBatchElementCheckerStaticConditions) {
-  RunObserverBatchElementChecker({
-      {Match(Selector({"#button"})), true},        // A visible element.
-      {Match(Selector({"#hidden"})), true},        // A hidden element.
-      {Match(Selector({"#doesnotexist"})), false}  // A nonexistent element.
-  });
-
-  RunObserverBatchElementChecker({{
-      AllOfConditions({
-          Match(Selector({"#button"})),  // A visible element.
-          Match(Selector({"#hidden"})),  // A hidden element.
-      }),
-      true  // Expected to match.
-  }});
-
-  RunObserverBatchElementChecker({{
-      AnyOfConditions({
-          Match(Selector({"#button"})),       // A visible element.
-          Match(Selector({"#doesnotexist"}))  // A nonexistent element.
-      }),
-      true  // Expected to match.
-  }});
-
-  RunObserverBatchElementChecker({{
-      NoneOfConditions({// A nonexistent element.
-                        Match(Selector({"#doesnotexist"})),
-                        // A non-existent element inside an iFrame.
-                        Match(Selector({"#iframe", "#doesnotexists"}))}),
-      true  // Expected to match.
-  }});
-
-  RunObserverBatchElementChecker({{
-      AllOfConditions(
-          {Match(Selector({"#iframe"})),          // An iFrame.
-           Match(Selector({"#iframeExternal"})),  // An OOPIF.
-           Match(Selector(
-               {"#iframe", "#button"})),  // An element in a same-origin iFrame.
-           Match(Selector(
-               {"#iframeExternal", "#button"})),  // An element in an OOPIF.
-           NoneOfConditions(
-               {// A non-existent element in an OOPIF.
-                Match(Selector({"#iframeExternal", "#doesnotexist"})),
-                // A non-existent element in a same-origin iFrame.
-                Match(Selector({"#iframe", "#doesnotexist"}))})}),
-      true  // Expected to match.
-  }});
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       ObserverBatchElementCheckerDynamicElements) {
-  RunObserverBatchElementChecker({{
-      // A selector that only matches for ~200ms.
-      Match(Selector({".dynamic.about-2-seconds"})),
-      true  // Expected to match.
-  }});
-
-  RunObserverBatchElementChecker({{
-      // A selector that only matches for ~200ms inside of an iFrame.
-      Match(Selector({"#iframe", ".dynamic.about-2-seconds"})),
-      true  // Expected to match.
-  }});
-
-  RunObserverBatchElementChecker({{
-      // A selector that only matches for ~200ms inside of an external iFrame.
-      Match(Selector({"#iframeExternal", ".dynamic.about-2-seconds"})),
-      true  // Expected to match.
-  }});
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       ObserverBatchElementCheckerDifferentFilters) {
-  Selector non_empty_bounding_box = Selector({"#button"});
-  non_empty_bounding_box.proto.add_filters()
-      ->mutable_bounding_box()
-      ->set_require_nonempty(true);
-
-  // Matches exactly one visible element.
-  auto with_inner_text =
-      Selector({"#with_inner_text span"}).MatchingInnerText("hello, world");
-
-  Selector match_css_selector({"label"});
-  match_css_selector.MatchingInnerText("terms and conditions");
-  match_css_selector.proto.add_filters()->mutable_labelled();
-  match_css_selector.proto.add_filters()->set_match_css_selector(
-      "input[type='checkbox']");
-
-  RunObserverBatchElementChecker({{
-      AllOfConditions(
-          {// A visible element.
-           Match(Selector({"#button"}).MustBeVisible()),
-           // An element in a same-origin iFrame.
-           Match(Selector({"#iframe", "#button"}).MustBeVisible()),
-           Match(non_empty_bounding_box), Match(with_inner_text),
-           Match(with_inner_text.MustBeVisible()), Match(match_css_selector),
-           NoneOfConditions(
-               {// A hidden element.
-                Match(Selector({"#hidden"}).MustBeVisible()),
-                // A non-existent element.
-                Match(Selector({"#doesnotexist"}).MustBeVisible())})}),
-      true  // Expected to match.
-  }});
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectorObserver) {
-  base::RunLoop run_loop;
-  // Selector ids can be any number as long as unique.
-  const SelectorObserver::SelectorId button_id(11);
-  const SelectorObserver::SelectorId iframe_button_id(1234);
-  const SelectorObserver::SelectorId dynamic_id(0);
-
-  std::vector<base::flat_set<std::pair<SelectorObserver::SelectorId, bool>>>
-      expected_updates = {
-          {
-              // Initial state.
-              std::make_pair(button_id, /* match = */ true),
-              std::make_pair(iframe_button_id, /* match = */ true),
-              std::make_pair(dynamic_id, /* match = */ false),
-          },
-          {
-              // Dynamic element matches about 2s in.
-              std::make_pair(dynamic_id, /* match = */ true),
-          },
-          {
-              // Then shortly stops matching.
-              std::make_pair(dynamic_id, /* match = */ false),
-          }};
-
-  auto element_callback = base::BindLambdaForTesting(
-      [&](const ClientStatus& status,
-          const base::flat_map<SelectorObserver::SelectorId,
-                               DomObjectFrameStack>& elements) {
-        EXPECT_TRUE(status.ok());
-        EXPECT_EQ(elements.size(), 1u);
-        EXPECT_EQ(elements.count(iframe_button_id), 1u);
-        run_loop.Quit();
-      });
-
-  int button_element_id = -1;
-  SelectorObserver::Callback update_callback = base::BindLambdaForTesting(
-      [&](const ClientStatus& status,
-          const std::vector<SelectorObserver::Update>& updates,
-          SelectorObserver* observer) {
-        EXPECT_TRUE(status.ok());
-        EXPECT_FALSE(expected_updates.empty());
-        for (auto& update : updates) {
-          auto removed = expected_updates[0].erase(
-              std::make_pair(update.selector_id, update.match));
-          EXPECT_EQ(removed, 1u);
-          if (update.selector_id == iframe_button_id) {
-            button_element_id = update.element_id;
-          }
-        }
-        if (expected_updates[0].empty()) {
-          expected_updates.erase(expected_updates.begin());
-        }
-        if (expected_updates.empty()) {
-          // Done receiving updates.
-          observer->GetElementsAndStop(
-              {{SelectorObserver::SelectorId(iframe_button_id),
-                /* element_id */ button_element_id}},
-              std::move(element_callback));
-        } else {
-          observer->Continue();
-        }
-      });
-
-  web_controller_->ObserveSelectors(
-      {{/* selector_id = */ button_id,
-        /* proto = */ Selector({"#button"}).proto,
-        /* strict = */ true},
-       {/* selector_id = */ iframe_button_id,
-        /* proto = */ Selector({"#iframe", "#button"}).proto,
-        /* strict = */ true},
-       {/* selector_id = */ dynamic_id,
-        /* proto = */
-        Selector({"#iframeExternal", ".dynamic.about-2-seconds"}).proto,
-        /* strict = */ true}},
-      base::Milliseconds(30000), base::Milliseconds(1000), update_callback);
-
-  run_loop.Run();
-  ASSERT_TRUE(expected_updates.empty());
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       SelectorObserverRedirectIframe) {
-  base::RunLoop run_loop;
-  bool received_no_match_update = false;
-  const SelectorObserver::SelectorId button_id(15);
-
-  auto element_callback = base::BindLambdaForTesting(
-      [&](const ClientStatus& status,
-          const base::flat_map<SelectorObserver::SelectorId,
-                               DomObjectFrameStack>& elements) {
-        EXPECT_TRUE(status.ok());
-        run_loop.Quit();
-      });
-
-  SelectorObserver::Callback update_callback = base::BindLambdaForTesting(
-      [&](const ClientStatus& status,
-          const std::vector<SelectorObserver::Update>& updates,
-          SelectorObserver* observer) {
-        EXPECT_TRUE(status.ok());
-        EXPECT_EQ(updates.size(), 1u);
-        EXPECT_EQ(updates[0].selector_id, button_id);
-        if (updates[0].match) {
-          EXPECT_TRUE(received_no_match_update);
-          observer->GetElementsAndStop({}, std::move(element_callback));
-        } else {
-          received_no_match_update = true;
-          observer->Continue();
-        }
-      });
-
-  web_controller_->ObserveSelectors(
-      {{/* selector_id = */ button_id,
-        /* proto = */ Selector({"#iframeRedirecting", "#button"}).proto,
-        /* strict = */ true}},
-      base::Milliseconds(30000), base::Milliseconds(1000), update_callback);
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunWithDomAnnotation) {
-  Selector selector({"#input1"});
-  auto* semantic_information = selector.proto.mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
-
-  NodeData node_frame_1;
-  node_frame_1.backend_node_id = 100;
-  NodeData node_frame_2;
-  node_frame_2.backend_node_id = 200;
-  EXPECT_CALL(autofill_assistant_agent_, GetSemanticNodes(1, 2, _))
-      .WillOnce(RunOnceCallback<2>(true, std::vector<NodeData>{node_frame_1}))
-      .WillOnce(RunOnceCallback<2>(true, std::vector<NodeData>{node_frame_2}))
-      // Capture any other frames.
-      .WillRepeatedly(RunOnceCallback<2>(true, std::vector<NodeData>()));
-
-  ClientStatus status;
-  ElementFinder::Result result;
-  FindElement(selector, &status, &result);
-
-  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
-  EXPECT_EQ(log_info_.element_finder_info(0).status(), ACTION_APPLIED);
-  ASSERT_EQ(log_info_.element_finder_info(0)
-                .semantic_inference_result()
-                .predicted_elements()
-                .size(),
-            2);
 }
 
 }  // namespace autofill_assistant

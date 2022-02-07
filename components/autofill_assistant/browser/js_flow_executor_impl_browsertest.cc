@@ -2,30 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/js_flow_executor_impl.h"
+#include "components/autofill_assistant/browser/js_flow_executor.h"
 
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <type_traits>
+
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/mock_callback.h"
-#include "base/test/task_environment.h"
-#include "base/time/tick_clock.h"
+#include "base/values.h"
+#include "components/autofill_assistant/browser/base_browsertest.h"
+#include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/js_flow_executor_impl.h"
+#include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_browser_test.h"
-#include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/switches.h"
 
 namespace autofill_assistant {
 namespace {
@@ -58,36 +60,12 @@ class MockJsFlowExecutorImplDelegate : public JsFlowExecutorImpl::Delegate {
       (override));
 };
 
-class JsFlowExecutorImplTest : public content::ContentBrowserTest {
+class JsFlowExecutorImplTest : public autofill_assistant::BaseBrowserTest {
  public:
   JsFlowExecutorImplTest() {}
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch("site-per-process");
-    // Necessary to avoid flakiness or failure due to input arriving
-    // before the first compositor commit.
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-
   void SetUpOnMainThread() override {
-    ContentBrowserTest::SetUpOnMainThread();
-
-    // Start a mock server for hosting an OOPIF.
-    http_server_iframe_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTP);
-    http_server_iframe_->ServeFilesFromSourceDirectory(
-        "components/test/data/autofill_assistant/html_iframe");
-    ASSERT_TRUE(http_server_iframe_->Start(8081));
-
-    // Start the main server hosting the test page.
-    http_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTP);
-    http_server_->ServeFilesFromSourceDirectory(
-        "components/test/data/autofill_assistant/html");
-    ASSERT_TRUE(http_server_->Start(8080));
-    ASSERT_TRUE(NavigateToURL(
-        shell(),
-        http_server_->GetURL("/autofill_assistant_target_website.html")));
+    BaseBrowserTest::SetUpOnMainThread();
 
     flow_executor_ = std::make_unique<JsFlowExecutorImpl>(
         shell()->web_contents(), &mock_delegate_);
@@ -124,8 +102,6 @@ class JsFlowExecutorImplTest : public content::ContentBrowserTest {
  protected:
   NiceMock<MockJsFlowExecutorImplDelegate> mock_delegate_;
   std::unique_ptr<JsFlowExecutorImpl> flow_executor_;
-  std::unique_ptr<net::EmbeddedTestServer> http_server_;
-  std::unique_ptr<net::EmbeddedTestServer> http_server_iframe_;
 };
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, SmokeTest) {

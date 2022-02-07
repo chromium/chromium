@@ -378,6 +378,7 @@ class WebController {
 
  private:
   friend class WebControllerBrowserTest;
+  friend class BatchElementCheckerBrowserTest;
 
   void OnJavaScriptResult(
       base::OnceCallback<void(const ClientStatus&)> callback,
