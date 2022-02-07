@@ -203,6 +203,7 @@ suite('PrivacySandbox', function() {
 
 suite('PrivacySandboxSettings3', function() {
   let page: PrivacySandboxAppElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -212,6 +213,9 @@ suite('PrivacySandboxSettings3', function() {
 
   setup(function() {
     assertTrue(loadTimeData.getBoolean('privacySandboxSettings3Enabled'));
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
     document.body.innerHTML = '';
     page = /** @type {!PrivacySandboxAppElement} */
         (document.createElement('privacy-sandbox-app'));
@@ -224,5 +228,31 @@ suite('PrivacySandboxSettings3', function() {
     assertFalse(isChildVisible(page, '#trialsCard'));
     assertFalse(isChildVisible(page, '#flocCard'));
     assertTrue(isChildVisible(page, '#trialsCardSettings3'));
+  });
+
+  [true, false].forEach(apisEnabledPrior => {
+    test(`clickTrialsToggleTest_${apisEnabledPrior}`, async () => {
+      const trialsToggle =
+          page.shadowRoot!.querySelector<HTMLElement>('#trialsToggle')!;
+      page.prefs = {
+        privacy_sandbox: {
+          apis_enabled_v2: {value: apisEnabledPrior},
+          manually_controlled: {value: false},
+        },
+      };
+      await flushTasks();
+      metricsBrowserProxy.resetResolver('recordAction');
+      // User clicks the trials toggle.
+      trialsToggle.click();
+      assertEquals(
+          !apisEnabledPrior,
+          page.getPref('privacy_sandbox.apis_enabled_v2').value);
+      assertTrue(page.prefs.privacy_sandbox.manually_controlled.value);
+      // Ensure UMA is logged.
+      assertEquals(
+          apisEnabledPrior ? 'Settings.PrivacySandbox.ApisDisabled' :
+                             'Settings.PrivacySandbox.ApisEnabled',
+          await metricsBrowserProxy.whenCalled('recordAction'));
+    });
   });
 });

@@ -97,10 +97,11 @@
   </picture>
   <template is="dom-if" if="[[privacySandboxSettings3Enabled_]]">
     <div id="trialsCardSettings3" class="card">
-      <settings-toggle-button
-          pref="{{privacySandboxTrialsEnabled_}}"
+      <settings-toggle-button id="trialsToggle"
+          pref="{{prefs.privacy_sandbox.apis_enabled_v2}}"
           label="$i18n{privacySandboxTrialsTitle}"
-          sub-label="$i18n{privacySandboxTrialsSummary}">
+          sub-label="$i18n{privacySandboxTrialsSummary}"
+          on-change="onApiToggleButtonChange_">
       </settings-toggle-button>
       <cr-link-row
         start-icon="settings:ads"

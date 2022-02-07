@@ -35,18 +35,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('privacySandboxSettings3Enabled'),
       },
-
-      // TODO(crbug/1286276): Remove this when connecting the new pref.
-      privacySandboxTrialsEnabled_: {
-        type: Object,
-        notify: true,
-        value() {
-          return {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          };
-        },
-      },
     };
   }
 
