@@ -16,13 +16,27 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/blink/public/common/features.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
+namespace {
+const std::string kYellow = skia::SkColorToHexString(SK_ColorYELLOW);
+const std::string kGreen = skia::SkColorToHexString(SK_ColorGREEN);
+const std::string kRed = skia::SkColorToHexString(SK_ColorRED);
+const std::string kBlue = skia::SkColorToHexString(SK_ColorBLUE);
+const std::string kBlack = skia::SkColorToHexString(SK_ColorBLACK);
+const std::string kWhite = skia::SkColorToHexString(SK_ColorWHITE);
+}  // namespace
 // Class to test browser error page display info.
 class AlternativeErrorPageOverrideInfoBrowserTest
     : public InProcessBrowserTest {
  public:
-  AlternativeErrorPageOverrideInfoBrowserTest() = default;
+  AlternativeErrorPageOverrideInfoBrowserTest() {
+    feature_list_.InitWithFeatures({features::kDesktopPWAsDefaultOfflinePage,
+                                    blink::features::kWebAppEnableDarkMode},
+                                   {});
+  }
 
   // Helper function to prepare PWA and retrieve information from the
   // alternative error page function.
@@ -48,9 +62,7 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
   }
-
-  base::test::ScopedFeatureList feature_list_{
-      features::kDesktopPWAsDefaultOfflinePage};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Testing app manifest with no theme or background color.
@@ -63,9 +75,9 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest, Manifest) {
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.FindKey(
                 "customized_background_color"),
-            base::Value(skia::SkColorToHexString(SK_ColorWHITE)));
+            base::Value(kWhite));
   EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
-            base::Value(skia::SkColorToHexString(SK_ColorBLACK)));
+            base::Value(kBlack));
 }
 
 // Testing app manifest with theme color.
@@ -80,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.FindKey(
                 "customized_background_color"),
-            base::Value(skia::SkColorToHexString(SK_ColorWHITE)));
+            base::Value(kWhite));
   EXPECT_EQ(
       *info->alternative_error_page_params.FindKey("theme_color"),
       base::Value(skia::SkColorToHexString(SkColorSetRGB(0xAA, 0xCC, 0xEE))));
@@ -98,9 +110,9 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.FindKey(
                 "customized_background_color"),
-            base::Value(skia::SkColorToHexString(SK_ColorBLUE)));
+            base::Value(kBlue));
   EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
-            base::Value(skia::SkColorToHexString(SK_ColorBLACK)));
+            base::Value(kBlack));
 }
 
 // Testing url outside the scope of an installed app.
@@ -197,7 +209,44 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.FindKey(
                 "customized_background_color"),
-            base::Value(skia::SkColorToHexString(SK_ColorYELLOW)));
+            base::Value(kYellow));
   EXPECT_EQ(*info->alternative_error_page_params.FindKey("theme_color"),
-            base::Value(skia::SkColorToHexString(SK_ColorGREEN)));
+            base::Value(kGreen));
+}
+
+// Testing app manifest with dark mode theme and background colors.
+IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+                       ManifestWithDarkModeThemeAndBackgroundColor) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
+  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
+      GetErrorPageInfo("/web_apps/get_manifest.html?color_scheme_dark.json");
+
+  // Expect mojom struct with dark mode theme color and dark mode background
+  // color.
+  EXPECT_TRUE(info);
+  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
+                "dark_mode_background_color"),
+            base::Value(kRed));
+  EXPECT_EQ(
+      *info->alternative_error_page_params.FindKey("dark_mode_theme_color"),
+      base::Value(kRed));
+}
+
+// Testing app manifest with no dark mode theme or background color.
+IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+                       ManifestWithNoDarkModeThemeAndBackgroundColor) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
+  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
+      GetErrorPageInfo("/banners/no-sw-with-colors.html");
+
+  // Expect mojom struct light mode background and theme color stored.
+  EXPECT_TRUE(info);
+  EXPECT_EQ(*info->alternative_error_page_params.FindKey(
+                "dark_mode_background_color"),
+            base::Value(kYellow));
+  EXPECT_EQ(
+      *info->alternative_error_page_params.FindKey("dark_mode_theme_color"),
+      base::Value(kGreen));
 }
