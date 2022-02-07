@@ -250,7 +250,7 @@ base::DictionaryValue FCMInvalidationListener::CollectDebugData() const {
       "InvalidationListener.Subscription-channel-state",
       SubscriptionChannelStateToString(subscription_channel_state_));
   for (const auto& topic : interested_topics_) {
-    if (!status.HasKey(topic.first)) {
+    if (!status.FindKey(topic.first)) {
       status.SetString(topic.first, "Unsubscribed");
     }
   }
