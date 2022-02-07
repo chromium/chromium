@@ -365,9 +365,13 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
-      TabSharingInfoBarDelegate::Create(GetInfoBarManager(), u"example.com",
-                                        u"application.com", false, true,
-                                        absl::nullopt, nullptr);
+      TabSharingInfoBarDelegate::Create(
+          /*infobar_manager=*/GetInfoBarManager(),
+          /*shared_tab_name=*/u"example.com", /*app_name=*/u"application.com",
+          /*shared_tab=*/false,
+          /*share_this_tab_instead_button_state=*/
+          TabSharingInfoBarDelegate::ButtonState::ENABLED,
+          /*focus_target=*/absl::nullopt, /*ui=*/nullptr);
       break;
 
     default:

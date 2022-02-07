@@ -11,7 +11,9 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/observer_list.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -49,6 +51,10 @@ class DlpContentManager : public DlpContentObserver {
   DlpContentRestrictionSet GetConfidentialRestrictions(
       content::WebContents* web_contents) const;
 
+  // Returns whether screenshare should be blocked for the specified
+  // WebContents.
+  bool IsScreenShareBlocked(content::WebContents* web_contents) const;
+
   // Checks whether printing of |web_contents| is restricted or not advised.
   // Depending on the result, calls |callback| and passes an indicator whether
   // to proceed or not.
@@ -81,6 +87,12 @@ class DlpContentManager : public DlpContentObserver {
   virtual void OnScreenCaptureStopped(
       const std::string& label,
       const content::DesktopMediaID& media_id) = 0;
+
+  void AddObserver(DlpContentManagerObserver* observer,
+                   DlpContentRestriction restriction);
+
+  void RemoveObserver(const DlpContentManagerObserver* observer,
+                      DlpContentRestriction restriction);
 
  protected:
   friend class DlpContentManagerTestHelper;
@@ -270,6 +282,12 @@ class DlpContentManager : public DlpContentObserver {
   void RemoveAllowedContents(DlpConfidentialContents& contents,
                              DlpRulesManager::Restriction restriction);
 
+  // Notifies observers if the restrictions they are listening to changed.
+  void NotifyOnConfidentialityChanged(
+      const DlpContentRestrictionSet& old_restriction_set,
+      const DlpContentRestrictionSet& new_restriction_set,
+      content::WebContents* web_contents);
+
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>
       confidential_web_contents_;
@@ -285,6 +303,11 @@ class DlpContentManager : public DlpContentObserver {
   raw_ptr<DlpReportingManager> reporting_manager_{nullptr};
 
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
+
+  // One ObserverList per restriction.
+  std::array<base::ObserverList<DlpContentManagerObserver>,
+             DlpContentRestriction::kMaxValue + 1>
+      observer_lists_;
 };
 
 }  // namespace policy

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 
+#include <string>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -16,7 +17,9 @@
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,21 +27,37 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-class TabSharingInfoBarDelegateButton {
+class TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
+  TabSharingInfoBarDelegateButton() = default;
+
+  // Deleted copy and assignment operator.
+  TabSharingInfoBarDelegateButton(const TabSharingInfoBarDelegateButton&) =
+      delete;
+  TabSharingInfoBarDelegateButton& operator=(
+      const TabSharingInfoBarDelegateButton&) = delete;
+
   virtual ~TabSharingInfoBarDelegateButton() = default;
   virtual void Click(infobars::InfoBar* infobar) = 0;
   virtual std::u16string GetLabel() const = 0;
-  virtual ui::ImageModel GetImage() const { return ui::ImageModel(); }
+  virtual ui::ImageModel GetImage() const { return {}; }
+  virtual bool IsEnabled() const { return true; }
+  virtual std::u16string GetTooltip() const { return u""; }
 };
 
 namespace {
 
 // Represents a button which, when clicked, changes the shared tab to be
 // the current tab (the one associated with this infobar.)
-class ShareTabInsteadButton : public TabSharingInfoBarDelegateButton {
+class ShareTabInsteadButton
+    : public TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
-  explicit ShareTabInsteadButton(TabSharingUI* ui) : ui_(ui) {}
+  ShareTabInsteadButton(TabSharingUI* ui,
+                        TabSharingInfoBarDelegate::ButtonState
+                            share_this_tab_instead_button_state)
+      : ui_(ui),
+        share_this_tab_instead_button_state_(
+            share_this_tab_instead_button_state) {}
 
   ~ShareTabInsteadButton() override = default;
 
@@ -51,14 +70,30 @@ class ShareTabInsteadButton : public TabSharingInfoBarDelegateButton {
     return l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON);
   }
 
+  bool IsEnabled() const override {
+    return share_this_tab_instead_button_state_ ==
+           TabSharingInfoBarDelegate::ButtonState::ENABLED;
+  }
+
+  std::u16string GetTooltip() const override {
+    return share_this_tab_instead_button_state_ ==
+                   TabSharingInfoBarDelegate::ButtonState::DISABLED
+               ? l10n_util::GetStringUTF16(
+                     IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE)
+               : u"";
+  }
+
  private:
   const raw_ptr<TabSharingUI> ui_;
+  const TabSharingInfoBarDelegate::ButtonState
+      share_this_tab_instead_button_state_;
 };
 
 // Represents a button which, when clicked, changes the activated tab to be
 // the one which was hard-coded into this infobar. The intended use for this
 // class is for the captured tab to activate the capturing tab, and vice versa.
-class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
+class SwitchToTabButton
+    : public TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
   SwitchToTabButton(const TabSharingInfoBarDelegate::FocusTarget& focus_target,
                     bool focus_target_is_capturer)
@@ -120,22 +155,23 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     const std::u16string& shared_tab_name,
     const std::u16string& app_name,
     bool shared_tab,
-    bool can_share_instead,
+    ButtonState share_this_tab_instead_button_state,
     absl::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
     bool favicons_used_for_switch_to_tab_button) {
   DCHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
-          shared_tab_name, app_name, shared_tab, can_share_instead,
-          focus_target, ui, favicons_used_for_switch_to_tab_button))));
+          shared_tab_name, app_name, shared_tab,
+          share_this_tab_instead_button_state, focus_target, ui,
+          favicons_used_for_switch_to_tab_button))));
 }
 
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::u16string shared_tab_name,
     std::u16string app_name,
     bool shared_tab,
-    bool can_share_instead,
+    ButtonState share_this_tab_instead_button_state,
     absl::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
     bool favicons_used_for_switch_to_tab_button)
@@ -148,8 +184,9 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
   if (focus_target.has_value()) {
     secondary_button_ =
         std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
-  } else if (can_share_instead) {
-    secondary_button_ = std::make_unique<ShareTabInsteadButton>(ui_);
+  } else if (share_this_tab_instead_button_state != ButtonState::NOT_SHOWN) {
+    secondary_button_ = std::make_unique<ShareTabInsteadButton>(
+        ui_, share_this_tab_instead_button_state);
   }
 }
 
@@ -200,7 +237,24 @@ ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
     DCHECK(secondary_button_);
     return secondary_button_->GetImage();
   }
-  return ui::ImageModel();
+  return ConfirmInfoBarDelegate::GetButtonImage(button);
+}
+
+bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
+  if (button == BUTTON_CANCEL) {
+    DCHECK(secondary_button_);
+    return secondary_button_->IsEnabled();
+  }
+  return ConfirmInfoBarDelegate::GetButtonEnabled(button);
+}
+
+std::u16string TabSharingInfoBarDelegate::GetButtonTooltip(
+    InfoBarButton button) const {
+  if (button == BUTTON_CANCEL) {
+    DCHECK(secondary_button_);
+    return secondary_button_->GetTooltip();
+  }
+  return ConfirmInfoBarDelegate::GetButtonTooltip(button);
 }
 
 int TabSharingInfoBarDelegate::GetButtons() const {

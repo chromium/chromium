@@ -60,8 +60,11 @@ class TabSharingInfoBarDelegateTest
     return TabSharingInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(
             browser()->tab_strip_model()->GetWebContentsAt(tab_index)),
-        shared_tab_name, app_name, shared_tab, can_share_instead, focus_target,
-        tab_sharing_mock_ui(), favicons_used_for_switch_to_tab_button_);
+        shared_tab_name, app_name, shared_tab,
+        can_share_instead ? TabSharingInfoBarDelegate::ButtonState::ENABLED
+                          : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN,
+        focus_target, tab_sharing_mock_ui(),
+        favicons_used_for_switch_to_tab_button_);
   }
 
   ConfirmInfoBarDelegate* CreateDelegate(

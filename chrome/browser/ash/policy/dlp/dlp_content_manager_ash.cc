@@ -88,13 +88,6 @@ void DlpContentManagerAsh::OnWindowDestroying(aura::Window* window) {
   MaybeChangeOnScreenRestrictions();
 }
 
-DlpContentRestrictionSet DlpContentManagerAsh::GetConfidentialRestrictions(
-    content::WebContents* web_contents) const {
-  if (!base::Contains(confidential_web_contents_, web_contents))
-    return DlpContentRestrictionSet();
-  return confidential_web_contents_.at(web_contents);
-}
-
 DlpContentRestrictionSet DlpContentManagerAsh::GetOnScreenPresentRestrictions()
     const {
   return on_screen_restrictions_;

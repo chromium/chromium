@@ -11,9 +11,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
@@ -76,6 +78,13 @@ DlpContentRestrictionSet DlpContentManager::GetConfidentialRestrictions(
   if (!base::Contains(confidential_web_contents_, web_contents))
     return DlpContentRestrictionSet();
   return confidential_web_contents_.at(web_contents);
+}
+
+bool DlpContentManager::IsScreenShareBlocked(
+    content::WebContents* web_contents) const {
+  return IsBlocked(GetConfidentialRestrictions(web_contents)
+                       .GetRestrictionLevelAndUrl(
+                           policy::DlpContentRestriction::kScreenShare));
 }
 
 void DlpContentManager::CheckPrintingRestriction(
@@ -202,21 +211,21 @@ bool DlpContentManager::ScreenShareInfo::IsRunning() const {
 }
 
 void DlpContentManager::ScreenShareInfo::Pause() {
-  DCHECK(state_ == State::kRunning);
+  DCHECK_EQ(state_, State::kRunning);
   state_change_callback_.Run(media_id_,
                              blink::mojom::MediaStreamStateChange::PAUSE);
   state_ = State::kPaused;
 }
 
 void DlpContentManager::ScreenShareInfo::Resume() {
-  DCHECK(state_ == State::kPaused);
+  DCHECK_EQ(state_, State::kPaused);
   state_change_callback_.Run(media_id_,
                              blink::mojom::MediaStreamStateChange::PLAY);
   state_ = State::kRunning;
 }
 
 void DlpContentManager::ScreenShareInfo::Stop() {
-  DCHECK(state_ != State::kStopped);
+  DCHECK_NE(state_, State::kStopped);
   if (stop_callback_) {
     std::move(stop_callback_).Run();
     state_ = State::kStopped;
@@ -245,7 +254,7 @@ void DlpContentManager::ScreenShareInfo::UpdatePausedNotification(bool show) {
       show)
     return;
   if (show) {
-    DCHECK(state_ == State::kPaused);
+    DCHECK_EQ(state_, State::kPaused);
     ShowDlpScreenSharePausedNotification(label_, application_title_);
     notification_state_ = NotificationState::kShowingPausedNotification;
   } else {
@@ -259,13 +268,24 @@ void DlpContentManager::ScreenShareInfo::UpdateResumedNotification(bool show) {
       show)
     return;
   if (show) {
-    DCHECK(state_ == State::kRunning);
+    DCHECK_EQ(state_, State::kRunning);
     ShowDlpScreenShareResumedNotification(label_, application_title_);
     notification_state_ = NotificationState::kShowingResumedNotification;
   } else {
     HideDlpScreenShareResumedNotification(label_);
     notification_state_ = NotificationState::kNotShowingNotification;
   }
+}
+
+void DlpContentManager::AddObserver(DlpContentManagerObserver* observer,
+                                    DlpContentRestriction restriction) {
+  observer_lists_[restriction].AddObserver(observer);
+}
+
+void DlpContentManager::RemoveObserver(
+    const DlpContentManagerObserver* observer,
+    DlpContentRestriction restriction) {
+  observer_lists_[restriction].RemoveObserver(observer);
 }
 
 DlpContentManager::DlpContentManager() = default;
@@ -312,11 +332,17 @@ void DlpContentManager::Init() {
 void DlpContentManager::OnConfidentialityChanged(
     content::WebContents* web_contents,
     const DlpContentRestrictionSet& restriction_set) {
+  DlpContentRestrictionSet old_restriction_set;
+  if (confidential_web_contents_.contains(web_contents)) {
+    old_restriction_set = confidential_web_contents_[web_contents];
+  }
   if (restriction_set.IsEmpty()) {
     RemoveFromConfidential(web_contents);
   } else {
     confidential_web_contents_[web_contents] = restriction_set;
   }
+  NotifyOnConfidentialityChanged(old_restriction_set, restriction_set,
+                                 web_contents);
 }
 
 void DlpContentManager::OnWebContentsDestroyed(
@@ -556,6 +582,26 @@ void DlpContentManager::RemoveAllowedContents(
       contents.GetContents(), [=](const DlpConfidentialContent& content) {
         return user_allowed_contents_cache_.Contains(content, restriction);
       });
+}
+
+void DlpContentManager::NotifyOnConfidentialityChanged(
+    const DlpContentRestrictionSet& old_restriction_set,
+    const DlpContentRestrictionSet& new_restriction_set,
+    content::WebContents* web_contents) {
+  for (int i = 0; i <= DlpContentRestriction::kMaxValue; ++i) {
+    auto restriction = static_cast<DlpContentRestriction>(i);
+    auto old_level = old_restriction_set.GetRestrictionLevel(restriction);
+    auto new_level = new_restriction_set.GetRestrictionLevel(restriction);
+    if (old_level == new_level) {
+      // If there is no change in this restriction, do not notify its
+      // observers.
+      continue;
+    }
+    auto& observer_list = observer_lists_[restriction];
+    for (DlpContentManagerObserver& observer : observer_list) {
+      observer.OnConfidentialityChanged(old_level, new_level, web_contents);
+    }
+  }
 }
 
 }  // namespace policy

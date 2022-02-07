@@ -23,6 +23,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
+#endif
+
 namespace content {
 class WebContents;
 }
@@ -36,6 +40,9 @@ class TabSharingUIViews : public TabSharingUI,
                           public BrowserListObserver,
                           public TabStripModelObserver,
                           public infobars::InfoBarManager::Observer,
+#if BUILDFLAG(IS_CHROMEOS)
+                          public policy::DlpContentManagerObserver,
+#endif
                           public content::WebContentsObserver {
  public:
   TabSharingUIViews(content::GlobalRenderFrameHostId capturer,
@@ -86,8 +93,23 @@ class TabSharingUIViews : public TabSharingUI,
   // toggle its favicon back and forth at an arbitrary rate, but we implicitly
   // rate-limit our response.
 
+ protected:
+#if BUILDFLAG(IS_CHROMEOS)
+  // DlpContentManagerObserver:
+  void OnConfidentialityChanged(
+      policy::DlpRulesManager::Level old_restriction_level,
+      policy::DlpRulesManager::Level new_restriction_level,
+      content::WebContents* web_contents) override;
+#endif
+
  private:
   friend class TabSharingUIViewsBrowserTest;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Allows to test the DLP functionality of TabSharingUIViews even if the user
+  // is not managed and without the need to initialize DlpRulesManager in tests.
+  static void ApplyDlpForAllUsersForTesting();
+#endif
 
   enum class TabCaptureUpdate {
     kCaptureAdded,

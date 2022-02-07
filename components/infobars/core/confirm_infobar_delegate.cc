@@ -50,6 +50,15 @@ ui::ImageModel ConfirmInfoBarDelegate::GetButtonImage(
   return ui::ImageModel();
 }
 
+bool ConfirmInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
+  return true;
+}
+
+std::u16string ConfirmInfoBarDelegate::GetButtonTooltip(
+    InfoBarButton button) const {
+  return std::u16string();
+}
+
 bool ConfirmInfoBarDelegate::OKButtonTriggersUACPrompt() const {
   return false;
 }

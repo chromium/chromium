@@ -27,11 +27,17 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
+#endif
 
 namespace {
 
@@ -78,6 +84,12 @@ ui::ImageModel GetSecondaryButtonImage(Browser* browser, int tab) {
       ->GetButtonImage(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
 }
 
+bool SecondaryButtonIsEnabled(Browser* browser, int tab) {
+  DCHECK(HasSecondaryButton(browser, tab));  // Test error otherwise.
+  return GetDelegate(browser, tab)
+      ->GetButtonEnabled(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+}
+
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
   content::RenderFrameHost* const rfh =
       GetWebContents(browser, tab)->GetMainFrame();
@@ -116,6 +128,13 @@ void ActivateTab(Browser* browser, int tab) {
 constexpr int kNullTabIndex = -1;
 const std::u16string kShareThisTabInsteadMessage = u"Share this tab instead";
 
+#if BUILDFLAG(IS_CHROMEOS)
+const policy::DlpContentRestrictionSet kEmptyRestrictionSet;
+const policy::DlpContentRestrictionSet kScreenshareRestrictionSet(
+    policy::DlpContentRestriction::kScreenShare,
+    policy::DlpRulesManager::Level::kBlock);
+#endif
+
 }  // namespace
 
 class TabSharingUIViewsBrowserTest
@@ -129,6 +148,8 @@ class TabSharingUIViewsBrowserTest
     InProcessBrowserTest::SetUpOnMainThread();
     DCHECK_EQ(browser()->tab_strip_model()->count(), 1);
     CreateUniqueFaviconFor(browser()->tab_strip_model()->GetWebContentsAt(0));
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void CreateUiAndStartSharing(Browser* browser,
@@ -167,7 +188,8 @@ class TabSharingUIViewsBrowserTest
                 int capturing_tab,
                 int captured_tab,
                 size_t infobar_count = 1,
-                bool has_border = true) {
+                bool has_border = true,
+                int tab_with_disabled_button = kNullTabIndex) {
     DCHECK((capturing_tab != kNullTabIndex && captured_tab != kNullTabIndex) ||
            (capturing_tab == kNullTabIndex && captured_tab == kNullTabIndex));
 
@@ -221,6 +243,9 @@ class TabSharingUIViewsBrowserTest
         EXPECT_EQ(GetSecondaryButtonLabel(browser, i),
                   kShareThisTabInsteadMessage);
         EXPECT_EQ(GetSecondaryButtonImage(browser, i), ui::ImageModel());
+        EXPECT_EQ(SecondaryButtonIsEnabled(browser, i),
+                  i != tab_with_disabled_button)
+            << "Tab: " << i;
       }
     }
   }
@@ -282,6 +307,13 @@ class TabSharingUIViewsBrowserTest
   TabSharingUIViews* tab_sharing_ui_views() {
     return static_cast<TabSharingUIViews*>(tab_sharing_ui_.get());
   }
+
+ protected:
+#if BUILDFLAG(IS_CHROMEOS)
+  void ApplyDlpForAllUsers() {
+    TabSharingUIViews::ApplyDlpForAllUsersForTesting();
+  }
+#endif
 
  private:
   void OnStartSharing(const content::DesktopMediaID& media_id) {
@@ -527,6 +559,61 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
       base::UTF16ToUTF8(GetInfobarMessageText(browser(), kCapturingTab)),
       ::testing::HasSubstr("about:blank"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
+                       SharingWithDlpAndNavigation) {
+  // DLP setup
+  ApplyDlpForAllUsers();
+  policy::DlpContentTabHelper::ScopedIgnoreDlpRulesManager
+      ignore_dlp_rules_manager =
+          policy::DlpContentTabHelper::IgnoreDlpRulesManagerForTesting();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL kUrlRestricted =
+      embedded_test_server()->GetURL("restricted.com", "/title1.html");
+  GURL kUrlUnrestricted =
+      embedded_test_server()->GetURL("unrestricted.com", "/title1.html");
+
+  policy::DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrlRestricted, kScreenshareRestrictionSet);
+  policy::DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrlUnrestricted, kEmptyRestrictionSet);
+
+  // Start actual test
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  // Create UI and start sharing the tab at index 1.
+  CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
+
+  // Test that infobars were created, and contents border and tab capture
+  // indicator are displayed on the shared tab.
+  VerifyUi(browser(), /*capturing_tab=*/0, /*captured_tab=*/1,
+           /*infobar_count=*/1, /*has_border=*/true,
+           /*tab_with_disabled_button=*/kNullTabIndex);
+
+  constexpr int kRestrictedTab = 2;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(kRestrictedTab);
+  // Navigate to restricted URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, kUrlRestricted));
+
+  // Test that button on tab 2 is now disabled.
+  VerifyUi(browser(), /*capturing_tab=*/0, /*captured_tab=*/1,
+           /*infobar_count=*/1, /*has_border=*/true,
+           /*tab_with_disabled_button=*/kRestrictedTab);
+
+  // Navigate to unrestricted URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, kUrlUnrestricted));
+
+  // Verify that button on tab 2 is re-enabled.
+  VerifyUi(browser(), /*capturing_tab=*/0, /*captured_tab=*/1,
+           /*infobar_count=*/1, /*has_border=*/true,
+           /*tab_with_disabled_button=*/kNullTabIndex);
+}
+#endif
 
 class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
  public:

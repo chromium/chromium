@@ -48,16 +48,28 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
           ok_button_,
           base::BindOnce(&ConfirmInfoBar::Layout, base::Unretained(this)));
     }
+    ok_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_OK));
+    ok_button_->SetEnabled(
+        delegate_ptr->GetButtonEnabled(ConfirmInfoBarDelegate::BUTTON_OK));
+    ok_button_->SetTooltipText(
+        delegate_ptr->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_OK));
   }
 
   if (buttons & ConfirmInfoBarDelegate::BUTTON_CANCEL) {
     cancel_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_CANCEL,
                                    &ConfirmInfoBar::CancelButtonPressed);
-    if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL)
+    if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL) {
       cancel_button_->SetProminent(true);
+    }
     cancel_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+    cancel_button_->SetEnabled(
+        delegate_ptr->GetButtonEnabled(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+    cancel_button_->SetTooltipText(
+        delegate_ptr->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_CANCEL));
   }
 
   link_ = CreateLink(delegate_ptr->GetLinkText());

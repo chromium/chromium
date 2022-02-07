@@ -53,11 +53,6 @@ class DlpContentManagerAsh : public DlpContentManager,
   void OnWindowOcclusionChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  // Returns which restrictions are applied to the |web_contents| according to
-  // the policy.
-  DlpContentRestrictionSet GetConfidentialRestrictions(
-      content::WebContents* web_contents) const;
-
   // Returns which restrictions are applied to the WebContents which are
   // currently visible.
   DlpContentRestrictionSet GetOnScreenPresentRestrictions() const;

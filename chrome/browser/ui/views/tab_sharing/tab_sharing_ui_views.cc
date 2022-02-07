@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -38,6 +39,12 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/native_widget_aura.h"
 #endif
@@ -47,6 +54,10 @@ namespace {
 using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool g_apply_dlp_for_all_users_for_testing_ = false;
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const int kContentsBorderThickness = 5;
@@ -183,9 +194,9 @@ std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     std::u16string app_name,
     bool region_capture_capable,
     bool favicons_used_for_switch_to_tab_button) {
-  return base::WrapUnique(new TabSharingUIViews(
+  return std::make_unique<TabSharingUIViews>(
       capturer, media_id, app_name, region_capture_capable,
-      favicons_used_for_switch_to_tab_button));
+      favicons_used_for_switch_to_tab_button);
 }
 
 TabSharingUIViews::TabSharingUIViews(
@@ -273,6 +284,10 @@ void TabSharingUIViews::StopSharing() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!stop_callback_.is_null())
     std::move(stop_callback_).Run();
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::DlpContentManager::Get()->RemoveObserver(
+      this, policy::DlpContentRestriction::kScreenShare);
+#endif
   RemoveInfobarsForAllTabs();
   UpdateTabCaptureData(shared_tab_, TabCaptureUpdate::kCaptureRemoved);
   tab_capture_indicator_ui_.reset();
@@ -300,6 +315,12 @@ void TabSharingUIViews::OnTabStripModelChanged(
     for (const auto& contents : change.GetInsert()->contents) {
       if (infobars_.find(contents.contents) == infobars_.end())
         CreateInfobarForWebContents(contents.contents);
+    }
+  }
+
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& contents : change.GetRemove()->contents) {
+      same_origin_observers_.erase(contents.contents);
     }
   }
 
@@ -357,7 +378,28 @@ void TabSharingUIViews::WebContentsDestroyed() {
   StopSharing();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void TabSharingUIViews::OnConfidentialityChanged(
+    policy::DlpRulesManager::Level old_restriction_level,
+    policy::DlpRulesManager::Level new_restriction_level,
+    content::WebContents* web_contents) {
+  DCHECK(old_restriction_level != new_restriction_level);
+  if (old_restriction_level == policy::DlpRulesManager::Level::kBlock ||
+      new_restriction_level == policy::DlpRulesManager::Level::kBlock) {
+    // We only call this function if it was previously blocked or should be
+    // blocked now.
+    CreateInfobarForWebContents(web_contents);
+  }
+}
+
+// static
+void TabSharingUIViews::ApplyDlpForAllUsersForTesting() {
+  g_apply_dlp_for_all_users_for_testing_ = true;
+}
+#endif
+
 void TabSharingUIViews::CreateInfobarsForAllTabs() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   BrowserList* browser_list = BrowserList::GetInstance();
   for (auto* browser : *browser_list) {
     OnBrowserAdded(browser);
@@ -368,9 +410,18 @@ void TabSharingUIViews::CreateInfobarsForAllTabs() {
     }
   }
   browser_list->AddObserver(this);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Observe only for managed users.
+  if (g_apply_dlp_for_all_users_for_testing_ ||
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile()) {
+    policy::DlpContentManager::Get()->AddObserver(
+        this, policy::DlpContentRestriction::kScreenShare);
+  }
+#endif
 }
 
 void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(contents);
 
   auto infobars_entry = infobars_.find(contents);
@@ -394,7 +445,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
 
   // If sharing this tab instead of the currently captured tab is possible, it
   // may still be blocked by enterprise policy. If the enterprise policy is
-  // active, create an observer that will inform us when it's compliance state
+  // active, create an observer that will inform us when its compliance state
   // changes.
   if (capturer_restricted_to_same_origin_ && is_share_instead_button_possible &&
       !base::Contains(same_origin_observers_, contents)) {
@@ -432,10 +483,29 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   const bool can_show_share_instead_button =
       is_share_instead_button_possible && is_sharing_allowed_by_policy;
 
+  TabSharingInfoBarDelegate::ButtonState share_this_tab_instead_button_state =
+      can_show_share_instead_button
+          ? TabSharingInfoBarDelegate::ButtonState::ENABLED
+          : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  const bool dlp_enabled =
+      g_apply_dlp_for_all_users_for_testing_ ||
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  const bool screenshare_allowed_by_dlp =
+      !dlp_enabled ||
+      !policy::DlpContentManager::Get()->IsScreenShareBlocked(contents);
+  if (!screenshare_allowed_by_dlp && can_show_share_instead_button) {
+    share_this_tab_instead_button_state =
+        TabSharingInfoBarDelegate::ButtonState::DISABLED;
+  }
+#endif
+
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
-      shared_tab_ == contents /*shared_tab*/, can_show_share_instead_button,
-      focus_target, this, favicons_used_for_switch_to_tab_button_);
+      shared_tab_ == contents /*shared_tab*/,
+      share_this_tab_instead_button_state, focus_target, this,
+      favicons_used_for_switch_to_tab_button_);
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {

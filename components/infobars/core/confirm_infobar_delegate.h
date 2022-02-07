@@ -61,6 +61,14 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // returns an empty image.
   virtual ui::ImageModel GetButtonImage(InfoBarButton button) const;
 
+  // Returns whether the specified button is enabled. The default implementation
+  // returns true.
+  virtual bool GetButtonEnabled(InfoBarButton button) const;
+
+  // Returns the tooltip for the specified button. The default implementation
+  // returns an empty tooltip.
+  virtual std::u16string GetButtonTooltip(InfoBarButton button) const;
+
   // Returns whether or not the OK button will trigger a UAC elevation prompt on
   // Windows.
   virtual bool OKButtonTriggersUACPrompt() const;
