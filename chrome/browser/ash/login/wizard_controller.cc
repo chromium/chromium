@@ -1323,11 +1323,24 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
           DemoSession::DemoModeConfig::kOnline);
       ShowEulaScreen();
       break;
-    case NetworkScreen::Result::OFFLINE_DEMO_SETUP:
+    case NetworkScreen::Result::OFFLINE_DEMO:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOffline);
       ShowEulaScreen();
+      break;
+    case NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
+    case NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
+      DCHECK(!demo_setup_controller_);
+      PerformPostEulaActions();
+      InitiateOOBEUpdate();
+      break;
+    case NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
+      DCHECK(demo_setup_controller_);
+      demo_setup_controller_->set_demo_config(
+          DemoSession::DemoModeConfig::kOnline);
+      PerformPostEulaActions();
+      InitiateOOBEUpdate();
       break;
     case NetworkScreen::Result::BACK_DEMO:
       DCHECK(demo_setup_controller_);
@@ -1360,20 +1373,6 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
     case EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING:
     case EulaScreen::Result::NOT_APPLICABLE:
       OnEulaAccepted(false /*usage_statistics_reporting_enabled*/);
-      break;
-    case EulaScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO:
-      // TODO(crbug.com/1247998): Investigate if we can call
-      // PerformPostEulaActions from here before enabling
-      // OobeConsolidatedConsent flag. If it's allowed, update the name of the
-      // method.
-      DCHECK(demo_setup_controller_);
-      PerformPostEulaActions();
-      ShowConsolidatedConsentScreen();
-      break;
-    case EulaScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
-      DCHECK(!demo_setup_controller_);
-      PerformPostEulaActions();
-      InitiateOOBEUpdate();
       break;
     case EulaScreen::Result::BACK:
       ShowNetworkScreen();
@@ -2277,7 +2276,8 @@ void WizardController::SkipPostLoginScreensForTesting() {
       current_screen_id == ArcTermsOfServiceScreenView::kScreenId ||
       current_screen_id == PinSetupScreenView::kScreenId ||
       current_screen_id == MarketingOptInScreenView::kScreenId ||
-      current_screen_id == ParentalHandoffScreenView::kScreenId) {
+      current_screen_id == ParentalHandoffScreenView::kScreenId ||
+      current_screen_id == ConsolidatedConsentScreenView::kScreenId) {
     default_controller()->OnOobeFlowFinished();
   } else {
     LOG(WARNING) << "SkipPostLoginScreensForTesting(): Ignore screen "

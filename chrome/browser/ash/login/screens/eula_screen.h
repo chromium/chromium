@@ -32,10 +32,6 @@ class EulaScreen : public BaseScreen {
     BACK,
     // Eula screen is skipped.
     NOT_APPLICABLE,
-    // Eula screen is skipped. EULA and Chrome & Chrome OS terms of service
-    // are added to the consolidated consent screen.
-    NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR,
-    NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO,
   };
 
   // This enum is tied directly to a UMA enum defined in

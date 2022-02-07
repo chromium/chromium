@@ -2430,7 +2430,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
 
-  mock_network_screen_->ExitScreen(NetworkScreen::Result::OFFLINE_DEMO_SETUP);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::OFFLINE_DEMO);
 
   CheckCurrentScreen(EulaView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
