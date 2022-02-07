@@ -1534,7 +1534,7 @@ TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
   ASSERT_FALSE(GetAXObjectByElementId("span-hidden")->CanSetFocusAttribute());
   ASSERT_FALSE(GetAXObjectByElementId("a-hidden")->CanSetFocusAttribute());
 
-  // ...nor if expressly inert...
+  // ...nor if inert...
   ASSERT_FALSE(GetAXObjectByElementId("div-inert")->CanSetFocusAttribute());
   ASSERT_FALSE(GetAXObjectByElementId("span-inert")->CanSetFocusAttribute());
   ASSERT_FALSE(GetAXObjectByElementId("a-inert")->CanSetFocusAttribute());
