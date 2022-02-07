@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
@@ -144,6 +145,7 @@ class SelectorObserver : public WebControllerWorker {
   base::TimeDelta periodic_check_interval_;
   base::TimeDelta max_wait_time_;
   base::TimeTicks started_;
+  std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   base::flat_map<SelectorId, ObservableSelector> selectors_;
   DevtoolsClient* devtools_client_;
@@ -294,6 +296,8 @@ class SelectorObserver : public WebControllerWorker {
   void InvalidateDeeperFrames(const SelectorId& selector_id, const DomRoot&);
 
   void TerminateUnneededDomRoots();
+
+  void OnTimeout();
 
   std::string BuildExpression(const DomRoot&) const;
   std::string BuildUpdateExpression(

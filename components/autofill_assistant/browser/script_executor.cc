@@ -244,8 +244,7 @@ void ScriptExecutor::ShortWaitForElement(
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
-      /* allow_interrupt= */ false,
-      /* observer= */ nullptr,
+      /* allow_interrupt= */ false, /* observer= */ nullptr,
       base::BindRepeating(&ScriptExecutor::CheckElementConditionMatches,
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
@@ -259,8 +258,7 @@ void ScriptExecutor::ShortWaitForElementWithSlowWarning(
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
-      /* allow_interrupt= */ false,
-      /* observer= */ nullptr,
+      /* allow_interrupt= */ false, /* observer= */ nullptr,
       base::BindRepeating(&ScriptExecutor::CheckElementConditionMatches,
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
@@ -1081,6 +1079,10 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
       ui_delegate_(ui_delegate),
       max_wait_time_(max_wait_time),
       allow_interrupt_(allow_interrupt),
+      use_observers_(delegate->GetTriggerContext()
+                         ->GetScriptParameters()
+                         .GetEnableObserverWaitForDom()
+                         .value_or(false)),
       observer_(observer),
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),
@@ -1175,16 +1177,22 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
       FROM_HERE, timeout_warning_delay_,
       base::BindOnce(&ScriptExecutor::WaitForDomOperation::TimeoutWarning,
                      weak_ptr_factory_.GetWeakPtr()));
-  wait_time_total_ =
-      (wait_time_stopwatch_.TotalElapsed() < retry_timer_.period())
-          // It's the first run of the checks, set the total time waited to 0.
-          ? base::Seconds(0)
-          // If this is not the first run of the checks, in order to estimate
-          // the real cost of periodic checks, half the duration of the retry
-          // timer period is removed from the total wait time. This is to
-          // account for the fact that the conditions could have been satisfied
-          // at any point between the two consecutive checks.
-          : wait_time_stopwatch_.TotalElapsed() - retry_timer_.period() / 2;
+
+  if (use_observers_) {
+    // Observers should stop soon after the elements are in the page.
+    wait_time_total_ = wait_time_stopwatch_.TotalElapsed();
+  } else if (wait_time_stopwatch_.TotalElapsed() < retry_timer_.period()) {
+    // It's the first run of the checks, set the total time waited to 0.
+    wait_time_total_ = base::Seconds(0);
+  } else if (use_observers_) {
+    // If this is not the first run of the checks, in order to estimate
+    // the real cost of periodic checks, half the duration of the retry
+    // timer period is removed from the total wait time. This is to
+    // account for the fact that the conditions could have been satisfied
+    // at any point between the two consecutive checks.
+    wait_time_total_ =
+        wait_time_stopwatch_.TotalElapsed() - retry_timer_.period() / 2;
+  }
   // Reset state possibly left over from previous runs.
   element_check_result_ = ClientStatus();
   runnable_interrupts_.clear();
@@ -1212,6 +1220,13 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
   batch_element_checker_->AddAllDoneCallback(
       base::BindOnce(&WaitForDomOperation::OnAllChecksDone,
                      base::Unretained(this), std::move(report_attempt_result)));
+  if (use_observers_) {
+    batch_element_checker_->EnableObserver(
+        /* max_wait_time= */ max_wait_time_ -
+            wait_time_stopwatch_.TotalElapsed(),
+        /* periodic_check_interval= */ main_script_->delegate_->GetSettings()
+            .periodic_element_check_interval);
+  }
   batch_element_checker_->Run(delegate_->GetWebController());
 }
 

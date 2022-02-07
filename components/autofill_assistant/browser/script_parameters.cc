@@ -93,6 +93,9 @@ const char kIntent[] = "INTENT";
 // Parameter that allows enabling Text-to-Speech functionality.
 const char kEnableTtsParameterName[] = "ENABLE_TTS";
 
+// Allows enabling observer-based WaitForDOM.
+const char kEnableObserversParameter[] = "ENABLE_OBSERVER_WAIT_FOR_DOM";
+
 // Parameter name of the CALLER script parameter. Note that the corresponding
 // values are integers, corresponding to the caller proto in the backend.
 const char kCallerParameterName[] = "CALLER";
@@ -248,6 +251,10 @@ absl::optional<std::string> ScriptParameters::GetCallerEmail() const {
 
 absl::optional<bool> ScriptParameters::GetEnableTts() const {
   return GetTypedParameter<bool>(parameters_, kEnableTtsParameterName);
+}
+
+absl::optional<bool> ScriptParameters::GetEnableObserverWaitForDom() const {
+  return GetTypedParameter<bool>(parameters_, kEnableObserversParameter);
 }
 
 absl::optional<int> ScriptParameters::GetCaller() const {

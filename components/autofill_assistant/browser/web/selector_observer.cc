@@ -101,6 +101,12 @@ ClientStatus SelectorObserver::Start(base::OnceClosure finished_callback) {
   EnterState(State::RUNNING);
   const DomRoot root(/* frame_id = */ "", DomRoot::kUseMainDoc);
   ResolveObjectIdAndInjectFrame(root, 0);
+
+  timeout_timer_ = std::make_unique<base::OneShotTimer>();
+  timeout_timer_->Start(FROM_HERE, max_wait_time_,
+                        base::BindOnce(&SelectorObserver::OnTimeout,
+                                       weak_ptr_factory_.GetWeakPtr()));
+
   return OkClientStatus();
 }
 
@@ -110,6 +116,7 @@ void SelectorObserver::GetElementsAndStop(
         const ClientStatus&,
         const base::flat_map<SelectorId, DomObjectFrameStack>&)> callback) {
   DCHECK(state_ == State::RUNNING);
+  timeout_timer_.reset();
   EnterState(State::FETCHING_ELEMENTS);
   get_elements_callback_ = std::move(callback);
   base::flat_map<DomRoot, std::vector<RequestedElement>> elements_by_dom_root;
@@ -205,6 +212,7 @@ void SelectorObserver::FailWithError(const ClientStatus& status) {
   } else if (state_ == State::FETCHING_ELEMENTS) {
     std::move(get_elements_callback_).Run(status, get_elements_response_);
   }
+  timeout_timer_.reset();
   EnterState(State::ERROR);
 }
 
@@ -764,6 +772,10 @@ void SelectorObserver::TerminateUnneededDomRoots() {
   for (const DomRoot& dom_root : unused_dom_roots) {
     TerminateDomRoot(dom_root);
   }
+}
+
+void SelectorObserver::OnTimeout() {
+  FailWithError(ClientStatus(TIMED_OUT));
 }
 
 std::string SelectorObserver::BuildExpression(const DomRoot& dom_root) const {

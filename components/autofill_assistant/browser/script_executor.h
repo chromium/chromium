@@ -354,6 +354,7 @@ class ScriptExecutor : public ActionDelegate,
     raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
     const base::TimeDelta max_wait_time_;
     const bool allow_interrupt_;
+    const bool use_observers_;
     raw_ptr<WaitForDomObserver> observer_;
     base::RepeatingCallback<void(BatchElementChecker*,
                                  base::OnceCallback<void(const ClientStatus&)>)>

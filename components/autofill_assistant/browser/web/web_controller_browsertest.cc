@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -995,6 +996,41 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
       EXPECT_EQ(actual->at(i), expected->at(i)) << "condition number " << i;
     }
     std::move(on_done).Run();
+  }
+
+  ClientStatus RunWaitForDom(
+      const ActionProto& wait_for_dom_action,
+      bool use_observers,
+      base::OnceCallback<void(ScriptExecutor*)> run_expectations) {
+    MockScriptExecutorDelegate mock_script_executor_delegate;
+    ON_CALL(mock_script_executor_delegate, GetWebController)
+        .WillByDefault(Return(web_controller_.get()));
+    TriggerContext trigger_context;
+    if (use_observers) {
+      trigger_context.SetScriptParameters(std::make_unique<ScriptParameters>(
+          base::flat_map<std::string, std::string>{
+              {"ENABLE_OBSERVER_WAIT_FOR_DOM", "true"}}));
+    }
+    ON_CALL(mock_script_executor_delegate, GetTriggerContext())
+        .WillByDefault(Return(&trigger_context));
+    std::vector<std::unique_ptr<Script>> ordered_interrupts;
+    FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate;
+    ScriptExecutor script_executor(
+        /* script_path= */ std::string(), /* additional_context= */ nullptr,
+        /* global_payload= */ std::string(),
+        /* script_payload= */ std::string(),
+        /* listener= */ nullptr, &ordered_interrupts,
+        &mock_script_executor_delegate, &fake_script_executor_ui_delegate);
+
+    WaitForDomAction action(&script_executor, wait_for_dom_action);
+    base::RunLoop run_loop;
+    ClientStatus status;
+    action.ProcessAction(base::BindOnce(
+        &WebControllerBrowserTest::OnProcessedAction, base::Unretained(this),
+        run_loop.QuitClosure(), &status));
+    run_loop.Run();
+    std::move(run_expectations).Run(&script_executor);
+    return status;
   }
 
  protected:
@@ -3032,17 +3068,6 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FocusAndBlur) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForDomForUniqueElement) {
-  MockScriptExecutorDelegate mock_script_executor_delegate;
-  ON_CALL(mock_script_executor_delegate, GetWebController)
-      .WillByDefault(Return(web_controller_.get()));
-  std::vector<std::unique_ptr<Script>> ordered_interrupts;
-  FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate;
-  ScriptExecutor script_executor(
-      /* script_path= */ std::string(), /* additional_context= */ nullptr,
-      /* global_payload= */ std::string(), /* script_payload= */ std::string(),
-      /* listener= */ nullptr, &ordered_interrupts,
-      &mock_script_executor_delegate, &fake_script_executor_ui_delegate);
-
   ActionProto action_proto;
   auto* wait_for_dom = action_proto.mutable_wait_for_dom();
   auto* condition = wait_for_dom->mutable_wait_condition();
@@ -3051,30 +3076,19 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForDomForUniqueElement) {
   // This element is unique.
   *condition->mutable_match() = ToSelectorProto("#select");
 
-  WaitForDomAction action(&script_executor, action_proto);
-  base::RunLoop run_loop;
-  ClientStatus status;
-  action.ProcessAction(
-      base::BindOnce(&WebControllerBrowserTest::OnProcessedAction,
-                     base::Unretained(this), run_loop.QuitClosure(), &status));
-  run_loop.Run();
+  base::MockCallback<base::OnceCallback<void(ScriptExecutor*)>>
+      run_expectations;
+  EXPECT_CALL(run_expectations, Run(_))
+      .WillOnce([](ScriptExecutor* script_executor) {
+        EXPECT_TRUE(script_executor->GetElementStore()->HasElement("e"));
+      });
+  ClientStatus status = RunWaitForDom(action_proto, /* use_observers= */ false,
+                                      run_expectations.Get());
   EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
-  EXPECT_TRUE(script_executor.GetElementStore()->HasElement("e"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        WaitForDomForNonUniqueElement) {
-  MockScriptExecutorDelegate mock_script_executor_delegate;
-  ON_CALL(mock_script_executor_delegate, GetWebController)
-      .WillByDefault(Return(web_controller_.get()));
-  std::vector<std::unique_ptr<Script>> ordered_interrupts;
-  FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate;
-  ScriptExecutor script_executor(
-      /* script_path= */ std::string(), /* additional_context= */ nullptr,
-      /* global_payload= */ std::string(), /* script_payload= */ std::string(),
-      /* listener= */ nullptr, &ordered_interrupts,
-      &mock_script_executor_delegate, &fake_script_executor_ui_delegate);
-
   ActionProto action_proto;
   auto* wait_for_dom = action_proto.mutable_wait_for_dom();
   auto* condition = wait_for_dom->mutable_wait_condition();
@@ -3083,15 +3097,35 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   // This element is not unique.
   *condition->mutable_match() = ToSelectorProto("div");
 
-  WaitForDomAction action(&script_executor, action_proto);
-  base::RunLoop run_loop;
-  ClientStatus status;
-  action.ProcessAction(
-      base::BindOnce(&WebControllerBrowserTest::OnProcessedAction,
-                     base::Unretained(this), run_loop.QuitClosure(), &status));
-  run_loop.Run();
+  base::MockCallback<base::OnceCallback<void(ScriptExecutor*)>>
+      run_expectations;
+  EXPECT_CALL(run_expectations, Run(_))
+      .WillOnce([](ScriptExecutor* script_executor) {
+        EXPECT_FALSE(script_executor->GetElementStore()->HasElement("e"));
+      });
+  ClientStatus status = RunWaitForDom(action_proto, /* use_observers= */ false,
+                                      run_expectations.Get());
   EXPECT_EQ(status.proto_status(), ELEMENT_RESOLUTION_FAILED);
-  EXPECT_FALSE(script_executor.GetElementStore()->HasElement("e"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       ObserverWaitForDomForUniqueElement) {
+  ActionProto action_proto;
+  auto* wait_for_dom = action_proto.mutable_wait_for_dom();
+  auto* condition = wait_for_dom->mutable_wait_condition();
+  condition->mutable_client_id()->set_identifier("e");
+  condition->set_require_unique_element(true);
+  // This element is unique.
+  *condition->mutable_match() = ToSelectorProto("#select");
+  base::MockCallback<base::OnceCallback<void(ScriptExecutor*)>>
+      run_expectations;
+  EXPECT_CALL(run_expectations, Run(_))
+      .WillOnce([](ScriptExecutor* script_executor) {
+        EXPECT_TRUE(script_executor->GetElementStore()->HasElement("e"));
+      });
+  ClientStatus status = RunWaitForDom(action_proto, /* use_observers= */ true,
+                                      run_expectations.Get());
+  EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindElementError) {
