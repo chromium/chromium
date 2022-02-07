@@ -6946,20 +6946,20 @@
     'ios_asan_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPHONE_X_15_0',
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPHONE_X_15_2',
+          'SIM_IPAD_AIR_2_15_2',
         ]
       },
       'ios_crash_unittests': {
         'variants': [
-          'SIM_IPHONE_X_15_0',
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPHONE_X_15_2',
+          'SIM_IPAD_AIR_2_15_2',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPHONE_X_15_0',
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPHONE_X_15_2',
+          'SIM_IPAD_AIR_2_15_2',
         ]
       }
     },
@@ -6975,7 +6975,7 @@
     'ios_clang_tot_sim_tests': {
       'ios_clang_tests': {
         'variants': [
-          'SIM_IPHONE_6S_15_0',
+          'SIM_IPHONE_6S_15_2',
         ]
       }
     },
@@ -6985,16 +6985,16 @@
     'ios_code_coverage_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPHONE_6S_15_0',
+          'SIM_IPHONE_6S_15_2',
           'SIM_IPHONE_6S_14_4',
         ],
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_6S_15_0',
-          'SIM_IPHONE_7_15_0',
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPHONE_6S_15_2',
+          'SIM_IPHONE_7_15_2',
+          'SIM_IPAD_AIR_2_15_2',
           'SIM_IPHONE_6S_14_4',
           'SIM_IPHONE_7_14_4',
           'SIM_IPAD_AIR_2_14_4',
@@ -7003,9 +7003,9 @@
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_7_15_0',
-          'SIM_IPAD_AIR_2_15_0',
-          'SIM_IPHONE_X_15_0',
+          'SIM_IPHONE_7_15_2',
+          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPHONE_X_15_2',
           'SIM_IPHONE_7_14_4',
           'SIM_IPAD_AIR_2_14_4',
           'SIM_IPHONE_X_14_4',
@@ -7013,10 +7013,10 @@
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPHONE_6S_PLUS_15_0',
-          'SIM_IPHONE_6S_15_0',
-          'SIM_IPHONE_SE_1ST_GEN_15_0',
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPHONE_6S_PLUS_15_2',
+          'SIM_IPHONE_6S_15_2',
+          'SIM_IPHONE_SE_1ST_GEN_15_2',
+          'SIM_IPAD_AIR_2_15_2',
           'SIM_IPHONE_6S_PLUS_14_4',
           'SIM_IPHONE_6S_14_4',
           'SIM_IPHONE_SE_1ST_GEN_14_4',
@@ -7028,7 +7028,7 @@
     'ios_simulator_cronet_tests': {
       'ios_cronet_tests': {
         'variants': [
-          'SIM_IPHONE_X_15_0',
+          'SIM_IPHONE_X_15_2',
         ]
       }
     },
@@ -7038,9 +7038,9 @@
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_7_15_0',
-          'SIM_IPAD_AIR_2_15_0',
-          'SIM_IPHONE_X_15_0',
+          'SIM_IPHONE_7_15_2',
+          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPHONE_X_15_2',
           'SIM_IPHONE_7_14_4',
           'SIM_IPAD_AIR_2_14_4',
           'SIM_IPHONE_X_14_4',
@@ -7049,8 +7049,8 @@
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_7_15_0',
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPHONE_7_15_2',
+          'SIM_IPAD_AIR_2_15_2',
           'SIM_IPHONE_7_14_4',
           'SIM_IPAD_AIR_2_14_4',
         ]
@@ -7060,24 +7060,24 @@
     'ios_simulator_multi_window_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPAD_AIR_2_15_2',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPAD_AIR_2_15_2',
         ]
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPAD_AIR_2_15_2',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPAD_AIR_2_15_2',
         ]
       }
     },
@@ -7106,7 +7106,7 @@
       'ios_crash_xcuitests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_7_15_0',
+          'SIM_IPHONE_7_15_2',
           'SIM_IPHONE_7_14_4',
         ]
       },
@@ -7117,22 +7117,22 @@
       'ios_common_tests': {
         'variants': [
           'SIM_IPHONE_6S_14_4',
-          'SIM_IPHONE_6S_15_0',
+          'SIM_IPHONE_6S_15_2',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_6S_14_4',
-          'SIM_IPHONE_6S_15_0',
+          'SIM_IPHONE_6S_15_2',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPHONE_6S_PLUS_15_0',
-          'SIM_IPHONE_6S_15_0',
-          'SIM_IPHONE_SE_1ST_GEN_15_0',
-          'SIM_IPAD_AIR_2_15_0',
+          'SIM_IPHONE_6S_PLUS_15_2',
+          'SIM_IPHONE_6S_15_2',
+          'SIM_IPHONE_SE_1ST_GEN_15_2',
+          'SIM_IPAD_AIR_2_15_2',
           'SIM_IPHONE_6S_PLUS_14_4',
           'SIM_IPHONE_6S_14_4',
           'SIM_IPHONE_SE_1ST_GEN_14_4',
