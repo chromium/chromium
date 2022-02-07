@@ -70,6 +70,10 @@
 #include "ui/wm/core/window_modality_controller.h"  // nogncheck
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using content::OpenURLParams;
 using content::WebContents;
 
@@ -83,6 +87,22 @@ namespace {
 // creation and makes it easier to drag tabs out of a restored window that had
 // maximized size.
 constexpr int kMaximizedWindowInset = 10;  // DIPs.
+
+// Some platforms, such as Lacros and Desktop Linux with Wayland, disallow
+// client applications to manipulate absolute screen positions, by design.
+// Preventing, for example, clients from programmatically positioning toplevel
+// windows using absolute coordinates. By default, this class assumes that the
+// underlying platform supports it, unless indicated by the Ozone platform
+// properties.
+bool PlatformProvidesAbsoluteWindowPositions() {
+#if defined(USE_OZONE)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_screen_coordinates;
+#else
+  return true;
+#endif
+}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1900,8 +1920,12 @@ gfx::Rect TabDragController::CalculateDraggedBrowserBounds(
                      kMaximizedWindowInset, kMaximizedWindowInset);
     // Behave as if the |source| was maximized at the start of a drag since this
     // is consistent with a browser window creation logic in case of windows
-    // that are as large as the |work_area|.
-    was_source_maximized_ = true;
+    // that are as large as the |work_area|. Note: Some platforms do not support
+    // global screen coordinates tracking, eg: Linux/Wayland, in such cases,
+    // avoid this heuristic to determine whether the new browser window should
+    // be maximized or not when completing the drag session.
+    if (PlatformProvidesAbsoluteWindowPositions())
+      was_source_maximized_ = true;
   }
 
   if (source->AsView()->GetWidget()->IsMaximized()) {
