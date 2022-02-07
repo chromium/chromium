@@ -1918,7 +1918,7 @@
   {
     "name": "enable-discover-feed-preview",
     "owners": [ "tinazwang", "sczs" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 101
   },
   {
     "name": "enable-discover-feed-shorter-cache",
