@@ -34,6 +34,10 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/time/time.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
@@ -464,6 +468,13 @@ void MessageView::OnSnoozeButtonPressed(const ui::Event& event) {
   for (auto& observer : observers_)
     observer.OnSnoozeButtonPressed(notification_id_);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+base::TimeDelta MessageView::GetBoundsAnimationDuration(
+    const Notification& notification) const {
+  return base::Milliseconds(0);
+}
+#endif
 
 bool MessageView::ShouldShowControlButtons() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

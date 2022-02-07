@@ -57,11 +57,6 @@ class ASH_EXPORT AshNotificationView
   // Called when a child notificaiton's preferred size changes.
   void GroupedNotificationsPreferredSizeChanged();
 
-  // Gets the animation duration for a recent bounds change. Called after
-  // `PreferredSizeChanged()`, so the current state is the target state.
-  base::TimeDelta GetBoundsAnimationDuration(
-      const message_center::Notification& notification) const;
-
   // message_center::MessageView:
   void AddGroupNotification(const message_center::Notification& notification,
                             bool newest_first) override;
@@ -70,6 +65,10 @@ class ASH_EXPORT AshNotificationView
       override;
   void RemoveGroupNotification(const std::string& notification_id) override;
   const char* GetClassName() const override;
+  // Called after `PreferredSizeChanged()`, so the current state is the target
+  // state.
+  base::TimeDelta GetBoundsAnimationDuration(
+      const message_center::Notification& notification) const override;
 
   // message_center::NotificationViewBase:
   void UpdateViewForExpandedState(bool expanded) override;

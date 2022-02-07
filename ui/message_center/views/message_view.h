@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -25,6 +26,10 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/time/time.h"
+#endif
 
 namespace views {
 class ScrollView;
@@ -130,6 +135,12 @@ class MESSAGE_CENTER_EXPORT MessageView
   void OnCloseButtonPressed();
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Gets the animation duration for a recent bounds change.
+  virtual base::TimeDelta GetBoundsAnimationDuration(
+      const Notification& notification) const;
+#endif
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
