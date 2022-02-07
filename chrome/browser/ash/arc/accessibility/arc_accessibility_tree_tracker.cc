@@ -197,10 +197,14 @@ class ArcAccessibilityTreeTracker::ArcInputMethodManagerServiceObserver
   }
 
   void OnAndroidVirtualKeyboardVisibilityChanged(bool visible) override {
+    is_virtual_keyboard_shown_ = visible;
     owner_->OnAndroidVirtualKeyboardVisibilityChanged(visible);
   }
 
+  bool is_virtual_keyboard_shown() const { return is_virtual_keyboard_shown_; }
+
  private:
+  bool is_virtual_keyboard_shown_ = false;
   base::ScopedObservation<ArcInputMethodManagerService,
                           ArcInputMethodManagerService::Observer>
       arc_imms_observation_{this};
@@ -370,18 +374,23 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::OnAccessibilityEvent(
     // notification_key before this receives an accessibility event for it.
     return GetFromKey(KeyForNotification(notification_key));
   } else if (event_data->is_input_method_window) {
+    if (!input_manager_service_observer_->is_virtual_keyboard_shown())
+      return nullptr;
+
     exo::InputMethodSurface* input_method_surface =
         exo::InputMethodSurface::GetInputMethodSurface();
     if (!input_method_surface)
       return nullptr;
 
     auto key = KeyForInputMethod();
-    if (GetFromKey(key) == nullptr) {
-      auto* tree = CreateFromKey(key, input_method_surface->host_window());
+    auto* tree = GetFromKey(key);
+    if (!tree) {
+      tree = CreateFromKey(key, input_method_surface->host_window());
       input_method_surface->SetChildAxTreeId(tree->ax_tree_id());
     }
+    DCHECK(tree->window() == input_method_surface->host_window());
 
-    return GetFromKey(key);
+    return tree;
   } else {
     int task_id;
     if (event_data->task_id != kNoTaskId) {
@@ -479,6 +488,10 @@ void ArcAccessibilityTreeTracker::OnNotificationStateChanged(
 
 void ArcAccessibilityTreeTracker::OnAndroidVirtualKeyboardVisibilityChanged(
     bool visible) {
+  // The lifetime of AXTreeSourceArc should be bounded by the corresponding exo
+  // window. Always using OnWindowDestroying is ideal.
+  // But it seems that OnWindowDestroying sometimes not called when visually VK
+  // is made invisible. We're using this callback here to destroy the tree.
   if (!visible)
     trees_.erase(KeyForInputMethod());
 }
@@ -571,8 +584,8 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::CreateFromKey(
     TreeKey key,
     aura::Window* window) {
   auto tree = std::make_unique<AXTreeSourceArc>(tree_source_delegate_, window);
-  AXTreeSourceArc* tree_ptr = tree.get();
-  trees_.insert(std::make_pair(std::move(key), std::move(tree)));
+  auto [itr, inserted] = trees_.try_emplace(std::move(key), std::move(tree));
+  DCHECK(inserted);
 
   if (ash::AccessibilityManager::Get() &&
       ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
@@ -580,7 +593,7 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::CreateFromKey(
     // compare this with TalkBack usage.
     base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", false);
   }
-  return tree_ptr;
+  return itr->second.get();
 }
 
 void ArcAccessibilityTreeTracker::InvalidateTrees() {
