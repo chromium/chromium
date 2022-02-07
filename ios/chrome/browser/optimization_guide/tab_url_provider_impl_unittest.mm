@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -60,15 +59,8 @@ class TabUrlProviderImplTest : public PlatformTest {
   // committed navigation.
   void AddURL(Browser* browser, const GURL& url, const base::Time& timestamp) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
-    auto fake_navigation_manager =
-        std::make_unique<web::FakeNavigationManager>();
-    fake_navigation_manager->AddItem(url,
-                                     ui::PageTransition::PAGE_TRANSITION_TYPED);
-    web::NavigationItem* item = fake_navigation_manager->GetItemAtIndex(
-        fake_navigation_manager->GetItemCount() - 1);
-    item->SetTimestamp(timestamp);
-    fake_navigation_manager->SetVisibleItem(item);
-    fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
+    fake_web_state->SetCurrentTimestamp(timestamp);
+    fake_web_state->SetCurrentURL(url);
     browser->GetWebStateList()->InsertWebState(
         browser->GetWebStateList()->count(), std::move(fake_web_state),
         WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());

@@ -696,6 +696,12 @@ const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();
 }
 
+const base::Time WebStateImpl::RealizedWebState::GetLastCommittedTimestamp()
+    const {
+  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
+  return item ? item->GetTimestamp() : base::Time();
+}
+
 GURL WebStateImpl::RealizedWebState::GetCurrentURL(
     URLVerificationTrustLevel* trust_level) const {
   if (!trust_level) {

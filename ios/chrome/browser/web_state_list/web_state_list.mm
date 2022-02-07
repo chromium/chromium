@@ -518,8 +518,13 @@ void WebStateList::NotifyIfActiveWebStateChanged(
   if (old_web_state == new_web_state)
     return;
 
-  if (new_web_state)
+  if (new_web_state) {
+    // Do not trigger a CheckForOverRealization here, as it's expected
+    // that many WebStates may realize actions like side swipe or quickly
+    // multiple tabs.
+    web::IgnoreOverRealizationCheck();
     new_web_state->ForceRealized();
+  }
 
   for (auto& observer : observers_) {
     observer.WebStateActivatedAt(this, old_web_state, new_web_state,

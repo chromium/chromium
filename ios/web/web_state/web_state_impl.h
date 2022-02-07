@@ -296,6 +296,7 @@ class WebStateImpl final : public WebState {
   void SetFaviconStatus(const FaviconStatus& favicon_status) final;
   const GURL& GetVisibleURL() const final;
   const GURL& GetLastCommittedURL() const final;
+  const base::Time GetLastCommittedTimestamp() const final;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const final;
   base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,

@@ -366,6 +366,9 @@ class WebState : public base::SupportsUserData {
   // displayed in this WebState. It represents the current security context.
   virtual const GURL& GetLastCommittedURL() const = 0;
 
+  // Gets the time at which the last committed navigation completed.
+  virtual const base::Time GetLastCommittedTimestamp() const = 0;
+
   // Returns the WebState view of the current URL. Moreover, this method
   // will set the trustLevel enum to the appropriate level from a security point
   // of view. The caller has to handle the case where |trust_level| is not
