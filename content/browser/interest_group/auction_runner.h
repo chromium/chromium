@@ -196,12 +196,8 @@ class CONTENT_EXPORT AuctionRunner {
     // Holds a reference to the BidderWorklet, once created.
     std::unique_ptr<AuctionWorkletManager::WorkletHandle> worklet_handle;
 
-    auction_worklet::mojom::BidderWorkletBidPtr bid_result;
-    // Points to the InterestGroupAd within `bidder` that won the auction. Only
-    // nullptr when `bid_result` is also nullptr.
-    raw_ptr<const blink::InterestGroup::Ad> bid_ad = nullptr;
-
-    double seller_score = 0;
+    // True if the worklet successfully made a bid.
+    bool made_bid = false;
 
     // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
     // forDebuggingOnly.reportAdAuctionWin(url) called in generateBid().
@@ -212,14 +208,71 @@ class CONTENT_EXPORT AuctionRunner {
     // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd().
     absl::optional<GURL> seller_debug_loss_report_url;
     absl::optional<GURL> seller_debug_win_report_url;
+  };
 
-    absl::optional<uint32_t> data_version;
+  // Result of generated a bid. Contains information that needs to score a bid
+  // and is persisted to the end of the auction if the bidder wins. Largely
+  // duplicates auction_worklet::mojom::BidderWorkletBid, with additional
+  // information about the bidder.
+  struct Bid {
+    Bid(std::string ad_metadata,
+        double bid,
+        GURL render_url,
+        absl::optional<std::vector<GURL>> ad_components,
+        base::TimeDelta bid_duration,
+        const blink::InterestGroup::Ad* bid_ad,
+        BidState* bid_state);
+
+    ~Bid();
+
+    // These are taken directly from the
+    // auction_worklet::mojom::BidderWorkletBid.
+    const std::string ad_metadata;
+    const double bid;
+    const GURL render_url;
+    const absl::optional<std::vector<GURL>> ad_components;
+    const base::TimeDelta bid_duration;
+
+    // InterestGroup that made the bid. Owned by the BidState of that
+    // InterestGroup.
+    const raw_ptr<const blink::InterestGroup> interest_group;
+
+    // Points to the InterestGroupAd within `interest_group`.
+    const raw_ptr<const blink::InterestGroup::Ad> bid_ad;
+
+    // `bid_state` of the InterestGroup that made the bid. This should not be
+    // writted to, except for adding seller debug reporting URLs.
+    const raw_ptr<BidState> bid_state;
+  };
+
+  // Combines a Bid with seller score and seller state needed to invoke its
+  // ReportResult() method.
+  struct ScoredBid {
+    ScoredBid(double score,
+              absl::optional<uint32_t> data_version,
+              std::unique_ptr<Bid> bid);
+    ~ScoredBid();
+
+    const double score;
+    const absl::optional<uint32_t> data_version;
+
+    const std::unique_ptr<Bid> bid;
   };
 
   AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
                 InterestGroupManagerImpl* interest_group_manager,
                 blink::mojom::AuctionAdConfigPtr auction_config,
                 RunAuctionCallback callback);
+
+  // Validates that `mojo_bid` is valid and, if it is, creates a Bid
+  // corresponding to it, consuming it. Returns nullptr and calls
+  // ReportBadMessage() if it's not valid. Does not mutate `bid_state`, but the
+  // returned Bid has a non-const pointer to it.
+  static std::unique_ptr<Bid> TryToCreateBid(
+      auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
+      BidState& bid_state,
+      const absl::optional<GURL>& debug_loss_report_url,
+      const absl::optional<GURL>& debug_win_report_url);
 
   // Checks that the seller is allowed to partipate in an auction, and starts
   // retrieving all interest groups owned buyer origins listed in
@@ -290,9 +343,10 @@ class CONTENT_EXPORT AuctionRunner {
   bool AllBidsScored() const { return outstanding_bids_ == 0; }
 
   // Calls into the seller asynchronously to score the passed in bid.
-  void ScoreBid(BidState* state);
+  void ScoreBid(std::unique_ptr<Bid> bid);
+
   // Callback from ScoreBid().
-  void OnBidScored(BidState* state,
+  void OnBidScored(std::unique_ptr<Bid> bid,
                    double score,
                    uint32_t data_version,
                    bool has_data_version,
@@ -384,6 +438,12 @@ class CONTENT_EXPORT AuctionRunner {
 
   // State of all loaded interest groups.
   std::vector<BidState> bid_states_;
+
+  // Bids waiting on the seller worklet to load before scoring. Does not include
+  // bids that are currently waiting on the worklet's ScoreAd() method to
+  // complete.
+  std::vector<std::unique_ptr<Bid>> unscored_bids_;
+
   // The time the auction started. Use a single base time for all Worklets, to
   // present a more consistent view of the universe.
   const base::Time auction_start_time_ = base::Time::Now();
@@ -391,12 +451,10 @@ class CONTENT_EXPORT AuctionRunner {
   // The number of owners with InterestGroups participating in an auction.
   int num_owners_with_interest_groups_ = 0;
 
-  // The bidder with the highest scoring bid so far. No other scored bidder
-  // worklet can win the auction, so the other worklets are all unloaded right
-  // after scoring.
-  raw_ptr<BidState> top_bidder_ = nullptr;
-  // Number of bidders with the same score as `top_bidder`.
-  size_t num_top_bidders_ = 0;
+  // The highest scoring bid so far. Null if no bid has been accepted yet.
+  std::unique_ptr<ScoredBid> top_bid_;
+  // Number of bidders with the same score as `top_bid_`.
+  size_t num_top_bids_ = 0;
 
   // Holds a reference to the SellerWorklet used by the auction.
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;
