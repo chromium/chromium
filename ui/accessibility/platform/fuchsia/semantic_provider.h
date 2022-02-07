@@ -67,7 +67,7 @@ class AX_EXPORT AXFuchsiaSemanticProvider {
   virtual bool Delete(uint32_t node_id) = 0;
 
   // Clears the semantic tree.
-  virtual bool Clear();
+  virtual bool Clear() = 0;
 
   // Sends an accessibility event to Fuchsia. Please consult
   // https://cs.opensource.google/fuchsia/fuchsia/+/master:sdk/fidl/fuchsia.accessibility.semantics/semantics_manager.fidl
