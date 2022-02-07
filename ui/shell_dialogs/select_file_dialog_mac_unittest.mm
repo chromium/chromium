@@ -423,6 +423,11 @@ TEST_F(SelectFileDialogMacTest, DialogMessage) {
 
 // Verify that multiple file dialogs are correctly handled.
 TEST_F(SelectFileDialogMacTest, MultipleDialogs) {
+  if (@available(macOS 12.0, *)) {
+    // TODO(https://crbug.com/1278619): Investigate and fix.
+    GTEST_SKIP() << "Fails on macOS Monterey; https://crbug.com/1278619";
+  }
+
   FileDialogArguments args;
   SelectFileWithParams(args);
   NSSavePanel* panel1 = GetPanel();
@@ -516,6 +521,11 @@ TEST_F(SelectFileDialogMacTest, KeepExtensionVisible) {
 // Test to ensure lifetime is sound if a reference to
 // the panel outlives the delegate.
 TEST_F(SelectFileDialogMacTest, Lifetime) {
+  if (@available(macOS 12.0, *)) {
+    // TODO(https://crbug.com/1278619): Investigate and fix.
+    GTEST_SKIP() << "Fails on macOS Monterey; https://crbug.com/1278619";
+  }
+
   base::scoped_nsobject<NSSavePanel> panel;
   @autoreleasepool {
     FileDialogArguments args;
