@@ -1683,6 +1683,7 @@ static_library("ui") {
       "//base",
       "//build:chromeos_buildflags",
       "//chrome/app/vector_icons",
+      "//chrome/browser:browser_themes",
       "//chrome/browser:theme_properties",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
@@ -3698,6 +3699,7 @@ static_library("ui") {
       "//ui/views/controls/webview",
     ]
     deps += [
+      "//chrome/browser:titlebar_config",
       "//chrome/browser/safe_browsing/chrome_cleaner:public",
       "//chrome/browser/ui/startup:buildflags",
       "//chrome/browser/win/conflicts:module_info",

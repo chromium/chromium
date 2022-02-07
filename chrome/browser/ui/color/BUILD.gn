@@ -24,17 +24,28 @@ source_set("mixers") {
     "native_chrome_color_mixer.h",
     "omnibox_color_mixer.cc",
     "omnibox_color_mixer.h",
+    "tab_strip_color_mixer.cc",
+    "tab_strip_color_mixer.h",
   ]
 
   deps = [
     ":color_headers",
     "//build:branding_buildflags",
+    "//chrome/browser:theme_properties",
     "//ui/color:color",
     "//ui/color:mixers",
   ]
 
   if (is_win) {
     sources += [ "win/native_chrome_color_mixer_win.cc" ]
+    deps += [
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser:browser_themes",
+      "//chrome/browser:titlebar_config",
+      "//ui/base",
+      "//ui/color:accent_color_observer",
+      "//ui/native_theme",
+    ]
   }
 }
 

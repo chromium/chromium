@@ -262,7 +262,6 @@
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
 #include "chrome/browser/win/jumplist.h"
 #include "chrome/browser/win/jumplist_factory.h"
-#include "chrome/browser/win/titlebar_config.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/win/hwnd_util.h"
 #include "ui/native_theme/native_theme_win.h"

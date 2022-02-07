@@ -24,6 +24,7 @@ source_set("color_headers") {
     ":mojom",
     "//base",
     "//skia",
+    "//ui/gfx:color_utils",
   ]
 }
 

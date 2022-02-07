@@ -306,4 +306,21 @@ ColorTransform PickGoogleColor(ColorTransform color,
                              std::move(background_color), min_contrast);
 }
 
+ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl) {
+  const auto generator = [](ColorTransform transform, color_utils::HSL hsl,
+                            SkColor input_color, const ColorMixer& mixer) {
+    const SkColor transform_color = transform.Run(input_color, mixer);
+    const SkColor result_color = color_utils::HSLShift(transform_color, hsl);
+    DVLOG(2) << "ColorTransform HSLShift:"
+             << " Input Color: " << SkColorName(input_color)
+             << " Transform Color: " << SkColorName(transform_color)
+             << " HSL: {" << base::NumberToString(hsl.h) << ", "
+             << base::NumberToString(hsl.s) << ", "
+             << base::NumberToString(hsl.l) << "}"
+             << " Result Color: " << SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(color), hsl);
+}
+
 }  // namespace ui

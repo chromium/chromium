@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
+#include "chrome/browser/ui/color/tab_strip_color_mixer.h"
 #include "ui/color/color_provider_utils.h"
 
 namespace {
@@ -56,6 +57,7 @@ void AddChromeColorMixers(ui::ColorProvider* provider,
 
   AddAutofillColorMixer(provider, key);
   AddOmniboxColorMixer(provider, key);
+  AddTabStripColorMixer(provider, key);
 
   if (key.custom_theme) {
     key.custom_theme->AddColorMixers(provider, key);

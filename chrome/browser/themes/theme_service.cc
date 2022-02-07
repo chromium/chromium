@@ -64,6 +64,7 @@
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -86,7 +87,12 @@ constexpr base::TimeDelta kRemoveUnusedThemesStartupDelay = base::Seconds(30);
 bool g_dont_write_theme_pack_for_testing = false;
 
 absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
+  // clang-format off
   static constexpr const auto kMap = base::MakeFixedFlatMap<int, ui::ColorId>({
+#if BUILDFLAG(IS_WIN)
+      {TP::COLOR_ACCENT_BORDER_ACTIVE, kColorAccentBorderActive},
+      {TP::COLOR_ACCENT_BORDER_INACTIVE, kColorAccentBorderInactive},
+#endif  // BUILDFLAG(IS_WIN)
       {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkText},
       {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
       {TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
@@ -120,6 +126,16 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE, kColorOmniboxSecurityChipSecure},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_TEXT_DIMMED, kColorOmniboxTextDimmed},
+      {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
+      {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
+      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
+       kColorTabBackgroundActiveFrameActive},
+      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE,
+       kColorTabBackgroundActiveFrameInactive},
+      {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
+       kColorTabBackgroundInactiveFrameActive},
+      {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
+       kColorTabBackgroundInactiveFrameInactive},
       {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
        kColorTabForegroundActiveFrameActive},
       {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
@@ -127,6 +143,7 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_TOOLBAR, kColorToolbar},
       {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
   });
+  // clang-format on
   auto* color_it = kMap.find(color_id);
   if (color_it != kMap.cend()) {
     return color_it->second;

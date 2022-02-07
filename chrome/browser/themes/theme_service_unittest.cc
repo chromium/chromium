@@ -4,6 +4,8 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
+#include <cmath>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -906,6 +908,14 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
 TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile());
+  static constexpr const auto kTolerances = base::MakeFixedFlatMap<int, int>(
+      {{ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE, 1}});
+  auto get_tolerance = [](int id) {
+    auto* it = kTolerances.find(id);
+    if (it != kTolerances.end())
+      return it->second;
+    return 0;
+  };
   auto param_tuple = GetParam();
   auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
   auto contrast_mode = std::get<ContrastMode>(param_tuple);
@@ -916,7 +926,23 @@ TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
                                        contrast_mode);
   auto original = pair.first;
   auto redirected = pair.second;
-  EXPECT_EQ(original, redirected);
+  auto tolerance = get_tolerance(color_id);
+  if (!tolerance) {
+    EXPECT_EQ(original, redirected);
+  } else {
+    EXPECT_LE(std::abs(static_cast<int>(SkColorGetA(original.color) -
+                                        SkColorGetA(redirected.color))),
+              tolerance);
+    EXPECT_LE(std::abs(static_cast<int>(SkColorGetR(original.color) -
+                                        SkColorGetR(redirected.color))),
+              tolerance);
+    EXPECT_LE(std::abs(static_cast<int>(SkColorGetG(original.color) -
+                                        SkColorGetG(redirected.color))),
+              tolerance);
+    EXPECT_LE(std::abs(static_cast<int>(SkColorGetB(original.color) -
+                                        SkColorGetB(redirected.color))),
+              tolerance);
+  }
 }
 
 }  // namespace theme_service_internal

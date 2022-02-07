@@ -10,7 +10,7 @@
 // TODO(pkasting): Add the rest of the colors.
 
 // clang-format off
-#define CHROME_COLOR_IDS \
+#define COMMON_CHROME_COLOR_IDS \
   /* Bookmark Bar output colors. */ \
   E(kColorBookmarkText, ThemeProperties::COLOR_BOOKMARK_TEXT, \
     kChromeColorsStart) \
@@ -63,6 +63,14 @@
     ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE) \
   E(kColorTabForegroundActiveFrameInactive, \
     ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE) \
+  E(kColorTabBackgroundActiveFrameActive, \
+    ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE) \
+  E(kColorTabBackgroundActiveFrameInactive, \
+    ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE) \
+  E(kColorTabBackgroundInactiveFrameActive, \
+    ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE) \
+  E(kColorTabBackgroundInactiveFrameInactive, \
+    ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE) \
   /* Toolbar output colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
@@ -87,6 +95,17 @@
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN) \
   E(kColorTabGroupContextMenuOrange, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE)
+
+#if BUILDFLAG(IS_WIN)
+#define CHROME_NATIVE_COLOR_IDS \
+    /* The colors of the 1px border around the window on Windows 10. */ \
+    E(kColorAccentBorderActive, ThemeProperties::COLOR_ACCENT_BORDER_ACTIVE) \
+    E(kColorAccentBorderInactive, ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE)
+#else
+#define CHROME_NATIVE_COLOR_IDS
+#endif  // BUILDFLAG(IS_WIN)
+
+#define CHROME_COLOR_IDS COMMON_CHROME_COLOR_IDS CHROME_NATIVE_COLOR_IDS
 
 #include "ui/color/color_id_macros.inc"
 

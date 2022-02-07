@@ -12,6 +12,8 @@
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_utils.h"
 
 namespace ui {
 
@@ -51,6 +53,13 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     // Adds any mixers necessary to represent this supplier.
     virtual void AddColorMixers(ColorProvider* provider,
                                 const Key& key) const = 0;
+    // The mixers may need access to the raw colors from the theme.
+    virtual bool GetColor(int id, SkColor* color) const = 0;
+    // The mixers will also need access to the tints provided by the theme.
+    virtual bool GetTint(int id, color_utils::HSL* hsl) const = 0;
+    // The mixers may need to adjust colors depending on whether there is an
+    // image supplied for the theme element.
+    virtual bool HasCustomImage(int id) const = 0;
 
    protected:
     virtual ~InitializerSupplier() = default;

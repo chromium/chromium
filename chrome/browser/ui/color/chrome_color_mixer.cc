@@ -12,7 +12,6 @@
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 
 namespace {
 
@@ -46,9 +45,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadShelfButtonText] =
       ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelf,
                           color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorTabForegroundActiveFrameActive] = {kColorToolbarText};
-  mixer[kColorTabForegroundActiveFrameInactive] = {
-      kColorTabForegroundActiveFrameActive};
   mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSeparator};
 
   if (dark_mode) {

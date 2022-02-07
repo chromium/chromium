@@ -125,6 +125,10 @@ ColorTransform PickGoogleColor(ColorTransform color,
                                ColorTransform background_color,
                                float min_contrast = 0.0f);
 
+// A transform that returns the HSL shifted color given the input color.
+COMPONENT_EXPORT(COLOR)
+ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl);
+
 #if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(COLOR)
 ColorTransform ApplySystemControlTintIfNeeded();
