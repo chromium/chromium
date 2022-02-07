@@ -892,6 +892,19 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys, FREExplicitlyRequired) {
       {"error-message", "error-guest-signin-fix-network"});
 }
 
+// FRE explicitly required when kCheckEnrollmentKey is set to an invalid value.
+IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys,
+                       FREExplicitlyRequiredInvalid) {
+  SetFRERequiredKey("anything");
+  host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
+  OobeScreenWaiter(AutoEnrollmentCheckScreenView::kScreenId).Wait();
+
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectHiddenPath({"error-message", "error-guest-signin"});
+  test::OobeJS().ExpectHiddenPath(
+      {"error-message", "error-guest-signin-fix-network"});
+}
+
 // FRE not explicitly required and the state keys are missing. Should proceed to
 // normal signin.
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys, NotRequired) {

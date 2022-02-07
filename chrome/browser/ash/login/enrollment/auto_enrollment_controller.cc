@@ -276,6 +276,11 @@ AutoEnrollmentController::GetFRERequirement() {
       return FRERequirement::kExplicitlyNotRequired;
     if (check_enrollment_value == "1")
       return FRERequirement::kExplicitlyRequired;
+
+    LOG(ERROR) << "Unexpected value for " << system::kCheckEnrollmentKey << ": "
+               << check_enrollment_value;
+    LOG(WARNING) << "Forcing auto enrollment check.";
+    return FRERequirement::kExplicitlyRequired;
   }
   // Assume that the presence of the machine serial number means that VPD has
   // been read successfully. Don't trust a missing ActivateDate if VPD could not
