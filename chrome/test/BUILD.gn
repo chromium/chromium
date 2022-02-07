@@ -6650,6 +6650,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/files/file_result_unittest.cc",
       "../browser/ui/app_list/search/files/file_search_provider_unittest.cc",
       "../browser/ui/app_list/search/files/item_suggest_cache_unittest.cc",
+      "../browser/ui/app_list/search/files/justifications_unittest.cc",
       "../browser/ui/app_list/search/files/zero_state_drive_provider_unittest.cc",
       "../browser/ui/app_list/search/files/zero_state_file_provider_unittest.cc",
       "../browser/ui/app_list/search/help_app_provider_unittest.cc",
