@@ -289,18 +289,20 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   const bool is_fully_locked =
       window->GetProperty(ash::kArcResizeLockTypeKey) ==
       ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE;
-  // The state is |ArcResizeLockState::READY| only when we enable the resize
-  // lock for an app for the first time.
-  if (pref_delegate_->GetResizeLockState(*app_id) ==
-      mojom::ArcResizeLockState::READY) {
-    if (ShouldShowSplashScreenDialog(pref_delegate_)) {
-      WindowActivationObserver::RunOnActivated(
-          window, base::BindOnce(&ArcSplashScreenDialogView::Show, window,
-                                 is_fully_locked));
-    }
-  }
 
+  // The state is |ArcResizeLockState::READY| only when we enable the resize
+  // lock for an app for the first time. UpdateResizeLockState() may overwrite
+  // the ResizeLockState so this check must be done before it's called.
+  const bool is_first_launch = pref_delegate_->GetResizeLockState(*app_id) ==
+                               mojom::ArcResizeLockState::READY;
   UpdateResizeLockState(window);
+
+  if (is_first_launch && ShouldShowSplashScreenDialog(pref_delegate_)) {
+    // UpdateResizeLockState() must be called beforehand as compat-mode button
+    // must exist before showing the splash dialog because it's used as the
+    // anchoring target.
+    ShowSplashScreenDialog(window, is_fully_locked);
+  }
 
   if (!is_fully_locked &&
       base::FeatureList::IsEnabled(arc::kCompatSnapFeature)) {
@@ -378,6 +380,13 @@ void ArcResizeLockManager::UpdateShadow(aura::Window* window) {
       ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
     }
   }
+}
+
+void ArcResizeLockManager::ShowSplashScreenDialog(aura::Window* window,
+                                                  bool is_fully_locked) {
+  WindowActivationObserver::RunOnActivated(
+      window, base::BindOnce(&ArcSplashScreenDialogView::Show, window,
+                             is_fully_locked));
 }
 
 }  // namespace arc

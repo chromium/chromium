@@ -65,6 +65,10 @@ class ArcResizeLockManager : public KeyedService,
   void UpdateResizeLockState(aura::Window* window);
   void UpdateShadow(aura::Window* window);
 
+  // virtual for unittest.
+  virtual void ShowSplashScreenDialog(aura::Window* window,
+                                      bool is_fully_locked);
+
   ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
 
   // Using unique_ptr to allow unittest to override.
