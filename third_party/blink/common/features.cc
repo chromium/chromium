@@ -130,6 +130,10 @@ const base::Feature kEditingNG{"EditingNG", base::FEATURE_ENABLED_BY_DEFAULT};
 // Enable LayoutNG.
 const base::Feature kLayoutNG{"LayoutNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable by default. This feature is for a kill switch.
+const base::Feature kLayoutNGBlockInInline{"LayoutNGBlockInInline",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

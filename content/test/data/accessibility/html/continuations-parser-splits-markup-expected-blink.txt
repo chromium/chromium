@@ -1,7 +1,7 @@
 rootWebArea isLineBreakingObject=true
 ++genericContainer ignored isLineBreakingObject=true
 ++++genericContainer ignored isLineBreakingObject=true
-++++++genericContainer ignored isLineBreakingObject=true
+++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++genericContainer className='copied-element' display='inline'
 ++++++++++genericContainer className='before' display='block' isLineBreakingObject=true
 ++++++++++++staticText display='block' name='Before'
