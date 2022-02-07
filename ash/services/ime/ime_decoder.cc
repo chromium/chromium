@@ -83,6 +83,9 @@ ImeDecoder::ImeDecoder() {
   entry_points.connect_to_input_method =
       reinterpret_cast<ConnectToInputMethodFn>(
           library.GetFunctionPointer(kConnectToInputMethodFnName));
+  entry_points.initialize_connection_factory =
+      reinterpret_cast<InitializeConnectionFactoryFn>(
+          library.GetFunctionPointer(kInitializeConnectionFactoryFnName));
   entry_points.is_input_method_connected =
       reinterpret_cast<IsInputMethodConnectedFn>(
           library.GetFunctionPointer(kIsInputMethodConnectedFnName));
@@ -91,7 +94,8 @@ ImeDecoder::ImeDecoder() {
   if (!entry_points.init_once || !entry_points.supports ||
       !entry_points.activate_ime || !entry_points.process ||
       !entry_points.close || !entry_points.connect_to_input_method ||
-      !entry_points.is_input_method_connected) {
+      !entry_points.is_input_method_connected ||
+      !entry_points.initialize_connection_factory) {
     return;
   }
 

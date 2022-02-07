@@ -43,6 +43,11 @@ typedef bool (*ConnectToInputMethodFn)(
     uint32_t remote_input_method_host_handle,
     uint32_t remote_input_method_host_version);
 
+inline constexpr char kInitializeConnectionFactoryFnName[] =
+    "InitializeConnectionFactory";
+typedef bool (*InitializeConnectionFactoryFn)(
+    uint32_t receiver_connection_factory_handle);
+
 inline constexpr char kIsInputMethodConnectedFnName[] =
     "IsInputMethodConnected";
 typedef bool (*IsInputMethodConnectedFn)();
@@ -63,6 +68,7 @@ class ImeDecoder {
     ImeDecoderActivateImeFn activate_ime;
     ImeDecoderProcessFn process;
     ConnectToInputMethodFn connect_to_input_method;
+    InitializeConnectionFactoryFn initialize_connection_factory;
     IsInputMethodConnectedFn is_input_method_connected;
   };
 
