@@ -32,7 +32,7 @@ class StubCrosSettingsProviderTest : public testing::Test {
   void AssertPref(const std::string& prefName, const base::Value* value) {
     const base::Value* pref = provider_->Get(prefName);
     ASSERT_TRUE(pref);
-    ASSERT_TRUE(pref->Equals(value));
+    ASSERT_EQ(*pref, *value);
   }
 
   void ExpectObservers(const std::string& prefName, int count) {

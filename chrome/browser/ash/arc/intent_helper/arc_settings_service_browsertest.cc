@@ -200,8 +200,8 @@ int CountProxyBroadcasts(
       DCHECK(count < extras.size())
           << "The expected proxy broadcast count is smaller than "
              "the actual count.";
-      EXPECT_TRUE(base::JSONReader::ReadDeprecated(broadcast.extras)
-                      ->Equals(extras[count]));
+      EXPECT_EQ(*base::JSONReader::ReadDeprecated(broadcast.extras),
+                *extras[count]);
       count++;
     }
   }

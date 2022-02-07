@@ -641,7 +641,7 @@ TEST_F(DeviceSettingsProviderTest, SetPrefTwice) {
 
   // Verify the second change has been applied.
   const base::Value* saved_value = provider_->Get(kReleaseChannel);
-  EXPECT_TRUE(value2.Equals(saved_value));
+  EXPECT_EQ(value2, *saved_value);
 
   Mock::VerifyAndClearExpectations(this);
 }

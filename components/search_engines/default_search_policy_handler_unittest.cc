@@ -219,11 +219,11 @@ TEST_F(DefaultSearchPolicyHandlerTest, FullyDefined) {
 
   EXPECT_TRUE(
       dictionary->GetList(DefaultSearchManager::kInputEncodings, &list_value));
-  EXPECT_TRUE(encodings.Equals(list_value));
+  EXPECT_EQ(encodings, *list_value);
 
   EXPECT_TRUE(
       dictionary->GetList(DefaultSearchManager::kAlternateURLs, &list_value));
-  EXPECT_TRUE(default_alternate_urls_.Equals(list_value));
+  EXPECT_EQ(default_alternate_urls_, *list_value);
 
   EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kImageURL, &value));
   EXPECT_EQ(kImageURL, value);
@@ -316,10 +316,10 @@ TEST_F(DefaultSearchPolicyHandlerTest, MinimallyDefined) {
   EXPECT_EQ(std::string(), value);
   EXPECT_TRUE(
       dictionary->GetList(DefaultSearchManager::kInputEncodings, &list_value));
-  EXPECT_TRUE(base::ListValue().Equals(list_value));
+  EXPECT_EQ(base::ListValue(), *list_value);
   EXPECT_TRUE(
       dictionary->GetList(DefaultSearchManager::kAlternateURLs, &list_value));
-  EXPECT_TRUE(base::ListValue().Equals(list_value));
+  EXPECT_EQ(base::ListValue(), *list_value);
   EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kImageURL, &value));
   EXPECT_EQ(std::string(), value);
   EXPECT_TRUE(

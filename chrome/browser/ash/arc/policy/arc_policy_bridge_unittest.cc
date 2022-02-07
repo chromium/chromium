@@ -298,8 +298,7 @@ class ArcPolicyBridgeTestBase {
           base::JSONReader::ReadDeprecated(
               policy_bridge()->get_arc_policy_compliance_report());
       ASSERT_TRUE(saved_compliance_report_value);
-      EXPECT_TRUE(
-          compliance_report_value->Equals(saved_compliance_report_value.get()));
+      EXPECT_EQ(*compliance_report_value, *saved_compliance_report_value);
     } else {
       EXPECT_TRUE(policy_bridge()->get_arc_policy_compliance_report().empty());
     }
