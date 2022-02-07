@@ -955,4 +955,23 @@ v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState* script_state) {
   return ToMicrotaskQueue(ExecutionContext::From(script_state));
 }
 
+bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
+                                   ScriptState* script_state) {
+  if (!execution_context || execution_context->IsContextDestroyed())
+    return false;
+
+  // It's possible that execution_context is the one of the
+  // document tree (i.e. the execution context of the document
+  // that the receiver object currently belongs to) and
+  // script_state is the one of the receiver object's creation
+  // context (i.e. the script state of the V8 context in which
+  // the receiver object was created). So, check the both contexts.
+  // TODO(yukishiino): Find the necessary and sufficient conditions of the
+  // runnability.
+  if (!script_state->ContextIsValid())
+    return false;
+
+  return true;
+}
+
 }  // namespace blink

@@ -527,6 +527,15 @@ CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
 v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
 v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
 
+// Helper finction used in the callback functions to validate context.
+// Returns true if the given execution context and V8 context are capable to run
+// an "in parallel" algorithm, otherwise returns false.  What implements an "in
+// parallel" algorithm should check the runnability before using the context.
+// https://html.spec.whatwg.org/C/#in-parallel
+CORE_EXPORT CORE_EXPORT bool IsInParallelAlgorithmRunnable(
+    ExecutionContext* execution_context,
+    ScriptState* script_state);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
