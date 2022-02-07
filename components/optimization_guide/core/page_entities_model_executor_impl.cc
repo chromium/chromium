@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/page_entities_model_executor_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/optimization_guide/core/entity_annotator_native_library.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -95,8 +96,15 @@ void EntityAnnotatorHolder::AnnotateEntitiesMetadataModelOnBackgroundThread(
   absl::optional<std::vector<ScoredEntityMetadata>> scored_md;
   if (entity_annotator_) {
     DCHECK(entity_annotator_native_library_);
+    base::TimeTicks start_time = base::TimeTicks::Now();
     scored_md =
         entity_annotator_native_library_->AnnotateText(entity_annotator_, text);
+    // The max of this histogram is 1 hour because we want to understand
+    // tail behavior and catch long running model executions.
+    base::UmaHistogramLongTimes(
+        "OptimizationGuide.PageContentAnnotationsService.ModelExecutionLatency."
+        "PageEntities",
+        base::TimeTicks::Now() - start_time);
   }
   reply_task_runner_->PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), scored_md));

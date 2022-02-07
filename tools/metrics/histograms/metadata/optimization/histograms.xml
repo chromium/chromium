@@ -749,6 +749,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ModelExecutionLatency.PageEntities"
+    units="ms" expires_after="M106">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the model execution latency for the PageEntities model only just the
+    annotation request. This does not include any thread hop or queuing delay.
+    Recorded once per model execution attempt.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotationsService.PageEntitiesExecutionLatency"
     units="ms" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
@@ -756,7 +768,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the execution latency for the PageEntities model from when the model
     manager requests the execution to completion and only if a result is
-    returned. Recorded once per model execution attempt.
+    returned. This includes thread queuing and hopping time. Recorded once per
+    model execution attempt.
   </summary>
 </histogram>
 
