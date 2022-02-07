@@ -32,6 +32,7 @@
 #include "components/autofill_assistant/browser/web/selector_observer.h"
 #include "components/autofill_assistant/browser/web/send_keyboard_input_worker.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 #include "url/gurl.h"
@@ -63,18 +64,22 @@ namespace autofill_assistant {
 // multiple operations, whether in sequence or in parallel.
 class WebController {
  public:
-  // Create web controller for a given |web_contents|. |user_data| must be valid
+  // Create web controller for a given |web_contents|. |user_data|, |log_info|
+  // and |annotate_dom_model_service| (if not nullptr) must be valid
   // for the lifetime of the controller.
   static std::unique_ptr<WebController> CreateForWebContents(
       content::WebContents* web_contents,
       const UserData* user_data,
-      ProcessedActionStatusDetailsProto* log_info);
+      ProcessedActionStatusDetailsProto* log_info,
+      AnnotateDomModelService* annotate_dom_model_service);
 
-  // |web_contents| and |user_data| must outlive this web controller.
+  // |web_contents|, |user_data|, |log_info| and |annotate_dom_model_service|
+  // (if not nullptr) must outlive this web controller.
   WebController(content::WebContents* web_contents,
                 std::unique_ptr<DevtoolsClient> devtools_client,
                 const UserData* user_data,
-                ProcessedActionStatusDetailsProto* log_info);
+                ProcessedActionStatusDetailsProto* log_info,
+                AnnotateDomModelService* annotate_dom_model_service);
 
   WebController(const WebController&) = delete;
   WebController& operator=(const WebController&) = delete;
@@ -519,6 +524,8 @@ class WebController {
   // Must not be |nullptr| and outlive this web controller.
   const raw_ptr<const UserData> user_data_;
   const raw_ptr<ProcessedActionStatusDetailsProto> log_info_;
+  // Can be |nullptr|, if not must outlive this web controller.
+  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
 
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;

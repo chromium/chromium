@@ -106,7 +106,7 @@ Service* Controller::GetService() {
 WebController* Controller::GetWebController() {
   if (!web_controller_) {
     web_controller_ = WebController::CreateForWebContents(
-        web_contents(), &user_data_, &log_info_);
+        web_contents(), &user_data_, &log_info_, annotate_dom_model_service_);
   }
   return web_controller_.get();
 }

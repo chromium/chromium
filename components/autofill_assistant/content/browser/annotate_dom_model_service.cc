@@ -43,9 +43,11 @@ AnnotateDomModelService::AnnotateDomModelService(
     optimization_guide::OptimizationGuideModelProvider* opt_guide,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
     : opt_guide_(opt_guide), background_task_runner_(background_task_runner) {
-  opt_guide_->AddObserverForOptimizationTargetModel(
-      optimization_guide::proto::OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT,
-      /* model_metadata= */ absl::nullopt, this);
+  if (opt_guide_) {
+    opt_guide_->AddObserverForOptimizationTargetModel(
+        optimization_guide::proto::OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT,
+        /* model_metadata= */ absl::nullopt, this);
+  }
 }
 
 AnnotateDomModelService::~AnnotateDomModelService() = default;

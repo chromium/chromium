@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -29,21 +30,61 @@
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
+#include "components/autofill_assistant/content/common/node_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace autofill_assistant {
+namespace {
 
+using ::base::test::RunOnceCallback;
+using ::testing::_;
 using ::testing::AnyOf;
 using ::testing::IsEmpty;
 using ::testing::Return;
+
+class MockAutofillAssistantAgent : public mojom::AutofillAssistantAgent {
+ public:
+  MockAutofillAssistantAgent() = default;
+  ~MockAutofillAssistantAgent() override = default;
+
+  void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(
+        this, mojo::PendingAssociatedReceiver<mojom::AutofillAssistantAgent>(
+                  std::move(handle)));
+  }
+
+  MOCK_METHOD(
+      void,
+      GetSemanticNodes,
+      (int32_t role,
+       int32_t objective,
+       base::OnceCallback<void(bool, const std::vector<NodeData>&)> callback),
+      (override));
+
+ private:
+  mojo::AssociatedReceiverSet<mojom::AutofillAssistantAgent> receivers_;
+};
+
+class FakeAnnotateDomModelService : public AnnotateDomModelService {
+ public:
+  FakeAnnotateDomModelService()
+      : AnnotateDomModelService(/* opt_guide= */ nullptr,
+                                /* background_task_runner= */ nullptr) {}
+  ~FakeAnnotateDomModelService() override = default;
+};
+
+}  // namespace
 
 // Flag to enable site per process to enforce OOPIFs.
 const char* kSitePerProcess = "site-per-process";
@@ -84,8 +125,22 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(http_server_->Start(8080));
     ASSERT_TRUE(
         NavigateToURL(shell(), http_server_->GetURL(kTargetWebsitePath)));
+
+    // Register the same agent on all frames, such that the callback can be
+    // mocked.
+    shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+        base::BindLambdaForTesting([this](content::RenderFrameHost* host) {
+          host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+              mojom::AutofillAssistantAgent::Name_,
+              base::BindRepeating(
+                  &MockAutofillAssistantAgent::BindPendingReceiver,
+                  base::Unretained(&autofill_assistant_agent_)));
+        }));
+
     web_controller_ = WebController::CreateForWebContents(
-        shell()->web_contents(), &user_data_, &log_info_);
+        shell()->web_contents(), &user_data_, &log_info_,
+        &annotate_dom_model_service_);
+
     Observe(shell()->web_contents());
   }
 
@@ -947,6 +1002,8 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
   UserData user_data_;
   UserModel user_model_;
   ProcessedActionStatusDetailsProto log_info_;
+  MockAutofillAssistantAgent autofill_assistant_agent_;
+  FakeAnnotateDomModelService annotate_dom_model_service_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
@@ -3349,6 +3406,35 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
       base::Milliseconds(30000), base::Milliseconds(1000), update_callback);
 
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunWithDomAnnotation) {
+  Selector selector({"#input1"});
+  auto* semantic_information = selector.proto.mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+
+  NodeData node_frame_1;
+  node_frame_1.backend_node_id = 100;
+  NodeData node_frame_2;
+  node_frame_2.backend_node_id = 200;
+  EXPECT_CALL(autofill_assistant_agent_, GetSemanticNodes(1, 2, _))
+      .WillOnce(RunOnceCallback<2>(true, std::vector<NodeData>{node_frame_1}))
+      .WillOnce(RunOnceCallback<2>(true, std::vector<NodeData>{node_frame_2}))
+      // Capture any other frames.
+      .WillRepeatedly(RunOnceCallback<2>(true, std::vector<NodeData>()));
+
+  ClientStatus status;
+  ElementFinder::Result result;
+  FindElement(selector, &status, &result);
+
+  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
+  EXPECT_EQ(log_info_.element_finder_info(0).status(), ACTION_APPLIED);
+  ASSERT_EQ(log_info_.element_finder_info(0)
+                .semantic_inference_result()
+                .predicted_elements()
+                .size(),
+            2);
 }
 
 }  // namespace autofill_assistant

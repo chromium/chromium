@@ -22,10 +22,14 @@
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/js_filter_builder.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
+#include "components/autofill_assistant/content/common/node_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
 class RenderFrameHost;
+struct GlobalRenderFrameHostId;
 }  // namespace content
 
 namespace autofill_assistant {
@@ -88,11 +92,13 @@ class ElementFinder : public WebControllerWorker {
   };
 
   // |web_contents|, |devtools_client| and |user_data| must be valid for the
-  // lifetime of the instance.
+  // lifetime of the instance. If |annotate_dom_model_service| is not nullptr,
+  // must be valid for the lifetime of the instance.
   ElementFinder(content::WebContents* web_contents,
                 DevtoolsClient* devtools_client,
                 const UserData* user_data,
                 ProcessedActionStatusDetailsProto* log_info,
+                AnnotateDomModelService* annotate_dom_model_service,
                 const Selector& selector,
                 ResultType result_type);
   ~ElementFinder() override;
@@ -108,13 +114,21 @@ class ElementFinder : public WebControllerWorker {
   // Update the log info with details about the current run.
   void UpdateLogInfo(const ClientStatus& status);
 
-  // Sends a result with the given status and no data. This expects an error
-  // status and will add details to |log_info_|.
-  void SendErrorResult(const ClientStatus& status);
+  // Eventually returns the given status and no element. This expects an error
+  // status.
+  void GiveUpElementResolutionWithError(const ClientStatus& status);
 
-  // Builds a result from the current state of the finder and returns it. This
-  // will add details to |log_info_|.
-  void SendSuccessResult(const std::string& object_id);
+  // Builds a result from the current state of the finder and eventually
+  // returns it with an ok status.
+  void ResultFound(const std::string& object_id);
+
+  // Call |callback_| with the |status| and |result|.
+  void SendResult(const ClientStatus& status, const Result& result);
+
+  // Calls |SendResult| with a the |result_status_| and |result_| if all tasks
+  // are complete. This includes waiting for the CSS selector resolution and
+  // the annotate DOM model inference (if applicable).
+  void SendCollectedResultIfAny();
 
   // Report |object_id| as result in |result| and initialize the frame-related
   // fields of |result| from the current state. Leaves the frame stack empty.
@@ -252,10 +266,28 @@ class ElementFinder : public WebControllerWorker {
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
+  // Helpers for running the annotate DOM model on all frames. The results will
+  // be compared against |result_| and logged to |log_info_|.
+  void DescribeNodeForAnnotateDom();
+  void OnDescribeNodeForAnnotateDom(
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<dom::DescribeNodeResult> node_result);
+  void RunAnnotateDomModel();
+  void RunAnnotateDomModelOnFrame(
+      const content::GlobalRenderFrameHostId& host_id,
+      base::OnceCallback<void(std::vector<NodeData>)> callback);
+  void OnRunAnnotateDomModelOnFrame(
+      base::OnceCallback<void(std::vector<NodeData>)> callback,
+      bool success,
+      const std::vector<NodeData>& node_data);
+  void OnRunAnnotateDomModel(
+      const std::vector<std::vector<NodeData>>& all_node_data);
+
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<DevtoolsClient> devtools_client_;
   const raw_ptr<const UserData> user_data_;
   const raw_ptr<ProcessedActionStatusDetailsProto> log_info_;
+  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
   const Selector selector_;
   const ResultType result_type_;
   Callback callback_;
@@ -298,6 +330,24 @@ class ElementFinder : public WebControllerWorker {
   std::vector<std::unique_ptr<std::vector<std::string>>> tasks_results_;
 
   std::vector<JsObjectIdentifier> frame_stack_;
+
+  // The status of finding the element.
+  ClientStatus result_status_;
+
+  // The successful result when the element has been found. In the case where
+  // |selector_| contains |SemanticInformation| this is only filled once the
+  // backend node id has been resolved.
+  Result result_ = Result::EmptyResult();
+  // The backend node id (stable id of DevTools) for the |result_|. Only
+  // filled if the |selector_| contains |SemanticInformation|.
+  // TODO(b/217160707): Always fill this.
+  absl::optional<int> result_backend_node_id_;
+  bool css_result_done_ = false;
+
+  // Elements gathered through all frames. Unused if the |selector_| does not
+  // contain |SemanticInformation|.
+  std::vector<NodeData> semantic_node_data_;
+  bool semantic_result_done_ = false;
 
   // Finder for the target of the current proximity filter.
   std::unique_ptr<ElementFinder> proximity_target_filter_;

@@ -828,6 +828,8 @@ if (!is_ios) {
       deps += [
         "//components/autofill_assistant/browser",
         "//components/autofill_assistant/browser:proto",
+        "//components/autofill_assistant/content/common",
+        "//components/autofill_assistant/content/common:mojo_interfaces",
         "//components/autofill_assistant/content/renderer:browser_tests",
         "//components/browser_ui/client_certificate/android",
         "//components/browser_ui/client_certificate/android:java",

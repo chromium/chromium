@@ -35,15 +35,16 @@ class ContentAutofillAssistantDriver
                              mojom::AutofillAssistantDriver> pending_receiver,
                          content::RenderFrameHost* render_frame_host);
 
+  static ContentAutofillAssistantDriver* GetOrCreateForRenderFrameHost(
+      content::RenderFrameHost* render_frame_host,
+      AnnotateDomModelService* annotate_dom_model_service);
+
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillAssistantDriver>
           pending_receiver);
 
   const mojo::AssociatedRemote<mojom::AutofillAssistantAgent>&
   GetAutofillAssistantAgent();
-
-  void SetAnnotateDomModelService(
-      AnnotateDomModelService* annotate_dom_model_service);
 
   // autofill_assistant::mojom::AutofillAssistantDriver:
   void GetAnnotateDomModel(GetAnnotateDomModelCallback callback) override;

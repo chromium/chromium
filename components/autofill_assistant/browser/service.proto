@@ -1312,6 +1312,16 @@ message ElementFinderInfoProto {
 
   // If set, the document could not be resolved.
   optional bool get_document_failed = 5;
+
+  message PredictedElement {
+    // Whether the inference returned the expectation.
+    optional bool matches_css_element = 1;
+  }
+  message SemanticInferenceResult {
+    // If this is empty, the model inference did not find any results.
+    repeated PredictedElement predicted_elements = 1;
+  }
+  optional SemanticInferenceResult semantic_inference_result = 6;
 }
 
 // The pseudo type values come from
@@ -1546,6 +1556,17 @@ message SelectorProto {
     // Take the match at the given |index|.
     optional int32 index = 1;
   }
+
+  // If set, and the model inference is enabled on the client, will run model
+  // inference and compare if the found element has been inferred along
+  // the expectation.
+  message SemanticInformation {
+    // The objective we expect this Selector to have.
+    optional int32 objective = 1;
+    // The role we expect this Selector to have.
+    optional int32 semantic_role = 2;
+  }
+  optional SemanticInformation semantic_information = 11;
 
   reserved 1 to 8;
 }
