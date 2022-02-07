@@ -181,8 +181,8 @@ public class ShareHelper {
                     sLastRegisteredReceiver.cancel();
                 }
                 sLastRegisteredReceiver = new TargetChosenReceiver(callback);
-                context.registerReceiver(
-                        sLastRegisteredReceiver, new IntentFilter(sTargetChosenReceiveAction));
+                ContextUtils.registerNonExportedBroadcastReceiver(context, sLastRegisteredReceiver,
+                        new IntentFilter(sTargetChosenReceiveAction));
             }
 
             Intent intent = new Intent(sTargetChosenReceiveAction);
