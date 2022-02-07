@@ -6,6 +6,10 @@
 # For the schema of this file, see Metadata message:
 #   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
+buganizer {
+  component_id: 1131776
+}
 monorail {
   component: "OS>Systems>Network>Bluetooth"
 }
+team_email: "cros-connectivity@google.com"
