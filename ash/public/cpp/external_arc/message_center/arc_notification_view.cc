@@ -180,9 +180,17 @@ void ArcNotificationView::OnSnoozeButtonPressed(const ui::Event& event) {
 
 void ArcNotificationView::OnThemeChanged() {
   message_center::MessageView::OnThemeChanged();
-  focus_painter_ = views::Painter::CreateSolidFocusPainter(
-      GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
-      gfx::Insets(0, 1, 3, 2));
+
+  // TODO(yhanada): Migrate to views::FocusRing to support rounded-corner ring.
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    focus_painter_ = views::Painter::CreateSolidFocusPainter(
+        GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused), 2,
+        gfx::Insets(3, 3));
+  } else {
+    focus_painter_ = views::Painter::CreateSolidFocusPainter(
+        GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
+        gfx::Insets(0, 1, 3, 2));
+  }
 }
 
 void ArcNotificationView::OnContainerAnimationEnded() {
