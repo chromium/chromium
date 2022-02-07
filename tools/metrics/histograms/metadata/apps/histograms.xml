@@ -1843,7 +1843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Apps.Launcher.ProductivityReorderAnimationSmoothness{TabletOrClamshell}"
+    name="Apps.Launcher.ProductivityReorderAnimationSmoothness.{TabletOrClamshell}"
     units="%" expires_after="2022-09-01">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
