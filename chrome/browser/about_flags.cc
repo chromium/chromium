@@ -7966,6 +7966,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOriginAgentClusterDefaultDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kOriginAgentClusterDefaultEnabled)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-user-cloud-signin-restriction-policy",
+     flag_descriptions::kEnableUserCloudSigninRestrictionPolicyName,
+     flag_descriptions::kEnableUserCloudSigninRestrictionPolicyDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

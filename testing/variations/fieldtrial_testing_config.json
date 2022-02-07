@@ -6500,6 +6500,23 @@
             ]
         }
     ],
+    "UserCloudSigninRestrictionPolicyFetcher": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UserCloudSigninRestrictionPolicyFetcher"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserMediaCaptureOnFocus": [
         {
             "platforms": [

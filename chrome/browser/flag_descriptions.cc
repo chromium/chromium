@@ -3652,6 +3652,12 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
+const char kEnableUserCloudSigninRestrictionPolicyName[] =
+    "Cloud User level Signin Restrictions Policy";
+const char kEnableUserCloudSigninRestrictionPolicyDescription[] =
+    "Enable the ManagedAccountsSigninRestrictions policy to be set at a cloud "
+    "user level";
+
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "

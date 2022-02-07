@@ -2877,6 +2877,11 @@
     "expiry_milestone": 80
   },
   {
+    "name": "enable-user-cloud-signin-restriction-policy",
+    "owners": [ "ydago" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "enable-vaapi-av1-decode-acceleration",
     "owners": [ "andrescj", "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 100

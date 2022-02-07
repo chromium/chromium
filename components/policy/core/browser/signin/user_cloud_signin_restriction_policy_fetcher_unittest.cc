@@ -10,9 +10,10 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -32,7 +33,10 @@ namespace policy {
 class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
  public:
   UserCloudSigninRestrictionPolicyFetcherTest()
-      : policy_fetcher_(nullptr, nullptr) {}
+      : policy_fetcher_(nullptr, nullptr) {
+    feature_list_.InitAndEnableFeature(
+        policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher);
+  }
 
   UserCloudSigninRestrictionPolicyFetcher* policy_fetcher() {
     return &policy_fetcher_;
@@ -42,6 +46,7 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_env_;
   UserCloudSigninRestrictionPolicyFetcher policy_fetcher_;
   signin::IdentityTestEnvironment identity_test_env_;

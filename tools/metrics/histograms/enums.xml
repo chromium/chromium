@@ -52222,6 +52222,8 @@ from previous Chrome versions.
   <int value="-1332267458" label="RemoveNavigationHistory:enabled"/>
   <int value="-1331831950" label="site-isolation-for-password-sites:enabled"/>
   <int value="-1330409814" label="ContextMenuCopyImage:enabled"/>
+  <int value="-1329990210"
+      label="UserCloudSigninRestrictionPolicyFetcher:disabled"/>
   <int value="-1329586063"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:disabled"/>
   <int value="-1327676774" label="disable-accelerated-mjpeg-decode"/>
@@ -53144,6 +53146,8 @@ from previous Chrome versions.
   <int value="-683306022" label="OverscrollHistoryNavigation:enabled"/>
   <int value="-682580680" label="DisableOfficeEditingComponentApp:disabled"/>
   <int value="-682440269" label="WebNotesPublish:disabled"/>
+  <int value="-681535143"
+      label="UserCloudSigninRestrictionPolicyFetcher:enabled"/>
   <int value="-681434111" label="WebFeed:disabled"/>
   <int value="-680787130" label="ExperimentalVRFeatures:disabled"/>
   <int value="-680589442" label="MacRTL:disabled"/>

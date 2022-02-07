@@ -7,11 +7,15 @@
 #include <set>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/secure_connect.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -70,6 +74,12 @@ void UserCloudSigninRestrictionPolicyFetcher::
         signin::IdentityManager* identity_manager,
         const CoreAccountId& account_id,
         base::OnceCallback<void(const std::string&)> callback) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableUserCloudSigninRestrictionPolicyFetcher)) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
+    return;
+  }
   // base::Unretained is safe here because the callback is called in the
   // lifecycle of `this`.
   FetchAccessToken(
