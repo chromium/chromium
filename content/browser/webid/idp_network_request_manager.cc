@@ -872,7 +872,6 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
       CreateTrafficAnnotation();
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  const url::Origin& idp_origin = url::Origin::Create(provider_);
 
   resource_request->url = target_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -891,8 +890,7 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
   resource_request->request_initiator = relying_party_origin_;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                 idp_origin, idp_origin, net::SiteForCookies());
+      net::IsolationInfo::CreateTransient();
 
   return network::SimpleURLLoader::Create(std::move(resource_request),
                                           traffic_annotation);
