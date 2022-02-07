@@ -248,7 +248,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
     std::vector<std::string>* ids) {
   DCHECK(ids);
 
-  if (!dict.HasKey(kPreferRelatedApplications))
+  if (!dict.FindKey(kPreferRelatedApplications))
     return;
 
   absl::optional<bool> prefer_related_applications =
@@ -395,13 +395,13 @@ void PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
     return;
   }
 
-  if (dict->HasKey(kDefaultApplications) &&
+  if (dict->FindKey(kDefaultApplications) &&
       !ParseDefaultApplications(manifest_url, dict.get(), web_app_manifest_urls,
                                 log)) {
     return;
   }
 
-  if (dict->HasKey(kSupportedOrigins) &&
+  if (dict->FindKey(kSupportedOrigins) &&
       !ParseSupportedOrigins(dict.get(), supported_origins, log)) {
     web_app_manifest_urls->clear();
   }
@@ -451,9 +451,9 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
       return false;
     }
 
-    if (!related_application.HasKey(kId) ||
-        !related_application.HasKey(kMinVersion) ||
-        !related_application.HasKey(kFingerprints)) {
+    if (!related_application.FindKey(kId) ||
+        !related_application.FindKey(kMinVersion) ||
+        !related_application.FindKey(kFingerprints)) {
       log.Error(
           base::StringPrintf("Each \"%s\": \"%s\" entry in \"%s\" must contain "
                              "\"%s\", \"%s\", and \"%s\".",
@@ -639,7 +639,7 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
                                    kPayment, kSupportedDelegations));
       return false;
     }
-  } else if (dict->HasKey(kPayment)) {
+  } else if (dict->FindKey(kPayment)) {
     log.Error(
         base::StringPrintf("\"%s\" member must be a dictionary", kPayment));
     return false;
