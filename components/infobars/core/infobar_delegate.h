@@ -177,6 +177,7 @@ class InfoBarDelegate {
     AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS = 106,
     ADD_TO_READING_LIST_IOS = 107,
     IOS_PERMISSIONS_INFOBAR_DELEGATE = 108,
+    SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS = 109,
   };
 
   // Describes navigation events, used to decide whether infobars should be

@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -205,6 +206,14 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
 
   if (app_type == PickerEntryType::kWeb) {
     web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(crbug.com/1293173): Lacros support for the infobar UI.
+    if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+      SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
+          web_contents, launch_name);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     // TODO(crbug.com/853604): Distinguish the source from link and omnibox.
     mojom::LaunchSource launch_source = mojom::LaunchSource::kFromLink;

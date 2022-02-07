@@ -4630,6 +4630,8 @@ static_library("browser") {
       "apps/app_service/webapk/webapk_prefs.h",
       "apps/icon_standardizer.cc",
       "apps/icon_standardizer.h",
+      "apps/intent_helper/supported_links_infobar_delegate.cc",
+      "apps/intent_helper/supported_links_infobar_delegate.h",
       "browser_process_platform_part_chromeos.cc",
       "browser_process_platform_part_chromeos.h",
       "component_updater/cros_component_installer_chromeos.cc",
