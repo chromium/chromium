@@ -68,14 +68,23 @@ void ReclaimableCodec::ReleaseCodecPressure() {
     return;
   }
 
-  if (auto* pressure_manager = PressureManager())
+  if (auto* pressure_manager = PressureManager()) {
+    // If we fail to get |pressure_manager| here (say, because the
+    // ExecutionContext is being destroyed), this is harmless. The
+    // CodecPressureManager maintains its own local pressure count, and it will
+    // properly decrement it from the global pressure count upon the manager's
+    // disposal. The CodecPressureManager's WeakMember reference to |this| will
+    // be cleared by the GC when |this| is disposed. The manager might still
+    // call into SetGlobalPressureExceededFlag() before |this| is disposed, but
+    // we will simply noop those calls.
     pressure_manager->RemoveCodec(this);
-
-  is_applying_pressure_ = false;
+  }
 
   // We might still exceed global codec pressure at this point, but this codec
   // isn't contributing to it, and needs to reset its own flag.
   SetGlobalPressureExceededFlag(false);
+
+  is_applying_pressure_ = false;
 }
 
 void ReclaimableCodec::Dispose() {
@@ -88,6 +97,13 @@ void ReclaimableCodec::Dispose() {
 
 void ReclaimableCodec::SetGlobalPressureExceededFlag(
     bool global_pressure_exceeded) {
+  if (!is_applying_pressure_) {
+    // We should only hit this call because we failed to get the
+    // PressureManager() in ReleaseCodecPressure(). See the note above.
+    DCHECK(!PressureManager());
+    return;
+  }
+
   if (global_pressure_exceeded_ == global_pressure_exceeded)
     return;
 
