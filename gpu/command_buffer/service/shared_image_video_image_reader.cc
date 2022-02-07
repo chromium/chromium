@@ -550,13 +550,16 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
     // being released and hence deadlock.
     // crbug.com/1262990 for more details.
 
-    DCHECK(release_fence.is_null());
     if (gl_image_) {
+      DCHECK(release_fence.is_null());
       if (scoped_hardware_buffer_) {
         scoped_hardware_buffer_->SetReadFence(gl_image_->TakeEndReadFence(),
                                               true);
       }
       gl_image_.reset();
+    } else {
+      scoped_hardware_buffer_->SetReadFence(std::move(release_fence.owned_fd),
+                                            true);
     }
     scoped_hardware_buffer_.reset();
   }
@@ -573,6 +576,11 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
       gl_image_->SetColorSpace(color_space());
     }
     return gl_image_.get();
+  }
+
+  AHardwareBuffer* GetAHardwareBuffer() override {
+    DCHECK(scoped_hardware_buffer_);
+    return scoped_hardware_buffer_->buffer();
   }
 
  private:

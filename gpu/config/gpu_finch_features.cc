@@ -349,10 +349,6 @@ bool IsUsingThreadSafeMediaForWebView() {
   if (IsUsingVulkan())
     return false;
 
-  // Not yet compatible with SurfaceControl.
-  if (IsAndroidSurfaceControlEnabled())
-    return false;
-
   return base::FeatureList::IsEnabled(kWebViewThreadSafeMedia);
 #else
   return false;
@@ -397,8 +393,9 @@ bool IsAndroidSurfaceControlEnabled() {
   if (LimitAImageReaderMaxSizeToOne())
     return false;
 
-  // On WebView we also require zero copy to use SurfaceControl
-  if (IsWebViewZeroCopyVideoEnabled() &&
+  // On WebView we also require zero copy or thread-safe media to use
+  // SurfaceControl
+  if ((IsWebViewZeroCopyVideoEnabled() || IsUsingThreadSafeMediaForWebView()) &&
       base::FeatureList::IsEnabled(kWebViewSurfaceControl))
     return true;
 

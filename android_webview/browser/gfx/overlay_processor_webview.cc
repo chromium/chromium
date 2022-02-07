@@ -62,10 +62,16 @@ class OverlayProcessorWebView::Manager
         : return_resource(std::move(return_resource)) {
       representation_ =
           shared_image_manager->ProduceOverlay(mailbox, memory_tracker);
-      if (!representation_)
+      if (!representation_) {
         return;
+      }
 
       read_access_ = representation_->BeginScopedReadAccess(false);
+      if (!read_access_) {
+        LOG(ERROR) << "Couldn't access shared image for read.";
+        return;
+      }
+
       std::vector<gfx::GpuFence> acquire_fences =
           read_access_->TakeAcquireFences();
       if (!acquire_fences.empty()) {
@@ -110,6 +116,15 @@ class OverlayProcessorWebView::Manager
     base::ScopedFD TakeBeginReadFence() { return std::move(begin_read_fence_); }
 
     AHardwareBuffer* GetAHardwareBuffer() {
+      // Note, that it's possible that BeginScopedReadAccess() will fail if
+      // media couldn't get us a frame. We don't fail creation of resource in
+      // this case, because if affects Surface acks and we don't to change the
+      // frame submission flow. Instead we just set empty buffer to the surface.
+      // Note, that it should only happen for the first frame in very rare
+      // cases.
+      if (!read_access_)
+        return nullptr;
+
       DCHECK(representation_);
       DCHECK(read_access_);
 
@@ -535,8 +550,8 @@ class OverlayProcessorWebView::Manager
     TRACE_EVENT1("gpu,benchmark,android_webview",
                  "OverlayProcessorWebview::Manager::UpdateBufferInTransaction",
                  "has_resource", !!resource);
-    if (resource) {
-      auto* buffer = resource->GetAHardwareBuffer();
+    auto* buffer = resource ? resource->GetAHardwareBuffer() : nullptr;
+    if (buffer) {
       auto crop_rect = resource->crop_rect();
 
       // Crop rect defines the valid portion of the buffer, so we use its as a
