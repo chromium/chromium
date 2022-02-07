@@ -4,16 +4,15 @@
 var gaia = gaia || {};
 gaia.chromeOSLogin = {};
 
-gaia.chromeOSLogin.parent_webview_signin_url_ = 'chrome://chrome-signin';
-gaia.chromeOSLogin.parent_webview_oobe_url_ = 'chrome://oobe';
+gaia.chromeOSLogin.allowed_parent_urls_ = ['chrome://chrome-signin',
+    'chrome://oobe', 'chrome://lock-reauth']
 gaia.chromeOSLogin.parent_webview_ = undefined;
 gaia.chromeOSLogin.parent_webview_url_ = undefined;
 
 gaia.chromeOSLogin.registerHtml5Listener = function() {
   var onMessage = function(e) {
-    if (e.origin != gaia.chromeOSLogin.parent_webview_signin_url_ &&
-        e.origin != gaia.chromeOSLogin.parent_webview_oobe_url_) {
-        return;
+    if (!gaia.chromeOSLogin.allowed_parent_urls_.includes(e.origin)) {
+      return;
     }
     gaia.chromeOSLogin.parent_webview_ = e.source;
     gaia.chromeOSLogin.parent_webview_url_ = e.origin;
