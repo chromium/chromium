@@ -1505,6 +1505,13 @@ void RemoveFormsToBeDeleted(
       break;
     }
   }
+
+  // Notify the accessibility to focus on the password check status cell when
+  // the status changed to unsafe, safe or error.
+  if (state == PasswordCheckStateUnSafe || state == PasswordCheckStateSafe ||
+      state == PasswordCheckStateError) {
+    [self focusAccessibilityOnPasswordCheckStatus];
+  }
 }
 
 - (void)updateExportPasswordsButton {
@@ -1686,6 +1693,17 @@ void RemoveFormsToBeDeleted(
     return OnDeviceEncryptionStateOptedIn;
   }
   return OnDeviceEncryptionStateNotShown;
+}
+
+// Notifies accessibility to focus on the Password Check Status cell when its
+// layout changed.
+- (void)focusAccessibilityOnPasswordCheckStatus {
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:ItemTypePasswordCheckStatus
+                              sectionIdentifier:SectionIdentifierPasswordCheck];
+  UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  cell);
 }
 
 #pragma mark - UITableViewDelegate
