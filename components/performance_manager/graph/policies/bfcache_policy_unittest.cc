@@ -21,16 +21,10 @@ namespace {
 // Mock version of a performance_manager::BFCachePolicy.
 class LenientMockBFCachePolicy : public BFCachePolicy {
  public:
-  LenientMockBFCachePolicy() {
-    flush_on_moderate_pressure_ = true;
-    delay_to_flush_background_tab_ = base::Seconds(5);
-  }
+  LenientMockBFCachePolicy() { flush_on_moderate_pressure_ = true; }
   ~LenientMockBFCachePolicy() override = default;
   LenientMockBFCachePolicy(const LenientMockBFCachePolicy& other) = delete;
   LenientMockBFCachePolicy& operator=(const LenientMockBFCachePolicy&) = delete;
-  base::TimeDelta delay_to_flush_background_tab() {
-    return delay_to_flush_background_tab_;
-  }
   MOCK_METHOD1(MaybeFlushBFCache, void(const PageNode* page_node));
 };
 using MockBFCachePolicy = ::testing::StrictMock<LenientMockBFCachePolicy>;
@@ -74,26 +68,6 @@ class BFCachePolicyTest : public GraphTestHarness {
 
   raw_ptr<MockBFCachePolicy> policy_;
 };
-
-TEST_F(BFCachePolicyTest, BFCacheFlushedWhenPageBecomesNonVisible) {
-  page_node_->SetIsVisible(true);
-  page_node_->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
-  ::testing::Mock::VerifyAndClearExpectations(policy_);
-
-  page_node_->SetIsVisible(false);
-  // There should be no immediate call to MaybeFlushBFCache.
-  ::testing::Mock::VerifyAndClearExpectations(policy_);
-  task_env().FastForwardBy(policy_->delay_to_flush_background_tab() / 2);
-
-  // There should be no call to MaybeFlushBFCache if not enough time has passed.
-  page_node_->SetIsVisible(true);
-  ::testing::Mock::VerifyAndClearExpectations(policy_);
-
-  page_node_->SetIsVisible(false);
-  EXPECT_CALL(*policy_, MaybeFlushBFCache(page_node_.get()));
-  task_env().FastForwardBy(policy_->delay_to_flush_background_tab());
-  ::testing::Mock::VerifyAndClearExpectations(policy_);
-}
 
 TEST_F(BFCachePolicyTest, BFCacheFlushedOnMemoryPressure) {
   page_node_->SetIsVisible(true);
