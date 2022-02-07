@@ -7,9 +7,12 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:drawable="@color/distilled_page_prefs_selected"
-        android:state_checked="true" />
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+          <solid android:color="@color/distilled_page_prefs_selected"/>
+          <corners android:radius="16dp"/>
+        </shape>
+    </item>
     <item
         android:drawable="@color/distilled_page_prefs_unselected"
         android:state_checked="false" />
