@@ -97,15 +97,6 @@ class AppLaunchSplash extends AppLaunchSplashBase {
     this.updateApp(data['appInfo']);
 
     this.$.shortcutInfo.hidden = !data['shortcutEnabled'];
-
-    Oobe.getInstance().solidBackground = true;
-  }
-
-  /**
-   * Event handler that is invoked just before the frame is hidden.
-   */
-  onBeforeHide() {
-    Oobe.getInstance().solidBackground = false;
   }
 
   /**

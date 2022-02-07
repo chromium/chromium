@@ -216,17 +216,6 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Toggles background of main body between transparency and solid.
-     * @param {boolean} solid Whether to show a solid background.
-     */
-    set solidBackground(solid) {
-      if (solid)
-        document.body.classList.add('solid');
-      else
-        document.body.classList.remove('solid');
-    }
-
-    /**
      * Forces keyboard based OOBE navigation.
      * @param {boolean} value True if keyboard navigation flow is forced.
      */
