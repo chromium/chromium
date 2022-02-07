@@ -285,11 +285,15 @@ executable("web_runner_exe") {
   visibility = [ ":*" ]
 }
 
-cr_fuchsia_package("web_runner_pkg") {
-  binary = ":web_runner_exe"
-  package_name = "web_runner"
+fuchsia_component("web_runner_component") {
   manifest = "web/web_runner.cmx"
+  data_deps = [ ":web_runner_exe" ]
+  visibility = [ ":*" ]
+}
 
+fuchsia_package("web_runner_pkg") {
+  package_name = "web_runner"
+  deps = [ ":web_runner_component" ]
   excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
