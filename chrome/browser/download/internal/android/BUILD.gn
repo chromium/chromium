@@ -138,9 +138,7 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-v24/circular_progress_bar_background_small.xml",
     "java/res/drawable/circular_progress_bar_background_large.xml",
-    "java/res/drawable/circular_progress_bar_background_small.xml",
     "java/res/drawable/circular_progress_bar_determinate_large.xml",
     "java/res/drawable/circular_progress_bar_determinate_small.xml",
     "java/res/drawable/circular_progress_bar_indeterminate_large.xml",
@@ -180,6 +178,7 @@ android_resources("java_resources") {
     "java/res/values-v17/dimens.xml",
     "java/res/values-v17/ids.xml",
     "java/res/values-v17/styles.xml",
+    "java/res/values/drawables.xml",
   ]
 
   deps = [

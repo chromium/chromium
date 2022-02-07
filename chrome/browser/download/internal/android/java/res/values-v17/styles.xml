@@ -52,7 +52,7 @@
     <style name="SmallCircularProgress">
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>
-        <item name="android:tint">@color/circular_progress_icon_color_small_large</item>
+        <item name="android:tint">@macro/circular_progress_icon_color_small_large</item>
         <item name="android:background">@drawable/circular_progress_bar_background_small</item>
         <item name="indeterminateProgress">@drawable/circular_progress_bar_indeterminate_small</item>
         <item name="determinateProgress">@drawable/circular_progress_bar_determinate_small</item>
@@ -63,7 +63,7 @@
     <style name="LargeCircularProgress">
         <item name="android:layout_width">60dp</item>
         <item name="android:layout_height">60dp</item>
-        <item name="android:tint">@color/circular_progress_icon_color_small_large</item>
+        <item name="android:tint">@macro/circular_progress_icon_color_small_large</item>
         <item name="android:background">@drawable/circular_progress_bar_background_large</item>
         <item name="indeterminateProgress">@drawable/circular_progress_bar_indeterminate_large</item>
         <item name="determinateProgress">@drawable/circular_progress_bar_determinate_large</item>

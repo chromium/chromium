@@ -14,8 +14,8 @@
                 android:useLevel="true"
                 android:shape="ring">
                 <gradient
-                    android:startColor="@color/circular_progress_outer_circle_progress_color_small"
-                    android:endColor="@color/circular_progress_outer_circle_progress_color_small"
+                    android:startColor="@macro/circular_progress_outer_circle_progress_color_small"
+                    android:endColor="@macro/circular_progress_outer_circle_progress_color_small"
                     android:type="sweep"/>
             </shape>
         </rotate>

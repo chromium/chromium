@@ -75,12 +75,6 @@
     <color name="default_control_color_normal_baseline" tools:ignore="UnusedResources">@color/default_control_color_normal_light</color>
     <color name="default_control_color_active_baseline" tools:ignore="UnusedResources">@color/default_control_color_active_light</color>
 
-    <!-- CircularProgressView colors -->
-    <color name="circular_progress_inner_background_color_small" tools:ignore="UnusedResources">@color/default_bg_color_elev_1_baseline</color>
-    <color name="circular_progress_outer_circle_background_color_small" tools:ignore="UnusedResources">@color/default_bg_color_elev_1_baseline</color>
-    <color name="circular_progress_outer_circle_progress_color_small" tools:ignore="UnusedResources">@color/circular_progress_outer_circle_progress_color_small_light</color>
-    <color name="circular_progress_icon_color_small_large" tools:ignore="UnusedResources">@color/circular_progress_icon_color_small_large_light</color>
-
     <!-- Incognito icon colors -->
     <color name="incognito_icon_filled_bg_color">@color/incognito_icon_filled_bg_color_dark</color>
 
