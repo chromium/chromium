@@ -65,4 +65,27 @@ TEST_F(CSSPropertyValueSetTest, MergeAndOverrideOnConflictCustomProperty) {
   EXPECT_EQ("bar", set1.GetPropertyValue(AtomicString("--y")));
 }
 
+// https://crbug.com/1292163
+TEST_F(CSSPropertyValueSetTest, ConflictingLonghandAndShorthand) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  String sheet_text = R"CSS(
+    #first {
+      offset: none reverse 2turn;
+      offset-path: initial;
+    }
+  )CSS";
+
+  CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                        CSSDeferPropertyParsing::kNo);
+  StyleRule* rule = RuleAt(style_sheet, 0);
+
+  EXPECT_EQ(
+      "offset-position: initial; offset-distance: initial; "
+      "offset-rotate: reverse 2turn; offset-anchor: initial; "
+      "offset-path: initial;",
+      rule->Properties().AsText());
+}
+
 }  // namespace blink

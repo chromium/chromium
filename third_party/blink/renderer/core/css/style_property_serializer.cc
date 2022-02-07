@@ -933,8 +933,10 @@ String StylePropertySerializer::OffsetValue() const {
       result.Append(rotate->CssText());
     }
   } else {
-    DCHECK(distance->IsInitialValue());
-    DCHECK(rotate->IsInitialValue());
+    // The longhand values cannot be serialized as a valid shorthand value.
+    // Serialize them as individual longhands instead.
+    if (!distance->IsInitialValue() || !rotate->IsInitialValue())
+      return String();
   }
   if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
     const CSSValue* anchor =
