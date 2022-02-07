@@ -9,9 +9,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "v8-cppgc.h"
-#include "v8.h"
 #include "v8/include/cppgc/testing.h"
+#include "v8/include/v8.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace blink {
 
