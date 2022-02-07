@@ -246,15 +246,6 @@ void InstantService::BuildNtpTheme() {
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   theme_->using_default_theme = theme_service->UsingDefaultTheme();
 
-  // Get theme colors.
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile_);
-
-  // Set colors.
-  theme_->background_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
-  theme_->text_color_light =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_TEXT_LIGHT);
   SetNtpElementsNtpTheme();
 
   if (theme_service->UsingExtensionTheme()) {
@@ -265,6 +256,8 @@ void InstantService::BuildNtpTheme() {
     if (extension) {
       theme_->theme_id = theme_service->GetThemeID();
 
+      const ui::ThemeProvider& theme_provider =
+          ThemeService::GetThemeProviderForProfile(profile_);
       if (theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
         theme_->has_theme_image = true;
 
@@ -334,7 +327,6 @@ void InstantService::SetNtpElementsNtpTheme() {
   NtpTheme* theme = GetInitializedNtpTheme();
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile_);
-  theme->text_color = theme_provider.GetColor(ThemeProperties::COLOR_NTP_TEXT);
   theme->logo_alternate = theme_provider.GetDisplayProperty(
                               ThemeProperties::NTP_LOGO_ALTERNATE) == 1;
 }

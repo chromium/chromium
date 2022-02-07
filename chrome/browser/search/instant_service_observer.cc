@@ -4,7 +4,7 @@
 
 #include "chrome/browser/search/instant_service_observer.h"
 
-void InstantServiceObserver::NtpThemeChanged(const NtpTheme&) {}
+void InstantServiceObserver::NtpThemeChanged(NtpTheme) {}
 
 void InstantServiceObserver::MostVisitedInfoChanged(
     const InstantMostVisitedInfo&) {}
