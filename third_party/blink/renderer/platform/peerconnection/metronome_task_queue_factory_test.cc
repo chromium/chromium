@@ -25,20 +25,13 @@ using ::webrtc::TaskQueueTest;
 
 constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
 
-// Wrapper needed for the TaskQueueTest and MetronomeLikeTaskQueueTest suites.
+// Test-only factory needed for the TaskQueueTest suite.
 class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
-  static std::unique_ptr<TestMetronomeTaskQueueFactory>
-  CreateWithTestEnvironment() {
-    return std::unique_ptr<TestMetronomeTaskQueueFactory>(
-        new TestMetronomeTaskQueueFactory(
-            std::make_unique<base::test::TaskEnvironment>()));
-  }
-  static std::unique_ptr<TestMetronomeTaskQueueFactory>
-  CreateWithoutTestEnvironment() {
-    return std::unique_ptr<TestMetronomeTaskQueueFactory>(
-        new TestMetronomeTaskQueueFactory(nullptr));
-  }
+  TestMetronomeTaskQueueFactory()
+      : metronome_source_(
+            base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick)),
+        factory_(CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
@@ -46,14 +39,7 @@ class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
   }
 
  private:
-  explicit TestMetronomeTaskQueueFactory(
-      std::unique_ptr<base::test::TaskEnvironment> task_environment)
-      : task_environment_(std::move(task_environment)),
-        metronome_source_(
-            base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick)),
-        factory_(CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
-
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<blink::MetronomeSource> metronome_source_;
   std::unique_ptr<webrtc::TaskQueueFactory> factory_;
 };
@@ -63,21 +49,35 @@ class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
 INSTANTIATE_TEST_SUITE_P(
     WebRtcMetronomeTaskQueue,
     TaskQueueTest,
-    ::testing::Values([]() {
-      return TestMetronomeTaskQueueFactory::CreateWithTestEnvironment();
-    }));
+    ::testing::Values(std::make_unique<TestMetronomeTaskQueueFactory>));
+
+// Provider needed for the MetronomeLikeTaskQueueTest suite.
+class MetronomeTaskQueueProvider : public MetronomeLikeTaskQueueProvider {
+ public:
+  void Initialize() override {
+    scoped_refptr<blink::MetronomeSource> metronome_source =
+        base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick);
+    task_queue_ =
+        CreateWebRtcMetronomeTaskQueueFactory(metronome_source)
+            ->CreateTaskQueue("MetronomeTestTaskQueue",
+                              webrtc::TaskQueueFactory::Priority::NORMAL);
+  }
+
+  base::TimeDelta MetronomeTick() const override { return kMetronomeTick; }
+  webrtc::TaskQueueBase* TaskQueue() const override {
+    return task_queue_.get();
+  }
+
+ private:
+  std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter> task_queue_;
+};
 
 // Instantiate suite to run all tests defined in
 // third_party/webrtc_overrides/test/metronome_like_task_queue_test.h
-INSTANTIATE_TEST_SUITE_P(WebRtcMetronomeTaskQueue,
-                         MetronomeLikeTaskQueueTest,
-                         ::testing::Values(MetronomeLikeTaskQueueTestParams{
-                             .task_queue_factory =
-                                 []() {
-                                   return TestMetronomeTaskQueueFactory::
-                                       CreateWithoutTestEnvironment();
-                                 },
-                             .metronome_tick = kMetronomeTick}));
+INSTANTIATE_TEST_SUITE_P(
+    WebRtcMetronomeTaskQueue,
+    MetronomeLikeTaskQueueTest,
+    ::testing::Values(std::make_unique<MetronomeTaskQueueProvider>));
 
 }  // namespace
 

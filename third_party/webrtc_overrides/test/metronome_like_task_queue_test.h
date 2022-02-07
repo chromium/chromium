@@ -17,25 +17,31 @@
 
 namespace blink {
 
-struct RTC_EXPORT MetronomeLikeTaskQueueTestParams {
-  std::function<std::unique_ptr<webrtc::TaskQueueFactory>()> task_queue_factory;
-  base::TimeDelta metronome_tick;
+class RTC_EXPORT MetronomeLikeTaskQueueProvider {
+ public:
+  virtual ~MetronomeLikeTaskQueueProvider() = default;
+
+  virtual void Initialize() = 0;
+  virtual base::TimeDelta MetronomeTick() const = 0;
+  virtual webrtc::TaskQueueBase* TaskQueue() const = 0;
 };
 
 class RTC_EXPORT MetronomeLikeTaskQueueTest
-    : public ::testing::TestWithParam<MetronomeLikeTaskQueueTestParams> {
+    : public ::testing::TestWithParam<
+          std::function<std::unique_ptr<MetronomeLikeTaskQueueProvider>()>> {
  public:
   MetronomeLikeTaskQueueTest()
       : task_environment_(
             base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        task_queue_factory_(GetParam().task_queue_factory()),
-        metronome_tick_(GetParam().metronome_tick) {}
+        provider_(GetParam()()) {}
+
+  void SetUp() override { provider_->Initialize(); }
+  void TearDown() override { provider_.reset(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<webrtc::TaskQueueFactory> task_queue_factory_;
-  const base::TimeDelta metronome_tick_;
+  std::unique_ptr<MetronomeLikeTaskQueueProvider> provider_;
 };
 
 }  // namespace blink
