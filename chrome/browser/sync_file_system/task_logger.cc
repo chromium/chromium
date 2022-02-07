@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 
 namespace sync_file_system {

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"

@@ -4,6 +4,7 @@
 
 #include "apps/app_lifetime_monitor.h"
 
+#include "base/observer_list.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_host.h"

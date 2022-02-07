@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
 #include "base/feature_list.h"
+#include "base/observer_list.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"

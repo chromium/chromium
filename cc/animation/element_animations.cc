@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/observer_list.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_host.h"

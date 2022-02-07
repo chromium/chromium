@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/common/file_system/file_system_util.h"
 

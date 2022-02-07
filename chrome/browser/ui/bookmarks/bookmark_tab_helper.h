@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_TAB_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"

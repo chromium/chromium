@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/last_tab_standing_tracker.h"
 
+#include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/gurl.h"
 

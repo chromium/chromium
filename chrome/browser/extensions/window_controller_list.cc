@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/observer_list.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"

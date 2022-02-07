@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
 

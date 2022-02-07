@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/serial_delegate.h"

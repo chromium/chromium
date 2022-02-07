@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/browser_thread.h"

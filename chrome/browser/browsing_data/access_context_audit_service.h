@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"

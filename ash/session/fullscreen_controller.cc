@@ -15,6 +15,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/check.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/prefs/pref_registry_simple.h"

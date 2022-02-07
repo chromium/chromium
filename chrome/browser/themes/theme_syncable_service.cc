@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
 #include "base/version.h"

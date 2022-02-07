@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"

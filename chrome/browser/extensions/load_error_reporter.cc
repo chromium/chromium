@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"

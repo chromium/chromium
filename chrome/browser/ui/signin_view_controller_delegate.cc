@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 
+#include "base/observer_list.h"
+
 SigninViewControllerDelegate::SigninViewControllerDelegate() = default;
 SigninViewControllerDelegate::~SigninViewControllerDelegate() = default;
 

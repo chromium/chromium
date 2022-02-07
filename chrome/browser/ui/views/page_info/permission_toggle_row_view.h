@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/view.h"

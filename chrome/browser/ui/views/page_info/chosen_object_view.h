@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
