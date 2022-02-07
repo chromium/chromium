@@ -408,7 +408,7 @@
   {
     "name": "autofill-enable-offer-notification-for-promo-codes",
     "owners": [ "jsaul@google.com", "siyua" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
@@ -453,7 +453,7 @@
   {
     "name": "autofill-fill-merchant-promo-code-fields",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-fix-offer-in-incognito",
@@ -478,7 +478,7 @@
   {
     "name": "autofill-parse-merchant-promo-code-fields",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-save-card-dismiss-on-navigation",
