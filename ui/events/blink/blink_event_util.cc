@@ -448,6 +448,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
     case ET_GESTURE_BEGIN:
     case ET_GESTURE_END:
     case ET_GESTURE_SWIPE:
+    case ET_GESTURE_SHORT_PRESS:
       // The caller is responsible for discarding these gestures appropriately.
       gesture.SetType(WebInputEvent::Type::kUndefined);
       break;

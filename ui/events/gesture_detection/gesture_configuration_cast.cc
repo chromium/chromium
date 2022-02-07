@@ -26,7 +26,7 @@ class GestureConfigurationCast : public GestureConfiguration {
  private:
   GestureConfigurationCast() : GestureConfiguration() {
     set_double_tap_enabled(false);
-    set_double_tap_timeout_in_ms(semi_long_press_time_in_ms());
+    set_double_tap_timeout_in_ms(double_tap_timeout_in_ms());
     set_gesture_begin_end_types_enabled(true);
     set_min_gesture_bounds_length(default_radius());
     set_min_pinch_update_span_delta(

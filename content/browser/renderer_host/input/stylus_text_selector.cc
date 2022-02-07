@@ -29,7 +29,7 @@ std::unique_ptr<GestureDetector> CreateGestureDetector(
   // should be explicitly disabled for efficiency.
   std::unique_ptr<ui::GestureDetector> detector(
       new ui::GestureDetector(config, listener, null_double_tap_listener));
-  detector->set_longpress_enabled(false);
+  detector->set_press_and_hold_enabled(false);
   detector->set_showpress_enabled(false);
 
   return detector;

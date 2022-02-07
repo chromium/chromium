@@ -26,6 +26,7 @@ GestureDetector::Config BuildGestureDetectorConfig(
   GestureDetector::Config config;
   config.longpress_timeout =
       base::Milliseconds(gesture_config.long_press_time_in_ms());
+  config.shortpress_timeout = gesture_config.short_press_time();
   config.showpress_timeout =
       base::Milliseconds(gesture_config.show_press_delay_in_ms());
   config.double_tap_timeout =

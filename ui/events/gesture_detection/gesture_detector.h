@@ -29,6 +29,7 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
     Config(const Config& other);
     ~Config();
 
+    base::TimeDelta shortpress_timeout;
     base::TimeDelta longpress_timeout;
     base::TimeDelta showpress_timeout;
     base::TimeDelta double_tap_timeout;
@@ -113,7 +114,11 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
 
   bool is_double_tapping() const { return is_double_tapping_; }
 
-  void set_longpress_enabled(bool enabled) { longpress_enabled_ = enabled; }
+  // Enables or disables gestures that require holding the finger steady for a
+  // while (i.e. both short-press and long-press).
+  void set_press_and_hold_enabled(bool enabled) {
+    press_and_hold_enabled_ = enabled;
+  }
   void set_showpress_enabled(bool enabled) { showpress_enabled_ = enabled; }
 
   // Returns the event storing the initial position of the pointer with given
@@ -127,8 +132,10 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
  private:
   void Init(const Config& config);
   void OnShowPressTimeout();
+  void OnShortPressTimeout();
   void OnLongPressTimeout();
   void OnTapTimeout();
+  void ActivateShortPressGesture(const MotionEvent& ev);
   void ActivateLongPressGesture(const MotionEvent& ev);
   void Cancel();
   void CancelTaps();
@@ -190,12 +197,12 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
   float down_focus_x_;
   float down_focus_y_;
 
-  bool stylus_button_accelerated_longpress_enabled_;
-  bool deep_press_accelerated_longpress_enabled_;
-  bool longpress_enabled_;
-  bool showpress_enabled_;
-  bool swipe_enabled_;
-  bool two_finger_tap_enabled_;
+  bool stylus_button_accelerated_longpress_enabled_ = false;
+  bool deep_press_accelerated_longpress_enabled_ = false;
+  bool press_and_hold_enabled_ = true;
+  bool showpress_enabled_ = true;
+  bool swipe_enabled_ = false;
+  bool two_finger_tap_enabled_ = false;
 
   // Determines speed during touch scrolling.
   VelocityTrackerState velocity_tracker_;

@@ -4408,6 +4408,7 @@ TEST_F(SplitViewOverviewSessionTest, OverviewDragControllerBehavior) {
   ui::GestureConfiguration* gesture_config =
       ui::GestureConfiguration::GetInstance();
   gesture_config->set_long_press_time_in_ms(1);
+  gesture_config->set_short_press_time(base::Milliseconds(1));
   gesture_config->set_show_press_delay_in_ms(1);
 
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
@@ -5329,6 +5330,7 @@ TEST_F(SplitViewOverviewSessionTest,
   ui::GestureConfiguration* gesture_config =
       ui::GestureConfiguration::GetInstance();
   gesture_config->set_long_press_time_in_ms(1);
+  gesture_config->set_short_press_time(base::Milliseconds(1));
   gesture_config->set_show_press_delay_in_ms(1);
 
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();

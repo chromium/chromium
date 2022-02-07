@@ -210,9 +210,12 @@ void LongGestureTap(const gfx::Point& screen_location,
   ui::GestureConfiguration* gesture_config =
       ui::GestureConfiguration::GetInstance();
   const int old_long_press_time_in_ms = gesture_config->long_press_time_in_ms();
+  const base::TimeDelta old_short_press_time =
+      gesture_config->short_press_time();
   const int old_show_press_delay_in_ms =
       gesture_config->show_press_delay_in_ms();
   gesture_config->set_long_press_time_in_ms(1);
+  gesture_config->set_short_press_time(base::Milliseconds(1));
   gesture_config->set_show_press_delay_in_ms(1);
 
   event_generator->set_current_screen_location(screen_location);
@@ -220,6 +223,7 @@ void LongGestureTap(const gfx::Point& screen_location,
   WaitForMilliseconds(2);
 
   gesture_config->set_long_press_time_in_ms(old_long_press_time_in_ms);
+  gesture_config->set_short_press_time(old_short_press_time);
   gesture_config->set_show_press_delay_in_ms(old_show_press_delay_in_ms);
 
   if (release_touch)

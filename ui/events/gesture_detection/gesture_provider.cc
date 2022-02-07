@@ -141,7 +141,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       scroll_event_sent_ = false;
       pinch_event_sent_ = false;
       show_press_event_sent_ = false;
-      gesture_detector_.set_longpress_enabled(true);
+      gesture_detector_.set_press_and_hold_enabled(true);
       tap_down_point_ = gfx::PointF(event.GetX(), event.GetY());
       max_diameter_before_show_press_ = event.GetTouchMajor();
     }
@@ -580,7 +580,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   bool OnDoubleTapEvent(const MotionEvent& e) override {
     switch (e.GetAction()) {
       case MotionEvent::Action::DOWN:
-        gesture_detector_.set_longpress_enabled(false);
+        gesture_detector_.set_press_and_hold_enabled(false);
         break;
 
       case MotionEvent::Action::UP:
@@ -594,6 +594,15 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         break;
     }
     return false;
+  }
+
+  void OnShortPress(const MotionEvent& e) override {
+    DCHECK(!IsDoubleTapInProgress());
+    GestureEventDetails short_press_details(ET_GESTURE_SHORT_PRESS);
+    short_press_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    short_press_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
+    Send(CreateGesture(short_press_details, e));
   }
 
   void OnLongPress(const MotionEvent& e) override {

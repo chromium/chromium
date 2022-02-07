@@ -68,6 +68,7 @@ SourceEventType EventTypeToLatencySourceEventType(EventType type) {
     case ET_GESTURE_PINCH_BEGIN:
     case ET_GESTURE_PINCH_END:
     case ET_GESTURE_PINCH_UPDATE:
+    case ET_GESTURE_SHORT_PRESS:
     case ET_GESTURE_LONG_PRESS:
     case ET_GESTURE_LONG_TAP:
     case ET_GESTURE_SWIPE:

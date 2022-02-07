@@ -655,7 +655,9 @@ class GestureRecognizerTest : public AuraTestBase {
   void SetUp() override {
     AuraTestBase::SetUp();
     ui::GestureConfiguration::GetInstance()->set_show_press_delay_in_ms(2);
-    ui::GestureConfiguration::GetInstance()->set_long_press_time_in_ms(3);
+    ui::GestureConfiguration::GetInstance()->set_short_press_time(
+        base::Milliseconds(3));
+    ui::GestureConfiguration::GetInstance()->set_long_press_time_in_ms(4);
   }
 };
 

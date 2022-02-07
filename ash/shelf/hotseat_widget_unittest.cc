@@ -453,6 +453,8 @@ TEST_P(HotseatWidgetTest, InAppShelfShowingContextMenu) {
 
   // Accelerate the generation of the long press event.
   ui::GestureConfiguration::GetInstance()->set_show_press_delay_in_ms(1);
+  ui::GestureConfiguration::GetInstance()->set_short_press_time(
+      base::Milliseconds(1));
   ui::GestureConfiguration::GetInstance()->set_long_press_time_in_ms(1);
 
   // Press the icon enough long time to generate the long press event.
