@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetViewProperties.NoArgOperation;
@@ -110,11 +109,7 @@ class ScreenshotShareSheetMediator {
         String isoDate = new SimpleDateFormat(sIsoDateFormat, Locale.getDefault())
                                  .format(new Date(System.currentTimeMillis()));
         String title = mContext.getString(R.string.screenshot_title_for_share, isoDate);
-        long startTime = System.currentTimeMillis();
         Callback<Uri> callback = (bitmapUri) -> {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare",
-                    System.currentTimeMillis() - startTime);
             ShareParams params =
                     new ShareParams.Builder(window, title, /*url=*/"")
                             .setFileUris(new ArrayList<>(Collections.singletonList(bitmapUri)))
