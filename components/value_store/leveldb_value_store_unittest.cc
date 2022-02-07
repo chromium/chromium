@@ -99,7 +99,7 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreKeyTest) {
   // Verify that the valid pair is still present.
   result = store()->Get(kNotCorruptKey);
   EXPECT_TRUE(result.status().ok());
-  EXPECT_TRUE(result.settings().HasKey(kNotCorruptKey));
+  EXPECT_TRUE(result.settings().FindKey(kNotCorruptKey));
   std::string value_string;
   EXPECT_TRUE(result.settings().GetString(kNotCorruptKey, &value_string));
   EXPECT_EQ(kValue, value_string);
@@ -142,7 +142,7 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreDoesMinimumNecessary) {
     result = store()->Get(kNotCorruptKey);
     EXPECT_TRUE(result.status().ok());
     ASSERT_EQ(ValueStore::RESTORE_NONE, result.status().restore_status);
-    EXPECT_TRUE(result.settings().HasKey(kNotCorruptKey));
+    EXPECT_TRUE(result.settings().FindKey(kNotCorruptKey));
     EXPECT_TRUE(result.settings().GetString(kNotCorruptKey, &value_string));
     EXPECT_EQ(kValue, value_string);
   }
