@@ -494,7 +494,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleAndLayoutTreeForContainer(Element& container,
                                             const LogicalSize&,
                                             LogicalAxes contained_axes);
-  void RecalcStyleForContainerDescendantsInLegacyLayoutTree(Element& container);
+  void RecalcStyleForNonLayoutNGContainerDescendants(Element& container);
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);

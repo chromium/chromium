@@ -2679,12 +2679,6 @@ void Element::AttachLayoutTree(AttachContext& context) {
   if (being_rendered) {
     AdjustForceLegacyLayout(style, &children_context.force_legacy_layout);
 
-    if (children_context.force_legacy_layout) {
-      GetDocument()
-          .GetStyleEngine()
-          .RecalcStyleForContainerDescendantsInLegacyLayoutTree(*this);
-    }
-
     LegacyLayout legacy = children_context.force_legacy_layout
                               ? LegacyLayout::kForce
                               : LegacyLayout::kAuto;
@@ -2713,6 +2707,18 @@ void Element::AttachLayoutTree(AttachContext& context) {
     children_context.parent = nullptr;
   }
   children_context.use_previous_in_flow = true;
+
+  if (children_context.force_legacy_layout ||
+      (being_rendered && !children_context.parent)) {
+    // If the created LayoutObject is forced into a legacy object, or if a
+    // LayoutObject was not created, even if we thought it should have been, for
+    // instance because the parent LayoutObject returns false for
+    // IsChildAllowed, we need to complete the skipped style recalc for size
+    // query containers as we would not have an NGBlockNode to resume from.
+    GetDocument()
+        .GetStyleEngine()
+        .RecalcStyleForNonLayoutNGContainerDescendants(*this);
+  }
 
   bool skip_container_descendants = SkippedContainerStyleRecalc();
   bool skip_lock_descendants = ChildStyleRecalcBlockedByDisplayLock();

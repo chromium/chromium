@@ -2325,7 +2325,7 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
   RecalcStyle(change, StyleRecalcContext::FromAncestors(container));
 }
 
-void StyleEngine::RecalcStyleForContainerDescendantsInLegacyLayoutTree(
+void StyleEngine::RecalcStyleForNonLayoutNGContainerDescendants(
     Element& container) {
   if (!RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
     return;
@@ -2337,15 +2337,15 @@ void StyleEngine::RecalcStyleForContainerDescendantsInLegacyLayoutTree(
   // subtree. Style recalc will not be resumed during layout for legacy layout.
   // Instead, finish recalc for the subtree when it is discovered that the
   // container is in legacy layout.
-
+  // Also, this method is called to complete a skipped style recalc where we
+  // could not predict that the LayoutObject would not be created, like if the
+  // parent LayoutObject returns false for IsChildAllowed.
   auto* cq_data = container.GetContainerQueryData();
   if (!cq_data)
     return;
 
   if (cq_data->SkippedStyleRecalc())
     RecalcStyleForContainer(container, {});
-
-  cq_data->SetContainerQueryEvaluator(nullptr);
 }
 
 void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
