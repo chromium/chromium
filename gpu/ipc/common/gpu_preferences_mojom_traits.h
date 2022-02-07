@@ -96,6 +96,38 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
 };
 
 template <>
+struct GPU_EXPORT
+    EnumTraits<gpu::mojom::WebGPUAdapterName, gpu::WebGPUAdapterName> {
+  static gpu::mojom::WebGPUAdapterName ToMojom(gpu::WebGPUAdapterName input) {
+    switch (input) {
+      case gpu::WebGPUAdapterName::kDefault:
+        return gpu::mojom::WebGPUAdapterName::kDefault;
+      case gpu::WebGPUAdapterName::kCompat:
+        return gpu::mojom::WebGPUAdapterName::kCompat;
+      case gpu::WebGPUAdapterName::kSwiftShader:
+        return gpu::mojom::WebGPUAdapterName::kSwiftShader;
+    }
+    NOTREACHED();
+    return gpu::mojom::WebGPUAdapterName::kDefault;
+  }
+  static bool FromMojom(gpu::mojom::WebGPUAdapterName input,
+                        gpu::WebGPUAdapterName* out) {
+    switch (input) {
+      case gpu::mojom::WebGPUAdapterName::kDefault:
+        *out = gpu::WebGPUAdapterName::kDefault;
+        return true;
+      case gpu::mojom::WebGPUAdapterName::kCompat:
+        *out = gpu::WebGPUAdapterName::kCompat;
+        return true;
+      case gpu::mojom::WebGPUAdapterName::kSwiftShader:
+        *out = gpu::WebGPUAdapterName::kSwiftShader;
+        return true;
+    }
+    return false;
+  }
+};
+
+template <>
 struct GPU_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
                              gpu::DawnBackendValidationLevel> {
   static gpu::mojom::DawnBackendValidationLevel ToMojom(
@@ -207,7 +239,8 @@ struct GPU_EXPORT
         prefs.enable_gpu_benchmarking_extension();
     out->enable_webgpu = prefs.enable_webgpu();
     out->enable_unsafe_webgpu = prefs.enable_unsafe_webgpu();
-    out->force_webgpu_compat = prefs.force_webgpu_compat();
+    if (!prefs.ReadUseWebgpuAdapter(&out->use_webgpu_adapter))
+      return false;
     if (!prefs.ReadEnableDawnBackendValidation(
             &out->enable_dawn_backend_validation))
       return false;
@@ -393,8 +426,9 @@ struct GPU_EXPORT
   static bool enable_unsafe_webgpu(const gpu::GpuPreferences& prefs) {
     return prefs.enable_unsafe_webgpu;
   }
-  static bool force_webgpu_compat(const gpu::GpuPreferences& prefs) {
-    return prefs.force_webgpu_compat;
+  static gpu::WebGPUAdapterName use_webgpu_adapter(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.use_webgpu_adapter;
   }
   static gpu::DawnBackendValidationLevel enable_dawn_backend_validation(
       const gpu::GpuPreferences& prefs) {

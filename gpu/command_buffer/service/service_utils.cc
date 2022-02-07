@@ -160,8 +160,7 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       base::FeatureList::IsEnabled(features::kWebGPUService);
   gpu_preferences.enable_unsafe_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
-  gpu_preferences.force_webgpu_compat =
-      command_line->HasSwitch(switches::kForceWebGPUCompat);
+  gpu_preferences.use_webgpu_adapter = ParseWebGPUAdapterName(command_line);
   if (command_line->HasSwitch(switches::kEnableDawnBackendValidation)) {
     auto value = command_line->GetSwitchValueASCII(
         switches::kEnableDawnBackendValidation);
@@ -246,6 +245,26 @@ VulkanImplementationName ParseVulkanImplementationName(
   // GrContext is not going to use Vulkan.
   return VulkanImplementationName::kNone;
 #endif
+}
+
+WebGPUAdapterName ParseWebGPUAdapterName(
+    const base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kUseWebGPUAdapter)) {
+    auto value = command_line->GetSwitchValueASCII(switches::kUseWebGPUAdapter);
+    if (value.empty()) {
+      return WebGPUAdapterName::kDefault;
+    } else if (value == "compat") {
+      return WebGPUAdapterName::kCompat;
+    } else if (value == "swiftshader") {
+      return WebGPUAdapterName::kSwiftShader;
+    } else if (value == "default") {
+      return WebGPUAdapterName::kDefault;
+    } else {
+      DLOG(ERROR) << "Invalid switch " << switches::kUseWebGPUAdapter << "="
+                  << value << ".";
+    }
+  }
+  return WebGPUAdapterName::kDefault;
 }
 
 }  // namespace gles2

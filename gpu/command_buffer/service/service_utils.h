@@ -45,6 +45,9 @@ GPU_GLES2_EXPORT GrContextType ParseGrContextType();
 GPU_GLES2_EXPORT VulkanImplementationName
 ParseVulkanImplementationName(const base::CommandLine* command_line);
 
+GPU_GLES2_EXPORT WebGPUAdapterName
+ParseWebGPUAdapterName(const base::CommandLine* command_line);
+
 }  // namespace gles2
 }  // namespace gpu
 

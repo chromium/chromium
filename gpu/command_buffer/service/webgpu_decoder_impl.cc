@@ -469,7 +469,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<dawn::native::Adapter> dawn_adapters_;
 
   bool enable_unsafe_webgpu_ = false;
-  bool force_webgpu_compat_ = false;
+  WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   std::vector<std::string> force_enabled_toggles_;
   std::vector<std::string> force_disabled_toggles_;
 
@@ -945,7 +945,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   }
 
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
-  force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
+  use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   force_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
@@ -970,7 +970,7 @@ void WebGPUDecoderImpl::Destroy(bool have_context) {
 }
 
 ContextResult WebGPUDecoderImpl::Initialize() {
-  if (force_webgpu_compat_) {
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kCompat) {
     gl_surface_ = new gl::SurfacelessEGL(gfx::Size(1, 1));
     gl::GLContextAttribs attribs;
     attribs.client_major_es_version = 3;
@@ -1166,7 +1166,7 @@ void WebGPUDecoderImpl::OnRequestDeviceCallback(
 
 void WebGPUDecoderImpl::DiscoverAdapters() {
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (force_webgpu_compat_) {
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kCompat) {
     auto getProc = [](const char* pname) {
       return reinterpret_cast<void*>(eglGetProcAddress(pname));
     };
@@ -1218,7 +1218,7 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
       continue;
     }
 
-    if (force_webgpu_compat_) {
+    if (use_webgpu_adapter_ == WebGPUAdapterName::kCompat) {
       if (adapterProperties.backendType == WGPUBackendType_OpenGLES) {
         dawn_adapters_.push_back(adapter);
       }
@@ -1455,6 +1455,9 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
   PowerPreference power_preference =
       static_cast<PowerPreference>(c.power_preference);
   bool force_fallback_adapter = c.force_fallback_adapter;
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kSwiftShader) {
+    force_fallback_adapter = true;
+  }
 
   if (gr_context_type_ != GrContextType::kVulkan) {
 #if BUILDFLAG(IS_LINUX)

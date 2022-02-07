@@ -37,6 +37,12 @@ enum class VulkanImplementationName : uint32_t {
   kLast = kSwiftshader,
 };
 
+enum class WebGPUAdapterName : uint32_t {
+  kDefault = 0,
+  kCompat = 1,
+  kSwiftShader = 2,
+};
+
 enum class GrContextType : uint32_t {
   kGL = 0,
   kVulkan = 1,
@@ -249,8 +255,8 @@ struct GPU_EXPORT GpuPreferences {
   DawnBackendValidationLevel enable_dawn_backend_validation =
       DawnBackendValidationLevel::kDisabled;
 
-  // Force the use of the WebGPU/Compat (GLES) backend for all WebGPU content.
-  bool force_webgpu_compat = false;
+  // The adapter to use for WebGPU content.
+  WebGPUAdapterName use_webgpu_adapter = WebGPUAdapterName::kDefault;
 
   // The Dawn features(toggles) enabled on the creation of Dawn devices.
   std::vector<std::string> enabled_dawn_features_list;
