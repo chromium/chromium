@@ -1556,7 +1556,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
 
   // If kAutofillVisualImprovementsForSuggestionUi is enabled, introduce an
   // additional view with a vertical padding that wraps the full content of the
-  // bubble. This is similar to the padding_wrapper used in the scroll area, but
+  // popup. This is similar to the padding_wrapper used in the scroll area, but
   // it allows to add a padding below the footer.
   if (UseImprovedSuggestionUi()) {
     // Create the view and set the convenience pointers defined above.
@@ -1567,7 +1567,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
 
-    // This adds a padding area on the top and the bottom of the bubble content.
+    // This adds a padding area on the top and the bottom of the popup content.
     content_padding_wrapper->SetBorder(
         views::CreateEmptyBorder(gfx::Insets(GetContentsVerticalPadding(), 0)));
 
@@ -1755,7 +1755,7 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
                             element_bounds, controller_->IsRTL(),
                             &popup_bounds);
   } else {
-    popup_bounds = GetOptionalPositionAndPlaceArrowOnBubble(
+    popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
         element_bounds, content_area_bounds, preferred_size);
   }
 

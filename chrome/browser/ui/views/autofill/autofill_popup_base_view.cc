@@ -54,7 +54,7 @@ class AutofillPopupBaseView::Widget : public views::Widget {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
     params.delegate = autofill_popup_base_view_;
     params.parent = autofill_popup_base_view_->GetParentNativeView();
-    // Ensure the bubble border is not painted on an opaque background.
+    // Ensure the popup border is not painted on an opaque background.
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     Init(std::move(params));
@@ -318,7 +318,7 @@ gfx::Rect AutofillPopupBaseView::GetTopWindowBounds() const {
   return gfx::Rect();
 }
 
-gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnBubble(
+gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
     const gfx::Rect& max_bounds_for_popup,
     const gfx::Size& preferred_size) {
@@ -326,13 +326,13 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnBubble(
       GetWidget()->GetRootView()->GetBorder());
   DCHECK(border);
 
-  gfx::Rect bubble_bounds;
+  gfx::Rect popup_bounds;
 
   // Deduce the arrow and the position.
-  views::BubbleBorder::Arrow arrow = GetOptimalBubblePlacement(
+  views::BubbleBorder::Arrow arrow = GetOptimalPopupPlacement(
       /*content_area_bounds=*/max_bounds_for_popup,
       /*element_bounds=*/element_bounds,
-      /*bubble_preferred_size=*/preferred_size,
+      /*popup_preferred_size=*/preferred_size,
       /*right_to_left=*/delegate_->IsRTL(),
       /*scrollbar_width=*/gfx::scrollbar_size(),
       /*maximum_pixel_offset_to_center=*/
@@ -341,19 +341,19 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnBubble(
       /*maximum_width_percentage_to_center=*/
       autofill::features::
           kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter.Get(),
-      /*bubble_bounds=*/bubble_bounds);
+      /*popup_bounds=*/popup_bounds);
 
   // Those values are not supported for adding an arrow.
-  // Currenrly, they can not be returned by GetOptimalBubblePlacement().
+  // Currently, they can not be returned by GetOptimalPopupPlacement().
   DCHECK(arrow != views::BubbleBorder::Arrow::NONE);
   DCHECK(arrow != views::BubbleBorder::Arrow::FLOAT);
 
   // Set the arrow position to the border.
   border->set_arrow(arrow);
   border->AddArrowToBubbleCornerAndPointTowardsAnchor(
-      element_bounds, /*move_bubble_to_add_arrow=*/true, bubble_bounds);
+      element_bounds, /*move_bubble_to_add_arrow=*/true, popup_bounds);
 
-  return bubble_bounds;
+  return popup_bounds;
 }
 
 bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
@@ -393,7 +393,7 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   gfx::Rect popup_bounds =
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillCenterAlignedSuggestions)
-          ? GetOptionalPositionAndPlaceArrowOnBubble(
+          ? GetOptionalPositionAndPlaceArrowOnPopup(
                 element_bounds, max_bounds_for_popup, preferred_size)
           : CalculatePopupBounds(preferred_size, max_bounds_for_popup,
                                  element_bounds, delegate_->IsRTL(),

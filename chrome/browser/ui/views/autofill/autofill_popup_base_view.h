@@ -82,7 +82,7 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // Hide the widget and delete |this|.
   void DoHide();
 
-  // Ensure the child views are not rendered beyond the bubble border
+  // Ensure the child views are not rendered beyond the popup border
   // boundaries. Should be overridden together with CreateBorder.
   void UpdateClipPath();
 
@@ -100,10 +100,10 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // Returns the border to be applied to the popup.
   virtual std::unique_ptr<views::Border> CreateBorder();
 
-  // Returns the optimal bounds to place the bubble with |preferred_size| and
-  // places an arrow on the bubble border to point towards |element_bounds|
+  // Returns the optimal bounds to place the popup with |preferred_size| and
+  // places an arrow on the popup border to point towards |element_bounds|
   // within |max_bounds_for_popup|.
-  gfx::Rect GetOptionalPositionAndPlaceArrowOnBubble(
+  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
       const gfx::Rect& max_bounds_for_popup,
       const gfx::Size& preferred_size);
