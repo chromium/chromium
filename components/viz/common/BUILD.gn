@@ -41,7 +41,7 @@ viz_component("resource_format_utils") {
     "//cc/base:base",
     "//gpu/vulkan:buildflags",
     "//skia",
-    "//third_party/dawn/src/dawn:dawncpp_headers",
+    "//third_party/dawn/include/dawn:cpp_headers",
     "//ui/gfx:buffer_types",
     "//ui/gfx/geometry:geometry",
   ]
@@ -133,14 +133,14 @@ if (skia_use_dawn) {
 
     public_deps = [
       "//skia",
-      "//third_party/dawn/src/dawn:dawn_headers",
+      "//third_party/dawn/include/dawn:headers",
     ]
 
     deps = [
       "//base",
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 }

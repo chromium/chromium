@@ -514,12 +514,12 @@ viz_source_set("gpu_service_dependencies") {
       "display_embedder/skia_output_device_dawn.h",
     ]
 
-    public_deps += [ "//third_party/dawn/src/dawn:dawn_headers" ]
+    public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 

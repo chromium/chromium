@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "components/viz/common/viz_dawn_context_provider_export.h"
-#include "third_party/dawn/src/include/dawn_native/DawnNative.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/dawn/GrDawnTypes.h"
 
