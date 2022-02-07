@@ -84,7 +84,6 @@ function setupSync() {
 suite('OsSyncControlsTest', function() {
   let browserProxy = null;
   let syncControls = null;
-  let syncIconContainer = null;
 
   setup(function() {
     browserProxy = new TestOsSyncBrowserProxy();
@@ -92,14 +91,7 @@ suite('OsSyncControlsTest', function() {
 
     PolymerTest.clearBody();
     syncControls = document.createElement('os-sync-controls');
-    syncControls.syncStatus = getDefaultSyncStatus();
-    syncControls.profileName = 'John Cena';
-    syncControls.profileEmail = 'john.cena@gmail.com';
-    syncControls.profileIconUrl = 'data:image/png;base64,abc123';
     document.body.appendChild(syncControls);
-
-    // Alias to help with line wrapping in test cases.
-    syncIconContainer = syncControls.$.syncIconContainer;
   });
 
   teardown(function() {
@@ -111,73 +103,6 @@ suite('OsSyncControlsTest', function() {
     assertTrue(syncControls.hidden);
     setupSync();
     assertFalse(syncControls.hidden);
-  });
-
-  test('Avatar icon', function() {
-    assertEquals('data:image/png;base64,abc123', syncControls.$.avatarIcon.src);
-  });
-
-  test('Status icon is visible with feature enabled', function() {
-    setupSync();
-    assertFalse(syncControls.$.syncIconContainer.hidden);
-  });
-
-  test('Status icon with error', function() {
-    setupSync();
-    const status = getDefaultSyncStatus();
-    status.hasError = true;
-    syncControls.syncStatus = status;
-
-    assertTrue(syncIconContainer.classList.contains('sync-problem'));
-    assertTrue(!!syncControls.$$('[icon="settings:sync-problem"]'));
-  });
-
-  test('Status icon with sync paused for reauthentication', function() {
-    setupSync();
-    const status = getDefaultSyncStatus();
-    status.hasError = true;
-    status.statusAction = settings.StatusAction.REAUTHENTICATE;
-    syncControls.syncStatus = status;
-
-    assertTrue(syncIconContainer.classList.contains('sync-paused'));
-    assertTrue(!!syncControls.$$('[icon="settings:sync-disabled"]'));
-  });
-
-  test('Status icon with sync disabled', function() {
-    setupSync();
-    const status = getDefaultSyncStatus();
-    status.disabled = true;
-    syncControls.syncStatus = status;
-
-    assertTrue(syncIconContainer.classList.contains('sync-disabled'));
-    assertTrue(!!syncControls.$$('[icon="cr:sync"]'));
-  });
-
-  test('Account name and email with feature enabled', function() {
-    setupSync();
-    assertEquals('John Cena', syncControls.$.accountTitle.textContent.trim());
-    assertEquals(
-        'Syncing to john.cena@gmail.com',
-        syncControls.$.accountSubtitle.textContent.trim());
-  });
-
-  test('Account name and email with sync error', function() {
-    setupSync();
-    syncControls.syncStatus = {hasError: true};
-    Polymer.dom.flush();
-    assertEquals(
-        `Sync isn't working`, syncControls.$.accountTitle.textContent.trim());
-    assertEquals(
-        'john.cena@gmail.com',
-        syncControls.$.accountSubtitle.textContent.trim());
-  });
-
-  // Regression test for https://crbug.com/1076239
-  test('Handles undefined syncStatus', function() {
-    syncControls.syncStatus = undefined;
-    setupSync();
-    assertEquals('', syncControls.$.accountTitle.textContent.trim());
-    assertEquals('', syncControls.$.accountSubtitle.textContent.trim());
   });
 
   test('SyncEnabled', function() {

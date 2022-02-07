@@ -1,61 +1,4 @@
 <style include="settings-shared">
-  :host {
-    --shown-avatar-size: 40px;
-    --sync-icon-border-size: 2px;
-    --sync-icon-size: 16px;
-  }
-
-  #avatarContainer {
-    height: var(--shown-avatar-size);
-    position: relative;
-  }
-
-  #avatarIcon {
-    border-radius: 20px;
-    flex-shrink: 0;
-    height: var(--shown-avatar-size);
-    width: var(--shown-avatar-size);
-  }
-
-  /* Similar to browser settings-sync-account-control styling. */
-  #syncIconContainer {     align-items: center;
-    background: var(--cros-icon-color-positive);
-    border: var(--sync-icon-border-size) solid
-        var(--cros-bg-color-elevation-1);
-    border-radius: 50%;
-    display: flex;
-    height: var(--sync-icon-size);
-    position: absolute;
-    right: -6px;
-    top: calc(var(--shown-avatar-size) - var(--sync-icon-size) -
-        var(--sync-icon-border-size));
-    width: var(--sync-icon-size);
-  }
-
-  :host-context([dir='rtl']) #syncIconContainer {
-    left: -6px;
-    right: initial;
-  }
-
-  #syncIconContainer.sync-problem {
-    background: var(--cros-icon-color-alert);
-  }
-
-  #syncIconContainer.sync-paused {
-    background: var(--cros-icon-color-prominent);
-  }
-
-  #syncIconContainer.sync-disabled {
-    background: var(--cros-icon-color-disabled);
-  }
-
-  #syncIconContainer iron-icon {
-    fill: var(--cros-bg-color-elevation-1);
-    height: 12px;
-    margin: auto;
-    width: 12px;
-  }
-
   .settings-box {
     border-top: none;
   }
@@ -78,29 +21,6 @@
     opacity: var(--cr-disabled-opacity);
   }
 </style>
-<div class="settings-box first two-line">
-  <div id="avatarContainer">
-    <img id="avatarIcon" alt="" src="[[profileIconUrl]]">
-    <div id="syncIconContainer"
-        class$="[[getSyncIconStyle_(
-            syncStatus.hasError, syncStatus.statusAction,
-            syncStatus.disabled)]]">
-      <iron-icon icon$="[[getSyncIcon_(
-          syncStatus.hasError, syncStatus.statusAction,
-          syncStatus.disabled)]]"></iron-icon>
-    </div>
-  </div>
-  <div class="middle two-line no-min-width">
-    <div class="flex text-elide settings-box-text">
-      <span id="accountTitle" aria-hidden="true">
-        [[getAccountTitle_(profileName, syncStatus.hasError)]]
-      </span>
-      <div id="accountSubtitle" class="secondary" aria-hidden="true">
-        [[getAccountSubtitle_(profileEmail, syncStatus.hasError)]]
-      </div>
-    </div>
-  </div>
-</div>
 <div id="featureLabel" class="settings-box">
   <localized-link class="secondary"
       localized-string="$i18n{osSyncFeatureLabel}"

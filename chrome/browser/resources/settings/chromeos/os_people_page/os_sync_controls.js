@@ -63,31 +63,6 @@ Polymer({
     },
 
     /**
-     * Injected sync system status. Undefined until the parent component injects
-     * the value.
-     * @type {SyncStatus|undefined}
-     */
-    syncStatus: Object,
-
-    /**
-     * Injected profile icon URL, usually a data:image/png URL.
-     * @private
-     */
-    profileIconUrl: String,
-
-    /**
-     * Injected profile name, e.g. "John Cena".
-     * @private
-     */
-    profileName: String,
-
-    /**
-     * Injected profile email address, e.g. "john.cena@gmail.com".
-     * @private
-     */
-    profileEmail: String,
-
-    /**
      * The current OS sync preferences. Cached so we can restore individual
      * toggle state when turning "sync everything" on and off, without affecting
      * the underlying chrome prefs.
@@ -146,73 +121,6 @@ Polymer({
     }
     if (oldRoute === routes.OS_SYNC) {
       this.browserProxy_.didNavigateAwayFromOsSyncPage();
-    }
-  },
-
-  /**
-   * @return {string} The top label for the account row.
-   * @private
-   */
-  getAccountTitle_() {
-    if (!this.syncStatus) {
-      return '';
-    }
-    return this.syncStatus.hasError ? this.i18n('syncNotWorking') :
-                                      this.profileName;
-  },
-
-  /**
-   * @return {string} The bottom label for the account row.
-   * @private
-   */
-  getAccountSubtitle_() {
-    if (!this.syncStatus) {
-      return '';
-    }
-    return !this.syncStatus.hasError ?
-        this.i18n('syncingTo', this.profileEmail) :
-        this.profileEmail;
-  },
-
-  /**
-   * Returns the CSS class for the sync status icon.
-   * @return {string}
-   * @private
-   */
-  getSyncIconStyle_() {
-    if (!this.syncStatus) {
-      return 'sync';
-    }
-    if (this.syncStatus.disabled) {
-      return 'sync-disabled';
-    }
-    if (!this.syncStatus.hasError) {
-      return 'sync';
-    }
-    // Specific error cases below.
-    if (this.syncStatus.hasUnrecoverableError) {
-      return 'sync-problem';
-    }
-    if (this.syncStatus.statusAction === StatusAction.REAUTHENTICATE) {
-      return 'sync-paused';
-    }
-    return 'sync-problem';
-  },
-
-  /**
-   * Returns the image to use for the sync status icon. The value must match
-   * one of iron-icon's settings:(*) icon names.
-   * @return {string}
-   * @private
-   */
-  getSyncIcon_() {
-    switch (this.getSyncIconStyle_()) {
-      case 'sync-problem':
-        return 'settings:sync-problem';
-      case 'sync-paused':
-        return 'settings:sync-disabled';
-      default:
-        return 'cr:sync';
     }
   },
 
