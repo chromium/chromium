@@ -83,17 +83,17 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   // Javascript message handlers:
   //--------------------------------
 
-  void OnReloadProxySettings(const base::ListValue* list);
-  void OnClearBadProxies(const base::ListValue* list);
-  void OnClearHostResolverCache(const base::ListValue* list);
-  void OnDomainSecurityPolicyDelete(const base::ListValue* list);
-  void OnHSTSQuery(const base::ListValue* list);
-  void OnHSTSAdd(const base::ListValue* list);
-  void OnExpectCTQuery(const base::ListValue* list);
-  void OnExpectCTAdd(const base::ListValue* list);
-  void OnExpectCTTestReport(const base::ListValue* list);
-  void OnCloseIdleSockets(const base::ListValue* list);
-  void OnFlushSocketPools(const base::ListValue* list);
+  void OnReloadProxySettings(base::Value::ConstListView list);
+  void OnClearBadProxies(base::Value::ConstListView list);
+  void OnClearHostResolverCache(base::Value::ConstListView list);
+  void OnDomainSecurityPolicyDelete(base::Value::ConstListView list);
+  void OnHSTSQuery(base::Value::ConstListView list);
+  void OnHSTSAdd(base::Value::ConstListView list);
+  void OnExpectCTQuery(base::Value::ConstListView list);
+  void OnExpectCTAdd(base::Value::ConstListView list);
+  void OnExpectCTTestReport(base::Value::ConstListView list);
+  void OnCloseIdleSockets(base::Value::ConstListView list);
+  void OnFlushSocketPools(base::Value::ConstListView list);
 
   raw_ptr<content::WebUI> web_ui_;
   base::WeakPtrFactory<NetInternalsMessageHandler> weak_factory_{this};
@@ -105,46 +105,46 @@ NetInternalsMessageHandler::NetInternalsMessageHandler(content::WebUI* web_ui)
 void NetInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "reloadProxySettings",
       base::BindRepeating(&NetInternalsMessageHandler::OnReloadProxySettings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearBadProxies",
       base::BindRepeating(&NetInternalsMessageHandler::OnClearBadProxies,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearHostResolverCache",
       base::BindRepeating(&NetInternalsMessageHandler::OnClearHostResolverCache,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "domainSecurityPolicyDelete",
       base::BindRepeating(
           &NetInternalsMessageHandler::OnDomainSecurityPolicyDelete,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "hstsQuery", base::BindRepeating(&NetInternalsMessageHandler::OnHSTSQuery,
                                        base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "hstsAdd", base::BindRepeating(&NetInternalsMessageHandler::OnHSTSAdd,
                                      base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "expectCTQuery",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTQuery,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "expectCTAdd",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTAdd,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "expectCTTestReport",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTTestReport,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "closeIdleSockets",
       base::BindRepeating(&NetInternalsMessageHandler::OnCloseIdleSockets,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "flushSocketPools",
       base::BindRepeating(&NetInternalsMessageHandler::OnFlushSocketPools,
                           base::Unretained(this)));
@@ -155,24 +155,24 @@ void NetInternalsMessageHandler::OnJavascriptDisallowed() {
 }
 
 void NetInternalsMessageHandler::OnReloadProxySettings(
-    const base::ListValue* list) {
+    base::Value::ConstListView list) {
   GetNetworkContext()->ForceReloadProxyConfig(base::NullCallback());
 }
 
 void NetInternalsMessageHandler::OnClearBadProxies(
-    const base::ListValue* list) {
+    base::Value::ConstListView list) {
   GetNetworkContext()->ClearBadProxiesCache(base::NullCallback());
 }
 
 void NetInternalsMessageHandler::OnClearHostResolverCache(
-    const base::ListValue* list) {
+    base::Value::ConstListView list) {
   GetNetworkContext()->ClearHostCache(/*filter=*/nullptr, base::NullCallback());
 }
 
 void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
-    const base::ListValue* list) {
+    base::Value::ConstListView list) {
   // |list| should be: [<domain to query>].
-  const std::string* domain = list->GetListDeprecated()[0].GetIfString();
+  const std::string* domain = list[0].GetIfString();
   DCHECK(domain);
   if (!base::IsStringASCII(*domain)) {
     // There cannot be a unicode entry in the HSTS set.
@@ -182,9 +182,9 @@ void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
       *domain, base::BindOnce(&IgnoreBoolCallback));
 }
 
-void NetInternalsMessageHandler::OnHSTSQuery(const base::ListValue* list) {
-  const std::string* callback_id = list->GetListDeprecated()[0].GetIfString();
-  const std::string* domain = list->GetListDeprecated()[1].GetIfString();
+void NetInternalsMessageHandler::OnHSTSQuery(base::Value::ConstListView list) {
+  const std::string* callback_id = list[0].GetIfString();
+  const std::string* domain = list[1].GetIfString();
   DCHECK(callback_id && domain);
 
   AllowJavascript();
@@ -200,28 +200,28 @@ void NetInternalsMessageHandler::ResolveCallbackWithResult(
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
-  const auto list_view = list->GetListDeprecated();
-  DCHECK_GE(2u, list_view.size());
+void NetInternalsMessageHandler::OnHSTSAdd(base::Value::ConstListView list) {
+  DCHECK_GE(2u, list.size());
 
   // |list| should be: [<domain to query>, <STS include subdomains>]
-  const std::string* domain = list->GetListDeprecated()[0].GetIfString();
+  const std::string* domain = list[0].GetIfString();
   DCHECK(domain);
   if (!base::IsStringASCII(*domain)) {
     // Silently fail. The user will get a helpful error if they query for the
     // name.
     return;
   }
-  const bool sts_include_subdomains = list_view[1].GetBool();
+  const bool sts_include_subdomains = list[1].GetBool();
 
   base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddHSTS(*domain, expiry, sts_include_subdomains,
                                base::DoNothing());
 }
 
-void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
-  const std::string* callback_id = list->GetListDeprecated()[0].GetIfString();
-  const std::string* domain = list->GetListDeprecated()[1].GetIfString();
+void NetInternalsMessageHandler::OnExpectCTQuery(
+    base::Value::ConstListView list) {
+  const std::string* callback_id = list[0].GetIfString();
+  const std::string* domain = list[1].GetIfString();
   DCHECK(callback_id && domain);
 
   url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
@@ -235,9 +235,10 @@ void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
                      weak_factory_.GetWeakPtr(), *callback_id));
 }
 
-void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
+void NetInternalsMessageHandler::OnExpectCTAdd(
+    base::Value::ConstListView list) {
   // |list| should be: [<domain to add>, <report URI>, <enforce>].
-  const std::string* domain = list->GetListDeprecated()[0].GetIfString();
+  const std::string* domain = list[0].GetIfString();
   DCHECK(domain);
   if (!base::IsStringASCII(*domain)) {
     // Silently fail. The user will get a helpful error if they query for the
@@ -245,9 +246,8 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
     return;
   }
 
-  const std::string* report_uri_str =
-      list->GetListDeprecated()[1].GetIfString();
-  absl::optional<bool> enforce = list->GetListDeprecated()[2].GetIfBool();
+  const std::string* report_uri_str = list[1].GetIfString();
+  absl::optional<bool> enforce = list[2].GetIfBool();
   DCHECK(report_uri_str && enforce);
 
   url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
@@ -261,10 +261,9 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
 }
 
 void NetInternalsMessageHandler::OnExpectCTTestReport(
-    const base::ListValue* list) {
-  const std::string* callback_id = list->GetListDeprecated()[0].GetIfString();
-  const std::string* report_uri_str =
-      list->GetListDeprecated()[1].GetIfString();
+    base::Value::ConstListView list) {
+  const std::string* callback_id = list[0].GetIfString();
+  const std::string* report_uri_str = list[1].GetIfString();
   DCHECK(callback_id && report_uri_str);
   GURL report_uri(*report_uri_str);
   AllowJavascript();
@@ -287,12 +286,12 @@ void NetInternalsMessageHandler::OnExpectCTTestReportCallback(
 }
 
 void NetInternalsMessageHandler::OnFlushSocketPools(
-    const base::ListValue* list) {
+    base::Value::ConstListView list) {
   GetNetworkContext()->CloseAllConnections(base::NullCallback());
 }
 
 void NetInternalsMessageHandler::OnCloseIdleSockets(
-    const base::ListValue* list) {
+    base::Value::ConstListView list) {
   GetNetworkContext()->CloseIdleConnections(base::NullCallback());
 }
 
