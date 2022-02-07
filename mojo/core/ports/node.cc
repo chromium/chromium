@@ -1759,6 +1759,8 @@ void Node::InitiateProxyRemoval(const PortRef& port_ref) {
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
+    if (port->state == Port::kClosed)
+      return;
     peer_node_name = port->peer_node_name;
     peer_port_name = port->peer_port_name;
     sequence_num = port->next_control_sequence_num_to_send++;
@@ -1784,6 +1786,8 @@ void Node::TryRemoveProxy(const PortRef& port_ref) {
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
+    if (port->state == Port::kClosed)
+      return;
     DCHECK_EQ(port->state, Port::kProxying);
 
     // Make sure we have seen ObserveProxyAck before removing the port.
