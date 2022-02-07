@@ -95,6 +95,7 @@ class PersonalizationAppWallpaperProviderImpl
   void FetchGooglePhotosCount(FetchGooglePhotosCountCallback callback) override;
 
   void FetchGooglePhotosPhotos(
+      const absl::optional<std::string>& item_id,
       const absl::optional<std::string>& album_id,
       const absl::optional<std::string>& resume_token,
       FetchGooglePhotosPhotosCallback callback) override;

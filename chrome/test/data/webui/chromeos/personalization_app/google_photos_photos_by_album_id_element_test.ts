@@ -77,7 +77,8 @@ export function GooglePhotosPhotosByAlbumIdTest() {
 
     // Expect a request to load photos for the selected album id.
     await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos');
-    assertEquals(wallpaperProvider.getArgs('fetchGooglePhotosPhotos')[0], '1');
+    assertEquals(
+        wallpaperProvider.getArgs('fetchGooglePhotosPhotos')[0][1], '1');
 
     // Start loading photos for the selected album id. Photos should still be
     // absent since they are still not loaded.

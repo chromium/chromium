@@ -271,6 +271,7 @@ class GooglePhotosPhotosFetcher
   ~GooglePhotosPhotosFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
+      const absl::optional<std::string>& item_id,
       const absl::optional<std::string>& album_id,
       const absl::optional<std::string>& resume_token,
       base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback);

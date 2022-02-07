@@ -74,6 +74,7 @@ void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosCount(
 }
 
 void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosPhotos(
+    const absl::optional<std::string>& item_id,
     const absl::optional<std::string>& album_id,
     const absl::optional<std::string>& resume_token,
     FetchGooglePhotosPhotosCallback callback) {

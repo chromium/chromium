@@ -476,16 +476,17 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
+  const std::string item_id = "itemId";
   const std::string album_id = "albumId";
   EXPECT_CALL(*google_photos_photos_fetcher,
-              AddRequestAndStartIfNecessary(absl::make_optional(album_id),
-                                            absl::make_optional(kResumeToken),
-                                            ::testing::_))
+              AddRequestAndStartIfNecessary(
+                  absl::make_optional(item_id), absl::make_optional(album_id),
+                  absl::make_optional(kResumeToken), ::testing::_))
       .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
   for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosPhotos(
-        album_id, kResumeToken,
+        item_id, album_id, kResumeToken,
         base::BindLambdaForTesting(
             [this](ash::personalization_app::mojom::
                        FetchGooglePhotosPhotosResponsePtr response) {

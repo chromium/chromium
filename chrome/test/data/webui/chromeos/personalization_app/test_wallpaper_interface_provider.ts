@@ -155,8 +155,8 @@ export class TestWallpaperProvider extends
     return Promise.resolve({count});
   }
 
-  fetchGooglePhotosPhotos(albumId: string) {
-    this.methodCalled('fetchGooglePhotosPhotos', albumId);
+  fetchGooglePhotosPhotos(itemId: string, albumId: string) {
+    this.methodCalled('fetchGooglePhotosPhotos', itemId, albumId);
     const response = new FetchGooglePhotosPhotosResponse();
     response.photos =
         loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ?

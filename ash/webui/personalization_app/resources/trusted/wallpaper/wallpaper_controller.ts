@@ -76,8 +76,8 @@ export async function fetchGooglePhotosAlbum(
   // TODO(b/216882690): Support incremental load of photos as the user scrolls
   // through their library as opposed to loading them all at once.
   do {
-    const {response} =
-        await provider.fetchGooglePhotosPhotos(albumId, resumeToken) as
+    const {response} = await provider.fetchGooglePhotosPhotos(
+                           /*itemId=*/ null, albumId, resumeToken) as
         {response: FetchGooglePhotosPhotosResponse};
     if (!Array.isArray(response.photos)) {
       console.warn('Failed to fetch Google Photos album');
@@ -139,7 +139,7 @@ async function fetchGooglePhotosPhotos(
   // through their library as opposed to loading them all at once.
   do {
     const {response} = await provider.fetchGooglePhotosPhotos(
-                           /*albumId=*/ null, resumeToken) as
+                           /*itemId=*/ null, /*albumId=*/ null, resumeToken) as
         {response: FetchGooglePhotosPhotosResponse};
     if (!Array.isArray(response.photos)) {
       console.warn('Failed to fetch Google Photos photos');
