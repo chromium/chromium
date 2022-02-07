@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -80,7 +81,7 @@ public class ShareRegistrationCoordinator {
             intent.putExtra(EXTRA_TYPE, action);
             intent.putExtra(ShareHelper.EXTRA_TASK_ID, taskId);
 
-            context.sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
 
         private final Map<String, Runnable> mShareMap = new HashMap<>();
@@ -104,14 +105,15 @@ public class ShareRegistrationCoordinator {
             mHashCodeToken = hashCode();
 
             sReceiverMap.put(mTaskId, this);
-            mContext.registerReceiver(this, new IntentFilter(RECEIVER_ACTION));
+            LocalBroadcastManager.getInstance(mContext).registerReceiver(
+                    this, new IntentFilter(RECEIVER_ACTION));
         }
 
         /** Destroy the receiver. */
         public void destroy() {
             mIsDestroyed = true;
             sReceiverMap.remove(mTaskId);
-            mContext.unregisterReceiver(this);
+            LocalBroadcastManager.getInstance(mContext).unregisterReceiver(this);
 
             mContext = null;
         }
