@@ -44,3 +44,4 @@ Local Modifications:
    (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
+ - [M98 CP] - b714b223ad7f ios: Actually merge memory snapshot data

@@ -15,6 +15,8 @@
 #ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 #define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
+#include <vector>
+
 #include "snapshot/memory_snapshot.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -55,6 +57,12 @@ class MemorySnapshotIOSIntermediateDump final : public MemorySnapshot {
 
   vm_address_t address_;
   vm_address_t data_;
+
+  // Because the iOS snapshot memory region is owned by the intermediate dump,
+  // it's necessary to copy the merged data into a vector owned by the memory
+  // snapshot itself.
+  std::vector<uint8_t> merged_data_;
+
   vm_size_t size_;
   InitializationStateDcheck initialized_;
 };
