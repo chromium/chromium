@@ -265,7 +265,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
       return testing::AssertionFailure()
              << "Actual dictionary " << PrettyJson(actual)
              << " is missing field " << field;
-    if (!expected_value->Equals(actual_value))
+    if (*expected_value != *actual_value)
       return testing::AssertionFailure()
              << "Field " << field
              << " mismatch: " << PrettyJson(*expected_value)
