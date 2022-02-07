@@ -78,8 +78,6 @@
 
 namespace base {
 
-class PartitionStatsDumper;
-
 namespace internal {
 // Avoid including partition_address_space.h from this .h file, by moving the
 // call to IsManagedByPartitionAllocBRPPool into the .cc file.

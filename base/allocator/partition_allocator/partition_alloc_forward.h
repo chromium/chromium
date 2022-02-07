@@ -13,7 +13,9 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 
-namespace partition_alloc::internal {
+namespace partition_alloc {
+
+namespace internal {
 
 // Alignment has two constraints:
 // - Alignment requirement for scalar types: alignof(std::max_align_t)
@@ -42,12 +44,17 @@ constexpr bool ThreadSafe = true;
 template <bool thread_safe>
 struct SlotSpanMetadata;
 
-}  // namespace partition_alloc::internal
+}  // namespace internal
+
+class PartitionStatsDumper;
+
+}  // namespace partition_alloc
 
 namespace base {
 
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
+using ::partition_alloc::PartitionStatsDumper;
 using ::partition_alloc::internal::kAlignment;
 
 namespace internal {
@@ -66,8 +73,6 @@ template <bool thread_safe = true>
 struct PartitionRoot;
 
 using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
-
-class PartitionStatsDumper;
 
 }  // namespace base
 
