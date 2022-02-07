@@ -31,6 +31,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 namespace exo {
 namespace {
@@ -90,7 +91,7 @@ bool ProcessAcceleratorIfReserved(Surface* surface, ui::KeyEvent* event) {
 // to fix https://crbug.com/847500 without breaking ARC apps/Lacros browser.
 bool IsImeSupportedSurface(Surface* surface) {
   aura::Window* window = surface->window();
-  for (; window; window = window->parent()) {
+  while (window) {
     const auto app_type =
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
     switch (app_type) {
@@ -109,6 +110,12 @@ bool IsImeSupportedSurface(Surface* surface) {
     // TODO(tetsui): find a way to remove this.
     if (window->GetProperty(aura::client::kSkipImeProcessing))
       return true;
+
+    if (aura::Window* transient_parent = wm::GetTransientParent(window)) {
+      window = transient_parent;
+    } else {
+      window = window->parent();
+    }
   }
   return false;
 }
