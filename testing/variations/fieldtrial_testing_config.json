@@ -2923,6 +2923,21 @@
             ]
         }
     ],
+    "EnableNewDownloadAPI": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableNewDownloadAPI",
+                    "enable_features": [
+                        "EnableNewDownloadAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSuggestedFiles": [
         {
             "platforms": [
