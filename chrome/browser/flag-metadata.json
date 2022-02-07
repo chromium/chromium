@@ -161,8 +161,8 @@
   },
   {
     "name": "apps-shortcut-default-off",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
-    "expiry_milestone": 99
+    "owners": [ "chrome-desktop-ui-sea@google.com", "dljames" ],
+    "expiry_milestone": 102
   },
   {
     "name": "arc-account-restrictions",
