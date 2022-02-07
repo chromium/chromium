@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/system/system_monitor.h"
+#include "base/timer/timer.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -105,6 +106,12 @@ class ASH_EXPORT CaptureModeCameraController
     // changed, and provides that list as `cameras`.
     virtual void OnAvailableCamerasChanged(const CameraInfoList& cameras) = 0;
 
+    // Called to notify the observer that a camera with `camera_id` was selected
+    // and will be used to show a camera preview when possible.
+    // Note that when `camera_id.is_valid()` is false, it means no camera is
+    // currently selected.
+    virtual void OnSelectedCameraChanged(const CameraId& camera_id) = 0;
+
    protected:
     ~Observer() override = default;
   };
@@ -141,6 +148,10 @@ class ASH_EXPORT CaptureModeCameraController
     on_camera_list_received_for_test_ = std::move(callback);
   }
 
+  base::OneShotTimer* camera_reconnect_timer_for_test() {
+    return &camera_reconnect_timer_;
+  }
+
  private:
   // Called to connect to the video capture services's video source provider for
   // the first time, or when the connection to it is lost. It also queries the
@@ -161,9 +172,10 @@ class ASH_EXPORT CaptureModeCameraController
   // whether it's currently allowed and whether one is currently selected.
   void RefreshCameraPreview();
 
-  // Returns a pointer to the CameraInfo item of the camera that should be used
-  // for the preview, or nullptr if no such camera exists.
-  const CameraInfo* GetCameraInfoForPreview() const;
+  // Triggered when the `camera_reconnect_timer_` fires, indicating that a
+  // previously `selected_camera_` remained disconnected for longer than the
+  // allowed grace period, and therefore it will be cleared.
+  void OnSelectedCameraDisconnected();
 
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.
@@ -192,6 +204,12 @@ class ASH_EXPORT CaptureModeCameraController
   // The camera preview widget and its contents view.
   views::UniqueWidgetPtr camera_preview_widget_;
   CameraPreviewView* camera_preview_view_ = nullptr;
+
+  // A timer used to give a `selected_camera_` that got disconnected a grace
+  // period, so if it reconnects again within this period, its ID is kept around
+  // in `selected_camera_`, otherwise the ID is cleared, effectively resetting
+  // back the camera setting to "Off".
+  base::OneShotTimer camera_reconnect_timer_;
 
   // Set to true when a preview of the currently selected camera (if any) should
   // be shown. This happens when CaptureModeSession is started or switched to

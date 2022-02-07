@@ -15,12 +15,18 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
+
+// The maximum amount of time we allow a `selected_camera_` to remain
+// disconnected before we consider it gone forever, and we clear its ID from
+// `selected_camera_`.
+constexpr base::TimeDelta kDisconnectionGracePeriod = base::Seconds(10);
 
 // Defines a map type to map a camera model ID (or display name) to the number
 // of cameras of that model that are currently connected.
@@ -161,7 +167,15 @@ void CaptureModeCameraController::RemoveObserver(Observer* observer) {
 }
 
 void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
+  if (selected_camera_ == camera_id)
+    return;
+
   selected_camera_ = std::move(camera_id);
+  camera_reconnect_timer_.Stop();
+
+  for (auto& observer : observers_)
+    observer.OnSelectedCameraChanged(selected_camera_);
+
   RefreshCameraPreview();
 }
 
@@ -233,8 +247,30 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
 }
 
 void CaptureModeCameraController::RefreshCameraPreview() {
-  const CameraInfo* camera_info = GetCameraInfoForPreview();
-  if (!camera_info) {
+  bool create_or_keep_widget = false;
+  if (selected_camera_.is_valid()) {
+    if (const CameraInfo* camera_info =
+            GetCameraInfoById(selected_camera_, available_cameras_);
+        camera_info) {
+      // When a selected camera becomes available, we stop any grace period
+      // timer (if any), and decide whether to show or hide the preview widget
+      // based on the current value of `should_show_preview_`.
+      camera_reconnect_timer_.Stop();
+      create_or_keep_widget = should_show_preview_;
+    } else {
+      // Here the selected camera is disconnected, we'll give it a grace period
+      // just in case it may reconnect again (this helps in the case of flaky
+      // camera connections).
+      camera_reconnect_timer_.Start(
+          FROM_HERE, kDisconnectionGracePeriod, this,
+          &CaptureModeCameraController::OnSelectedCameraDisconnected);
+
+      // TODO(afakhry): Clear the camera immediately if it gets disconnected
+      // during count down and before recording starts.
+    }
+  }
+
+  if (!create_or_keep_widget) {
     camera_preview_widget_.reset();
     camera_preview_view_ = nullptr;
     return;
@@ -249,10 +285,13 @@ void CaptureModeCameraController::RefreshCameraPreview() {
   camera_preview_widget_->Show();
 }
 
-const CameraInfo* CaptureModeCameraController::GetCameraInfoForPreview() const {
-  if (!should_show_preview_ || !selected_camera_.is_valid())
-    return nullptr;
-  return GetCameraInfoById(selected_camera_, available_cameras_);
+void CaptureModeCameraController::OnSelectedCameraDisconnected() {
+  DCHECK(selected_camera_.is_valid());
+
+  LOG(WARNING)
+      << "Selected camera: " << selected_camera_.ToString()
+      << " remained disconnected for longer than the grace period. Clearing.";
+  SetSelectedCamera(CameraId());
 }
 
 }  // namespace ash
