@@ -1670,11 +1670,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
 // This test is checking behavior when ImplicitRootScroller is enabled which
 // applies only on Android.
-// TODO(http://crbug.com/1137425): Re-enable the test after it gets fixed on
-// Android O.
 #if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       DISABLED_ImplicitRootScroller) {
+                       ImplicitRootScroller) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/scrolling/implicit-root-scroller.html");
 
