@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.util.browser;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 
 import org.hamcrest.Matchers;
@@ -51,7 +50,6 @@ public class ThemeTestUtils {
      * Method is for Android L+ because it relies on Window#getStatusBarColor() which was introduced
      * in L.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     public static void assertStatusBarColor(ChromeActivity activity, int expectedColor) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             expectedColor = ColorUtils.getDarkenedColorForStatusBar(expectedColor);

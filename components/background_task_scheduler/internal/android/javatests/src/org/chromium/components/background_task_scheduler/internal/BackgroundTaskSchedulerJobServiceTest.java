@@ -4,7 +4,6 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link BackgroundTaskSchedulerJobService}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class BackgroundTaskSchedulerJobServiceTest {
     private static final long CLOCK_TIME_MS = 1415926535000L;

@@ -8,7 +8,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.RESULTS_NULL;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.os.Build;
 
 import androidx.test.filters.SmallTest;
@@ -28,7 +27,6 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
  */
 @RunWith(ContentJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
 @Batch(Batch.PER_CLASS)
 public class WebContentsAccessibilityEventsTest {

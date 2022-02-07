@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview.services;
 
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
@@ -45,7 +44,6 @@ import java.util.concurrent.TimeUnit;
  * be used outside the variations service. For the equivalent fetch in Chrome, see
  * AsyncInitTaskRunner$FetchSeedTask.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP) // for JobService
 public class AwVariationsSeedFetcher extends JobService {
     @VisibleForTesting
     public static final String JOB_REQUEST_COUNT_KEY = "RequestCount";

@@ -4,10 +4,8 @@
 
 package org.chromium.net;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 
@@ -230,8 +228,9 @@ public class CronetPerfTestActivity extends Activity {
         }
 
         private void reportResult() {
-            if (mStartTimeMs == -1 || mStopTimeMs == -1)
+            if (mStartTimeMs == -1 || mStopTimeMs == -1) {
                 throw new IllegalStateException("startTimer() or stopTimer() not called");
+            }
             try {
                 mResults.put(mName, mStopTimeMs - mStartTimeMs);
             } catch (JSONException e) {
@@ -240,7 +239,6 @@ public class CronetPerfTestActivity extends Activity {
         }
 
         // NOTE(pauljensen): Sampling profiling won't work on KitKat and earlier devices.
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         private void startLogging() {
             if (getConfigBoolean("CAPTURE_NETLOG")) {
                 mCronetEngine.startNetLogToFile(

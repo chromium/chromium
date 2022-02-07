@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetTestRule.assertContains;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.runner.AndroidJUnit4;
 import android.system.Os;
@@ -50,7 +49,6 @@ public class NetworkChangeNotifierTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void testNetworkChangeNotifier() throws Exception {
         CronetTestFramework testFramework = mTestRule.startCronetTestFramework();
         assertNotNull(testFramework);
