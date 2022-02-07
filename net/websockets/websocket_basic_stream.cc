@@ -249,6 +249,10 @@ std::string WebSocketBasicStream::GetSubProtocol() const {
 
 std::string WebSocketBasicStream::GetExtensions() const { return extensions_; }
 
+const NetLogWithSource& WebSocketBasicStream::GetNetLogWithSource() const {
+  return net_log_;
+}
+
 /*static*/
 std::unique_ptr<WebSocketBasicStream>
 WebSocketBasicStream::CreateWebSocketBasicStreamForTesting(

@@ -282,12 +282,18 @@ class FakeWebSocketStream : public WebSocketStream {
   // Returns the string passed to the constructor.
   std::string GetExtensions() const override { return extensions_; }
 
+  const NetLogWithSource& GetNetLogWithSource() const override {
+    return net_log_;
+  }
+
  private:
   // The string to return from GetSubProtocol().
   std::string protocol_;
 
   // The string to return from GetExtensions().
   std::string extensions_;
+
+  NetLogWithSource net_log_;
 };
 
 // To make the static initialisers easier to read, we use enums rather than
@@ -718,6 +724,7 @@ class MockWebSocketStream : public WebSocketStream {
   MOCK_METHOD0(Close, void());
   MOCK_CONST_METHOD0(GetSubProtocol, std::string());
   MOCK_CONST_METHOD0(GetExtensions, std::string());
+  MOCK_CONST_METHOD0(GetNetLogWithSource, NetLogWithSource&());
   MOCK_METHOD0(AsWebSocketStream, WebSocketStream*());
 };
 

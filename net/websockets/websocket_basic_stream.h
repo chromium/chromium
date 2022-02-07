@@ -130,6 +130,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
 
   std::string GetExtensions() const override;
 
+  const NetLogWithSource& GetNetLogWithSource() const override;
+
   ////////////////////////////////////////////////////////////////////////////
   // Methods for testing only.
 
