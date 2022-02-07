@@ -40,78 +40,6 @@
 #include "url/gurl.h"
 
 namespace cc {
-namespace {
-
-static void RasterizeSource(
-    const RasterSource* raster_source,
-    gpu::Mailbox* mailbox,
-    const gpu::SyncToken& sync_token,
-    bool texture_is_overlay_candidate,
-    const gfx::Size& resource_size,
-    viz::ResourceFormat resource_format,
-    const gfx::ColorSpace& color_space,
-    const gfx::Rect& raster_full_rect,
-    const gfx::Rect& playback_rect,
-    const gfx::AxisTransform2d& transform,
-    const RasterSource::PlaybackSettings& playback_settings,
-    viz::RasterContextProvider* context_provider,
-    bool is_using_raw_draw) {
-  gpu::raster::RasterInterface* ri = context_provider->RasterInterface();
-  bool mailbox_needs_clear = false;
-  if (mailbox->IsZero()) {
-    DCHECK(!sync_token.HasData());
-    auto* sii = context_provider->SharedImageInterface();
-    uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY |
-                     gpu::SHARED_IMAGE_USAGE_RASTER |
-                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    if (texture_is_overlay_candidate) {
-      flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    } else if (is_using_raw_draw) {
-      flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
-    }
-    *mailbox = sii->CreateSharedImage(
-        resource_format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
-    mailbox_needs_clear = true;
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  } else {
-    ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  }
-
-  // Assume legacy MSAA if sample count is positive.
-  gpu::raster::MsaaMode msaa_mode = playback_settings.msaa_sample_count > 0
-                                        ? gpu::raster::kMSAA
-                                        : gpu::raster::kNoMSAA;
-
-  // With Raw Draw, the framebuffer will be the rasterization target. It cannot
-  // support LCD text, so disable LCD text for Raw Draw backings.
-  // TODO(penghuang): remove it when GrSlug can be serialized.
-  bool is_raw_draw_backing = is_using_raw_draw && !texture_is_overlay_candidate;
-  bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;
-  ri->BeginRasterCHROMIUM(raster_source->background_color(),
-                          mailbox_needs_clear,
-                          playback_settings.msaa_sample_count, msaa_mode,
-                          use_lcd_text, color_space, mailbox->name);
-  gfx::Vector2dF recording_to_raster_scale = transform.scale();
-  recording_to_raster_scale.Scale(1 / raster_source->recording_scale_factor());
-  gfx::Size content_size = raster_source->GetContentSize(transform.scale());
-
-  // TODO(enne): could skip the clear on new textures, as the service side has
-  // to do that anyway.  resource_has_previous_content implies that the texture
-  // is not new, but the reverse does not hold, so more plumbing is needed.
-  ri->RasterCHROMIUM(
-      raster_source->GetDisplayItemList().get(),
-      playback_settings.image_provider, content_size, raster_full_rect,
-      playback_rect, transform.translation(), recording_to_raster_scale,
-      raster_source->requires_clear(),
-      const_cast<RasterSource*>(raster_source)->max_op_size_hint());
-  ri->EndRasterCHROMIUM();
-
-  // TODO(ericrk): Handle unpremultiply+dither for 4444 cases.
-  // https://crbug.com/789153
-}
-
-}  // namespace
 
 // Subclass for InUsePoolResource that holds ownership of a gpu-rastered backing
 // and does cleanup of the backing when destroyed.
@@ -199,18 +127,15 @@ void GpuRasterBufferProvider::RasterBufferImpl::Playback(
     const RasterSource::PlaybackSettings& playback_settings,
     const GURL& url) {
   TRACE_EVENT0("cc", "GpuRasterBuffer::Playback");
-  // The |before_raster_sync_token_| passed in here was created on the
-  // compositor thread, or given back with the texture for reuse. This call
-  // returns another SyncToken generated on the worker thread to synchronize
-  // with after the raster is complete.
-  after_raster_sync_token_ = client_->PlaybackOnWorkerThread(
-      &mailbox_, texture_is_overlay_candidate_, before_raster_sync_token_,
-      resource_size_, resource_format_, color_space_,
-      resource_has_previous_content_, raster_source, raster_full_rect,
-      raster_dirty_rect, new_content_id, transform, playback_settings, url,
-      creation_time_, depends_on_at_raster_decodes_,
-      depends_on_hardware_accelerated_jpeg_candidates_,
-      depends_on_hardware_accelerated_webp_candidates_);
+
+  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+      client_->worker_context_provider_, url.possibly_invalid_spec().c_str());
+  gpu::raster::RasterInterface* ri =
+      client_->worker_context_provider_->RasterInterface();
+  PlaybackOnWorkerThread(raster_source, raster_full_rect, raster_dirty_rect,
+                         new_content_id, transform, playback_settings, url);
+  after_raster_sync_token_ =
+      viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
 }
 
 bool GpuRasterBufferProvider::RasterBufferImpl::
@@ -326,59 +251,37 @@ uint64_t GpuRasterBufferProvider::SetReadyToDrawCallback(
 
 void GpuRasterBufferProvider::Shutdown() {}
 
-gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThread(
-    gpu::Mailbox* mailbox,
-    bool texture_is_overlay_candidate,
-    const gpu::SyncToken& sync_token,
-    const gfx::Size& resource_size,
-    viz::ResourceFormat resource_format,
-    const gfx::ColorSpace& color_space,
-    bool resource_has_previous_content,
+void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThread(
     const RasterSource* raster_source,
     const gfx::Rect& raster_full_rect,
     const gfx::Rect& raster_dirty_rect,
     uint64_t new_content_id,
     const gfx::AxisTransform2d& transform,
     const RasterSource::PlaybackSettings& playback_settings,
-    const GURL& url,
-    base::TimeTicks raster_buffer_creation_time,
-    bool depends_on_at_raster_decodes,
-    bool depends_on_hardware_accelerated_jpeg_candidates,
-    bool depends_on_hardware_accelerated_webp_candidates) {
+    const GURL& url) {
   RasterQuery query;
   query.depends_on_hardware_accelerated_jpeg_candidates =
-      depends_on_hardware_accelerated_jpeg_candidates;
+      depends_on_hardware_accelerated_jpeg_candidates_;
   query.depends_on_hardware_accelerated_webp_candidates =
-      depends_on_hardware_accelerated_webp_candidates;
-  gpu::SyncToken raster_finished_token = PlaybackOnWorkerThreadInternal(
-      mailbox, texture_is_overlay_candidate, sync_token, resource_size,
-      resource_format, color_space, resource_has_previous_content,
-      raster_source, raster_full_rect, raster_dirty_rect, new_content_id,
-      transform, playback_settings, url, depends_on_at_raster_decodes, &query);
+      depends_on_hardware_accelerated_webp_candidates_;
+  PlaybackOnWorkerThreadInternal(raster_source, raster_full_rect,
+                                 raster_dirty_rect, new_content_id, transform,
+                                 playback_settings, url, &query);
 
   if (query.raster_duration_query_id) {
     if (query.raster_start_query_id)
-      query.raster_buffer_creation_time = raster_buffer_creation_time;
+      query.raster_buffer_creation_time = creation_time_;
 
     // Note that it is important to scope the raster context lock to
     // PlaybackOnWorkerThreadInternal and release it before calling this
     // function to avoid a deadlock in
     // RasterQueryQueue::CheckRasterFinishedQueries which acquires the raster
     // context lock while holding a lock used in the function.
-    pending_raster_queries_->Append(std::move(query));
+    client_->pending_raster_queries_->Append(std::move(query));
   }
-
-  return raster_finished_token;
 }
 
-gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
-    gpu::Mailbox* mailbox,
-    bool texture_is_overlay_candidate,
-    const gpu::SyncToken& sync_token,
-    const gfx::Size& resource_size,
-    viz::ResourceFormat resource_format,
-    const gfx::ColorSpace& color_space,
-    bool resource_has_previous_content,
+void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
     const RasterSource* raster_source,
     const gfx::Rect& raster_full_rect,
     const gfx::Rect& raster_dirty_rect,
@@ -386,17 +289,16 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
     const gfx::AxisTransform2d& transform,
     const RasterSource::PlaybackSettings& playback_settings,
     const GURL& url,
-    bool depends_on_at_raster_decodes,
     RasterQuery* query) {
-  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-      worker_context_provider_, url.possibly_invalid_spec().c_str());
-  gpu::raster::RasterInterface* ri = scoped_context.RasterInterface();
+  gpu::raster::RasterInterface* ri =
+      client_->worker_context_provider_->RasterInterface();
   DCHECK(ri);
 
-  const bool measure_raster_metric = bernoulli_distribution_(random_generator_);
+  const bool measure_raster_metric =
+      client_->bernoulli_distribution_(client_->random_generator_);
 
   gfx::Rect playback_rect = raster_full_rect;
-  if (resource_has_previous_content) {
+  if (resource_has_previous_content_) {
     playback_rect.Intersect(raster_dirty_rect);
   }
   DCHECK(!playback_rect.IsEmpty())
@@ -413,12 +315,14 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
     // work that depends on at-raster image decodes. This is because we want the
     // delay to always include image decoding and uploading time, and at-raster
     // decodes should be relatively rare.
-    if (!depends_on_at_raster_decodes) {
+    if (!depends_on_at_raster_decodes_) {
       ri->GenQueriesEXT(1, &query->raster_start_query_id);
       DCHECK_GT(query->raster_start_query_id, 0u);
       ri->QueryCounterEXT(query->raster_start_query_id,
                           GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM);
     }
+#else
+    std::ignore = depends_on_at_raster_decodes_;
 #endif
 
     // Use a query to time the GPU side work for rasterizing this tile.
@@ -432,19 +336,77 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
     absl::optional<base::ElapsedTimer> timer;
     if (measure_raster_metric)
       timer.emplace();
-    RasterizeSource(raster_source, mailbox, sync_token,
-                    texture_is_overlay_candidate, resource_size,
-                    resource_format, color_space, raster_full_rect,
-                    playback_rect, transform, playback_settings,
-                    worker_context_provider_, is_using_raw_draw_);
+    RasterizeSource(raster_source, raster_full_rect, playback_rect, transform,
+                    playback_settings);
     if (measure_raster_metric) {
       query->worker_raster_duration = timer->Elapsed();
       ri->EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
     }
   }
+}
 
-  // Generate sync token for cross context synchronization.
-  return viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
+void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
+    const RasterSource* raster_source,
+    const gfx::Rect& raster_full_rect,
+    const gfx::Rect& playback_rect,
+    const gfx::AxisTransform2d& transform,
+    const RasterSource::PlaybackSettings& playback_settings) {
+  gpu::raster::RasterInterface* ri =
+      client_->worker_context_provider_->RasterInterface();
+  bool mailbox_needs_clear = false;
+  if (mailbox_.IsZero()) {
+    DCHECK(!before_raster_sync_token_.HasData());
+    auto* sii = client_->worker_context_provider_->SharedImageInterface();
+    uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                     gpu::SHARED_IMAGE_USAGE_RASTER |
+                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    if (texture_is_overlay_candidate_) {
+      flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    } else if (client_->is_using_raw_draw_) {
+      flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
+    }
+    mailbox_ =
+        sii->CreateSharedImage(resource_format_, resource_size_, color_space_,
+                               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                               flags, gpu::kNullSurfaceHandle);
+    mailbox_needs_clear = true;
+    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  } else {
+    ri->WaitSyncTokenCHROMIUM(before_raster_sync_token_.GetConstData());
+  }
+
+  // Assume legacy MSAA if sample count is positive.
+  gpu::raster::MsaaMode msaa_mode = playback_settings.msaa_sample_count > 0
+                                        ? gpu::raster::kMSAA
+                                        : gpu::raster::kNoMSAA;
+
+  // With Raw Draw, the framebuffer will be the rasterization target. It cannot
+  // support LCD text, so disable LCD text for Raw Draw backings.
+  // TODO(penghuang): remove it when GrSlug can be serialized.
+  bool is_raw_draw_backing =
+      client_->is_using_raw_draw_ && !texture_is_overlay_candidate_;
+  bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;
+  ri->BeginRasterCHROMIUM(raster_source->background_color(),
+                          mailbox_needs_clear,
+                          playback_settings.msaa_sample_count, msaa_mode,
+                          use_lcd_text, color_space_, mailbox_.name);
+  gfx::Vector2dF recording_to_raster_scale = transform.scale();
+  recording_to_raster_scale.Scale(1 / raster_source->recording_scale_factor());
+  gfx::Size content_size = raster_source->GetContentSize(transform.scale());
+
+  // TODO(enne): could skip the clear on new textures, as the service side has
+  // to do that anyway.  resource_has_previous_content implies that the texture
+  // is not new, but the reverse does not hold, so more plumbing is needed.
+  ri->RasterCHROMIUM(
+      raster_source->GetDisplayItemList().get(),
+      playback_settings.image_provider, content_size, raster_full_rect,
+      playback_rect, transform.translation(), recording_to_raster_scale,
+      raster_source->requires_clear(),
+      const_cast<RasterSource*>(raster_source)->max_op_size_hint());
+  ri->EndRasterCHROMIUM();
+
+  // TODO(ericrk): Handle unpremultiply+dither for 4444 cases.
+  // https://crbug.com/789153
 }
 
 bool GpuRasterBufferProvider::ShouldUnpremultiplyAndDitherResource(
