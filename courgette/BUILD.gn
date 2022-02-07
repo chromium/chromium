@@ -232,8 +232,7 @@ test("courgette_unittests") {
   data = [ "testdata/" ]
 
   if (is_fuchsia) {
-    # TODO(crbug.com/1256502): Switch back to CFv2 once the bug is fixed.
-    use_cfv2 = false
+    use_cfv2 = true
   }
 }
 

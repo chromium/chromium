@@ -3783,16 +3783,9 @@ test("base_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
 
-    # TODO(crbug.com/1256502): Switch back to CFv2 and delete the .test-cmx once
-    # the bug is fixed.
-    use_cfv2 = false
-    if (use_cfv2) {
-      additional_manifest_fragments =
-          [ "//build/config/fuchsia/test/logger.shard.test-cml" ]
-    } else {
-      additional_manifest_fragments =
-          [ "//build/config/fuchsia/test/test_logger_capabilities.test-cmx" ]
-    }
+    use_cfv2 = true
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/logger.shard.test-cml" ]
   }
 
   if (!is_fuchsia && !is_ios) {
