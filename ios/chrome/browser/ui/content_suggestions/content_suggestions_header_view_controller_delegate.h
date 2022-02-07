@@ -12,9 +12,6 @@
 // Delegate for the ContentSuggestionsHeaderViewController.
 @protocol ContentSuggestionsHeaderViewControllerDelegate
 
-// Returns whether a context menu is visible.
-- (BOOL)isContextMenuVisible;
-
 // Returns whether the collection is scrolled to the omnibox.
 - (BOOL)isScrolledToMinimumHeight;
 

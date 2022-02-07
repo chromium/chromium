@@ -48,9 +48,6 @@ class WebState;
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
-// Dismisses all modals owned by the NTP.
-- (void)dismissModals;
-
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;

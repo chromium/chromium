@@ -107,10 +107,7 @@ const CGFloat kCardBorderRadius = 11;
         [self.collectionView
             deleteSections:[NSIndexSet indexSetWithIndex:section]];
       }
-      completion:^(BOOL) {
-        // The context menu could be displayed for the deleted entries.
-        [self.suggestionCommandHandler dismissModals];
-      }];
+               completion:nil];
 }
 
 #pragma mark - UIViewController

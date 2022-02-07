@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
@@ -34,7 +33,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_alert_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
@@ -101,7 +99,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // TemplateURL used to get the search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 // Authentication Service to get the current user's avatar.
@@ -290,37 +287,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _URLLoader->Load(params);
 }
 
-- (void)displayContextMenuForMostVisitedItem:(CollectionViewItem*)item
-                                     atPoint:(CGPoint)touchLocation
-                                 atIndexPath:(NSIndexPath*)indexPath {
-  DCHECK(_browser);
-  // No context menu for action buttons.
-  if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
-    return;
-  }
-
-  // Unfocus the omnibox as the omnibox can disappear when choosing some
-  // options. See crbug.com/928237.
-  [self.dispatcher cancelOmniboxEdit];
-
-  ContentSuggestionsMostVisitedItem* mostVisitedItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
-  self.alertCoordinator = [ContentSuggestionsAlertFactory
-      alertCoordinatorForMostVisitedItem:mostVisitedItem
-                        onViewController:self.suggestionsViewController
-                             withBrowser:self.browser
-                                 atPoint:touchLocation
-                             atIndexPath:indexPath
-                          commandHandler:self];
-
-  [self.alertCoordinator start];
-}
-
-- (void)dismissModals {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
-}
-
 // TODO(crbug.com/761096) : Promo handling should be tested.
 - (void)handlePromoTapped {
   NotificationPromoWhatsNew* notificationPromo =
@@ -452,10 +418,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 #pragma mark - ContentSuggestionsHeaderViewControllerDelegate
-
-- (BOOL)isContextMenuVisible {
-  return self.alertCoordinator.isVisible;
-}
 
 - (BOOL)isScrolledToMinimumHeight {
   return [self.ntpViewController isScrolledToMinimumHeight];

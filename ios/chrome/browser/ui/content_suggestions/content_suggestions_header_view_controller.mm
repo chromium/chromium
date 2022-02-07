@@ -394,8 +394,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)loadVoiceSearch:(id)sender {
-  [self.commandHandler prepareForVoiceSearchPresentation];
-
   if ([self.delegate ignoreLoadRequests])
     return;
   DCHECK(self.voiceSearchIsEnabled);
@@ -706,12 +704,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     return;
 
   self.omniboxFocused = NO;
-  if ([self.delegate isContextMenuVisible]) {
-    return;
-  }
 
   [self shiftTilesDown];
-  [self.commandHandler updateForLocationBarResignedFirstResponder];
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {

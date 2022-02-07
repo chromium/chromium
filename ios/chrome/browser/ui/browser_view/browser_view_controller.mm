@@ -1120,9 +1120,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   web::WebState* webState = self.currentWebState;
 
   if (webState) {
-    if (self.isNTPActiveForCurrentWebState) {
-      [[self ntpCoordinatorForWebState:webState] dismissModals];
-    }
     [self.dispatcher closeFindInPage];
     [self.textZoomHandler closeTextZoom];
   }

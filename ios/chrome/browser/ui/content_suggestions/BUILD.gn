@@ -4,8 +4,6 @@
 
 source_set("content_suggestions") {
   sources = [
-    "content_suggestions_alert_factory.h",
-    "content_suggestions_alert_factory.mm",
     "content_suggestions_category_wrapper.h",
     "content_suggestions_category_wrapper.mm",
     "content_suggestions_coordinator.h",

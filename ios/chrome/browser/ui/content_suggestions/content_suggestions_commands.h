@@ -21,13 +21,6 @@
 - (void)openMostRecentTab;
 // Handles the action that dismisses the "Return to Recent Tab" item.
 - (void)hideMostRecentTab;
-// Displays a context menu for the |mostVisitedItem|.
-- (void)displayContextMenuForMostVisitedItem:
-            (CollectionViewItem*)mostVisitedItem
-                                     atPoint:(CGPoint)touchLocation
-                                 atIndexPath:(NSIndexPath*)indexPath;
-// Dismisses the context menu if it is displayed.
-- (void)dismissModals;
 // Handles the actions following a tap on the promo.
 - (void)handlePromoTapped;
 // Handles the actions following a tap on the "Manage Activity" item in the

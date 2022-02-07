@@ -57,9 +57,6 @@ class WebState;
 // Delegate used to communicate to communicate events to the DiscoverFeed.
 @property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
 
-// Dismisses all modals owned by the NTP mediator.
-- (void)dismissModals;
-
 // Stop any scrolling in the scroll view.
 - (void)stopScrolling;
 

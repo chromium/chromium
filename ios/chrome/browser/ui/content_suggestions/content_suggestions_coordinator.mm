@@ -305,27 +305,14 @@
 
 #pragma mark - ContentSuggestionsHeaderCommands
 
-- (void)prepareForVoiceSearchPresentation {
-  [self.ntpMediator dismissModals];
-}
-
 - (void)updateForHeaderSizeChange {
   [self.ntpCommandHandler updateDiscoverFeedLayout];
-}
-
-- (void)updateForLocationBarResignedFirstResponder {
-  // TODO(crbug.com/1200303): Check if doing this is actually needed.
-  [self.ntpMediator dismissModals];
 }
 
 #pragma mark - Public methods
 
 - (UIView*)view {
   return self.suggestionsViewController.view;
-}
-
-- (void)dismissModals {
-  [self.ntpMediator dismissModals];
 }
 
 - (void)stopScrolling {

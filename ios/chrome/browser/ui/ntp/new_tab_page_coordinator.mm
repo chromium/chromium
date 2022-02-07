@@ -454,10 +454,6 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   _webState = webState;
 }
 
-- (void)dismissModals {
-  [self.contentSuggestionsCoordinator dismissModals];
-}
-
 - (void)stopScrolling {
   if (!self.contentSuggestionsCoordinator) {
     return;
