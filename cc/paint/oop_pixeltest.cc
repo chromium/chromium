@@ -744,7 +744,13 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Android has slight differences in color.
-  FuzzyPixelOffByOneComparator comparator(/*discard_alpha=*/false);
+  FuzzyPixelComparator comparator(
+      /*discard_alpha=*/false,
+      /*error_pixels_percentage_limit=*/100.0f,
+      /*small_error_pixels_percentage_limit=*/0.0f,
+      /*avg_abs_error_limit=*/1.2f,
+      /*max_abs_error_limit=*/2,
+      /*small_error_threshold=*/0);
 #else
   ExactPixelComparator comparator(/*discard_alpha=*/false);
 #endif
