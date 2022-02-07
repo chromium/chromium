@@ -16,6 +16,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/webrtc/api/metronome/metronome.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
 namespace blink {
@@ -60,7 +61,7 @@ class RTC_EXPORT MetronomeSource final
     ~ListenerHandle();
 
     void OnMetronomeTick();
-    void MaybeRunCallbackOnTaskRunner();
+    void MaybeRunCallback();
 
     void Inactivate();
 
@@ -95,6 +96,11 @@ class RTC_EXPORT MetronomeSource final
   // The source is active as long as it has listeners. The source stays alive
   // until it has been deactivated by removing all listeners.
   bool IsActive();
+
+  base::TimeDelta metronome_tick() const { return metronome_tick_; }
+
+  // Creates a webrtc::Metronome which is backed by this metronome.
+  std::unique_ptr<webrtc::Metronome> CreateWebRtcMetronome();
 
  private:
   friend class base::RefCountedThreadSafe<MetronomeSource>;
