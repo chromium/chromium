@@ -5832,6 +5832,22 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_120",
+                    "params": {
+                        "TimeoutLengthMs": "120"
+                    },
+                    "enable_features": [
+                        "PreemptiveLinkToTextGeneration"
+                    ]
+                }
+            ]
         }
     ],
     "SidePanelDragAndDrop": [
