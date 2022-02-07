@@ -27,6 +27,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
     const blink::SharedWorkerToken& token,
     const url::Origin& constructor_origin,
     const std::string& user_agent,
+    const std::string& full_user_agent,
     const std::string& reduced_user_agent,
     const blink::UserAgentMetadata& ua_metadata,
     bool pause_on_start,
@@ -49,7 +50,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
     ukm::SourceId ukm_source_id) {
   // Bound to the lifetime of the underlying blink::WebSharedWorker instance.
   new EmbeddedSharedWorkerStub(
-      std::move(info), token, constructor_origin, user_agent,
+      std::move(info), token, constructor_origin, user_agent, full_user_agent,
       reduced_user_agent, ua_metadata, pause_on_start, devtools_worker_token,
       renderer_preferences, std::move(preference_watcher_receiver),
       std::move(content_settings), std::move(service_worker_container_info),

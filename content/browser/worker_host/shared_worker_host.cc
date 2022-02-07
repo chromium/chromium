@@ -329,6 +329,7 @@ void SharedWorkerHost::Start(
       std::move(info), token_, instance_.storage_key().origin(),
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
           GetProcessHost()->GetBrowserContext()),
+      GetContentClient()->browser()->GetFullUserAgent(),
       GetContentClient()->browser()->GetReducedUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),

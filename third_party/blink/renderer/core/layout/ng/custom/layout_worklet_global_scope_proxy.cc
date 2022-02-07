@@ -40,9 +40,11 @@ LayoutWorkletGlobalScopeProxy::LayoutWorkletGlobalScopeProxy(
 
   LocalFrameClient* frame_client = frame->Client();
   const String user_agent =
-      RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
-          ? frame_client->ReducedUserAgent()
-          : frame_client->UserAgent();
+      RuntimeEnabledFeatures::SendFullUserAgentAfterReductionEnabled(window)
+          ? frame_client->FullUserAgent()
+          : RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
+                ? frame_client->ReducedUserAgent()
+                : frame_client->UserAgent();
 
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,

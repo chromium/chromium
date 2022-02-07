@@ -1051,8 +1051,8 @@ void ServiceWorkerVersion::ExecuteScriptForTest(
 
 void ServiceWorkerVersion::SetValidOriginTrialTokens(
     const blink::TrialTokenValidator::FeatureToTokensMap& tokens) {
-  origin_trial_tokens_ = validator_.GetValidTokens(
-      url::Origin::Create(scope()), tokens, clock_->Now());
+  origin_trial_tokens_ =
+      validator_.GetValidTokens(key_.origin(), tokens, clock_->Now());
 }
 
 void ServiceWorkerVersion::SetDevToolsAttached(bool attached) {
@@ -1105,8 +1105,7 @@ void ServiceWorkerVersion::SetMainScriptResponse(
   //     wasn't set in the entry.
   if (!origin_trial_tokens_) {
     origin_trial_tokens_ = validator_.GetValidTokensFromHeaders(
-        url::Origin::Create(scope()), main_script_response_->headers.get(),
-        clock_->Now());
+        key_.origin(), main_script_response_->headers.get(), clock_->Now());
   }
 
   if (context_) {
@@ -1887,11 +1886,16 @@ void ServiceWorkerVersion::StartWorkerInternal() {
       outside_fetch_client_settings_object_.Clone();
 
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  params->user_agent = (origin_trial_tokens_ &&
-                        origin_trial_tokens_->contains("UserAgentReduction"))
-                           ? browser_client->GetReducedUserAgent()
-                           : browser_client->GetUserAgentBasedOnPolicy(
-                                 context_->wrapper()->browser_context());
+  if (origin_trial_tokens_ &&
+      origin_trial_tokens_->contains("SendFullUserAgentAfterReduction")) {
+    params->user_agent = browser_client->GetFullUserAgent();
+  } else if (origin_trial_tokens_ &&
+             origin_trial_tokens_->contains("UserAgentReduction")) {
+    params->user_agent = browser_client->GetReducedUserAgent();
+  } else {
+    params->user_agent = browser_client->GetUserAgentBasedOnPolicy(
+        context_->wrapper()->browser_context());
+  }
   params->ua_metadata = browser_client->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;
