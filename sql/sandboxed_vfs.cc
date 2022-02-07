@@ -116,6 +116,33 @@ base::Time SqliteEpoch() {
   return base::Time::FromJsTime(-kUnixEpochAsJulianDay * kMicroSecondsPerDay);
 }
 
+#if DCHECK_IS_ON()
+// `full_path_cstr` must be a filename argument passed to the VFS from SQLite.
+SandboxedVfsFileType VfsFileTypeFromPath(const char* full_path_cstr) {
+  base::StringPiece full_path(full_path_cstr);
+
+  const char* database_file_cstr = sqlite3_filename_database(full_path_cstr);
+  base::StringPiece database_file(database_file_cstr);
+  if (full_path == database_file)
+    return SandboxedVfsFileType::kDatabase;
+
+  const char* journal_file_cstr = sqlite3_filename_journal(full_path_cstr);
+  base::StringPiece journal_file(journal_file_cstr);
+  if (full_path == journal_file)
+    return SandboxedVfsFileType::kJournal;
+
+  const char* wal_file_cstr = sqlite3_filename_wal(full_path_cstr);
+  base::StringPiece wal_file(wal_file_cstr);
+  if (full_path == wal_file)
+    return SandboxedVfsFileType::kWal;
+
+  NOTREACHED()
+      << "Argument is not a file name buffer passed from SQLite to a VFS: "
+      << full_path;
+  return SandboxedVfsFileType::kDatabase;
+}
+#endif  // DCHECK_IS_ON()
+
 }  // namespace
 
 // static
@@ -149,8 +176,11 @@ int SandboxedVfs::Open(const char* full_path,
     return Open(full_path, result_file, new_flags, granted_flags);
   }
 
-  SandboxedVfsFile::Create(std::move(file), std::move(file_path), this,
-                           result_file);
+  SandboxedVfsFile::Create(std::move(file), std::move(file_path),
+#if DCHECK_IS_ON()
+                           VfsFileTypeFromPath(full_path),
+#endif  // DCHECK_IS_ON()
+                           this, result_file);
   if (granted_flags)
     *granted_flags = requested_flags;
   return SQLITE_OK;

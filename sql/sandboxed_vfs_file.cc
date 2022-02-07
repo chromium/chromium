@@ -11,6 +11,8 @@
 
 #include "base/check_op.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -129,12 +131,19 @@ const sqlite3_io_methods* GetSqliteIoMethods() {
 // static
 void SandboxedVfsFile::Create(base::File file,
                               base::FilePath file_path,
+#if DCHECK_IS_ON()
+                              SandboxedVfsFileType file_type,
+#endif  // DCHECK_IS_ON()
                               SandboxedVfs* vfs,
                               sqlite3_file& buffer) {
   SandboxedVfsFileSqliteBridge& bridge =
       SandboxedVfsFileSqliteBridge::FromSqliteFile(buffer);
   bridge.sandboxed_vfs_file =
-      new SandboxedVfsFile(std::move(file), std::move(file_path), vfs);
+      new SandboxedVfsFile(std::move(file), std::move(file_path),
+#if DCHECK_IS_ON()
+                           file_type,
+#endif  // DCHECK_IS_ON()
+                           vfs);
   bridge.sqlite_file.pMethods = GetSqliteIoMethods();
 }
 
@@ -154,6 +163,21 @@ int SandboxedVfsFile::Read(void* buffer, int size, sqlite3_int64 offset) {
   DCHECK(buffer);
   DCHECK_GE(size, 0);
   DCHECK_GE(offset, 0);
+
+#if DCHECK_IS_ON()
+  constexpr int kSqliteDatabaseHeaderOffset = 0;
+  constexpr int kSqliteDatabaseHeaderSize = 100;
+  // SQLite's locking protocol only acquires locks on the database file. The
+  // journal and the WAL file are always unlocked. Also, as an optimization,
+  // SQLite first reads the database header without locking the file.
+  DCHECK(sqlite_lock_mode_ > SQLITE_LOCK_NONE ||
+         file_type_ != SandboxedVfsFileType::kDatabase ||
+         (offset == kSqliteDatabaseHeaderOffset &&
+          size == kSqliteDatabaseHeaderSize))
+      << "Read from database file with lock mode " << sqlite_lock_mode_
+      << "of size" << size << " at offset " << offset;
+#endif  // DCHECK_IS_ON()
+
   char* data = reinterpret_cast<char*>(buffer);
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
@@ -192,6 +216,15 @@ int SandboxedVfsFile::Write(const void* buffer,
   DCHECK(buffer);
   DCHECK_GE(size, 0);
   DCHECK_GE(offset, 0);
+
+#if DCHECK_IS_ON()
+  // SQLite's locking protocol only acquires locks on the database file. The
+  // journal and the WAL file are always unlocked.
+  DCHECK(sqlite_lock_mode_ == SQLITE_LOCK_EXCLUSIVE ||
+         file_type_ != SandboxedVfsFileType::kDatabase)
+      << "Write to database file with lock mode " << sqlite_lock_mode_;
+#endif  // DCHECK_IS_ON()
+
   const char* data = reinterpret_cast<const char*>(buffer);
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
@@ -286,6 +319,10 @@ bool IsExclusiveLockMode(int sqlite_lock_mode) {
 }  // namespace
 
 int SandboxedVfsFile::Lock(int mode) {
+  DCHECK_GE(mode, sqlite_lock_mode_)
+      << "SQLite asked the VFS to lock the file up to mode " << mode
+      << " but the file is already locked at mode " << sqlite_lock_mode_;
+
 #if BUILDFLAG(IS_FUCHSIA)
   return SQLITE_IOERR_LOCK;
 #else
@@ -360,6 +397,10 @@ int SandboxedVfsFile::Lock(int mode) {
 }
 
 int SandboxedVfsFile::Unlock(int mode) {
+  DCHECK_LE(mode, sqlite_lock_mode_)
+      << "SQLite asked the VFS to unlock the file down to mode " << mode
+      << " but the file is already at mode " << sqlite_lock_mode_;
+
   // No-op if we're already unlocked or at the requested mode.
   if (sqlite_lock_mode_ == mode || sqlite_lock_mode_ == SQLITE_LOCK_NONE)
     return SQLITE_OK;
@@ -535,11 +576,18 @@ int SandboxedVfsFile::Unfetch(sqlite3_int64 offset, void* fetch_result) {
 
 SandboxedVfsFile::SandboxedVfsFile(base::File file,
                                    base::FilePath file_path,
+#if DCHECK_IS_ON()
+                                   SandboxedVfsFileType file_type,
+#endif  // DCHECK_IS_ON()
                                    SandboxedVfs* vfs)
     : file_(std::move(file)),
       sqlite_lock_mode_(SQLITE_LOCK_NONE),
       vfs_(vfs),
-      file_path_(std::move(file_path)) {}
+#if DCHECK_IS_ON()
+      file_type_(file_type),
+#endif  // DCHECK_IS_ON()
+      file_path_(std::move(file_path)) {
+}
 
 SandboxedVfsFile::~SandboxedVfsFile() = default;
 
