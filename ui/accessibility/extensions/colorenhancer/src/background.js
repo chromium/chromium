@@ -47,13 +47,13 @@ class Background {
    * @private
    */
   updateTabs_() {
-    this.forEachTab_(async (tab) => {
+    this.forEachTab_((tab) => {
       const msg = {
-        'delta': await this.storage_.getSiteDelta(Common.siteFromUrl(tab.url)),
-        'severity': await this.storage_.getDefaultSeverity(),
-        'type': await this.storage_.getDefaultType(),
-        'simulate': await this.storage_.getDefaultSimulate(),
-        'enable': await this.storage_.getDefaultEnable()
+        'delta': this.storage_.getSiteDelta(Common.siteFromUrl(tab.url)),
+        'severity': this.storage_.getDefaultSeverity(),
+        'type': this.storage_.getDefaultType(),
+        'simulate': this.storage_.getDefaultSimulate(),
+        'enable': this.storage_.getDefaultEnable()
       };
       Common.debugPrint(
           'updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
@@ -63,21 +63,20 @@ class Background {
   }
 
   /** @private */
-  async onInitReceived_(sender) {
+  onInitReceived_(sender) {
     let delta;
     if (sender.tab) {
-      delta =
-          await this.storage_.getSiteDelta(Common.siteFromUrl(sender.tab.url));
+      delta = this.storage_.getSiteDelta(Common.siteFromUrl(sender.tab.url));
     } else {
-      delta = await this.storage_.getDefaultDelta();
+      delta = this.storage_.getDefaultDelta();
     }
 
     return {
       'delta': delta,
-      'severity': await this.storage_.getDefaultSeverity(),
-      'type': await this.storage_.getDefaultType(),
-      'simulate': await this.storage_.getDefaultSimulate(),
-      'enable': await this.storage_.getDefaultEnable()
+      'severity': this.storage_.getDefaultSeverity(),
+      'type': this.storage_.getDefaultType(),
+      'simulate': this.storage_.getDefaultSimulate(),
+      'enable': this.storage_.getDefaultEnable()
     };
   }
 
@@ -91,16 +90,15 @@ class Background {
     chrome.runtime.onMessage.addListener(
         (message, sender, sendResponse) => {
           if (message === 'init') {
-            this.onInitReceived_(sender).then(sendResponse);
+            this.onInitReceived_(sender);
+            sendResponse();
             return true;  // Keep message context open for async response.
           } else if (message === 'updateTabs') {
             this.updateTabs_();
           }
         });
     chrome.storage.onChanged.addListener(this.updateTabs_.bind(this));
-
     //TODO(mustaq): Handle uninstall
-
   }
 }
 

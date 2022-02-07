@@ -125,8 +125,8 @@ class Popup {
    * Update the popup controls based on settings for this site or the default.
    * @return {boolean} True if settings are valid and update performed.
    */
-  async update() {
-    const type = await storage.getDefaultType();
+  update() {
+    const type = storage.getDefaultType();
     let validType = false;
     Object.values(CvdType).forEach((cvdType) => {
       if (cvdType == type) {
@@ -139,21 +139,21 @@ class Popup {
       return false;
 
     if (this.site) {
-      Common.$('delta').value = await storage.getSiteDelta(this.site);
+      Common.$('delta').value = storage.getSiteDelta(this.site);
     } else {
-      Common.$('delta').value = await storage.getDefaultDelta();
+      Common.$('delta').value = storage.getDefaultDelta();
     }
 
-    Common.$('severity').value = await storage.getDefaultSeverity();
+    Common.$('severity').value = storage.getDefaultSeverity();
 
     if (!Common.$('setup-panel').classList.contains('collapsed'))
-      this.setCvdTypeSelection(await storage.getDefaultType());
-    Common.$('enable').checked = await storage.getDefaultEnable();
+      this.setCvdTypeSelection(storage.getDefaultType());
+    Common.$('enable').checked = storage.getDefaultEnable();
 
     Common.debugPrint(
         'update: ' +
         ' del=' + Common.$('delta').value + ' sev=' +
-        Common.$('severity').value + ' typ=' + await storage.getDefaultType() +
+        Common.$('severity').value + ' typ=' + storage.getDefaultType() +
         ' enb=' + Common.$('enable').checked + ' for ' + this.site);
     chrome.runtime.sendMessage('updateTabs');
     return true;
@@ -167,9 +167,11 @@ class Popup {
   onDeltaChange(value) {
     Common.debugPrint('onDeltaChange: ' + value + ' for ' + this.site);
     if (this.site) {
-      storage.setSiteDelta(this.site, value).then(this.update.bind(this));
+      storage.setSiteDelta(this.site, value);
+      this.update();
     }
-    storage.setDefaultDelta(value).then(this.update.bind(this));
+    storage.setDefaultDelta(value);
+    this.update();
   }
 
   /**
@@ -179,15 +181,14 @@ class Popup {
    */
   onSeverityChange(value) {
     Common.debugPrint('onSeverityChange: ' + value + ' for ' + this.site);
-    storage.setDefaultSeverity(value).then(() => {
-      this.update();
-      // Apply filter to popup swatches.
-      const filter =
-          cvd.getDefaultCvdCorrectionFilter(this.getCvdTypeSelection(), value);
-      cvd.injectColorEnhancementFilter(filter);
-      // Force a refresh.
-      window.getComputedStyle(document.documentElement, null);
-    });
+    storage.setDefaultSeverity(value);
+    this.update();
+    // Apply filter to popup swatches.
+    const filter =
+        cvd.getDefaultCvdCorrectionFilter(this.getCvdTypeSelection(), value);
+    cvd.injectColorEnhancementFilter(filter);
+    // Force a refresh.
+    window.getComputedStyle(document.documentElement, null);
   }
 
   /**
@@ -197,11 +198,10 @@ class Popup {
    */
   onTypeChange(value) {
     Common.debugPrint('onTypeChange: ' + value + ' for ' + this.site);
-    storage.setDefaultType(value).then(() => {
-      this.update();
-      Common.$('severity').value = 0;
-      this.updateControls();
-    });
+    storage.setDefaultType(value);
+    this.update();
+    Common.$('severity').value = 0;
+    this.updateControls();
   }
 
   /**
@@ -211,12 +211,11 @@ class Popup {
   */
   onEnableChange(value) {
     Common.debugPrint('onEnableChange: ' + value + ' for ' + this.site);
-    storage.setDefaultEnable(value).then(() => {
-      if (!this.update()) {
-        // Settings are not valid for a reconfiguration.
-        Common.$('setup').onclick();
-      }
-    });
+    storage.setDefaultEnable(value);
+    if (!this.update()) {
+      // Settings are not valid for a reconfiguration.
+      Common.$('setup').onclick();
+    }
   }
 
   /**
@@ -231,12 +230,12 @@ class Popup {
       elem.textContent = chrome.i18n.getMessage(msg);
     }
 
-    Common.$('setup').onclick = async () => {
+    Common.$('setup').onclick = () => {
       Common.$('setup-panel').classList.remove('collapsed');
       // Store current settings in the event of a canceled setup.
       this.restoreSettings = {
-        type: await storage.getDefaultType(),
-        severity: await storage.getDefaultSeverity()
+        type: storage.getDefaultType(),
+        severity: storage.getDefaultSeverity()
       };
       // Initialize controls based on current settings.
       this.setCvdTypeSelection(this.restoreSettings.type);

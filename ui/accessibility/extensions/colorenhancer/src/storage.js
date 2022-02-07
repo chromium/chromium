@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // TODO(wnwen): Wrap calls.
-// TODO(anastasi): Change interface to remove unneeded promises.
 
 /** @typedef {CvdType|number|boolean} */
 let StoredValue;
@@ -124,62 +123,50 @@ class Storage {
     return delta >= 0 && delta <= 1;
   }
 
-  /** @return {Promise<number>} */
+  /** @return {number} */
   getDefaultDelta() {
-    return new Promise(resolve => {
-      resolve(this.defaultDelta_);
-    });
+    return this.defaultDelta_;
   }
 
   /**
    * @param {number} delta
-   * @return {Promise}
    */
   setDefaultDelta(delta) {
     if (!this.validDelta_(delta)) {
       delta = Storage.DEFAULT_DELTA;
     }
     this.defaultDelta_ = delta;
-    return new Promise(
-        resolve => this.store_(Storage.DELTA_TAG, delta, resolve));
+    this.store_(Storage.DELTA_TAG, delta);
   }
 
   /**
    * @param {string} site
-   * @return {Promise<number>}
+   * @return {number}
    */
   getSiteDelta(site) {
-    return new Promise(resolve => {
-      const delta = this.siteDeltas_[site];
-      if (!this.validDelta_(delta)) {
-        this.setSiteDelta(site, this.defaultDelta_);
-        resolve(this.defaultDelta_);
-        return;
-      }
-      resolve(delta);
-    });
+    const delta = this.siteDeltas_[site];
+    if (!this.validDelta_(delta)) {
+      this.setSiteDelta(site, this.defaultDelta_);
+      return this.defaultDelta_;
+    }
+    return delta;
   }
 
   /**
    * @param {string} site
    * @param {number} delta
-   * @return {Promise}
    */
   setSiteDelta(site, delta) {
-    return new Promise(resolve => {
-      if (!this.validDelta_(delta)) {
-        delta = this.defaultDelta_;
-      }
-      this.siteDeltas_[site] = delta;
-      this.store_(Storage.PER_SITE_DELTA_TAG, this.siteDeltas_, resolve);
-    });
+    if (!this.validDelta_(delta)) {
+      delta = this.defaultDelta_;
+    }
+    this.siteDeltas_[site] = delta;
+    this.store_(Storage.PER_SITE_DELTA_TAG, this.siteDeltas_);
   }
 
-  /** @return {Promise} */
   resetSiteDeltas() {
     this.siteDeltas_ = {};
-    return new Promise(
-        resolve => this.store_(Storage.PER_SITE_DELTA_TAG, {}, resolve));
+    this.store_(Storage.PER_SITE_DELTA_TAG, {});
   }
 
   // ======= Severity setting =======
@@ -193,24 +180,20 @@ class Storage {
     return severity >= 0 && severity <= 1;
   }
 
-  /** @return {Promise<number>} */
+  /** @return {number} */
   getDefaultSeverity() {
-    return new Promise(resolve => {
-      resolve(this.defaultSeverity_);
-    });
+    return this.defaultSeverity_;
   }
 
   /**
    * @param {number} severity
-   * @return {Promise}
    */
   setDefaultSeverity(severity) {
     if (!this.validSeverity_(severity)) {
       severity = Storage.DEFAULT_SEVERITY;
     }
     this.defaultSeverity_ = severity;
-    return new Promise(
-        resolve => this.store_(Storage.SEVERITY_TAG, severity, resolve));
+    this.store_(Storage.SEVERITY_TAG, severity);
   }
 
   // ======= Type setting =======
@@ -224,67 +207,56 @@ class Storage {
     return Object.values(CvdType).includes(type);
   }
 
-  /** @return {Promise<!CvdType|Storage.INVALID_TYPE_PLACEHOLDER>} */
+  /** @return {!CvdType|Storage.INVALID_TYPE_PLACEHOLDER} */
   getDefaultType() {
-    return new Promise(resolve => {
-      resolve(this.defaultType_);
-    });
+    return this.defaultType_;
   }
 
   /**
    * @param {CvdType} type
-   * @return {Promise}
    */
   setDefaultType(type) {
     if (!this.validType_(type)) {
       type = Storage.INVALID_TYPE_PLACEHOLDER;
     }
     this.defaultType_ = type;
-    return new Promise(resolve => this.store_(Storage.TYPE_TAG, type, resolve));
+    this.store_(Storage.TYPE_TAG, type);
   }
 
   // ======= Simulate setting =======
 
-  /** @return {Promise<boolean>} */
+  /** @return {boolean} */
   getDefaultSimulate() {
-    return new Promise(resolve => {
-      resolve(this.defaultSimulate_);
-    });
+    return this.defaultSimulate_;
   }
 
   /**
    * @param {boolean} simulate
-   * @return {Promise}
    */
   setDefaultSimulate(simulate) {
     if (!this.validBoolean_(simulate)) {
       simulate = Storage.DEFAULT_SIMULATE;
     }
     this.defaultSimulate_ = simulate;
-    return new Promise(
-        resolve => this.store_(Storage.SIMULATE_TAG, simulate, resolve));
+    this.store_(Storage.SIMULATE_TAG, simulate);
   }
 
   // ======= Enable setting =======
 
-  /** @return {Promise<boolean>} */
+  /** @return {boolean} */
   getDefaultEnable() {
-    return new Promise(resolve => {
-      resolve(this.defaultEnable_);
-    });
+    return this.defaultEnable_;
   }
 
   /**
    * @param {boolean} enable
-   * @return {Promise}
    */
   setDefaultEnable(enable) {
     if (!this.validBoolean_(enable)) {
       enable = Storage.DEFAULT_ENABLE;
     }
     this.defaultEnable_ = enable;
-    return new Promise(
-        resolve => this.store_(Storage.ENABLE_TAG, enable, resolve));
+    this.store_(Storage.ENABLE_TAG, enable);
   }
 
   // ======= Helper functions ========
@@ -300,13 +272,13 @@ class Storage {
   /**
    * @param {*} key
    * @param {*} val
-   * @param {function()} callback
+   * @param {function()|undefined} opt_callback
    * @private
    */
-  store_(key, val, callback) {
+  store_(key, val, opt_callback) {
     const newVals = {};
     newVals[key] = val;
-    chrome.storage.local.set(newVals, callback);
+    chrome.storage.local.set(newVals, opt_callback);
   }
 }
 
