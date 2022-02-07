@@ -154,7 +154,13 @@ HEADLESS_COMPOSITOR_TEST(RendererCssUrlFilter,
                          "sanity/renderer-css-url-filter.js")
 HEADLESS_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
 
-HEADLESS_COMPOSITOR_TEST(RendererOpacityAnimation,
+#if BUILDFLAG(IS_LINUX)
+// Flaky on Linux: crbug.com/1294751.
+#define MAYBE_RendererOpacityAnimation DISABLED_RendererOpacityAnimation
+#else
+#define MAYBE_RendererOpacityAnimation RendererOpacityAnimation
+#endif
+HEADLESS_COMPOSITOR_TEST(MAYBE_RendererOpacityAnimation,
                          "sanity/renderer-opacity-animation.js")
 HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
                          "sanity/screenshot-after-metrics-override.js")
