@@ -928,8 +928,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   if (Element* animating_element = state.GetAnimatingElement())
     SetAnimationUpdateIfNeeded(style_recalc_context, state, *animating_element);
 
-  if (state.Style()->HasViewportUnits())
-    GetDocument().SetHasViewportUnits();
+  GetDocument().AddViewportUnitFlags(state.StyleRef().ViewportUnitFlags());
 
   if (state.Style()->HasContainerRelativeUnits()) {
     state.Style()->SetDependsOnContainerQueries(true);
@@ -1155,7 +1154,7 @@ void StyleResolver::ApplyBaseStyle(
     if (collector.MatchedResult().DependsOnContainerQueries())
       state.Style()->SetDependsOnContainerQueries(true);
     if (collector.MatchedResult().DependsOnViewportContainerQueries())
-      state.Style()->SetHasViewportUnits(true);
+      state.Style()->SetHasStaticViewportUnits();
     if (collector.MatchedResult().DependsOnRemContainerQueries())
       state.Style()->SetHasRemUnits();
     if (collector.MatchedResult().ConditionallyAffectsAnimations())

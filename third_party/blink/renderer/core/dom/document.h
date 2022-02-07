@@ -1471,8 +1471,19 @@ class CORE_EXPORT Document : public ContainerNode,
   void MaybeHandleHttpRefresh(const String&, HttpRefreshType);
   bool IsHttpRefreshScheduledWithin(base::TimeDelta interval);
 
-  void SetHasViewportUnits() { has_viewport_units_ = true; }
-  bool HasViewportUnits() const { return has_viewport_units_; }
+  // Marks the Document has having at least one Element which depends
+  // on the specified ViewportUnitFlags.
+  void AddViewportUnitFlags(unsigned flags) { viewport_unit_flags_ |= flags; }
+
+  bool HasStaticViewportUnits() const {
+    return viewport_unit_flags_ &
+           static_cast<unsigned>(ViewportUnitFlag::kStatic);
+  }
+  bool HasDynamicViewportUnits() const {
+    return viewport_unit_flags_ &
+           static_cast<unsigned>(ViewportUnitFlag::kDynamic);
+  }
+
   void LayoutViewportWasResized();
   // dv*
   void DynamicViewportUnitsChanged();
@@ -2133,6 +2144,8 @@ class CORE_EXPORT Document : public ContainerNode,
   String xml_version_;
   unsigned xml_standalone_ : 2;
   unsigned has_xml_declaration_ : 1;
+  // See enum ViewportUnitFlags.
+  unsigned viewport_unit_flags_ : kViewportUnitFlagBits;
 
   AtomicString content_language_;
 
@@ -2229,8 +2242,6 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapTaskRunnerTimer<Document> did_associate_form_controls_timer_;
 
   HeapHashSet<Member<SVGUseElement>> use_elements_needing_update_;
-
-  bool has_viewport_units_;
 
   ParserSynchronizationPolicy parser_sync_policy_;
 

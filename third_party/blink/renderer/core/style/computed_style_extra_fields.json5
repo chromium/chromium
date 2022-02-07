@@ -204,13 +204,12 @@
       default_value: "false",
     },
     // These are set if we used viewport or rem units when resolving a length.
-    // FIXME: HasViewportUnits should be a monotonic_flag.
     {
-      name: "HasViewportUnits",
+      name: "ViewportUnitFlags",
       field_template: "primitive",
-      default_value: "false",
-      type_name: "bool",
-      custom_compare: true,
+      field_size: 2,
+      default_value: "0",
+      type_name: "unsigned",
     },
     {
       name: "HasRemUnits",

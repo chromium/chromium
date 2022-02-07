@@ -388,6 +388,14 @@ enum EDynamicRestyleFlagsForHas {
   kAncestorsAffectedByFocusVisibleInHas = 1 << 4,
 };
 
+constexpr size_t kViewportUnitFlagBits = 2;
+enum class ViewportUnitFlag {
+  // v*, sv*, lv*
+  kStatic = 0x1,
+  // dv*
+  kDynamic = 0x2,
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_

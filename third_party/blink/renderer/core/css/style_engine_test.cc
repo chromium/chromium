@@ -3514,6 +3514,76 @@ TEST_F(StyleEngineTest, InternalForcedProperties) {
   }
 }
 
+TEST_F(StyleEngineTest, HasViewportUnitFlags) {
+  ScopedCSSViewportUnits4ForTest flag(true);
+
+  struct {
+    const char* value;
+    bool has_static;
+    bool has_dynamic;
+  } test_data[] = {
+      {"1px", false, false},
+      {"1em", false, false},
+      {"1rem", false, false},
+
+      {"1vw", true, false},
+      {"1vh", true, false},
+      {"1vi", true, false},
+      {"1vb", true, false},
+      {"1vmin", true, false},
+      {"1vmax", true, false},
+
+      {"1svw", true, false},
+      {"1svh", true, false},
+      {"1svi", true, false},
+      {"1svb", true, false},
+      {"1svmin", true, false},
+      {"1svmax", true, false},
+
+      {"1lvw", true, false},
+      {"1lvh", true, false},
+      {"1lvi", true, false},
+      {"1lvb", true, false},
+      {"1lvmin", true, false},
+      {"1lvmax", true, false},
+
+      {"1dvw", false, true},
+      {"1dvh", false, true},
+      {"1dvi", false, true},
+      {"1dvb", false, true},
+      {"1dvmin", false, true},
+      {"1dvmax", false, true},
+
+      {"calc(1vh)", true, false},
+      {"calc(1dvh)", false, true},
+      {"calc(1vh + 1dvh)", true, true},
+  };
+
+  for (const auto& data : test_data) {
+    SCOPED_TRACE(data.value);
+    auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    Document& document = holder->GetDocument();
+    document.body()->setInnerHTML(String::Format(R"HTML(
+      <style>
+        div { width: %s; }
+      </style>
+      <div id=target></div>
+    )HTML",
+                                                 data.value));
+    document.View()->UpdateAllLifecyclePhasesForTest();
+
+    Element* target = document.getElementById("target");
+    ASSERT_TRUE(target);
+
+    EXPECT_EQ(data.has_static,
+              target->GetComputedStyle()->HasStaticViewportUnits());
+    EXPECT_EQ(data.has_dynamic,
+              target->GetComputedStyle()->HasDynamicViewportUnits());
+    EXPECT_EQ(data.has_static, document.HasStaticViewportUnits());
+    EXPECT_EQ(data.has_dynamic, document.HasDynamicViewportUnits());
+  }
+}
+
 class StyleEngineSimTest : public SimTest {};
 
 TEST_F(StyleEngineSimTest, OwnerColorScheme) {

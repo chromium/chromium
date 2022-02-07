@@ -714,6 +714,7 @@ Document::Document(const DocumentInit& initializer,
       xml_version_("1.0"),
       xml_standalone_(kStandaloneUnspecified),
       has_xml_declaration_(0),
+      viewport_unit_flags_(0),
       design_mode_(false),
       is_running_exec_command_(false),
       has_annotated_regions_(false),
@@ -754,7 +755,6 @@ Document::Document(const DocumentInit& initializer,
           GetTaskRunner(TaskType::kInternalLoading),
           this,
           &Document::DidAssociateFormControlsTimerFired),
-      has_viewport_units_(false),
       parser_sync_policy_(kAllowDeferredParsing),
       node_count_(0),
       // Use the source id from the document initializer if it is available.
@@ -4573,7 +4573,7 @@ void Document::LayoutViewportWasResized() {
     if (GetFrame()->IsMainFrame() && !Printing())
       probe::DidResizeMainFrame(GetFrame());
   }
-  if (!HasViewportUnits())
+  if (!HasStaticViewportUnits())
     return;
   GetStyleResolver().SetResizedForViewportUnits();
   SetNeedsStyleRecalcForViewportUnits();
@@ -4587,9 +4587,9 @@ void Document::DynamicViewportUnitsChanged() {
   MediaQueryAffectingValueChanged(MediaValueChange::kSize);
   if (media_query_matcher_)
     media_query_matcher_->ViewportChanged();
-  // TODO(crbug.com/1093055): Target dv* specifically.
-  if (!HasViewportUnits())
+  if (!HasDynamicViewportUnits())
     return;
+  // TODO(crbug.com/1093055): Target dv* specifically.
   GetStyleResolver().SetResizedForViewportUnits();
   SetNeedsStyleRecalcForViewportUnits();
 }

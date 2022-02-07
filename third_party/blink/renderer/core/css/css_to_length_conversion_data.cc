@@ -180,54 +180,54 @@ double CSSToLengthConversionData::ViewportWidthPercent() const {
   // information through as output parameters on functions involved in length
   // resolution.
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return viewport_size_.Width() / 100;
 }
 double CSSToLengthConversionData::ViewportHeightPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return viewport_size_.Height() / 100;
 }
 double CSSToLengthConversionData::ViewportInlineSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.Width()
                                     : viewport_size_.Height()) /
          100;
 }
 double CSSToLengthConversionData::ViewportBlockSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.Height()
                                     : viewport_size_.Width()) /
          100;
 }
 double CSSToLengthConversionData::ViewportMinPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return std::min(viewport_size_.Width(), viewport_size_.Height()) / 100;
 }
 double CSSToLengthConversionData::ViewportMaxPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return std::max(viewport_size_.Width(), viewport_size_.Height()) / 100;
 }
 
 double CSSToLengthConversionData::SmallViewportWidthPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return viewport_size_.SmallWidth() / 100;
 }
 
 double CSSToLengthConversionData::SmallViewportHeightPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return viewport_size_.SmallHeight() / 100;
 }
 
 double CSSToLengthConversionData::SmallViewportInlineSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.SmallWidth()
                                     : viewport_size_.SmallHeight()) /
          100;
@@ -235,7 +235,7 @@ double CSSToLengthConversionData::SmallViewportInlineSizePercent() const {
 
 double CSSToLengthConversionData::SmallViewportBlockSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.SmallHeight()
                                     : viewport_size_.SmallWidth()) /
          100;
@@ -243,33 +243,33 @@ double CSSToLengthConversionData::SmallViewportBlockSizePercent() const {
 
 double CSSToLengthConversionData::SmallViewportMinPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return std::min(viewport_size_.SmallWidth(), viewport_size_.SmallHeight()) /
          100;
 }
 
 double CSSToLengthConversionData::SmallViewportMaxPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return std::max(viewport_size_.SmallWidth(), viewport_size_.SmallHeight()) /
          100;
 }
 
 double CSSToLengthConversionData::LargeViewportWidthPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return viewport_size_.LargeWidth() / 100;
 }
 
 double CSSToLengthConversionData::LargeViewportHeightPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return viewport_size_.LargeHeight() / 100;
 }
 
 double CSSToLengthConversionData::LargeViewportInlineSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.LargeWidth()
                                     : viewport_size_.LargeHeight()) /
          100;
@@ -277,7 +277,7 @@ double CSSToLengthConversionData::LargeViewportInlineSizePercent() const {
 
 double CSSToLengthConversionData::LargeViewportBlockSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.LargeHeight()
                                     : viewport_size_.LargeWidth()) /
          100;
@@ -285,33 +285,33 @@ double CSSToLengthConversionData::LargeViewportBlockSizePercent() const {
 
 double CSSToLengthConversionData::LargeViewportMinPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return std::min(viewport_size_.LargeWidth(), viewport_size_.LargeHeight()) /
          100;
 }
 
 double CSSToLengthConversionData::LargeViewportMaxPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
   return std::max(viewport_size_.LargeWidth(), viewport_size_.LargeHeight()) /
          100;
 }
 
 double CSSToLengthConversionData::DynamicViewportWidthPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
   return viewport_size_.DynamicWidth() / 100;
 }
 
 double CSSToLengthConversionData::DynamicViewportHeightPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
   return viewport_size_.DynamicHeight() / 100;
 }
 
 double CSSToLengthConversionData::DynamicViewportInlineSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.DynamicWidth()
                                     : viewport_size_.DynamicHeight()) /
          100;
@@ -319,7 +319,7 @@ double CSSToLengthConversionData::DynamicViewportInlineSizePercent() const {
 
 double CSSToLengthConversionData::DynamicViewportBlockSizePercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
   return (IsHorizontalWritingMode() ? viewport_size_.DynamicHeight()
                                     : viewport_size_.DynamicWidth()) /
          100;
@@ -327,7 +327,7 @@ double CSSToLengthConversionData::DynamicViewportBlockSizePercent() const {
 
 double CSSToLengthConversionData::DynamicViewportMinPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
   return std::min(viewport_size_.DynamicWidth(),
                   viewport_size_.DynamicHeight()) /
          100;
@@ -335,7 +335,7 @@ double CSSToLengthConversionData::DynamicViewportMinPercent() const {
 
 double CSSToLengthConversionData::DynamicViewportMaxPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasViewportUnits(true);
+    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
   return std::max(viewport_size_.DynamicWidth(),
                   viewport_size_.DynamicHeight()) /
          100;

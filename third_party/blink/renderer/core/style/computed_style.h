@@ -2764,6 +2764,24 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool ForceDark() const { return DarkColorScheme() && ColorSchemeForced(); }
 
+  void SetHasStaticViewportUnits() {
+    SetViewportUnitFlags(ViewportUnitFlags() |
+                         static_cast<unsigned>(ViewportUnitFlag::kStatic));
+  }
+  void SetHasDynamicViewportUnits() {
+    SetViewportUnitFlags(ViewportUnitFlags() |
+                         static_cast<unsigned>(ViewportUnitFlag::kDynamic));
+  }
+  bool HasStaticViewportUnits() const {
+    return ViewportUnitFlags() &
+           static_cast<unsigned>(ViewportUnitFlag::kStatic);
+  }
+  bool HasDynamicViewportUnits() const {
+    return ViewportUnitFlags() &
+           static_cast<unsigned>(ViewportUnitFlag::kDynamic);
+  }
+  bool HasViewportUnits() const { return ViewportUnitFlags(); }
+
  private:
   EClear Clear() const { return ClearInternal(); }
   EFloat Floating() const { return FloatingInternal(); }
