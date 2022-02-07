@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer_private;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -103,6 +104,7 @@ import org.chromium.weblayer_private.settings.SettingsFragmentImpl;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -935,10 +937,22 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         }
     }
 
+    @SuppressLint("DiscouragedPrivateApi")
     private static Context createContextForMode(Context remoteContext, int uiMode) {
         Configuration configuration = new Configuration();
         configuration.uiMode = uiMode;
-        return remoteContext.createConfigurationContext(configuration);
+        Context context = remoteContext.createConfigurationContext(configuration);
+        // DrawableInflater uses the ClassLoader from the Resources object. We need to make sure
+        // this ClassLoader is correct. See crbug.com/1287000 and crbug.com/1293849 for more
+        // details.
+        try {
+            Field classLoaderField = Resources.class.getDeclaredField("mClassLoader");
+            classLoaderField.setAccessible(true);
+            classLoaderField.set(context.getResources(), WebLayerImpl.class.getClassLoader());
+        } catch (ReflectiveOperationException e) {
+            Log.e(TAG, "Error setting Resources ClassLoader.", e);
+        }
+        return context;
     }
 
     @CalledByNative
