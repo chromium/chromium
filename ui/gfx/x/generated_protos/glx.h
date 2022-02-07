@@ -290,7 +290,6 @@ class COMPONENT_EXPORT(X11) Glx {
   struct PbufferClobberEvent {
     static constexpr int type_id = 4;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint16_t sequence{};
     uint16_t event_type{};
     uint16_t draw_type{};
@@ -311,7 +310,6 @@ class COMPONENT_EXPORT(X11) Glx {
   struct BufferSwapCompleteEvent {
     static constexpr int type_id = 5;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     uint16_t event_type{};
     Drawable drawable{};

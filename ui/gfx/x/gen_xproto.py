@@ -761,7 +761,6 @@ class GenXproto(FileWriter):
                              for (y, x) in event.enum_opcodes.items()]
                     for opcode, opname in sorted(items):
                         self.write('%s = %s,' % (opname, opcode))
-            self.write('bool send_event{};')
             self.declare_fields(event.fields)
             self.write()
             window_field = self.get_window_field(event)
@@ -1491,7 +1490,6 @@ class GenReadEvent(FileWriter):
             if len(event.opcodes) > 1:
                 self.write('{0} = static_cast<decltype({0})>({1});'.format(
                     'event_->opcode', opcode))
-            self.write('event_->send_event = send_event;')
             self.write('event->event_ = event_;')
             self.write('event->window_ = event_->GetWindow();')
             self.write('return;')
@@ -1519,7 +1517,6 @@ class GenReadEvent(FileWriter):
             self.write(cast % ('ev', 'xcb_generic_event_t'))
             self.write(cast % ('ge', 'xcb_ge_generic_event_t'))
             self.write('auto evtype = ev->response_type & ~kSendEventMask;')
-            self.write('bool send_event = ev->response_type & kSendEventMask;')
             self.write()
             for name, event, proto in self.events:
                 self.gen_event(name, event, proto)

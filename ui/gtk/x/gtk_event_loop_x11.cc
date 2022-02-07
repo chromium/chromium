@@ -20,14 +20,13 @@ x11::KeyButMask BuildXkbStateFromGdkEvent(unsigned int state,
   return static_cast<x11::KeyButMask>(state | ((group & 0x3) << 13));
 }
 
-x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
+x11::Event ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
   if (!gtk::GtkCheckVersion(4)) {
     auto* key = reinterpret_cast<GdkEventKey*>(gdk_event);
     DCHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease());
-    return {
+    x11::KeyEvent key_event{
         .opcode = key->type == GdkKeyPress() ? x11::KeyEvent::Press
                                              : x11::KeyEvent::Release,
-        .send_event = !!key->send_event,
         .detail = static_cast<x11::KeyCode>(key->hardware_keycode),
         .time = static_cast<x11::Time>(key->time),
         .root = ui::GetX11RootWindow(),
@@ -35,6 +34,7 @@ x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
         .state = BuildXkbStateFromGdkEvent(key->state, key->group),
         .same_screen = true,
     };
+    return x11::Event(!!key->send_event, std::move(key_event));
   }
 
   GdkKeymapKey* keys = nullptr;
@@ -56,7 +56,7 @@ x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
     g_free(keyvals);
   }
 
-  return {
+  x11::KeyEvent key_event{
       .opcode = gtk::GdkEventGetEventType(gdk_event) == GdkKeyPress()
                     ? x11::KeyEvent::Press
                     : x11::KeyEvent::Release,
@@ -69,6 +69,7 @@ x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
           gdk_event_get_modifier_state(gdk_event), keymap_key.group),
       .same_screen = true,
   };
+  return x11::Event(false, std::move(key_event));
 }
 
 void ProcessGdkEvent(GdkEvent* gdk_event) {
@@ -94,8 +95,7 @@ void ProcessGdkEvent(GdkEvent* gdk_event) {
 
   // We want to process the gtk event; mapped to an X11 event immediately
   // otherwise if we put it back on the queue we may get items out of order.
-  x11::Connection::Get()->DispatchEvent(
-      x11::Event{ConvertGdkEventToKeyEvent(gdk_event)});
+  x11::Connection::Get()->DispatchEvent(ConvertGdkEventToKeyEvent(gdk_event));
 }
 
 }  // namespace

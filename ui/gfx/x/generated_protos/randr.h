@@ -219,7 +219,6 @@ class COMPONENT_EXPORT(X11) RandR {
   struct ScreenChangeNotifyEvent {
     static constexpr int type_id = 11;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     Rotation rotation{};
     uint16_t sequence{};
     Time timestamp{};
@@ -254,7 +253,6 @@ class COMPONENT_EXPORT(X11) RandR {
   struct NotifyEvent {
     static constexpr int type_id = 12;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     struct Cc {
       Time timestamp{};

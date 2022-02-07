@@ -218,7 +218,6 @@ class COMPONENT_EXPORT(X11) Xv {
   struct VideoNotifyEvent {
     static constexpr int type_id = 81;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     VideoNotifyReason reason{};
     uint16_t sequence{};
     Time time{};
@@ -233,7 +232,6 @@ class COMPONENT_EXPORT(X11) Xv {
   struct PortNotifyEvent {
     static constexpr int type_id = 82;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     Time time{};
     Port port{};

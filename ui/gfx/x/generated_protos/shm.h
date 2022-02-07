@@ -85,7 +85,6 @@ class COMPONENT_EXPORT(X11) Shm {
   struct CompletionEvent {
     static constexpr int type_id = 15;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint16_t sequence{};
     Drawable drawable{};
     uint16_t minor_event{};

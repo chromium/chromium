@@ -122,7 +122,6 @@ class COMPONENT_EXPORT(X11) XPrint {
   struct NotifyEvent {
     static constexpr int type_id = 50;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint8_t detail{};
     uint16_t sequence{};
     PContext context{};
@@ -134,7 +133,6 @@ class COMPONENT_EXPORT(X11) XPrint {
   struct AttributNotifyEvent {
     static constexpr int type_id = 51;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint8_t detail{};
     uint16_t sequence{};
     PContext context{};

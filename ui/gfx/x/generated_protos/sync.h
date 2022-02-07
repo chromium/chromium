@@ -157,7 +157,6 @@ class COMPONENT_EXPORT(X11) Sync {
   struct CounterNotifyEvent {
     static constexpr int type_id = 16;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint8_t kind{};
     uint16_t sequence{};
     Counter counter{};
@@ -173,7 +172,6 @@ class COMPONENT_EXPORT(X11) Sync {
   struct AlarmNotifyEvent {
     static constexpr int type_id = 17;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint8_t kind{};
     uint16_t sequence{};
     Alarm alarm{};

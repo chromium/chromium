@@ -2086,7 +2086,7 @@ void X11Window::HandleEvent(const x11::Event& xev) {
     OnFocusEvent(focus->opcode == x11::FocusEvent::In, focus->mode,
                  focus->detail);
   } else if (auto* configure = xev.As<x11::ConfigureNotifyEvent>()) {
-    OnConfigureEvent(*configure);
+    OnConfigureEvent(*configure, xev.send_event());
   } else if (auto* crossing_input = xev.As<x11::Input::CrossingEvent>()) {
     TouchFactory* factory = TouchFactory::GetInstance();
     if (factory->ShouldProcessCrossingEvent(*crossing_input)) {
@@ -2182,7 +2182,8 @@ void X11Window::OnWindowMapped() {
   }
 }
 
-void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure) {
+void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure,
+                                 bool send_event) {
   DCHECK_EQ(xwindow_, configure.window);
   DCHECK_EQ(xwindow_, configure.event);
 
@@ -2208,7 +2209,7 @@ void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure) {
   // sure the root window size is maintained properly.
   int translated_x_in_pixels = configure.x;
   int translated_y_in_pixels = configure.y;
-  if (!configure.send_event && !configure.override_redirect) {
+  if (!send_event && !configure.override_redirect) {
     auto future =
         connection_->TranslateCoordinates({xwindow_, x_root_window_, 0, 0});
     if (auto coords = future.Sync()) {

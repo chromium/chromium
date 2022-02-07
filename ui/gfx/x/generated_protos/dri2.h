@@ -121,7 +121,6 @@ class COMPONENT_EXPORT(X11) Dri2 {
   struct BufferSwapCompleteEvent {
     static constexpr int type_id = 2;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint16_t sequence{};
     EventType event_type{};
     Drawable drawable{};
@@ -139,7 +138,6 @@ class COMPONENT_EXPORT(X11) Dri2 {
   struct InvalidateBuffersEvent {
     static constexpr int type_id = 3;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     Drawable drawable{};
 

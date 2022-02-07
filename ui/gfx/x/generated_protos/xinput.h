@@ -1029,7 +1029,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DeviceValuatorEvent {
     static constexpr int type_id = 20;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint8_t device_id{};
     uint16_t sequence{};
     uint16_t device_state{};
@@ -1051,7 +1050,6 @@ class COMPONENT_EXPORT(X11) Input {
       ProximityIn = 8,
       ProximityOut = 9,
     } opcode{};
-    bool send_event{};
     uint8_t detail{};
     uint16_t sequence{};
     Time time{};
@@ -1075,7 +1073,6 @@ class COMPONENT_EXPORT(X11) Input {
       In = 6,
       Out = 7,
     } opcode{};
-    bool send_event{};
     x11::NotifyDetail detail{};
     uint16_t sequence{};
     Time time{};
@@ -1089,7 +1086,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DeviceStateNotifyEvent {
     static constexpr int type_id = 23;
     static constexpr uint8_t opcode = 10;
-    bool send_event{};
     uint8_t device_id{};
     uint16_t sequence{};
     Time time{};
@@ -1107,7 +1103,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DeviceMappingNotifyEvent {
     static constexpr int type_id = 24;
     static constexpr uint8_t opcode = 11;
-    bool send_event{};
     uint8_t device_id{};
     uint16_t sequence{};
     Mapping request{};
@@ -1121,7 +1116,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct ChangeDeviceNotifyEvent {
     static constexpr int type_id = 25;
     static constexpr uint8_t opcode = 12;
-    bool send_event{};
     uint8_t device_id{};
     uint16_t sequence{};
     Time time{};
@@ -1133,7 +1127,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DeviceKeyStateNotifyEvent {
     static constexpr int type_id = 26;
     static constexpr uint8_t opcode = 13;
-    bool send_event{};
     uint8_t device_id{};
     uint16_t sequence{};
     std::array<uint8_t, 28> keys{};
@@ -1144,7 +1137,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DeviceButtonStateNotifyEvent {
     static constexpr int type_id = 27;
     static constexpr uint8_t opcode = 14;
-    bool send_event{};
     uint8_t device_id{};
     uint16_t sequence{};
     std::array<uint8_t, 28> buttons{};
@@ -1155,7 +1147,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DevicePresenceNotifyEvent {
     static constexpr int type_id = 28;
     static constexpr uint8_t opcode = 15;
-    bool send_event{};
     uint16_t sequence{};
     Time time{};
     DeviceChange devchange{};
@@ -1168,7 +1159,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DevicePropertyNotifyEvent {
     static constexpr int type_id = 29;
     static constexpr uint8_t opcode = 16;
-    bool send_event{};
     Property state{};
     uint16_t sequence{};
     Time time{};
@@ -1181,7 +1171,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct DeviceChangedEvent {
     static constexpr int type_id = 30;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};
@@ -1204,7 +1193,6 @@ class COMPONENT_EXPORT(X11) Input {
       TouchUpdate = 19,
       TouchEnd = 20,
     } opcode{};
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};
@@ -1235,7 +1223,6 @@ class COMPONENT_EXPORT(X11) Input {
       FocusIn = 9,
       FocusOut = 10,
     } opcode{};
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};
@@ -1269,7 +1256,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct HierarchyEvent {
     static constexpr int type_id = 33;
     static constexpr uint8_t opcode = 11;
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};
@@ -1282,7 +1268,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct PropertyEvent {
     static constexpr int type_id = 34;
     static constexpr uint8_t opcode = 12;
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};
@@ -1304,7 +1289,6 @@ class COMPONENT_EXPORT(X11) Input {
       RawTouchUpdate = 23,
       RawTouchEnd = 24,
     } opcode{};
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};
@@ -1321,7 +1305,6 @@ class COMPONENT_EXPORT(X11) Input {
   struct TouchOwnershipEvent {
     static constexpr int type_id = 36;
     static constexpr uint8_t opcode = 21;
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};
@@ -1341,7 +1324,6 @@ class COMPONENT_EXPORT(X11) Input {
       Hit = 25,
       Leave = 26,
     } opcode{};
-    bool send_event{};
     uint16_t sequence{};
     DeviceId deviceid{};
     Time time{};

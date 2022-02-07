@@ -44,13 +44,14 @@ void InitButtonEvent(x11::Event* event,
                      const gfx::Point& location,
                      int button,
                      x11::KeyButMask state) {
-  *event = x11::Event(x11::ButtonEvent{
-      .opcode = is_press ? x11::ButtonEvent::Press : x11::ButtonEvent::Release,
-      .detail = static_cast<x11::Button>(button),
-      .event_x = static_cast<int16_t>(location.x()),
-      .event_y = static_cast<int16_t>(location.y()),
-      .state = state,
-  });
+  *event = x11::Event(false, x11::ButtonEvent{
+                                 .opcode = is_press ? x11::ButtonEvent::Press
+                                                    : x11::ButtonEvent::Release,
+                                 .detail = static_cast<x11::Button>(button),
+                                 .event_x = static_cast<int16_t>(location.x()),
+                                 .event_y = static_cast<int16_t>(location.y()),
+                                 .state = state,
+                             });
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -61,11 +62,12 @@ void InitKeyEvent(x11::Event* event,
                   x11::KeyButMask state) {
   // We don't bother setting fields that the event code doesn't use, such as
   // x_root/y_root and window/root/subwindow.
-  *event = x11::Event(x11::KeyEvent{
-      .opcode = is_press ? x11::KeyEvent::Press : x11::KeyEvent::Release,
-      .detail = static_cast<x11::KeyCode>(keycode),
-      .state = state,
-  });
+  *event = x11::Event(false, x11::KeyEvent{
+                                 .opcode = is_press ? x11::KeyEvent::Press
+                                                    : x11::KeyEvent::Release,
+                                 .detail = static_cast<x11::KeyCode>(keycode),
+                                 .state = state,
+                             });
 }
 #endif
 
@@ -190,13 +192,13 @@ TEST_F(EventsXTest, AvoidExtraEventsOnWheelRelease) {
 }
 
 TEST_F(EventsXTest, EnterLeaveEvent) {
-  x11::Event event(x11::CrossingEvent{
-      .opcode = x11::CrossingEvent::EnterNotify,
-      .root_x = 110,
-      .root_y = 120,
-      .event_x = 10,
-      .event_y = 20,
-  });
+  x11::Event event(false, x11::CrossingEvent{
+                              .opcode = x11::CrossingEvent::EnterNotify,
+                              .root_x = 110,
+                              .root_y = 120,
+                              .event_x = 10,
+                              .event_y = 20,
+                          });
 
   // Mouse enter events are converted to mouse move events to be consistent with
   // the way views handle mouse enter. See comments for EnterNotify case in
@@ -206,13 +208,13 @@ TEST_F(EventsXTest, EnterLeaveEvent) {
   EXPECT_EQ("10,20", ui::EventLocationFromXEvent(event).ToString());
   EXPECT_EQ("110,120", ui::EventSystemLocationFromXEvent(event).ToString());
 
-  event = x11::Event(x11::CrossingEvent{
-      .opcode = x11::CrossingEvent::LeaveNotify,
-      .root_x = 230,
-      .root_y = 240,
-      .event_x = 30,
-      .event_y = 40,
-  });
+  event = x11::Event(false, x11::CrossingEvent{
+                                .opcode = x11::CrossingEvent::LeaveNotify,
+                                .root_x = 230,
+                                .root_y = 240,
+                                .event_x = 30,
+                                .event_y = 40,
+                            });
   EXPECT_EQ(ui::ET_MOUSE_EXITED, ui::EventTypeFromXEvent(event));
   EXPECT_EQ("30,40", ui::EventLocationFromXEvent(event).ToString());
   EXPECT_EQ("230,240", ui::EventSystemLocationFromXEvent(event).ToString());
@@ -800,11 +802,12 @@ TEST_F(EventsXTest, EventLatencyOSMouseWheelHistogram) {
   DeviceDataManagerX11::CreateInstance();
 
   // Initializes a native event and uses it to generate a MouseWheel event.
-  x11::Event native_event(x11::ButtonEvent{
-      .opcode = x11::ButtonEvent::Press,
-      // A valid wheel button number between min and max.
-      .detail = static_cast<x11::Button>(4),
-  });
+  x11::Event native_event(
+      false, x11::ButtonEvent{
+                 .opcode = x11::ButtonEvent::Press,
+                 // A valid wheel button number between min and max.
+                 .detail = static_cast<x11::Button>(4),
+             });
   auto mouse_ev = ui::BuildMouseWheelEventFromXEvent(native_event);
   histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.MOUSE_WHEEL", 1);

@@ -25,8 +25,9 @@ void ReadEvent(Event* event, Connection* connection, ReadBuffer* buffer);
 class COMPONENT_EXPORT(X11) Event {
  public:
   template <typename T>
-  explicit Event(T&& xproto_event) {
+  Event(bool send_event, T&& xproto_event) {
     using DecayT = std::decay_t<T>;
+    send_event_ = send_event;
     sequence_ = xproto_event.sequence;
     type_id_ = DecayT::type_id;
     deleter_ = [](void* event) { delete reinterpret_cast<DecayT*>(event); };
@@ -62,6 +63,8 @@ class COMPONENT_EXPORT(X11) Event {
     return const_cast<Event*>(this)->As<T>();
   }
 
+  bool send_event() const { return send_event_; }
+
   uint32_t sequence() const { return sequence_; }
 
   Window window() const { return window_ ? *window_ : Window::None; }
@@ -79,6 +82,9 @@ class COMPONENT_EXPORT(X11) Event {
 
   void Dealloc();
 
+  // True if this event was sent from another X client.  False if this event
+  // was sent by the X server.
+  bool send_event_ = false;
   uint16_t sequence_ = 0;
 
   // XProto event state.

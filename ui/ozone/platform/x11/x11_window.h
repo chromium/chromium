@@ -267,7 +267,8 @@ class X11Window : public PlatformWindow,
   // Called when |xwindow_|'s _NET_FRAME_EXTENTS property is updated.
   void OnFrameExtentsUpdated();
 
-  void OnConfigureEvent(const x11::ConfigureNotifyEvent& event);
+  void OnConfigureEvent(const x11::ConfigureNotifyEvent& event,
+                        bool send_event);
 
   void OnWorkspaceUpdated();
 
