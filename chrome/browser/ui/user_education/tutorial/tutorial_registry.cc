@@ -46,3 +46,7 @@ void TutorialRegistry::AddTutorial(TutorialIdentifier id,
                                    TutorialDescription description) {
   tutorial_registry_.emplace(id, std::move(description));
 }
+
+void TutorialRegistry::RemoveTutorialForTesting(TutorialIdentifier id) {
+  tutorial_registry_.erase(id);
+}

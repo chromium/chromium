@@ -22,6 +22,7 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier1);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 
 const char kTestElementName1[] = "ELEMENT_NAME_1";
 
@@ -110,7 +111,7 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
       CreateTestTutorialBubbleFactoryRegistry();
   TutorialRegistry registry;
   TutorialService service(&registry, bubble_factory_registry.get());
-  service.SetOnCompleteTutorial(completed.Get());
+  service.SetOnCompleteTutorialForTesting(completed.Get());
 
   // build elements and keep them for triggering show/hide
   ui::TestElement element_1(kTestIdentifier1, kTestContext1);
@@ -127,4 +128,32 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
   EXPECT_CALL_IN_SCOPE(
       completed, Run,
       service.StartTutorial(kTestTutorial1, element_1.context()));
+}
+
+TEST(TutorialTest, TutorialWithCustomEvent) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TutorialService service(&registry, bubble_factory_registry.get());
+  service.SetOnCompleteTutorialForTesting(completed.Get());
+
+  // build elements and keep them for triggering show/hide
+  ui::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Build the tutorial Description
+  TutorialDescription description;
+  description.steps.emplace_back(TutorialDescription::Step(
+      u"step 1 title", u"step 1 description",
+      ui::InteractionSequence::StepType::kCustomEvent, kTestIdentifier1, "",
+      HelpBubbleArrow::kNone, kCustomEventType1));
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context());
+  EXPECT_CALL_IN_SCOPE(
+      completed, Run,
+      ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          &element_1, kCustomEventType1));
 }

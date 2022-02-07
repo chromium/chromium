@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -184,26 +185,28 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
         absl::nullopt,
         u"Right Click on a Tab and select \"Add Tab To new Group\".",
         ui::InteractionSequence::StepType::kShown, kTabStripElementId,
-        std::string(), HelpBubbleArrow::kTopCenter, absl::nullopt);
+        std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(step1);
 
     TutorialDescription::Step step2(
         absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
         ui::InteractionSequence::StepType::kShown, kTabGroupEditorBubbleId,
         std::string(), HelpBubbleArrow::kLeftCenter,
-        false /*must_remain_visible*/);
+        ui::CustomElementEventType(),
+        /*must_remain_visible =*/false);
     description.steps.emplace_back(std::move(step2));
 
     TutorialDescription::Step step3(
         absl::nullopt, std::u16string(),
         ui::InteractionSequence::StepType::kHidden, kTabGroupEditorBubbleId,
-        std::string(), HelpBubbleArrow::kNone, false /*must_remain_visible*/);
+        std::string(), HelpBubbleArrow::kNone, ui::CustomElementEventType(),
+        /*must_remain_visible =*/false);
     description.steps.emplace_back(std::move(step3));
 
     TutorialDescription::Step step4(
         absl::nullopt, u"Congratulations, you've made your first tab group.",
         ui::InteractionSequence::StepType::kShown, kTabGroupHeaderElementId,
-        std::string(), HelpBubbleArrow::kTopCenter, absl::nullopt);
+        std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(step4));
 
     tutorial_registry.AddTutorial(kTabGroupTutorialId, std::move(description));

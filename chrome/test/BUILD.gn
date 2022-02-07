@@ -8792,6 +8792,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/user_education/help_bubble_factory_views_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/user_education/interaction_sequence_interactive_uitest.cc",
+        "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",
       ]
       deps += [
         "//components/optimization_guide/core:test_support",

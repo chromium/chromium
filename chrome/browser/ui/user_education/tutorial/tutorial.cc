@@ -65,8 +65,14 @@ Tutorial::StepBuilder& Tutorial::StepBuilder::SetBodyText(
 }
 
 Tutorial::StepBuilder& Tutorial::StepBuilder::SetStepType(
-    ui::InteractionSequence::StepType step_type_) {
+    ui::InteractionSequence::StepType step_type_,
+    ui::CustomElementEventType event_type_) {
+  DCHECK_EQ(step_type_ == ui::InteractionSequence::StepType::kCustomEvent,
+            static_cast<bool>(event_type_))
+      << "`event_type_` should be set if and only if `step_type_` is "
+         "kCustomEvent.";
   step_.step_type = step_type_;
+  step_.event_type = event_type_;
   return *this;
 }
 
@@ -118,7 +124,7 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
   if (!step_.element_name.empty())
     interaction_sequence_step_builder->SetElementName(step_.element_name);
 
-  interaction_sequence_step_builder->SetType(step_.step_type);
+  interaction_sequence_step_builder->SetType(step_.step_type, step_.event_type);
 
   if (step_.must_remain_visible.has_value())
     interaction_sequence_step_builder->SetMustRemainVisible(

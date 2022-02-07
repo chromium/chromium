@@ -71,7 +71,10 @@ class Tutorial {
     StepBuilder& SetAnchorElementName(std::string anchor_element_name);
     StepBuilder& SetTitleText(absl::optional<std::u16string> title_text_);
     StepBuilder& SetBodyText(std::u16string body_text_);
-    StepBuilder& SetStepType(ui::InteractionSequence::StepType step_type_);
+    // Sets the step type; `event_type_` should be set only for custom events.
+    StepBuilder& SetStepType(
+        ui::InteractionSequence::StepType step_type_,
+        ui::CustomElementEventType event_type_ = ui::CustomElementEventType());
     StepBuilder& SetArrow(HelpBubbleArrow arrow_);
     StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
     StepBuilder& SetIsLastStep(bool is_last_step_);

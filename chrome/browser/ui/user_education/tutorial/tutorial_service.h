@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -40,13 +41,14 @@ class TutorialService : public KeyedService {
   // Starts the tutorial by looking for the id in the Tutorial Registry.
   bool StartTutorial(TutorialIdentifier id, ui::ElementContext context);
 
-  void SetOnCompleteTutorial(CompletedCallback callback);
-  void SetOnAbortTutorial(AbortedCallback callback);
+  void SetOnCompleteTutorialForTesting(CompletedCallback callback);
+  void SetOnAbortTutorialForTesting(AbortedCallback callback);
 
   TutorialRegistry* tutorial_registry() { return tutorial_registry_; }
 
  private:
   friend class Tutorial;
+  friend class TutorialInteractiveUitest;
 
   // Aborts the current running tutorial if there is one.
   void AbortTutorial();
@@ -63,8 +65,8 @@ class TutorialService : public KeyedService {
   std::unique_ptr<Tutorial> running_tutorial_;
 
   // a function to call on complete of the tutorial
-  CompletedCallback completed_callback_;
-  AbortedCallback aborted_callback_;
+  CompletedCallback completed_callback_ = base::DoNothing();
+  AbortedCallback aborted_callback_ = base::DoNothing();
 
   std::unique_ptr<HelpBubble> currently_displayed_bubble_;
 

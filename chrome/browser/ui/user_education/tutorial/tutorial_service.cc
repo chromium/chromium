@@ -37,11 +37,12 @@ bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
   return true;
 }
 
-void TutorialService::SetOnCompleteTutorial(CompletedCallback callback) {
+void TutorialService::SetOnCompleteTutorialForTesting(
+    CompletedCallback callback) {
   completed_callback_ = std::move(callback);
 }
 
-void TutorialService::SetOnAbortTutorial(AbortedCallback callback) {
+void TutorialService::SetOnAbortTutorialForTesting(AbortedCallback callback) {
   aborted_callback_ = std::move(callback);
 }
 

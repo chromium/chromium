@@ -38,9 +38,13 @@ class TutorialRegistry {
       HelpBubbleFactoryRegistry* bubble_factory_registry,
       ui::ElementContext context);
 
-  // Adds a TutorialID, TutorialDescription Pair to the Registry. This should
+  // Adds a TutorialID, TutorialDescription pair to the registry. This should
   // be used by the RegisterTutorials method to Add Tutorials.
   void AddTutorial(TutorialIdentifier id, TutorialDescription description);
+
+  // Removes a TutorialID and its associated TutorialDescription from the
+  // registry, to clean up from tests that need to inject test-only tutorials.
+  void RemoveTutorialForTesting(TutorialIdentifier id);
 
  private:
   std::map<TutorialIdentifier, TutorialDescription> tutorial_registry_;

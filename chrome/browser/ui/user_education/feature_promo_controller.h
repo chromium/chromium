@@ -191,6 +191,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
     return critical_promo_bubble();
   }
 
+  TutorialService* tutorial_service_for_testing() { return tutorial_service_; }
+
   // Blocks a check whether the IPH would be created in an inactive window or
   // app before showing the IPH. Intended for browser and unit tests.
   // The actual implementation of the check is in the platform-specific

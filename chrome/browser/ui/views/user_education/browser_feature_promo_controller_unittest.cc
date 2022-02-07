@@ -38,6 +38,7 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -87,14 +88,14 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
         absl::nullopt,
         u"Right Click on a Tab and select \"Add Tab To new Group\".",
         ui::InteractionSequence::StepType::kShown, kTabStripElementId,
-        std::string(), HelpBubbleArrow::kTopCenter, absl::nullopt);
+        std::string(), HelpBubbleArrow::kTopCenter);
     desc.steps.emplace_back(step1);
 
     TutorialDescription::Step step2(
         absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
         ui::InteractionSequence::StepType::kShown, kTabGroupEditorBubbleId,
         std::string(), HelpBubbleArrow::kLeftCenter,
-        false /*must_remain_visible*/);
+        ui::CustomElementEventType(), false /*must_remain_visible*/);
     desc.steps.emplace_back(std::move(step2));
 
     user_education_service->tutorial_registry().AddTutorial(
