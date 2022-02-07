@@ -100,6 +100,8 @@ message DeviceRegisterRequest {
 
   // Enumerates different flavors of registration.
   enum Flavor {
+    reserved 12;
+
     // User manually enrolls a device for device management.
     FLAVOR_ENROLLMENT_MANUAL = 0;
     // User re-starts enrollment manually to recover from loss of policy.
@@ -135,8 +137,6 @@ message DeviceRegisterRequest {
     // mandatory, but it failed and we are doing a fallback to manual
     // enrollment.
     FLAVOR_ENROLLMENT_ATTESTATION_MANUAL_FALLBACK = 11;
-    // Enrollment triggered by USB pre-configuration
-    FLAVOR_ENROLLMENT_ATTESTATION_USB_ENROLLMENT = 12;
     // Device state downloaded from the server during OOBE indicates that
     // initial enrollment is mandatory.
     FLAVOR_ENROLLMENT_INITIAL_SERVER_FORCED = 13;
