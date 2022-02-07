@@ -16,6 +16,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/embedder_support/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -291,6 +294,15 @@ void VerifyWinPlatformVersion(std::string version) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+bool ContainsBrandVersion(const blink::UserAgentBrandList& brand_list,
+                          const blink::UserAgentBrandVersion brand_version) {
+  for (const auto& brand_list_entry : brand_list) {
+    if (brand_list_entry == brand_version)
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 class UserAgentUtilsTest : public testing::Test,
@@ -313,6 +325,23 @@ class UserAgentUtilsTest : public testing::Test,
       m100_version.append(base::NumberToString(version.components()[i]));
     }
     return m100_version;
+  }
+
+  std::string MajorToMinorVersionNumber() {
+    const base::Version version = version_info::GetVersion();
+    std::string version_str;
+    const auto& components = version.components();
+    for (size_t i = 0; i < version.components().size(); ++i) {
+      if (i > 0)
+        version_str.append(".");
+      if (i == 0)
+        version_str.append("99");
+      else if (i == 1)
+        version_str.append(base::NumberToString(components[0]));
+      else
+        version_str.append(base::NumberToString(components[i]));
+    }
+    return version_str;
   }
 
  private:
@@ -474,10 +503,10 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
 
   const std::string major_version =
       ForceMajorVersionTo100() ? "100" : version_info::GetMajorVersionNumber();
-
   const std::string full_version = ForceMajorVersionTo100()
                                        ? M100VersionNumber()
                                        : version_info::GetVersionNumber();
+  const std::string major_to_minor_full_version = MajorToMinorVersionNumber();
 
   // According to spec, Sec-CH-UA should contain what project the browser is
   // based on (i.e. Chromium in this case) as well as the actual product.
@@ -486,44 +515,64 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
 
   const blink::UserAgentBrandVersion chromium_brand_version = {"Chromium",
                                                                major_version};
+  const blink::UserAgentBrandVersion major_to_minor_chromium_brand_version = {
+      "Chromium", "99"};
   const blink::UserAgentBrandVersion product_brand_version = {
       version_info::GetProductName(), major_version};
-  bool contains_chromium_brand_version = false;
-  bool contains_product_brand_version = false;
+  const blink::UserAgentBrandVersion major_to_minor_product_brand_version = {
+      version_info::GetProductName(), "99"};
 
-  for (const auto& brand_version : metadata.brand_version_list) {
-    if (brand_version == chromium_brand_version) {
-      contains_chromium_brand_version = true;
-    }
-    if (brand_version == product_brand_version) {
-      contains_product_brand_version = true;
-    }
-  }
-
-  EXPECT_TRUE(contains_chromium_brand_version);
-  EXPECT_TRUE(contains_product_brand_version);
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   chromium_brand_version));
+  EXPECT_TRUE(
+      ContainsBrandVersion(metadata.brand_version_list, product_brand_version));
 
   // verify full version list
   const blink::UserAgentBrandVersion chromium_brand_full_version = {
       "Chromium", full_version};
+  const blink::UserAgentBrandVersion
+      major_to_minor_chromium_brand_full_version = {
+          "Chromium", major_to_minor_full_version};
   const blink::UserAgentBrandVersion product_brand_full_version = {
       version_info::GetProductName(), full_version};
-  bool contains_chromium_brand_full_version = false;
-  bool contains_product_brand_full_version = false;
+  const blink::UserAgentBrandVersion major_to_minor_product_brand_full_version =
+      {version_info::GetProductName(), major_to_minor_full_version};
 
-  for (const auto& brand_version : metadata.brand_full_version_list) {
-    if (brand_version == chromium_brand_full_version) {
-      contains_chromium_brand_full_version = true;
-    }
-    if (brand_version == product_brand_full_version) {
-      contains_product_brand_full_version = true;
-    }
-  }
-
-  EXPECT_TRUE(contains_chromium_brand_full_version);
-  EXPECT_TRUE(contains_product_brand_full_version);
-
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   chromium_brand_full_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   product_brand_full_version));
   EXPECT_EQ(metadata.full_version, full_version);
+
+  // Ensure ForceMajorVersionToMinorPosition is respected,
+  TestingPrefServiceSimple pref_service;
+
+  // ForceMajorVersionToMinorPosition: kForceDisabled
+  pref_service.registry()->RegisterIntegerPref(
+      kForceMajorVersionToMinorPosition, kForceDisabled);
+  metadata = GetUserAgentMetadata(&pref_service);
+  EXPECT_EQ(metadata.full_version, full_version);
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   chromium_brand_version));
+  EXPECT_TRUE(
+      ContainsBrandVersion(metadata.brand_version_list, product_brand_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   chromium_brand_full_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   product_brand_full_version));
+
+  // ForceMajorVersionToMinorPosition: kForceEnabled
+  pref_service.SetInteger(kForceMajorVersionToMinorPosition, kForceEnabled);
+  metadata = GetUserAgentMetadata(&pref_service);
+  EXPECT_EQ(metadata.full_version, major_to_minor_full_version);
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   major_to_minor_chromium_brand_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   major_to_minor_product_brand_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   major_to_minor_chromium_brand_full_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   major_to_minor_product_brand_full_version));
 
 #if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10) {

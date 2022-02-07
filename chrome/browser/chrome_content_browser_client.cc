@@ -5832,8 +5832,8 @@ std::string ChromeContentBrowserClient::GetUserAgent() {
 std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
     content::BrowserContext* context) {
   embedder_support::ForceMajorVersionToMinorPosition
-      force_major_version_to_minor =
-          GetForceMajorVersionToMinorPosition(context);
+      force_major_version_to_minor = embedder_support::GetMajorToMinorFromPrefs(
+          Profile::FromBrowserContext(context)->GetPrefs());
   switch (GetUserAgentReductionEnterprisePolicyState(context)) {
     case UserAgentReductionEnterprisePolicyState::kForceDisabled:
       return embedder_support::GetFullUserAgent(force_major_version_to_minor);
@@ -6411,22 +6411,6 @@ ChromeContentBrowserClient::GetUserAgentReductionEnterprisePolicyState(
   }
 
   return UserAgentReductionEnterprisePolicyState::kDefault;
-}
-
-embedder_support::ForceMajorVersionToMinorPosition
-ChromeContentBrowserClient::GetForceMajorVersionToMinorPosition(
-    content::BrowserContext* context) {
-  int policy = Profile::FromBrowserContext(context)->GetPrefs()->GetInteger(
-      prefs::kForceMajorVersionToMinorPositionInUserAgent);
-  switch (policy) {
-    case 0:
-      return embedder_support::ForceMajorVersionToMinorPosition::kDefault;
-    case 1:
-      return embedder_support::ForceMajorVersionToMinorPosition::kForceDisabled;
-    case 2:
-      return embedder_support::ForceMajorVersionToMinorPosition::kForceEnabled;
-  }
-  return embedder_support::ForceMajorVersionToMinorPosition::kDefault;
 }
 
 bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
