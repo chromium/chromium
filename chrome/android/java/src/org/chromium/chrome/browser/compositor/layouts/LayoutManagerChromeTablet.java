@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurface.Controller;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -28,7 +29,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * the tablet.
  */
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
-
+    private Controller mStartSurfaceController;
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
 
     // Internal State
@@ -59,6 +60,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 host.getContext(), this, mHost.getLayoutRenderHost(), () -> mLayerTitleCache);
         addSceneOverlay(mTabStripLayoutHelperManager);
 
+        if (startSurface != null) {
+            mStartSurfaceController = startSurface.getController();
+            if (mStartSurfaceController != null) {
+                mStartSurfaceController.addOverviewModeObserver(
+                        mTabStripLayoutHelperManager.getStartSurfaceObserver());
+            }
+        }
+
         setNextLayout(null);
     }
 
@@ -69,6 +78,11 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
         if (mLayerTitleCache != null) {
             mLayerTitleCache.shutDown();
             mLayerTitleCache = null;
+        }
+
+        if (mStartSurfaceController != null && mTabStripLayoutHelperManager != null) {
+            mStartSurfaceController.removeOverviewModeObserver(
+                    mTabStripLayoutHelperManager.getStartSurfaceObserver());
         }
 
         if (mTabStripLayoutHelperManager != null) {

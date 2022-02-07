@@ -23,6 +23,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
     : SceneLayer(env, jobj),
       tab_strip_layer_(cc::SolidColorLayer::Create()),
       scrollable_strip_layer_(cc::Layer::Create()),
+      scrim_layer_(cc::SolidColorLayer::Create()),
       new_tab_button_(cc::UIResourceLayer::Create()),
       left_fade_(cc::UIResourceLayer::Create()),
       right_fade_(cc::UIResourceLayer::Create()),
@@ -35,6 +36,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   model_selector_button_->SetIsDrawable(true);
   left_fade_->SetIsDrawable(true);
   right_fade_->SetIsDrawable(true);
+  scrim_layer_->SetIsDrawable(true);
 
   // When the ScrollingStripStacker is used, the new tab button and tabs scroll,
   // while the incognito button and left/ride fade stay fixed. Put the new tab
@@ -45,6 +47,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->SetBackgroundColor(SK_ColorBLACK);
   tab_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
+
+  tab_strip_layer_->AddChild(scrim_layer_);
   tab_strip_layer_->AddChild(left_fade_);
   tab_strip_layer_->AddChild(right_fade_);
   tab_strip_layer_->AddChild(model_selector_button_);
@@ -103,7 +107,12 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jfloat y_offset,
                                              jfloat background_tab_brightness,
                                              jfloat brightness,
-                                             jboolean should_readd_background) {
+                                             jboolean should_readd_background,
+                                             jfloat scrim_x,
+                                             jfloat scrim_y,
+                                             jfloat scrim_width,
+                                             jfloat scrim_color,
+                                             jboolean scrim_visible) {
   background_tab_brightness_ = background_tab_brightness;
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
@@ -116,6 +125,15 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
     if (brightness_ < 1.f)
       filters.Append(cc::FilterOperation::CreateBrightnessFilter(brightness_));
     tab_strip_layer_->SetFilters(filters);
+  }
+
+  if (scrim_visible) {
+    scrim_layer_->SetBackgroundColor(scrim_color);
+    scrim_layer_->SetBounds(gfx::Size(scrim_width, height));
+    scrim_layer_->SetPosition(gfx::PointF(scrim_x, scrim_y));
+    scrim_layer_->SetHideLayerAndSubtree(false);
+  } else {
+    scrim_layer_->SetHideLayerAndSubtree(true);
   }
 
   // Content tree should not be affected by tab strip scene layer visibility.

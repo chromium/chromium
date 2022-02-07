@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripScrim;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.base.LocalizationUtils;
@@ -98,9 +99,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             ResourceManager resourceManager, float yOffset) {
         final float width = layoutHelper.getWidth() * mDpToPx;
         final float height = layoutHelper.getHeight() * mDpToPx;
+        final StripScrim stripScrim = layoutHelper.getStripScrim();
         TabStripSceneLayerJni.get().updateTabStripLayer(mNativePtr, TabStripSceneLayer.this, width,
                 height, yOffset * mDpToPx, layoutHelper.getBackgroundTabBrightness(),
-                layoutHelper.getBrightness(), shouldReaddBackground(layoutHelper.getOrientation()));
+                layoutHelper.getBrightness(), shouldReaddBackground(layoutHelper.getOrientation()),
+                stripScrim.getX(), stripScrim.getY(), stripScrim.getWidth(), stripScrim.getColor(),
+                stripScrim.isVisible());
 
         CompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -164,7 +168,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
         void updateTabStripLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 float width, float height, float yOffset, float backgroundTabBrightness,
-                float brightness, boolean shouldReaddBackground);
+                float brightness, boolean shouldReadBackground, float scrimX, float scrimY,
+                float scrimWidth, int scrimColor, boolean scrimVisible);
         void updateNewTabButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, float x, float y, float width, float height, boolean visible,
                 ResourceManager resourceManager);

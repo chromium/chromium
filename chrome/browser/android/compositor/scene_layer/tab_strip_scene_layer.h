@@ -55,7 +55,12 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat y_offset,
                            jfloat background_tab_brightness,
                            jfloat brightness,
-                           jboolean should_readd_background);
+                           jboolean should_readd_background,
+                           jfloat scrim_x,
+                           jfloat scrim_y,
+                           jfloat scrim_width,
+                           jfloat scrim_color,
+                           jboolean scrim_visible);
 
   void UpdateNewTabButton(
       JNIEnv* env,
@@ -129,6 +134,7 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::SolidColorLayer> tab_strip_layer_;
   scoped_refptr<cc::Layer> scrollable_strip_layer_;
+  scoped_refptr<cc::SolidColorLayer> scrim_layer_;
   scoped_refptr<cc::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::UIResourceLayer> left_fade_;
   scoped_refptr<cc::UIResourceLayer> right_fade_;

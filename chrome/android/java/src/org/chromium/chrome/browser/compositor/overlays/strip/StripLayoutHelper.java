@@ -113,7 +113,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private final StripTabEventHandler mStripTabEventHandler = new StripTabEventHandler();
     private final TabLoadTrackerCallback mTabLoadTrackerHost = new TabLoadTrackerCallbackImpl();
     private Animator mRunningAnimator;
-
     private final CompositorButton mNewTabButton;
 
     // Layout Constants
@@ -157,6 +156,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     public static final int ID_CLOSE_ALL_TABS = 0;
 
     private Context mContext;
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      * @param context         The current Android {@link Context}.

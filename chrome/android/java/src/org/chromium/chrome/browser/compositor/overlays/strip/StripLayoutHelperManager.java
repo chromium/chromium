@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaGestureEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -39,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
@@ -78,9 +81,12 @@ public class StripLayoutHelperManager implements SceneOverlay {
     private int mOrientation;
     private final CompositorButton mModelSelectorButton;
 
+    private final StripScrim mStripScrim;
+
     private TabStripSceneLayer mTabStripTreeProvider;
 
     private TabStripEventHandler mTabStripEventHandler;
+    private StartSurfaceOverviewObserver mStartSurfaceOverviewObserver;
 
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
@@ -101,6 +107,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
         @Override
         public void onDown(float x, float y, boolean fromMouse, int buttons) {
             if (mModelSelectorButton.onDown(x, y)) return;
+            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
         }
 
@@ -112,12 +119,14 @@ public class StripLayoutHelperManager implements SceneOverlay {
                 mTabModelSelector.selectModel(!mTabModelSelector.isIncognitoSelected());
                 return;
             }
+            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().onUpOrCancel(time());
         }
 
         @Override
         public void drag(float x, float y, float dx, float dy, float tx, float ty) {
             mModelSelectorButton.drag(x, y);
+            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().drag(time(), x, y, dx, dy, tx, ty);
         }
 
@@ -128,16 +137,19 @@ public class StripLayoutHelperManager implements SceneOverlay {
                 mModelSelectorButton.handleClick(time);
                 return;
             }
+            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().click(time(), x, y, fromMouse, buttons);
         }
 
         @Override
         public void fling(float x, float y, float velocityX, float velocityY) {
+            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().fling(time(), x, y, velocityX, velocityY);
         }
 
         @Override
         public void onLongPress(float x, float y) {
+            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().onLongPress(time(), x, y);
         }
 
@@ -149,6 +161,39 @@ public class StripLayoutHelperManager implements SceneOverlay {
         private long time() {
             return LayoutManagerImpl.time();
         }
+    }
+
+    /**
+     * Observer for Start Surface overview events.
+     */
+    class StartSurfaceOverviewObserver implements StartSurface.OverviewModeObserver {
+        @Override
+        public void startedShowing() {
+            updateScrimVisibility(true);
+        }
+
+        @Override
+        public void finishedShowing() {}
+
+        @Override
+        public void startedHiding() {
+            updateScrimVisibility(false);
+        }
+
+        @Override
+        public void finishedHiding() {}
+
+        private void updateScrimVisibility(boolean visibility) {
+            if (!isGridTabSwitcherEnabled()) return;
+            mStripScrim.setVisible(visibility);
+        }
+    }
+
+    /**
+     * @return Returns overview mode observer for start surface.
+     */
+    public StartSurfaceOverviewObserver getStartSurfaceObserver() {
+        return mStartSurfaceOverviewObserver;
     }
 
     /**
@@ -165,6 +210,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
         mTabStripEventHandler = new TabStripEventHandler();
+        mStartSurfaceOverviewObserver = new StartSurfaceOverviewObserver();
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mEventFilter =
                 new AreaGestureEventFilter(context, mTabStripEventHandler, null, false, false);
@@ -194,7 +240,17 @@ public class StripLayoutHelperManager implements SceneOverlay {
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
 
+        mStripScrim = new StripScrim(mWidth);
+        mStripScrim.setVisible(false);
+
         onContextChanged(context);
+    }
+
+    /**
+     * @return Return scrim to be applied on tab strip.
+     */
+    public StripScrim getStripScrim() {
+        return mStripScrim;
     }
 
     /**
@@ -270,11 +326,34 @@ public class StripLayoutHelperManager implements SceneOverlay {
             mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_END_PADDING_DP);
         }
 
+        updateStripScrim();
+
         mNormalHelper.onSizeChanged(mWidth, mHeight);
         mIncognitoHelper.onSizeChanged(mWidth, mHeight);
 
         mStripFilterArea.set(0, 0, mWidth, Math.min(getHeight(), visibleViewportOffsetY));
         mEventFilter.setEventArea(mStripFilterArea);
+    }
+
+    private void updateStripScrim() {
+        if (!isGridTabSwitcherEnabled()) return;
+        // Update width
+        float scrimWidth = mModelSelectorButton.isVisible()
+                ? mWidth - getModelSelectorButtonWidthWithPadding()
+                : mWidth;
+        mStripScrim.setWidth(scrimWidth);
+
+        // Update drawX
+        float drawX = 0;
+        if (LocalizationUtils.isLayoutRtl() && mModelSelectorButton.isVisible()) {
+            drawX = getModelSelectorButtonWidthWithPadding();
+        }
+        mStripScrim.setX(drawX);
+    }
+
+    private float getModelSelectorButtonWidthWithPadding() {
+        return MODEL_SELECTOR_BUTTON_WIDTH_DP + MODEL_SELECTOR_BUTTON_END_PADDING_DP
+                + MODEL_SELECTOR_BUTTON_START_PADDING_DP;
     }
 
     public CompositorButton getNewTabButton() {
@@ -556,14 +635,16 @@ public class StripLayoutHelperManager implements SceneOverlay {
             boolean isVisible = mTabModelSelector.getModel(true).getCount() != 0;
             mModelSelectorButton.setVisible(isVisible);
 
-            float endMargin = isVisible
-                    ? MODEL_SELECTOR_BUTTON_WIDTH_DP + MODEL_SELECTOR_BUTTON_END_PADDING_DP
-                            + MODEL_SELECTOR_BUTTON_START_PADDING_DP
-                    : 0.0f;
+            float endMargin = isVisible ? getModelSelectorButtonWidthWithPadding() : 0.0f;
 
             mNormalHelper.setEndMargin(endMargin);
             mIncognitoHelper.setEndMargin(endMargin);
+            updateStripScrim();
         }
+    }
+
+    private boolean isGridTabSwitcherEnabled() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
     }
 
     /**
