@@ -36,12 +36,14 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
     Profile* profile,
     AppListControllerDelegate* list_controller,
     bool is_recommendation,
-    const std::u16string& query)
+    const std::u16string& query,
+    const std::string& details)
     : data_(std::move(data)),
       profile_(profile),
       list_controller_(list_controller) {
   const auto title = base::UTF8ToUTF16(data_->short_label);
   SetTitle(title);
+  SetDetails(base::UTF8ToUTF16(details));
   if (!query.empty())
     SetTitleTags(CalculateTags(query, title));
   set_id(kAppShortcutSearchPrefix + GetAppId() + "/" + data_->shortcut_id);

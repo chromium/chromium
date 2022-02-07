@@ -34,7 +34,8 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
                              Profile* profile,
                              AppListControllerDelegate* list_controller,
                              bool is_recommendation,
-                             const std::u16string& query);
+                             const std::u16string& query,
+                             const std::string& details);
 
   ArcAppShortcutSearchResult(const ArcAppShortcutSearchResult&) = delete;
   ArcAppShortcutSearchResult& operator=(const ArcAppShortcutSearchResult&) =

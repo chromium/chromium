@@ -81,7 +81,7 @@ void ArcAppShortcutsSearchProvider::UpdateRecommendedResults(
       continue;
     auto result = std::make_unique<ArcAppShortcutSearchResult>(
         std::move(item), profile_, list_controller_, true /*is_recommendation*/,
-        std::u16string() /*query*/);
+        std::u16string() /*query*/, app_info->name);
 
     if (!app_info->install_time.is_null() ||
         !app_info->last_launch_time.is_null()) {
@@ -113,7 +113,7 @@ void ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems(
       continue;
     search_results.emplace_back(std::make_unique<ArcAppShortcutSearchResult>(
         std::move(item), profile_, list_controller_,
-        false /*is_recommendation*/, last_query_));
+        false /*is_recommendation*/, last_query_, app_info->name));
   }
   SwapResults(&search_results);
 }
