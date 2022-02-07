@@ -60,6 +60,21 @@ class CalendarHeaderView : public views::View {
   views::Label* const header_year_;
 };
 
+// The container for a `CalendarEventListView`.
+class CalendarEventListContainer : public views::View {
+ public:
+  explicit CalendarEventListContainer(CalendarViewController* controller);
+  CalendarEventListContainer(const CalendarEventListContainer& other) = delete;
+  CalendarEventListContainer& operator=(
+      const CalendarEventListContainer& other) = delete;
+  ~CalendarEventListContainer() override;
+
+  CalendarEventListView* event_list() { return event_list_; }
+
+ private:
+  CalendarEventListView* const event_list_;
+};
+
 // This view displays a scrollable calendar.
 class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
                                 public TrayDetailedView,
@@ -188,10 +203,12 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // Adjusts the Chrome Vox box position for date cells in the scroll view.
   void AdjustDateCellVoxBounds();
 
-  // Handles the position and status of `event_list_` and other views after the
-  // opening event list animation. Such as restoring the position of them,
-  // re-enabling animation and etc.
+  // Handles the position and status of `event_list_container_->event_list()`
+  // and other views after the opening event list animation or closing event
+  // list animation. Such as restoring the position of them, re-enabling
+  // animation and etc.
   void OnOpenEventListAnimationComplete();
+  void OnCloseEventListAnimationComplete();
 
   // Unowned.
   UnifiedSystemTrayController* controller_;
@@ -226,8 +243,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   views::Button* settings_button_ = nullptr;
   IconButton* up_button_ = nullptr;
   IconButton* down_button_ = nullptr;
-  views::View* event_list_container_ = nullptr;
-  CalendarEventListView* event_list_ = nullptr;
+  CalendarEventListContainer* event_list_container_ = nullptr;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.

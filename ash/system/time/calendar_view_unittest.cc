@@ -124,7 +124,7 @@ class CalendarViewTest : public AshTestBase {
   IconButton* up_button() { return calendar_view_->up_button_; }
   IconButton* down_button() { return calendar_view_->down_button_; }
   views::ImageButton* close_button() {
-    return calendar_view_->event_list_->close_button_;
+    return calendar_view_->event_list_container_->event_list()->close_button_;
   }
 
   void ScrollUpOneMonth() { calendar_view_->ScrollUpOneMonthAndAutoScroll(); }
