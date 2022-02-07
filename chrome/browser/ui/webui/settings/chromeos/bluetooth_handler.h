@@ -33,6 +33,7 @@ class BluetoothHandler : public ::settings::SettingsPageUIHandler {
       scoped_refptr<device::BluetoothAdapter> adapter);
 
   void HandleIsDeviceBlockedByPolicy(base::Value::ConstListView args);
+  void HandleRequestFastPairDeviceSupport(base::Value::ConstListView args);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::WeakPtrFactory<BluetoothHandler> weak_ptr_factory_{this};

@@ -82,6 +82,16 @@ TEST_F(BluetoothEnabledProviderTest, NoHardwareSupport) {
   EXPECT_FALSE(provider_->is_enabled());
 }
 
+TEST_F(BluetoothEnabledProviderTest, HasHardwareSupport) {
+  adapter().SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kSupported);
+  EXPECT_FALSE(provider_->is_enabled());
+
+  adapter().SetBluetoothIsPowered(true);
+  EXPECT_TRUE(provider_->is_enabled());
+}
+
 TEST_F(BluetoothEnabledProviderTest, HardwareSupportBecomesAvailable) {
   adapter().SetHardwareOffloadingStatus(
       device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::

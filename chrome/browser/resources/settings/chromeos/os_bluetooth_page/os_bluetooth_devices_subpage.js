@@ -13,6 +13,7 @@ import './settings_fast_pair_toggle.js';
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -22,6 +23,7 @@ import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
@@ -31,9 +33,14 @@ const mojom = chromeos.bluetoothConfig.mojom;
  * @implements {I18nBehaviorInterface}
  * @implements {RouteObserverBehaviorInterface}
  * @implements {DeepLinkingBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsBluetoothDevicesSubpageElementBase = mixinBehaviors(
-    [I18nBehavior, RouteObserverBehavior, DeepLinkingBehavior], PolymerElement);
+    [
+      I18nBehavior, RouteObserverBehavior, DeepLinkingBehavior,
+      WebUIListenerBehavior
+    ],
+    PolymerElement);
 
 /** @polymer */
 class SettingsBluetoothDevicesSubpageElement extends
@@ -83,15 +90,12 @@ class SettingsBluetoothDevicesSubpageElement extends
       },
 
       /**
-       * Whether or not the fast pair feature flag is enabled which controls if
-       * the fast pair toggle shows up.
+       * Whether or not this device has the requirements to support fast pair.
        * @private {boolean}
        */
-      isFastPairAllowed_: {
+      isFastPairSupportedByDevice_: {
         type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('enableFastPairFlag');
-        }
+        value: true,
       },
 
       /**
@@ -120,12 +124,23 @@ class SettingsBluetoothDevicesSubpageElement extends
      * @private {?string}
      */
     this.lastSelectedDeviceId_ = null;
+
+    /** @private {?OsBluetoothDevicesSubpageBrowserProxy} */
+    this.browserProxy_ =
+        OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   ready() {
     super.ready();
     IronA11yAnnouncer.requestAvailability();
+    if (loadTimeData.getBoolean('enableFastPairFlag')) {
+      this.addWebUIListener(
+          'fast-pair-device-supported-status', (isSupported) => {
+            this.isFastPairSupportedByDevice_ = isSupported;
+          });
+      this.browserProxy_.requestFastPairDeviceSupport();
+    }
   }
 
   /**
@@ -279,6 +294,15 @@ class SettingsBluetoothDevicesSubpageElement extends
             this.i18n('bluetoothDisabledA11YLabel')
       }
     }));
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isFastPairToggleVisible_() {
+    return this.isFastPairSupportedByDevice_ &&
+        loadTimeData.getBoolean('enableFastPairFlag');
   }
 }
 

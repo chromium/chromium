@@ -91,5 +91,23 @@ TEST_F(BluetoothHandlerTest, GetIsDeviceBlockedByPolicy) {
   EXPECT_TRUE(call_data.arg3()->GetBool());
 }
 
+TEST_F(BluetoothHandlerTest, GetRequestFastPairDeviceSupport) {
+  mock_device_->SetIsBlockedByPolicy(true);
+
+  size_t call_data_count_before_call = test_web_ui()->call_data().size();
+
+  base::Value args(base::Value::Type::LIST);
+  test_web_ui()->HandleReceivedMessage("requestFastPairDeviceSupportStatus",
+                                       &base::Value::AsListValue(args));
+
+  ASSERT_EQ(call_data_count_before_call + 1u,
+            test_web_ui()->call_data().size());
+  const content::TestWebUI::CallData& call_data =
+      CallDataAtIndex(call_data_count_before_call);
+  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+  EXPECT_EQ("fast-pair-device-supported-status", call_data.arg1()->GetString());
+  EXPECT_FALSE(call_data.arg2()->GetBool());
+}
+
 }  // namespace settings
 }  // namespace chromeos

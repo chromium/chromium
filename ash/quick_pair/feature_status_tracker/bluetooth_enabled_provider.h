@@ -35,7 +35,6 @@ class BluetoothEnabledProvider : public BaseEnabledProvider,
   void OnAdapterReceived(scoped_refptr<device::BluetoothAdapter> adapter);
 
   void Update();
-  bool HasHardwareSupport();
 
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
