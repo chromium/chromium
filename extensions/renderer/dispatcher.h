@@ -58,6 +58,12 @@ class RenderThread;
 }  // namespace content
 
 namespace extensions {
+
+// Constant to define the default profile id for the renderer to 0.
+// Since each renderer is associated with a single context, we don't need
+// separate ids for the profile.
+const int kRendererProfileId = 0;
+
 class ContentWatcher;
 class DispatcherDelegate;
 class Extension;
@@ -231,6 +237,7 @@ class Dispatcher : public content::RenderThreadObserver,
       const std::string& extension_id,
       mojom::Renderer::SuspendExtensionCallback callback) override;
   void CancelSuspendExtension(const std::string& extension_id) override;
+  void SetDeveloperMode(bool current_developer_mode) override;
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session_type,
                       bool lock_screen_context) override;

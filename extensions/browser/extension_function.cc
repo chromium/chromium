@@ -37,6 +37,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/constants.h"
@@ -475,7 +476,7 @@ bool ExtensionFunction::HasPermission() const {
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           name_, extension_.get(), source_context_type_, source_url(),
-          extensions::CheckAliasStatus::ALLOWED);
+          extensions::CheckAliasStatus::ALLOWED, context_id_);
   return availability.is_available();
 }
 
@@ -586,6 +587,7 @@ void ExtensionFunction::SetDispatcher(
     return;
   }
   browser_context_ = dispatcher_->browser_context();
+  context_id_ = extensions::util::GetBrowserContextId(browser_context_);
   shutdown_subscription_ =
       BrowserContextShutdownNotifierFactory::GetInstance()
           ->Get(browser_context_)

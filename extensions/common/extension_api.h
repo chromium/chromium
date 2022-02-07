@@ -111,7 +111,8 @@ class ExtensionAPI {
                                     const Extension* extension,
                                     Feature::Context context,
                                     const GURL& url,
-                                    CheckAliasStatus check_alias);
+                                    CheckAliasStatus check_alias,
+                                    int context_id);
 
   // Determines whether an API, or any parts of that API, can be exposed to
   // |context|.
@@ -123,7 +124,8 @@ class ExtensionAPI {
                                       const Extension* extension,
                                       Feature::Context context,
                                       const GURL& url,
-                                      CheckAliasStatus check_alias);
+                                      CheckAliasStatus check_alias,
+                                      int context_id);
 
   // Gets the StringPiece for the schema specified by |api_name|.
   base::StringPiece GetSchemaStringPiece(const std::string& api_name);
@@ -166,7 +168,8 @@ class ExtensionAPI {
                                          const Feature& feature,
                                          const Extension* extension,
                                          Feature::Context context,
-                                         const GURL& url);
+                                         const GURL& url,
+                                         int context_id);
 
   // Loads a schema.
   void LoadSchema(const std::string& name, const base::StringPiece& schema);

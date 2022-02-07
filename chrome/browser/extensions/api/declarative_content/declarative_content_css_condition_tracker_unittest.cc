@@ -69,6 +69,7 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
     std::move(callback).Run();
   }
   void CancelSuspendExtension(const std::string& extension_id) override {}
+  void SetDeveloperMode(bool current_developer_mode) override {}
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session,
                       bool is_lock_screen_context) override {}

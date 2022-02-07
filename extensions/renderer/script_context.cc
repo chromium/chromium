@@ -21,6 +21,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -337,7 +338,8 @@ Feature::Availability ScriptContext::GetAvailability(
     extension = NULL;
   }
   return ExtensionAPI::GetSharedInstance()->IsAvailable(
-      api_name, extension, context_type_, url(), check_alias);
+      api_name, extension, context_type_, url(), check_alias,
+      kRendererProfileId);
 }
 
 std::string ScriptContext::GetContextTypeDescription() const {
@@ -368,7 +370,7 @@ bool ScriptContext::IsAnyFeatureAvailableToContext(
   // web_frame() is null.
   GURL url = web_frame() ? GetDocumentLoaderURLForFrame(web_frame()) : url_;
   return ExtensionAPI::GetSharedInstance()->IsAnyFeatureAvailableToContext(
-      api, extension(), context_type(), url, check_alias);
+      api, extension(), context_type(), url, check_alias, kRendererProfileId);
 }
 
 // static

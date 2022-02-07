@@ -83,6 +83,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/process_manager_factory.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_service_factory.h"
@@ -932,6 +933,9 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
                       *update.in_developer_mode);
     SetCurrentDeveloperMode(util::GetBrowserContextId(browser_context()),
                             *update.in_developer_mode);
+
+    RendererStartupHelperFactory::GetForBrowserContext(browser_context())
+        ->OnDeveloperModeChanged(*update.in_developer_mode);
   }
 
   return RespondNow(NoArguments());

@@ -240,6 +240,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   virtual void SetName(const char* name);
   const char* name() const { return name_; }
 
+  int context_id() const { return context_id_; }
+
   void set_profile_id(void* profile_id) { profile_id_ = profile_id; }
   void* profile_id() const { return profile_id_; }
 
@@ -578,6 +580,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // The type of the JavaScript context where this call originated.
   extensions::Feature::Context source_context_type_ =
       extensions::Feature::UNSPECIFIED_CONTEXT;
+
+  // The context ID of the browser context where this call originated.
+  int context_id_ = extensions::kUnspecifiedContextId;
 
   // The process ID of the page that triggered this function call, or -1
   // if unknown.

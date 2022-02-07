@@ -43,6 +43,7 @@
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest_constants.h"
@@ -128,11 +129,6 @@ using blink::WebView;
 using content::RenderThread;
 
 namespace extensions {
-
-// Constant to define the default profile id for the renderer to 0.
-// Since each renderer is associated with a single context, we don't need
-// separate ids for the profile.
-const int kRendererProfileId = 0;
 
 namespace {
 
@@ -1343,6 +1339,10 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
           background_frame->GetRoutingID(), params->event_id));
     }
   }
+}
+
+void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
+  SetCurrentDeveloperMode(kRendererProfileId, current_developer_mode);
 }
 
 void Dispatcher::SetSessionInfo(version_info::Channel channel,

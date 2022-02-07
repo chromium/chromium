@@ -235,7 +235,7 @@ TEST(ExtensionAPITest, APIFeatures) {
     bool expected = test_data[i].expect_is_available;
     Feature::Availability availability = api.IsAvailable(
         test_data[i].api_full_name, nullptr, test_data[i].context,
-        test_data[i].url, CheckAliasStatus::NOT_ALLOWED);
+        test_data[i].url, CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId);
     EXPECT_EQ(expected, availability.is_available())
         << base::StringPrintf("Test %d: Feature '%s' was %s: %s",
                               static_cast<int>(i),
@@ -257,19 +257,20 @@ TEST(ExtensionAPITest, APIFeaturesAlias) {
 
   ASSERT_FALSE(api.IsAvailable("alias_api_source", nullptr,
                                Feature::UNBLESSED_EXTENSION_CONTEXT, GURL(),
-                               CheckAliasStatus::NOT_ALLOWED)
+                               CheckAliasStatus::NOT_ALLOWED,
+                               kUnspecifiedContextId)
                    .is_available());
   ASSERT_TRUE(api.IsAvailable("alias_api_source", nullptr,
                               Feature::UNBLESSED_EXTENSION_CONTEXT, GURL(),
-                              CheckAliasStatus::ALLOWED)
+                              CheckAliasStatus::ALLOWED, kUnspecifiedContextId)
                   .is_available());
   ASSERT_TRUE(api.IsAvailable("alias_api_source.bar", nullptr,
                               Feature::UNBLESSED_EXTENSION_CONTEXT, GURL(),
-                              CheckAliasStatus::ALLOWED)
+                              CheckAliasStatus::ALLOWED, kUnspecifiedContextId)
                   .is_available());
   ASSERT_FALSE(api.IsAvailable("alias_api_source.foo", nullptr,
                                Feature::UNBLESSED_EXTENSION_CONTEXT, GURL(),
-                               CheckAliasStatus::ALLOWED)
+                               CheckAliasStatus::ALLOWED, kUnspecifiedContextId)
                    .is_available());
 
   scoped_refptr<const Extension> extension =
@@ -285,10 +286,10 @@ TEST(ExtensionAPITest, APIFeaturesAlias) {
   ASSERT_TRUE(test_feature);
   ASSERT_FALSE(api.IsAnyFeatureAvailableToContext(
       *test_feature, extension.get(), Feature::UNBLESSED_EXTENSION_CONTEXT,
-      GURL(), CheckAliasStatus::NOT_ALLOWED));
+      GURL(), CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId));
   EXPECT_TRUE(api.IsAnyFeatureAvailableToContext(
       *test_feature, extension.get(), Feature::UNBLESSED_EXTENSION_CONTEXT,
-      GURL(), CheckAliasStatus::ALLOWED));
+      GURL(), CheckAliasStatus::ALLOWED, kUnspecifiedContextId));
 }
 
 TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
@@ -375,7 +376,8 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
     EXPECT_EQ(test_data[i].expect_is_available,
               api.IsAnyFeatureAvailableToContext(
                   *test_feature, test_data[i].extension, test_data[i].context,
-                  test_data[i].url, CheckAliasStatus::NOT_ALLOWED))
+                  test_data[i].url, CheckAliasStatus::NOT_ALLOWED,
+                  kUnspecifiedContextId))
         << i;
   }
 }
@@ -433,11 +435,12 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
 
     std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> current_session(
         ScopedCurrentFeatureSessionType(test.current_session_type));
-    EXPECT_EQ(test.expect_available,
-              api.IsAvailable(test.api_name, app.get(),
-                              Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                              CheckAliasStatus::NOT_ALLOWED)
-                  .is_available())
+    EXPECT_EQ(
+        test.expect_available,
+        api.IsAvailable(test.api_name, app.get(),
+                        Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
+                        CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId)
+            .is_available())
         << "Test case (" << test.api_name << ", "
         << static_cast<int>(test.current_session_type) << ").";
   }
@@ -512,44 +515,48 @@ TEST(ExtensionAPITest, ExtensionWithUnprivilegedAPIs) {
   // "storage" is completely unprivileged.
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("storage"), nullptr,
-      Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-      CheckAliasStatus::NOT_ALLOWED));
+      Feature::BLESSED_EXTENSION_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED,
+      kUnspecifiedContextId));
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("storage"), nullptr,
       Feature::UNBLESSED_EXTENSION_CONTEXT, GURL(),
-      CheckAliasStatus::NOT_ALLOWED));
+      CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId));
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("storage"), nullptr,
-      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED));
+      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED,
+      kUnspecifiedContextId));
 
   // "extension" is partially unprivileged.
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("extension"), nullptr,
-      Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-      CheckAliasStatus::NOT_ALLOWED));
+      Feature::BLESSED_EXTENSION_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED,
+      kUnspecifiedContextId));
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("extension"), nullptr,
       Feature::UNBLESSED_EXTENSION_CONTEXT, GURL(),
-      CheckAliasStatus::NOT_ALLOWED));
+      CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId));
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("extension"), nullptr,
-      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED));
+      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED,
+      kUnspecifiedContextId));
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("extension.getURL"), nullptr,
-      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED));
+      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED,
+      kUnspecifiedContextId));
 
   // "history" is entirely privileged.
   EXPECT_TRUE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("history"), nullptr,
-      Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-      CheckAliasStatus::NOT_ALLOWED));
+      Feature::BLESSED_EXTENSION_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED,
+      kUnspecifiedContextId));
   EXPECT_FALSE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("history"), nullptr,
       Feature::UNBLESSED_EXTENSION_CONTEXT, GURL(),
-      CheckAliasStatus::NOT_ALLOWED));
+      CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId));
   EXPECT_FALSE(extension_api->IsAnyFeatureAvailableToContext(
       *api_features.GetFeature("history"), nullptr,
-      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED));
+      Feature::CONTENT_SCRIPT_CONTEXT, GURL(), CheckAliasStatus::NOT_ALLOWED,
+      kUnspecifiedContextId));
 }
 
 scoped_refptr<Extension> CreateHostedApp() {
@@ -608,27 +615,32 @@ TEST(ExtensionAPITest, HostedAppPermissions) {
   EXPECT_FALSE(extension_api
                    ->IsAvailable("runtime", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                    .is_available());
   EXPECT_FALSE(extension_api
                    ->IsAvailable("runtime.id", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                    .is_available());
   EXPECT_FALSE(extension_api
                    ->IsAvailable("runtime.sendMessage", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                    .is_available());
   EXPECT_FALSE(extension_api
                    ->IsAvailable("runtime.sendNativeMessage", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                    .is_available());
   EXPECT_FALSE(extension_api
                    ->IsAvailable("tabs.create", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                    .is_available());
 }
 
@@ -648,19 +660,22 @@ TEST(ExtensionAPITest, AppAndFriendsAvailability) {
                      ->IsAvailable("app", extension.get(),
                                    Feature::BLESSED_EXTENSION_CONTEXT,
                                    GURL("http://foo.com"),
-                                   CheckAliasStatus::NOT_ALLOWED)
+                                   CheckAliasStatus::NOT_ALLOWED,
+                                   kUnspecifiedContextId)
                      .is_available());
     EXPECT_TRUE(extension_api
                     ->IsAvailable("app.runtime", extension.get(),
                                   Feature::BLESSED_EXTENSION_CONTEXT,
                                   GURL("http://foo.com"),
-                                  CheckAliasStatus::NOT_ALLOWED)
+                                  CheckAliasStatus::NOT_ALLOWED,
+                                  kUnspecifiedContextId)
                     .is_available());
     EXPECT_TRUE(extension_api
                     ->IsAvailable("app.window", extension.get(),
                                   Feature::BLESSED_EXTENSION_CONTEXT,
                                   GURL("http://foo.com"),
-                                  CheckAliasStatus::NOT_ALLOWED)
+                                  CheckAliasStatus::NOT_ALLOWED,
+                                  kUnspecifiedContextId)
                     .is_available());
   }
   // Make sure chrome.app.runtime and chrome.app.window are not available to
@@ -673,19 +688,22 @@ TEST(ExtensionAPITest, AppAndFriendsAvailability) {
                     ->IsAvailable("app", extension.get(),
                                   Feature::BLESSED_EXTENSION_CONTEXT,
                                   GURL("http://foo.com"),
-                                  CheckAliasStatus::NOT_ALLOWED)
+                                  CheckAliasStatus::NOT_ALLOWED,
+                                  kUnspecifiedContextId)
                     .is_available());
     EXPECT_FALSE(extension_api
                      ->IsAvailable("app.runtime", extension.get(),
                                    Feature::BLESSED_EXTENSION_CONTEXT,
                                    GURL("http://foo.com"),
-                                   CheckAliasStatus::NOT_ALLOWED)
+                                   CheckAliasStatus::NOT_ALLOWED,
+                                   kUnspecifiedContextId)
                      .is_available());
     EXPECT_FALSE(extension_api
                      ->IsAvailable("app.window", extension.get(),
                                    Feature::BLESSED_EXTENSION_CONTEXT,
                                    GURL("http://foo.com"),
-                                   CheckAliasStatus::NOT_ALLOWED)
+                                   CheckAliasStatus::NOT_ALLOWED,
+                                   kUnspecifiedContextId)
                      .is_available());
   }
 }
@@ -700,11 +718,13 @@ TEST(ExtensionAPITest, ExtensionWithDependencies) {
         ExtensionAPI::CreateWithDefaultConfiguration());
     EXPECT_TRUE(api->IsAvailable("ttsEngine", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                     .is_available());
     EXPECT_FALSE(api->IsAvailable("tts", extension.get(),
                                   Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                  CheckAliasStatus::NOT_ALLOWED)
+                                  CheckAliasStatus::NOT_ALLOWED,
+                                  kUnspecifiedContextId)
                      .is_available());
   }
 
@@ -717,11 +737,13 @@ TEST(ExtensionAPITest, ExtensionWithDependencies) {
         ExtensionAPI::CreateWithDefaultConfiguration());
     EXPECT_FALSE(api->IsAvailable("ttsEngine", extension.get(),
                                   Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                  CheckAliasStatus::NOT_ALLOWED)
+                                  CheckAliasStatus::NOT_ALLOWED,
+                                  kUnspecifiedContextId)
                      .is_available());
     EXPECT_TRUE(api->IsAvailable("tts", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                     .is_available());
   }
 }
@@ -730,7 +752,7 @@ bool MatchesURL(
     ExtensionAPI* api, const std::string& api_name, const std::string& url) {
   return api
       ->IsAvailable(api_name, nullptr, Feature::WEB_PAGE_CONTEXT, GURL(url),
-                    CheckAliasStatus::NOT_ALLOWED)
+                    CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId)
       .is_available();
 }
 
@@ -960,12 +982,13 @@ TEST(ExtensionAPITest, NoPermissions) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
 
   for (size_t i = 0; i < base::size(kTests); ++i) {
-    EXPECT_EQ(kTests[i].expect_success,
-              extension_api
-                  ->IsAvailable(kTests[i].permission_name, extension.get(),
-                                Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                CheckAliasStatus::NOT_ALLOWED)
-                  .is_available())
+    EXPECT_EQ(
+        kTests[i].expect_success,
+        extension_api
+            ->IsAvailable(kTests[i].permission_name, extension.get(),
+                          Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
+                          CheckAliasStatus::NOT_ALLOWED, kUnspecifiedContextId)
+            .is_available())
         << "Permission being tested: " << kTests[i].permission_name;
   }
 }
@@ -982,12 +1005,14 @@ TEST(ExtensionAPITest, ManifestKeys) {
   EXPECT_TRUE(extension_api
                   ->IsAvailable("browserAction", extension.get(),
                                 Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                CheckAliasStatus::NOT_ALLOWED)
+                                CheckAliasStatus::NOT_ALLOWED,
+                                kUnspecifiedContextId)
                   .is_available());
   EXPECT_FALSE(extension_api
                    ->IsAvailable("pageAction", extension.get(),
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
-                                 CheckAliasStatus::NOT_ALLOWED)
+                                 CheckAliasStatus::NOT_ALLOWED,
+                                 kUnspecifiedContextId)
                    .is_available());
 }
 

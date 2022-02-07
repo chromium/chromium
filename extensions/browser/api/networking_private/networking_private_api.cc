@@ -52,10 +52,11 @@ NetworkingPrivateDelegate* GetDelegate(
 
 bool HasPrivateNetworkingAccess(const Extension* extension,
                                 Feature::Context context,
-                                const GURL& source_url) {
+                                const GURL& source_url,
+                                int context_id) {
   return ExtensionAPI::GetSharedInstance()
       ->IsAvailable("networkingPrivate", extension, context, source_url,
-                    CheckAliasStatus::NOT_ALLOWED)
+                    CheckAliasStatus::NOT_ALLOWED, context_id)
       .is_available();
 }
 
@@ -71,8 +72,9 @@ std::vector<std::string> FilterProperties(base::Value* properties,
                                           PropertiesType type,
                                           const Extension* extension,
                                           Feature::Context context,
-                                          const GURL& source_url) {
-  if (HasPrivateNetworkingAccess(extension, context, source_url))
+                                          const GURL& source_url,
+                                          int context_id) {
+  if (HasPrivateNetworkingAccess(extension, context, source_url, context_id))
     return std::vector<std::string>();
 
   const char* const* filter = nullptr;
@@ -162,7 +164,7 @@ void NetworkingPrivateGetPropertiesFunction::Result(
     return;
   }
   FilterProperties(&result.value(), PropertiesType::GET, extension(),
-                   source_context_type(), source_url());
+                   source_context_type(), source_url(), context_id());
   Respond(OneArgument(std::move(*result)));
 }
 
@@ -198,7 +200,7 @@ void NetworkingPrivateGetManagedPropertiesFunction::Result(
     return;
   }
   FilterProperties(&result.value(), PropertiesType::GET, extension(),
-                   source_context_type(), source_url());
+                   source_context_type(), source_url(), context_id());
   Respond(OneArgument(std::move(*result)));
 }
 
@@ -226,7 +228,7 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
 
 void NetworkingPrivateGetStateFunction::Success(base::Value result) {
   FilterProperties(&result, PropertiesType::GET, extension(),
-                   source_context_type(), source_url());
+                   source_context_type(), source_url(), context_id());
   Respond(OneArgument(std::move(result)));
 }
 
@@ -251,7 +253,7 @@ NetworkingPrivateSetPropertiesFunction::Run() {
 
   std::vector<std::string> not_allowed_properties =
       FilterProperties(&properties_dict, PropertiesType::SET, extension(),
-                       source_context_type(), source_url());
+                       source_context_type(), source_url(), context_id());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
 
@@ -299,7 +301,7 @@ NetworkingPrivateCreateNetworkFunction::Run() {
 
   std::vector<std::string> not_allowed_properties =
       FilterProperties(&properties_dict, PropertiesType::SET, extension(),
-                       source_context_type(), source_url());
+                       source_context_type(), source_url(), context_id());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
 
@@ -416,7 +418,7 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
   // networkingPrivate permissions, i.e. apps that might have started using it
   // before its deprecation.
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
+                                  source_url(), context_id())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -461,7 +463,7 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
   // networkingPrivate permissions, i.e. apps that might have started using it
   // before its deprecation.
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
+                                  source_url(), context_id())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -644,7 +646,7 @@ NetworkingPrivateStartActivateFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateStartActivateFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
+                                  source_url(), context_id())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -719,7 +721,7 @@ NetworkingPrivateUnlockCellularSimFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateUnlockCellularSimFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
+                                  source_url(), context_id())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -758,7 +760,7 @@ NetworkingPrivateSetCellularSimStateFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSetCellularSimStateFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
+                                  source_url(), context_id())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -799,7 +801,7 @@ NetworkingPrivateSelectCellularMobileNetworkFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSelectCellularMobileNetworkFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
+                                  source_url(), context_id())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -858,7 +860,7 @@ NetworkingPrivateGetCertificateListsFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetCertificateListsFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
+                                  source_url(), context_id())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 

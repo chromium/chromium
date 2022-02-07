@@ -61,13 +61,15 @@ class FeatureCache {
   // creating a new entry if one doesn't exist.
   const FeatureVector& GetFeaturesFromCache(Feature::Context context_type,
                                             const Extension* extension,
-                                            const GURL& origin);
+                                            const GURL& origin,
+                                            int context_id);
 
   // Creates a FeatureVector to be entered into a cache for the specified
   // context data.
   FeatureVector CreateCacheEntry(Feature::Context context_type,
                                  const Extension* extension,
-                                 const GURL& origin);
+                                 const GURL& origin,
+                                 int context_id);
 
   // The cache of extension-related contexts. These may be invalidated, since
   // extension permissions change.
