@@ -84,6 +84,9 @@ class LoginDisplayHost {
   // Returns corresponding native window.
   virtual gfx::NativeWindow GetNativeWindow() const = 0;
 
+  // Returns the current login window widget.
+  virtual views::Widget* GetLoginWindowWidget() const = 0;
+
   // Returns instance of the OOBE WebUI.
   virtual OobeUI* GetOobeUI() const = 0;
 

@@ -34,6 +34,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
               (),
               (override));
   MOCK_METHOD(gfx::NativeWindow, GetNativeWindow, (), (const, override));
+  MOCK_METHOD(views::Widget*, GetLoginWindowWidget, (), (const, override));
   MOCK_METHOD(OobeUI*, GetOobeUI, (), (const, override));
   MOCK_METHOD(content::WebContents*, GetOobeWebContents, (), (const, override));
   MOCK_METHOD(WebUILoginView*, GetWebUILoginView, (), (const, override));

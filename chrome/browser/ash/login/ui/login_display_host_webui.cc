@@ -490,6 +490,10 @@ gfx::NativeWindow LoginDisplayHostWebUI::GetNativeWindow() const {
   return login_window_ ? login_window_->GetNativeWindow() : nullptr;
 }
 
+views::Widget* LoginDisplayHostWebUI::GetLoginWindowWidget() const {
+  return login_window_;
+}
+
 WebUILoginView* LoginDisplayHostWebUI::GetWebUILoginView() const {
   return login_view_;
 }

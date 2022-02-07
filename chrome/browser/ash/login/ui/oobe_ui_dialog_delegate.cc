@@ -340,6 +340,10 @@ gfx::NativeWindow OobeUIDialogDelegate::GetNativeWindow() const {
   return widget_ ? widget_->GetNativeWindow() : nullptr;
 }
 
+views::Widget* OobeUIDialogDelegate::GetWebDialogWidget() const {
+  return widget_;
+}
+
 views::View* OobeUIDialogDelegate::GetWebDialogView() {
   return dialog_view_;
 }

@@ -247,6 +247,10 @@ gfx::NativeWindow LoginDisplayHostMojo::GetNativeWindow() const {
   return dialog_->GetNativeWindow();
 }
 
+views::Widget* LoginDisplayHostMojo::GetLoginWindowWidget() const {
+  return dialog_ ? dialog_->GetWebDialogWidget() : nullptr;
+}
+
 OobeUI* LoginDisplayHostMojo::GetOobeUI() const {
   if (!dialog_)
     return nullptr;

@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -357,6 +358,13 @@ void LoginScreenClientImpl::OnUserActivity() {
         ->GetExistingUserController()
         ->ResetAutoLoginTimer();
   }
+}
+
+views::Widget* LoginScreenClientImpl::GetLoginWindowWidget() {
+  if (ash::LoginDisplayHost::default_host()) {
+    return ash::LoginDisplayHost::default_host()->GetLoginWindowWidget();
+  }
+  return nullptr;
 }
 
 void LoginScreenClientImpl::OnParentAccessValidation(

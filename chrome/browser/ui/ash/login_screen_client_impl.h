@@ -133,6 +133,7 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   void OnSystemTrayBubbleShown() override;
   void OnLoginScreenShown() override;
   void OnUserActivity() override;
+  views::Widget* GetLoginWindowWidget() override;
 
  private:
   void SetPublicSessionKeyboardLayout(

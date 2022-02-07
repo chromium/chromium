@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/callback_forward.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -99,6 +100,10 @@ class ASH_PUBLIC_EXPORT LoginScreen {
 
   // Stops login shelf gesture detection.
   virtual void ClearLoginShelfGestureHandler() = 0;
+
+  // Get login screen widget. Currently used to set proper accessibility
+  // navigation.
+  virtual views::Widget* GetLoginWindowWidget() = 0;
 
  protected:
   LoginScreen();

@@ -1415,6 +1415,7 @@ void LockContentsView::OnFocusLeavingLockScreenApps(bool reverse) {
 }
 
 void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
+  bool oobe_dialog_was_visible = oobe_dialog_visible_;
   oobe_dialog_visible_ = state != OobeDialogState::HIDDEN;
   extension_ui_visible_ = state == OobeDialogState::EXTENSION_LOGIN;
 
@@ -1430,6 +1431,14 @@ void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
   } else if (features::IsRedirectToDefaultIdPEnabled() &&
              !oobe_dialog_visible_ && login_camera_timeout_view_) {
     login_camera_timeout_view_->RequestFocus();
+  }
+  // If OOBE dialog visibility changes we need to force an update of the a11y
+  // tree to fix linear navigation from `StatusAreaWidget` to `LockScreen`.
+  if (oobe_dialog_visible_ != oobe_dialog_was_visible) {
+    Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+    shelf->GetStatusAreaWidget()
+        ->status_area_widget_delegate()
+        ->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
   }
 }
 

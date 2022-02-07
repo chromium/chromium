@@ -88,6 +88,8 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   OobeUI* GetOobeUI() const;
   gfx::NativeWindow GetNativeWindow() const;
 
+  views::Widget* GetWebDialogWidget() const;
+
   views::View* GetWebDialogView();
 
   CaptivePortalDialogDelegate* captive_portal_delegate_for_test() {

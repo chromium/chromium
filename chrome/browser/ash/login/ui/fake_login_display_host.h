@@ -31,6 +31,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   LoginDisplay* GetLoginDisplay() override;
   ExistingUserController* GetExistingUserController() override;
   gfx::NativeWindow GetNativeWindow() const override;
+  views::Widget* GetLoginWindowWidget() const override;
   OobeUI* GetOobeUI() const override;
   content::WebContents* GetOobeWebContents() const override;
   WebUILoginView* GetWebUILoginView() const override;

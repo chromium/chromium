@@ -399,6 +399,10 @@ void LoginScreenController::ClearLoginShelfGestureHandler() {
       ->ClearLoginShelfSwipeHandler();
 }
 
+views::Widget* LoginScreenController::GetLoginWindowWidget() {
+  return client_ ? client_->GetLoginWindowWidget() : nullptr;
+}
+
 void LoginScreenController::ShowLockScreen() {
   CHECK(!LockScreen::HasInstance());
   OnShow();

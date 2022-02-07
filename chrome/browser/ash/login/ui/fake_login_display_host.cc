@@ -48,6 +48,10 @@ gfx::NativeWindow FakeLoginDisplayHost::GetNativeWindow() const {
   return nullptr;
 }
 
+views::Widget* FakeLoginDisplayHost::GetLoginWindowWidget() const {
+  return nullptr;
+}
+
 OobeUI* FakeLoginDisplayHost::GetOobeUI() const {
   return nullptr;
 }
