@@ -158,16 +158,17 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const double relevance) {
   const auto type = path.is_directory ? FileResult::Type::kDirectory
                                       : FileResult::Type::kFile;
-  // Use the display name of the Files app as the details text.
-  std::u16string details_text = base::CollapseWhitespace(
-      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
-  base::i18n::SanitizeUserSuppliedString(&details_text);
+  // Use the parent directory name as details text. Take care to remove newlines
+  // and handle RTL as this is displayed directly.
+  std::u16string parent_dir_name = base::CollapseWhitespace(
+      path.path.DirName().BaseName().LossyDisplayName(), true);
+  base::i18n::SanitizeUserSuppliedString(&parent_dir_name);
 
-  auto result =
-      std::make_unique<FileResult>(kFileSearchSchema, path.path, details_text,
-                                   ash::AppListSearchResultType::kFileSearch,
-                                   ash::SearchResultDisplayType::kList,
-                                   relevance, last_query_, type, profile_);
+  auto result = std::make_unique<FileResult>(
+      kFileSearchSchema, path.path, parent_dir_name,
+      ash::AppListSearchResultType::kFileSearch,
+      ash::SearchResultDisplayType::kList, relevance, last_query_, type,
+      profile_);
   result->RequestThumbnail(&thumbnail_loader_);
   return result;
 }
