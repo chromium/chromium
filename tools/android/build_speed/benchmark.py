@@ -420,9 +420,9 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                    use_emulator: bool) -> Iterator[Tuple[str, List[float]]]:
     out_dir = os.path.relpath(output_directory, _SRC_ROOT)
     args_gn_path = os.path.join(out_dir, 'args.gn')
-    emulator_ctx = _emulator() if use_emulator else contextlib.nullcontext()
-    server_ctx = _server() if not no_server else contextlib.nullcontext()
-    with _backup_file(args_gn_path), server_ctx, emulator_ctx as emulator:
+    emulator_ctx = _emulator if use_emulator else contextlib.nullcontext
+    server_ctx = _server if not no_server else contextlib.nullcontext
+    with _backup_file(args_gn_path), emulator_ctx() as emulator:
         with open(args_gn_path, 'w') as f:
             # Use newlines instead of spaces since autoninja.py uses regex to
             # determine whether use_goma is turned on or off.
@@ -433,12 +433,16 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
             time_taken = []
             for run_num in range(repeat):
                 logging.info(f'Run number: {run_num + 1}')
-                for elapsed in _run_benchmark(out_dir=out_dir,
-                                              target=target,
-                                              emulator=emulator,
-                                              **benchmark.info):
-                    logging.info(f'Time: {elapsed:.1f}s')
-                    time_taken.append(elapsed)
+                # Run the fast local dev server fresh for each benchmark run
+                # to avoid later benchmarks being slower due to the server
+                # accumulating queued tasks.
+                with server_ctx():
+                    for elapsed in _run_benchmark(out_dir=out_dir,
+                                                  target=target,
+                                                  emulator=emulator,
+                                                  **benchmark.info):
+                        logging.info(f'Time: {elapsed:.1f}s')
+                        time_taken.append(elapsed)
             logging.info(f'Completed {benchmark.name}')
             logging.info('Result: %s', _format_result(time_taken))
             yield benchmark.name, time_taken
