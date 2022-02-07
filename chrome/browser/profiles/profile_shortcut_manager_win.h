@@ -37,6 +37,11 @@ std::wstring GetUniqueShortcutFilenameForProfile(
     const std::u16string& profile_name,
     const std::set<base::FilePath>& excludes);
 
+// Looks through the various Windows directories that could have pinned
+// shortcuts and returns a vector of shortcuts with profile `profile_path`.
+const std::vector<base::FilePath> GetPinnedShortCutsForProfile(
+    const base::FilePath& profile_path);
+
 // This class checks that shortcut filename matches certain profile.
 class ShortcutFilenameMatcher {
  public:

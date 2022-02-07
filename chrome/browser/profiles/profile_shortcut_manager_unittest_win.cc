@@ -1138,3 +1138,58 @@ TEST_F(ProfileShortcutManagerTest, ShortcutsForProfilesWithIdenticalNames) {
   EXPECT_FALSE(base::PathExists(profile_3_shortcut_path));
   ValidateSingleProfileShortcut(FROM_HERE, profile_3_path_);
 }
+
+TEST_F(ProfileShortcutManagerTest, GetPinnedShortcutsForProfile) {
+  // Create shortcuts in DIR_TASKBAR_PINS and sub-dirs of
+  // DIR_IMPLICIT_APP_SHORTCUTS for the desired profile, and one for a different
+  // profile, and check that GetPinnedShortcutsForProfile returns the ones for
+  // the desired profile.
+  base::FilePath chrome_exe;
+  std::set<base::FilePath> expected_files;
+  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &chrome_exe));
+  base::ScopedPathOverride override_taskbar_pin{base::DIR_TASKBAR_PINS};
+  base::ScopedPathOverride override_implicit_apps{
+      base::DIR_IMPLICIT_APP_SHORTCUTS};
+  base::FilePath taskbar_pinned;
+  base::FilePath implicit_apps;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pinned));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS, &implicit_apps));
+  base::win::ShortcutProperties properties;
+  std::wstring command_line =
+      profiles::internal::CreateProfileShortcutFlags(profile_1_path_);
+  properties.set_arguments(command_line);
+  properties.set_target(chrome_exe);
+  base::FilePath shortcut_path =
+      taskbar_pinned.Append(L"Shortcut 1").AddExtension(installer::kLnkExt);
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, properties, base::win::ShortcutOperation::kCreateAlways));
+  expected_files.insert(shortcut_path);
+
+  base::FilePath implicit_apps_subdir;
+
+  // Create a subdirectory of implicit apps dir and create a shortcut with the
+  // desired profile.
+  base::CreateTemporaryDirInDir(implicit_apps, L"pre", &implicit_apps_subdir);
+  shortcut_path =
+      taskbar_pinned.Append(L"Shortcut 2").AddExtension(installer::kLnkExt);
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, properties, base::win::ShortcutOperation::kCreateAlways));
+  expected_files.insert(shortcut_path);
+
+  // Create a shortcut using a different profile in the taskbar pinned dir.
+  // This should not be returned by GetPinnedShortCutsForProfile.
+  command_line =
+      profiles::internal::CreateProfileShortcutFlags(profile_2_path_);
+  properties.set_arguments(command_line);
+  shortcut_path =
+      taskbar_pinned.Append(L"Shortcut 3").AddExtension(installer::kLnkExt);
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, properties, base::win::ShortcutOperation::kCreateAlways));
+
+  std::vector<base::FilePath> pinned_shortcuts =
+      profiles::internal::GetPinnedShortCutsForProfile(profile_1_path_);
+  EXPECT_EQ(pinned_shortcuts.size(), 2U);
+  EXPECT_TRUE(expected_files.find(pinned_shortcuts[0]) != expected_files.end());
+  EXPECT_TRUE(expected_files.find(pinned_shortcuts[1]) != expected_files.end());
+}
