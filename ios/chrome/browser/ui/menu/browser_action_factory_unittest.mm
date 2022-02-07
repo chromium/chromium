@@ -405,7 +405,8 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedImageAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = nil;
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"doc.on.clipboard"
+                                             systemSymbol:YES];
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE);
 
@@ -421,7 +422,8 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedURLAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = nil;
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"doc.on.clipboard"
+                                             systemSymbol:YES];
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK);
 
@@ -437,7 +439,8 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedTextAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = nil;
+  UIImage* expectedImage = [factory configuredSymbolNamed:@"doc.on.clipboard"
+                                             systemSymbol:YES];
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT);
 

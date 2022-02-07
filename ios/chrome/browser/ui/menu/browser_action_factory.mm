@@ -338,10 +338,12 @@
 
         UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(params);
       };
-  // TODO(crbug.com/1285015): Add the image.
+
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
-                         image:nil
+                         image:[self configuredSymbolNamed:@"doc.on.clipboard"
+                                              systemSymbol:YES]
+
                           type:MenuActionType::SearchCopiedImage
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -365,10 +367,10 @@
         });
       };
 
-  // TODO(crbug.com/1285015): Add the image.
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
-                         image:nil
+                         image:[self configuredSymbolNamed:@"doc.on.clipboard"
+                                              systemSymbol:YES]
                           type:MenuActionType::VisitCopiedLink
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -392,10 +394,10 @@
         });
       };
 
-  // TODO(crbug.com/1285015): Add the image.
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
-                         image:nil
+                         image:[self configuredSymbolNamed:@"doc.on.clipboard"
+                                              systemSymbol:YES]
                           type:MenuActionType::SearchCopiedText
                          block:^{
                            ClipboardRecentContent::GetInstance()
