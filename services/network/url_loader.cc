@@ -110,77 +110,6 @@ using ConcerningHeaderId = URLLoader::ConcerningHeaderId;
 // mojo::core::Core::CreateDataPipe
 constexpr size_t kBlockedBodyAllocationSize = 1;
 
-void PopulateResourceResponse(net::URLRequest* request,
-                              bool is_load_timing_enabled,
-                              int32_t options,
-                              network::mojom::URLResponseHead* response) {
-  response->request_time = request->request_time();
-  response->response_time = request->response_time();
-  response->headers = request->response_headers();
-  response->parsed_headers =
-      PopulateParsedHeaders(response->headers.get(), request->url());
-
-  request->GetCharset(&response->charset);
-  response->content_length = request->GetExpectedContentSize();
-  request->GetMimeType(&response->mime_type);
-  net::HttpResponseInfo response_info = request->response_info();
-  response->was_fetched_via_spdy = response_info.was_fetched_via_spdy;
-  response->was_alpn_negotiated = response_info.was_alpn_negotiated;
-  response->alpn_negotiated_protocol = response_info.alpn_negotiated_protocol;
-  response->connection_info = response_info.connection_info;
-  response->remote_endpoint = response_info.remote_endpoint;
-  response->was_fetched_via_cache = request->was_cached();
-  response->is_validated = (response_info.cache_entry_status ==
-                            net::HttpResponseInfo::ENTRY_VALIDATED);
-  response->proxy_server = request->proxy_server();
-  response->network_accessed = response_info.network_accessed;
-  response->async_revalidation_requested =
-      response_info.async_revalidation_requested;
-  response->was_in_prefetch_cache =
-      !(request->load_flags() & net::LOAD_PREFETCH) &&
-      response_info.unused_since_prefetch;
-
-  response->was_cookie_in_request = false;
-  for (const auto& cookie_with_access_result : request->maybe_sent_cookies()) {
-    if (cookie_with_access_result.access_result.status.IsInclude()) {
-      // IsInclude() true means the cookie was sent.
-      response->was_cookie_in_request = true;
-      break;
-    }
-  }
-
-  if (is_load_timing_enabled)
-    request->GetLoadTimingInfo(&response->load_timing);
-
-  if (request->ssl_info().cert.get()) {
-    response->ct_policy_compliance = request->ssl_info().ct_policy_compliance;
-    response->cert_status = request->ssl_info().cert_status;
-    net::SSLVersion ssl_version = net::SSLConnectionStatusToVersion(
-        request->ssl_info().connection_status);
-    response->is_legacy_tls_version =
-        ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1 ||
-        ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1_1;
-
-    if ((options & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
-        (net::IsCertStatusError(request->ssl_info().cert_status) &&
-         (options & mojom::kURLLoadOptionSendSSLInfoForCertificateError))) {
-      response->ssl_info = request->ssl_info();
-    }
-  }
-
-  response->request_start = request->creation_time();
-  response->response_start = base::TimeTicks::Now();
-  response->encoded_data_length = request->GetTotalReceivedBytes();
-  response->auth_challenge_info = request->auth_challenge_info();
-  response->has_range_requested = request->extra_request_headers().HasHeader(
-      net::HttpRequestHeaders::kRange);
-  base::ranges::copy(request->response_info().dns_aliases,
-                     std::back_inserter(response->dns_aliases));
-  // [spec]: https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
-  // 13. Set response’s request-includes-credentials to includeCredentials.
-  response->request_include_credentials = request->allow_credentials();
-}
-
 // A subclass of net::UploadBytesElementReader which owns
 // ResourceRequestBody.
 class BytesElementReader : public net::UploadBytesElementReader {
@@ -1116,7 +1045,7 @@ const mojom::ClientSecurityState* URLLoader::GetClientSecurityState() const {
 
 PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
     const net::TransportInfo& transport_info) {
-  resource_ip_address_space_ = TransportInfoToIPAddressSpace(transport_info);
+  response_ip_address_space_ = TransportInfoToIPAddressSpace(transport_info);
 
   const mojom::ClientSecurityState* security_state = GetClientSecurityState();
 
@@ -1124,7 +1053,7 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
   // `URLLoader::PrivateNetworkAccessCheck()` and fails to compile.
   PrivateNetworkAccessCheckResult result = network::PrivateNetworkAccessCheck(
       security_state, target_ip_address_space_, options_,
-      resource_ip_address_space_);
+      response_ip_address_space_);
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
@@ -1138,7 +1067,7 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
                           IPAddressSpaceToStringPiece(client_address_space));
         dict.SetStringKey(
             "resource_address_space",
-            IPAddressSpaceToStringPiece(resource_ip_address_space_));
+            IPAddressSpaceToStringPiece(response_ip_address_space_));
         dict.SetStringKey("result",
                           PrivateNetworkAccessCheckResultToStringPiece(result));
         return dict;
@@ -1164,7 +1093,7 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
   if (devtools_observer_) {
     devtools_observer_->OnPrivateNetworkRequest(
         devtools_request_id(), url_request_->url(), is_warning,
-        resource_ip_address_space_, security_state->Clone());
+        response_ip_address_space_, security_state->Clone());
   }
 
   return result;
@@ -1188,7 +1117,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
     // with it later, then fail the request with the same net error code as
     // other CORS errors.
     cors_error_status_ = CorsErrorStatus(*cors_error, target_ip_address_space_,
-                                         resource_ip_address_space_);
+                                         response_ip_address_space_);
     return net::ERR_FAILED;
   }
 
@@ -1216,6 +1145,87 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
   return net::OK;
 }
 
+mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
+  auto response = mojom::URLResponseHead::New();
+
+  response->request_time = url_request_->request_time();
+  response->response_time = url_request_->response_time();
+  response->headers = url_request_->response_headers();
+  response->parsed_headers =
+      PopulateParsedHeaders(response->headers.get(), url_request_->url());
+
+  url_request_->GetCharset(&response->charset);
+  response->content_length = url_request_->GetExpectedContentSize();
+  url_request_->GetMimeType(&response->mime_type);
+  net::HttpResponseInfo response_info = url_request_->response_info();
+  response->was_fetched_via_spdy = response_info.was_fetched_via_spdy;
+  response->was_alpn_negotiated = response_info.was_alpn_negotiated;
+  response->alpn_negotiated_protocol = response_info.alpn_negotiated_protocol;
+  response->connection_info = response_info.connection_info;
+  response->remote_endpoint = response_info.remote_endpoint;
+  response->was_fetched_via_cache = url_request_->was_cached();
+  response->is_validated = (response_info.cache_entry_status ==
+                            net::HttpResponseInfo::ENTRY_VALIDATED);
+  response->proxy_server = url_request_->proxy_server();
+  response->network_accessed = response_info.network_accessed;
+  response->async_revalidation_requested =
+      response_info.async_revalidation_requested;
+  response->was_in_prefetch_cache =
+      !(url_request_->load_flags() & net::LOAD_PREFETCH) &&
+      response_info.unused_since_prefetch;
+
+  response->was_cookie_in_request = false;
+  for (const auto& cookie_with_access_result :
+       url_request_->maybe_sent_cookies()) {
+    if (cookie_with_access_result.access_result.status.IsInclude()) {
+      // IsInclude() true means the cookie was sent.
+      response->was_cookie_in_request = true;
+      break;
+    }
+  }
+
+  if (is_load_timing_enabled_)
+    url_request_->GetLoadTimingInfo(&response->load_timing);
+
+  if (url_request_->ssl_info().cert.get()) {
+    response->ct_policy_compliance =
+        url_request_->ssl_info().ct_policy_compliance;
+    response->cert_status = url_request_->ssl_info().cert_status;
+    net::SSLVersion ssl_version = net::SSLConnectionStatusToVersion(
+        url_request_->ssl_info().connection_status);
+    response->is_legacy_tls_version =
+        ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1 ||
+        ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1_1;
+
+    if ((options_ & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
+        (net::IsCertStatusError(url_request_->ssl_info().cert_status) &&
+         (options_ & mojom::kURLLoadOptionSendSSLInfoForCertificateError))) {
+      response->ssl_info = url_request_->ssl_info();
+    }
+  }
+
+  response->request_start = url_request_->creation_time();
+  response->response_start = base::TimeTicks::Now();
+  response->encoded_data_length = url_request_->GetTotalReceivedBytes();
+  response->auth_challenge_info = url_request_->auth_challenge_info();
+  response->has_range_requested =
+      url_request_->extra_request_headers().HasHeader(
+          net::HttpRequestHeaders::kRange);
+  base::ranges::copy(url_request_->response_info().dns_aliases,
+                     std::back_inserter(response->dns_aliases));
+  // [spec]: https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
+  // 13. Set response’s request-includes-credentials to includeCredentials.
+  response->request_include_credentials = url_request_->allow_credentials();
+
+  response->response_address_space = response_ip_address_space_;
+
+  const mojom::ClientSecurityState* state = GetClientSecurityState();
+  response->client_address_space =
+      state ? state->ip_address_space : mojom::IPAddressSpace::kUnknown;
+
+  return response;
+}
+
 void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
                                    const net::RedirectInfo& redirect_info,
                                    bool* defer_redirect) {
@@ -1228,9 +1238,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   // optionally follow the redirect.
   *defer_redirect = true;
 
-  auto response = network::mojom::URLResponseHead::New();
-  PopulateResourceResponse(url_request_.get(), is_load_timing_enabled_,
-                           options_, response.get());
+  mojom::URLResponseHeadPtr response = BuildResponseHead();
   DispatchOnRawResponse();
   ReportFlaggedResponseCookies();
 
@@ -1390,9 +1398,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     return;
   }
 
-  response_ = network::mojom::URLResponseHead::New();
-  PopulateResourceResponse(url_request_.get(), is_load_timing_enabled_,
-                           options_, response_.get());
+  response_ = BuildResponseHead();
   DispatchOnRawResponse();
 
   // Parse and remove the Trust Tokens response headers, if any are expected,
@@ -2181,7 +2187,7 @@ bool URLLoader::DispatchOnRawResponse() {
   emitted_devtools_raw_response_ = true;
   devtools_observer_->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
-      std::move(header_array), raw_response_headers, resource_ip_address_space_,
+      std::move(header_array), raw_response_headers, response_ip_address_space_,
       response_headers->response_code());
 
   return true;

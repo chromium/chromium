@@ -427,6 +427,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
       const net::TransportInfo& info);
 
+  mojom::DevToolsObserver* GetDevToolsObserver() const;
+  mojom::CookieAccessObserver* GetCookieAccessObserver() const;
+
+  // Builds a response struct based on the data received so far.
+  // Never returns nullptr.
+  mojom::URLResponseHeadPtr BuildResponseHead() const;
+
   // Determine given the |url|, whether the |url_request_| should include
   // credentials and client certificates.
   void SetRequestCredentials(const GURL& url);
@@ -562,10 +569,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojom::IPAddressSpace target_ip_address_space_ =
       mojom::IPAddressSpace::kUnknown;
 
-  // The resource's address space, as computed using the |net::TransportInfo|
+  // The response's address space, as computed using the |net::TransportInfo|
   // argument to the |OnConnected()| callback. This info is only available then,
   // so the computation result is stored for later use in this member.
-  mojom::IPAddressSpace resource_ip_address_space_ =
+  // https://wicg.github.io/private-network-access/#response-ip-address-space
+  mojom::IPAddressSpace response_ip_address_space_ =
       mojom::IPAddressSpace::kUnknown;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;

@@ -1751,6 +1751,16 @@ std::ostream& operator<<(std::ostream& out,
              << net::ErrorToString(params.expected_result) << " }";
 }
 
+mojom::IPAddressSpace ResponseAddressSpace(
+    const URLLoaderFakeTransportInfoTestParams& params) {
+  switch (params.transport_type) {
+    case net::TransportType::kDirect:
+      return params.endpoint_address_space;
+    case net::TransportType::kProxied:
+      return mojom::IPAddressSpace::kUnknown;
+  }
+}
+
 class URLLoaderFakeTransportInfoTest
     : public URLLoaderTest,
       public testing::WithParamInterface<URLLoaderFakeTransportInfoTestParams> {
@@ -1805,7 +1815,15 @@ TEST_P(URLLoaderFakeTransportInfoTest, PrivateNetworkRequestLoadsCorrectly) {
     EXPECT_THAT(client()->completion_status().cors_error_status,
                 Optional(InsecurePrivateNetworkCorsErrorStatus(
                     params.endpoint_address_space)));
+    return;
   }
+
+  // Check that the right address spaces are reported in `URLResponseHead`.
+  ASSERT_FALSE(client()->response_head().is_null());
+  EXPECT_EQ(client()->response_head()->client_address_space,
+            params.client_address_space);
+  EXPECT_EQ(client()->response_head()->response_address_space,
+            ResponseAddressSpace(params));
 }
 
 // Lists all combinations we want to test in URLLoaderFakeTransportInfoTest.

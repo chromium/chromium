@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -80,6 +81,14 @@ struct URLResponseHead {
 
   // Remote address of the socket which fetched this resource.
   IPEndPoint remote_endpoint;
+
+  // The IP address space of the request client/the request's policy container.
+  // https://wicg.github.io/private-network-access/#policy-container-ip-address-space
+  IPAddressSpace client_address_space = IPAddressSpace.kUnknown;
+
+  // The IP address space of the response, derived from the remote IP endpoint.
+  // https://wicg.github.io/private-network-access/#response-ip-address-space
+  IPAddressSpace response_address_space = IPAddressSpace.kUnknown;
 
   // True if the response was fetched from the cache and validated over the
   // network.
