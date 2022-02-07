@@ -268,8 +268,8 @@ bool PolicyWatcher::NormalizePolicies(base::DictionaryValue* policy_dict) {
 
 void PolicyWatcher::HandleDeprecatedPolicies(base::DictionaryValue* dict) {
   // RemoteAccessHostDomain
-  if (dict->HasKey(policy::key::kRemoteAccessHostDomain)) {
-    if (!dict->HasKey(policy::key::kRemoteAccessHostDomainList)) {
+  if (dict->FindKey(policy::key::kRemoteAccessHostDomain)) {
+    if (!dict->FindKey(policy::key::kRemoteAccessHostDomainList)) {
       std::string domain;
       dict->GetString(policy::key::kRemoteAccessHostDomain, &domain);
       if (!domain.empty()) {
@@ -282,13 +282,12 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictionaryValue* dict) {
   }
 
   // RemoteAccessHostClientDomain
-  if (dict->HasKey(policy::key::kRemoteAccessHostClientDomain)) {
-    if (!dict->HasKey(policy::key::kRemoteAccessHostClientDomainList)) {
-      std::string domain;
-      dict->GetString(policy::key::kRemoteAccessHostClientDomain, &domain);
-      if (!domain.empty()) {
+  if (const std::string* domain =
+          dict->FindStringKey(policy::key::kRemoteAccessHostClientDomain)) {
+    if (!dict->FindKey(policy::key::kRemoteAccessHostClientDomainList)) {
+      if (!domain->empty()) {
         auto list = std::make_unique<base::ListValue>();
-        list->Append(domain);
+        list->Append(*domain);
         dict->Set(policy::key::kRemoteAccessHostClientDomainList,
                   std::move(list));
       }
@@ -326,9 +325,9 @@ PolicyWatcher::StoreNewAndReturnChangedPolicies(
   }
 
   // If one of ThirdPartyAuthConfig policies changed, we need to include all.
-  if (changed_policies->HasKey(key::kRemoteAccessHostTokenUrl) ||
-      changed_policies->HasKey(key::kRemoteAccessHostTokenValidationUrl) ||
-      changed_policies->HasKey(
+  if (changed_policies->FindKey(key::kRemoteAccessHostTokenUrl) ||
+      changed_policies->FindKey(key::kRemoteAccessHostTokenValidationUrl) ||
+      changed_policies->FindKey(
           key::kRemoteAccessHostTokenValidationCertificateIssuer)) {
     CopyDictionaryValue(*new_policies, *changed_policies,
                         key::kRemoteAccessHostTokenUrl);
