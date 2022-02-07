@@ -48,9 +48,9 @@ self.constructorThrowsForAll = (constructor, firstArgs) => {
 };
 
 self.garbageCollect = async () => {
-  if (self.testUtils?.gc) {
-    // https://testutils.spec.whatwg.org/#the-testutils-object
-    await testUtils.gc();
+  if (self.TestUtils?.gc) {
+    // https://testutils.spec.whatwg.org/#the-testutils-namespace
+    await TestUtils.gc();
   } else if (self.gc) {
     // Use --expose_gc for V8 (and Node.js)
     // to pass this flag at chrome launch use: --js-flags="--expose-gc"

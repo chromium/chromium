@@ -3190,6 +3190,7 @@ crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-fetch.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-border-image-001.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-002.html [ Failure ]

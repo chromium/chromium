@@ -505,6 +505,13 @@
       ]
      ],
      "container-queries": {
+      "canvas-as-container-crash.html": [
+       "8d825606561884090c74b63e3d7bdfef19709169",
+       [
+        null,
+        {}
+       ]
+      ],
       "chrome-bug-1289718-000-crash.html": [
        "5dab634a2a2586722ddbd0a9cf9eea8e31001dc6",
        [
@@ -310989,7 +310996,7 @@
      []
     ],
     "idlharness.js": [
-     "611a26f1fe829afd97cdee7a6f0ff1b5c97422f1",
+     "53ca06ddf997c2559cf6a88cc994d6919bbf5c2e",
      []
     ],
     "idlharness.js.headers": [
@@ -315366,7 +315373,7 @@
       []
      ],
      "test-utils.js": [
-      "88a671b08bf8820685709580e8631b615650721d",
+      "1c932f17074239f9141aeec0ce90fb065a1f11de",
       []
      ]
     },
@@ -508296,13 +508303,6 @@
          ]
         ]
        }
-      ]
-     ],
-     "global.html": [
-      "08665d318eac889dfba85abd0efeb0a3168913df",
-      [
-       null,
-       {}
       ]
      ],
      "patched-global.any.js": [
