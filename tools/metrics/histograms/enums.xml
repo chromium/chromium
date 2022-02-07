@@ -37021,6 +37021,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4158" label="V8UDPSocket_Writable_AttributeGetter"/>
   <int value="4159" label="AbortSignalTimeout"/>
   <int value="4160" label="ClientHintsPartitionedCookies"/>
+  <int value="4161" label="V8Document_Prerendering_AttributeGetter"/>
+  <int value="4162" label="V8Document_Onprerenderingchange_AttributeGetter"/>
+  <int value="4163" label="V8Document_Onprerenderingchange_AttributeSetter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

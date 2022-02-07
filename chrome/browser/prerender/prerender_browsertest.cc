@@ -158,19 +158,39 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, UseCounter) {
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kSpeculationRulesPrerender, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kV8Document_Prerendering_AttributeGetter, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kV8Document_Onprerenderingchange_AttributeSetter,
+      0);
 
   // Start a prerender. The API call should be recorded.
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
   prerender_helper().AddPrerender(prerender_url);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kSpeculationRulesPrerender, 1);
 
-  // The API call should be recorded only one time per page.
-  prerender_helper().AddPrerender(prerender_url);
+  // Accessing related attributes should also be recorded.
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetMainFrame(),
+                              "const value = document.prerendering;"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetMainFrame(),
+                              "document.onprerenderingchange = e => {};"));
+
+  // Make sure the counts are stored by navigating away.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kSpeculationRulesPrerender, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kV8Document_Prerendering_AttributeGetter, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kV8Document_Onprerenderingchange_AttributeSetter,
+      1);
 }
 
 // Tests that Prerender2 cannot be triggered when preload setting is disabled.
