@@ -4712,6 +4712,27 @@ New install
       <message name="IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_SPEED_LIMITED_BODY" desc="Notification body text for when a user connects a device to their Chromebook with a cable that has a lower maximum data rate than the device." translateable="false">
         Your device supports a higher data rate than your cable. Device performance may be limited.
       </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_NOTIFIER" desc="A string explaining that the origin of the notification is the snooping protection feature.">
+        Viewing protection
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_TITLE" desc="Notification title explaining that a notification has been hidden.">
+        New notification hidden
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_1" desc="Notification message explaining that a popup from one application has been blocked.">
+        <ph name="APP_TITLE">$1<ex>Google Chat</ex></ph> notification is hidden because viewing protection is on
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_2" desc="Notification message explaining that a popup from two applications have been blocked.">
+        <ph name="APP_1_TITLE">$1<ex>Google Chat</ex></ph> and <ph name="APP_2_TITLE">$2<ex>Chrome</ex></ph> notifications are hidden because viewing protection is on
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_MESSAGE_3_PLUS" desc="Notification message explaining that a popup from three or more applications have been blocked.">
+        <ph name="APP_1_TITLE">$1<ex>Google Chat</ex></ph>, <ph name="APP_2_TITLE">$2<ex>Chrome</ex></ph> and other notifications are hidden because viewing protection is on
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SHOW_BUTTON_TEXT" desc="Text in notification button to show previously-blocked notifications.">
+        Show
+      </message>
+      <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SETTINGS_BUTTON_TEXT" desc="Text in notification button to launch smart privacy settings.">
+        Privacy settings
+      </message>
     </messages>
   </release>
 </grit>
