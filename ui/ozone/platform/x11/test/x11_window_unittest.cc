@@ -456,9 +456,11 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   EXPECT_EQ(initial_bounds, window->GetBounds());
 }
 
+// TODO(crbug.com/1294066): Flaky on both Linux and ChromeOS.
 // Tests that the minimization information is propagated to the
 // PlatformWindowDelegate.
-TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
+TEST_F(X11WindowTest,
+       DISABLED_ToggleMinimizePropogateToPlatformWindowDelegate) {
   TestPlatformWindowDelegate delegate;
   constexpr gfx::Rect bounds(10, 10, 100, 100);
   auto window = CreateX11Window(&delegate, bounds, nullptr);
