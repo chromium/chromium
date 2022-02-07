@@ -84,6 +84,14 @@ class ConsolidatedConsentScreen
   void OnBackupAndRestoreModeChanged(bool enabled, bool managed) override;
   void OnLocationServicesModeChanged(bool enabled, bool managed) override;
 
+ protected:
+  // BaseScreen:
+  bool MaybeSkip(WizardContext* context) override;
+  void ShowImpl() override;
+  void HideImpl() override;
+  void OnUserAction(const std::string& action_id) override;
+  ScreenExitCallback* exit_callback() { return &exit_callback_; }
+
  private:
   struct ConsentsParameters {
     std::string tos_content;
@@ -93,12 +101,6 @@ class ConsolidatedConsentScreen
     bool record_location_consent;
     bool location_accepted;
   };
-
-  // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
-  void ShowImpl() override;
-  void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
 
   void RecordConsents(const ConsentsParameters& params);
 

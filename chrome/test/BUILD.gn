@@ -3324,6 +3324,8 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/screens/marketing_opt_in_screen_browsertest.cc",
         "../browser/ash/login/screens/mock_arc_terms_of_service_screen.cc",
         "../browser/ash/login/screens/mock_arc_terms_of_service_screen.h",
+        "../browser/ash/login/screens/mock_consolidated_consent_screen.cc",
+        "../browser/ash/login/screens/mock_consolidated_consent_screen.h",
         "../browser/ash/login/screens/mock_demo_preferences_screen.cc",
         "../browser/ash/login/screens/mock_demo_preferences_screen.h",
         "../browser/ash/login/screens/mock_demo_setup_screen.cc",
