@@ -23,6 +23,8 @@ namespace {
 // ElementIdentifier's name is predictable.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 const char* const kElementIdentifier1Name = "kElementIdentifier1";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
@@ -378,25 +380,70 @@ TEST(ElementTrackerTest, AddElementHiddenCallback) {
   EXPECT_CALL_IN_SCOPE(callback, Run(e1.get()), e1->Hide());
 }
 
-TEST(ElementTrackerTest, CleanupAfterElementHidden) {
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+TEST(ElementTrackerTest, AddCustomEventCallback) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  auto subscription =
+      ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kCustomEventType1, kElementContext1, callback.Get());
   TestElementPtr e1 =
       std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
   e1->Show();
-  EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
+  EXPECT_CALL_IN_SCOPE(
+      callback, Run(e1.get()),
+      ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          e1.get(), kCustomEventType1));
+}
+
+TEST(ElementTrackerTest, MultipleCustomEventCallbacks) {
+  // We will test that custom events work with multiple event types, including
+  // in the edge case that the event type is the same as an element identifier
+  // (this should never happen, but should also never break).
+  const CustomElementEventType kCustomEventType2 = kElementIdentifier1;
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback2);
+  auto subscription =
+      ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kCustomEventType1, kElementContext1, callback.Get());
+  auto subscription2 =
+      ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kCustomEventType2, kElementContext1, callback2.Get());
+  TestElementPtr e1 =
+      std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
+  e1->Show();
+  EXPECT_CALL_IN_SCOPE(
+      callback, Run(e1.get()),
+      ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          e1.get(), kCustomEventType1));
+  EXPECT_CALL_IN_SCOPE(
+      callback2, Run(e1.get()),
+      ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          e1.get(), kCustomEventType2));
+}
+
+TEST(ElementTrackerTest, CleanupAfterElementHidden) {
+  // Because tests can run concurrently, we have to create our own tracker to
+  // avoid other tests messing with the data here.
+  ElementTracker element_tracker;
+  EXPECT_TRUE(element_tracker.element_data_.empty());
+  TestElementPtr e1 =
+      std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
+  element_tracker.NotifyElementShown(e1.get());
+  EXPECT_EQ(1U, element_tracker.element_data_.size());
   {
     UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
-    auto subscription =
-        ElementTracker::GetElementTracker()->AddElementShownCallback(
-            kElementIdentifier1, kElementContext1, callback.Get());
-    EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
+    auto subscription = element_tracker.AddElementShownCallback(
+        kElementIdentifier1, kElementContext1, callback.Get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
   }
-  e1->Hide();
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+  element_tracker.NotifyElementHidden(e1.get());
+  EXPECT_TRUE(element_tracker.element_data_.empty());
 }
 
 TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+  // Because tests can run concurrently, we have to create our own tracker to
+  // avoid other tests messing with the data here.
+  ElementTracker element_tracker;
+  EXPECT_TRUE(element_tracker.element_data_.empty());
   TestElementPtr e1 =
       std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
 
@@ -405,53 +452,59 @@ TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
   {
     base::MockCallback<ElementTracker::Callback> callback;
     EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
-    auto subscription =
-        ElementTracker::GetElementTracker()->AddElementShownCallback(
-            kElementIdentifier1, kElementContext1, callback.Get());
-    EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
-    e1->Show();
-    EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
-    e1->Hide();
-    EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
+    auto subscription = element_tracker.AddElementShownCallback(
+        kElementIdentifier1, kElementContext1, callback.Get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
+    element_tracker.NotifyElementShown(e1.get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
+    element_tracker.NotifyElementHidden(e1.get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
   }
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+  EXPECT_TRUE(element_tracker.element_data_.empty());
 
   // Add element activated callback.
   {
     base::MockCallback<ElementTracker::Callback> callback;
     EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
-    auto subscription =
-        ElementTracker::GetElementTracker()->AddElementActivatedCallback(
-            kElementIdentifier1, kElementContext1, callback.Get());
-    EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
+    auto subscription = element_tracker.AddElementActivatedCallback(
+        kElementIdentifier1, kElementContext1, callback.Get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
   }
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+  EXPECT_TRUE(element_tracker.element_data_.empty());
 
   // Add element hidden callback.
   {
     base::MockCallback<ElementTracker::Callback> callback;
     EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
-    auto subscription =
-        ElementTracker::GetElementTracker()->AddElementHiddenCallback(
-            kElementIdentifier1, kElementContext1, callback.Get());
-    EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
+    auto subscription = element_tracker.AddElementHiddenCallback(
+        kElementIdentifier1, kElementContext1, callback.Get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
   }
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+  EXPECT_TRUE(element_tracker.element_data_.empty());
+
+  // Add custom event callback.
+  {
+    base::MockCallback<ElementTracker::Callback> callback;
+    EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
+    auto subscription = element_tracker.AddCustomEventCallback(
+        kCustomEventType1, kElementContext1, callback.Get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
+  }
+  EXPECT_TRUE(element_tracker.element_data_.empty());
 
   // Add and remove multiple callbacks.
   {
     base::MockCallback<ElementTracker::Callback> callback;
     EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
-    auto sub1 = ElementTracker::GetElementTracker()->AddElementShownCallback(
+    auto sub1 = element_tracker.AddElementShownCallback(
         kElementIdentifier1, kElementContext1, callback.Get());
-    auto sub2 =
-        ElementTracker::GetElementTracker()->AddElementActivatedCallback(
-            kElementIdentifier1, kElementContext1, callback.Get());
-    auto sub3 = ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+    auto sub2 = element_tracker.AddElementActivatedCallback(
         kElementIdentifier1, kElementContext1, callback.Get());
-    EXPECT_EQ(1U, ElementTracker::GetElementTracker()->element_data_.size());
+    auto sub3 = element_tracker.AddElementHiddenCallback(
+        kElementIdentifier1, kElementContext1, callback.Get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
   }
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+  EXPECT_TRUE(element_tracker.element_data_.empty());
 }
 
 // The following test specific conditions that could trigger a UAF or cause
@@ -538,18 +591,21 @@ TEST(ElementTrackerTest, MultipleCallbacksForSameEvent) {
 }
 
 TEST(ElementTrackerTest, HideDuringShowCallback) {
+  // Because we have to test for correct cleanup, we have to use an isolated
+  // ElementTracker.
+  ElementTracker element_tracker;
   TestElement e1(kElementIdentifier1, kElementContext1);
   ElementTracker::Subscription subscription;
   auto callback = base::BindLambdaForTesting([&](TrackedElement* element) {
     subscription = ElementTracker::Subscription();
-    e1.Hide();
+    element_tracker.NotifyElementHidden(&e1);
   });
-  subscription = ElementTracker::GetElementTracker()->AddElementShownCallback(
+  subscription = element_tracker.AddElementShownCallback(
       e1.identifier(), e1.context(), callback);
-  e1.Show();
+  element_tracker.NotifyElementShown(&e1);
 
   // Verify that cleanup still happens after all callbacks return.
-  EXPECT_TRUE(ElementTracker::GetElementTracker()->element_data_.empty());
+  EXPECT_TRUE(element_tracker.element_data_.empty());
 }
 
 TEST(SafeElementReferenceTest, ElementRemainsVisible) {

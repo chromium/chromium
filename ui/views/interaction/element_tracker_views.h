@@ -101,6 +101,12 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // identifier.
   ViewList GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id);
 
+  // Notifies listeners that a specific custom event has occurred for the given
+  // view. Calls GetElementForView(view, true) under the hood; returns false if
+  // an element cannot be found or created for the view (e.g. in the case where
+  // it is not visible or associated with a widget).
+  bool NotifyCustomEvent(ui::CustomElementEventType event_type, View* view);
+
   // ----------
   // The following methods are used by View and derived classes to send events
   // to ElementTracker. ElementTrackerViews maintains additional observers and

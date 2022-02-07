@@ -31,10 +31,12 @@ namespace views {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID2);
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType);
 
 namespace {
 
-enum ElementEventType { kShown, kActivated, kHidden };
+enum ElementEventType { kShown, kActivated, kHidden, kCustom };
 
 View* ElementToView(ui::TrackedElement* element) {
   auto* const view_element = element->AsA<TrackedElementViews>();
@@ -54,11 +56,11 @@ class ElementEventWatcher {
   ElementEventWatcher(ui::ElementIdentifier id,
                       ui::ElementContext context,
                       ElementEventType event_type)
-      : id_(id) {
+      : id_(id), event_type_(event_type) {
     auto callback = base::BindRepeating(&ElementEventWatcher::OnEvent,
                                         base::Unretained(this));
     ui::ElementTracker* const tracker = ui::ElementTracker::GetElementTracker();
-    switch (event_type) {
+    switch (event_type_) {
       case ElementEventType::kShown:
         subscription_ = tracker->AddElementShownCallback(id, context, callback);
         break;
@@ -70,6 +72,9 @@ class ElementEventWatcher {
         subscription_ =
             tracker->AddElementHiddenCallback(id, context, callback);
         break;
+      case ElementEventType::kCustom:
+        subscription_ = tracker->AddCustomEventCallback(id, context, callback);
+        break;
     }
   }
 
@@ -78,12 +83,14 @@ class ElementEventWatcher {
 
  private:
   void OnEvent(ui::TrackedElement* element) {
-    EXPECT_EQ(id_, element->identifier());
+    if (event_type_ != ElementEventType::kCustom)
+      EXPECT_EQ(id_, element->identifier());
     last_view_ = ElementToView(element);
     ++event_count_;
   }
 
   const ui::ElementIdentifier id_;
+  const ElementEventType event_type_;
   ui::ElementTracker::Subscription subscription_;
   int event_count_ = 0;
   raw_ptr<View> last_view_ = nullptr;
@@ -295,6 +302,47 @@ TEST_F(ElementTrackerViewsTest, MenuButtonPressedSendsActivatedSignal) {
   EXPECT_EQ(2U, pressed_count);
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, SendCustomEventWithNamedElement) {
+  ElementEventWatcher watcher(kCustomEventType, context(),
+                              ElementEventType::kCustom);
+  auto* const target = widget_->SetContentsView(std::make_unique<View>());
+  target->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(0, watcher.event_count());
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
+  // Send an event with a different ID (which happens to be the element's ID;
+  // this shouldn't happen but we should handle it gracefully).
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kTestElementID, target);
+  EXPECT_EQ(1, watcher.event_count());
+  // Send another event.
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, SendCustomEventWithUnnamedElement) {
+  ElementEventWatcher watcher(kCustomEventType, context(),
+                              ElementEventType::kCustom);
+  auto* const target = widget_->SetContentsView(std::make_unique<View>());
+  // View has no pre-set identifier, but this should still work.
+  EXPECT_EQ(0, watcher.event_count());
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
+  // Send an extraneous event.
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kTestElementID, target);
+  EXPECT_EQ(1, watcher.event_count());
+  // Send another event.
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
 }
 
 TEST_F(ElementTrackerViewsTest, HandlesCreateWithTheSameIDMultipleTimes) {

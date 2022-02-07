@@ -21,6 +21,14 @@
 
 namespace ui {
 
+// Represents a unique type of event, you may create these as needed using the
+// DECLARE_CUSTOM_ELEMENT_EVENT_TYPE() and DEFINE_CUSTOM_ELEMENT_EVENT_TYPE()
+// macros.
+//
+// Currently, imlpemented using ElementIdentifier, since both have the same
+// API requirements.
+using CustomElementEventType = ElementIdentifier;
+
 // Represents a visible UI element in a platform-agnostic manner.
 //
 // A pointer to this object may be stored after the element becomes visible, but
@@ -65,6 +73,8 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
   virtual void NotifyElementShown(TrackedElement* element) = 0;
   virtual void NotifyElementActivated(TrackedElement* element) = 0;
   virtual void NotifyElementHidden(TrackedElement* element) = 0;
+  virtual void NotifyCustomEvent(TrackedElement* element,
+                                 CustomElementEventType event_type) = 0;
 };
 
 // Tracks elements as they become visible, are activated by the user, and
@@ -145,6 +155,12 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
                                         ElementContext context,
                                         Callback callback);
 
+  // Adds a callback that will be called whenever an event of `event_type` is
+  // generated within `context` by any element.
+  Subscription AddCustomEventCallback(CustomElementEventType event_type,
+                                      ElementContext context,
+                                      Callback callback);
+
  private:
   friend class base::NoDestructor<ElementTracker>;
   class ElementData;
@@ -161,6 +177,8 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   void NotifyElementShown(TrackedElement* element) override;
   void NotifyElementActivated(TrackedElement* element) override;
   void NotifyElementHidden(TrackedElement* element) override;
+  void NotifyCustomEvent(TrackedElement* element,
+                         CustomElementEventType event_type) override;
 
   ElementData* GetOrAddElementData(ElementIdentifier id,
                                    ElementContext context);
@@ -196,5 +214,11 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
 };
 
 }  // namespace ui
+
+// Macros for declaring custom element event types:
+#define DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DECLARE_ELEMENT_IDENTIFIER_VALUE(EventName)
+#define DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DEFINE_ELEMENT_IDENTIFIER_VALUE(EventName)
 
 #endif  // UI_BASE_INTERACTION_ELEMENT_TRACKER_H_

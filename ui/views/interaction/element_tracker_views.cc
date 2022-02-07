@@ -290,6 +290,17 @@ ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id) {
   return it->second.GetAllViews();
 }
 
+bool ElementTrackerViews::NotifyCustomEvent(
+    ui::CustomElementEventType event_type,
+    View* view) {
+  auto* const element = GetElementForView(view, /* assign_temporary_id =*/true);
+  if (!element)
+    return false;
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(element,
+                                                                event_type);
+  return true;
+}
+
 void ElementTrackerViews::RegisterView(ui::ElementIdentifier element_id,
                                        View* view) {
   const auto [it, added] =
