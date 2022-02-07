@@ -23,7 +23,6 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
 
  protected:
   void HandleDialogActionOccurred(base::Value::ConstListView args);
-  void LogDialogAction(PrivacySandboxService::DialogAction action);
 
   base::OnceClosure close_callback_;
   const raw_ptr<Browser> browser_;

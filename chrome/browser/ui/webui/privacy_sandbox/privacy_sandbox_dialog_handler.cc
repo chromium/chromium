@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h"
 
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 
@@ -32,7 +35,6 @@ void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
   auto action =
       static_cast<PrivacySandboxService::DialogAction>(args[0].GetInt());
 
-  // TODO(crbug.com/1286276): Handle all other actions.
   if (action == PrivacySandboxService::DialogAction::kNoticeOpenSettings) {
     DCHECK(browser_);
     chrome::ShowPrivacySandboxSettings(browser_);
@@ -50,10 +52,8 @@ void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
       break;
   }
 
-  LogDialogAction(action);
-}
-
-void PrivacySandboxDialogHandler::LogDialogAction(
-    PrivacySandboxService::DialogAction action) {
-  // TODO(crbug.com/1286276):Add metrics.
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+  DCHECK(privacy_sandbox_service);
+  privacy_sandbox_service->DialogActionOccurred(action);
 }
