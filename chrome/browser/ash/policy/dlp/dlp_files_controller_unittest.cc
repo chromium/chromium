@@ -129,8 +129,11 @@ class DlpFilesControllerTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(&add_file_cb);
 
     file_url1_ = CreateFileSystemURL(file1.value());
+    ASSERT_TRUE(file_url1_.is_valid());
     file_url2_ = CreateFileSystemURL(file2.value());
+    ASSERT_TRUE(file_url2_.is_valid());
     file_url3_ = CreateFileSystemURL(file3.value());
+    ASSERT_TRUE(file_url3_.is_valid());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -315,6 +318,7 @@ TEST_P(DlpFilesExternalDestinationTest, GetDisallowedTransfers_Component) {
 
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), mount_name, base::FilePath(path));
+  ASSERT_TRUE(dst_url.is_valid());
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   files_controller_.GetDisallowedTransfers(transferred_files, dst_url,
