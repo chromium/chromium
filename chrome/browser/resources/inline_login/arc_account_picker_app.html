@@ -110,7 +110,8 @@
     <div class="account-item" on-click="makeAvailableInArc_"
         on-keypress="onAccountKeyPress_"
         tabindex="0" role="button"
-        aria-labelledby$="fullName-[[index]] email-[[index]]">
+        aria-labelledby$="fullName-[[index]] email-[[index]]"
+        aria-description="$i18n{accountUseInArcButtonLabel}">
       <div class="account-icon" aria-hidden="true"
           style="background-image: [[getIconImageSet_(item.image)]]">
       </div>
@@ -125,8 +126,7 @@
 
   <div class="account-item" id="addAccountButton" on-click="addAccount_"
       on-keypress="onAddAccountKeyPress_" tabindex="0" role="button"
-      aria-label="$i18n{addAccountLabel}"
-      aria-description="$i18n{accountUseInArcButtonLabel}">
+      aria-label="$i18n{addAccountLabel}">
     <div class="account-icon" aria-hidden="true">
       <div class="add-icon"></div>
     </div>
