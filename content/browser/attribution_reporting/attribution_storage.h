@@ -35,19 +35,13 @@ class AttributionTrigger;
 // properly should result in no-ops.
 class AttributionStorage {
  public:
-  // The type of attribution used for rate limiting calculations.
-  enum class AttributionType {
-    kNavigation = 0,
-    kEvent = 1,
-  };
-
   // Storage delegate that can supplied to extend basic attribution storage
   // functionality like annotating reports.
   class Delegate {
    public:
     struct RateLimitConfig {
       base::TimeDelta time_window;
-      int64_t max_contributions_per_window;
+      int64_t max_attributions_per_window;
     };
 
     // Both bounds are inclusive.
@@ -104,8 +98,7 @@ class AttributionStorage {
     virtual int GetMaxDestinationsPerSourceSiteReportingOrigin() const = 0;
 
     // Returns the rate limits for capping contributions per window.
-    virtual RateLimitConfig GetRateLimits(
-        AttributionType attribution_type) const = 0;
+    virtual RateLimitConfig GetRateLimits() const = 0;
 
     // Returns the maximum frequency at which to delete expired sources.
     // Must be positive.

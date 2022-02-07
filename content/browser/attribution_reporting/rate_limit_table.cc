@@ -21,26 +21,6 @@ namespace {
 
 using AttributionAllowedStatus =
     ::content::RateLimitTable::AttributionAllowedStatus;
-using AttributionType = ::content::AttributionStorage::AttributionType;
-
-constexpr AttributionType kAttributionTypes[] = {
-    AttributionType::kNavigation,
-    AttributionType::kEvent,
-};
-
-AttributionType AttributionTypeFromSourceType(
-    CommonSourceInfo::SourceType source_type) {
-  switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      return AttributionType::kNavigation;
-    case CommonSourceInfo::SourceType::kEvent:
-      return AttributionType::kEvent;
-  }
-}
-
-int SerializeAttributionType(AttributionType attribution_type) {
-  return static_cast<int>(attribution_type);
-}
 
 }  // namespace
 
@@ -58,41 +38,41 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // All columns in this table are const.
-  // |attribution_type| corresponds to the `AttributionType` enum.
   // |impression_id| is the primary key of a row in the |impressions| table,
   // though the row may not exist.
   // |impression_site| is the eTLD+1 of the impression.
   // |impression_origin| is the origin of the impression.
   // |conversion_destination| is the destination of the conversion.
   // |conversion_origin| is the origin of the conversion.
+  // |reporting_origin| is the reporting origin of the impression/conversion.
   // |conversion_time| is the report's conversion time.
   static constexpr char kRateLimitTableSql[] =
       "CREATE TABLE IF NOT EXISTS rate_limits"
       "(rate_limit_id INTEGER PRIMARY KEY NOT NULL,"
-      "attribution_type INTEGER NOT NULL,"
       "impression_id INTEGER NOT NULL,"
       "impression_site TEXT NOT NULL,"
       "impression_origin TEXT NOT NULL,"
       "conversion_destination TEXT NOT NULL,"
       "conversion_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
       "conversion_time INTEGER NOT NULL)";
   if (!db->Execute(kRateLimitTableSql))
     return false;
 
   // Optimizes calls to |AttributionAllowed()|.
-  static constexpr char kRateLimitImpressionSiteTypeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS rate_limit_impression_site_type_idx "
-      "ON rate_limits(attribution_type,conversion_destination,"
-      "impression_site,conversion_time)";
-  if (!db->Execute(kRateLimitImpressionSiteTypeIndexSql))
+  static constexpr char kRateLimitReportScopeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_report_scope_idx "
+      "ON rate_limits(conversion_destination,impression_site,reporting_origin,"
+      "conversion_time)";
+  if (!db->Execute(kRateLimitReportScopeIndexSql))
     return false;
 
   // Optimizes calls to |DeleteExpiredRateLimits()|, |ClearAllDataInRange()|,
   // |ClearDataForOriginsInRange()|.
   static constexpr char kRateLimitAttributionTypeConversionTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS "
-      "rate_limit_attribution_type_conversion_time_idx "
-      "ON rate_limits(attribution_type,conversion_time)";
+      "rate_limit_conversion_time_idx "
+      "ON rate_limits(conversion_time)";
   if (!db->Execute(kRateLimitAttributionTypeConversionTimeIndexSql))
     return false;
 
@@ -108,8 +88,6 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const CommonSourceInfo& common_info = report.source().common_info();
-  AttributionType attribution_type =
-      AttributionTypeFromSourceType(common_info.source_type());
 
   // Only delete expired rate limits periodically to avoid excessive DB
   // operations.
@@ -118,24 +96,24 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   DCHECK_GE(delete_frequency, base::TimeDelta());
   const base::Time now = base::Time::Now();
   if (now - last_cleared_ >= delete_frequency) {
-    if (!DeleteExpiredRateLimits(db, attribution_type))
+    if (!DeleteExpiredRateLimits(db))
       return false;
     last_cleared_ = now;
   }
 
   static constexpr char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits"
-      "(attribution_type,impression_id,impression_site,impression_origin,"
-      "conversion_destination,conversion_origin,conversion_time)"
+      "(impression_id,impression_site,impression_origin,conversion_destination,"
+      "conversion_origin,reporting_origin,conversion_time)"
       "VALUES(?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
-  statement.BindInt(0, SerializeAttributionType(attribution_type));
-  statement.BindInt64(1, *report.source().source_id());
-  statement.BindString(2, common_info.ImpressionSite().Serialize());
-  statement.BindString(3, SerializeOrigin(common_info.impression_origin()));
-  statement.BindString(4, common_info.ConversionDestination().Serialize());
-  statement.BindString(5, SerializeOrigin(common_info.conversion_origin()));
+  statement.BindInt64(0, *report.source().source_id());
+  statement.BindString(1, common_info.ImpressionSite().Serialize());
+  statement.BindString(2, SerializeOrigin(common_info.impression_origin()));
+  statement.BindString(3, common_info.ConversionDestination().Serialize());
+  statement.BindString(4, SerializeOrigin(common_info.conversion_origin()));
+  statement.BindString(5, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(6, report.trigger_time());
   return statement.Run();
 }
@@ -146,28 +124,26 @@ AttributionAllowedStatus RateLimitTable::AttributionAllowed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const CommonSourceInfo& common_info = report.source().common_info();
-  AttributionType attribution_type =
-      AttributionTypeFromSourceType(common_info.source_type());
 
   const AttributionStorage::Delegate::RateLimitConfig rate_limits =
-      delegate_->GetRateLimits(attribution_type);
+      delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
-  DCHECK_GT(rate_limits.max_contributions_per_window, 0);
+  DCHECK_GT(rate_limits.max_attributions_per_window, 0);
 
   base::Time min_timestamp = report.trigger_time() - rate_limits.time_window;
 
   static constexpr char kAttributionAllowedSql[] =
       "SELECT COUNT(*) FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_impression_site_type_idx")
-      "WHERE attribution_type = ? "
-      "AND impression_site = ? "
+      DCHECK_SQL_INDEXED_BY("rate_limit_report_scope_idx")
+      "WHERE impression_site = ? "
       "AND conversion_destination = ? "
+      "AND reporting_origin = ? "
       "AND conversion_time > ?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
-  statement.BindInt(0, SerializeAttributionType(attribution_type));
-  statement.BindString(1, common_info.ImpressionSite().Serialize());
-  statement.BindString(2, common_info.ConversionDestination().Serialize());
+  statement.BindString(0, common_info.ImpressionSite().Serialize());
+  statement.BindString(1, common_info.ConversionDestination().Serialize());
+  statement.BindString(2, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(3, min_timestamp);
 
   if (!statement.Step())
@@ -175,7 +151,7 @@ AttributionAllowedStatus RateLimitTable::AttributionAllowed(
 
   int64_t count = statement.ColumnInt64(0);
 
-  return count < rate_limits.max_contributions_per_window
+  return count < rate_limits.max_attributions_per_window
              ? AttributionAllowedStatus::kAllowed
              : AttributionAllowedStatus::kNotAllowed;
 }
@@ -186,27 +162,15 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
   DCHECK(!((delete_begin.is_null() || delete_begin.is_min()) &&
            delete_end.is_max()));
 
-  sql::Transaction transaction(db);
-  if (!transaction.Begin())
-    return false;
-
   static constexpr char kDeleteRateLimitRangeSql[] =
       "DELETE FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_attribution_type_conversion_time_idx")
-      "WHERE attribution_type = ? AND conversion_time BETWEEN ? AND ?";
+      DCHECK_SQL_INDEXED_BY("rate_limit_conversion_time_idx")
+      "WHERE conversion_time BETWEEN ? AND ?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitRangeSql));
-
-  for (AttributionType attribution_type : kAttributionTypes) {
-    statement.Reset(/*clear_bound_vars=*/true);
-    statement.BindInt(0, SerializeAttributionType(attribution_type));
-    statement.BindTime(1, delete_begin);
-    statement.BindTime(2, delete_end);
-    if (!statement.Run())
-      return false;
-  }
-
-  return transaction.Commit();
+  statement.BindTime(0, delete_begin);
+  statement.BindTime(1, delete_end);
+  return statement.Run();
 }
 
 bool RateLimitTable::ClearAllDataAllTime(sql::Database* db) {
@@ -237,55 +201,48 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     return false;
 
   static constexpr char kSelectSql[] =
-      "SELECT rate_limit_id,impression_origin,conversion_origin "
+      "SELECT rate_limit_id,impression_origin,conversion_origin,"
+      "reporting_origin "
       "FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_attribution_type_conversion_time_idx")
-      "WHERE attribution_type=? AND conversion_time BETWEEN ? AND ?";
+      DCHECK_SQL_INDEXED_BY("rate_limit_conversion_time_idx")
+      "WHERE conversion_time BETWEEN ? AND ?";
   sql::Statement select_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  select_statement.BindTime(1, delete_begin);
-  select_statement.BindTime(2, delete_end);
+  select_statement.BindTime(0, delete_begin);
+  select_statement.BindTime(1, delete_end);
 
-  // Issue SELECTs for different attribution_types so this can be easily
-  // optimized by the rate_limit_attribution_type_conversion_time_idx.
-  for (AttributionType attribution_type : kAttributionTypes) {
-    select_statement.Reset(/*clear_bound_vars=*/false);
-    select_statement.BindInt(0, SerializeAttributionType(attribution_type));
-
-    while (select_statement.Step()) {
-      int64_t rate_limit_id = select_statement.ColumnInt64(0);
-      if (filter.Run(DeserializeOrigin(select_statement.ColumnString(1))) ||
-          filter.Run(DeserializeOrigin(select_statement.ColumnString(2)))) {
-        // See https://www.sqlite.org/isolation.html for why it's OK for this
-        // DELETE to be interleaved in the surrounding SELECT.
-        delete_statement.Reset(/*clear_bound_vars=*/false);
-        delete_statement.BindInt64(0, rate_limit_id);
-        if (!delete_statement.Run())
-          return false;
-      }
+  while (select_statement.Step()) {
+    int64_t rate_limit_id = select_statement.ColumnInt64(0);
+    if (filter.Run(DeserializeOrigin(select_statement.ColumnString(1))) ||
+        filter.Run(DeserializeOrigin(select_statement.ColumnString(2))) ||
+        filter.Run(DeserializeOrigin(select_statement.ColumnString(3)))) {
+      // See https://www.sqlite.org/isolation.html for why it's OK for this
+      // DELETE to be interleaved in the surrounding SELECT.
+      delete_statement.Reset(/*clear_bound_vars=*/false);
+      delete_statement.BindInt64(0, rate_limit_id);
+      if (!delete_statement.Run())
+        return false;
     }
+  }
 
     if (!select_statement.Succeeded())
       return false;
-  }
 
   return transaction.Commit();
 }
 
-bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db,
-                                             AttributionType attribution_type) {
-  base::Time timestamp = base::Time::Now() -
-                         delegate_->GetRateLimits(attribution_type).time_window;
+bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
+  base::Time timestamp =
+      base::Time::Now() - delegate_->GetRateLimits().time_window;
 
   static constexpr char kDeleteExpiredRateLimits[] =
       // clang-format off
       "DELETE FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_attribution_type_conversion_time_idx")
-      "WHERE attribution_type = ? AND conversion_time <= ?";  // clang-format on
+      DCHECK_SQL_INDEXED_BY("rate_limit_conversion_time_idx")
+      "WHERE conversion_time <= ?";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
-  statement.BindInt(0, SerializeAttributionType(attribution_type));
-  statement.BindTime(1, timestamp);
+  statement.BindTime(0, timestamp);
   return statement.Run();
 }
 

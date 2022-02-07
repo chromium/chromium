@@ -125,11 +125,16 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 17 - 2022/01/31 - https://crrev.com/c/3427311
 //
 // Version 17 removes the rate_limits.bucket and rate_limits.value columns.
-const int kCurrentVersionNumber = 17;
+//
+// Version 18 - 2022/02/04 - https://crrev.com/c/3425176
+//
+// Version 18 adds the rate_limits.reporting_origin column and removes the
+// rate_limits.attribution_type column.
+const int kCurrentVersionNumber = 18;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 17;
+const int kCompatibleVersionNumber = 18;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -139,7 +144,9 @@ const int kCompatibleVersionNumber = 17;
 // Version 15 was deprecated by https://crrev.com/c/3421414.
 //
 // Version 16 was deprecated by https://crrev.com/c/3427311.
-const int kDeprecatedVersionNumber = 16;
+//
+// Version 17 was deprecated by https://crrev.com/c/3425176.
+const int kDeprecatedVersionNumber = 17;
 
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {

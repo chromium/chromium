@@ -85,9 +85,7 @@ class CONTENT_EXPORT RateLimitTable {
   // Deletes data in the table older than the window determined by
   // |delegate_->GetRateLimits()|.
   // Returns false on failure.
-  [[nodiscard]] bool DeleteExpiredRateLimits(
-      sql::Database* db,
-      AttributionStorage::AttributionType attribution_type)
+  [[nodiscard]] bool DeleteExpiredRateLimits(sql::Database* db)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Must outlive |this|.

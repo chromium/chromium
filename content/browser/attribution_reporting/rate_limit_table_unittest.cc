@@ -44,6 +44,7 @@ using ::testing::SizeIs;
 struct RateLimitRow {
   std::string impression_origin;
   std::string conversion_origin;
+  std::string reporting_origin;
   base::Time time;
 
   AttributionReport BuildReport() const {
@@ -51,6 +52,7 @@ struct RateLimitRow {
         SourceBuilder()
             .SetImpressionOrigin(url::Origin::Create(GURL(impression_origin)))
             .SetConversionOrigin(url::Origin::Create(GURL(conversion_origin)))
+            .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
             .BuildStored();
 
     return ReportBuilder(std::move(source)).SetTriggerTime(time).Build();
@@ -60,14 +62,14 @@ struct RateLimitRow {
 bool operator==(const RateLimitRow& a, const RateLimitRow& b) {
   const auto tie = [](const RateLimitRow& row) {
     return std::make_tuple(row.impression_origin, row.conversion_origin,
-                           row.time);
+                           row.reporting_origin, row.time);
   };
   return tie(a) == tie(b);
 }
 
 std::ostream& operator<<(std::ostream& out, const RateLimitRow& row) {
   return out << "{" << row.impression_origin << "," << row.conversion_origin
-             << "," << row.time << "}";
+             << "," << row.reporting_origin << "," << row.time << "}";
 }
 
 class RateLimitTableTest : public testing::Test {
@@ -85,7 +87,7 @@ class RateLimitTableTest : public testing::Test {
 
     static constexpr char kSelectSql[] =
         "SELECT rate_limit_id,impression_origin,conversion_origin,"
-        "conversion_time FROM rate_limits";
+        "reporting_origin,conversion_time FROM rate_limits";
     sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
 
     while (statement.Step()) {
@@ -93,7 +95,8 @@ class RateLimitTableTest : public testing::Test {
                         RateLimitRow{
                             .impression_origin = statement.ColumnString(1),
                             .conversion_origin = statement.ColumnString(2),
-                            .time = statement.ColumnTime(3),
+                            .reporting_origin = statement.ColumnString(3),
+                            .time = statement.ColumnTime(4),
                         });
     }
 
@@ -121,12 +124,13 @@ class RateLimitTableTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(RateLimitTableTest,
-       AttributionAllowed_ScopedToSourceSiteDestinationSiteTimeWindow) {
+TEST_F(
+    RateLimitTableTest,
+    AttributionAllowed_ScopedToSourceSiteDestinationSiteReportingOriginTimeWindow) {
   constexpr base::TimeDelta kTimeWindow = base::Days(1);
   delegate_.set_rate_limits({
       .time_window = kTimeWindow,
-      .max_contributions_per_window = 2,
+      .max_attributions_per_window = 2,
   });
 
   const base::Time now = base::Time::Now();
@@ -141,24 +145,29 @@ TEST_F(RateLimitTableTest,
       // two *origins* for each row are different, they share the same *sites*,
       // that is, https://s1.test and https://d1.test, respectively.
 
-      {{"https://a.s1.test", "https://a.d1.test", now},
+      {{"https://a.s1.test", "https://a.d1.test", "https://a.r.test", now},
        AttributionAllowedStatus::kAllowed},
 
-      {{"https://b.s1.test", "https://b.d1.test", now},
+      {{"https://b.s1.test", "https://b.d1.test", "https://a.r.test", now},
        AttributionAllowedStatus::kAllowed},
 
       // This is not allowed because
-      // <https://s1.test, https://d1.test> already has the maximum of 2
+      // <https://s1.test, https://d1.test, https://a.r.test> already has the
+      // maximum of 2
       // reports.
-      {{"https://b.s1.test", "https://b.d1.test", now},
+      {{"https://b.s1.test", "https://b.d1.test", "https://a.r.test", now},
        AttributionAllowedStatus::kNotAllowed},
 
       // This is allowed because the source site is different.
-      {{"https://s2.test", "https://a.d1.test", now},
+      {{"https://s2.test", "https://a.d1.test", "https://a.r.test", now},
        AttributionAllowedStatus::kAllowed},
 
       // This is allowed because the destination site is different.
-      {{"https://a.s1.test", "https://d2.test", now},
+      {{"https://a.s1.test", "https://d2.test", "https://a.r.test", now},
+       AttributionAllowedStatus::kAllowed},
+
+      // This is allowed because the reporting origin is different.
+      {{"https://a.s1.test", "https://d2.test", "https://b.r.test", now},
        AttributionAllowedStatus::kAllowed},
   };
 
@@ -177,20 +186,15 @@ TEST_F(RateLimitTableTest,
   // This is allowed because the original rows for the tuple have fallen out of
   // the time window.
   const RateLimitRow row{"https://a.s1.test", "https://a.d1.test",
-                         base::Time::Now()};
+                         "https://a.r.test", base::Time::Now()};
   ASSERT_EQ(AttributionAllowedStatus::kAllowed,
             AttributionAllowed(row.BuildReport()));
 }
 
-TEST_F(RateLimitTableTest, AttributionAllowed_SourceTypesIndependent) {
-  // Tests that limits are calculated independently for each
-  // `CommonSourceInfo::SourceType`. In the future, we may change this so that
-  // there is a combined calculation but each source type is weighted
-  // differently.
-
+TEST_F(RateLimitTableTest, AttributionAllowed_SourceTypesCombined) {
   delegate_.set_rate_limits({
       .time_window = base::Days(1),
-      .max_contributions_per_window = 2,
+      .max_attributions_per_window = 2,
   });
 
   const auto navigation_report =
@@ -213,22 +217,6 @@ TEST_F(RateLimitTableTest, AttributionAllowed_SourceTypesIndependent) {
             AttributionAllowed(event_report));
 
   ASSERT_TRUE(AddRateLimit(navigation_report));
-  ASSERT_TRUE(AddRateLimit(event_report));
-
-  ASSERT_EQ(AttributionAllowedStatus::kAllowed,
-            AttributionAllowed(navigation_report));
-
-  ASSERT_EQ(AttributionAllowedStatus::kAllowed,
-            AttributionAllowed(event_report));
-
-  ASSERT_TRUE(AddRateLimit(navigation_report));
-
-  ASSERT_EQ(AttributionAllowedStatus::kNotAllowed,
-            AttributionAllowed(navigation_report));
-
-  ASSERT_EQ(AttributionAllowedStatus::kAllowed,
-            AttributionAllowed(event_report));
-
   ASSERT_TRUE(AddRateLimit(event_report));
 
   ASSERT_EQ(AttributionAllowedStatus::kNotAllowed,
@@ -292,6 +280,15 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
           {2, 4},
       },
       {
+          "1 deletion: filter matches for reporting origin",
+          base::Time::Min(),
+          base::Time::Max(),
+          base::BindRepeating([](const url::Origin& origin) {
+            return origin == url::Origin::Create(GURL("https://c.r.test"));
+          }),
+          {3},
+      },
+      {
           "4 deletions: null filter matches everything",
           now,
           base::Time::Max(),
@@ -302,10 +299,16 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 
   for (const auto& test_case : kTestCases) {
     base::flat_map<int64_t, RateLimitRow> rows = {
-        {1, {"https://a.s1.test", "https://a.d1.test", now}},
-        {2, {"https://b.s1.test", "https://b.d1.test", now}},
-        {3, {"https://a.s1.test", "https://a.d1.test", now + base::Days(1)}},
-        {4, {"https://b.s1.test", "https://b.d1.test", now + base::Days(1)}},
+        {1,
+         {"https://a.s1.test", "https://a.d1.test", "https://a.r.test", now}},
+        {2,
+         {"https://b.s1.test", "https://b.d1.test", "https://b.r.test", now}},
+        {3,
+         {"https://a.s1.test", "https://a.d1.test", "https://c.r.test",
+          now + base::Days(1)}},
+        {4,
+         {"https://b.s1.test", "https://b.d1.test", "https://d.r.test",
+          now + base::Days(1)}},
     };
 
     for (const auto& [_, row] : rows) {
@@ -333,7 +336,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   delegate_.set_rate_limits({
       .time_window = base::Minutes(2),
-      .max_contributions_per_window = INT_MAX,
+      .max_attributions_per_window = INT_MAX,
   });
 
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));

@@ -773,7 +773,7 @@ TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
 TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_contributions_per_window = 2,
+      .max_attributions_per_window = 2,
   });
 
   auto conversion = DefaultTrigger();
@@ -795,10 +795,10 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
 }
 
 TEST_F(AttributionStorageTest,
-       MaxAttributionReportsBetweenSites_RespectsSourceType) {
+       MaxAttributionReportsBetweenSites_IgnoresSourceType) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_contributions_per_window = 1,
+      .max_attributions_per_window = 1,
   });
 
   storage()->StoreSource(
@@ -812,22 +812,7 @@ TEST_F(AttributionStorageTest,
       SourceBuilder()
           .SetSourceType(CommonSourceInfo::SourceType::kEvent)
           .Build());
-  // This would fail if the source types had a combined limit or the incorrect
-  // source type were stored.
-  EXPECT_EQ(CreateReportStatus::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
-
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-          .Build());
-  EXPECT_EQ(CreateReportStatus::kRateLimited,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
-
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
-          .Build());
+  // This would fail if the source types had separate limits.
   EXPECT_EQ(CreateReportStatus::kRateLimited,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 }
@@ -875,7 +860,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
 TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_contributions_per_window = 1,
+      .max_attributions_per_window = 1,
   });
 
   delegate()->set_randomized_response(

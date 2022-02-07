@@ -15,12 +15,6 @@
 
 namespace content {
 
-namespace {
-
-using AttributionType = ::content::AttributionStorage::AttributionType;
-
-}  // namespace
-
 AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(bool debug_mode)
     : debug_mode_(debug_mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -54,18 +48,12 @@ int AttributionStorageDelegateImpl::
 }
 
 AttributionStorage::Delegate::RateLimitConfig
-AttributionStorageDelegateImpl::GetRateLimits(
-    AttributionType attribution_type) const {
+AttributionStorageDelegateImpl::GetRateLimits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(csharrison): Finalize `max_contributions_per_window` value.
-  switch (attribution_type) {
-    case AttributionType::kNavigation:
-    case AttributionType::kEvent:
-      return {
-          .time_window = base::Days(30),
-          .max_contributions_per_window = 100,
-      };
-  }
+  return RateLimitConfig{
+      .time_window = base::Days(30),
+      .max_attributions_per_window = 100,
+  };
 }
 
 base::TimeDelta

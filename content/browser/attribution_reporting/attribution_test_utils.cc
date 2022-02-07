@@ -87,8 +87,7 @@ int ConfigurableStorageDelegate::
 }
 
 AttributionStorage::Delegate::RateLimitConfig
-ConfigurableStorageDelegate::GetRateLimits(
-    AttributionStorage::AttributionType attribution_type) const {
+ConfigurableStorageDelegate::GetRateLimits() const {
   return rate_limits_;
 }
 

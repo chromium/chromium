@@ -34,4 +34,6 @@ CREATE INDEX rate_limit_attribution_type_conversion_time_idx ON rate_limits(attr
 
 CREATE INDEX rate_limit_impression_id_idx ON rate_limits(impression_id);
 
+INSERT INTO conversions VALUES (1,2,3,4,5,6,7,8);
+
 COMMIT;

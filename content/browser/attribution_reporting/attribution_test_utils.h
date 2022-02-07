@@ -93,8 +93,7 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
       CommonSourceInfo::SourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxAttributionsPerOrigin() const override;
-  RateLimitConfig GetRateLimits(
-      AttributionStorage::AttributionType attribution_type) const override;
+  RateLimitConfig GetRateLimits() const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
@@ -154,7 +153,7 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
 
   RateLimitConfig rate_limits_ = {
       .time_window = base::TimeDelta::Max(),
-      .max_contributions_per_window = INT_MAX,
+      .max_attributions_per_window = INT_MAX,
   };
 
   base::TimeDelta delete_expired_sources_frequency_;
