@@ -145,11 +145,6 @@ class StartupBrowserCreator {
       StartupProfileInfo profile_info,
       const Profiles& last_opened_profiles);
 
-  // If Incognito or Guest mode are requested by policy or command line returns
-  // the appropriate private browsing profile. Otherwise returns |profile|.
-  Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
-                                        Profile* profile);
-
   // Returns true during browser process startup if the previous browser was
   // restarted. This only returns true before the first StartupBrowserCreator
   // destructs. WasRestarted() will update prefs::kWasRestarted to false, but
