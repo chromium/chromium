@@ -251,13 +251,24 @@ sk_sp<const SkPicture> Layer::GetPicture() const {
   return nullptr;
 }
 
-void Layer::SetParent(Layer* layer) {
+void Layer::SetParent(Layer* layer, RemovalReason reason) {
   DCHECK(IsMutationAllowed());
   DCHECK(!layer || !layer->HasAncestor(this));
+  DCHECK(reason == RemovalReason::kNormal || !layer);
 
   raw_ptr<Layer>& parent = parent_.Write(*this);
   parent = layer;
-  SetLayerTreeHost(parent ? parent->layer_tree_host() : nullptr);
+  if (reason == RemovalReason::kForReadd) {
+    // When passing kForReadd, the caller is responsible for calling
+    // SetLayerTreeHost.  Deferring this until after the readd means that the
+    // single SetLayerTreeHost call will generally set layer_tree_host_ to the
+    // same value, and thus be able to optimize away the recursive tree walk.
+#if DCHECK_IS_ON()
+    DCHECK(allow_remove_for_readd_);
+#endif
+  } else {
+    SetLayerTreeHost(parent ? parent->layer_tree_host() : nullptr);
+  }
 
   SetPropertyTreesNeedRebuild();
 }
@@ -268,10 +279,11 @@ void Layer::AddChild(scoped_refptr<Layer> child) {
 
 void Layer::InsertChild(scoped_refptr<Layer> child, size_t index) {
   DCHECK(IsPropertyChangeAllowed());
-  child->RemoveFromParent();
+  AllowRemoveForReadd allow(child.get());
+  child->RemoveFromParentForReadd();
   AddDrawableDescendants(child->NumDescendantsThatDrawContent() +
                          (child->draws_content() ? 1 : 0));
-  child->SetParent(this);
+  child->SetParent(this, RemovalReason::kNormal);
   child->SetSubtreePropertyChanged();
 
   auto& inputs = inputs_.Write(*this);
@@ -290,10 +302,16 @@ void Layer::InsertChild(scoped_refptr<Layer> child, size_t index) {
 void Layer::RemoveFromParent() {
   DCHECK(IsPropertyChangeAllowed());
   if (parent_.Read(*this))
-    parent_.Write(*this)->RemoveChild(this);
+    parent_.Write(*this)->RemoveChild(this, RemovalReason::kNormal);
 }
 
-void Layer::RemoveChild(Layer* child) {
+void Layer::RemoveFromParentForReadd() {
+  DCHECK(IsPropertyChangeAllowed());
+  if (parent_.Read(*this))
+    parent_.Write(*this)->RemoveChild(this, RemovalReason::kForReadd);
+}
+
+void Layer::RemoveChild(Layer* child, RemovalReason reason) {
   const auto* layer_tree_inputs = layer_tree_inputs_.Read(*this);
   if (layer_tree_inputs && child == layer_tree_inputs->mask_layer)
     layer_tree_inputs_.Write(*this)->mask_layer = nullptr;
@@ -304,7 +322,7 @@ void Layer::RemoveChild(Layer* child) {
     if (iter->get() != child)
       continue;
 
-    child->SetParent(nullptr);
+    child->SetParent(nullptr, reason);
     AddDrawableDescendants(-child->NumDescendantsThatDrawContent() -
                            (child->draws_content() ? 1 : 0));
     inputs.children.erase(iter);
@@ -378,7 +396,6 @@ void Layer::ReplaceChild(Layer* reference, scoped_refptr<Layer> new_layer) {
   reference->RemoveFromParent();
 
   if (new_layer.get()) {
-    new_layer->RemoveFromParent();
     InsertChild(new_layer, reference_index);
   }
 }
@@ -452,7 +469,7 @@ void Layer::SetChildLayerList(LayerList new_children) {
     for (auto& new_child : new_children)
       children_to_remove.erase(new_child.get());
     for (auto* child : children_to_remove) {
-      child->SetParent(nullptr);
+      child->SetParent(nullptr, RemovalReason::kNormal);
       AddDrawableDescendants(-child->NumDescendantsThatDrawContent() -
                              (child->draws_content() ? 1 : 0));
     }
@@ -474,10 +491,11 @@ void Layer::SetChildLayerList(LayerList new_children) {
   // |child->parent()| such as the above loop.
   for (auto& child : new_children) {
     if (child->parent() != this) {
-      child->RemoveFromParent();
+      AllowRemoveForReadd allow(child.get());
+      child->RemoveFromParentForReadd();
       AddDrawableDescendants(child->NumDescendantsThatDrawContent() +
                              (child->draws_content() ? 1 : 0));
-      child->SetParent(this);
+      child->SetParent(this, RemovalReason::kNormal);
       child->SetSubtreePropertyChanged();
     }
   }

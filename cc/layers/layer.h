@@ -900,10 +900,23 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   void AddClipChild(Layer* child);
   void RemoveClipChild(Layer* child);
 
-  void SetParent(Layer* layer);
+  // For functions that do or (as SetParent) might remove a child layer,
+  // passing kForReadd causes the removal to *not* call SetLayerTreeHost.
+  // This variation assumes that the caller will re-add the layer (probably to
+  // the same layer tree host) and then call SetLayerTreeHost.
+  enum class RemovalReason {
+    kNormal,
+    kForReadd,
+  };
+
+  void SetParent(Layer* layer, RemovalReason reason);
 
   // This should only be called from RemoveFromParent().
-  void RemoveChild(Layer* child);
+  void RemoveChild(Layer* child, RemovalReason reason);
+
+  // Variant (for internal use) of RemoveFromParent (which is a widely-used
+  // public API) as though it were passed RemovalReason::kForReadd.
+  void RemoveFromParentForReadd();
 
   bool GetBitFlag(uint8_t mask) const;
 
@@ -1101,6 +1114,43 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   ProtectedSequenceReadable<uint8_t> bitflags_;
 
   ProtectedSequenceWritable<bool> subtree_property_changed_;
+
+#if DCHECK_IS_ON()
+  class AllowRemoveForReadd {
+   public:
+    explicit AllowRemoveForReadd(Layer* layer) : layer_(layer) {
+      // Assume these will never be nested.  If this DCHECK() fails due to
+      // nesting, we could convert to using base::AutoReset.
+      DCHECK(!layer_->allow_remove_for_readd_);
+      layer_->allow_remove_for_readd_ = true;
+    }
+    ~AllowRemoveForReadd() {
+      // Check that the layer has actually been re-added.
+      DCHECK(layer_->parent());
+
+      // Assume these will never be nested.  If this DCHECK() fails due to
+      // nesting, we could convert to using base::AutoReset.
+      DCHECK(layer_->allow_remove_for_readd_);
+      layer_->allow_remove_for_readd_ = false;
+    }
+
+    AllowRemoveForReadd(const AllowRemoveForReadd&) = delete;
+    AllowRemoveForReadd& operator=(const AllowRemoveForReadd&) = delete;
+
+   private:
+    Layer* layer_;
+  };
+
+  bool allow_remove_for_readd_ = false;
+#else
+  class AllowRemoveForReadd {
+   public:
+    explicit AllowRemoveForReadd(Layer* layer) {}
+
+    AllowRemoveForReadd(const AllowRemoveForReadd&) = delete;
+    AllowRemoveForReadd& operator=(const AllowRemoveForReadd&) = delete;
+  };
+#endif
 
   ProtectedSequenceWritable<std::unique_ptr<LayerDebugInfo>> debug_info_;
 

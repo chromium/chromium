@@ -1378,7 +1378,6 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   children_.erase(children_.begin() + child_i);
   children_.insert(children_.begin() + dest_i, child);
 
-  child->cc_layer_->RemoveFromParent();
   cc_layer_->InsertChild(child->cc_layer_.get(), dest_i);
 }
 
