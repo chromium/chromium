@@ -49,6 +49,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_multiopus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_opus",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
+  "//third_party/webrtc/api/task_queue:task_queue",
   "//third_party/webrtc/api/transport:enums",
   "//third_party/webrtc/api/transport/rtp:rtp_source",
   "//third_party/webrtc/api/video:recordable_encoded_frame",
@@ -96,6 +97,8 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:socket_address",
   "//third_party/webrtc/rtc_base:threading",
   "//third_party/webrtc/rtc_base:timeutils",
+  "//third_party/webrtc/rtc_base/system:rtc_export",
+  "//third_party/webrtc/rtc_base/task_utils:to_queued_task",
   "//third_party/webrtc/rtc_base/third_party/base64",
   "//third_party/webrtc/rtc_base/third_party/sigslot",
   "//third_party/webrtc/rtc_base/third_party/sigslot:sigslot",
@@ -216,11 +219,24 @@ source_set("task_queue_factory") {
     "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
+}
 
-  # If you want to use a WebRTC task queue you may want to have access to
-  # webrtc::ToQueuedTask, but it has limited visibility within WebRTC so we
-  # depend on it publically here.
-  public_deps = [ "//third_party/webrtc/rtc_base/task_utils:to_queued_task" ]
+source_set("metronome_like_task_queue_test") {
+  configs += webrtc_configs
+  public_configs = webrtc_public_configs
+
+  testonly = true
+
+  sources = [
+    "test/metronome_like_task_queue_test.cc",
+    "test/metronome_like_task_queue_test.h",
+  ]
+  deps = [
+    ":webrtc_component",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest:gtest",
+  ]
 }
 
 source_set("system_time") {

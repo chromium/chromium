@@ -15,23 +15,30 @@
 #include "third_party/webrtc/api/task_queue/task_queue_test.h"
 #include "third_party/webrtc/rtc_base/task_utils/to_queued_task.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
+#include "third_party/webrtc_overrides/test/metronome_like_task_queue_test.h"
 
 namespace blink {
 
 namespace {
 
-using ::testing::ElementsAre;
 using ::webrtc::TaskQueueTest;
 
 constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
 
-// Wrapper needed for the TaskQueueTest suite.
+// Wrapper needed for the TaskQueueTest and MetronomeLikeTaskQueueTest suites.
 class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
-  TestMetronomeTaskQueueFactory()
-      : metronome_source_(
-            base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick)),
-        factory_(CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
+  static std::unique_ptr<TestMetronomeTaskQueueFactory>
+  CreateWithTestEnvironment() {
+    return std::unique_ptr<TestMetronomeTaskQueueFactory>(
+        new TestMetronomeTaskQueueFactory(
+            std::make_unique<base::test::TaskEnvironment>()));
+  }
+  static std::unique_ptr<TestMetronomeTaskQueueFactory>
+  CreateWithoutTestEnvironment() {
+    return std::unique_ptr<TestMetronomeTaskQueueFactory>(
+        new TestMetronomeTaskQueueFactory(nullptr));
+  }
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
@@ -39,194 +46,38 @@ class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  explicit TestMetronomeTaskQueueFactory(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment)
+      : task_environment_(std::move(task_environment)),
+        metronome_source_(
+            base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick)),
+        factory_(CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
+
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   scoped_refptr<blink::MetronomeSource> metronome_source_;
   std::unique_ptr<webrtc::TaskQueueFactory> factory_;
 };
 
 // Instantiate suite to run all tests defined in
-// /third_party/webrtc/api/task_queue/task_queue_test.h.
+// third_party/webrtc/api/task_queue/task_queue_test.h.
 INSTANTIATE_TEST_SUITE_P(
     WebRtcMetronomeTaskQueue,
     TaskQueueTest,
-    ::testing::Values(std::make_unique<TestMetronomeTaskQueueFactory>));
+    ::testing::Values([]() {
+      return TestMetronomeTaskQueueFactory::CreateWithTestEnvironment();
+    }));
 
-class MetronomeTaskQueueFactoryTest : public ::testing::Test {
- public:
-  MetronomeTaskQueueFactoryTest()
-      : task_environment_(
-            base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        metronome_source_(
-            base::MakeRefCounted<MetronomeSource>(kMetronomeTick)),
-        task_queue_factory_(
-            CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
-
- protected:
-  base::test::TaskEnvironment task_environment_;
-  scoped_refptr<MetronomeSource> metronome_source_;
-  std::unique_ptr<webrtc::TaskQueueFactory> task_queue_factory_;
-};
-
-TEST_F(MetronomeTaskQueueFactoryTest, PostTaskRunsPriorToTick) {
-  auto task_queue = task_queue_factory_->CreateTaskQueue(
-      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
-
-  bool did_run = false;
-  task_queue->PostTask(webrtc::ToQueuedTask([&did_run]() { did_run = true; }));
-
-  EXPECT_FALSE(did_run);
-  task_environment_.FastForwardBy(base::Nanoseconds(1));
-  EXPECT_TRUE(did_run);
-}
-
-TEST_F(MetronomeTaskQueueFactoryTest, NormalPriorityDelayedTasksRunOnTicks) {
-  auto task_queue = task_queue_factory_->CreateTaskQueue(
-      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
-
-  int task_run_counter = 0;
-
-  // Delay task until next tick.
-  task_queue->PostDelayedTask(
-      webrtc::ToQueuedTask([&task_run_counter]() { ++task_run_counter; }),
-      kMetronomeTick.InMilliseconds());
-  EXPECT_EQ(task_run_counter, 0);
-  task_environment_.FastForwardBy(kMetronomeTick);
-  EXPECT_EQ(task_run_counter, 1);
-
-  // Delay half a tick. A full tick must pass before it runs.
-  task_queue->PostDelayedTask(
-      webrtc::ToQueuedTask([&task_run_counter]() { ++task_run_counter; }),
-      (kMetronomeTick / 2).InMilliseconds());
-  task_environment_.FastForwardBy(kMetronomeTick - base::Milliseconds(1));
-  EXPECT_EQ(task_run_counter, 1);
-  task_environment_.FastForwardBy(base::Milliseconds(1));
-  EXPECT_EQ(task_run_counter, 2);
-
-  // Delay several ticks.
-  task_queue->PostDelayedTask(
-      webrtc::ToQueuedTask([&task_run_counter]() { ++task_run_counter; }),
-      (kMetronomeTick * 3).InMilliseconds());
-  task_environment_.FastForwardBy(kMetronomeTick * 2);
-  EXPECT_EQ(task_run_counter, 2);
-  task_environment_.FastForwardBy(kMetronomeTick);
-  EXPECT_EQ(task_run_counter, 3);
-}
-
-TEST_F(MetronomeTaskQueueFactoryTest,
-       NormalPriorityHighPrecisionDelayedTasksRunOutsideTicks) {
-  auto task_queue = task_queue_factory_->CreateTaskQueue(
-      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
-
-  bool did_run = false;
-  task_queue->PostDelayedHighPrecisionTask(
-      webrtc::ToQueuedTask([&did_run]() { did_run = true; }),
-      /*milliseconds=*/1);
-
-  EXPECT_FALSE(did_run);
-  task_environment_.FastForwardBy(base::Milliseconds(1));
-  EXPECT_TRUE(did_run);
-}
-
-TEST_F(MetronomeTaskQueueFactoryTest, CanDeleteTaskQueueWhileTasksAreInFlight) {
-  auto task_queue = task_queue_factory_->CreateTaskQueue(
-      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
-
-  bool did_run_post_task = false;
-  task_queue->PostTask(webrtc::ToQueuedTask(
-      [&did_run_post_task]() { did_run_post_task = true; }));
-  bool did_run_low_precision_delay_task = false;
-  task_queue->PostDelayedTask(
-      webrtc::ToQueuedTask([&did_run_low_precision_delay_task]() {
-        did_run_low_precision_delay_task = true;
-      }),
-      /*milliseconds=*/1);
-  bool did_run_high_precision_delay_task = false;
-  task_queue->PostDelayedHighPrecisionTask(
-      webrtc::ToQueuedTask([&did_run_high_precision_delay_task]() {
-        did_run_high_precision_delay_task = true;
-      }),
-      /*milliseconds=*/1);
-
-  EXPECT_FALSE(did_run_post_task);
-  EXPECT_FALSE(did_run_low_precision_delay_task);
-  EXPECT_FALSE(did_run_high_precision_delay_task);
-  task_queue.reset();
-
-  // The PostTask is executed, but not the delayed tasks.
-  EXPECT_TRUE(did_run_post_task);
-  EXPECT_FALSE(did_run_low_precision_delay_task);
-  EXPECT_FALSE(did_run_high_precision_delay_task);
-
-  // The delayed tasks never run because they have been cancelled.
-  task_environment_.FastForwardBy(kMetronomeTick);
-  EXPECT_FALSE(did_run_low_precision_delay_task);
-  EXPECT_FALSE(did_run_high_precision_delay_task);
-}
-
-TEST_F(MetronomeTaskQueueFactoryTest, DelayedTasksRunInOrder) {
-  auto task_queue = task_queue_factory_->CreateTaskQueue(
-      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
-
-  constexpr uint32_t kTime0Ms = 0;
-  constexpr uint32_t kTime1Ms = 1;
-  std::vector<std::string> run_tasks;
-
-  task_queue->PostDelayedTask(webrtc::ToQueuedTask([&run_tasks]() {
-                                run_tasks.emplace_back("Time0_First");
-                              }),
-                              kTime0Ms);
-  task_queue->PostDelayedTask(webrtc::ToQueuedTask([&run_tasks]() {
-                                run_tasks.emplace_back("Time1_First");
-                              }),
-                              kTime1Ms);
-  task_queue->PostDelayedTask(webrtc::ToQueuedTask([&run_tasks]() {
-                                run_tasks.emplace_back("Time1_Second");
-                              }),
-                              kTime1Ms);
-  task_queue->PostDelayedTask(webrtc::ToQueuedTask([&run_tasks]() {
-                                run_tasks.emplace_back("Time0_Second");
-                              }),
-                              kTime0Ms);
-  task_queue->PostDelayedTask(webrtc::ToQueuedTask([&run_tasks]() {
-                                run_tasks.emplace_back("Time0_Third");
-                              }),
-                              kTime0Ms);
-  task_queue->PostDelayedTask(webrtc::ToQueuedTask([&run_tasks]() {
-                                run_tasks.emplace_back("Time1_Third");
-                              }),
-                              kTime1Ms);
-  task_environment_.FastForwardBy(kMetronomeTick);
-
-  EXPECT_THAT(run_tasks,
-              ElementsAre("Time0_First", "Time0_Second", "Time0_Third",
-                          "Time1_First", "Time1_Second", "Time1_Third"));
-}
-
-TEST_F(MetronomeTaskQueueFactoryTest, DelayedTaskCanPostDelayedTask) {
-  auto task_queue = task_queue_factory_->CreateTaskQueue(
-      "MetronomeTestQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
-
-  bool task0_ran = false;
-  bool task1_ran = false;
-
-  task_queue->PostDelayedTask(
-      webrtc::ToQueuedTask([&task_queue, &task0_ran, &task1_ran]() {
-        task0_ran = true;
-        // Inception!
-        task_queue->PostDelayedTask(
-            webrtc::ToQueuedTask([&task1_ran]() { task1_ran = true; }),
-            kMetronomeTick.InMilliseconds());
-      }),
-      kMetronomeTick.InMilliseconds());
-
-  task_environment_.FastForwardBy(kMetronomeTick);
-  EXPECT_TRUE(task0_ran);
-  EXPECT_FALSE(task1_ran);
-  task_environment_.FastForwardBy(kMetronomeTick);
-  EXPECT_TRUE(task0_ran);
-  EXPECT_TRUE(task1_ran);
-}
+// Instantiate suite to run all tests defined in
+// third_party/webrtc_overrides/test/metronome_like_task_queue_test.h
+INSTANTIATE_TEST_SUITE_P(WebRtcMetronomeTaskQueue,
+                         MetronomeLikeTaskQueueTest,
+                         ::testing::Values(MetronomeLikeTaskQueueTestParams{
+                             .task_queue_factory =
+                                 []() {
+                                   return TestMetronomeTaskQueueFactory::
+                                       CreateWithoutTestEnvironment();
+                                 },
+                             .metronome_tick = kMetronomeTick}));
 
 }  // namespace
 

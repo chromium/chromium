@@ -2263,6 +2263,7 @@ source_set("blink_platform_unittests_sources") {
     "//third_party/libjxl:libjxl",
     "//third_party/libyuv",
     "//third_party/webrtc/api/task_queue:task_queue_test",
+    "//third_party/webrtc_overrides:metronome_like_task_queue_test",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base:features",
     "//ui/base/prediction",
