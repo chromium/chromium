@@ -159,7 +159,7 @@ bool ExternalCacheImpl::GetExtension(const extensions::ExtensionId& id,
 
 bool ExternalCacheImpl::ExtensionFetchPending(
     const extensions::ExtensionId& id) {
-  return extensions_->HasKey(id) && !cached_extensions_->HasKey(id);
+  return extensions_->FindKey(id) && !cached_extensions_->FindKey(id);
 }
 
 void ExternalCacheImpl::PutExternalExtension(
@@ -190,7 +190,7 @@ void ExternalCacheImpl::OnExtensionDownloadFailed(
     const std::set<int>& request_ids,
     const FailureData& data) {
   if (error == Error::NO_UPDATE_AVAILABLE) {
-    if (!cached_extensions_->HasKey(id)) {
+    if (!cached_extensions_->FindKey(id)) {
       LOG(ERROR) << "ExternalCacheImpl extension " << id
                  << " not found on update server";
       delegate_->OnExtensionDownloadFailed(id);

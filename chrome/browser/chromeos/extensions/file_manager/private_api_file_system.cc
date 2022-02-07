@@ -1376,7 +1376,7 @@ void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
   }
 
   for (const auto& hashAndPath : search_results) {
-    DCHECK(result->HasKey(hashAndPath.hash));
+    DCHECK(result->FindKey(hashAndPath.hash));
     base::ListValue* list;
     result->GetListWithoutPathExpansion(hashAndPath.hash, &list);
     list->Append(hashAndPath.path.value());
