@@ -126,6 +126,7 @@ source_set("fakes") {
     "//base",
     "//components/reading_list/core",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 bundle_data("distilled_bundle_data") {
