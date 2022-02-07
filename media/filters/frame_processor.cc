@@ -810,6 +810,22 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     // and failed processing.
     DCHECK(decode_timestamp != kNoDecodeTimestamp);
 
+    if (presentation_timestamp.is_inf()) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Before adjusting by timestampOffset, PTS for "
+          << frame->GetTypeName()
+          << " frame exceeds range allowed by implementation";
+      return false;
+    }
+
+    if (decode_timestamp.is_inf()) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Before adjusting by timestampOffset, DTS for "
+          << frame->GetTypeName()
+          << " frame exceeds range allowed by implementation";
+      return false;
+    }
+
     // TODO(wolenetz): Determine whether any DTS>PTS logging is needed. See
     // http://crbug.com/354518.
     DVLOG_IF(2, decode_timestamp.ToPresentationTime() > presentation_timestamp)

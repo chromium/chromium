@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
@@ -95,6 +96,8 @@ class DecodeTimestamp {
   constexpr int64_t InMilliseconds() const { return ts_.InMilliseconds(); }
   constexpr int64_t InMicroseconds() const { return ts_.InMicroseconds(); }
 
+  constexpr bool is_inf() const { return ts_.is_inf(); }
+
   // TODO(acolwell): Remove once all the hacks are gone. This method is called
   // by hacks where a decode time is being used as a presentation time.
   constexpr base::TimeDelta ToPresentationTime() const { return ts_; }
@@ -105,6 +108,11 @@ class DecodeTimestamp {
 
   base::TimeDelta ts_;
 };
+
+// Assert assumptions necessary for DecodeTimestamp analogues of
+// base::TimeDelta::is_inf(), media::kNoTimestamp and media::kInfiniteDuration.
+static_assert(kNoTimestamp.is_min() && kNoTimestamp.is_inf());
+static_assert(kInfiniteDuration.is_max() && kInfiniteDuration.is_inf());
 
 // Indicates an invalid or missing decode timestamp.
 constexpr DecodeTimestamp kNoDecodeTimestamp =

@@ -517,10 +517,21 @@ MATCHER_P3(DroppedAppendWindowUnusedPreroll,
           base::NumberToString(next_pts_us) + "us");
 }
 
+MATCHER_P(PtsUnknown, frame_type, "") {
+  return CONTAINS_STRING(
+      arg, "Unknown PTS for " + std::string(frame_type) + " frame");
+}
+
 MATCHER_P2(FrameDurationUnknown, frame_type, pts_us, "") {
   return CONTAINS_STRING(arg, "Unknown duration for " +
                                   std::string(frame_type) + " frame at PTS " +
                                   base::NumberToString(pts_us) + "us");
+}
+
+MATCHER_P3(FrameTimeOutOfRange, when, pts_or_dts, frame_type, "") {
+  return CONTAINS_STRING(
+      arg, std::string(when) + ", " + pts_or_dts + " for " + frame_type +
+               " frame exceeds range allowed by implementation");
 }
 
 }  // namespace media
