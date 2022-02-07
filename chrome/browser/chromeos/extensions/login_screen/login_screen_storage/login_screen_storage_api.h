@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_SCREEN_STORAGE_LOGIN_SCREEN_STORAGE_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_SCREEN_STORAGE_LOGIN_SCREEN_STORAGE_API_H_
 
-#include "chromeos/dbus/login_manager/login_screen_storage.pb.h"
+#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
 
-// Provides common callback functions to return results from
-// 'LoginScreenStorageStore' and 'LoginScreenStorageRetrieve' D-Bus methods.
+// Provides common callback functions to return results from the
+// LoginScreenStorage crosapi's `Store` and `Retrieve` methods.
 class LoginScreenStorageExtensionFunction : public ExtensionFunction {
  public:
   LoginScreenStorageExtensionFunction(
@@ -23,17 +23,18 @@ class LoginScreenStorageExtensionFunction : public ExtensionFunction {
   LoginScreenStorageExtensionFunction();
   ~LoginScreenStorageExtensionFunction() override;
 
-  // When passed as a callback to the 'LoginScreenStorageStore' D-Bus method,
+  // When passed as a callback to the LoginScreenStorage `Store` crosapi method,
   // returns its result to the calling extension.
-  void OnDataStored(absl::optional<std::string> error);
+  void OnDataStored(const absl::optional<std::string>& error_message);
 
-  // When passed as a callback to the 'LoginScreenStorageRetrieve' D-Bus method,
-  // returns its result to the calling extension.
-  void OnDataRetrieved(absl::optional<std::string> data,
-                       absl::optional<std::string> error);
+  // When passed as a callback to the LoginScreenStorage `Retrieve` crosapi
+  // method, returns its result to the calling extension.
+  void OnDataRetrieved(
+      crosapi::mojom::LoginScreenStorageRetrieveResultPtr result);
 };
 
-class LoginScreenStorageStorePersistentDataFunction : public ExtensionFunction {
+class LoginScreenStorageStorePersistentDataFunction
+    : public LoginScreenStorageExtensionFunction {
  public:
   LoginScreenStorageStorePersistentDataFunction();
 
@@ -50,20 +51,6 @@ class LoginScreenStorageStorePersistentDataFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  // Called when data for one of the extension was stored, |extension_ids| is a
-  // list of the extensions that the data wasn't yet stored for.
-  void OnDataStored(std::vector<std::string> extension_ids,
-                    const login_manager::LoginScreenStorageMetadata& metadata,
-                    const std::string& data,
-                    absl::optional<std::string> error);
-
-  // Asynchronously stores data for every extension from |extension_ids|.
-  void StoreDataForExtensions(
-      std::vector<std::string> extension_ids,
-      const login_manager::LoginScreenStorageMetadata& metadata,
-      const std::string& data);
 };
 
 class LoginScreenStorageRetrievePersistentDataFunction

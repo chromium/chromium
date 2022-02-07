@@ -35,6 +35,7 @@ import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
+import "chromeos/crosapi/mojom/login_screen_storage.mojom";
 import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
@@ -95,8 +96,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 64
-// Next method id: 68
+// Next version: 65
+// Next method id: 69
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -278,6 +279,10 @@ interface Crosapi {
   // Binds the login service.
   // Added in M99.
   [MinVersion=63] BindLogin@67(pending_receiver<Login> receiver);
+
+  // Binds the login screen storage service.
+  [MinVersion=64] BindLoginScreenStorage@68(
+      pending_receiver<LoginScreenStorage> receiver);
 
   // Binds the login state service.
   [MinVersion=57] BindLoginState@61(pending_receiver<LoginState> receiver);

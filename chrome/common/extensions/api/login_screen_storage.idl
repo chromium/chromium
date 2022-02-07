@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.loginScreenStorage</code> API to store persistent data
 // from the login screen or inject data into the session.
-[platforms=("chromeos"),
+[platforms=("chromeos", "lacros"),
  implemented_in="chrome/browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.h"]
 namespace loginScreenStorage {
   callback StoreCallback = void ();

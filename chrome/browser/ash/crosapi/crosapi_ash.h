@@ -50,6 +50,7 @@ class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
 class LoginAsh;
+class LoginScreenStorageAsh;
 class LoginStateAsh;
 class MessageCenterAsh;
 class MetricsReportingAsh;
@@ -156,6 +157,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
+  void BindLoginScreenStorage(
+      mojo::PendingReceiver<mojom::LoginScreenStorage> receiver) override;
   void BindLoginState(
       mojo::PendingReceiver<mojom::LoginState> receiver) override;
   void BindMessageCenter(
@@ -270,6 +273,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LoginAsh* login_ash() { return login_ash_.get(); }
 
+  LoginScreenStorageAsh* login_screen_storage_ash() {
+    return login_screen_storage_ash_.get();
+  }
+
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
@@ -310,6 +317,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
+  std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;

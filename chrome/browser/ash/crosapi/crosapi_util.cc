@@ -55,6 +55,7 @@
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
+#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
@@ -184,6 +185,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::KioskSessionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::LocalPrinter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Login>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::LoginScreenStorage>(),
     MakeInterfaceVersionEntry<crosapi::mojom::LoginState>(),
     MakeInterfaceVersionEntry<
         chromeos::machine_learning::mojom::MachineLearningService>(),

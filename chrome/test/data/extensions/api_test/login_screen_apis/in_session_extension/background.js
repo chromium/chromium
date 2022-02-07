@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const extensionId = 'abcdefghijklmnopabcdefghijklmnop';
+
+const extensionId1 = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+const extensionId2 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+const credentials = 'credentials';
+const data = 'persistent data';
+
+// Fixed return value of FakeSessionManagerClient::LoginScreenStorageRetrieve
+// returned in tests.
+const loginScreenStorageResult = 'Test';
+
 const noPermissionToLockErrorMessage =
     'The extension does not have permission to lock this session';
 const noPermissionToUnlockErrorMessage =
@@ -26,6 +38,34 @@ const tests = {
       chrome.test.succeed();
     });
   },
+  'InSessionLoginScreenStorageStorePersistentData': () => {
+    chrome.loginScreenStorage.storePersistentData(
+        [extensionId1, extensionId2], data, () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+  'InSessionLoginScreenStorageRetrievePersistentData': () => {
+    chrome.loginScreenStorage.retrievePersistentData(extensionId, data => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(loginScreenStorageResult, data);
+      chrome.test.succeed();
+    });
+  },
+  'InSessionLoginScreenStorageStoreCredentials': () => {
+    chrome.loginScreenStorage.storeCredentials(
+        extensionId, credentials, () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+  'InSessionLoginScreenStorageRetrieveCredentials': () => {
+    chrome.loginScreenStorage.retrieveCredentials(credentials => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(loginScreenStorageResult, credentials);
+      chrome.test.succeed();
+    });
+  }
 }
 
 // |waitForTestName()| waits for the browser test to reply with a test name and
