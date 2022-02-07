@@ -41,7 +41,8 @@ DomDistillerService::DomDistillerService(
       distiller_factory_(std::move(distiller_factory)),
       distiller_page_factory_(std::move(distiller_page_factory)),
       distilled_page_prefs_(std::move(distilled_page_prefs)),
-      distiller_ui_handle_(std::move(distiller_ui_handle)) {}
+      distiller_ui_handle_(std::move(distiller_ui_handle)),
+      weak_ptr_factory_(this) {}
 
 DomDistillerService::~DomDistillerService() {
   // There shouldn't be any tasks pending at this point.
@@ -130,6 +131,10 @@ DistilledPagePrefs* DomDistillerService::GetDistilledPagePrefs() {
 
 DistillerUIHandle* DomDistillerService::GetDistillerUIHandle() {
   return distiller_ui_handle_.get();
+}
+
+base::WeakPtr<DomDistillerService> DomDistillerService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace dom_distiller

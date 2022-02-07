@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -85,6 +86,7 @@ class DomDistillerService : public DomDistillerServiceInterface {
       std::unique_ptr<SourcePageHandle> handle) override;
   DistilledPagePrefs* GetDistilledPagePrefs() override;
   DistillerUIHandle* GetDistillerUIHandle() override;
+  base::WeakPtr<DomDistillerService> GetWeakPtr();
 
  private:
   void CancelTask(TaskTracker* task);
@@ -111,6 +113,8 @@ class DomDistillerService : public DomDistillerServiceInterface {
 
   typedef std::vector<std::unique_ptr<TaskTracker>> TaskList;
   TaskList tasks_;
+
+  base::WeakPtrFactory<DomDistillerService> weak_ptr_factory_;
 };
 
 }  // namespace dom_distiller
