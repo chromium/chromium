@@ -604,9 +604,9 @@ int32_t GetInt32(const base::Value* dict, const char* key) {
   const base::Value* v = dict->FindKey(key);
   if (v && !v->is_int()) {
     NET_LOG(ERROR) << "Expected int, found: " << *v;
-    return false;
+    return 0;
   }
-  return v ? v->GetInt() : false;
+  return v ? v->GetInt() : 0;
 }
 
 std::vector<int32_t> GetInt32List(const base::Value* dict, const char* key) {
