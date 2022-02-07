@@ -99,7 +99,7 @@ TEST(IPCMessageTest, ListValue) {
   base::PickleIterator iter(msg);
   EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
 
-  EXPECT_TRUE(input.Equals(&output));
+  EXPECT_EQ(input, output);
 
   // Also test the corrupt case.
   IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
@@ -133,7 +133,7 @@ TEST(IPCMessageTest, DictionaryValue) {
   base::PickleIterator iter(msg);
   EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
 
-  EXPECT_TRUE(input.Equals(&output));
+  EXPECT_EQ(input, output);
 
   // Also test the corrupt case.
   IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
