@@ -129,8 +129,8 @@
   </cr-search-field>
   <template is="dom-if" if="[[v2Enabled]]">
     <div id="category-button-group">
-      <template is="dom-repeat" items="[[categoryData]]">
-          <emoji-category-button 
+      <template is="dom-repeat" items="[[categoryMetadata]]">
+          <emoji-category-button
             active="[[item.active]]"
             name="[[item.name]]"
             icon="[[item.icon]]">

@@ -18,9 +18,9 @@ import {EmojiButton} from './emoji_button.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_REMAINING_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK, V2_CONTENT_LOADED} from './events.js';
-import {V2_SUBCATEGORY_TABS} from './metadata_extension.js';
+import {CATEGORY_METADATA, V2_SUBCATEGORY_TABS} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredItem, SubcategoryData} from './types.js';
+import {CategoryData, CategoryEnum, Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredItem, SubcategoryData} from './types.js';
 
 const EMOJI_ORDERING_JSON_TEMPLATE = '/emoji_14_0_ordering';
 const EMOTICON_ORDERING_JSON = '/emoticon_test_ordering.json';
@@ -840,6 +840,19 @@ export class EmojiPicker extends PolymerElement {
     const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
     return (page === 1) ? 0 :
                           (page - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
+  }
+
+  /**
+   * @private
+   * @param {string} category
+   * @returns {!Array<!CategoryData>}
+   */
+  getCategoryMetadata(category) {
+    return CATEGORY_METADATA.map(data => ({
+                                   name: data.name,
+                                   icon: data.icon,
+                                   active: data.name === category
+                                 }));
   }
 }
 
