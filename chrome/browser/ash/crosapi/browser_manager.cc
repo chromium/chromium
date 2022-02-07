@@ -832,12 +832,18 @@ void BrowserManager::StartWithLogFile(
   std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
 
-  DCHECK(lacros_selection_.has_value());
-  version_info::Channel update_channel =
-      browser_util::GetLacrosSelectionUpdateChannel(lacros_selection_.value());
-  // If we don't have channel information, we default to the "dev" channel.
-  if (update_channel == version_info::Channel::UNKNOWN)
-    update_channel = browser_util::kLacrosDefaultChannel;
+  // If Ash is an unknown channel then this is not a production build and we
+  // should be using an unknown channel for Lacros as well. This prevents Lacros
+  // from picking up Finch experiments.
+  version_info::Channel update_channel = version_info::Channel::UNKNOWN;
+  if (chrome::GetChannel() != version_info::Channel::UNKNOWN) {
+    DCHECK(lacros_selection_.has_value());
+    update_channel = browser_util::GetLacrosSelectionUpdateChannel(
+        lacros_selection_.value());
+    // If we don't have channel information, we default to the "dev" channel.
+    if (update_channel == version_info::Channel::UNKNOWN)
+      update_channel = browser_util::kLacrosDefaultChannel;
+  }
 
   base::LaunchOptions options;
   options.environment["EGL_PLATFORM"] = "surfaceless";
