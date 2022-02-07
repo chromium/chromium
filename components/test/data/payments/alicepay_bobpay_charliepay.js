@@ -7,8 +7,7 @@
 /* global PaymentRequest:false */
 
 /**
- * Launches the PaymentRequest UI with Bob Pay, Alice Pay and credit cards as
- * payment methods.
+ * Launches the PaymentRequest UI with Bob Pay, Alice Pay as payment methods.
  */
 function buy() { // eslint-disable-line no-unused-vars
   try {
@@ -16,10 +15,7 @@ function buy() { // eslint-disable-line no-unused-vars
         [
           {supportedMethods: 'https://alicepay.com'},
           {supportedMethods: 'https://bobpay.com'},
-          {supportedMethods: 'https://charliepay.com'}, {
-            supportedMethods: 'basic-card',
-            data: {supportedNetworks: ['visa', 'mastercard']},
-          },
+          {supportedMethods: 'https://charliepay.com'},
         ],
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}})
         .show()
