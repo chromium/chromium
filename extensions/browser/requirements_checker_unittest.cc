@@ -78,7 +78,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
   }
 
   void RequireFeature(const char feature[]) {
-    if (!manifest_dict_->HasKey(kFeaturesKey))
+    if (!manifest_dict_->FindKey(kFeaturesKey))
       manifest_dict_->Set(kFeaturesKey, std::make_unique<base::ListValue>());
     base::ListValue* features_list = nullptr;
     ASSERT_TRUE(manifest_dict_->GetList(kFeaturesKey, &features_list));

@@ -270,7 +270,7 @@ TEST_F(AppWindowGeometryCacheTest, SaveGeometryAndStateToStore) {
       extension_prefs_->GetGeometryCache(extension_id);
   ASSERT_TRUE(dict);
 
-  ASSERT_TRUE(dict->HasKey(window_id));
+  ASSERT_TRUE(dict->FindKey(window_id));
 
   ASSERT_EQ(bounds.x(), dict->FindIntPath(window_id + ".x"));
   ASSERT_EQ(bounds.y(), dict->FindIntPath(window_id + ".y"));

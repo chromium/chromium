@@ -51,7 +51,7 @@ struct RecordingCondition {
       const base::Value& condition,
       std::string* error) {
     const base::DictionaryValue* dict = nullptr;
-    if (condition.GetAsDictionary(&dict) && dict->HasKey("bad_key")) {
+    if (condition.GetAsDictionary(&dict) && dict->FindKey("bad_key")) {
       *error = "Found error key";
       return nullptr;
     }
@@ -220,11 +220,11 @@ class SummingAction : public base::RefCounted<SummingAction> {
       bool* bad_message) {
     const base::DictionaryValue* dict = nullptr;
     EXPECT_TRUE(action.GetAsDictionary(&dict));
-    if (dict->HasKey("error")) {
+    if (dict->FindKey("error")) {
       EXPECT_TRUE(dict->GetString("error", error));
       return nullptr;
     }
-    if (dict->HasKey("bad")) {
+    if (dict->FindKey("bad")) {
       *bad_message = true;
       return nullptr;
     }

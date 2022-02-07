@@ -151,7 +151,7 @@ void RegisterItem(OperationResult* result,
     return;
   }
 
-  if (dict->HasKey(item_id)) {
+  if (dict->FindKey(item_id)) {
     *result = OperationResult::kAlreadyRegistered;
     return;
   }
