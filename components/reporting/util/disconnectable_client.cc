@@ -25,6 +25,7 @@ DisconnectableClient::DisconnectableClient(
 
 DisconnectableClient::~DisconnectableClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetAvailability(/*is_available=*/false);
 }
 
 void DisconnectableClient::MaybeMakeCall(std::unique_ptr<Delegate> delegate) {

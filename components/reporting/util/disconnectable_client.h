@@ -53,7 +53,7 @@ class DisconnectableClient {
   void CallResponded(uint64_t id);
 
   // Sequenced task runner - must be first member of the class.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Availability flag.
