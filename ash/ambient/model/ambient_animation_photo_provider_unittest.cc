@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -69,19 +70,23 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     model_.AddNextImage(decoded_topic);
   }
 
-  scoped_refptr<ImageAsset> LoadAsset(base::StringPiece asset_id) {
+  scoped_refptr<ImageAsset> LoadAsset(
+      base::StringPiece asset_id,
+      absl::optional<gfx::Size> size = absl::nullopt) {
     scoped_refptr<ImageAsset> asset = provider_.LoadImageAsset(
         asset_id, base::FilePath("dummy-resource-path/dummy-resource-name"),
-        /*size=*/absl::nullopt);
+        std::move(size));
     CHECK(asset) << asset_id;
     return asset;
   }
 
-  std::vector<scoped_refptr<ImageAsset>> LoadAllDynamicAssets() {
+  std::vector<scoped_refptr<ImageAsset>> LoadAllDynamicAssets(
+      std::array<absl::optional<gfx::Size>, kNumDynamicAssets> asset_sizes =
+          std::array<absl::optional<gfx::Size>, kNumDynamicAssets>()) {
     std::vector<scoped_refptr<ImageAsset>> all_assets;
     for (int asset_idx = 0; asset_idx < kNumDynamicAssets; ++asset_idx) {
-      all_assets.push_back(
-          LoadAsset(GenerateTestLottieDynamicAssetId(asset_idx)));
+      all_assets.push_back(LoadAsset(
+          GenerateTestLottieDynamicAssetId(asset_idx), asset_sizes[asset_idx]));
     }
     return all_assets;
   }
@@ -239,6 +244,87 @@ TEST_F(AmbientAnimationPhotoProviderTest, LoadsStaticImageAssets) {
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
   EXPECT_THAT(frame_data, ElementsAre(HasImageDimensions(10, 10),
                                       HasImageDimensions(11, 11)));
+}
+
+TEST_F(AmbientAnimationPhotoProviderTest, MatchesDynamicAssetOrientation) {
+  // 2 landscape 2 portrait
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/40));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/20));
+
+  std::vector<scoped_refptr<ImageAsset>> all_assets =
+      LoadAllDynamicAssets({gfx::Size(100, 50), gfx::Size(50, 100),
+                            gfx::Size(100, 50), gfx::Size(50, 100)});
+
+  std::vector<cc::SkottieFrameData> frame_data =
+      GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(std::vector<cc::SkottieFrameData>({frame_data[0], frame_data[2]}),
+              UnorderedElementsAre(HasImageDimensions(20, 10),
+                                   HasImageDimensions(40, 20)));
+  EXPECT_THAT(std::vector<cc::SkottieFrameData>({frame_data[1], frame_data[3]}),
+              UnorderedElementsAre(HasImageDimensions(10, 20),
+                                   HasImageDimensions(20, 40)));
+  GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+
+  // 3 landscape 1 portrait
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/30));
+  frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(frame_data[1], HasImageDimensions(10, 20));
+  EXPECT_THAT(std::vector<cc::SkottieFrameData>(
+                  {frame_data[0], frame_data[2], frame_data[3]}),
+              UnorderedElementsAre(HasImageDimensions(20, 10),
+                                   HasImageDimensions(30, 20),
+                                   HasImageDimensions(40, 30)));
+  GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+
+  // 1 landscape 3 portrait
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/40));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/50));
+  frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(frame_data[0], HasImageDimensions(20, 10));
+  EXPECT_THAT(std::vector<cc::SkottieFrameData>(
+                  {frame_data[1], frame_data[2], frame_data[3]}),
+              UnorderedElementsAre(HasImageDimensions(10, 20),
+                                   HasImageDimensions(20, 40),
+                                   HasImageDimensions(30, 50)));
+}
+
+TEST_F(AmbientAnimationPhotoProviderTest, HandlesOnlyPortraitAvailable) {
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/30));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/40));
+
+  std::vector<scoped_refptr<ImageAsset>> all_assets =
+      LoadAllDynamicAssets({gfx::Size(100, 50), gfx::Size(50, 100),
+                            gfx::Size(100, 50), gfx::Size(50, 100)});
+
+  std::vector<cc::SkottieFrameData> frame_data =
+      GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(10, 30),
+                                               HasImageDimensions(20, 40),
+                                               HasImageDimensions(10, 30),
+                                               HasImageDimensions(20, 40)));
+}
+
+TEST_F(AmbientAnimationPhotoProviderTest, HandlesOnlyLandscapeAvailable) {
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/20));
+
+  std::vector<scoped_refptr<ImageAsset>> all_assets =
+      LoadAllDynamicAssets({gfx::Size(100, 50), gfx::Size(50, 100),
+                            gfx::Size(100, 50), gfx::Size(50, 100)});
+
+  std::vector<cc::SkottieFrameData> frame_data =
+      GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(30, 10),
+                                               HasImageDimensions(40, 20),
+                                               HasImageDimensions(30, 10),
+                                               HasImageDimensions(40, 20)));
 }
 
 }  // namespace ash
