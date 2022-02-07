@@ -297,7 +297,7 @@ void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
                                               DisplaySchedulerBase* scheduler) {
   swap_timings_ = timings;
 
-  if (timings.swap_start.is_null())
+  if (timings.swap_start.is_null() || frame_time_.is_inf())
     return;
 
   auto frame_latency = timings.swap_start - frame_time_;
