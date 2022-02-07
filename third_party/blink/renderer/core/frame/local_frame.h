@@ -214,7 +214,7 @@ class CORE_EXPORT LocalFrame final
   void SetInheritedEffectiveTouchAction(TouchAction) override;
   bool BubbleLogicalScrollFromChildFrame(
       mojom::blink::ScrollDirection direction,
-      ScrollGranularity granularity,
+      ui::ScrollGranularity granularity,
       Frame* child) override;
   void DidFocus() override;
   bool IsAdSubframe() const override;

@@ -934,7 +934,7 @@ void LocalFrame::SetInheritedEffectiveTouchAction(TouchAction touch_action) {
 
 bool LocalFrame::BubbleLogicalScrollFromChildFrame(
     mojom::blink::ScrollDirection direction,
-    ScrollGranularity granularity,
+    ui::ScrollGranularity granularity,
     Frame* child) {
   FrameOwner* owner = child->Owner();
   auto* owner_element = DynamicTo<HTMLFrameOwnerElement>(owner);

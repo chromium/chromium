@@ -111,7 +111,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // The callback will be run if the animation is updated by another
   // UserScroll, otherwise it is called when the animation is finished,
   // cancelled or reset.
-  ScrollResult UserScroll(ScrollGranularity,
+  ScrollResult UserScroll(ui::ScrollGranularity,
                           const ScrollOffset& delta,
                           ScrollableArea::ScrollCallback on_finish) override;
   void ScrollToOffsetWithoutAnimation(const ScrollOffset&) override;
@@ -156,7 +156,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   base::TimeTicks start_time_;
 
   ScrollOffset target_offset_;
-  ScrollGranularity last_granularity_;
+  ui::ScrollGranularity last_granularity_;
 
   // on_finish_ is a callback to call on animation finished, cancelled, or
   // otherwise interrupted in any way.

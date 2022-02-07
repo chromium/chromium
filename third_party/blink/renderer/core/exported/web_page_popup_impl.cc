@@ -1002,7 +1002,7 @@ gfx::Rect WebPagePopupImpl::WindowRectInScreen() const {
 void WebPagePopupImpl::InjectGestureScrollEvent(
     WebGestureDevice device,
     const gfx::Vector2dF& delta,
-    ScrollGranularity granularity,
+    ui::ScrollGranularity granularity,
     cc::ElementId scrollable_area_element_id,
     WebInputEvent::Type injected_type) {
   widget_base_->input_handler().InjectGestureScrollEvent(

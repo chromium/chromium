@@ -52,7 +52,7 @@ const int kVKeyProcessKey = 229;
 bool MapKeyCodeForScroll(int key_code,
                          WebInputEvent::Modifiers modifiers,
                          mojom::blink::ScrollDirection* scroll_direction,
-                         ScrollGranularity* scroll_granularity,
+                         ui::ScrollGranularity* scroll_granularity,
                          WebFeature* scroll_use_uma) {
   if (modifiers & WebInputEvent::kShiftKey ||
       modifiers & WebInputEvent::kMetaKey)
@@ -82,8 +82,8 @@ bool MapKeyCodeForScroll(int key_code,
           mojom::blink::ScrollDirection::kScrollLeftIgnoringWritingMode;
       *scroll_granularity =
           RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ScrollGranularity::kScrollByPercentage
-              : ScrollGranularity::kScrollByLine;
+              ? ui::ScrollGranularity::kScrollByPercentage
+              : ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_RIGHT:
@@ -91,8 +91,8 @@ bool MapKeyCodeForScroll(int key_code,
           mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode;
       *scroll_granularity =
           RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ScrollGranularity::kScrollByPercentage
-              : ScrollGranularity::kScrollByLine;
+              ? ui::ScrollGranularity::kScrollByPercentage
+              : ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_UP:
@@ -100,8 +100,8 @@ bool MapKeyCodeForScroll(int key_code,
           mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
       *scroll_granularity =
           RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ScrollGranularity::kScrollByPercentage
-              : ScrollGranularity::kScrollByLine;
+              ? ui::ScrollGranularity::kScrollByPercentage
+              : ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_DOWN:
@@ -109,32 +109,32 @@ bool MapKeyCodeForScroll(int key_code,
           mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
       *scroll_granularity =
           RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ScrollGranularity::kScrollByPercentage
-              : ScrollGranularity::kScrollByLine;
+              ? ui::ScrollGranularity::kScrollByPercentage
+              : ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_HOME:
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByDocument;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByDocument;
       *scroll_use_uma = WebFeature::kScrollByKeyboardHomeEndKeys;
       break;
     case VKEY_END:
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByDocument;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByDocument;
       *scroll_use_uma = WebFeature::kScrollByKeyboardHomeEndKeys;
       break;
     case VKEY_PRIOR:  // page up
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByPage;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByPage;
       *scroll_use_uma = WebFeature::kScrollByKeyboardPageUpDownKeys;
       break;
     case VKEY_NEXT:  // page down
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByPage;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByPage;
       *scroll_use_uma = WebFeature::kScrollByKeyboardPageUpDownKeys;
       break;
     default:
@@ -417,7 +417,7 @@ void KeyboardEventManager::DefaultSpaceEventHandler(
   // TODO(bokan): enable scroll customization in this case. See
   // crbug.com/410974.
   if (scroll_manager_->LogicalScroll(direction,
-                                     ScrollGranularity::kScrollByPage, nullptr,
+                                     ui::ScrollGranularity::kScrollByPage, nullptr,
                                      possible_focused_node)) {
     UseCounter::Count(frame_->GetDocument(),
                       WebFeature::kScrollByKeyboardSpacebarKey);
@@ -448,7 +448,7 @@ void KeyboardEventManager::DefaultArrowEventHandler(
     return;
 
   mojom::blink::ScrollDirection scroll_direction;
-  ScrollGranularity scroll_granularity;
+  ui::ScrollGranularity scroll_granularity;
   WebFeature scroll_use_uma;
   if (!MapKeyCodeForScroll(event->keyCode(), event->GetModifiers(),
                            &scroll_direction, &scroll_granularity,

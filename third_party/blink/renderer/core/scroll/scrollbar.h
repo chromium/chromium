@@ -220,9 +220,9 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   void InjectGestureScrollUpdateForThumbMove(float single_axis_target_offset);
   void InjectScrollGesture(WebInputEvent::Type type,
                            ScrollOffset delta,
-                           ScrollGranularity granularity);
+                           ui::ScrollGranularity granularity);
   ScrollDirectionPhysical PressedPartScrollDirectionPhysical();
-  ScrollGranularity PressedPartScrollGranularity();
+  ui::ScrollGranularity PressedPartScrollGranularity();
 
   Member<ScrollableArea> scrollable_area_;
   ScrollbarOrientation orientation_;

@@ -509,7 +509,7 @@ cc::Layer* RootFrameViewport::LayerForScrollCorner() const {
 
 // This method distributes the scroll between the visual and layout viewport.
 ScrollResult RootFrameViewport::UserScroll(
-    ScrollGranularity granularity,
+    ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
     ScrollableArea::ScrollCallback on_finish) {
   base::ScopedClosureRunner run_on_return(std::move(on_finish));

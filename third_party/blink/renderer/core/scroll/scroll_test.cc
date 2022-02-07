@@ -231,7 +231,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   // Scroll on the layout viewport.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
+      ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -275,7 +275,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   // Scroll on the visual viewport.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
+      ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -319,7 +319,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   // Scroll on both the layout and visual viewports.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, ScrollOffset(0, 1000),
+      ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 1000),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -370,7 +370,7 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
   PaintLayerScrollableArea* scrollable_area =
       To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
   scrollable_area->UserScroll(
-      ScrollGranularity::kScrollByLine, ScrollOffset(0, 100),
+      ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 100),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -410,7 +410,7 @@ TEST_P(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
 
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, ScrollOffset(0, 300),
+      ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -447,7 +447,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   // Scroll on the layout viewport.
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
-      ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
+      ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
   // Sync time with ScrollAnimator.

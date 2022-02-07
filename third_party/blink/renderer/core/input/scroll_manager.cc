@@ -313,7 +313,7 @@ bool ScrollManager::CanScroll(const ScrollState& scroll_state,
 }
 
 bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
-                                  ScrollGranularity granularity,
+                                  ui::ScrollGranularity granularity,
                                   Node* start_node,
                                   Node* mouse_press_node) {
   Node* node = start_node;
@@ -369,18 +369,18 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
     // the Home/End key is considered as a scroll with intended end position
     // only.
     switch (granularity) {
-      case ScrollGranularity::kScrollByLine:
-      case ScrollGranularity::kScrollByPercentage: {
+      case ui::ScrollGranularity::kScrollByLine:
+      case ui::ScrollGranularity::kScrollByPercentage: {
         if (scrollable_area->SnapForDirection(delta))
           return true;
         break;
       }
-      case ScrollGranularity::kScrollByPage: {
+      case ui::ScrollGranularity::kScrollByPage: {
         if (scrollable_area->SnapForEndAndDirection(delta))
           return true;
         break;
       }
-      case ScrollGranularity::kScrollByDocument: {
+      case ui::ScrollGranularity::kScrollByDocument: {
         gfx::PointF end_position = scrollable_area->ScrollPosition() + delta;
         bool scrolled_x = physical_direction == kScrollLeft ||
                           physical_direction == kScrollRight;
@@ -417,7 +417,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
 // TODO(bokan): This should be merged with logicalScroll assuming
 // defaultSpaceEventHandler's chaining scroll can be done crossing frames.
 bool ScrollManager::BubblingScroll(mojom::blink::ScrollDirection direction,
-                                   ScrollGranularity granularity,
+                                   ui::ScrollGranularity granularity,
                                    Node* starting_node,
                                    Node* mouse_press_node) {
   // The layout needs to be up to date to determine if we can scroll. We may be
@@ -872,7 +872,7 @@ bool ScrollManager::SnapAtGestureScrollEnd(
   bool is_mouse_wheel =
       end_event.SourceDevice() == WebGestureDevice::kTouchpad &&
       end_event.data.scroll_end.delta_units !=
-          ScrollGranularity::kScrollByPrecisePixel;
+          ui::ScrollGranularity::kScrollByPrecisePixel;
 
   // Treat mouse wheel scrolls as direction only scroll with its last scroll
   // delta amout. This means each wheel tick will prefer the next snap position
@@ -937,7 +937,7 @@ gfx::PointF ScrollManager::ScrollByForSnapFling(const gfx::Vector2dF& delta) {
   scroll_state_data->is_in_inertial_phase = true;
   scroll_state_data->from_user_input = true;
   scroll_state_data->delta_granularity =
-      ScrollGranularity::kScrollByPrecisePixel;
+      ui::ScrollGranularity::kScrollByPrecisePixel;
   scroll_state_data->delta_consumed_for_scroll_sequence =
       delta_consumed_for_scroll_sequence_;
   auto* scroll_state =

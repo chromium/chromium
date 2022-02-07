@@ -41,8 +41,6 @@ namespace blink {
 // information.
 using ScrollOffset = gfx::Vector2dF;
 
-using ui::ScrollGranularity;
-
 enum ScrollDirectionPhysical {
   kScrollUp,
   kScrollDown,

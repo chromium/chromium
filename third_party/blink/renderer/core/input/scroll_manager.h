@@ -69,14 +69,14 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   // startNode - Optional. If provided, start chaining from the given node.
   //             If not, use the current focus or last clicked node.
   bool LogicalScroll(mojom::blink::ScrollDirection,
-                     ScrollGranularity,
+                     ui::ScrollGranularity,
                      Node* start_node,
                      Node* mouse_press_node);
 
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
   bool BubblingScroll(mojom::blink::ScrollDirection,
-                      ScrollGranularity,
+                      ui::ScrollGranularity,
                       Node* starting_node,
                       Node* mouse_press_node);
 

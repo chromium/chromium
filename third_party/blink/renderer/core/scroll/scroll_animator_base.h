@@ -63,7 +63,7 @@ class CORE_EXPORT ScrollAnimatorBase
   // no unusedDelta and didScroll=true, i.e. fully consuming the scroll request.
   // This makes animations latch to a single scroller. Note, the semantics are
   // currently somewhat different on Mac - see ScrollAnimatorMac.mm.
-  virtual ScrollResult UserScroll(ScrollGranularity,
+  virtual ScrollResult UserScroll(ui::ScrollGranularity,
                                   const ScrollOffset& delta,
                                   ScrollableArea::ScrollCallback on_finish);
 

@@ -61,7 +61,7 @@ ScrollAnimator::ScrollAnimator(ScrollableArea* scrollable_area,
                                const base::TickClock* tick_clock)
     : ScrollAnimatorBase(scrollable_area),
       tick_clock_(tick_clock),
-      last_granularity_(ScrollGranularity::kScrollByPixel) {}
+      last_granularity_(ui::ScrollGranularity::kScrollByPixel) {}
 
 ScrollAnimator::~ScrollAnimator() {
   if (on_finish_)
@@ -100,7 +100,7 @@ void ScrollAnimator::ResetAnimationState() {
 }
 
 ScrollResult ScrollAnimator::UserScroll(
-    ScrollGranularity granularity,
+    ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
     ScrollableArea::ScrollCallback on_finish) {
   // We only store on_finish_ when running an animation, and it should be
@@ -115,7 +115,7 @@ ScrollResult ScrollAnimator::UserScroll(
   base::ScopedClosureRunner run_on_return(std::move(on_finish));
 
   if (!scrollable_area_->ScrollAnimatorEnabled() ||
-      granularity == ScrollGranularity::kScrollByPrecisePixel) {
+      granularity == ui::ScrollGranularity::kScrollByPrecisePixel) {
     // Cancel scroll animation because asked to instant scroll.
     if (HasRunningAnimation())
       CancelAnimation();
@@ -298,7 +298,7 @@ void ScrollAnimator::CreateAnimationCurve() {
   // It is not correct to assume the input type from the granularity, but we've
   // historically determined animation parameters from granularity.
   CompositorScrollOffsetAnimationCurve::ScrollType scroll_type =
-      (last_granularity_ == ScrollGranularity::kScrollByPixel)
+      (last_granularity_ == ui::ScrollGranularity::kScrollByPixel)
           ? CompositorScrollOffsetAnimationCurve::ScrollType::kMouseWheel
           : CompositorScrollOffsetAnimationCurve::ScrollType::kKeyboard;
   animation_curve_ = std::make_unique<CompositorScrollOffsetAnimationCurve>(

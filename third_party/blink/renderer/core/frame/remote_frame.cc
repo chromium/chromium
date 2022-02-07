@@ -415,7 +415,7 @@ void RemoteFrame::SetInheritedEffectiveTouchAction(TouchAction touch_action) {
 
 bool RemoteFrame::BubbleLogicalScrollFromChildFrame(
     mojom::blink::ScrollDirection direction,
-    ScrollGranularity granularity,
+    ui::ScrollGranularity granularity,
     Frame* child) {
   DCHECK(child->Client());
   To<LocalFrame>(child)

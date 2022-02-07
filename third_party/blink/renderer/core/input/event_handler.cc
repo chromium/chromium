@@ -405,7 +405,7 @@ void EventHandler::StopAutoscroll() {
 // TODO(bokan): This should be merged with logicalScroll assuming
 // defaultSpaceEventHandler's chaining scroll can be done crossing frames.
 bool EventHandler::BubblingScroll(mojom::blink::ScrollDirection direction,
-                                  ScrollGranularity granularity,
+                                  ui::ScrollGranularity granularity,
                                   Node* starting_node) {
   return scroll_manager_->BubblingScroll(
       direction, granularity, starting_node,

@@ -45,7 +45,7 @@ class ViewportScrollCallback : public ScrollStateCallback {
 
  private:
   bool ShouldScrollBrowserControls(const ScrollOffset&,
-                                   ScrollGranularity) const;
+                                   ui::ScrollGranularity) const;
   bool ScrollBrowserControls(ScrollState&);
 
   ScrollResult PerformNativeScroll(ScrollState&);

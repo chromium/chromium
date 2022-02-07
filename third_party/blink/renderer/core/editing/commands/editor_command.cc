@@ -755,7 +755,7 @@ static bool ExecuteScrollPageBackward(LocalFrame& frame,
                                       const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionBackward,
-      ScrollGranularity::kScrollByPage);
+      ui::ScrollGranularity::kScrollByPage);
 }
 
 static bool ExecuteScrollPageForward(LocalFrame& frame,
@@ -764,7 +764,7 @@ static bool ExecuteScrollPageForward(LocalFrame& frame,
                                      const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionForward,
-      ScrollGranularity::kScrollByPage);
+      ui::ScrollGranularity::kScrollByPage);
 }
 
 static bool ExecuteScrollLineUp(LocalFrame& frame,
@@ -773,7 +773,7 @@ static bool ExecuteScrollLineUp(LocalFrame& frame,
                                 const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode,
-      ScrollGranularity::kScrollByLine);
+      ui::ScrollGranularity::kScrollByLine);
 }
 
 static bool ExecuteScrollLineDown(LocalFrame& frame,
@@ -782,7 +782,7 @@ static bool ExecuteScrollLineDown(LocalFrame& frame,
                                   const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode,
-      ScrollGranularity::kScrollByLine);
+      ui::ScrollGranularity::kScrollByLine);
 }
 
 static bool ExecuteScrollToBeginningOfDocument(LocalFrame& frame,
@@ -791,7 +791,7 @@ static bool ExecuteScrollToBeginningOfDocument(LocalFrame& frame,
                                                const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionBackward,
-      ScrollGranularity::kScrollByDocument);
+      ui::ScrollGranularity::kScrollByDocument);
 }
 
 static bool ExecuteScrollToEndOfDocument(LocalFrame& frame,
@@ -800,7 +800,7 @@ static bool ExecuteScrollToEndOfDocument(LocalFrame& frame,
                                          const String&) {
   return frame.GetEventHandler().BubblingScroll(
       mojom::blink::ScrollDirection::kScrollBlockDirectionForward,
-      ScrollGranularity::kScrollByDocument);
+      ui::ScrollGranularity::kScrollByDocument);
 }
 
 static bool ExecuteSelectAll(LocalFrame& frame,
@@ -1887,13 +1887,13 @@ bool Editor::ExecuteCommand(const String& command_name, const String& value) {
   if (!CanEdit() && command_name == "moveToBeginningOfDocument") {
     return GetFrame().GetEventHandler().BubblingScroll(
         mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode,
-        ScrollGranularity::kScrollByDocument);
+        ui::ScrollGranularity::kScrollByDocument);
   }
 
   if (!CanEdit() && command_name == "moveToEndOfDocument") {
     return GetFrame().GetEventHandler().BubblingScroll(
         mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode,
-        ScrollGranularity::kScrollByDocument);
+        ui::ScrollGranularity::kScrollByDocument);
   }
 
   if (command_name == "ToggleSpellPanel") {

@@ -41,7 +41,7 @@ ScrollState* ScrollState::Create(ScrollStateInit* init) {
   scroll_state_data->from_user_input = init->fromUserInput();
   scroll_state_data->is_direct_manipulation = init->isDirectManipulation();
   scroll_state_data->delta_granularity =
-      static_cast<ScrollGranularity>(init->deltaGranularity());
+      static_cast<ui::ScrollGranularity>(init->deltaGranularity());
   ScrollState* scroll_state =
       MakeGarbageCollected<ScrollState>(std::move(scroll_state_data));
   return scroll_state;

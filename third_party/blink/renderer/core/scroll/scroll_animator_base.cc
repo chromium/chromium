@@ -49,7 +49,7 @@ ScrollOffset ScrollAnimatorBase::ComputeDeltaToConsume(
 }
 
 ScrollResult ScrollAnimatorBase::UserScroll(
-    ScrollGranularity,
+    ui::ScrollGranularity,
     const ScrollOffset& delta,
     ScrollableArea::ScrollCallback on_finish) {
   // Run the callback for non-animation user scroll.

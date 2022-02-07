@@ -140,7 +140,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
   bool BubblingScroll(mojom::blink::ScrollDirection,
-                      ScrollGranularity,
+                      ui::ScrollGranularity,
                       Node* starting_node = nullptr);
 
   WebInputEventResult HandleMouseMoveEvent(
