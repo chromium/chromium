@@ -163,7 +163,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
       continue;
 
     CHECK(entry.SetStringKey("hash", it->second));
-    entries->Append(entry.CreateDeepCopy());
+    entries->Append(std::make_unique<base::Value>(entry.Clone()));
   }
 
   std::string url = host->GetURL().spec();
