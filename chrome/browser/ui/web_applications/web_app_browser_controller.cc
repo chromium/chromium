@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -344,6 +345,12 @@ bool WebAppBrowserController::IsInstalled() const {
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
   SetAppPrefsForWebContents(contents);
+
+  // If a `WebContents` is inserted into an app browser (e.g. after
+  // installation), it is "appy". Note that if and when it's moved back into a
+  // tabbed browser window (e.g. via "Open in Chrome" menu item), it is still
+  // considered "appy".
+  WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {

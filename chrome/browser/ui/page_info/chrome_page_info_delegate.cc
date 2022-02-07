@@ -40,11 +40,6 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -59,7 +54,7 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "ui/events/event.h"
 #else
 #include "chrome/grit/chromium_strings.h"
@@ -159,6 +154,7 @@ permissions::PermissionResult ChromePageInfoDelegate::GetPermissionStatus(
   return PermissionManagerFactory::GetForProfile(GetProfile())
       ->GetPermissionStatus(type, site_url, site_url);
 }
+
 #if !BUILDFLAG(IS_ANDROID)
 bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
   infobars::ContentInfoBarManager* infobar_manager =
@@ -171,24 +167,10 @@ bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (web_app::AppBrowserController::IsWebApp(browser)) {
-    web_app::AppId app_id = browser->app_controller()->app_id();
-    chrome::ShowAppManagementPage(
-        GetProfile(), app_id,
-        ash::settings::AppManagementEntryPoint::kPageInfoView);
+  if (web_app::HandleAppManagementLinkClickedInPageInfo(web_contents_))
     return;
-  }
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
-      web_app::AppBrowserController::IsWebApp(browser)) {
-    web_app::AppId app_id = browser->app_controller()->app_id();
-    chrome::ShowWebAppSettings(browser, app_id);
-    return;
-  }
-#endif
 
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   chrome::ShowSiteSettings(browser, site_url);
 }
 

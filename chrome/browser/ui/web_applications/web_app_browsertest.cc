@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -115,6 +116,14 @@ constexpr const char16_t kExampleURL16[] = u"http://example.org/";
 constexpr const char kExampleManifestURL[] = "http://example.org/manifest";
 
 constexpr char kLaunchWebAppDisplayModeHistogram[] = "Launch.WebAppDisplayMode";
+
+// Represents the variety of states that can exist and which control the page
+// info bubble's app settings link.
+enum class WebAppSettingsState {
+  kNeitherEnabled,
+  kOnlyWebAppSettingsEnabled,
+  kFileHandlingAlsoEnabled,
+};
 
 // Opens |url| in a new popup window with the dimensions |popup_size|.
 Browser* OpenPopupAndWait(Browser* browser,
@@ -1060,9 +1069,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kEnabled);
-
-  Browser* const app_browser = ReparentWebAppForActiveTab(browser());
-  ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -1981,5 +1987,115 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UninstallIncompleteUninstall) {
   }
   EXPECT_EQ(app_count, 0);
 }
+
+// Verifies the behavior of the App/site settings link in the page info bubble.
+class WebAppBrowserTest_PageInfoManagementLink
+    : public WebAppBrowserTest,
+      public testing::WithParamInterface<WebAppSettingsState> {
+ public:
+  WebAppBrowserTest_PageInfoManagementLink() {
+    file_handling_feature_list_.InitWithFeatureState(
+        blink::features::kFileHandlingAPI,
+        GetParam() == WebAppSettingsState::kFileHandlingAlsoEnabled);
+#if !BUILDFLAG(IS_CHROMEOS)
+    web_app_settings_feature_list_.InitWithFeatureState(
+        features::kDesktopPWAsWebAppSettingsPage,
+        GetParam() != WebAppSettingsState::kNeitherEnabled);
+#endif
+  }
+
+  bool ShowingAppManagementLink(Browser* browser) {
+    int unused_id, unused_id2;
+    return GetLabelIdsForAppManagementLinkInPageInfo(
+        browser->tab_strip_model()->GetActiveWebContents(), &unused_id,
+        &unused_id2);
+  }
+
+  static bool HasAppSettingsPage() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return true;
+#else
+    return base::FeatureList::IsEnabled(
+        features::kDesktopPWAsWebAppSettingsPage);
+#endif
+  }
+
+  static bool ShowsAppSettingsLinkInTabbedBrowser() {
+    return HasAppSettingsPage() &&
+           base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI);
+  }
+
+ private:
+  base::test::ScopedFeatureList file_handling_feature_list_;
+  base::test::ScopedFeatureList web_app_settings_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
+  const GURL app_url = GetSecureAppURL();
+  InstallPWA(app_url);
+
+  NavigateToURLAndWait(browser(), app_url);
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(tab_contents->GetLastCommittedURL(), app_url);
+
+  // After a normal (e.g. typed) navigation, should not show the app settings
+  // link.
+  EXPECT_FALSE(ShowingAppManagementLink(browser()));
+  // Reparent into app browser window.
+  Browser* const app_browser = ReparentWebAppForActiveTab(browser());
+  // The leftover tab in the tabbed browser window should not be appy.
+  EXPECT_FALSE(ShowingAppManagementLink(browser()));
+  // After reparenting into an app browser, should show the app settings link.
+  EXPECT_EQ(HasAppSettingsPage(), ShowingAppManagementLink(app_browser));
+
+  // Move back into tabbed browser: should keep showing the app settings link.
+  Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
+  EXPECT_EQ(ShowsAppSettingsLinkInTabbedBrowser(),
+            ShowingAppManagementLink(tabbed_browser));
+}
+
+// Verifies behavior when an app window is opened by navigating with
+// `open_pwa_window_if_possible` set to true.
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink,
+                       OpenAppWindowIfPossible) {
+  const GURL app_url = GetSecureAppURL();
+  InstallPWA(app_url);
+
+  NavigateParams params(browser(), app_url, ui::PAGE_TRANSITION_LINK);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.open_pwa_window_if_possible = true;
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_NE(browser(), params.browser);
+  EXPECT_FALSE(params.browser->is_type_normal());
+  EXPECT_TRUE(params.browser->is_type_app());
+  EXPECT_TRUE(params.browser->is_trusted_source());
+
+  EXPECT_EQ(HasAppSettingsPage(), ShowingAppManagementLink(params.browser));
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
+  const GURL app_url = GetSecureAppURL();
+  const AppId app_id = InstallPWA(app_url);
+
+  // A non appy tab is showing, so the app settings link should not be visible.
+  EXPECT_FALSE(ShowingAppManagementLink(browser()));
+
+  // *Launch* the app as a tab in a normal browser window. The app settings link
+  // should be visible.
+  Browser* tabbed_browser = LaunchBrowserForWebAppInTab(app_id);
+  EXPECT_EQ(browser(), tabbed_browser);
+  EXPECT_EQ(ShowsAppSettingsLinkInTabbedBrowser(),
+            ShowingAppManagementLink(tabbed_browser));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppBrowserTest_PageInfoManagementLink,
+    ::testing::Values(WebAppSettingsState::kNeitherEnabled,
+                      WebAppSettingsState::kOnlyWebAppSettingsEnabled,
+                      WebAppSettingsState::kFileHandlingAlsoEnabled));
 
 }  // namespace web_app

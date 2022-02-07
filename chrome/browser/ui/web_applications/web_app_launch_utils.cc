@@ -187,6 +187,13 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           gfx::Rect(), profile, true /* user_gesture */)));
 }
 
+void SetWebContentsActingAsApp(content::WebContents* contents,
+                               const AppId& app_id) {
+  auto* helper = WebAppTabHelper::FromWebContents(contents);
+  helper->SetAppId(app_id);
+  helper->set_acting_as_app(true);
+}
+
 void SetAppPrefsForWebContents(content::WebContents* web_contents) {
   web_contents->GetMutableRendererPrefs()->can_accept_load_drops = false;
   web_contents->SyncRendererPrefs();
@@ -323,7 +330,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
       nav_params.navigated_or_inserted_contents;
 
   if (web_contents) {
-    WebAppTabHelper::FromWebContents(web_contents)->SetAppId(app_id);
+    SetWebContentsActingAsApp(web_contents, app_id);
     SetAppPrefsForWebContents(web_contents);
   }
 

@@ -334,7 +334,7 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
 
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
   tab_strip->ActivateTabAt(tab_index, {TabStripModel::GestureType::kOther});
-  WebAppTabHelper::FromWebContents(web_contents)->SetAppId(params_.app_id);
+  SetWebContentsActingAsApp(web_contents, params_.app_id);
   return {.web_contents = web_contents, .did_navigate = true};
 }
 

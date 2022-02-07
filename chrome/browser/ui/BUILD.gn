@@ -5185,6 +5185,8 @@ static_library("ui") {
       "web_applications/web_app_metrics_tab_helper.h",
       "web_applications/web_app_ui_manager_impl.cc",
       "web_applications/web_app_ui_manager_impl.h",
+      "web_applications/web_app_ui_utils.cc",
+      "web_applications/web_app_ui_utils.h",
       "web_applications/web_app_uninstall_dialog.h",
       "webui/extensions/extension_basic_info.cc",
       "webui/extensions/extension_basic_info.h",

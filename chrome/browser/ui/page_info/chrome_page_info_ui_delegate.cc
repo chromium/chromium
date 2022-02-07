@@ -32,12 +32,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #endif
 
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(
@@ -133,20 +128,14 @@ bool ChromePageInfoUiDelegate::ShouldShowSiteSettings(int* link_text_id,
   if (GetProfile()->IsGuestSession())
     return false;
 
+  if (web_app::GetLabelIdsForAppManagementLinkInPageInfo(
+          web_contents_, link_text_id, tooltip_text_id)) {
+    return true;
+  }
+
   *link_text_id = IDS_PAGE_INFO_SITE_SETTINGS_LINK;
   *tooltip_text_id = IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage))
-    return true;
-#endif
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  if (web_app::AppBrowserController::IsWebApp(browser)) {
-    *link_text_id = IDS_WEB_APP_SETTINGS_LINK;
-    *tooltip_text_id = IDS_WEB_APP_SETTINGS_LINK_TOOLTIP;
-  }
-#endif
+
   return true;
 }
 

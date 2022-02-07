@@ -46,6 +46,12 @@ Browser* ReparentWebAppForActiveTab(Browser* browser);
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            const AppId& app_id);
 
+// Tags `contents` with the given app id and marks it as an app. This
+// differentiates it from a `WebContents` which happens to be hosting a page
+// that is part of an app.
+void SetWebContentsActingAsApp(content::WebContents* contents,
+                               const AppId& app_id);
+
 // Set preferences that are unique to app windows.
 void SetAppPrefsForWebContents(content::WebContents* web_contents);
 
