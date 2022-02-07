@@ -7607,7 +7607,7 @@ crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-b
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-script.html [ Skip ]
 
 # Sheriff 2022-02-03
-crbug.com/1293878 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Skip ]
+crbug.com/1293878 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure Pass ]
 crbug.com/1293965 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Skip ]
 crbug.com/1293965 [ Mac ] fast/forms/month/month-picker-appearance-step.html [ Skip ]
 crbug.com/1293965 [ Mac ] fast/forms/color-scheme/week-picker/week-picker-appearance-highlight-es.html [ Skip ]
