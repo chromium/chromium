@@ -5,6 +5,7 @@
 #ifndef CC_BASE_PROTECTED_SEQUENCE_SYNCHRONIZER_H_
 #define CC_BASE_PROTECTED_SEQUENCE_SYNCHRONIZER_H_
 
+#include <memory>
 #include <utility>
 
 namespace cc {
@@ -132,6 +133,87 @@ class ProtectedSequenceWritable {
 
  private:
   T value_;
+};
+
+// Type specializations for various containers.
+
+template <typename T>
+class ProtectedSequenceForbidden<std::unique_ptr<T>> {
+ public:
+  template <typename... Args>
+  explicit ProtectedSequenceForbidden(Args&&... args)
+      : value_(std::forward<Args>(args)...) {}
+
+  ProtectedSequenceForbidden(const ProtectedSequenceForbidden&) = delete;
+  ProtectedSequenceForbidden& operator=(const ProtectedSequenceForbidden&) =
+      delete;
+
+  const T* Read(const ProtectedSequenceSynchronizer& synchronizer) const {
+    DCHECK(synchronizer.IsOwnerThread());
+    return value_.get();
+  }
+
+  std::unique_ptr<T>& Write(const ProtectedSequenceSynchronizer& synchronizer) {
+    DCHECK(synchronizer.IsOwnerThread());
+    return value_;
+  }
+
+ private:
+  std::unique_ptr<T> value_;
+};
+
+template <typename T>
+class ProtectedSequenceReadable<std::unique_ptr<T>> {
+ public:
+  template <typename... Args>
+  explicit ProtectedSequenceReadable(Args&&... args)
+      : value_(std::forward<Args>(args)...) {}
+
+  ProtectedSequenceReadable(const ProtectedSequenceReadable&) = delete;
+  ProtectedSequenceReadable& operator=(const ProtectedSequenceReadable&) =
+      delete;
+
+  const T* Read(const ProtectedSequenceSynchronizer& synchronizer) const {
+    return value_.get();
+  }
+
+  std::unique_ptr<T>& Write(const ProtectedSequenceSynchronizer& synchronizer) {
+    DCHECK(synchronizer.IsOwnerThread());
+    synchronizer.WaitForProtectedSequenceCompletion();
+    return value_;
+  }
+
+ private:
+  std::unique_ptr<T> value_;
+};
+
+template <typename T>
+class ProtectedSequenceWritable<std::unique_ptr<T>> {
+ public:
+  template <typename... Args>
+  explicit ProtectedSequenceWritable(Args&&... args)
+      : value_(std::forward<Args>(args)...) {}
+
+  ProtectedSequenceWritable(const ProtectedSequenceWritable&) = delete;
+  ProtectedSequenceWritable& operator=(const ProtectedSequenceWritable&) =
+      delete;
+
+  const T* Read(const ProtectedSequenceSynchronizer& synchronizer) const {
+    DCHECK(synchronizer.IsOwnerThread() || synchronizer.InProtectedSequence());
+    if (synchronizer.IsOwnerThread())
+      synchronizer.WaitForProtectedSequenceCompletion();
+    return value_.get();
+  }
+
+  std::unique_ptr<T>& Write(const ProtectedSequenceSynchronizer& synchronizer) {
+    DCHECK(synchronizer.IsOwnerThread() || synchronizer.InProtectedSequence());
+    if (synchronizer.IsOwnerThread())
+      synchronizer.WaitForProtectedSequenceCompletion();
+    return value_;
+  }
+
+ private:
+  std::unique_ptr<T> value_;
 };
 
 }  // namespace cc

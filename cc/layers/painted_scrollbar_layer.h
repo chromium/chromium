@@ -52,12 +52,12 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
 
   // For unit tests
   UIResourceId track_resource_id() {
-    if (const auto& track_resource = track_resource_.Read(*this))
+    if (const auto* track_resource = track_resource_.Read(*this))
       return track_resource->id();
     return 0;
   }
   UIResourceId thumb_resource_id() {
-    if (const auto& thumb_resource = thumb_resource_.Read(*this))
+    if (const auto* thumb_resource = thumb_resource_.Read(*this))
       return thumb_resource->id();
     return 0;
   }

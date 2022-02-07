@@ -84,7 +84,7 @@ void PaintedOverlayScrollbarLayer::PushPropertiesTo(
     scrollbar_layer->SetTrackLength(track_rect_.Read(*this).height());
   }
 
-  if (thumb_resource_.Read(*this).get()) {
+  if (thumb_resource_.Read(*this)) {
     auto iter =
         commit_state.ui_resource_sizes.find(thumb_resource_.Read(*this)->id());
     gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
@@ -100,7 +100,7 @@ void PaintedOverlayScrollbarLayer::PushPropertiesTo(
     scrollbar_layer->set_thumb_ui_resource_id(0);
   }
 
-  if (track_resource_.Read(*this).get())
+  if (track_resource_.Read(*this))
     scrollbar_layer->set_track_ui_resource_id(
         track_resource_.Read(*this)->id());
   else

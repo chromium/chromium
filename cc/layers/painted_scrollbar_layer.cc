@@ -82,16 +82,18 @@ void PaintedScrollbarLayer::PushPropertiesTo(
     scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
   }
 
-  if (track_resource_.Read(*this).get())
+  if (track_resource_.Read(*this)) {
     scrollbar_layer->set_track_ui_resource_id(
         track_resource_.Read(*this)->id());
-  else
+  } else {
     scrollbar_layer->set_track_ui_resource_id(0);
-  if (thumb_resource_.Read(*this).get())
+  }
+  if (thumb_resource_.Read(*this)) {
     scrollbar_layer->set_thumb_ui_resource_id(
         thumb_resource_.Read(*this)->id());
-  else
+  } else {
     scrollbar_layer->set_thumb_ui_resource_id(0);
+  }
 
   scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_.Read(*this));
 

@@ -677,9 +677,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // display.
   virtual sk_sp<const SkPicture> GetPicture() const;
 
-  const LayerDebugInfo* debug_info() const {
-    return debug_info_.Read(*this).get();
-  }
+  const LayerDebugInfo* debug_info() const { return debug_info_.Read(*this); }
   LayerDebugInfo& EnsureDebugInfo();
   void ClearDebugInfo();
 
@@ -889,7 +887,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   const LayerTreeInputs* layer_tree_inputs() const;
 #else
   const LayerTreeInputs* layer_tree_inputs() const {
-    return layer_tree_inputs_.Read(*this).get();
+    return layer_tree_inputs_.Read(*this);
   }
 #endif
 

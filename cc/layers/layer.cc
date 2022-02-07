@@ -139,7 +139,7 @@ Layer::LayerTreeInputs& Layer::EnsureLayerTreeInputs() {
 #if DCHECK_IS_ON()
 const Layer::LayerTreeInputs* Layer::layer_tree_inputs() const {
   DCHECK(!IsAttached() || !IsUsingLayerLists());
-  return layer_tree_inputs_.Read(*this).get();
+  return layer_tree_inputs_.Read(*this);
 }
 #endif
 
@@ -276,7 +276,7 @@ void Layer::InsertChild(scoped_refptr<Layer> child, size_t index) {
 
   auto& inputs = inputs_.Write(*this);
   index = std::min(index, inputs.children.size());
-  const auto& layer_tree_inputs = layer_tree_inputs_.Read(*this);
+  const auto* layer_tree_inputs = layer_tree_inputs_.Read(*this);
   if (layer_tree_inputs && layer_tree_inputs->mask_layer && index &&
       index == inputs.children.size()) {
     // Ensure that the mask layer is always the last child.
@@ -294,7 +294,7 @@ void Layer::RemoveFromParent() {
 }
 
 void Layer::RemoveChild(Layer* child) {
-  const auto& layer_tree_inputs = layer_tree_inputs_.Read(*this);
+  const auto* layer_tree_inputs = layer_tree_inputs_.Read(*this);
   if (layer_tree_inputs && child == layer_tree_inputs->mask_layer)
     layer_tree_inputs_.Write(*this)->mask_layer = nullptr;
 
@@ -1363,7 +1363,7 @@ void Layer::ClearDebugInfo() {
 }
 
 std::string Layer::DebugName() const {
-  const auto& info = debug_info_.Read(*this);
+  const auto* info = debug_info_.Read(*this);
   return info ? info->name : "";
 }
 
@@ -1479,7 +1479,7 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   layer->SetNeedsPushProperties();
 
   // debug_info_->invalidations, if exist, will be cleared in the function.
-  layer->UpdateDebugInfo(debug_info_.Read(*this).get());
+  layer->UpdateDebugInfo(debug_info_.Write(*this).get());
 
   if (inputs.rare_inputs) {
     layer->SetNonFastScrollableRegion(

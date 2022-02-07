@@ -59,7 +59,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
   }
 
   const KeyframeEffect* keyframe_effect() const {
-    return keyframe_effect_.Read(*this).get();
+    return keyframe_effect_.Read(*this);
   }
 
   // Parent AnimationHost. Animation can be detached from AnimationTimeline.
