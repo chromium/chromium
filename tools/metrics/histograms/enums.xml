@@ -50084,6 +50084,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Cancelled due to omnibox navigation."/>
   <int value="4" label="Cancelled due to tab crash."/>
   <int value="5" label="Cancelled due to time out"/>
+  <int value="6" label="Empty selector"/>
 </enum>
 
 <enum name="LinkToTextShouldOfferResult">

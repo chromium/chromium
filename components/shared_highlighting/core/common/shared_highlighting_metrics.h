@@ -97,8 +97,9 @@ enum class LinkToTextReshareStatus {
   kOmniboxNavigation = 3,
   kTabCrash = 4,
   kTimeout = 5,
+  kEmptySelector = 6,
 
-  kMaxValue = kTimeout,
+  kMaxValue = kEmptySelector,
 };
 
 // Records the type of link generation that was copied on desktop.

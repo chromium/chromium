@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.share.link_to_text;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -15,7 +14,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -142,6 +140,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         return sb.toString();
     }
 
+    // TODO(http://crbug/1294855): Move canonical url request after renderer calls.
     private void startRequestSelector() {
         if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mShareUrl))) {
             completeRequestWithFailure(LinkGenerationError.BLOCK_LIST);
@@ -157,7 +156,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
-        requestSelectorForCanonicalUrl();
+        LinkToTextHelper.requestCanonicalUrl(mTab, this::onRequestSelectorForCanonicalUrl);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -179,6 +178,22 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void onReshareSelectorsRemoteRequestCompleted(String selectors) {
+        if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
+        if (selectors.isEmpty()) {
+            completeReshareWithFailure(LinkToTextReshareStatus.EMPTY_SELECTOR);
+            return;
+        }
+
+        LinkToTextHelper.requestCanonicalUrl(mTab, (canonicalUrl) -> {
+            if (!canonicalUrl.isEmpty()) {
+                mShareUrl = canonicalUrl;
+            }
+            reshareRequestCompleted(selectors);
+        });
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void reshareRequestCompleted(String selectors) {
         if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
 
         mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
@@ -254,30 +269,11 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         LinkToTextHelper.requestSelector(mProducer, this::onRemoteRequestCompleted);
     }
 
-    private void requestSelectorForCanonicalUrl() {
-        if (shouldRequestCanonicalUrl()) {
-            mTab.getWebContents().getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
-                @Override
-                public void onResult(GURL result) {
-                    if (!result.isEmpty()) {
-                        mShareUrl = result.getSpec();
-                    }
-                    requestSelector();
-                }
-            });
-        } else {
-            requestSelector();
+    private void onRequestSelectorForCanonicalUrl(String canonicalUrl) {
+        if (!canonicalUrl.isEmpty()) {
+            mShareUrl = canonicalUrl;
         }
-    }
-
-    private boolean shouldRequestCanonicalUrl() {
-        if (mTab.getWebContents() == null) return false;
-        if (mTab.getWebContents().getMainFrame() == null) return false;
-        if (mTab.getUrl().isEmpty()) return false;
-        if (mTab.isShowingErrorPage() || SadTab.isShowing(mTab)) {
-            return false;
-        }
-        return true;
+        requestSelector();
     }
 
     private void setTextFragmentReceiver() {

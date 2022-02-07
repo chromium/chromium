@@ -151,7 +151,7 @@ public class LinkToTextCoordinatorTest {
             void reshareHighlightedText() {
                 mLinkToTextCoordinator.mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
                 if (mIsRemoteRequestResultSet) {
-                    mLinkToTextCoordinator.onReshareSelectorsRemoteRequestCompleted(mSelector);
+                    mLinkToTextCoordinator.reshareRequestCompleted(mSelector);
                 }
             }
         });
