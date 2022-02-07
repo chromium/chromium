@@ -50,7 +50,12 @@ public class LightweightReactionsProgressDialog extends DialogFragment {
                 ApiCompatibilityUtils.getColor(resources, R.color.modern_grey_300));
         mProgressBar.setProgressColor(
                 ApiCompatibilityUtils.getColor(resources, R.color.modern_white));
+        mProgressBar.setContentDescription(
+                getActivity().getString(R.string.lightweight_reactions_creating_gif_announcement));
         mProgressPercentage = dialogView.findViewById(R.id.reactions_progress_percentage);
+        // Since the progress bar has a content description, the user does not need to be alerted
+        // every time the progress bar advances.
+        mProgressPercentage.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
         Button cancelButton = dialogView.findViewById(R.id.reactions_progress_cancel);
         cancelButton.setOnClickListener(mCancelListener);

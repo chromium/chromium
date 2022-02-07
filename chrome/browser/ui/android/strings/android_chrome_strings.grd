@@ -5160,6 +5160,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Creating GIF <ph name="PERCENT">%1$d<ex>13</ex></ph>%%
       </message>
 
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_CREATING_GIF_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility text to read when GIF creation begins.">
+        Creating GIF
+      </message>
+
       <message name="IDS_LIGHTWEIGHT_REACTIONS_TOOLBAR_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the lightweight reactions toolbar is selected. The user can then select a reaction from the toolbar to place on the screen.">
         Choose an emotion
       </message>
