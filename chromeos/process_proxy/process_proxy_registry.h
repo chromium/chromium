@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessProxyRegistry {
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
   // Starts new ProcessProxy (which starts new process).
-  // Returns true if the process is created sucessfully, false otherwise.
+  // Returns true if the process is created successfully, false otherwise.
   // The unique process id is passed back via |id|.
   bool OpenProcess(const base::CommandLine& cmdline,
                    const std::string& user_id_hash,
