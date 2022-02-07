@@ -228,18 +228,24 @@ absl::optional<bool> GetAllowNewUsers(
 }
 
 // Returns:
-// - an empty absl::optional if the user_allowlist outer wrapper message is
-//   not present
+// - an empty absl::optional if the user_allowlist and user_whitelist
+// outer wrapper message is not present.
 // - true if the user_allowlist outer wrapper message is present and the
-//   user_allowlist inner list is empty
+//   user_allowlist inner list is empty, or when it's not present,
+//   if the user_whitelist is non-empty.
 // - false if the user_allowlist outer wrapper message is present and the
-//   user_allowlist inner list has at least one element.
+//   user_allowlist inner list has at least one element, or when it's not
+//   present, and the user_whitelist has at least one element.
 absl::optional<bool> GetIsEmptyAllowList(
     const em::ChromeDeviceSettingsProto& policy) {
-  if (!policy.has_user_allowlist())
+  if (!policy.has_user_whitelist() && !policy.has_user_allowlist())
     return absl::nullopt;
-  return absl::optional<bool>{policy.user_allowlist().user_allowlist_size() ==
-                              0};
+  // use user_whitelist only if user_allowlist is not present
+  return !policy.has_user_allowlist()
+             ? absl::optional<bool>{policy.user_whitelist()
+                                        .user_whitelist_size() == 0}
+             : absl::optional<bool>{
+                   policy.user_allowlist().user_allowlist_size() == 0};
 }
 
 // Decodes the allow_new_users (DeviceAllowNewUsers) and user_allowlist

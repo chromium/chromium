@@ -263,6 +263,49 @@ TEST_F(CrosSettingsTest, ConsumerOwnedDefaultState) {
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(true));
 }
 
+// It's possible for the user_allowlist to be not present, and for the
+// user_whitelist to be present instead. This test simulates this by
+// doing something similar to the "RestrictSignInToAListOfUsers" test
+// but using user_whitelist instead
+TEST_F(CrosSettingsTest, WhitelistUsedWhenAllowlistNotPresent) {
+  // clear user_allowlist
+  device_policy_.payload().clear_user_allowlist();
+  // set non-empty user_whitelist
+  device_policy_.payload().mutable_user_whitelist()->add_user_whitelist(kOwner);
+  // Set allow_new_users to false.
+  device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
+      false);
+  StoreDevicePolicy();
+
+  // Expect the same - a non-empty allowlist and no new users allowed.
+  base::Value allowlist(base::Value::Type::LIST);
+  allowlist.Append(kOwner);
+  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
+}
+
+// In cases where both the user_allowlist and the user_whitelist are present,
+// we should use the user_allowlist. This test simulates this by
+// doing something similar to the "RestrictSignInToAListOfUsers" test
+// but providing both user_allowlist and user_whitelist, and asserting that
+// user_allowlist is being used.
+TEST_F(CrosSettingsTest, AllowlistUsedWhenAllowlistAndWhitelistPresent) {
+  // clear user_allowlist
+  device_policy_.payload().mutable_user_allowlist()->add_user_allowlist(kUser1);
+  // set non-empty user_whitelist
+  device_policy_.payload().mutable_user_whitelist()->add_user_whitelist(kOwner);
+  // Set allow_new_users to false.
+  device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
+      false);
+  StoreDevicePolicy();
+
+  // Expect the same - a non-empty allowlist and no new users allowed.
+  base::Value allowlist(base::Value::Type::LIST);
+  allowlist.Append(kUser1);
+  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
+}
+
 TEST_F(CrosSettingsTest, FindEmailInList) {
   auto* oss = CreateOwnerSettingsService(kOwner);
 
