@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
+#include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -171,6 +172,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(WebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegate,
+              (),
+              (override));
 };
 
 void CheckPendingCredentials(const PasswordForm& expected,
@@ -441,6 +446,11 @@ class PasswordFormManagerTest : public testing::Test,
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
 
+    ON_CALL(client_, GetWebAuthnCredentialsDelegate)
+        .WillByDefault(Return(&webauthn_credentials_delegate_));
+    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
+        .WillByDefault(Return(false));
+
     fetcher_ = std::make_unique<FakeFormFetcher>();
     fetcher_->Fetch();
   }
@@ -464,6 +474,7 @@ class PasswordFormManagerTest : public testing::Test,
   TestingPrefServiceSimple pref_service_;
   MockPasswordManagerClient client_;
   MockPasswordManagerDriver driver_;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
 
   // Define |fetcher_| before |form_manager_|, because the former needs to
   // outlive the latter.
@@ -1821,14 +1832,14 @@ TEST_P(PasswordFormManagerTest, UpdateFormWaitForServerPredictions) {
   EXPECT_CALL(driver_, FillPasswordForm).Times(0);
 
   // Wait half-delay time before updating form
-  task_environment_.FastForwardBy(kMaxFillingDelayForServerPredictions / 2);
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions / 2);
 
   // Updating form should cancel previous task for fill and start a new delayed
   // fill task for waiting server-side predictions
   form_manager_->FillForm(changed_form, {});
 
   // Fire the cancelled fill task should do nothing
-  task_environment_.FastForwardBy(kMaxFillingDelayForServerPredictions / 2);
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions / 2);
 
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));

@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -148,6 +147,21 @@ PasswordFormManager::PasswordFormManager(
   if (owned_form_fetcher_ &&
       !observed_form()->is_gaia_with_skip_save_password_form) {
     owned_form_fetcher_->Fetch();
+
+    WebAuthnCredentialsDelegate* delegate =
+        client_->GetWebAuthnCredentialsDelegate();
+    bool is_webauthn_autofill_enabled =
+        delegate && delegate->IsWebAuthnAutofillEnabled();
+
+    // The barrier closure is invoked by the WebAuthnCredentialsDelegate,
+    // if enabled, and by ProcessServerPredictions. A fill will trigger
+    // when both requests are satisfied.
+    async_predictions_waiter_.InitializeClosure(
+        is_webauthn_autofill_enabled ? 2 : 1);
+    if (is_webauthn_autofill_enabled) {
+      delegate->RetrieveWebAuthnSuggestions(
+          async_predictions_waiter_.closure());
+    }
   }
   votes_uploader_.StoreInitialFieldValues(*observed_form());
 }
@@ -643,13 +657,7 @@ PasswordFormManager::PasswordFormManager(
 
 void PasswordFormManager::DelayFillForServerSidePredictions() {
   waiting_for_server_predictions_ = true;
-
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordFormManager::Fill,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kMaxFillingDelayForServerPredictions);
+  async_predictions_waiter_.StartTimer();
 }
 
 void PasswordFormManager::OnFetchCompleted() {
@@ -681,6 +689,10 @@ void PasswordFormManager::OnFetchCompleted() {
   } else if (!waiting_for_server_predictions_) {
     DelayFillForServerSidePredictions();
   }
+}
+
+void PasswordFormManager::OnWaitCompleted() {
+  Fill();
 }
 
 void PasswordFormManager::CreatePendingCredentials() {
@@ -797,8 +809,15 @@ void PasswordFormManager::ProcessServerPredictions(
     return;
   }
   UpdatePredictionsForObservedForm(predictions);
-  if (parser_.predictions())
-    Fill();
+  if (parser_.predictions()) {
+    if (!async_predictions_waiter_.closure().is_null()) {
+      // Signals the availability of server predictions, but there might be
+      // other callbacks still outstanding.
+      async_predictions_waiter_.closure().Run();
+    } else {
+      Fill();
+    }
+  }
 }
 
 void PasswordFormManager::Fill() {
@@ -920,7 +939,8 @@ PasswordFormManager::PasswordFormManager(
       password_save_manager_(std::move(password_save_manager)),
       // TODO(https://crbug.com/831123): set correctly
       // |is_possible_change_password_form| in |votes_uploader_| constructor
-      votes_uploader_(client, false /* is_possible_change_password_form */) {
+      votes_uploader_(client, false /* is_possible_change_password_form */),
+      async_predictions_waiter_(this) {
   form_fetcher_->AddConsumer(this);
   if (!metrics_recorder_) {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(

@@ -26,15 +26,12 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
-
-// Filling timeout for waiting server predictions
-constexpr base::TimeDelta kMaxFillingDelayForServerPredictions =
-    base::Milliseconds(500);
 
 class PasswordFormMetricsRecorder;
 class PasswordManagerClient;
@@ -44,6 +41,7 @@ struct PossibleUsernameData;
 // This class helps with filling the observed form and with saving/updating the
 // stored information about it.
 class PasswordFormManager : public PasswordFormManagerForUI,
+                            public PasswordFormPredictionWaiter::Client,
                             public FormFetcher::Consumer {
  public:
   // TODO(crbug.com/621355): So far, |form_fetcher| can be null. In that case
@@ -261,6 +259,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // FormFetcher::Consumer:
   void OnFetchCompleted() override;
 
+  // PasswordFormPredictionWaiter::Client:
+  void OnWaitCompleted() override;
+
   // Create pending credentials from |parsed_submitted_form_| and forms received
   // from the password store.
   void CreatePendingCredentials();
@@ -337,8 +338,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const autofill::FormData& observed_form_data,
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
-  // Delays form filling by |kMaxFillingDelayForServerPredictions| while waiting
-  // for server-side predictions.
+  // Sets the timer on |async_predictions_waiter_| while waiting for
+  // server-side predictions.
   void DelayFillForServerSidePredictions();
 
   // The client which implements embedder-specific PasswordManager operations.
@@ -399,10 +400,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Time when stored credentials are received from the store. Used for metrics.
   base::TimeTicks received_stored_credentials_time_;
 
+  PasswordFormPredictionWaiter async_predictions_waiter_;
+
   // Used to transform FormData into PasswordForms.
   FormDataParser parser_;
-
-  base::WeakPtrFactory<PasswordFormManager> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

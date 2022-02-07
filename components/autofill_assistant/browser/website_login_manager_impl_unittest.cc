@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -55,15 +56,23 @@ class MockPasswordManagerClient
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_CONST_METHOD0(GetProfilePasswordStore,
-                     password_manager::PasswordStoreInterface*());
-  MOCK_CONST_METHOD0(GetAccountPasswordStore,
-                     password_manager::PasswordStoreInterface*());
-  MOCK_CONST_METHOD0(GetPasswordManager, PasswordManager*());
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetProfilePasswordStore,
+              (),
+              (const, override));
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetAccountPasswordStore,
+              (),
+              (const, override));
+  MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (const, override));
   MOCK_METHOD(bool,
               IsSavingAndFillingEnabled,
               (const GURL&),
               (const, override));
+  MOCK_METHOD(password_manager::MockWebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegate,
+              (),
+              (override));
 };
 
 FormData MakeFormDataWithPasswordField() {
@@ -181,6 +190,10 @@ class WebsiteLoginManagerImplTest : public testing::Test {
     password_manager_ = std::make_unique<PasswordManager>(&client_);
     ON_CALL(client_, GetPasswordManager())
         .WillByDefault(Return(password_manager_.get()));
+    ON_CALL(client_, GetWebAuthnCredentialsDelegate())
+        .WillByDefault(Return(&webauthn_credentials_delegate_));
+    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
+        .WillByDefault(Return(false));
   }
 
   password_manager::MockPasswordStoreInterface* store() {
@@ -197,6 +210,8 @@ class WebsiteLoginManagerImplTest : public testing::Test {
   testing::NiceMock<MockPasswordManagerClient> client_;
   std::unique_ptr<WebsiteLoginManagerImpl> manager_;
   std::unique_ptr<PasswordManager> password_manager_;
+  testing::NiceMock<password_manager::MockWebAuthnCredentialsDelegate>
+      webauthn_credentials_delegate_;
   password_manager::StubPasswordManagerDriver driver_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> account_store_;

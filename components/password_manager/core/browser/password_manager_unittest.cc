@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -150,6 +151,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
     ON_CALL(filter_, IsSyncAccountEmail(_)).WillByDefault(Return(false));
     ON_CALL(*this, IsNewTabPage()).WillByDefault(Return(false));
     ON_CALL(*this, IsAutofillAssistantUIVisible()).WillByDefault(Return(false));
+
+    ON_CALL(*this, GetWebAuthnCredentialsDelegate)
+        .WillByDefault(Return(&webauthn_credentials_delegate_));
+    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
+        .WillByDefault(Return(false));
   }
 
   MOCK_METHOD(bool,
@@ -210,6 +216,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (const, override));
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+  MOCK_METHOD(WebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegate,
+              (),
+              (override));
 
   // Workaround for std::unique_ptr<> lacking a copy constructor.
   bool PromptUserToSaveOrUpdatePassword(
@@ -240,6 +250,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
  private:
   mutable FakeNetworkContext network_context_;
   testing::NiceMock<MockStoreResultFilter> filter_;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
 };
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -3880,7 +3891,9 @@ TEST_P(PasswordManagerTest,
     EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr);
     EXPECT_CALL(client_, IsSavingAndFillingEnabled)
         .WillRepeatedly(Return(true));
+
     manager()->OnPasswordFormsParsed(&driver_, {form2.form_data});
+
     OnPasswordFormSubmitted(form2.form_data);
     manager()->OnPasswordFormsRendered(&driver_, {} /* observed */,
                                        true /* did stop loading */);

@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -56,6 +57,9 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     prefs_->registry()->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
     prefs_->SetString(prefs::kPasswordProtectionChangePasswordURL,
                       kEnterpriseURL);
+
+    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
+        .WillByDefault(testing::Return(false));
   }
 
   FakePasswordManagerClient(const FakePasswordManagerClient&) = delete;
@@ -76,6 +80,9 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   signin::IdentityManager* GetIdentityManager() override {
     return identity_manager_;
   }
+  MockWebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegate() override {
+    return &webauthn_credentials_delegate_;
+  }
 
   void set_last_committed_entry_url(base::StringPiece url_spec) {
     last_committed_origin_ = url::Origin::Create(GURL(url_spec));
@@ -91,6 +98,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   url::Origin last_committed_origin_;
   scoped_refptr<testing::NiceMock<MockPasswordStoreInterface>> password_store_ =
       new testing::NiceMock<MockPasswordStoreInterface>;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
   bool is_incognito_ = false;
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;

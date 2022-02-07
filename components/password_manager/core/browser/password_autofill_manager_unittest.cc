@@ -33,6 +33,7 @@
 #include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -84,6 +85,7 @@ using testing::Field;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRef;
 using testing::SizeIs;
 using testing::Unused;
 
@@ -107,19 +109,6 @@ constexpr char kDropdownShownHistogram[] =
 constexpr char kCredentialsCountFromAccountStoreAfterUnlockHistogram[] =
     "PasswordManager.CredentialsCountFromAccountStoreAfterUnlock";
 const gfx::Image kTestFavicon = gfx::test::CreateImage(16, 16);
-
-class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
- public:
-  MOCK_METHOD(bool, IsWebAuthnAutofillEnabled, (), (const, override));
-  MOCK_METHOD(void,
-              SelectWebAuthnCredential,
-              (std::string backend_id),
-              (override));
-  MOCK_METHOD(std::vector<autofill::Suggestion>,
-              GetWebAuthnSuggestions,
-              (),
-              (const override));
-};
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
@@ -323,6 +312,13 @@ class PasswordAutofillManagerTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(client);
     // Suppress the warnings in the tests.
     EXPECT_CALL(*client, GetFaviconService()).WillRepeatedly(Return(nullptr));
+
+    webauthn_credentials_delegate_ =
+        std::make_unique<MockWebAuthnCredentialsDelegate>();
+    ON_CALL(*client, GetWebAuthnCredentialsDelegate)
+        .WillByDefault(Return(webauthn_credentials_delegate_.get()));
+    ON_CALL(*webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
+        .WillByDefault(Return(false));
   }
 
   autofill::PasswordFormFillData CreateTestFormFillData() {
@@ -355,6 +351,9 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   scoped_refptr<device_reauth::MockBiometricAuthenticator> authenticator_ =
       base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+
+  std::unique_ptr<MockWebAuthnCredentialsDelegate>
+      webauthn_credentials_delegate_;
 
   std::u16string test_username_;
   std::u16string test_password_;
@@ -1803,8 +1802,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       .WillByDefault(Return(true));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegate)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
+  auto webauthn_credential_list =
+      std::vector<autofill::Suggestion>{webauthn_credential};
   EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
-      .WillOnce(Return(std::vector<autofill::Suggestion>{webauthn_credential}));
+      .WillOnce(ReturnRef(webauthn_credential_list));
 
   // Show password suggestions including WebAuthn credentials.
   autofill::AutofillClient::PopupOpenArgs open_args;
