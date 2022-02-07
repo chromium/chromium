@@ -20,6 +20,7 @@ import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './add_languages_dialog.html.js';
 
 export interface SettingsAddLanguagesDialogElement {
   $: {
@@ -51,7 +52,7 @@ export class SettingsAddLanguagesDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

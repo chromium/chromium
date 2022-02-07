@@ -13,6 +13,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
+import {getTemplate} from './do_not_track_toggle.html.js';
+
 export interface SettingsDoNotTrackToggleElement {
   $: {
     toggle: SettingsToggleButtonElement,
@@ -25,7 +27,7 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

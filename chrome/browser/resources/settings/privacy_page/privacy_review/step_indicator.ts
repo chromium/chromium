@@ -9,6 +9,7 @@
  */
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './step_indicator.html.js';
 
 const StepIndicatorBase = I18nMixin(PolymerElement);
 
@@ -67,7 +68,7 @@ export class StepIndicator extends StepIndicatorBase {
 
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 

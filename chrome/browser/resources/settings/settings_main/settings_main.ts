@@ -28,6 +28,8 @@ import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
+import {getTemplate} from './settings_main.html.js';
+
 type MainPageVisibility = {
   about: boolean,
   settings: boolean,
@@ -48,7 +50,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -24,6 +24,7 @@ import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 
 import {PrivacyReviewStep} from './constants.js';
+import {getTemplate} from './privacy_review_history_sync_fragment.html.js';
 
 export interface PrivacyReviewHistorySyncFragmentElement {
   $: {
@@ -44,7 +45,7 @@ export class PrivacyReviewHistorySyncFragmentElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -25,6 +25,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ChooserType, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {getTemplate} from './site_list_entry.html.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {SiteException} from './site_settings_prefs_browser_proxy.js';
 
@@ -46,7 +47,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

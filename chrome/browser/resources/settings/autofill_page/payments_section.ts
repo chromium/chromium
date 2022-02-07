@@ -33,6 +33,7 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_br
 
 import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
 import {PaymentsManagerImpl, PaymentsManagerProxy} from './payments_manager_proxy.js';
+import {getTemplate} from './payments_section.html.js';
 
 
 type DotsCardMenuiClickEvent = CustomEvent<{
@@ -71,7 +72,7 @@ export class SettingsPaymentsSectionElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

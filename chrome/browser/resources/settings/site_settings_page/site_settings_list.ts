@@ -20,6 +20,8 @@ import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
+import {getTemplate} from './site_settings_list.html.js';
+
 export type CategoryListItem = {
   route: Route,
   id: ContentSettingsTypes,
@@ -57,7 +59,7 @@ class SettingsSiteSettingsListElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -18,6 +18,7 @@ import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from '../controls/cr_poli
 import {PrefControlMixin} from '../controls/pref_control_mixin.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
+import {getTemplate} from './home_url_input.html.js';
 
 export interface HomeUrlInputElement {
   $: {
@@ -35,7 +36,7 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

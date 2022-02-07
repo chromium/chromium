@@ -23,6 +23,7 @@ import {html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
+import {getTemplate} from './signout_dialog.html.js';
 import {SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export interface SettingsSignoutDialogElement {
@@ -41,7 +42,7 @@ export class SettingsSignoutDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -22,6 +22,8 @@ import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from '../site_settings/site_settings_mixin.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
+import {getTemplate} from './recent_site_permissions.html.js';
+
 type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsRecentSitePermissionsElement {
@@ -45,7 +47,7 @@ export class SettingsRecentSitePermissionsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

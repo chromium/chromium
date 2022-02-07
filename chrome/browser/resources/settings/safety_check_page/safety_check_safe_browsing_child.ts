@@ -18,6 +18,7 @@ import {Router} from '../router.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckSafeBrowsingStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
+import {getTemplate} from './safety_check_safe_browsing_child.html.js';
 
 type SafeBrowsingChangedEvent = {
   newState: SafetyCheckSafeBrowsingStatus,
@@ -34,7 +35,7 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

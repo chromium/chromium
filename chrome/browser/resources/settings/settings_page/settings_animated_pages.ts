@@ -18,7 +18,6 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-
 // <if expr="chromeos">
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 // </if>
@@ -27,10 +26,11 @@ import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.j
 import {DomIf, FlattenedNodesObserver, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
-
 // <if expr="chromeos">
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 // </if>
+
+import {getTemplate} from './settings_animated_pages.html.js';
 
 import {SettingsSubpageElement} from './settings_subpage.js';
 
@@ -51,7 +51,7 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

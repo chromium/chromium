@@ -36,6 +36,7 @@ import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
+import {getTemplate} from './passwords_list_handler.html.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -64,7 +65,7 @@ export class PasswordsListHandlerElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

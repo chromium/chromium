@@ -20,9 +20,9 @@ import './safety_check_extensions_child.js';
 import './safety_check_passwords_child.js';
 import './safety_check_safe_browsing_child.js';
 import './safety_check_updates_child.js';
-
 // <if expr="_google_chrome and is_win">
 import './safety_check_chrome_cleaner_child.js';
+
 // </if>
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -31,10 +31,11 @@ import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polym
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
-
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+
 import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
+import {getTemplate} from './safety_check_page.html.js';
 
 type ParentChangedEvent = {
   newState: SafetyCheckParentStatus,
@@ -51,7 +52,7 @@ export class SettingsSafetyCheckPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

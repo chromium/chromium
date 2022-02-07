@@ -17,13 +17,15 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {loadTimeData} from '../i18n_setup.js';
 
+import {getTemplate} from './payments_list.html.js';
+
 class SettingsPaymentsListElement extends PolymerElement {
   static get is() {
     return 'settings-payments-list';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

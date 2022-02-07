@@ -59,6 +59,7 @@ import {PasswordCheckMixin} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
+import {getTemplate} from './passwords_section.html.js';
 
 /**
  * Checks if an HTML element is an editable. An editable is either a text
@@ -92,7 +93,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

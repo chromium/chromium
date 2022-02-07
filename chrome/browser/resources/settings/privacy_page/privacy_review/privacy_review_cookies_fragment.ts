@@ -19,6 +19,8 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
+import {getTemplate} from './privacy_review_cookies_fragment.html.js';
+
 const PrivacyReviewCookiesFragmentBase = PrefsMixin(PolymerElement);
 
 export class PrivacyReviewCookiesFragmentElement extends
@@ -28,7 +30,7 @@ export class PrivacyReviewCookiesFragmentElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

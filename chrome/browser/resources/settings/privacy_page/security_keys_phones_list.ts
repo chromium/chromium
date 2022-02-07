@@ -13,7 +13,9 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {SecurityKeysPhone} from './security_keys_browser_proxy.js';
+import {getTemplate} from './security_keys_phones_list.html.js';
 
 class SecurityKeysPhonesListElement extends PolymerElement {
   static get is() {
@@ -21,7 +23,7 @@ class SecurityKeysPhonesListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

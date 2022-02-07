@@ -12,6 +12,8 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
+import {getTemplate} from './extension_controlled_indicator.html.js';
+
 const ExtensionControlledIndicatorElementBase = I18nMixin(PolymerElement);
 
 export class ExtensionControlledIndicatorElement extends
@@ -21,7 +23,7 @@ export class ExtensionControlledIndicatorElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

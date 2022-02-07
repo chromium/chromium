@@ -31,6 +31,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
+import {getTemplate} from './search_engines_page.html.js';
 
 type SearchEngineEditEvent = CustomEvent<{
   engine: SearchEngine,
@@ -61,7 +62,7 @@ export class SettingsSearchEnginesPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

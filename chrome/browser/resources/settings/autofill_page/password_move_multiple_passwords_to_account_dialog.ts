@@ -19,6 +19,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {getTemplate} from './password_move_multiple_passwords_to_account_dialog.html.js';
 import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
 
 export interface PasswordMoveMultiplePasswordsToAccountDialogElement {
@@ -36,7 +37,7 @@ export class PasswordMoveMultiplePasswordsToAccountDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

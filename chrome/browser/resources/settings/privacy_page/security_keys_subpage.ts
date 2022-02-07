@@ -21,6 +21,8 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {getTemplate} from './security_keys_subpage.html.js';
+
 interface SecurityKeysSubpageElement {
   $: {
     setPINButton: HTMLElement,
@@ -34,7 +36,7 @@ class SecurityKeysSubpageElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

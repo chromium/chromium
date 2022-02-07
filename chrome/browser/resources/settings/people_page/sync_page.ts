@@ -19,9 +19,9 @@ import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
-
 // <if expr="not chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+
 // </if>
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
@@ -29,7 +29,6 @@ import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from '//resources/js/web_ui_listener_mixin.js';
-
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
@@ -45,6 +44,8 @@ import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPr
 // <if expr="chromeos">
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>
+
+import {getTemplate} from './sync_page.html.js';
 
 // TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
 // Settings.
@@ -86,7 +87,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

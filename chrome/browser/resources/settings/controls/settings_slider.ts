@@ -18,6 +18,7 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {loadTimeData} from '../i18n_setup.js';
 
 import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
+import {getTemplate} from './settings_slider.html.js';
 
 export interface SettingsSliderElement {
   $: {
@@ -33,7 +34,7 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

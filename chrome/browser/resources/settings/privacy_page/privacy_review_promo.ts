@@ -14,6 +14,8 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {getTemplate} from './privacy_review_promo.html.js';
+
 const PrivacyReviewPromoElementBase = PrefsMixin(PolymerElement);
 
 export class PrivacyReviewPromoElement extends PrivacyReviewPromoElementBase {
@@ -22,7 +24,7 @@ export class PrivacyReviewPromoElement extends PrivacyReviewPromoElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

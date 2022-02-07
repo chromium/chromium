@@ -11,6 +11,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from './lifetime_browser_proxy.js';
+import {getTemplate} from './relaunch_confirmation_dialog.html.js';
 import {RestartType} from './relaunch_mixin.js';
 
 export interface RelaunchConfirmationDialogElement {
@@ -46,7 +47,7 @@ export class RelaunchConfirmationDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

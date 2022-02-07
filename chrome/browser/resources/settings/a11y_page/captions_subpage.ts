@@ -21,6 +21,8 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
+import {getTemplate} from './captions_subpage.html.js';
+
 const SettingsCaptionsElementBase = PrefsMixin(PolymerElement);
 
 class SettingsCaptionsElement extends SettingsCaptionsElementBase {
@@ -29,7 +31,7 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

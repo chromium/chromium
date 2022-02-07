@@ -19,6 +19,7 @@ import {Router} from '../router.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
+import {getTemplate} from './safety_check_chrome_cleaner_child.html.js';
 
 type ChromeCleanerChangedEvent = {
   newState: SafetyCheckChromeCleanerStatus,
@@ -35,7 +36,7 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

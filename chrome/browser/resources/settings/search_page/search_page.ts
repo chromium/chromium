@@ -28,6 +28,8 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
 
+import {getTemplate} from './search_page.html.js';
+
 const SettingsSearchPageElementBase = BaseMixin(I18nMixin(PolymerElement));
 
 export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
@@ -36,7 +38,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

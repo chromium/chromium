@@ -21,6 +21,7 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
 import {PrefControlMixin} from './pref_control_mixin.js';
+import {getTemplate} from './settings_radio_group.html.js';
 
 const SettingsRadioGroupElementBase = PrefControlMixin(PolymerElement);
 
@@ -30,7 +31,7 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

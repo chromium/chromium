@@ -23,7 +23,6 @@ import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
-
 // <if expr="chromeos_ash or chromeos_lacros">
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 // </if>
@@ -34,6 +33,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
+import {getTemplate} from './security_page.html.js';
 
 /**
  * Enumeration of all safe browsing modes. Must be kept in sync with the enum
@@ -72,7 +72,7 @@ export class SettingsSecurityPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

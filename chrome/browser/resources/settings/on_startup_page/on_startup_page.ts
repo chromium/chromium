@@ -19,6 +19,7 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NtpExtension, OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
+import {getTemplate} from './on_startup_page.html.js';
 
 
 /** Enum values for the 'session.restore_on_startup' preference. */
@@ -38,7 +39,7 @@ export class SettingsOnStartupPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -18,6 +18,7 @@ import '../relaunch_confirmation_dialog.js';
 import '../settings_shared_css.js';
 // <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+
 // </if>
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -32,6 +33,7 @@ import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
+import {getTemplate} from './personalization_options.html.js';
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 
@@ -54,7 +56,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

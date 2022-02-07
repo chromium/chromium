@@ -22,6 +22,7 @@ import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v
 
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
+import {getTemplate} from './zoom_levels.html.js';
 
 export interface ZoomLevelsElement {
   $: {
@@ -40,7 +41,7 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

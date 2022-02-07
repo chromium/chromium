@@ -50,6 +50,7 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
+import {getTemplate} from './languages_subpage.html.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
 
 /**
@@ -615,7 +616,7 @@ export class SettingsLanguagesSubpageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 

@@ -23,6 +23,7 @@ import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
 import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 import {PrefControlMixin} from './pref_control_mixin.js';
+import {getTemplate} from './settings_dropdown_menu.html.js';
 
 /**
  * The |name| is shown in the gui.  The |value| us use to set or compare with
@@ -51,7 +52,7 @@ export class SettingsDropdownMenuElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

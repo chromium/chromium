@@ -39,6 +39,8 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {SettingsMainElement} from '../settings_main/settings_main.js';
 import {SettingsMenuElement} from '../settings_menu/settings_menu.js';
 
+import {getTemplate} from './settings_ui.html.js';
+
 declare global {
   interface HTMLElementEventMap {
     'refresh-pref': CustomEvent<string>;
@@ -73,7 +75,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

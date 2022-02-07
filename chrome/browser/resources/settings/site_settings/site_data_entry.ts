@@ -22,6 +22,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
 import {LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
+import {getTemplate} from './site_data_entry.html.js';
 
 const SiteDataEntryElementBase =
     mixinBehaviors([FocusRowBehavior], I18nMixin(PolymerElement)) as
@@ -33,7 +34,7 @@ class SiteDataEntryElement extends SiteDataEntryElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

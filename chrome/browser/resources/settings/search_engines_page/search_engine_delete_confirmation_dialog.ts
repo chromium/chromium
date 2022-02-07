@@ -16,6 +16,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {loadTimeData} from '../i18n_setup.js';
 
+import {getTemplate} from './search_engine_delete_confirmation_dialog.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
 export interface SettingsSearchEngineDeleteConfirmationDialogElement {
@@ -36,7 +37,7 @@ export class SettingsSearchEngineDeleteConfirmationDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

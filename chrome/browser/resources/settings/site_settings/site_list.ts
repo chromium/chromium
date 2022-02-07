@@ -29,9 +29,11 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 // <if expr="chromeos">
 import {loadTimeData} from '../i18n_setup.js';
+
 import {AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './android_info_browser_proxy.js';
 // </if>
 import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
+import {getTemplate} from './site_list.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
@@ -53,7 +55,7 @@ export class SiteListElement extends SiteListElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

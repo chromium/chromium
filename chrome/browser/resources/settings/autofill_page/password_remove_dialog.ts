@@ -25,6 +25,7 @@ import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {getTemplate} from './password_remove_dialog.html.js';
 
 export type PasswordRemoveDialogPasswordsRemovedEvent =
     CustomEvent<{removedFromAccount: boolean, removedFromDevice: boolean}>;
@@ -43,7 +44,7 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

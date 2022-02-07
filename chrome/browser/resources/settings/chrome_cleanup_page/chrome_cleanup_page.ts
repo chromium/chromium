@@ -22,6 +22,8 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
+
+import {getTemplate} from './chrome_cleanup_page.html.js';
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
 import {ChromeCleanupRemovalListItem} from './items_to_remove_list.js';
 
@@ -133,7 +135,7 @@ export class SettingsChromeCleanupPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -25,6 +25,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SecurityKeysPINBrowserProxy, SecurityKeysPINBrowserProxyImpl} from './security_keys_browser_proxy.js';
+import {getTemplate} from './security_keys_set_pin_dialog.html.js';
 
 export enum SetPINDialogPage {
   INITIAL = 'initial',
@@ -58,7 +59,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

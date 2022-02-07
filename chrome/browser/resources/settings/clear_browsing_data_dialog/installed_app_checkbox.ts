@@ -15,6 +15,7 @@ import '../site_favicon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InstalledApp} from './clear_browsing_data_browser_proxy.js';
+import {getTemplate} from './installed_app_checkbox.html.js';
 
 class InstalledAppCheckboxElement extends PolymerElement {
   static get is() {
@@ -22,7 +23,7 @@ class InstalledAppCheckboxElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

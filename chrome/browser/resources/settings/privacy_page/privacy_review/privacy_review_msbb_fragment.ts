@@ -17,6 +17,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
+import {getTemplate} from './privacy_review_msbb_fragment.html.js';
+
 const PrivacyReviewMsbbFragmentBase = PrefsMixin(PolymerElement);
 
 export class PrivacyReviewMsbbFragmentElement extends
@@ -26,7 +28,7 @@ export class PrivacyReviewMsbbFragmentElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

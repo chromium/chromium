@@ -37,6 +37,7 @@ import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.j
 import {CookiePrimarySetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
+import {getTemplate} from './cookies_page.html.js';
 
 /**
  * Must be kept in sync with the C++ enum of the same name (see
@@ -77,7 +78,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

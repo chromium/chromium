@@ -18,6 +18,7 @@ import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {loadTimeData} from '../i18n_setup.js';
 
+import {getTemplate} from './search_engine_edit_dialog.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
 export interface SettingsSearchEngineEditDialogElement {
@@ -41,7 +42,7 @@ export class SettingsSearchEngineEditDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

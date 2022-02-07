@@ -16,9 +16,11 @@ import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.m.js'
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="chromeos">
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+
 // </if>
 
 import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
+import {getTemplate} from './settings_toggle_button.html.js';
 
 
 export interface SettingsToggleButtonElement {
@@ -38,7 +40,7 @@ export class SettingsToggleButtonElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -46,6 +46,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 
+import {getTemplate} from './password_check.html.js';
 import {PasswordCheckListItemElement} from './password_check_list_item.js';
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {PasswordCheckInteraction, SavedPasswordListChangedListener} from './password_manager_proxy.js';
@@ -73,7 +74,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -19,6 +19,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {CookieDataForDisplay, CookieDetails, getCookieData} from './cookie_info.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
+import {getTemplate} from './site_data_details_subpage.html.js';
 
 
 const categoryLabels: {[key: string]: string} = {
@@ -49,7 +50,7 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

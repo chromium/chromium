@@ -13,6 +13,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
+import {getTemplate} from './appearance_fonts_page.html.js';
 import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './fonts_browser_proxy.js';
 
 
@@ -49,7 +50,7 @@ export class SettingsAppearanceFontsPageElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

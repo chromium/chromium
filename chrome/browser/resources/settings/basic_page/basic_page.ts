@@ -46,6 +46,8 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {getSearchManager, SearchResult} from '../search_settings.js';
 import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_mixin.js';
 
+import {getTemplate} from './basic_page.html.js';
+
 // <if expr="chromeos_ash or chromeos_lacros">
 const OS_BANNER_INTERACTION_METRIC_NAME =
     'ChromeOS.Settings.OsBannerInteraction';
@@ -81,7 +83,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

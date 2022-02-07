@@ -27,6 +27,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route} from '../router.js';
 
+import {getTemplate} from './edit_dictionary_page.html.js';
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 
 // Max valid word size defined in
@@ -53,7 +54,7 @@ export class SettingsEditDictionaryPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

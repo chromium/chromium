@@ -22,6 +22,7 @@ import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_browser_proxy.js';
+import {getTemplate} from './downloads_page.html.js';
 
 type AccountInfo = {
   linked: boolean,
@@ -39,7 +40,7 @@ export class SettingsDownloadsPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

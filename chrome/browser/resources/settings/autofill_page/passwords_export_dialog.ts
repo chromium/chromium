@@ -21,6 +21,7 @@ import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
+import {getTemplate} from './passwords_export_dialog.html.js';
 
 
 /**
@@ -55,7 +56,7 @@ export class PasswordsExportDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

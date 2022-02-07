@@ -21,6 +21,8 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} 
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 
+import {getTemplate} from './privacy_review_completion_fragment.html.js';
+
 const PrivacyReviewCompletionFragmentElementBase =
     WebUIListenerMixin(PolymerElement);
 
@@ -31,7 +33,7 @@ export class PrivacyReviewCompletionFragmentElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

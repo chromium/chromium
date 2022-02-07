@@ -17,6 +17,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ResetBrowserProxyImpl} from './reset_browser_proxy.js';
+import {getTemplate} from './reset_profile_banner.html.js';
 
 export interface SettingsResetProfileBannerElement {
   $: {
@@ -32,7 +33,7 @@ export class SettingsResetProfileBannerElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   connectedCallback() {

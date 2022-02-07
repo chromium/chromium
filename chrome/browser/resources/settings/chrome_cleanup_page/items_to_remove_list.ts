@@ -9,6 +9,7 @@ import '../settings_shared_css.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
+import {getTemplate} from './items_to_remove_list.html.js';
 
 /**
  * For each line in the item list, the text field will be shown in normal
@@ -51,7 +52,7 @@ export class ItemsToRemoveListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

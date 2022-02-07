@@ -21,6 +21,8 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
+import {getTemplate} from './live_caption_section.html.js';
+
 
 /**
  * |name| is the display name of a language, ex. German.
@@ -45,7 +47,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

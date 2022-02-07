@@ -325,51 +325,64 @@ preprocess_if_expr("copy_browser_settings_tsc") {
   in_folder = "$root_gen_dir/chrome/browser/resources/settings/tsc"
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$browser_settings_tsc_manifest"
-  in_files = [
+
+  # Files that have a corresponding HTML wrapper file.
+  settings_web_component_files = [
     "a11y_page/captions_subpage.js",
     "a11y_page/live_caption_section.js",
-    "appearance_page/fonts_browser_proxy.js",
     "controls/controlled_button.js",
     "controls/controlled_radio_button.js",
-    "controls/cr_policy_pref_mixin.js",
     "controls/extension_controlled_indicator.js",
     "controls/password_prompt_dialog.js",
-    "controls/pref_control_mixin.js",
-    "controls/settings_boolean_control_mixin.js",
     "controls/settings_dropdown_menu.js",
     "controls/settings_radio_group.js",
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
+    "people_page/signout_dialog.js",
+    "people_page/sync_account_control.js",
+    "people_page/sync_controls.js",
+    "people_page/sync_encryption_options.js",
+    "people_page/sync_page.js",
+    "privacy_page/personalization_options.js",
+    "privacy_page/secure_dns_input.js",
+    "privacy_page/secure_dns.js",
+    "settings_page/settings_animated_pages.js",
+    "settings_page/settings_section.js",
+    "settings_page/settings_subpage.js",
+  ]
+
+  in_files = [
+    # Files that don't have a corresponding HTML file.
+    "appearance_page/fonts_browser_proxy.js",
+    "controls/cr_policy_pref_mixin.js",
+    "controls/pref_control_mixin.js",
+    "controls/settings_boolean_control_mixin.js",
     "extension_control_browser_proxy.js",
     "i18n_setup.js",
     "icons.js",
     "lifetime_browser_proxy.js",
     "open_window_proxy.js",
     "people_page/profile_info_browser_proxy.js",
-    "people_page/signout_dialog.js",
-    "people_page/sync_account_control.js",
     "people_page/sync_browser_proxy.js",
-    "people_page/sync_controls.js",
-    "people_page/sync_encryption_options.js",
-    "people_page/sync_page.js",
     "prefs/prefs.js",
     "prefs/prefs_mixin.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
-    "privacy_page/personalization_options.js",
     "privacy_page/privacy_page_browser_proxy.js",
-    "privacy_page/secure_dns_input.js",
-    "privacy_page/secure_dns.js",
     "relaunch_mixin.js",
     "setting_id_param_util.js",
     "settings_page_css.js",
-    "settings_page/settings_animated_pages.js",
-    "settings_page/settings_section.js",
-    "settings_page/settings_subpage.js",
     "settings_shared_css.js",
     "settings_vars_css.js",
   ]
+
+  foreach(f, settings_web_component_files) {
+    in_files += [
+      f,
+      string_replace(f, ".js", ".html.js"),
+    ]
+  }
 }
 
 preprocess_if_expr("preprocess_gen_v3") {
@@ -819,7 +832,8 @@ group("polymer3_elements") {
     ":os_settings_icons_css_module",
 
     # Shared with browser settings
-    "..:web_components",
+    "..:css_wrapper_files",
+    "..:html_wrapper_files",
   ]
 }
 

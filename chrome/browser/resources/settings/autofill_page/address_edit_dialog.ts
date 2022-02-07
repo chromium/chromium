@@ -25,6 +25,8 @@ import {flush, html, microTask, PolymerElement} from 'chrome://resources/polymer
 
 import {loadTimeData} from '../i18n_setup.js';
 
+import {getTemplate} from './address_edit_dialog.html.js';
+
 export interface SettingsAddressEditDialogElement {
   $: {
     dialog: CrDialogElement,
@@ -44,7 +46,7 @@ export class SettingsAddressEditDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

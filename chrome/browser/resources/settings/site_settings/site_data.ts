@@ -33,6 +33,7 @@ import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
+import {getTemplate} from './site_data.html.js';
 
 type FocusConfig = Map<string, string|(() => void)>;
 
@@ -59,7 +60,7 @@ class SiteDataElement extends SiteDataElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

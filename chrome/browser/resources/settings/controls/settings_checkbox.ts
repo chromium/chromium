@@ -14,6 +14,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
+import {getTemplate} from './settings_checkbox.html.js';
 
 export interface SettingsCheckboxElement {
   $: {
@@ -30,7 +31,7 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

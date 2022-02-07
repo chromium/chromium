@@ -22,6 +22,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {Route, Router} from '../router.js';
 
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from './sync_browser_proxy.js';
+import {getTemplate} from './sync_controls.html.js';
 
 /**
  * Names of the radio buttons which allow the user to choose their data sync
@@ -46,7 +47,7 @@ export class SettingsSyncControlsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

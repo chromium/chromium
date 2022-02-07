@@ -29,6 +29,8 @@ import {loadTimeData} from '../i18n_setup.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 
+import {getTemplate} from './settings_subpage.html.js';
+
 export interface SettingsSubpageElement {
   $: {
     closeButton: HTMLElement,
@@ -286,7 +288,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 

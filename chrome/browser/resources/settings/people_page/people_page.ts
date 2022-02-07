@@ -43,6 +43,8 @@ import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router
 // <if expr="chromeos">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 // </if>
+
+import {getTemplate} from './people_page.html.js';
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
@@ -67,7 +69,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -26,6 +26,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {PageVisibility} from '../page_visibility.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
+import {getTemplate} from './settings_menu.html.js';
+
 export interface SettingsMenuElement {
   $: {
     autofill: HTMLLinkElement,
@@ -46,7 +48,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -27,6 +27,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {getTemplate} from './sync_account_control.html.js';
 import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export const MAX_SIGNIN_PROMO_IMPRESSION: number = 10;
@@ -47,7 +48,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

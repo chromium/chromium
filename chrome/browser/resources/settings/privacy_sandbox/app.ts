@@ -14,6 +14,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 // with |optimize_webui="true"|.
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
+import {getTemplate} from './app.html.js';
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 
 const PrivacySandboxAppElementBase = PrefsMixin(PolymerElement);
@@ -24,7 +25,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

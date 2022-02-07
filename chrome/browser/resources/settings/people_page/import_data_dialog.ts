@@ -27,6 +27,7 @@ import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './import_data_browser_proxy.js';
+import {getTemplate} from './import_data_dialog.html.js';
 
 export interface SettingsImportDataDialogElement {
   $: {
@@ -49,7 +50,7 @@ export class SettingsImportDataDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -36,6 +36,7 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
+import {getTemplate} from './site_details.html.js';
 import {SiteDetailsPermissionElement} from './site_details_permission.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './website_usage_browser_proxy.js';
@@ -64,7 +65,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

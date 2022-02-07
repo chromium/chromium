@@ -17,6 +17,7 @@ import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckExtensionsStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
+import {getTemplate} from './safety_check_extensions_child.html.js';
 
 type ExtensionsChangedEvent = {
   newState: SafetyCheckExtensionsStatus,
@@ -33,7 +34,7 @@ export class SettingsSafetyCheckExtensionsChildElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

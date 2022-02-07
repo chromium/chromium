@@ -19,6 +19,8 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 
+import {getTemplate} from './privacy_review_safe_browsing_fragment.html.js';
+
 const PrivacyReviewSafeBrowsingFragmentBase = PrefsMixin(PolymerElement);
 
 export class PrivacyReviewSafeBrowsingFragmentElement extends
@@ -28,7 +30,7 @@ export class PrivacyReviewSafeBrowsingFragmentElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

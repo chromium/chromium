@@ -25,6 +25,7 @@ import {Router} from '../router.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {CategoryListItem} from './site_settings_list.js';
+import {getTemplate} from './site_settings_page.html.js';
 
 const Id = ContentSettingsTypes;
 
@@ -328,7 +329,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './address_remove_confirmation_dialog.html.js';
 
 
 export interface SettingsAddressRemoveConfirmationDialogElement {
@@ -28,7 +29,7 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   wasConfirmed(): boolean {

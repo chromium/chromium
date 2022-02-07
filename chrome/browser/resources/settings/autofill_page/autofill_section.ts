@@ -31,6 +31,7 @@ import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
 import {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import {getTemplate} from './autofill_section.html.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -58,7 +59,7 @@ export class SettingsAutofillSectionElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

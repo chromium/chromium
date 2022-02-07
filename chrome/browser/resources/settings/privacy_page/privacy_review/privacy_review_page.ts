@@ -38,6 +38,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {PrivacyReviewStep} from './constants.js';
+import {getTemplate} from './privacy_review_page.html.js';
 import {StepIndicatorModel} from './step_indicator.js';
 
 interface PrivacyReviewStepComponents {
@@ -66,7 +67,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

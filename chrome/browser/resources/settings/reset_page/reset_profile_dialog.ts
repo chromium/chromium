@@ -30,6 +30,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ResetBrowserProxy, ResetBrowserProxyImpl} from './reset_browser_proxy.js';
+import {getTemplate} from './reset_profile_dialog.html.js';
 
 export interface SettingsResetProfileDialogElement {
   $: {
@@ -50,7 +51,7 @@ export class SettingsResetProfileDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

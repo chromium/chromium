@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './privacy_review_description_item.html.js';
 
 export class PrivacyReviewDescriptionItemElement extends PolymerElement {
   static get is() {
@@ -19,7 +20,7 @@ export class PrivacyReviewDescriptionItemElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

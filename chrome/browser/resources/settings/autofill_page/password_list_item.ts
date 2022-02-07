@@ -19,6 +19,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {loadTimeData} from '../i18n_setup.js';
 
+import {getTemplate} from './password_list_item.html.js';
 import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 export type PasswordMoreActionsClickedEvent = CustomEvent<{
@@ -43,7 +44,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

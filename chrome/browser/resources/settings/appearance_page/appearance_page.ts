@@ -32,6 +32,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
+import {getTemplate} from './appearance_page.html.js';
 
 
 /**
@@ -68,7 +69,7 @@ export class SettingsAppearancePageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

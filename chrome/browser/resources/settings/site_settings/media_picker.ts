@@ -13,6 +13,7 @@ import '../settings_vars_css.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './media_picker.html.js';
 
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {MediaPickerEntry} from './site_settings_prefs_browser_proxy.js';
@@ -33,7 +34,7 @@ class MediaPickerElement extends MediaPickerElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

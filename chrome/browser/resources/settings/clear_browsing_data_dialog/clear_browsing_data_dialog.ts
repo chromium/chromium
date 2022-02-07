@@ -38,6 +38,7 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
+import {getTemplate} from './clear_browsing_data_dialog.html.js';
 
 /**
  * InstalledAppsDialogActions enum.
@@ -101,7 +102,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

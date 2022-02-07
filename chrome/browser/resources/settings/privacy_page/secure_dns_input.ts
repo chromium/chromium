@@ -15,6 +15,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {loadTimeData} from '../i18n_setup.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
+import {getTemplate} from './secure_dns_input.html.js';
 
 export interface SecureDnsInputElement {
   $: {
@@ -28,7 +29,7 @@ export class SecureDnsInputElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

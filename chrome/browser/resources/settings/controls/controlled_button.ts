@@ -8,6 +8,7 @@ import '//resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './controlled_button.html.js';
 
 import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 import {PrefControlMixin} from './pref_control_mixin.js';
@@ -21,7 +22,7 @@ export class ControlledButtonElement extends ControlledButtonElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
