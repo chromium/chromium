@@ -82,6 +82,7 @@ class MockRenderThread : public RenderThread {
   void SetRendererProcessType(
       blink::scheduler::WebRendererProcessType type) override;
   blink::WebString GetUserAgent() override;
+  blink::WebString GetFullUserAgent() override;
   blink::WebString GetReducedUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
   bool IsUseZoomForDSF() override;

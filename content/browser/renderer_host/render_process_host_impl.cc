@@ -5060,14 +5060,12 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   }
 
   // Pass bits of global renderer state to the renderer.
-  GetRendererInterface()->SetUserAgent(
+  GetRendererInterface()->InitializeRenderer(
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
-          browser_context_));
-  GetRendererInterface()->SetReducedUserAgent(
-      GetContentClient()->browser()->GetReducedUserAgent());
-  GetRendererInterface()->SetUserAgentMetadata(
-      GetContentClient()->browser()->GetUserAgentMetadata());
-  GetRendererInterface()->SetCorsExemptHeaderList(
+          browser_context_),
+      GetContentClient()->browser()->GetFullUserAgent(),
+      GetContentClient()->browser()->GetReducedUserAgent(),
+      GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list());
   NotifyRendererOfLockedStateUpdate();
 

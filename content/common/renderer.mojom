@@ -116,23 +116,6 @@ interface Renderer {
   // Android.
   SetWebKitSharedTimersSuspended(bool suspend);
 
-  // Sets the user-agent string. This is needed because getting the value in the
-  // renderer from the system leads to a wrong value due to sandboxing. This
-  // must be called as early as possible, during the renderer process
-  // initialization.
-  SetUserAgent(string user_agent);
-
-  // Sets a user-agent with high-entropy information reduced to common values.
-  // See `SetUserAgent` for caveats.
-  SetReducedUserAgent(string user_agent);
-
-  // Sets the user agent metadata. This will replace `SetUserAgent()` if we
-  // decide to ship https://github.com/WICG/ua-client-hints.
-  SetUserAgentMetadata(blink.mojom.UserAgentMetadata metadata);
-
-  // Sets the CORS exempt header list for sanity checking (e.g. DCHECKs).
-  SetCorsExemptHeaderList(array<string> list);
-
   // Tells the renderer about a scrollbar appearance change. Only for use on
   // OS X.
   UpdateScrollbarTheme(UpdateScrollbarThemeParams params);
@@ -186,4 +169,28 @@ interface Renderer {
   // sites, because those features are highly privileged and shouldn't be
   // exposed to other sites.
   EnableBlinkRuntimeFeatures(array<string> features);
+
+  // Initialize renderer user agent string, user agent metadata and CORS exempt
+  // header list on renderer startup.
+  //
+  // |user_agent| sets the user-agent string. This is needed because getting the
+  // value in the renderer from the system leads to a wrong value due to
+  // sandboxing. This must be called as early as possible, during the renderer
+  // process initialization.
+  //
+  // |full_user_agent| sets the full user-agent with high-entropy information.
+  //
+  // |reduced_user_agent| sets a user-agent with high-entropy information
+  // reduced to common values.
+  //
+  // |metadata| sets the user agent metadata. This will replace `SetUserAgent()`
+  // if we decide to ship https://github.com/WICG/ua-client-hints.
+  //
+  // |cors_exempt_header_list| sets the CORS exempt header list for sanity
+  // checking (e.g. DCHECKs).
+  InitializeRenderer(string user_agent,
+                     string full_user_agent,
+                     string reduced_user_agent,
+                     blink.mojom.UserAgentMetadata metadata,
+                     array<string> cors_exempt_header_list);
 };

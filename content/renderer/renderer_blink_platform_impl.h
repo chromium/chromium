@@ -86,6 +86,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   uint64_t VisitedLinkHash(const char* canonicalURL, size_t length) override;
   bool IsLinkVisited(uint64_t linkHash) override;
   blink::WebString UserAgent() override;
+  blink::WebString FullUserAgent() override;
   blink::WebString ReducedUserAgent() override;
   blink::UserAgentMetadata UserAgentMetadata() override;
   void CacheMetadata(blink::mojom::CodeCacheType cache_type,

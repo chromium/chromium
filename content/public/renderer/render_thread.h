@@ -112,6 +112,7 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
 
   // Returns the user-agent string.
   virtual blink::WebString GetUserAgent() = 0;
+  virtual blink::WebString GetFullUserAgent() = 0;
   virtual blink::WebString GetReducedUserAgent() = 0;
   virtual const blink::UserAgentMetadata& GetUserAgentMetadata() = 0;
 
