@@ -35,6 +35,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
@@ -628,22 +629,24 @@ int ChromeBrowserMainPartsFuchsia::PreEarlyInitialization() {
 }
 
 int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableCFv2)) {
-    // Configure Ozone to create top-level Views via GraphicalPresenter.
-    element_manager_ = std::make_unique<ElementManagerImpl>(
-        base::ComponentContextForProcess()->outgoing().get(),
-        base::BindRepeating(&NotifyNewBrowserWindow));
-    keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA,
-        KeepAliveRestartOption::ENABLED);
-    use_graphical_presenter_ =
-        std::make_unique<UseGraphicalPresenter>(element_manager_.get());
-  } else {
-    // Register the ViewProvider API.
-    view_provider_ = std::make_unique<ViewProviderRouter>(
-        std::make_unique<ViewProviderScenic>(),
-        std::make_unique<ViewProviderFlatland>());
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableCFv2)) {
+      // Configure Ozone to create top-level Views via GraphicalPresenter.
+      element_manager_ = std::make_unique<ElementManagerImpl>(
+          base::ComponentContextForProcess()->outgoing().get(),
+          base::BindRepeating(&NotifyNewBrowserWindow));
+      keep_alive_ = std::make_unique<ScopedKeepAlive>(
+          KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA,
+          KeepAliveRestartOption::ENABLED);
+      use_graphical_presenter_ =
+          std::make_unique<UseGraphicalPresenter>(element_manager_.get());
+    } else {
+      // Register the ViewProvider API.
+      view_provider_ = std::make_unique<ViewProviderRouter>(
+          std::make_unique<ViewProviderScenic>(),
+          std::make_unique<ViewProviderFlatland>());
+    }
   }
 
   zx_status_t status =

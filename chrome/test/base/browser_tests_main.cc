@@ -15,6 +15,12 @@
 #include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/test/test_switches.h"
+#include "ui/gfx/switches.h"
+#include "ui/ozone/public/ozone_switches.h"  // nogncheck
+#endif
+
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
@@ -38,6 +44,11 @@ int main(int argc, char** argv) {
   // Adjust switches for interactive tests where the user is expected to
   // manually verify results.
   if (command_line->HasSwitch(switches::kTestLauncherInteractive)) {
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1288963): Consider porting interactive tests to Fuchsia.
+    LOG(FATAL) << "Interactive tests are not supported on Fuchsia.";
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
     // Since the test is interactive, the invoker will want to have pixel output
     // to actually see the result.
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
@@ -49,6 +60,19 @@ int main(int argc, char** argv) {
     command_line->AppendSwitch(switches::kDisableGpu);
 #endif  // BUILDFLAG(IS_WIN)
   }
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // Running in headless mode frees the test suite from depending on
+  // a graphical compositor.
+  // TODO(crbug.com/1292100): Switch to Flatland ozone platform.
+  command_line->AppendSwitch(switches::kHeadless);
+  command_line->AppendSwitchNative(switches::kOzonePlatform,
+                                   switches::kHeadless);
+
+  // The default headless resolution (1x1) causes ui/gfx/canvas.cc to crash.
+  // TODO(crbug.com/1292122): Remove workaround once bug is fixed.
+  command_line->AppendSwitchNative(switches::kOzoneOverrideScreenSize, "10,10");
+#endif
 
   ChromeTestSuiteRunner runner;
   ChromeTestLauncherDelegate delegate(&runner);

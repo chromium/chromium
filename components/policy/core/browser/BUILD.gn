@@ -102,14 +102,9 @@ static_library("test_support") {
   sources = [
     "configuration_policy_pref_store_test.cc",
     "configuration_policy_pref_store_test.h",
+    "policy_pref_mapping_test.cc",
+    "policy_pref_mapping_test.h",
   ]
-
-  if (!is_fuchsia) {
-    sources += [
-      "policy_pref_mapping_test.cc",
-      "policy_pref_mapping_test.h",
-    ]
-  }
 
   public_deps = [
     ":browser",

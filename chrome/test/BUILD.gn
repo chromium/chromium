@@ -306,7 +306,6 @@ static_library("test_support") {
     "//media:media_buildflags",
     "//net",
     "//net:test_support",
-    "//pdf",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/cert_verifier:test_support",
@@ -327,6 +326,10 @@ static_library("test_support") {
   ]
 
   data_deps = []
+
+  if (enable_pdf) {
+    public_deps += [ "//pdf" ]
+  }
 
   if (is_chromeos_lacros && also_build_ash_chrome) {
     data_deps += [
@@ -1054,23 +1057,28 @@ if (is_android) {
   }
 }
 
-source_set("pdf_extension_test_utils") {
-  testonly = true
-  sources = [
-    "../browser/pdf/pdf_extension_test_util.cc",
-    "../browser/pdf/pdf_extension_test_util.h",
-  ]
-  deps = [
-    ":test_support",
-    "//base",
-  ]
+if (enable_pdf) {
+  source_set("pdf_extension_test_utils") {
+    testonly = true
+    sources = [
+      "../browser/pdf/pdf_extension_test_util.cc",
+      "../browser/pdf/pdf_extension_test_util.h",
+    ]
+    deps = [
+      ":test_support",
+      "//base",
+    ]
+  }
 }
 
 static_library("browser_tests_runner") {
   testonly = true
   sources = []
 
-  deps = [ ":test_support" ]
+  deps = [
+    ":test_support",
+    "//ui/gfx:gfx_switches",  # Used by Fuchsia.
+  ]
 
   if (is_chromeos_ash) {
     sources += [ "base/browser_tests_main_chromeos.cc" ]
@@ -1085,9 +1093,13 @@ static_library("browser_tests_runner") {
   if (is_android) {
     deps += [ "//ui/compositor" ]
   }
+
+  if (is_fuchsia) {
+    deps += [ "//ui/ozone:ozone_switches" ]
+  }
 }
 
-if (!is_android && !is_fuchsia) {
+if (!is_android) {
   static_library("webrtc_browser_tests_base") {
     testonly = true
 
@@ -1103,7 +1115,7 @@ if (!is_android && !is_fuchsia) {
   }
 }
 
-if (!is_android && !is_fuchsia) {
+if (!is_android) {
   test("browser_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -1116,7 +1128,6 @@ if (!is_android && !is_fuchsia) {
 
     deps = [
       ":browser_tests_runner",
-      ":pdf_extension_test_utils",
       ":policy_testserver_pyproto",
       ":sync_integration_test_support",
       ":test_support",
@@ -1383,9 +1394,7 @@ if (!is_android && !is_fuchsia) {
       "//net:extras",
       "//net:test_support",
       "//pdf:buildflags",
-      "//pdf:features",
       "//ppapi/buildflags",
-      "//ppapi/shared_impl:test_support",
       "//printing/buildflags",
       "//rlz/buildflags",
       "//services/audio/public/cpp:test_support",
@@ -1447,17 +1456,11 @@ if (!is_android && !is_fuchsia) {
       "//chrome/test/data:web_ui_test_mojom_js_module",
       "//components/policy/proto",
       "//testing:test_scripts_shared",
-      "//third_party/private_membership:private_membership_proto",
-      "//third_party/shell-encryption:serialization_proto",
-
-      # TODO(thakis): Why do these need copying in browser_tests?
-      # content_browsertests uses the non-copied files instead.
-      "//ppapi:copy_test_files",
-      "//ppapi:copy_test_files2",
-      "//ppapi:ppapi_tests",
       "//testing/buildbot/filters:browser_tests_filters",
       "//testing/buildbot/filters:linux_trusty_rel_browser_tests_filters",
       "//third_party/mesa_headers",
+      "//third_party/private_membership:private_membership_proto",
+      "//third_party/shell-encryption:serialization_proto",
       "//third_party/widevine/cdm:widevine_test_license_server",
       "//tools/media_engagement_preload:generator",
       "//ui/webui/resources/cr_elements:modulize_runtime_data",
@@ -1572,14 +1575,12 @@ if (!is_android && !is_fuchsia) {
       "../browser/chrome_navigation_browsertest.cc",
       "../browser/chrome_origin_trials_browsertest.cc",
       "../browser/chrome_security_exploit_browsertest.cc",
-      "../browser/chrome_service_worker_browsertest.cc",
       "../browser/chrome_shared_array_buffer_browsertest.cc",
       "../browser/chrome_web_platform_security_metrics_browsertest.cc",
       "../browser/chrome_worker_browsertest.cc",
       "../browser/client_hints/client_hints_browsertest.cc",
       "../browser/component_updater/component_patcher_operation_browsertest.cc",
       "../browser/content_index/content_index_browsertest.cc",
-      "../browser/content_settings/content_settings_browsertest.cc",
       "../browser/content_settings/mixed_content_settings_tab_helper_browsertest.cc",
       "../browser/content_settings/sound_content_setting_observer_browsertest.cc",
       "../browser/crash_recovery_browsertest.cc",
@@ -1785,8 +1786,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/page_load_metrics/page_load_metrics_browsertest.cc",
       "../browser/password_manager/credential_manager_browsertest.cc",
       "../browser/password_manager/password_manager_browsertest.cc",
-      "../browser/pdf/pdf_extension_test.cc",
-      "../browser/pdf/pdf_find_request_manager_browsertest.cc",
       "../browser/performance_hints/performance_hints_observer_browsertest.cc",
       "../browser/performance_manager/background_tab_loading_policy_browsertest.cc",
       "../browser/performance_manager/frame_node_impl_browsertest.cc",
@@ -1801,8 +1800,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/permissions/permissions_browsertest.cc",
       "../browser/permissions/permissions_browsertest.h",
       "../browser/picture_in_picture/picture_in_picture_window_controller_browsertest.cc",
-      "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
-      "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
       "../browser/policy/policy_initialization_browsertest.cc",
       "../browser/policy/policy_network_browsertest.cc",
       "../browser/policy/policy_prefs_browsertest.cc",
@@ -1828,8 +1825,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/portal/portal_recently_audible_browsertest.cc",
       "../browser/predictors/loading_predictor_browsertest.cc",
       "../browser/prefetch/no_state_prefetch/prerender_nostate_prefetch_browsertest.cc",
-      "../browser/prefetch/no_state_prefetch/prerender_test_utils.cc",
-      "../browser/prefetch/no_state_prefetch/prerender_test_utils.h",
       "../browser/prefetch/prefetch_browsertest.cc",
       "../browser/prefetch/prefetch_proxy/prefetch_proxy_browsertest.cc",
       "../browser/prefetch/prefetch_proxy/prefetch_proxy_test_utils.cc",
@@ -2174,8 +2169,6 @@ if (!is_android && !is_fuchsia) {
       "data/webui/webui_resource_browsertest.cc",
       "gpu/webgl_infobar_browsertest.cc",
       "origin_policy/origin_policy_browsertest.cc",
-      "ppapi/ppapi_browsertest.cc",
-      "ppapi/ppapi_filechooser_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
@@ -2214,8 +2207,15 @@ if (!is_android && !is_fuchsia) {
     }
 
     if (enable_pdf) {
+      sources += [
+        "../browser/pdf/pdf_extension_test.cc",
+        "../browser/pdf/pdf_find_request_manager_browsertest.cc",
+        "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
+      ]
       deps += [
+        ":pdf_extension_test_utils",
         "//components/pdf/browser",
+        "//pdf:features",
         "//pdf:internal",
       ]
     }
@@ -2500,6 +2500,23 @@ if (!is_android && !is_fuchsia) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
     }
 
+    if (enable_plugins) {
+      sources += [
+        "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
+        "ppapi/ppapi_browsertest.cc",
+        "ppapi/ppapi_filechooser_browsertest.cc",
+      ]
+      deps += [ "//ppapi/shared_impl:test_support" ]
+
+      # TODO(thakis): Why do these need copying in browser_tests?
+      # content_browsertests uses the non-copied files instead.
+      data_deps += [
+        "//ppapi:copy_test_files",
+        "//ppapi:copy_test_files2",
+        "//ppapi:ppapi_tests",
+      ]
+    }
+
     if (enable_dice_support) {
       sources += [
         "../browser/signin/dice_browsertest.cc",
@@ -2572,7 +2589,6 @@ if (!is_android && !is_fuchsia) {
     if (enable_extensions) {
       sources += [
         "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
-        "../browser/apps/platform_apps/api/media_galleries/media_galleries_apitest.cc",
         "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
         "../browser/apps/platform_apps/api/music_manager_private/music_manager_private_browsertest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
@@ -2799,6 +2815,10 @@ if (!is_android && !is_fuchsia) {
         "../browser/extensions/window_open_apitest.cc",
         "../browser/extensions/worker_apitest.cc",
         "../browser/notifications/notification_permission_context_apitest.cc",
+        "../browser/policy/extension_force_install_mixin.cc",
+        "../browser/policy/extension_force_install_mixin.h",
+        "../browser/prefetch/no_state_prefetch/prerender_test_utils.cc",
+        "../browser/prefetch/no_state_prefetch/prerender_test_utils.h",
         "../browser/safe_browsing/settings_reset_prompt/default_settings_fetcher_browsertest.cc",
         "../browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_test_utils.cc",
         "../browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_test_utils.h",
@@ -2940,6 +2960,15 @@ if (!is_android && !is_fuchsia) {
         "//chrome/test/data/extensions/",
         "//extensions/test/data/",
       ]
+
+      if (enable_plugins) {
+        # The following tests include PPAPI headers.
+        sources += [
+          "../browser/apps/platform_apps/api/media_galleries/media_galleries_apitest.cc",
+          "../browser/chrome_service_worker_browsertest.cc",
+          "../browser/content_settings/content_settings_browsertest.cc",
+        ]
+      }
     }
 
     if (use_aura) {
@@ -3936,7 +3965,10 @@ if (!is_android && !is_fuchsia) {
         "../browser/extensions/api/networking_private/networking_private_apitest.cc",
         "../browser/extensions/api/networking_private/networking_private_service_client_apitest.cc",
       ]
-      deps += [ "//components/wifi:test_support" ]
+      deps += [
+        "//components/onc",
+        "//components/wifi:test_support",
+      ]
     }
     if (is_linux || is_chromeos || is_win) {
       sources += [
@@ -4091,6 +4123,86 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
         "../browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_browsertest.cc",
       ]
+    }
+
+    if (is_fuchsia) {
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/font_capabilities.test-cmx",
+        "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+        "//build/config/fuchsia/test/network_capabilities.test-cmx",
+      ]
+
+      # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
+      # in filenames in depfiles, so temporarily exclude affected files.
+      excluded_files = [
+        "chrome/test/data/ie@cookie[1].txt",
+        "chrome/test/data/android/download/[large]wallpaper.dm",
+        "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
+      ]
+
+      # Tests depend on having a Python interpreter present on-device.
+      # TODO(crbug.com/1292144): Determine whether a solution can be devised
+      # for Fuchsia.
+      sources -= [
+        "../browser/media/encrypted_media_browsertest.cc",
+        "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",
+        "../browser/media/webrtc/webrtc_video_quality_browsertest.cc",
+        "../browser/media/wv_test_license_server_config.cc",
+        "../browser/media/wv_test_license_server_config.h",
+      ]
+
+      # TODO(crbug.com/1290597): Enable once WebRTC becomes functional.
+      sources -= [
+        "../browser/media/webrtc/capture_handle_browsertest.cc",
+        "../browser/media/webrtc/conditional_focus_browsertest.cc",
+        "../browser/media/webrtc/media_stream_devices_controller_browsertest.cc",
+        "../browser/media/webrtc/region_capture_browsertest.cc",
+        "../browser/media/webrtc/same_origin_observer_browsertest.cc",
+        "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
+        "../browser/media/webrtc/webrtc_browsertest_perf.cc",
+        "../browser/media/webrtc/webrtc_browsertest_perf.h",
+        "../browser/media/webrtc/webrtc_browsertest_perf_unittest.cc",
+        "../browser/media/webrtc/webrtc_desktop_capture_browsertest.cc",
+        "../browser/media/webrtc/webrtc_disable_encryption_flag_browsertest.cc",
+        "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
+        "../browser/media/webrtc/webrtc_internals_integration_browsertest.cc",
+        "../browser/media/webrtc/webrtc_internals_perf_browsertest.cc",
+        "../browser/media/webrtc/webrtc_pan_tilt_zoom_browsertest.cc",
+        "../browser/media/webrtc/webrtc_stats_perf_browsertest.cc",
+        "../browser/media/webrtc/webrtc_video_display_perf_browsertest.cc",
+        "../browser/media/webrtc/webrtc_video_high_bitrate_browsertest.cc",
+        "../browser/media/webrtc/webrtc_webcam_browsertest.cc",
+      ]
+
+      # TODO(crbug.com/1278123): Enable once PWAs are supported.
+      sources -= [
+        "../../apps/app_restore_service_browsertest.cc",
+        "../../apps/load_and_launch_browsertest.cc",
+        "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
+        "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
+        "../browser/apps/platform_apps/api/music_manager_private/music_manager_private_browsertest.cc",
+        "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
+        "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
+        "../browser/apps/platform_apps/app_browsertest.cc",
+        "../browser/apps/platform_apps/app_speech_recognition_browsertest.cc",
+        "../browser/apps/platform_apps/app_window_browsertest.cc",
+        "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
+        "../browser/apps/platform_apps/event_page_browsertest.cc",
+        "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
+        "../browser/apps/platform_apps/service_worker_browsertest.cc",
+        "../browser/ui/startup/startup_browser_creator_browsertest.cc",
+      ]
+
+      # Exclude tests which depend on native messaging.
+      # TODO(crbug.com/1293504): Reintroduce tests when native messaging
+      # enabled, or remove TODO if the lack of native messaging is WAI.
+      sources -= [
+        "../browser/extensions/api/messaging/native_messaging_apitest.cc",
+        "../browser/extensions/api/messaging/service_worker_messaging_apitest.cc",
+      ]
+
+      # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
+      deps -= [ "//components/crash/content/browser/error_reporting:mock_crash_endpoint" ]
     }
 
     sources += metric_integration_sources
@@ -7983,7 +8095,7 @@ test("unit_tests") {
   # //chrome include.
   # TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
   # on Chromecast and remove this section entirely.
-  if (is_linux && is_chromecast) {
+  if ((is_linux || is_fuchsia) && is_chromecast) {
     sources -= [
       "../browser/browsing_data/browsing_data_media_license_helper_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",
@@ -8627,7 +8739,6 @@ if (!is_android && !is_fuchsia) {
 
     if (toolkit_views) {
       sources += [
-        "../browser/pdf/pdf_extension_interactive_uitest.cc",
         "../browser/ui/read_later/read_later_test_utils.cc",
         "../browser/ui/read_later/read_later_test_utils.h",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_interactive_uitest.cc",
@@ -8683,7 +8794,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/user_education/interaction_sequence_interactive_uitest.cc",
       ]
       deps += [
-        ":pdf_extension_test_utils",
         "//components/optimization_guide/core:test_support",
         "//components/optimization_guide/proto:optimization_guide_proto",
         "//pdf:features",
@@ -8694,6 +8804,10 @@ if (!is_android && !is_fuchsia) {
         "//ui/views:views_interactive_ui_tests",
         "//ui/views/controls/webview:test_support",
       ]
+      if (enable_pdf) {
+        sources += [ "../browser/pdf/pdf_extension_interactive_uitest.cc" ]
+        deps += [ ":pdf_extension_test_utils" ]
+      }
       if (is_linux || is_chromeos_lacros) {
         # Desktop linux.
         sources -= [

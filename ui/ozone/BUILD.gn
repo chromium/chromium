@@ -100,8 +100,6 @@ component("ozone_base") {
     "public/overlay_surface.h",
     "public/overlay_surface_candidate.cc",
     "public/overlay_surface_candidate.h",
-    "public/ozone_switches.cc",
-    "public/ozone_switches.h",
     "public/platform_clipboard.h",
     "public/platform_gl_egl_utility.cc",
     "public/platform_gl_egl_utility.h",
@@ -128,6 +126,7 @@ component("ozone_base") {
   defines = [ "IS_OZONE_BASE_IMPL" ]
 
   public_deps = [
+    ":ozone_switches",
     "//base",
     "//gpu/vulkan:buildflags",
     "//ipc",
@@ -230,6 +229,19 @@ source_set("platform") {
 
   # This can be used for out of tree platforms tests.
   visibility += ozone_external_platform_visibility
+}
+
+source_set("ozone_switches") {
+  sources = [
+    "public/ozone_switches.cc",
+    "public/ozone_switches.h",
+  ]
+
+  defines = [ "IS_OZONE_SWITCHES_IMPL" ]
+
+  deps = [ "//base" ]
+
+  visibility += [ "//chrome/test:browser_tests_runner" ]
 }
 
 component("ozone") {
