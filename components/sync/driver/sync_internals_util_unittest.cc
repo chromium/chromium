@@ -22,7 +22,7 @@ TEST(SyncUIUtilTestAbout, ConstructAboutInformationWithUnrecoverableErrorTest) {
   std::unique_ptr<base::DictionaryValue> strings(ConstructAboutInformation(
       IncludeSensitiveData(true), &service, std::string()));
 
-  EXPECT_TRUE(strings->HasKey("unrecoverable_error_detected"));
+  EXPECT_TRUE(strings->FindKey("unrecoverable_error_detected"));
 }
 
 }  // namespace
