@@ -171,6 +171,19 @@ public class BrowserAccessibilityState {
         }
     }
 
+    @VisibleForTesting
+    public static void setScreenReaderModeForTesting(boolean enabled) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        // Explicitly set screen reader mode since a real screen reader isn't run during tests.
+        sScreenReader = enabled;
+
+        // Inform all listeners of this change.
+        for (Listener listener : sListeners) {
+            listener.onBrowserAccessibilityStateChanged(sScreenReader);
+        }
+    }
+
     static void updateAccessibilityServices() {
         sInitialized = true;
         sEventTypeMask = 0;

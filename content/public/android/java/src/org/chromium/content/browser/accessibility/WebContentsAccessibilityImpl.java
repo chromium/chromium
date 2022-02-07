@@ -169,11 +169,23 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public static final String PERCENTAGE_DROPPED_HISTOGRAM =
             "Accessibility.Android.OnDemand.PercentageDropped";
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE =
+            "Accessibility.Android.OnDemand.PercentageDropped.Complete";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC =
+            "Accessibility.Android.OnDemand.PercentageDropped.Basic";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String EVENTS_DROPPED_HISTOGRAM =
             "Accessibility.Android.OnDemand.EventsDropped";
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String ONE_HUNDRED_PERCENT_HISTOGRAM =
             "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE =
+            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.Complete";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC =
+            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.Basic";
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -486,6 +498,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         BrowserAccessibilityState.setEventTypeMaskEmptyForTesting();
     }
 
+    @VisibleForTesting
+    public void setScreenReaderModeForTesting(boolean enabled) {
+        BrowserAccessibilityState.setScreenReaderModeForTesting(enabled);
+    }
+
     @CalledByNative
     public void handleEndOfTestSignal() {
         // We have received a signal that we have reached the end of a unit test. If we have a
@@ -512,14 +529,28 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     // Helper method to record UMA histograms for OnDemand feature and reset counters.
     private void recordUMAHistograms() {
+        // To investigate whether adding more AXModes could be beneficial, track separate
+        // stats when both the ComputeAXMode and OnDemand features are enabled.
+        boolean isComputeAXModeEnabled =
+                ContentFeatureList.isEnabled(ContentFeatureList.COMPUTE_AX_MODE);
+        // There are only 2 AXModes, kAXModeComplete is used when a screenreader is active.
+        boolean isAXModeComplete = BrowserAccessibilityState.screenReaderMode();
+
         // If we did not enqueue any events, we can ignore the data as a trivial case.
         if (mTotalEnqueuedEvents > 0) {
             // Log the percentage dropped (dispatching 0 events should be 100% dropped).
             int percentSent = (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0);
             RecordHistogram.recordPercentageHistogram(
                     PERCENTAGE_DROPPED_HISTOGRAM, 100 - percentSent);
+            // Log the percentage dropped per AXMode as well.
+            if (isComputeAXModeEnabled) {
+                RecordHistogram.recordPercentageHistogram(isAXModeComplete
+                                ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE
+                                : PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC,
+                        100 - percentSent);
+            }
 
-            // Log the total number of dropped events.
+            // Log the total number of dropped events. (Not relevant to be tracked per AXMode)
             RecordHistogram.recordCustomCountHistogram(EVENTS_DROPPED_HISTOGRAM,
                     mTotalEnqueuedEvents - mTotalDispatchedEvents,
                     EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
@@ -532,6 +563,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mTotalEnqueuedEvents - mTotalDispatchedEvents,
                         EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
                         EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
+
+                // Log the 100% events count per AXMode as well.
+                if (isComputeAXModeEnabled) {
+                    RecordHistogram.recordCustomCountHistogram(isAXModeComplete
+                                    ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE
+                                    : ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC,
+                            mTotalEnqueuedEvents - mTotalDispatchedEvents,
+                            EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET,
+                            EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
+                            EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
+                }
             }
         }
 

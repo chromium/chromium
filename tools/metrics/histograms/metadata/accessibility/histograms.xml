@@ -179,6 +179,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.{AXMode}"
+    units="count" expires_after="2022-06-26">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the number of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled, and the ComputeAXMode feature is
+    enabled, and the number of events dropped is 100%. Tracks for when the
+    AXMode is set to {AXMode}. Recorded a the end of a session.
+  </summary>
+  <token key="AXMode">
+    <variant name="Basic"
+        summary="kAXModeBasic - Includes only NativeAPIs and WebContents"/>
+    <variant name="Complete"
+        summary="kAXModeComplete - Includes NativeAPIs, WebContents,
+                 InlineTextBoxes, ScreenReader, and HTML"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.Android.OnDemand.PercentageDropped" units="%"
     expires_after="2022-06-05">
   <owner>mschillaci@google.com</owner>
@@ -187,6 +207,25 @@ chromium-metrics-reviews@google.com.
     Tracks the percentage of AccessibilityEvents dropped when the OnDemand
     accessibility services feature is enabled. Recorded at the end of a session.
   </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.OnDemand.PercentageDropped.{AXMode}"
+    units="%" expires_after="2022-06-26">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the percentage of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled, and the ComputeAXMode feature is
+    enabled. Tracks for when the AXMode is set to {AXMode}. Recorded at the end
+    of a session.
+  </summary>
+  <token key="AXMode">
+    <variant name="Basic"
+        summary="kAXModeBasic - Includes only NativeAPIs and WebContents"/>
+    <variant name="Complete"
+        summary="kAXModeComplete - Includes NativeAPIs, WebContents,
+                 InlineTextBoxes, ScreenReader, and HTML"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.Android.ScreenReader{AccessibilityEveryReport}"

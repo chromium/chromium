@@ -56,7 +56,11 @@ import static org.chromium.content.browser.accessibility.WebContentsAccessibilit
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ONE_HUNDRED_PERCENT_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -81,6 +85,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -88,12 +93,15 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -128,8 +136,8 @@ public class WebContentsAccessibilityTest {
             "Expected to receive both a traversal and selection text event";
     private static final String BOUNDING_BOX_ERROR =
             "Expected bounding box to have updated values.";
-    private static final String ONDEMAND_HISTOGRAM_ERROR =
-            "Expected histogram for OnDemand AT feature to be recorded.";
+    private static final String UMA_HISTOGRAM_ERROR =
+            "Expected UMA histograms did not match recorded value.";
     private static final String VISIBLE_TO_USER_ERROR =
             "AccessibilityNodeInfo object has incorrect visibleToUser value";
     private static final String OFFSCREEN_BUNDLE_EXTRA_ERROR =
@@ -140,6 +148,15 @@ public class WebContentsAccessibilityTest {
             "AccessibilityNodeInfo object does not have Bundle extra containing image data.";
     private static final String FOCUSING_ERROR =
             "Expected focus to be on a different node than it is.";
+
+    // ContentFeatureList maps used for various tests.
+    private static final Map<String, Boolean> ON_DEMAND_ON_COMPUTE_ON =
+            new HashMap<String, Boolean>() {
+                {
+                    put(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS, true);
+                    put(ContentFeatureList.COMPUTE_AX_MODE, true);
+                }
+            };
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -362,90 +379,159 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Test that UMA histograms are recorded for the OnDemand AT feature.
+     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode complete.
      */
     @Test
     @SmallTest
-    public void testOnDemandAccessibilityEventsUMARecorded() throws Throwable {
+    public void testUMAHistograms_OnDemand_AXModeComplete() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTML("<p>This is a test 1</p>\n"
                 + "<p>This is a test 2</p>\n"
                 + "<p>This is a test 3</p>");
 
-        // Find the three text nodes.
-        int vvId1 = waitForNodeMatching(sTextMatcher, "This is a test 1");
-        int vvId2 = waitForNodeMatching(sTextMatcher, "This is a test 2");
-        int vvId3 = waitForNodeMatching(sTextMatcher, "This is a test 3");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvId1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvId2);
-        AccessibilityNodeInfoCompat mNodeInfo3 = createAccessibilityNodeInfo(vvId3);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo3);
+        // Set the relevant features and screen reader state.
+        FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
+        mActivityTestRule.mWcax.setScreenReaderModeForTesting(true);
 
-        // Focus each node in turn to generate events.
-        focusNode(vvId1);
-        focusNode(vvId2);
-        focusNode(vvId3);
-
-        // Signal end of test.
-        mActivityTestRule.sendEndOfTestSignal();
-
-        // Force recording of UMA histograms.
-        mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
+        performHistogramActions();
 
         // Verify results were recorded in histograms.
-        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
                 RecordHistogram.getHistogramTotalCountForTesting(PERCENTAGE_DROPPED_HISTOGRAM));
-        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
                 RecordHistogram.getHistogramTotalCountForTesting(EVENTS_DROPPED_HISTOGRAM));
-        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 0,
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
                 RecordHistogram.getHistogramTotalCountForTesting(ONE_HUNDRED_PERCENT_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC));
     }
 
     /**
-     * Test that UMA histogram for 100% events dropped is recorded for the OnDemand AT feature.
+     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode basic.
      */
     @Test
     @SmallTest
-    public void testOnDemandAccessibilityEventsUMARecorded_100Percent() throws Throwable {
+    public void testUMAHistograms_OnDemand_AXModeBasic() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTML("<p>This is a test 1</p>\n"
                 + "<p>This is a test 2</p>\n"
                 + "<p>This is a test 3</p>");
 
-        // Set the relevant events type masks to be empty so no events are dispatched.
-        mActivityTestRule.mWcax.setEventTypeMaskEmptyForTesting();
+        // Set the relevant features and screen reader state.
+        FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
+        mActivityTestRule.mWcax.setScreenReaderModeForTesting(false);
 
-        // Find the three text nodes.
-        int vvId1 = waitForNodeMatching(sTextMatcher, "This is a test 1");
-        int vvId2 = waitForNodeMatching(sTextMatcher, "This is a test 2");
-        int vvId3 = waitForNodeMatching(sTextMatcher, "This is a test 3");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvId1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvId2);
-        AccessibilityNodeInfoCompat mNodeInfo3 = createAccessibilityNodeInfo(vvId3);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo3);
-
-        // Focus each node in turn to generate events.
-        focusNode(vvId1);
-        focusNode(vvId2);
-        focusNode(vvId3);
-
-        // Signal end of test.
-        mActivityTestRule.sendEndOfTestSignal();
-
-        // Force recording of UMA histograms.
-        mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
+        performHistogramActions();
 
         // Verify results were recorded in histograms.
-        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
                 RecordHistogram.getHistogramTotalCountForTesting(PERCENTAGE_DROPPED_HISTOGRAM));
-        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
                 RecordHistogram.getHistogramTotalCountForTesting(EVENTS_DROPPED_HISTOGRAM));
-        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
                 RecordHistogram.getHistogramTotalCountForTesting(ONE_HUNDRED_PERCENT_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC));
+    }
+
+    /**
+     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode complete
+     * when 100% of events are dropped.
+     */
+    @Test
+    @SmallTest
+    public void testUMAHistograms_OnDemand_AXModeComplete_100Percent() throws Throwable {
+        // Build a simple web page with a few nodes to traverse.
+        setupTestWithHTML("<p>This is a test 1</p>\n"
+                + "<p>This is a test 2</p>\n"
+                + "<p>This is a test 3</p>");
+
+        // Set the relevant features and screen reader state, set event type masks to empty.
+        FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
+        mActivityTestRule.mWcax.setEventTypeMaskEmptyForTesting();
+        mActivityTestRule.mWcax.setScreenReaderModeForTesting(true);
+
+        performHistogramActions();
+
+        // Verify results were recorded in histograms.
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(PERCENTAGE_DROPPED_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(EVENTS_DROPPED_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(ONE_HUNDRED_PERCENT_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC));
+    }
+
+    /**
+     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode basic
+     * when 100% of events are dropped.
+     */
+    @Test
+    @SmallTest
+    public void testUMAHistograms_OnDemand_AXModeBasic_100Percent() throws Throwable {
+        // Build a simple web page with a few nodes to traverse.
+        setupTestWithHTML("<p>This is a test 1</p>\n"
+                + "<p>This is a test 2</p>\n"
+                + "<p>This is a test 3</p>");
+
+        // Set the relevant features and screen reader state, set event type masks to empty.
+        FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
+        mActivityTestRule.mWcax.setEventTypeMaskEmptyForTesting();
+        mActivityTestRule.mWcax.setScreenReaderModeForTesting(false);
+
+        performHistogramActions();
+
+        // Verify results were recorded in histograms.
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(PERCENTAGE_DROPPED_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(EVENTS_DROPPED_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(ONE_HUNDRED_PERCENT_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC));
     }
 
     /**
@@ -2026,5 +2112,33 @@ public class WebContentsAccessibilityTest {
     private String lowThresholdError(int count) {
         return THRESHOLD_LOW_EVENT_COUNT_ERROR + " Received " + count
                 + ", but expected at least: " + UNSUPPRESSED_EXPECTED_COUNT;
+    }
+
+    /**
+     * Helper method to perform a series of events that trigger histograms being tracked.
+     * @throws Throwable error on focusNode
+     */
+    private void performHistogramActions() throws Throwable {
+        // Find the three text nodes.
+        int vvId1 = waitForNodeMatching(sTextMatcher, "This is a test 1");
+        int vvId2 = waitForNodeMatching(sTextMatcher, "This is a test 2");
+        int vvId3 = waitForNodeMatching(sTextMatcher, "This is a test 3");
+        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvId1);
+        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvId2);
+        AccessibilityNodeInfoCompat mNodeInfo3 = createAccessibilityNodeInfo(vvId3);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo3);
+
+        // Focus each node in turn to generate events.
+        focusNode(vvId1);
+        focusNode(vvId2);
+        focusNode(vvId3);
+
+        // Signal end of test.
+        mActivityTestRule.sendEndOfTestSignal();
+
+        // Force recording of UMA histograms.
+        mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
     }
 }
