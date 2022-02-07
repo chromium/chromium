@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_BROWSER_AGENT_H_
 
+#import "components/signin/ios/browser/manage_accounts_delegate.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
@@ -21,6 +22,7 @@ class Browser;
 class AccountConsistencyBrowserAgent
     : public BrowserUserData<AccountConsistencyBrowserAgent>,
       public DependencyInstaller,
+      public ManageAccountsDelegate,
       BrowserObserver {
  public:
   // |browser| is the browser this agent is attached to.
@@ -41,12 +43,13 @@ class AccountConsistencyBrowserAgent
   void InstallDependency(web::WebState* web_state) override;
   void UninstallDependency(web::WebState* web_state) override;
 
-  // Handlers for the corresponding protocol methods in ManageAccountDelegate.
-  void OnRestoreGaiaCookies();
-  void OnManageAccounts();
-  void OnAddAccount();
-  void OnShowConsistencyPromo(const GURL& url, web::WebState* webState);
-  void OnGoIncognito(const GURL& url);
+  // ManageAccountsDelegate
+  void OnRestoreGaiaCookies() override;
+  void OnManageAccounts() override;
+  void OnAddAccount() override;
+  void OnShowConsistencyPromo(const GURL& url,
+                              web::WebState* webState) override;
+  void OnGoIncognito(const GURL& url) override;
 
  private:
   AccountConsistencyBrowserAgent(Browser* browser,

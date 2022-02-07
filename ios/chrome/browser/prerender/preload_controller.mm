@@ -141,6 +141,27 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   __weak id<PreloadCancelling> cancel_handler_ = nil;
 };
 
+class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
+ public:
+  explicit PreloadManageAccountsDelegate(id<PreloadCancelling> canceler)
+      : canceler_(canceler) {}
+  ~PreloadManageAccountsDelegate() override {}
+
+  void OnRestoreGaiaCookies() override { [canceler_ schedulePrerenderCancel]; }
+  void OnManageAccounts() override { [canceler_ schedulePrerenderCancel]; }
+  void OnAddAccount() override { [canceler_ schedulePrerenderCancel]; }
+  void OnShowConsistencyPromo(const GURL& url,
+                              web::WebState* webState) override {
+    [canceler_ schedulePrerenderCancel];
+  }
+  void OnGoIncognito(const GURL& url) override {
+    [canceler_ schedulePrerenderCancel];
+  }
+
+ private:
+  __weak id<PreloadCancelling> canceler_;
+};
+
 // Maximum time to let a cancelled webState attempt to finish restore.
 static const size_t kMaximumCancelledWebStateDelay = 2;
 
@@ -206,7 +227,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
                                  CRWWebStateDelegate,
                                  CRWWebStateObserver,
                                  CRWWebStatePolicyDecider,
-                                 ManageAccountsDelegate,
                                  PrefObserverDelegate,
                                  PreloadCancelling> {
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegate;
@@ -232,6 +252,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   // one. This is needed by |startPrerender| to build the new webstate with the
   // same sessions.
   web::WebState* _webStateToReplace;
+
+  std::unique_ptr<PreloadManageAccountsDelegate> _manageAccountsDelegate;
 }
 
 // The ChromeBrowserState passed on initialization.
@@ -310,6 +332,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
     _observerBridge->ObserveChangesForPreference(
         prefs::kNetworkPredictionSetting, &_prefChangeRegistrar);
     _dialogPresenter = std::make_unique<PreloadJavaScriptDialogPresenter>(self);
+    _manageAccountsDelegate =
+        std::make_unique<PreloadManageAccountsDelegate>(self);
     if (_networkPredictionSetting ==
         prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly) {
       _connectionTypeObserver =
@@ -580,29 +604,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   decisionHandler(WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
-#pragma mark - ManageAccountsDelegate
-
-- (void)onRestoreGaiaCookies {
-  [self schedulePrerenderCancel];
-}
-
-- (void)onManageAccounts {
-  [self schedulePrerenderCancel];
-}
-
-- (void)onShowConsistencyPromo:(const GURL&)url
-                      webState:(web::WebState*)webState {
-  [self schedulePrerenderCancel];
-}
-
-- (void)onAddAccount {
-  [self schedulePrerenderCancel];
-}
-
-- (void)onGoIncognito:(const GURL&)url {
-  [self schedulePrerenderCancel];
-}
-
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
@@ -724,7 +725,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
               self.browserState)) {
-    accountConsistencyService->SetWebStateHandler(_webState.get(), self);
+    accountConsistencyService->SetWebStateHandler(
+        _webState.get(), _manageAccountsDelegate.get());
   }
 
   HistoryTabHelper::FromWebState(_webState.get())

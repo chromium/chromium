@@ -107,7 +107,7 @@ class AccountConsistencyService::AccountConsistencyHandler
                             AccountConsistencyService* service,
                             AccountReconcilor* account_reconcilor,
                             signin::IdentityManager* identity_manager,
-                            id<ManageAccountsDelegate> delegate);
+                            ManageAccountsDelegate* delegate);
 
   void WebStateDestroyed(web::WebState* web_state) override;
 
@@ -145,7 +145,7 @@ class AccountConsistencyService::AccountConsistencyHandler
   AccountReconcilor* account_reconcilor_;                   // Weak.
   signin::IdentityManager* identity_manager_;
   web::WebState* web_state_;
-  __weak id<ManageAccountsDelegate> delegate_;
+  ManageAccountsDelegate* delegate_;  // Weak.
   base::WeakPtrFactory<AccountConsistencyHandler> weak_ptr_factory_;
 };
 
@@ -154,7 +154,7 @@ AccountConsistencyService::AccountConsistencyHandler::AccountConsistencyHandler(
     AccountConsistencyService* service,
     AccountReconcilor* account_reconcilor,
     signin::IdentityManager* identity_manager,
-    id<ManageAccountsDelegate> delegate)
+    ManageAccountsDelegate* delegate)
     : web::WebStatePolicyDecider(web_state),
       account_consistency_service_(service),
       account_reconcilor_(account_reconcilor),
@@ -232,7 +232,8 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
       GURL continue_url = GURL(params.continue_url);
       DLOG_IF(ERROR, !params.continue_url.empty() && !continue_url.is_valid())
           << "Invalid continuation URL: \"" << continue_url << "\"";
-      [delegate_ onGoIncognito:continue_url];
+      if (delegate_)
+        delegate_->OnGoIncognito(continue_url);
       break;
     }
     case signin::GAIA_SERVICE_TYPE_SIGNUP:
@@ -253,11 +254,13 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
           return;
         }
       }
-      [delegate_ onAddAccount];
+      if (delegate_)
+        delegate_->OnAddAccount();
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
     case signin::GAIA_SERVICE_TYPE_DEFAULT:
-      [delegate_ onManageAccounts];
+      if (delegate_)
+        delegate_->OnManageAccounts();
       break;
     case signin::GAIA_SERVICE_TYPE_NONE:
       NOTREACHED();
@@ -281,13 +284,15 @@ void AccountConsistencyService::AccountConsistencyHandler::
     // is not in an inconsistent state (where the identities on the device
     // are different than those on the web). Fallback to asking the user to
     // add an account.
-    [delegate_ onAddAccount];
+    if (delegate_)
+      delegate_->OnAddAccount();
     return;
   }
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
-  [delegate_ onRestoreGaiaCookies];
+  if (delegate_)
+    delegate_->OnRestoreGaiaCookies();
   LogIOSGaiaCookiesState(
       GaiaCookieStateOnSignedInNavigation::kGaiaCookieRestoredOnShowInfobar);
 }
@@ -303,9 +308,9 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
     return;
   }
 
-  if (show_consistency_web_signin_ &&
+  if (delegate_ && show_consistency_web_signin_ &&
       gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
-    [delegate_ onShowConsistencyPromo:url webState:web_state];
+    delegate_->OnShowConsistencyPromo(url, web_state);
   }
   show_consistency_web_signin_ = false;
 }
@@ -397,7 +402,7 @@ void AccountConsistencyService::RunGaiaCookiesRestoredCallbacks(
 
 void AccountConsistencyService::SetWebStateHandler(
     web::WebState* web_state,
-    id<ManageAccountsDelegate> delegate) {
+    ManageAccountsDelegate* delegate) {
   DCHECK(!is_shutdown_) << "SetWebStateHandler called after Shutdown";
   DCHECK(handlers_map_.find(web_state) == handlers_map_.end());
   handlers_map_.insert(std::make_pair(

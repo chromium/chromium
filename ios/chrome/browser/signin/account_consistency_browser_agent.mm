@@ -8,7 +8,6 @@
 
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
-#import "components/signin/ios/browser/manage_accounts_delegate.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/account_reconcilor_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -22,50 +21,6 @@
 #endif
 
 BROWSER_USER_DATA_KEY_IMPL(AccountConsistencyBrowserAgent)
-
-// Obj-C bridge object to forward ManageAccountsDelegate methods to the browser
-// agent.
-// TODO(crbug.com/1293395): Refactor ManageAccountsDelegate into C++, removing
-// the need for this object.
-@interface ManageAccountsDelegateBridge : NSObject <ManageAccountsDelegate>
-
-- (instancetype)initWithBrowserAgent:(AccountConsistencyBrowserAgent*)agent;
-
-@end
-
-@implementation ManageAccountsDelegateBridge {
-  AccountConsistencyBrowserAgent* _agent;
-}
-
-- (instancetype)initWithBrowserAgent:(AccountConsistencyBrowserAgent*)agent {
-  if (self = [super init]) {
-    _agent = agent;
-  }
-  return self;
-}
-
-- (void)onRestoreGaiaCookies {
-  _agent->OnRestoreGaiaCookies();
-}
-
-- (void)onManageAccounts {
-  _agent->OnManageAccounts();
-}
-
-- (void)onAddAccount {
-  _agent->OnAddAccount();
-}
-
-- (void)onShowConsistencyPromo:(const GURL&)url
-                      webState:(web::WebState*)webState {
-  _agent->OnShowConsistencyPromo(url, webState);
-}
-
-- (void)onGoIncognito:(const GURL&)url {
-  _agent->OnGoIncognito(url);
-}
-
-@end
 
 void AccountConsistencyBrowserAgent::CreateForBrowser(
     Browser* browser,
@@ -86,7 +41,6 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     : base_view_controller_(base_view_controller),
       handler_(handler),
       browser_(browser) {
-  bridge_ = [[ManageAccountsDelegateBridge alloc] initWithBrowserAgent:this];
   installation_observer_ =
       std::make_unique<WebStateDependencyInstallationObserver>(
           browser->GetWebStateList(), this);
@@ -100,7 +54,7 @@ void AccountConsistencyBrowserAgent::InstallDependency(
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
               browser_->GetBrowserState())) {
-    accountConsistencyService->SetWebStateHandler(web_state, bridge_);
+    accountConsistencyService->SetWebStateHandler(web_state, this);
   }
 }
 
