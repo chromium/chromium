@@ -84,7 +84,6 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_paths",
-      "//components/crash/core/common:crash_key",
     ]
     sources += [
       "cdm_adapter.cc",
@@ -122,6 +121,7 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_type_conversion",
+      "//components/crash/core/common:crash_key",
     ]
   }
 

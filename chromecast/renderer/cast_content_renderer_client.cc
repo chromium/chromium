@@ -233,12 +233,13 @@ void CastContentRendererClient::RunScriptsAtDocumentEnd(
 #endif
 }
 
-void CastContentRendererClient::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>*
-        key_systems_properties) {
-  media::AddChromecastKeySystems(key_systems_properties,
+void CastContentRendererClient::GetSupportedKeySystems(
+    ::media::GetSupportedKeySystemsCB cb) {
+  ::media::KeySystemPropertiesVector key_systems;
+  media::AddChromecastKeySystems(&key_systems,
                                  false /* enable_persistent_license_support */,
                                  false /* enable_playready */);
+  std::move(cb).Run(std::move(key_systems));
 }
 
 bool CastContentRendererClient::IsSupportedAudioType(

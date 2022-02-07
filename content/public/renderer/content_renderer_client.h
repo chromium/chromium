@@ -21,6 +21,7 @@
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_client.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/key_system_properties.h"
 #include "media/base/supported_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
@@ -63,7 +64,6 @@ namespace media {
 class DecoderFactory;
 class Demuxer;
 class GpuVideoAcceleratorFactories;
-class KeySystemProperties;
 class MediaLog;
 class RendererFactory;
 }
@@ -251,14 +251,12 @@ class CONTENT_EXPORT ContentRendererClient {
   // language.
   virtual bool IsOriginIsolatedPepperPlugin(const base::FilePath& plugin_path);
 
-  // Allows embedder to register the key system(s) it supports by populating
-  // |key_systems|.
-  virtual void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems);
+  // Allows embedder to register the key system(s) it supports.
+  virtual void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb);
 
   // Signal that embedder has changed key systems.
   // TODO(chcunningham): Refactor this to a proper change "observer" API that is
-  // less fragile (don't assume AddSupportedKeySystems has just one caller).
+  // less fragile (don't assume GetSupportedKeySystems has just one caller).
   virtual bool IsKeySystemsUpdateNeeded();
 
   // Allows embedder to describe customized audio capabilities.

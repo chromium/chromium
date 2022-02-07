@@ -10,7 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
@@ -92,10 +94,17 @@ class TestKeySystemsProviderDelegate {
   bool include_widevine_;
 };
 
+void CopyKeySystems(media::KeySystemPropertiesVector* output,
+                    media::KeySystemPropertiesVector input) {
+  *output = std::move(input);
+}
+
 }  // namespace
 
 TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
+  base::test::TaskEnvironment task_environment_;
   ChromeKeySystemsProvider key_systems_provider;
+  media::KeySystemPropertiesVector key_systems;
 
   base::SimpleTestTickClock tick_clock;
   key_systems_provider.SetTickClockForTesting(&tick_clock);
@@ -109,10 +118,10 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
   // IsKeySystemsUpdateNeeded() always returns true after construction.
   EXPECT_TRUE(key_systems_provider.IsKeySystemsUpdateNeeded());
 
-  std::vector<std::unique_ptr<media::KeySystemProperties>> key_systems;
-  key_systems_provider.AddSupportedKeySystems(&key_systems);
+  key_systems_provider.GetSupportedKeySystems(
+      base::BindOnce(&CopyKeySystems, &key_systems));
 
-  // No update needed immediately after AddSupportedKeySystems() call.
+  // No update needed immediately after GetSupportedKeySystems() call.
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
 
   // Widevine not initially provided.
@@ -133,7 +142,9 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
   // Now add Widevine.
   provider_delegate->set_include_widevine(true);
   key_systems.clear();
-  key_systems_provider.AddSupportedKeySystems(&key_systems);
+
+  key_systems_provider.GetSupportedKeySystems(
+      base::BindOnce(&CopyKeySystems, &key_systems));
 
   // Widevine should now be among the list.
   bool found_widevine = false;

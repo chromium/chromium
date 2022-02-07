@@ -25,9 +25,9 @@ RenderMediaClient::RenderMediaClient() {}
 RenderMediaClient::~RenderMediaClient() {
 }
 
-void RenderMediaClient::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems) {
-  GetContentClient()->renderer()->AddSupportedKeySystems(key_systems);
+void RenderMediaClient::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  GetContentClient()->renderer()->GetSupportedKeySystems(std::move(cb));
 }
 
 bool RenderMediaClient::IsKeySystemsUpdateNeeded() {

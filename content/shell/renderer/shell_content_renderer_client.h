@@ -47,9 +47,7 @@ class ShellContentRendererClient : public ContentRendererClient {
       v8::Local<v8::Context> context) override;
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems)
-      override;
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
 #endif
 
  private:

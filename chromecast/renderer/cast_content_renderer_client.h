@@ -64,9 +64,7 @@ class CastContentRendererClient
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<::media::KeySystemProperties>>*
-          key_systems_properties) override;
+  void GetSupportedKeySystems(::media::GetSupportedKeySystemsCB cb) override;
   bool IsSupportedAudioType(const ::media::AudioType& type) override;
   bool IsSupportedVideoType(const ::media::VideoType& type) override;
   bool IsSupportedBitstreamAudioCodec(::media::AudioCodec codec) override;

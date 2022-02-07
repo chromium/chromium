@@ -100,7 +100,8 @@ WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
     std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
         web_frame_delegate)
     : cdm_factory_(cdm_factory),
-      key_system_config_selector_(media::KeySystems::GetInstance(),
+      key_systems_(media::KeySystems::GetInstance()),
+      key_system_config_selector_(key_systems_,
                                   media_permission,
                                   std::move(web_frame_delegate)) {
   DCHECK(cdm_factory_);
@@ -112,10 +113,15 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
     WebEncryptedMediaRequest request) {
   GetReporter(request.KeySystem())->ReportRequested();
 
-  key_system_config_selector_.SelectConfig(
-      request.KeySystem(), request.SupportedConfigurations(),
-      base::BindOnce(&WebEncryptedMediaClientImpl::OnConfigSelected,
-                     weak_factory_.GetWeakPtr(), request));
+  if (!key_systems_->IsUpToDate()) {
+    pending_requests_.push_back(std::move(request));
+    key_systems_->UpdateIfNeeded(
+        base::BindOnce(&WebEncryptedMediaClientImpl::OnKeySystemsUpdated,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  SelectConfig(request);
 }
 
 void WebEncryptedMediaClientImpl::CreateCdm(
@@ -126,6 +132,20 @@ void WebEncryptedMediaClientImpl::CreateCdm(
       cdm_factory_, security_origin, cdm_config,
       base::BindOnce(&CompleteWebContentDecryptionModuleResult,
                      std::move(result)));
+}
+
+void WebEncryptedMediaClientImpl::OnKeySystemsUpdated() {
+  auto requests = std::move(pending_requests_);
+  for (const auto& request : requests)
+    SelectConfig(request);
+}
+
+void WebEncryptedMediaClientImpl::SelectConfig(
+    WebEncryptedMediaRequest request) {
+  key_system_config_selector_.SelectConfig(
+      request.KeySystem(), request.SupportedConfigurations(),
+      base::BindOnce(&WebEncryptedMediaClientImpl::OnConfigSelected,
+                     weak_factory_.GetWeakPtr(), request));
 }
 
 void WebEncryptedMediaClientImpl::OnConfigSelected(

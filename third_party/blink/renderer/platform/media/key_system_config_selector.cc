@@ -992,6 +992,9 @@ void KeySystemConfigSelector::SelectConfig(
     const WebString& key_system,
     const WebVector<WebMediaKeySystemConfiguration>& candidate_configurations,
     SelectConfigCB cb) {
+  DCHECK(key_systems_->IsUpToDate())
+      << "The caller must make sure the Key Systems are up to date";
+
   // Continued from requestMediaKeySystemAccess(), step 6, from
   // https://w3c.github.io/encrypted-media/#requestmediakeysystemaccess
   //
@@ -1002,8 +1005,6 @@ void KeySystemConfigSelector::SelectConfig(
     std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);
     return;
   }
-
-  key_systems_->UpdateIfNeeded();
 
   std::string key_system_ascii = key_system.Ascii();
   if (!key_systems_->IsSupportedKeySystem(key_system_ascii)) {

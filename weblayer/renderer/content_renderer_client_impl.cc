@@ -215,12 +215,14 @@ ContentRendererClientImpl::CreateURLLoaderThrottleProvider(
       browser_interface_broker_.get(), provider_type);
 }
 
-void ContentRendererClientImpl::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
+void ContentRendererClientImpl::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  media::KeySystemPropertiesVector key_systems;
 #if BUILDFLAG(IS_ANDROID)
-  cdm::AddAndroidWidevine(key_systems);
-  cdm::AddAndroidPlatformKeySystems(key_systems);
+  cdm::AddAndroidWidevine(&key_systems);
+  cdm::AddAndroidPlatformKeySystems(&key_systems);
 #endif
+  std::move(cb).Run(std::move(key_systems));
 }
 
 void ContentRendererClientImpl::

@@ -340,19 +340,21 @@ void AddWidevine(
 
 }  // namespace
 
-void AddChromeKeySystems(
-    std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) {
+void GetChromeKeySystems(media::GetSupportedKeySystemsCB cb) {
+  media::KeySystemPropertiesVector key_systems;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))
-    AddExternalClearKey(key_systems);
+    AddExternalClearKey(&key_systems);
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
-  AddWidevine(key_systems);
+  AddWidevine(&key_systems);
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(IS_ANDROID)
-  cdm::AddAndroidWidevine(key_systems);
+  cdm::AddAndroidWidevine(&key_systems);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  std::move(cb).Run(std::move(key_systems));
 }

@@ -1477,9 +1477,9 @@ ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
       browser_interface_broker_.get());
 }
 
-void ChromeContentRendererClient::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
-  key_systems_provider_.AddSupportedKeySystems(key_systems);
+void ChromeContentRendererClient::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  key_systems_provider_.GetSupportedKeySystems(std::move(cb));
 }
 
 bool ChromeContentRendererClient::IsKeySystemsUpdateNeeded() {

@@ -12,7 +12,6 @@
 #include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_system_names.h"
-#include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/aes_decryptor.h"
 #include "url/origin.h"
@@ -24,7 +23,7 @@ DefaultCdmFactory::DefaultCdmFactory() = default;
 DefaultCdmFactory::~DefaultCdmFactory() = default;
 
 static bool ShouldCreateAesDecryptor(const std::string& key_system) {
-  if (CanUseAesDecryptor(key_system))
+  if (IsClearKey(key_system))
     return true;
 
   // Should create AesDecryptor to support External Clear Key key system.

@@ -198,7 +198,12 @@ class FakeKeySystems : public media::KeySystems {
  public:
   ~FakeKeySystems() override = default;
 
-  void UpdateIfNeeded() override { ++update_count; }
+  void UpdateIfNeeded(base::OnceClosure done_cb) override {
+    NOTREACHED() << "Not needed since IsUpToDate() always returns true";
+    std::move(done_cb).Run();
+  }
+
+  bool IsUpToDate() override { return true; }
 
   std::string GetBaseKeySystemName(
       const std::string& key_system) const override {
@@ -363,8 +368,6 @@ class FakeKeySystems : public media::KeySystems {
   // the default values may be changed.
   EmeFeatureSupport persistent_state = EmeFeatureSupport::NOT_SUPPORTED;
   EmeFeatureSupport distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
-
-  int update_count = 0;
 };
 
 class FakeMediaPermission : public media::MediaPermission {
@@ -563,17 +566,6 @@ TEST_F(KeySystemConfigSelectorTest, UsableConfig) {
   EXPECT_FALSE(cdm_config_.allow_distinctive_identifier);
   EXPECT_FALSE(cdm_config_.allow_persistent_state);
   EXPECT_FALSE(cdm_config_.use_hw_secure_codecs);
-}
-
-// KeySystemConfigSelector should make sure it uses up-to-date KeySystems.
-TEST_F(KeySystemConfigSelectorTest, UpdateKeySystems) {
-  configs_.push_back(UsableConfiguration());
-
-  ASSERT_EQ(key_systems_->update_count, 0);
-  SelectConfig();
-  EXPECT_EQ(key_systems_->update_count, 1);
-  SelectConfig();
-  EXPECT_EQ(key_systems_->update_count, 2);
 }
 
 TEST_F(KeySystemConfigSelectorTest, Label) {

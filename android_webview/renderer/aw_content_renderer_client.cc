@@ -200,9 +200,11 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
   communication->RunScriptsAtDocumentStart();
 }
 
-void AwContentRendererClient::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
-  AwAddKeySystems(key_systems);
+void AwContentRendererClient::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  media::KeySystemPropertiesVector key_systems;
+  AwAddKeySystems(&key_systems);
+  std::move(cb).Run(std::move(key_systems));
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>

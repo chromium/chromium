@@ -48,9 +48,7 @@ class ContentRendererClientImpl : public content::ContentRendererClient {
   std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType provider_type) override;
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems)
-      override;
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
   bool IsPrefetchOnly(content::RenderFrame* render_frame) override;
   bool DeferMediaLoad(content::RenderFrame* render_frame,

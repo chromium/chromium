@@ -160,9 +160,7 @@ class ChromeContentRendererClient
       content::RenderFrame* render_frame,
       media::SpeechRecognitionClient::OnReadyCallback callback) override;
 #endif
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems)
-      override;
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   bool IsKeySystemsUpdateNeeded() override;
   bool IsPluginAllowedToUseCameraDeviceAPI(const GURL& url) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;

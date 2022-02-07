@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
@@ -76,6 +77,12 @@ class MEDIA_EXPORT KeySystemProperties {
   // Returns whether AesDecryptor can be used for this key system.
   virtual bool UseAesDecryptor() const;
 };
+
+using KeySystemPropertiesVector =
+    std::vector<std::unique_ptr<KeySystemProperties>>;
+
+using GetSupportedKeySystemsCB =
+    base::OnceCallback<void(KeySystemPropertiesVector)>;
 
 }  // namespace media
 

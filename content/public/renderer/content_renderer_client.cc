@@ -156,8 +156,10 @@ bool ContentRendererClient::IsOriginIsolatedPepperPlugin(
   return true;
 }
 
-void ContentRendererClient::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems) {}
+void ContentRendererClient::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  std::move(cb).Run({});
+}
 
 bool ContentRendererClient::IsKeySystemsUpdateNeeded() {
   return false;
