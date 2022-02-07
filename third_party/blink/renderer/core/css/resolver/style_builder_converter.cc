@@ -1674,7 +1674,7 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
     CSSValueID value_id = identifier_value->GetValueID();
     if (value_id == CSSValueID::kCurrentcolor)
       return StyleColor::CurrentColor();
-    if (StyleColor::IsSystemColor(value_id)) {
+    if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
       CountSystemColorComputeToSelfUsage(state);
       return StyleColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
@@ -1697,7 +1697,7 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
       return StyleAutoColor::CurrentColor();
     if (value_id == CSSValueID::kAuto)
       return StyleAutoColor::AutoColor();
-    if (StyleColor::IsSystemColor(value_id)) {
+    if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
       CountSystemColorComputeToSelfUsage(state);
       return StyleAutoColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(

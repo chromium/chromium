@@ -1450,11 +1450,17 @@ static bool ParseColorFunction(CSSParserTokenRange& range,
 
 CSSValue* ConsumeColor(CSSParserTokenRange& range,
                        const CSSParserContext& context,
-                       bool accept_quirky_colors) {
+                       bool accept_quirky_colors,
+                       AllowedColorKeywords allowed_keywords) {
   CSSValueID id = range.Peek().Id();
   if (StyleColor::IsColorKeyword(id)) {
     if (!isValueAllowedInMode(id, context.Mode()))
       return nullptr;
+    if (allowed_keywords != AllowedColorKeywords::kAllowSystemColor &&
+        (StyleColor::IsSystemColorIncludingDeprecated(id) ||
+         StyleColor::IsSystemColor(id))) {
+      return nullptr;
+    }
     CSSIdentifierValue* color = ConsumeIdent(range);
     return color;
   }
@@ -1462,7 +1468,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
   if (!ParseHexColor(range, color, accept_quirky_colors) &&
       !ParseColorFunction(range, context, color)) {
     return ConsumeInternalLightDark(ConsumeColor, range, context,
-                                    accept_quirky_colors);
+                                    accept_quirky_colors, allowed_keywords);
   }
   return cssvalue::CSSColor::Create(color);
 }
@@ -2816,6 +2822,13 @@ bool IsDefaultKeyword(StringView keyword) {
 bool IsHashIdentifier(const CSSParserToken& token) {
   return token.GetType() == kHashToken &&
          token.GetHashTokenType() == kHashTokenId;
+}
+
+bool IsDashedIdent(const CSSParserToken& token) {
+  if (token.GetType() != kIdentToken)
+    return false;
+  DCHECK(!IsCSSWideKeyword(token.Value()));
+  return token.Value().ToString().StartsWith(kTwoDashes);
 }
 
 bool IsTimelineName(const CSSParserToken& token) {

@@ -2359,7 +2359,7 @@ Color ComputedStyle::ResolvedColor(const StyleColor& color) const {
 bool ComputedStyle::ShouldForceColor(const StyleColor& unforced_color) const {
   return InForcedColorsMode() &&
          ForcedColorAdjust() == EForcedColorAdjust::kAuto &&
-         !unforced_color.IsSystemColor();
+         !unforced_color.IsSystemColorIncludingDeprecated();
 }
 
 bool ComputedStyle::ShouldPreserveParentColor() const {
@@ -2540,7 +2540,7 @@ Color ComputedStyle::GetInternalVisitedCurrentColor() const {
 
 Color ComputedStyle::GetInternalForcedCurrentColor() const {
   DCHECK(!InternalForcedColor().IsCurrentColor());
-  if (GetColor().IsSystemColor())
+  if (GetColor().IsSystemColorIncludingDeprecated())
     return GetCurrentColor();
   return InternalForcedColor().Resolve(Color(), UsedColorScheme(),
                                        /* is_forced_color */ true);
@@ -2548,7 +2548,7 @@ Color ComputedStyle::GetInternalForcedCurrentColor() const {
 
 Color ComputedStyle::GetInternalForcedVisitedCurrentColor() const {
   DCHECK(!InternalForcedVisitedColor().IsCurrentColor());
-  if (InternalVisitedColor().IsSystemColor())
+  if (InternalVisitedColor().IsSystemColorIncludingDeprecated())
     return GetInternalVisitedCurrentColor();
   return InternalForcedVisitedColor().Resolve(Color(), UsedColorScheme(),
                                               /* is_forced_color */ true);

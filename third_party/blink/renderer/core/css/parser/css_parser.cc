@@ -288,7 +288,7 @@ bool CSSParser::ParseSystemColor(Color& color,
                                  const String& color_string,
                                  mojom::blink::ColorScheme color_scheme) {
   CSSValueID id = CssValueKeywordID(color_string);
-  if (!StyleColor::IsSystemColor(id))
+  if (!StyleColor::IsSystemColorIncludingDeprecated(id))
     return false;
 
   color = LayoutTheme::GetTheme().SystemColor(id, color_scheme);

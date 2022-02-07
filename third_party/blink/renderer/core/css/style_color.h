@@ -61,13 +61,16 @@ class CORE_EXPORT StyleColor {
   bool IsCurrentColor() const {
     return color_keyword_ == CSSValueID::kCurrentcolor;
   }
+  bool IsSystemColorIncludingDeprecated() const {
+    return IsSystemColorIncludingDeprecated(color_keyword_);
+  }
   bool IsSystemColor() const { return IsSystemColor(color_keyword_); }
   Color GetColor() const {
     // TODO(1081945): System colors will fail the IsNumeric check, as they store
     // a keyword, but they also have a stored color that may need to be accessed
     // directly. For example in FilterEffectBuilder::BuildFilterEffect for
     // shadow colors.
-    DCHECK(IsNumeric() || IsSystemColor());
+    DCHECK(IsNumeric() || IsSystemColorIncludingDeprecated());
     return color_;
   }
   CSSValueID GetColorKeyword() const {
@@ -97,6 +100,7 @@ class CORE_EXPORT StyleColor {
   static Color ColorFromKeyword(CSSValueID,
                                 mojom::blink::ColorScheme color_scheme);
   static bool IsColorKeyword(CSSValueID);
+  static bool IsSystemColorIncludingDeprecated(CSSValueID);
   static bool IsSystemColor(CSSValueID);
 
   inline bool operator==(const StyleColor& other) const {
@@ -114,7 +118,8 @@ class CORE_EXPORT StyleColor {
     // At least one of color_keyword_ and color_ should retain its default
     // value.
     return EffectiveColorKeyword() == CSSValueID::kInvalid ||
-           color_ == Color() || IsSystemColor(EffectiveColorKeyword());
+           color_ == Color() ||
+           IsSystemColorIncludingDeprecated(EffectiveColorKeyword());
   }
 
   Color color_;

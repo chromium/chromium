@@ -260,5 +260,62 @@ TEST(CSSParsingUtilsTest, ConsumeAnyValue) {
   }
 }
 
+TEST(CSSParsingUtilsTest, DashedIdent) {
+  struct Expectations {
+    String css_text;
+    bool is_dashed_indent;
+  } expectations[] = {
+      {"--grogu", true}, {"--1234", true}, {"--\U0001F37A", true},
+      {"--", true},      {"-", false},     {"blue", false},
+      {"body", false},   {"0", false},     {"#FFAA00", false},
+  };
+  for (auto& expectation : expectations) {
+    auto tokens = CSSTokenizer(expectation.css_text).TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    EXPECT_EQ(css_parsing_utils::IsDashedIdent(range.Peek()),
+              expectation.is_dashed_indent);
+  }
+}
+
+TEST(CSSParsingUtilsTest, NoSystemColor) {
+  auto ConsumeColorForTest =
+      [](String css_text,
+         css_parsing_utils::AllowedColorKeywords allowed_keywords) {
+        auto tokens = CSSTokenizer(css_text).TokenizeToEOF();
+        CSSParserTokenRange range(tokens);
+        return ConsumeColor(range, *MakeContext(), false, allowed_keywords);
+      };
+  using css_parsing_utils::AllowedColorKeywords;
+
+  struct {
+    STACK_ALLOCATED();
+
+   public:
+    String css_text;
+    CSSIdentifierValue* allowed_expectation;
+    CSSIdentifierValue* not_allowed_expectation;
+  } expectations[]{
+      {"Canvas", CSSIdentifierValue::Create(CSSValueID::kCanvas), nullptr},
+      {"HighlightText", CSSIdentifierValue::Create(CSSValueID::kHighlighttext),
+       nullptr},
+      {"GrayText", CSSIdentifierValue::Create(CSSValueID::kGraytext), nullptr},
+      {"blue", CSSIdentifierValue::Create(CSSValueID::kBlue),
+       CSSIdentifierValue::Create(CSSValueID::kBlue)},
+      // Deprecated system colors are not allowed either.
+      {"ActiveBorder", CSSIdentifierValue::Create(CSSValueID::kActiveborder),
+       nullptr},
+      {"WindowText", CSSIdentifierValue::Create(CSSValueID::kWindowtext),
+       nullptr},
+  };
+  for (auto& expectation : expectations) {
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
+                                  AllowedColorKeywords::kAllowSystemColor),
+              expectation.allowed_expectation);
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
+                                  AllowedColorKeywords::kNoSystemColor),
+              expectation.not_allowed_expectation);
+  }
+}
+
 }  // namespace
 }  // namespace blink
