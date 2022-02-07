@@ -92,7 +92,8 @@ void LeakDetectionDelegateHelper::ProcessResults() {
 
   IsSaved is_saved(
       base::ranges::any_of(partial_results_, [this](const auto& form) {
-        return form->url == url_ && form->username_value == username_;
+        return form->url == url_ && form->username_value == username_ &&
+               form->password_value == password_;
       }));
   IsReused is_reused(partial_results_.size() > (is_saved ? 1 : 0));
   HasChangeScript has_change_script(script_is_available_);
