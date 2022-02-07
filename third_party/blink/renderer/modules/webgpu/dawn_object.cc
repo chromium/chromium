@@ -19,6 +19,20 @@ DawnObjectBase::GetDawnControlClient() const {
   return dawn_control_client_;
 }
 
+void DawnObjectBase::setLabel(ScriptState* script_state,
+                              const ScriptValue value,
+                              ExceptionState& exception_state) {
+  v8::Local<v8::Value> v8_value = value.V8Value();
+  if (v8_value->IsString()) {
+    setLabel(ToCoreString(v8::Local<v8::String>::Cast(v8_value)));
+  } else if (v8_value->IsUndefined()) {
+    setLabel(String());
+  } else {
+    exception_state.ThrowTypeError(
+        "'label' is not of type 'string' or undefined");
+  }
+}
+
 void DawnObjectBase::setLabel(const String& value) {
   // TODO: Relay label changes to Dawn
   label_ = value;

@@ -9,6 +9,7 @@
 #include <dawn/webgpu.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -89,7 +90,18 @@ class DawnObjectBase {
   void FlushNow();
 
   // GPUObjectBase mixin implementation
-  const String& label() const { return label_; }
+  const ScriptValue label(ScriptState* script_state,
+                          ExceptionState& exception_state) const {
+    if (label_.IsNull()) {
+      v8::Isolate* isolate = script_state->GetIsolate();
+      return ScriptValue(isolate, v8::Undefined(isolate));
+    }
+    return ScriptValue::From(script_state, label_);
+  }
+  void setLabel(ScriptState* script_state,
+                const ScriptValue value,
+                ExceptionState& exception_state);
+
   void setLabel(const String& value);
 
  private:
