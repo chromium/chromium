@@ -70,7 +70,7 @@ extern const base::Feature kUsernameFirstFlowFilling;
 extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
 
 // All features parameters are in alphabetical order.
-
+extern const base::FeatureParam<bool> kPasswordChangeLiveExperimentParam;
 #if BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<int> kMigrationVersion;
 #endif

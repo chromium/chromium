@@ -230,6 +230,12 @@ const base::Feature kUsernameFirstFlowFallbackCrowdsourcing = {
     "UsernameFirstFlowFallbackCrowdsourcing",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Returns true if the client is part of the live_experiment group for
+// |kPasswordDomainCapabilitiesFetching|, otherwise, the client is assumed to be
+// in the regular launch group.
+extern const base::FeatureParam<bool> kPasswordChangeLiveExperimentParam = {
+    &kPasswordDomainCapabilitiesFetching, "live_experiment", false};
+
 #if BUILDFLAG(IS_ANDROID)
 // Current migration version to Google Mobile Services. If version saved in pref
 // is lower than 'kMigrationVersion' passwords will be re-uploaded.

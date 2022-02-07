@@ -325,6 +325,9 @@ static_library("browser") {
     sources += [
       "built_in_backend_to_android_backend_migrator.cc",
       "built_in_backend_to_android_backend_migrator.h",
+      "capabilities_service.h",
+      "capabilities_service_impl.cc",
+      "capabilities_service_impl.h",
       "password_scripts_fetcher.h",
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",
@@ -333,6 +336,7 @@ static_library("browser") {
       "password_store_proxy_backend.cc",
       "password_store_proxy_backend.h",
     ]
+    deps += [ "//components/autofill_assistant/browser/public" ]
   }
 
   if (!is_ios) {
@@ -716,6 +720,7 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "built_in_backend_to_android_backend_migrator_unittest.cc",
+      "capabilities_service_impl_unittest.cc",
       "password_scripts_fetcher_impl_unittests.cc",
       "password_store_backend_migration_decorator_unittest.cc",
       "password_store_proxy_backend_unittest.cc",
@@ -795,6 +800,10 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//url",
   ]
+
+  if (is_android) {
+    deps += [ "//components/autofill_assistant/browser/public" ]
+  }
 }
 
 fuzzer_test("csv_reader_fuzzer") {
