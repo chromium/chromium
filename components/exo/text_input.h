@@ -181,7 +181,7 @@ class TextInput : public ui::TextInputClient,
   void OnKeyboardHidden() override;
 
  private:
-  void AttachInputMethod();
+  void AttachInputMethod(aura::Window* window);
   void DetachInputMethod();
 
   // Delegate to talk to actual its client.

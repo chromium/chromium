@@ -387,7 +387,7 @@ void text_input_set_content_type(wl_client* client,
       type = ui::TEXT_INPUT_TYPE_EMAIL;
       break;
     case ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PASSWORD:
-      DCHECK(!should_do_learning);
+      should_do_learning = false;
       type = ui::TEXT_INPUT_TYPE_PASSWORD;
       break;
     case ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE:

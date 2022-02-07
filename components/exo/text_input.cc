@@ -42,16 +42,12 @@ TextInput::~TextInput() {
 }
 
 void TextInput::Activate(Surface* surface) {
-  DLOG_IF(ERROR, window_) << "Already activated with " << window_;
   DCHECK(surface);
-
-  window_ = surface->window();
-  AttachInputMethod();
+  AttachInputMethod(surface->window());
 }
 
 void TextInput::Deactivate() {
   DetachInputMethod();
-  window_ = nullptr;
 }
 
 void TextInput::ShowVirtualKeyboardIfEnabled() {
@@ -403,18 +399,25 @@ void TextInput::OnKeyboardHidden() {
   delegate_->OnVirtualKeyboardVisibilityChanged(false);
 }
 
-void TextInput::AttachInputMethod() {
+void TextInput::AttachInputMethod(aura::Window* window) {
+  DCHECK(window);
+
+  if (window_) {
+    if (window == window_)
+      return;
+    DetachInputMethod();
+  }
   DCHECK(!input_method_);
 
-  ui::InputMethod* input_method = GetInputMethod(window_);
-  if (!input_method) {
+  window_ = window;
+  input_method_ = GetInputMethod(window_);
+  if (!input_method_) {
     LOG(ERROR) << "input method not found";
     return;
   }
 
   input_mode_ = ui::TEXT_INPUT_MODE_TEXT;
   input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
-  input_method_ = input_method;
   if (auto* controller = input_method_->GetVirtualKeyboardController())
     controller->AddObserver(this);
   input_method_->SetFocusedTextInputClient(this);
@@ -437,6 +440,7 @@ void TextInput::DetachInputMethod() {
   if (auto* controller = input_method_->GetVirtualKeyboardController())
     controller->RemoveObserver(this);
   input_method_ = nullptr;
+  window_ = nullptr;
   delegate_->Deactivated();
 }
 
