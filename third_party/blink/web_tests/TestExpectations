@@ -7614,3 +7614,4 @@ crbug.com/1293965 [ Mac ] fast/forms/color-scheme/week-picker/week-picker-appear
 
 # Sheriff 2022-02-07
 crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
+crbug.com/1278570 [ Linux ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
