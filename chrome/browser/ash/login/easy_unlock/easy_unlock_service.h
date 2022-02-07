@@ -125,6 +125,18 @@ class EasyUnlockService : public KeyedService,
   // Returns true if ChromeOS login is enabled by the user.
   virtual bool IsChromeOSLoginEnabled() const;
 
+  // To be called when EasyUnlockService is "warming up", for example, on screen
+  // lock, after suspend, when the login screen is starting up, etc. During a
+  // period like this, not all sub-systems are fully initialized, particularly
+  // UnlockManager and the Bluetooth stack, so to avoid UI jank, callers can use
+  // this method to fill in the UI with an approximation of what the UI will
+  // look like in <1 second. The resulting initial state will be one of two
+  // possibilities:
+  //   * SmartLockState::kConnectingToPhone: if the feature is allowed, enabled,
+  //     and has kicked off a scan/connection.
+  //   * SmartLockState::kDisabled: if any values above can't be confirmed.
+  virtual SmartLockState GetInitialSmartLockState() const;
+
   // Sets the hardlock state for the associated user.
   void SetHardlockState(SmartLockStateHandler::HardlockState state);
 
@@ -213,6 +225,9 @@ class EasyUnlockService : public KeyedService,
 
   // Checks whether Easy unlock should be running and updates app state.
   void UpdateAppState();
+
+  // Fill in the UI with the state returned by GetInitialSmartLockState().
+  void ShowInitialSmartLockState();
 
   // Resets the Smart Lock state set by this service.
   void ResetSmartLockState();

@@ -543,4 +543,62 @@ TEST_F(EasyUnlockServiceRegularTest,
   SetScreenLockState(false /* is_locked */);
 }
 
+TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            service->GetInitialSmartLockState());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetIsEnabled(false);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+  EXPECT_EQ(SmartLockState::kDisabled, service->GetInitialSmartLockState());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, ShowInitialSmartLockState_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state());
+
+  SetScreenLockState(true /* is_locked */);
+
+  // Before EasyUnlockService::UpdateSmartLockState() is called externally,
+  // ensure that internal state is updated to an "initial" state to prevent
+  // UI jank.
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_lock_handler_->smart_lock_state().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest,
+       ShowInitialSmartLockState_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetIsEnabled(false);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state());
+
+  SetScreenLockState(true /* is_locked */);
+
+  // Before EasyUnlockService::UpdateSmartLockState() is called externally,
+  // ensure that internal state is updated to an "initial" state to prevent
+  // UI jank.
+  EXPECT_EQ(SmartLockState::kDisabled,
+            fake_lock_handler_->smart_lock_state().value());
+}
+
 }  // namespace ash

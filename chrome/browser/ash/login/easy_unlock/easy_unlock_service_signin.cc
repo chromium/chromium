@@ -345,6 +345,13 @@ bool EasyUnlockServiceSignin::IsChromeOSLoginEnabled() const {
   return pref_manager_ && pref_manager_->IsChromeOSLoginEnabled();
 }
 
+SmartLockState EasyUnlockServiceSignin::GetInitialSmartLockState() const {
+  if (IsChromeOSLoginEnabled())
+    return EasyUnlockService::GetInitialSmartLockState();
+
+  return SmartLockState::kDisabled;
+}
+
 void EasyUnlockServiceSignin::OnSuspendDoneInternal() {
   // Ignored.
 }
@@ -416,7 +423,7 @@ void EasyUnlockServiceSignin::OnFocusedUserChanged(
 
   // Update initial UI is when the account picker on login screen is ready.
   if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
-    // TODO(b/216832183): Show initial Smart Lock state to prevent UI jank.
+    ShowInitialSmartLockState();
   } else {
     ShowInitialUserPodState();
   }

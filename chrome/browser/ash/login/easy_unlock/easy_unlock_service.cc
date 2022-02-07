@@ -202,6 +202,13 @@ bool EasyUnlockService::IsChromeOSLoginEnabled() const {
   return false;
 }
 
+SmartLockState EasyUnlockService::GetInitialSmartLockState() const {
+  if (IsAllowed() && IsEnabled() && proximity_auth_system_ != nullptr)
+    return SmartLockState::kConnectingToPhone;
+
+  return SmartLockState::kDisabled;
+}
+
 void EasyUnlockService::SetHardlockState(
     SmartLockStateHandler::HardlockState state) {
   if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
@@ -517,7 +524,9 @@ void EasyUnlockService::Shutdown() {
 
 void EasyUnlockService::OnScreenDidLock(
     proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
-  // TODO(b/216832183): Show initial Smart Lock state to prevent UI jank.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    ShowInitialSmartLockState();
+  }
 }
 
 void EasyUnlockService::UpdateAppState() {
@@ -532,8 +541,30 @@ void EasyUnlockService::UpdateAppState() {
   }
 }
 
+void EasyUnlockService::ShowInitialSmartLockState() {
+  // Only proceed if the screen is locked to prevent the UI event from not
+  // persisting within UpdateSmartLockState().
+  //
+  // Note: ScreenlockBridge::IsLocked() may return a false positive if the
+  // system is "warming up" (for example, ScreenlockBridge::IsLocked() will
+  // return false when EasyUnlockServiceSignin is first instantiated because of
+  // initialization timing in UserSelectionScreen). To work around this race,
+  // ShowInitialSmartLockState() is also called from OnScreenDidLock() (which
+  // triggers when ScreenlockBridge::IsLocked() becomes true) to ensure that
+  // an initial state is displayed in the UI.
+  auto* screenlock_bridge = proximity_auth::ScreenlockBridge::Get();
+  if (screenlock_bridge && screenlock_bridge->IsLocked()) {
+    UpdateSmartLockState(GetInitialSmartLockState());
+  }
+}
+
 void EasyUnlockService::ResetSmartLockState() {
-  smartlock_state_handler_.reset();
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    smart_lock_state_.reset();
+  } else {
+    smartlock_state_handler_.reset();
+  }
+
   auth_attempt_.reset();
 }
 
@@ -804,8 +835,16 @@ void EasyUnlockService::OnCryptohomeKeysFetchedForChecking(
 }
 
 void EasyUnlockService::PrepareForSuspend() {
-  if (smartlock_state_handler_ && smartlock_state_handler_->IsActive())
-    UpdateSmartLockState(SmartLockState::kConnectingToPhone);
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    if (smart_lock_state_ && *smart_lock_state_ != SmartLockState::kInactive) {
+      ShowInitialSmartLockState();
+    }
+  } else {
+    if (smartlock_state_handler_ && smartlock_state_handler_->IsActive()) {
+      UpdateSmartLockState(SmartLockState::kConnectingToPhone);
+    }
+  }
+
   if (proximity_auth_system_)
     proximity_auth_system_->OnSuspend();
 }
