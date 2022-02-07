@@ -84,6 +84,8 @@ function setupSync() {
 suite('OsSyncControlsTest', function() {
   let browserProxy = null;
   let syncControls = null;
+  let syncEverything = null;
+  let customizeSync = null;
 
   setup(function() {
     browserProxy = new TestOsSyncBrowserProxy();
@@ -92,6 +94,13 @@ suite('OsSyncControlsTest', function() {
     PolymerTest.clearBody();
     syncControls = document.createElement('os-sync-controls');
     document.body.appendChild(syncControls);
+
+    syncEverything = syncControls.shadowRoot.querySelector(
+        'cr-radio-button[name="sync-everything"]');
+    customizeSync = syncControls.shadowRoot.querySelector(
+        'cr-radio-button[name="customize-sync"]');
+    assertTrue(!!syncEverything);
+    assertTrue(!!customizeSync);
   });
 
   teardown(function() {
@@ -108,12 +117,8 @@ suite('OsSyncControlsTest', function() {
   test('SyncEnabled', function() {
     setupSync();
 
-    assertFalse(syncControls.$.syncEverythingCheckboxLabel.hasAttribute(
-        'label-disabled'));
-
-    const syncAllControl = syncControls.$.syncAllOsTypesControl;
-    assertFalse(syncAllControl.disabled);
-    assertTrue(syncAllControl.checked);
+    assertTrue(syncEverything.checked);
+    assertFalse(customizeSync.checked);
 
     const labels = syncControls.shadowRoot.querySelectorAll(
         '.list-item:not([hidden]) > div.checkbox-label');
@@ -131,7 +136,7 @@ suite('OsSyncControlsTest', function() {
 
   test('UncheckingSyncAllEnablesAllIndividualControls', async function() {
     setupSync();
-    syncControls.$.syncAllOsTypesControl.click();
+    customizeSync.click();
     const prefs = await browserProxy.whenCalled('setOsSyncDatatypes');
 
     const expectedPrefs = getSyncAllPrefs();
@@ -155,8 +160,8 @@ suite('OsSyncControlsTest', function() {
   test('DisablingOneControlUpdatesPrefs', async function() {
     setupSync();
 
-    // Disable "Sync All".
-    syncControls.$.syncAllOsTypesControl.click();
+    // Select "Customize sync" instead of "Sync everything".
+    customizeSync.click();
     // Disable "Settings".
     syncControls.$.osPreferencesControl.click();
     const prefs = await browserProxy.whenCalled('setOsSyncDatatypes');

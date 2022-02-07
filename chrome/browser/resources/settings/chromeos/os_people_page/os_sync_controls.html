@@ -1,12 +1,6 @@
-<style include="settings-shared">
+<style include="cr-shared-style settings-shared">
   .settings-box {
     border-top: none;
-  }
-
-  .flex {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
   }
 
   .list-item {
@@ -27,16 +21,20 @@
       link-url="$i18n{browserSettingsSyncSetupUrl}">
   </localized-link>
 </div>
-<div class="settings-box">
-  <div id="syncEverythingCheckboxLabel"
-      class="start">
-    $i18n{syncEverythingCheckboxLabel}
-  </div>
-  <cr-toggle id="syncAllOsTypesControl"
-      checked="{{osSyncPrefs.syncAllOsTypes}}"
-      on-change="onSyncAllOsTypesChanged_"
-      aria-labelledby="syncEverythingCheckboxLabel">
-  </cr-toggle>
+<div id="syncDataRadio" class="cr-row first">
+  <cr-radio-group
+      selected="[[selectedSyncDataRadio_(osSyncPrefs)]]"
+      on-selected-changed="onSyncDataRadioSelectionChanged_">
+    <cr-radio-button name="sync-everything">
+      $i18n{syncEverythingCheckboxLabel}
+    </cr-radio-button>
+    <cr-radio-button name="customize-sync">
+      $i18n{customizeSyncLabel}
+    </cr-radio-button>
+  </cr-radio-group>
+</div>
+<div class="cr-row first">
+  <h2 class="cr-title-text flex">$i18n{syncData}</h2>
 </div>
 <div class="list-frame" id="sync-data-types">
   <div class="list-item" hidden="[[!osSyncPrefs.osAppsRegistered]]">

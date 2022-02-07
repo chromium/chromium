@@ -23,6 +23,15 @@ import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_sync_browser_proxy.m.js';
 
+/**
+ * Names of the radio buttons which allow the user to choose their data sync
+ * mechanism.
+ * @enum {string}
+ */
+const RadioButtonNames = {
+  SYNC_EVERYTHING: 'sync-everything',
+  CUSTOMIZE_SYNC: 'customize-sync',
+};
 
 /**
  * Names of the individual data type properties to be cached from
@@ -40,6 +49,7 @@ const SyncPrefsIndividualDataTypes = [
 ];
 
 /**
+ * TODO(https://crbug.com/1294178): Consider merging this with sync_controls.
  * @fileoverview
  * 'os-sync-controls' contains all OS sync data type controls.
  */
@@ -138,14 +148,23 @@ Polymer({
   },
 
   /**
-   * Handler for when the sync all data types checkbox is changed.
-   * @param {!Event} event
+   * Computed binding returning the selected sync data radio button.
    * @private
    */
-  onSyncAllOsTypesChanged_(event) {
-    if (event.target.checked) {
-      this.set('osSyncPrefs.syncAllOsTypes', true);
+  selectedSyncDataRadio_() {
+    return this.osSyncPrefs.syncAllOsTypes ? RadioButtonNames.SYNC_EVERYTHING :
+                                             RadioButtonNames.CUSTOMIZE_SYNC;
+  },
 
+  /**
+   * Called when the sync data radio button selection changes.
+   * @private
+   */
+  onSyncDataRadioSelectionChanged_(event) {
+    const syncAllDataTypes =
+        event.detail.value === RadioButtonNames.SYNC_EVERYTHING;
+    this.set('osSyncPrefs.syncAllOsTypes', syncAllDataTypes);
+    if (syncAllDataTypes) {
       // Cache the previously selected preference before checking every box.
       this.cachedOsSyncPrefs_ = {};
       for (const dataType of SyncPrefsIndividualDataTypes) {
