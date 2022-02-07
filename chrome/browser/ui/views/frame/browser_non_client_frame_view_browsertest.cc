@@ -63,10 +63,8 @@ class BrowserNonClientFrameViewBrowserTest
     blink::mojom::Manifest manifest;
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
-    if (app_theme_color_) {
-      manifest.has_theme_color = true;
-      manifest.theme_color = *app_theme_color_;
-    }
+    manifest.has_theme_color = true;
+    manifest.theme_color = app_theme_color_;
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     GURL manifest_url = embedded_test_server()->GetURL("/manifest");
@@ -77,19 +75,25 @@ class BrowserNonClientFrameViewBrowserTest
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     app_browser_ = web_app::LaunchWebAppBrowser(profile(), app_id);
     web_contents_ = app_browser_->tab_strip_model()->GetActiveWebContents();
-    // Ensure the main page has loaded and is ready for ExecJs DOM manipulation.
+    // Ensure the main page has loaded and is ready for ExecJs DOM
+    // manipulation.
     ASSERT_TRUE(content::NavigateToURL(web_contents_, manifest.start_url));
 
     app_browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-    app_frame_view_ = app_browser_view_->frame()->GetFrameView();
+  }
+
+  // Frame view may get reset after theme change, so always access from the
+  // browser view and don't retain the pointer.
+  // TODO(crbug.com/1020050): Make it not do this and only refresh the Widget.
+  BrowserNonClientFrameView* GetAppFrameView() {
+    return app_browser_view_->frame()->GetFrameView();
   }
 
  protected:
-  absl::optional<SkColor> app_theme_color_ = SK_ColorBLUE;
+  SkColor app_theme_color_ = SK_ColorBLUE;
   raw_ptr<Browser> app_browser_ = nullptr;
   raw_ptr<BrowserView> app_browser_view_ = nullptr;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  raw_ptr<BrowserNonClientFrameView> app_frame_view_ = nullptr;
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
@@ -124,8 +128,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   InstallAndLaunchBookmarkApp();
   // Note: This is checking for the bookmark app's theme color, not the user's
   // theme color.
-  EXPECT_EQ(*app_theme_color_,
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+  EXPECT_EQ(app_theme_color_,
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 }
 
 // Tests the frame color for a bookmark app when a theme is applied, with the
@@ -134,12 +138,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        BookmarkAppFrameColorCustomThemeNoThemeColor) {
   InstallAndLaunchBookmarkApp();
   const SkColor color_without_theme =
-      app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive);
+      GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive);
 
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
   // Bookmark apps are not affected by browser themes.
   EXPECT_EQ(color_without_theme,
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 }
 
 // Tests that an opaque frame color is used for a web app with a transparent
@@ -153,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 
   app_theme_color_ = SkColorSetA(SK_ColorBLUE, 0x88);
   InstallAndLaunchBookmarkApp();
-  EXPECT_EQ(app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive),
+  EXPECT_EQ(GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive),
             SK_ColorBLUE);
 }
 
@@ -173,14 +177,15 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   // color to the system color (not the app theme color); otherwise the title
   // and border would clash horribly with the GTK title bar.
   // (https://crbug.com/878636)
-  const ui::ThemeProvider* theme_provider = app_frame_view_->GetThemeProvider();
+  const ui::ThemeProvider* theme_provider =
+      GetAppFrameView()->GetThemeProvider();
   const SkColor frame_color =
       theme_provider->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE);
   EXPECT_EQ(frame_color,
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 #else
-  EXPECT_EQ(*app_theme_color_,
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+  EXPECT_EQ(app_theme_color_,
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 #endif
 }
 
@@ -189,12 +194,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        FullscreenForTabTitlebarHeight) {
   InstallAndLaunchBookmarkApp();
-  EXPECT_GT(app_frame_view_->GetTopInset(false), 0);
+  EXPECT_GT(GetAppFrameView()->GetTopInset(false), 0);
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
       ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});
 
-  EXPECT_EQ(app_frame_view_->GetTopInset(false), 0);
+  EXPECT_EQ(GetAppFrameView()->GetTopInset(false), 0);
 }
 
 // Tests that the custom tab bar is visible in fullscreen mode.
@@ -208,8 +213,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   static_cast<content::WebContentsDelegate*>(app_browser_)
       ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});
 
-  EXPECT_TRUE(
-      app_frame_view_->browser_view()->toolbar()->custom_tab_bar()->IsDrawn());
+  EXPECT_TRUE(app_browser_view_->toolbar()->custom_tab_bar()->IsDrawn());
 }
 
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
@@ -226,10 +230,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   theme_service->UseDefaultTheme();
 
   InstallAndLaunchBookmarkApp();
-  ASSERT_EQ(*app_theme_color_, SK_ColorBLUE);
+  ASSERT_EQ(app_theme_color_, SK_ColorBLUE);
   EXPECT_EQ(
-      app_frame_view_->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
-      *app_theme_color_);
+      GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+      app_theme_color_);
 
   {
     // Add two meta theme color elements. The first element's color should be
@@ -242,11 +246,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
         "<meta id=\"second\" name=\"theme-color\" content=\"#00ff00\">'"));
     waiter.Wait();
 
-    // Frame view may get reset after theme change.
-    // TODO(crbug.com/1020050): Make it not do this and only refresh the Widget.
-    EXPECT_EQ(app_browser_view_->frame()->GetFrameView()->GetFrameColor(
-                  BrowserFrameActiveState::kUseCurrent),
-              SK_ColorRED);
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorRED);
   }
   {
     // Change the color of the first element. The new color should be picked.
@@ -256,9 +258,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
         "document.getElementById('first').setAttribute('content', 'yellow')"));
     waiter.Wait();
 
-    EXPECT_EQ(app_browser_view_->frame()->GetFrameView()->GetFrameColor(
-                  BrowserFrameActiveState::kUseCurrent),
-              SK_ColorYELLOW);
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorYELLOW);
   }
   {
     // Set a non matching media query to the first element. The second element's
@@ -269,9 +271,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                                 "setAttribute('media', '(max-width: 0px)')"));
     waiter.Wait();
 
-    EXPECT_EQ(app_browser_view_->frame()->GetFrameView()->GetFrameColor(
-                  BrowserFrameActiveState::kUseCurrent),
-              SK_ColorGREEN);
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorGREEN);
   }
   {
     // Remove the second element. The manifest color should be picked because
@@ -281,9 +283,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                                 "document.getElementById('second').remove()"));
     waiter.Wait();
 
-    EXPECT_EQ(app_browser_view_->frame()->GetFrameView()->GetFrameColor(
-                  BrowserFrameActiveState::kUseCurrent),
-              SK_ColorBLUE);
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorBLUE);
   }
   {
     // Set a matching media query to the first element. The first element's
@@ -298,9 +300,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                                     width + "px')"));
     waiter.Wait();
 
-    EXPECT_EQ(app_browser_view_->frame()->GetFrameView()->GetFrameColor(
-                  BrowserFrameActiveState::kUseCurrent),
-              SK_ColorYELLOW);
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorYELLOW);
   }
   {
     // Resize the window so that the media query on the first element does not
@@ -309,9 +311,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     EXPECT_TRUE(content::ExecJs(web_contents_.get(), "window.resizeBy(24, 0)"));
     waiter.Wait();
 
-    EXPECT_EQ(app_browser_view_->frame()->GetFrameView()->GetFrameColor(
-                  BrowserFrameActiveState::kUseCurrent),
-              SK_ColorBLUE);
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorBLUE);
   }
 }
 
@@ -357,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
   PageActionIconView* icon =
       app_browser_view_->toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kSaveCard);
-  EXPECT_TRUE(app_frame_view_->Contains(icon));
+  EXPECT_TRUE(GetAppFrameView()->Contains(icon));
   EXPECT_TRUE(icon->GetVisible());
 }
 
