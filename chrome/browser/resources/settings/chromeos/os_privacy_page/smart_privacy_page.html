@@ -46,7 +46,10 @@
     </iron-icon>
   </div>
   <div>
-    $i18n{smartPrivacyDesc}
+    <localized-link
+        localized-string="$i18n{smartPrivacyDesc}"
+        link-url="$i18n{smartPrivacyLearnMoreLink}">
+    </localized-link>
   </div>
 </div>
 <template is="dom-if" if="[[isQuickDimEnabled_]]" restamp>
