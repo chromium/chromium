@@ -28,6 +28,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/attribution_reporting.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_instance.h"
@@ -119,6 +120,19 @@ bool IsOffline() {
   return content::GetNetworkConnectionTracker()->IsOffline();
 }
 
+std::unique_ptr<AttributionStorage::Delegate> MakeStorageDelegate() {
+  bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kConversionsDebugMode);
+
+  if (debug_mode) {
+    return std::make_unique<AttributionStorageDelegateImpl>(
+        AttributionNoiseMode::kNone, AttributionDelayMode::kNone);
+  }
+
+  return std::make_unique<AttributionStorageDelegateImpl>(
+      AttributionNoiseMode::kDefault, AttributionDelayMode::kDefault);
+}
+
 }  // namespace
 
 AttributionManager* AttributionManagerProviderImpl::GetManager(
@@ -175,9 +189,7 @@ AttributionManagerImpl::AttributionManagerImpl(
           DefaultIsReportAllowedCallback(storage_partition->browser_context()),
           user_data_directory,
           std::move(special_storage_policy),
-          std::make_unique<AttributionStorageDelegateImpl>(
-              base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kConversionsDebugMode)),
+          MakeStorageDelegate(),
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionNetworkSenderImpl>(storage_partition)) {}
 

@@ -11,6 +11,7 @@
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/attribution_reporting.h"
 
 namespace base {
 class GUID;
@@ -29,7 +30,9 @@ class AttributionReport;
 class CONTENT_EXPORT AttributionStorageDelegateImpl
     : public AttributionStorage::Delegate {
  public:
-  explicit AttributionStorageDelegateImpl(bool debug_mode = false);
+  explicit AttributionStorageDelegateImpl(
+      AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault,
+      AttributionDelayMode delay_mode = AttributionDelayMode::kDefault);
   AttributionStorageDelegateImpl(const AttributionStorageDelegateImpl& other) =
       delete;
   AttributionStorageDelegateImpl& operator=(
@@ -80,9 +83,8 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       int random_stars_and_bars_sequence_index) const;
 
  private:
-  // Whether the API is running in debug mode, meaning that there should be
-  // no delays or noise added to reports.
-  const bool debug_mode_;
+  const AttributionNoiseMode noise_mode_;
+  const AttributionDelayMode delay_mode_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

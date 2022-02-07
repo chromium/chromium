@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/attribution_reporting.h"
 #include "content/public/test/attribution_simulator.h"
 
 namespace {
@@ -22,14 +23,17 @@ constexpr char kSwitchHelpShort[] = "h";
 constexpr char kSwitchVersion[] = "version";
 constexpr char kSwitchVersionShort[] = "v";
 
+constexpr char kSwitchDelayMode[] = "delay_mode";
 constexpr char kSwitchInputFile[] = "input_file";
+constexpr char kSwitchNoiseMode[] = "noise_mode";
 constexpr char kSwitchRemoveReportIds[] = "remove_report_ids";
 
 constexpr const char* kAllowedSwitches[] = {
     kSwitchHelp,      kSwitchHelpShort,
     kSwitchVersion,   kSwitchVersionShort,
 
-    kSwitchInputFile, kSwitchRemoveReportIds,
+    kSwitchInputFile, kSwitchDelayMode,
+    kSwitchNoiseMode, kSwitchRemoveReportIds,
 };
 
 constexpr const char* kRequiredSwitches[] = {
@@ -38,6 +42,8 @@ constexpr const char* kRequiredSwitches[] = {
 
 constexpr char kHelpMsg[] = R"(
 attribution_reporting_simulator --input_file=<input_file>
+  [--delay_mode=<mode>]
+  [--noise_mode=<mode>]
   [--remove_report_ids]
 
 attribution_reporting_simulator is a command-line tool that simulates the
@@ -58,6 +64,25 @@ Switches:
   --input_file=<input_file> - Required path to a JSON file containing sources
                               and triggers to register in the simulation.
                               Input format described below.
+
+  --delay_mode=<mode>      -  Optional. One of `default` or `none`. Defaults to
+                              `default`.
+
+                              default: Reports are sent in reporting windows
+                              some time after attribution is triggered.
+
+                              none: Reports are sent immediately after
+                              attribution is triggered.
+
+  --noise_mode=<mode>       - Optional. One of `default` or `none`. Defaults to
+                              `default`.
+
+                              default: Sources are subject to randomized
+                              response, reports within a reporting window are
+                              shuffled.
+
+                              none: None of the above applies.
+
   --remove_report_ids       - Optional. If present, removes the `report_id`
                               field from report bodies, as they are randomly
                               generated. Use this switch to make the tool's
@@ -212,6 +237,30 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  auto noise_mode = content::AttributionNoiseMode::kDefault;
+  if (command_line.HasSwitch(kSwitchNoiseMode)) {
+    std::string str = command_line.GetSwitchValueASCII(kSwitchNoiseMode);
+
+    if (str == "none") {
+      noise_mode = content::AttributionNoiseMode::kNone;
+    } else if (str != "default") {
+      std::cerr << "unknown noise mode: " << str << std::endl;
+      return 1;
+    }
+  }
+
+  auto delay_mode = content::AttributionDelayMode::kDefault;
+  if (command_line.HasSwitch(kSwitchDelayMode)) {
+    std::string str = command_line.GetSwitchValueASCII(kSwitchDelayMode);
+
+    if (str == "none") {
+      delay_mode = content::AttributionDelayMode::kNone;
+    } else if (str != "default") {
+      std::cerr << "unknown report mode: " << str << std::endl;
+      return 1;
+    }
+  }
+
   std::string error_msg;
   std::unique_ptr<base::Value> input =
       JSONFileValueDeserializer(
@@ -225,6 +274,8 @@ int main(int argc, char* argv[]) {
   base::Value output = content::RunAttributionSimulationOrExit(
       *input,
       content::AttributionSimulationOptions{
+          .noise_mode = noise_mode,
+          .delay_mode = delay_mode,
           .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),
       });
 

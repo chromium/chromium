@@ -15,8 +15,10 @@
 
 namespace content {
 
-AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(bool debug_mode)
-    : debug_mode_(debug_mode) {
+AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
+    AttributionNoiseMode noise_mode,
+    AttributionDelayMode delay_mode)
+    : noise_mode_(noise_mode), delay_mode_(delay_mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -72,10 +74,13 @@ base::Time AttributionStorageDelegateImpl::GetReportTime(
     const CommonSourceInfo& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If in debug mode, the report should be sent immediately.
-  if (debug_mode_)
-    return trigger_time;
-  return ComputeReportTime(source, trigger_time);
+
+  switch (delay_mode_) {
+    case AttributionDelayMode::kDefault:
+      return ComputeReportTime(source, trigger_time);
+    case AttributionDelayMode::kNone:
+      return trigger_time;
+  }
 }
 
 base::GUID AttributionStorageDelegateImpl::NewReportID() const {
@@ -84,24 +89,32 @@ base::GUID AttributionStorageDelegateImpl::NewReportID() const {
 
 absl::optional<AttributionStorage::Delegate::OfflineReportDelayConfig>
 AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
-  if (debug_mode_)
-    return absl::nullopt;
+  if (noise_mode_ == AttributionNoiseMode::kDefault &&
+      delay_mode_ == AttributionDelayMode::kDefault) {
+    // Add uniform random noise in the range of [0, 1 minutes] to the report
+    // time.
+    // TODO(https://crbug.com/1075600): This delay is very conservative.
+    // Consider increasing this delay once we can be sure reports are still
+    // sent at reasonable times, and not delayed for many browser sessions due
+    // to short session up-times.
+    return OfflineReportDelayConfig{
+        .min = base::Minutes(0),
+        .max = base::Minutes(1),
+    };
+  }
 
-  // Add uniform random noise in the range of [0, 1 minutes] to the report time.
-  // TODO(https://crbug.com/1075600): This delay is very conservative. Consider
-  // increasing this delay once we can be sure reports are still sent at
-  // reasonable times, and not delayed for many browser sessions due to short
-  // session up-times.
-  return OfflineReportDelayConfig{
-      .min = base::Minutes(0),
-      .max = base::Minutes(1),
-  };
+  return absl::nullopt;
 }
 
 void AttributionStorageDelegateImpl::ShuffleReports(
     std::vector<AttributionReport>& reports) const {
-  if (!debug_mode_)
-    base::RandomShuffle(reports.begin(), reports.end());
+  switch (noise_mode_) {
+    case AttributionNoiseMode::kDefault:
+      base::RandomShuffle(reports.begin(), reports.end());
+      break;
+    case AttributionNoiseMode::kNone:
+      break;
+  }
 }
 
 AttributionStorage::Delegate::RandomizedResponse
@@ -109,23 +122,27 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     const CommonSourceInfo& source) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (debug_mode_)
-    return absl::nullopt;
+  switch (noise_mode_) {
+    case AttributionNoiseMode::kDefault: {
+      double randomized_trigger_rate =
+          RandomizedTriggerRate(source.source_type());
+      DCHECK_GE(randomized_trigger_rate, 0);
+      DCHECK_LE(randomized_trigger_rate, 1);
 
-  double randomized_trigger_rate = RandomizedTriggerRate(source.source_type());
-  DCHECK_GE(randomized_trigger_rate, 0);
-  DCHECK_LE(randomized_trigger_rate, 1);
-
-  if (base::RandDouble() < randomized_trigger_rate)
-    return GetRandomFakeReports(source);
-
-  return absl::nullopt;
+      return base::RandDouble() < randomized_trigger_rate
+                 ? absl::make_optional(GetRandomFakeReports(source))
+                 : absl::nullopt;
+    }
+    case AttributionNoiseMode::kNone:
+      return absl::nullopt;
+  }
 }
 
 std::vector<AttributionStorage::Delegate::FakeReport>
 AttributionStorageDelegateImpl::GetRandomFakeReports(
     const CommonSourceInfo& source) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
   const int num_combinations = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/GetMaxAttributionsPerSource(source.source_type()),
@@ -143,6 +160,7 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     const CommonSourceInfo& source,
     int random_stars_and_bars_sequence_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
   const int trigger_data_cardinality =
       TriggerDataCardinality(source.source_type());

@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
 #define CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
 
+#include "content/public/browser/attribution_reporting.h"
+
 namespace base {
 class Value;
 }  // namespace base
@@ -12,6 +14,10 @@ class Value;
 namespace content {
 
 struct AttributionSimulationOptions {
+  AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault;
+
+  AttributionDelayMode delay_mode = AttributionDelayMode::kDefault;
+
   // If true, removes the `report_id` field from reports before output.
   //
   // This field normally contains a random GUID used by the reporting origin

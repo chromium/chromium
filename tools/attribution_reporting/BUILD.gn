@@ -7,6 +7,7 @@ executable("attribution_reporting_simulator") {
   deps = [
     "//base",
     "//components/version_info",
+    "//content/public/browser",
     "//content/test:test_support",
   ]
   testonly = true
