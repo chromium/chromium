@@ -220,10 +220,12 @@ class HistoryService : public KeyedService {
                              const GURL& url,
                              base::Time end_ts);
 
-  // Updates the history database by setting the floc allowed bit. The page can
-  // be identified by the combination of the context id, the navigation entry id
-  // and the url. No-op if the page is not found.
-  void SetFlocAllowed(ContextID context_id, int nav_entry_id, const GURL& url);
+  // Updates the history database by setting the browsing topics allowed bit.
+  // The page can be identified by the combination of the context id, the
+  // navigation entry id and the url. No-op if the page is not found.
+  void SetBrowsingTopicsAllowed(ContextID context_id,
+                                int nav_entry_id,
+                                const GURL& url);
 
   // Updates the history database with the content model annotations for the
   // visit.

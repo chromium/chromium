@@ -474,10 +474,10 @@ void HistoryBackend::UpdateWithPageEndTime(ContextID context_id,
   UpdateVisitDuration(visit_id, end_ts);
 }
 
-void HistoryBackend::SetFlocAllowed(ContextID context_id,
-                                    int nav_entry_id,
-                                    const GURL& url) {
-  TRACE_EVENT0("browser", "HistoryBackend::SetFlocAllowed");
+void HistoryBackend::SetBrowsingTopicsAllowed(ContextID context_id,
+                                              int nav_entry_id,
+                                              const GURL& url) {
+  TRACE_EVENT0("browser", "HistoryBackend::SetBrowsingTopicsAllowed");
 
   if (!db_)
     return;
@@ -491,11 +491,11 @@ void HistoryBackend::SetFlocAllowed(ContextID context_id,
   VisitContentAnnotations annotations;
   if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
     annotations.annotation_flags |=
-        VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+        VisitContentAnnotationFlag::kBrowsingTopicsEligible;
     db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
   } else {
     annotations.annotation_flags |=
-        VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+        VisitContentAnnotationFlag::kBrowsingTopicsEligible;
     db_->AddContentAnnotationsForVisit(visit_id, annotations);
   }
   ScheduleCommit();

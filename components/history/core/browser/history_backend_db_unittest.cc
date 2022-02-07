@@ -2094,7 +2094,7 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
     EXPECT_EQ(-1, s.ColumnDouble(1));
     EXPECT_EQ("", s.ColumnString(2));
     EXPECT_EQ(-1, s.ColumnInt64(3));
-    EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+    EXPECT_EQ(VisitContentAnnotationFlag::kDeprecatedFlocEligibleRelaxed,
               static_cast<uint64_t>(s.ColumnInt64(4)));
 
     EXPECT_TRUE(s.Step());
@@ -2110,7 +2110,7 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
     EXPECT_EQ(-1, s.ColumnDouble(1));
     EXPECT_EQ("", s.ColumnString(2));
     EXPECT_EQ(-1, s.ColumnInt64(3));
-    EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+    EXPECT_EQ(VisitContentAnnotationFlag::kDeprecatedFlocEligibleRelaxed,
               static_cast<uint64_t>(s.ColumnInt64(4)));
 
     EXPECT_FALSE(s.Step());

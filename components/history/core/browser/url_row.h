@@ -153,20 +153,25 @@ typedef std::vector<URLRow> URLRows;
 
 // A set of binary state related to a page visit. To be used for bit masking
 // operations.
+//
+// These values are persisted in database. Entries should not be renumbered and
+// numeric values should never be reused.
 enum VisitContentAnnotationFlag : uint64_t {
   kNone = 0,
 
-  // Indicates that the annotated page can be included in FLoC clustering
-  // (https://github.com/WICG/floc) based on a relaxed opt-in condition. A page
-  // visit is eligible for FLoC clustering if all of the conditions hold:
+  // No longer used in production code. Only referenced in a database migration
+  // test.
+  kDeprecatedFlocEligibleRelaxed = 1ULL << 0,
+
+  // Indicates that the annotated page can be included in browsing topics
+  // calculation (https://github.com/jkarlin/topics). A page visit is eligible
+  // for browsing topics calculation if all of the conditions hold:
   // 1. The IP of this visit is publicly routable, i.e. the IP is NOT within
   // the ranges reserved for "private" internet
   // (https://tools.ietf.org/html/rfc1918).
-  // 2. The interest-cohort Permissions Policy feature is allowed in the page.
-  // 3. Page opted in / Either one of the following holds:
-  //      - document.interestCohort API is used in the page
-  //      - the page has heuristically detected ad resources
-  kFlocEligibleRelaxed = 1 << 0,
+  // 2. The browsing-topics Permissions Policy feature is allowed in the page.
+  // 3. Page opted in: document.browsingTopics() API is used in the page.
+  kBrowsingTopicsEligible = 1ULL << 1,
 };
 
 using VisitContentAnnotationFlags = uint64_t;

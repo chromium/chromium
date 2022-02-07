@@ -1698,7 +1698,7 @@ TEST_F(HistoryBackendTest, AddRelatedSearchesWithNoEntryInVisitTable) {
       visit_id, &got_content_annotations));
 }
 
-TEST_F(HistoryBackendTest, SetFlocAllowed) {
+TEST_F(HistoryBackendTest, SetBrowsingTopicsAllowed) {
   ASSERT_TRUE(backend_.get());
 
   GURL url("http://test-set-floc-allowed.com");
@@ -1717,13 +1717,13 @@ TEST_F(HistoryBackendTest, SetFlocAllowed) {
   ASSERT_EQ(1U, visits.size());
   VisitID visit_id = visits[0].visit_id;
 
-  backend_->SetFlocAllowed(context_id, nav_entry_id, url);
+  backend_->SetBrowsingTopicsAllowed(context_id, nav_entry_id, url);
 
   VisitContentAnnotations got_content_annotations;
   ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
 
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             got_content_annotations.annotation_flags);
   EXPECT_EQ(-1, got_content_annotations.model_annotations.visibility_score);
   EXPECT_TRUE(got_content_annotations.model_annotations.categories.empty());
@@ -1735,7 +1735,7 @@ TEST_F(HistoryBackendTest, SetFlocAllowed) {
   QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
 
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
       -1, results[0].content_annotations().model_annotations.visibility_score);
@@ -1915,7 +1915,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_EQ(1U, visits.size());
   VisitID visit_id = visits[0].visit_id;
 
-  backend_->SetFlocAllowed(context_id, nav_entry_id, url);
+  backend_->SetBrowsingTopicsAllowed(context_id, nav_entry_id, url);
 
   VisitContentModelAnnotations model_annotations = {
       0.5f,
@@ -1928,7 +1928,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
 
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             got_content_annotations.annotation_flags);
   EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
@@ -1949,7 +1949,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
 
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
       0.5f,

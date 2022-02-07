@@ -469,15 +469,15 @@ void HistoryService::UpdateWithPageEndTime(ContextID context_id,
                      context_id, nav_entry_id, url, end_ts));
 }
 
-void HistoryService::SetFlocAllowed(ContextID context_id,
-                                    int nav_entry_id,
-                                    const GURL& url) {
-  TRACE_EVENT0("browser", "HistoryService::SetFlocAllowed");
+void HistoryService::SetBrowsingTopicsAllowed(ContextID context_id,
+                                              int nav_entry_id,
+                                              const GURL& url) {
+  TRACE_EVENT0("browser", "HistoryService::SetBrowsingTopicsAllowed");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScheduleTask(PRIORITY_NORMAL,
-               base::BindOnce(&HistoryBackend::SetFlocAllowed, history_backend_,
-                              context_id, nav_entry_id, url));
+               base::BindOnce(&HistoryBackend::SetBrowsingTopicsAllowed,
+                              history_backend_, context_id, nav_entry_id, url));
 }
 
 void HistoryService::AddContentModelAnnotationsForVisit(
