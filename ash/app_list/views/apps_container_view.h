@@ -12,6 +12,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
+#include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
@@ -24,9 +25,10 @@
 namespace ash {
 
 class ApplicationDragAndDropHost;
-class AppListReorderUndoContainerView;
 class AppListFolderItem;
 class AppListFolderView;
+class AppListNudgeController;
+class AppListToastContainerView;
 class ContentsView;
 class ContinueSectionView;
 class FolderBackgroundView;
@@ -175,6 +177,14 @@ class ASH_EXPORT AppsContainerView
       bool animate,
       base::OnceClosure update_position_closure);
 
+  // Called when the app list temporary sort order changes. If `new_order` is
+  // null, the temporary sort order is cleared.
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order);
+
+  // Updates the nudge in `toast_container_` when app list visibility changes.
+  void OnAppListVisibilityChanged(bool shown);
+
   ContinueSectionView* GetContinueSection();
   RecentAppsView* GetRecentApps();
   views::View* GetSeparatorView();
@@ -191,8 +201,12 @@ class ASH_EXPORT AppsContainerView
     return suggestion_chip_container_view_;
   }
 
-  AppListReorderUndoContainerView* reorder_undo_container_for_test() {
-    return reorder_undo_container_;
+  AppListToastContainerView* toast_container_for_test() {
+    return toast_container_;
+  }
+
+  AppListNudgeController* app_list_nudge_controller() {
+    return app_list_nudge_controller_.get();
   }
 
   // Updates recent apps from app list model.
@@ -297,6 +311,8 @@ class ASH_EXPORT AppsContainerView
   // within the apps container.
   std::unique_ptr<AppListConfig> app_list_config_;
 
+  std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
+
   // The number of active requests to disable blur.
   size_t suggestion_chips_blur_disabler_count_ = 0;
 
@@ -307,7 +323,7 @@ class ASH_EXPORT AppsContainerView
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
   ContinueContainer* continue_container_ = nullptr;
-  AppListReorderUndoContainerView* reorder_undo_container_ = nullptr;
+  AppListToastContainerView* toast_container_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;

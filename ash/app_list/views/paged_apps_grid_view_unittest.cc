@@ -9,6 +9,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
@@ -88,6 +89,20 @@ class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
   }
 
   base::test::ScopedFeatureList scoped_features_;
+};
+
+// Tests with ProductivityLauncher and app list nudge enabled.
+class PagedAppsGridViewWithNudgeTest : public PagedAppsGridViewTest {
+ public:
+  void SetUp() override {
+    PagedAppsGridViewTest::SetUp();
+    GetAppListTestHelper()->DisableAppListNudge(false);
+    // Update the toast container to make sure the nudge is shown, if required.
+    GetAppListTestHelper()
+        ->GetAppsContainerView()
+        ->toast_container_for_test()
+        ->MaybeUpdateReorderNudgeView();
+  }
 };
 
 // Tests with ProductivityLauncher disabled, which disables the bubble launcher.
@@ -235,6 +250,77 @@ TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {
   // With the drag complete, check that page 1 is still selected, because a new
   // page cannot be created.
   EXPECT_EQ(1, pagination_model->selected_page());
+}
+
+// Test that the first page of the root level paged apps grid holds less apps to
+// accommodate the recent apps, which are shown at the top of the first page,
+// and the app list nudge, which is shown right above the apps grid view. Then
+// check that the subsequent page holds more apps.
+TEST_F(PagedAppsGridViewWithNudgeTest, PageMaxAppCounts) {
+  GetAppListTestHelper()->AddAppItems(40);
+
+  // Add some recent apps and re-layout so the first page of the apps grid has
+  // less rows to accommodate.
+  GetAppListTestHelper()->AddRecentApps(4);
+  GetAppListTestHelper()->GetAppsContainerView()->ResetForShowApps();
+  UpdateLayout();
+
+  // There should be a total of 40 items in the item list.
+  AppListItemList* item_list =
+      AppListModelProvider::Get()->model()->top_level_item_list();
+  ASSERT_EQ(40u, item_list->item_count());
+
+  // With the recent apps and app list reorder nudge, the first page should be
+  // maxed at 10 apps, the second page maxed at 20 apps, and the third page
+  // should hold the leftover 10 apps totalling to 40 apps.
+  EXPECT_EQ(10, grid_test_api_->AppsOnPage(0));
+  EXPECT_EQ(20, grid_test_api_->AppsOnPage(1));
+  EXPECT_EQ(10, grid_test_api_->AppsOnPage(2));
+}
+
+// Test that the grid dimensions change according to differently sized displays.
+// The number of rows should change depending on the display height and the
+// first page should most of the time have less rows to accommodate the recents
+// apps. With the app list nudge enabled in this test, the number of rows
+// showing could be less to accommodate the toast nudge.
+TEST_F(PagedAppsGridViewWithNudgeTest, GridDimensionsChangesWithDisplaySize) {
+  // Add some recent apps to take up space on the first page.
+  GetAppListTestHelper()->AddAppItems(4);
+  GetAppListTestHelper()->AddRecentApps(4);
+  GetAppListTestHelper()->GetAppsContainerView()->ResetForShowApps();
+
+  // Test with a display in landscape mode.
+  UpdateDisplay("1000x600");
+  EXPECT_EQ(2, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in landscape mode with less height. This should have
+  // less rows.
+  UpdateDisplay("1000x500");
+  EXPECT_EQ(1, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(3, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in landscape mode with more height. This should have
+  // more rows.
+  UpdateDisplay("1400x1100");
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in portrait mode.
+  UpdateDisplay("700x1100");
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
+  // Test with a display in portrait mode with more height. This should have
+  // more rows.
+  UpdateDisplay("700x1400");
+  EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(7, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 }
 
 }  // namespace
