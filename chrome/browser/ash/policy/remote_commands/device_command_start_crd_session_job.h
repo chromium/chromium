@@ -23,6 +23,7 @@ namespace policy {
 // Affiliated Users and for Managed Guest Sessions.
 class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  public:
+  // This enum can't be renumbered because its logged to UMA.
   enum ResultCode {
     // Successfully obtained access code.
     SUCCESS = 0,
@@ -44,6 +45,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
     // Failure during attempt to start CRD host and obtain CRD token.
     FAILURE_CRD_HOST_ERROR = 6,
+
+    kMaxValue = FAILURE_CRD_HOST_ERROR
   };
 
   using OAuthTokenCallback = base::OnceCallback<void(const std::string&)>;
@@ -91,6 +94,14 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // fetch an oauth token.
   void SetOAuthTokenForTest(const std::string& token);
 
+  // This enum can't be renumbered because its logged to UMA.
+  enum class UmaSessionType {
+    kAutoLaunchedKiosk = 0,
+    kAffiliatedUser = 1,
+    kManagedGuestSession = 2,
+    kMaxValue = kManagedGuestSession
+  };
+
  protected:
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
@@ -110,12 +121,14 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
     kManagedGuestSession,
     kOther,
   };
+
   const char* UserTypeToString(UserType value) const;
 
   // Check if all required system services (singletons) are ready.
   bool AreServicesReady() const;
   bool UserTypeSupportsCrd() const;
   UserType GetUserType() const;
+  UmaSessionType GetUmaSessionType() const;
   bool IsRunningAutoLaunchedKiosk() const;
   bool IsDeviceIdle() const;
   base::TimeDelta GetDeviceIdlenessPeriod() const;
@@ -126,6 +139,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // Finishes command with error code and optional message.
   void FinishWithError(ResultCode result_code, const std::string& message);
   void FinishWithNotIdleError();
+  void FinishWithSuccess(const std::string& access_code);
 
   void OnOAuthTokenReceived(const std::string& token);
   void OnAccessCodeReceived(const std::string& access_code);

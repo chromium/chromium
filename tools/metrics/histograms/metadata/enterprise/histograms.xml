@@ -530,6 +530,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceRemoteCommand.CRD.Result"
+    enum="EnterpriseCrdSessionResultCode" expires_after="2023-01-01">
+  <owner>macinashutosh@google.com</owner>
+  <owner>chromeos-commercial-crd@google.com</owner>
+  <summary>Reports success/failure when a session is attempted.</summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceRemoteCommand.CRD.SessionType"
+    enum="EnterpriseCrdUserType" expires_after="2023-01-01">
+  <owner>macinashutosh@google.com</owner>
+  <owner>chromeos-commercial-crd@google.com</owner>
+  <summary>
+    Reports the user type for the attempted session only when the result is
+    EnterpriseCrdSessionResultCode::SUCCESS.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.DeviceRemoteCommand.Executed{Enterprise_RemoteCommandType}"
     enum="RemoteCommandExecutionStatus" expires_after="2023-03-01">

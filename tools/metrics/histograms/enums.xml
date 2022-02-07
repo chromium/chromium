@@ -27135,6 +27135,24 @@ Called by update_document_policy_enum.py.-->
   <int value="16" label="UNAUTHENTICATED"/>
 </enum>
 
+<enum name="EnterpriseCrdSessionResultCode">
+  <summary>Types of CRD sessions connection request result code.</summary>
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="FAILURE_SERVICES_NOT_READY"/>
+  <int value="2" label="FAILURE_UNSUPPORTED_USER_TYPE"/>
+  <int value="3" label="FAILURE_NOT_IDLE"/>
+  <int value="4" label="FAILURE_NO_OAUTH_TOKEN"/>
+  <int value="5" label="FAILURE_NO_ICE_CONFIG"/>
+  <int value="6" label="FAILURE_CRD_HOST_ERROR"/>
+</enum>
+
+<enum name="EnterpriseCrdUserType">
+  <summary>Types of enterprise user connections.</summary>
+  <int value="0" label="kAutoLaunchedKiosk"/>
+  <int value="1" label="kAffiliatedUser"/>
+  <int value="2" label="kManagedGuestSession"/>
+</enum>
+
 <enum name="EnterpriseDeviceManagementStatus">
   <summary>
     Status codes produced by DeviceManagementService for requests made to the
