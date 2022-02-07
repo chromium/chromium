@@ -1993,7 +1993,7 @@
   {
     "name": "enable-experimental-accessibility-switch-access-multistep-automation",
     "owners": [ "akihiroota@google.com", "mschillaci@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 102
   },
   {
     "name": "enable-experimental-accessibility-switch-access-text",
