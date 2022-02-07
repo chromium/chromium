@@ -333,7 +333,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   int textID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT;
   [self.delegate signinSyncViewController:self addConsentStringID:textID];
   label.text = l10n_util::GetNSString(textID);
-  label.textColor = [UIColor colorNamed:kGrey600Color];
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   return label;
 }
