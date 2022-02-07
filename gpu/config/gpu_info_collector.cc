@@ -11,10 +11,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -36,6 +39,11 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/bundle_locations.h"
+#include "base/mac/foundation_util.h"
+#endif
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"           // nogncheck
@@ -607,7 +615,34 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
-  auto instance = std::make_unique<dawn::native::Instance>();
+  std::string dawn_search_path;
+  base::FilePath module_path;
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::AmIBundled()) {
+    dawn_search_path = base::mac::FrameworkBundlePath()
+                           .Append("Libraries")
+                           .AsEndingWithSeparator()
+                           .MaybeAsASCII();
+  }
+  if (dawn_search_path.empty())
+#endif
+  {
+    if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+      dawn_search_path = module_path.AsEndingWithSeparator().MaybeAsASCII();
+    }
+  }
+  const char* dawn_search_path_c_str = dawn_search_path.c_str();
+
+  wgpu::DawnInstanceDescriptor dawn_instance_desc = {};
+  dawn_instance_desc.additionalRuntimeSearchPathsCount =
+      dawn_search_path.empty() ? 0u : 1u;
+  dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
+
+  wgpu::InstanceDescriptor instance_desc = {};
+  instance_desc.nextInChain = &dawn_instance_desc;
+
+  auto instance = std::make_unique<dawn::native::Instance>(
+      reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
   instance->DiscoverDefaultAdapters();
   std::vector<dawn::native::Adapter> adapters = instance->GetAdapters();
 
