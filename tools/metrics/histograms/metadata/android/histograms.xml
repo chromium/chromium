@@ -693,6 +693,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.DexFixer" enum="DexFixerReason"
     expires_after="2023-01-30">
+  <obsolete>
+    Removed Feb 2020.
+  </obsolete>
   <owner>agrieve@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
