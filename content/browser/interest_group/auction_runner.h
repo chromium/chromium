@@ -154,31 +154,6 @@ class CONTENT_EXPORT AuctionRunner {
 
  private:
   struct BidState {
-    enum class State {
-      // Waiting for all the interest groups to load, and then for the seller
-      // worklet to get a process.
-      kLoadingWorkletsAndOnSellerProcess,
-
-      // Waiting for the AuctionWorkletManager to provide a BidderWorklet.
-      kWaitingForWorklet,
-
-      // Loading the bidder worklet script / trusted data and generating the
-      // bid.
-      kGeneratingBid,
-
-      // Waiting on the seller worklet to load.
-      kWaitingOnSellerWorkletLoad,
-
-      // Waiting on the seller worklet to score the bid.
-      kSellerScoringBid,
-
-      // Seller worklet has completed scoring the bid, or doesn't need to. If
-      // this is not potentially the winning bidder, the worklet has been
-      // unloaded. Otherwise, the worklet is still in memory, as it may still be
-      // necessary to call reporting methods, if this is the winning bidder.
-      kScoringComplete,
-    };
-
     BidState();
     BidState(BidState&&);
     ~BidState();
@@ -188,8 +163,6 @@ class CONTENT_EXPORT AuctionRunner {
     // copiable.
     BidState(BidState&) = delete;
     BidState& operator=(BidState&) = delete;
-
-    State state = State::kLoadingWorkletsAndOnSellerProcess;
 
     StorageInterestGroup bidder;
 

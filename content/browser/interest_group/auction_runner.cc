@@ -316,10 +316,6 @@ void AuctionRunner::RequestBidderWorklets() {
 
   // Request processes for all bidder worklets.
   for (auto& bid_state : bid_states_) {
-    DCHECK_EQ(bid_state.state,
-              BidState::State::kLoadingWorkletsAndOnSellerProcess);
-
-    bid_state.state = BidState::State::kWaitingForWorklet;
     if (RequestBidderWorklet(
             bid_state,
             base::BindOnce(&AuctionRunner::OnBidderWorkletReceived,
@@ -347,9 +343,6 @@ void AuctionRunner::OnSellerWorkletFatalError(
 }
 
 void AuctionRunner::OnBidderWorkletReceived(BidState* bid_state) {
-  DCHECK_EQ(bid_state->state, BidState::State::kWaitingForWorklet);
-
-  bid_state->state = BidState::State::kGeneratingBid;
   const blink::InterestGroup& interest_group = bid_state->bidder.interest_group;
   bid_state->worklet_handle->GetBidderWorklet()->GenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParams::New(
@@ -387,8 +380,6 @@ void AuctionRunner::OnBidderWorkletGenerateBidFatalError(
     BidState* bid_state,
     AuctionWorkletManager::FatalErrorType fatal_error_type,
     const std::vector<std::string>& errors) {
-  DCHECK_EQ(BidState::State::kGeneratingBid, bid_state->state);
-
   if (fatal_error_type ==
       AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
     // Ignore default error message in case of crash. Instead, use a more
@@ -419,7 +410,6 @@ void AuctionRunner::OnGenerateBidComplete(
   DCHECK(!state->made_bid);
   DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
   DCHECK_GT(outstanding_bids_, 0);
-  DCHECK_EQ(state->state, BidState::State::kGeneratingBid);
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
@@ -443,7 +433,6 @@ void AuctionRunner::OnGenerateBidComplete(
   }
 
   if (!bid) {
-    state->state = BidState::State::kScoringComplete;
     --num_bids_not_sent_to_seller_worklet_;
     // If this is the only bid that yet to be sent to the seller worklet, and
     // the seller worklet has loaded, then tell the seller worklet to send any
@@ -457,7 +446,6 @@ void AuctionRunner::OnGenerateBidComplete(
 
   state->bidder_debug_win_report_url = std::move(debug_win_report_url);
   state->made_bid = true;
-  state->state = BidState::State::kWaitingOnSellerWorkletLoad;
   if (!seller_worklet_received_) {
     unscored_bids_.emplace_back(std::move(bid));
   } else {
@@ -469,12 +457,8 @@ void AuctionRunner::ScoreBid(std::unique_ptr<Bid> bid) {
   DCHECK(bid);
   DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
   DCHECK_GT(outstanding_bids_, 0);
-  DCHECK_EQ(bid->bid_state->state,
-            BidState::State::kWaitingOnSellerWorkletLoad);
   DCHECK(bid->bid_state->made_bid);
   DCHECK(seller_worklet_received_);
-
-  bid->bid_state->state = BidState::State::kSellerScoringBid;
 
   Bid* bid_raw = bid.get();
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
@@ -503,10 +487,8 @@ void AuctionRunner::OnBidScored(
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
     const std::vector<std::string>& errors) {
-  DCHECK_EQ(bid->bid_state->state, BidState::State::kSellerScoringBid);
-
   --outstanding_bids_;
-  bid->bid_state->state = BidState::State::kScoringComplete;
+
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
   // URL, the auction should fail because the worklet is compromised.
   if (debug_loss_report_url.has_value() &&
