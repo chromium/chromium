@@ -28,19 +28,13 @@ import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import {HistoryItemElement, searchResultsTitle} from './history_item.js';
 import {getTemplate} from './history_list.html.js';
 
-type OpenMenuEvent = CustomEvent<{
+export type ActionMenuModel = {
   index: number,
   item: HistoryEntry,
-  path: string,
-  target: HTMLElement,
-}>;
-
-type ActionMenuModel = {
-  index: number,
-  item: HistoryEntry,
-  path: string,
   target: HTMLElement,
 };
+
+type OpenMenuEvent = CustomEvent<ActionMenuModel>;
 
 type HistoryCheckboxSelectEvent = CustomEvent<{
   index: number,
@@ -609,6 +603,12 @@ export class HistoryListElement extends HistoryListElementBase {
    */
   private onHistoryDataChanged_() {
     this.$['infinite-list'].fire('iron-resize');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-list': HistoryListElement;
   }
 }
 

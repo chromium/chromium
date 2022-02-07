@@ -115,6 +115,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   private eventTracker_: EventTracker = new EventTracker();
 
   item: HistoryEntry;
+  hasTimeGap: boolean;
   index: number;
   searchTerm: string;
   isCardStart: boolean;

@@ -12,6 +12,7 @@ import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
 import {TestBrowserService} from './test_browser_service.js';
+import {navigateTo} from './test_util.js';
 
 [true, false].forEach(isHistoryClustersEnabled => {
   const suitSuffix = isHistoryClustersEnabled ? 'enabled' : 'disabled';
@@ -20,14 +21,6 @@ import {TestBrowserService} from './test_browser_service.js';
     let sidebar: HistorySideBarElement;
     let testBrowserProxy: TestBrowserProxy;
     let testMetricsProxy: TestMetricsProxy;
-
-    function navigateTo(route: string) {
-      window.history.replaceState({}, '', route);
-      window.dispatchEvent(new CustomEvent('location-changed'));
-      // Update from the URL synchronously.
-      app.shadowRoot!.querySelector(
-                         'history-router')!.getDebouncerForTesting()!.flush();
-    }
 
     suiteSetup(() => {
       loadTimeData.overrideValues({
@@ -76,7 +69,7 @@ import {TestBrowserService} from './test_browser_service.js';
       assertEquals('history', app.$.content.selected);
       assertEquals(app.$.history, app.$['tabs-content'].selectedItem);
 
-      navigateTo('/syncedTabs');
+      navigateTo('/syncedTabs', app);
       return flushTasks().then(function() {
         assertEquals('chrome://history/syncedTabs', window.location.href);
 
@@ -93,7 +86,7 @@ import {TestBrowserService} from './test_browser_service.js';
           app.shadowRoot!.querySelector('#history'),
           app.$['tabs-content'].selectedItem);
 
-      navigateTo('/journeys');
+      navigateTo('/journeys', app);
       return flushTasks().then(function() {
         assertEquals('chrome://history/journeys', window.location.href);
 
@@ -113,7 +106,7 @@ import {TestBrowserService} from './test_browser_service.js';
       assertEquals('chrome://history/', sidebar.$.history.href);
       assertEquals('history', sidebar.$.history.getAttribute('path'));
 
-      navigateTo('/journeys');
+      navigateTo('/journeys', app);
       return flushTasks().then(function() {
         // Currently selected history view is preserved in sidebar menu item.
         assertEquals(
@@ -230,7 +223,7 @@ import {TestBrowserService} from './test_browser_service.js';
       assertEquals('chrome://history/', window.location.href);
       const searchTerm = 'Mei';
       assertEquals('history', app.$.content.selected);
-      navigateTo('/?q=' + searchTerm);
+      navigateTo('/?q=' + searchTerm, app);
       assertEquals(searchTerm, app.$.toolbar.searchTerm);
     });
 
@@ -246,7 +239,7 @@ import {TestBrowserService} from './test_browser_service.js';
     test('search is preserved across tabs and sidebar menu items', function() {
       const searchTerm = 'Soldier76';
       assertEquals('history', sidebar.$.menu.selected);
-      navigateTo('/?q=' + searchTerm);
+      navigateTo('/?q=' + searchTerm, app);
 
       sidebar.$.syncedTabs.click();
       assertEquals('syncedTabs', sidebar.$.menu.selected);

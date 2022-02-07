@@ -232,4 +232,10 @@ export class HistorySideBarElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-side-bar': HistorySideBarElement;
+  }
+}
+
 customElements.define(HistorySideBarElement.is, HistorySideBarElement);

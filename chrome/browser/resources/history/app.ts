@@ -567,6 +567,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   searchInputHasFocus(): boolean {
     return this.$.toolbar.searchField.isSearchFocused();
   }
+
+  setHasDrawerForTesting(enabled: boolean) {
+    this.hasDrawer_ = enabled;
+  }
 }
 
 declare global {

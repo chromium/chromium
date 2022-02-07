@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import 'chrome://history/history.js';
+
+import {BrowserServiceImpl, HistoryItemElement} from 'chrome://history/history.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry} from './test_util.js';
 
 suite('<history-item> focus test', function() {
-  let item;
+  let item: HistoryItemElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -24,14 +27,14 @@ suite('<history-item> focus test', function() {
   test('refocus checkbox on click', async () => {
     await flushTasks();
     item.$['menu-button'].focus();
-    assertEquals(item.$['menu-button'], item.root.activeElement);
+    assertEquals(item.$['menu-button'], item.shadowRoot!.activeElement);
 
     const whenCheckboxSelected =
         eventToPromise('history-checkbox-select', item);
     item.$['time-accessed'].click();
 
     await whenCheckboxSelected;
-    assertEquals(item.$['checkbox'], item.root.activeElement);
+    assertEquals(item.$.checkbox, item.shadowRoot!.activeElement);
   });
 
   test('RemovingBookmarkMovesFocus', async () => {
@@ -43,15 +46,14 @@ suite('<history-item> focus test', function() {
     // the item. Otherwise, FocusRowBehavior will see that it newly received
     // focus and attempt to move the focus to the first focusable item since
     // the bookmark star is not in the focus order.
-    item.shadowRoot.querySelector('#checkbox').focus();
-    item.shadowRoot.querySelector('#link').focus();
-    item.shadowRoot.querySelector('#bookmark-star').focus();
-
-    item.shadowRoot.querySelector('#bookmark-star').click();
+    item.$.checkbox.focus();
+    item.$.link.focus();
+    const star = item.shadowRoot!.querySelector<HTMLElement>('#bookmark-star');
+    assertTrue(!!star);
+    star.focus();
+    star.click();
 
     // Check that focus is shifted to overflow menu icon.
-    assertEquals(
-        item.shadowRoot.activeElement,
-        item.shadowRoot.querySelector('#menu-button'));
+    assertEquals(item.shadowRoot!.activeElement, item.$['menu-button']);
   });
 });

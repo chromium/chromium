@@ -12,7 +12,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
-import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks} from './test_util.js';
+import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks, navigateTo} from './test_util.js';
 
 suite('Metrics', function() {
   let testService: TestBrowserService;
@@ -57,14 +57,6 @@ suite('Metrics', function() {
         });
   }
 
-  function navigateTo(route: string) {
-    window.history.replaceState({}, '', route);
-    window.dispatchEvent(new CustomEvent('location-changed'));
-    // Update from the URL synchronously.
-    app.shadowRoot!.querySelector(
-                       'history-router')!.getDebouncerForTesting()!.flush();
-  }
-
   test('History.HistoryPageView', async () => {
     await finishSetup([]);
 
@@ -72,7 +64,7 @@ suite('Metrics', function() {
     assertTrue(!!histogram);
     assertEquals(1, histogram[HistoryPageViewHistogram.HISTORY]);
 
-    navigateTo('/syncedTabs');
+    navigateTo('/syncedTabs', app);
     assertEquals(1, histogram[HistoryPageViewHistogram.SIGNIN_PROMO]);
     await testService.whenCalled('otherDevicesInitialized');
 
@@ -81,7 +73,7 @@ suite('Metrics', function() {
     await testService.whenCalled('recordHistogram');
 
     assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
-    navigateTo('/history');
+    navigateTo('/history', app);
     assertEquals(2, histogram[HistoryPageViewHistogram.HISTORY]);
   });
 
@@ -200,7 +192,7 @@ suite('Metrics', function() {
     testService.setForeignSessions(sessionList);
     await finishSetup([]);
 
-    navigateTo('/syncedTabs');
+    navigateTo('/syncedTabs', app);
     await flushTasks();
 
     const histogram = histogramMap[SYNCED_TABS_HISTOGRAM_NAME];
