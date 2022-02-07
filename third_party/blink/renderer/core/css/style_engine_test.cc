@@ -3584,6 +3584,55 @@ TEST_F(StyleEngineTest, HasViewportUnitFlags) {
   }
 }
 
+TEST_F(StyleEngineTest, DynamicViewportUnitInvalidation) {
+  ScopedCSSViewportUnits4ForTest flag(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+  <style>
+    #target_px { width: 1px; }
+    #target_svh { width: 1svh; }
+    #target_dvh { width: 1dvh; }
+  </style>
+  <div id=target_px></div>
+  <div id=target_svh></div>
+  <div id=target_dvh></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* target_px = GetDocument().getElementById("target_px");
+  Element* target_svh = GetDocument().getElementById("target_svh");
+  Element* target_dvh = GetDocument().getElementById("target_dvh");
+  ASSERT_TRUE(target_px);
+  ASSERT_TRUE(target_svh);
+  ASSERT_TRUE(target_dvh);
+
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_FALSE(target_dvh->NeedsStyleRecalc());
+
+  // Only dvh should be affected:
+  GetDocument().DynamicViewportUnitsChanged();
+  GetStyleEngine().InvalidateViewportUnitStylesIfNeeded();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_TRUE(target_dvh->NeedsStyleRecalc());
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_FALSE(target_dvh->NeedsStyleRecalc());
+
+  //  svh/dvh should be affected:
+  GetDocument().LayoutViewportWasResized();
+  GetStyleEngine().InvalidateViewportUnitStylesIfNeeded();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_TRUE(target_svh->NeedsStyleRecalc());
+  EXPECT_TRUE(target_dvh->NeedsStyleRecalc());
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_FALSE(target_dvh->NeedsStyleRecalc());
+}
+
 class StyleEngineSimTest : public SimTest {};
 
 TEST_F(StyleEngineSimTest, OwnerColorScheme) {

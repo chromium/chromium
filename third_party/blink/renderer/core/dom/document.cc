@@ -2145,6 +2145,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
 
   GetStyleEngine().UpdateActiveStyle();
   GetStyleEngine().UpdateCounterStyles();
+  GetStyleEngine().InvalidateViewportUnitStylesIfNeeded();
   InvalidateStyleAndLayoutForFontUpdates();
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();
@@ -4576,7 +4577,8 @@ void Document::LayoutViewportWasResized() {
   if (!HasStaticViewportUnits())
     return;
   GetStyleResolver().SetResizedForViewportUnits();
-  SetNeedsStyleRecalcForViewportUnits();
+  GetStyleEngine().MarkViewportUnitDirty(ViewportUnitFlag::kStatic);
+  GetStyleEngine().MarkViewportUnitDirty(ViewportUnitFlag::kDynamic);
 }
 
 void Document::DynamicViewportUnitsChanged() {
@@ -4589,9 +4591,8 @@ void Document::DynamicViewportUnitsChanged() {
     media_query_matcher_->ViewportChanged();
   if (!HasDynamicViewportUnits())
     return;
-  // TODO(crbug.com/1093055): Target dv* specifically.
   GetStyleResolver().SetResizedForViewportUnits();
-  SetNeedsStyleRecalcForViewportUnits();
+  GetStyleEngine().MarkViewportUnitDirty(ViewportUnitFlag::kDynamic);
 }
 
 void Document::SetHoverElement(Element* new_hover_element) {

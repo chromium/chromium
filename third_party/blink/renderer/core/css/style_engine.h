@@ -445,6 +445,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkViewportStyleDirty();
   bool IsViewportStyleDirty() const { return viewport_style_dirty_; }
 
+  void MarkViewportUnitDirty(ViewportUnitFlag);
+  void InvalidateViewportUnitStylesIfNeeded();
+
   void MarkFontsNeedUpdate();
   void InvalidateStyleAndLayoutForFontUpdates();
 
@@ -768,6 +771,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Set to true if we allow marking for reattachment from layout tree rebuild.
   // AllowMarkStyleDirtyFromRecalcScope.
   bool allow_mark_for_reattach_from_rebuild_layout_tree_{false};
+
+  // See enum ViewportUnitFlag.
+  unsigned viewport_unit_dirty_flags_{0};
 
   VisionDeficiency vision_deficiency_{VisionDeficiency::kNoVisionDeficiency};
   Member<ReferenceFilterOperation> vision_deficiency_filter_;

@@ -672,20 +672,6 @@ Element* TreeScope::GetElementByAccessKey(const String& key) const {
   return result;
 }
 
-void TreeScope::SetNeedsStyleRecalcForViewportUnits() {
-  for (Element* element = ElementTraversal::FirstWithin(RootNode()); element;
-       element = ElementTraversal::NextIncludingPseudo(*element)) {
-    if (ShadowRoot* root = element->GetShadowRoot())
-      root->SetNeedsStyleRecalcForViewportUnits();
-    const ComputedStyle* style = element->GetComputedStyle();
-    if (style && style->HasViewportUnits()) {
-      element->SetNeedsStyleRecalc(kLocalStyleChange,
-                                   StyleChangeReasonForTracing::Create(
-                                       style_change_reason::kViewportUnits));
-    }
-  }
-}
-
 void TreeScope::Trace(Visitor* visitor) const {
   visitor->Trace(root_node_);
   visitor->Trace(document_);

@@ -165,7 +165,6 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   void ResetTreeScope();
   void SetDocument(Document& document) { document_ = &document; }
   void SetParentTreeScope(TreeScope&);
-  void SetNeedsStyleRecalcForViewportUnits();
 
   virtual void OnAdoptedStyleSheetSet(ScriptState*,
                                       V8ObservableArrayCSSStyleSheet&,

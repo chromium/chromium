@@ -800,6 +800,41 @@ void StyleEngine::CollectScopedStyleFeaturesTo(RuleFeatureSet& features) const {
   }
 }
 
+void StyleEngine::MarkViewportUnitDirty(ViewportUnitFlag flag) {
+  if (viewport_unit_dirty_flags_ & static_cast<unsigned>(flag))
+    return;
+
+  viewport_unit_dirty_flags_ |= static_cast<unsigned>(flag);
+  GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+}
+
+namespace {
+
+void SetNeedsStyleRecalcForViewportUnits(TreeScope& tree_scope,
+                                         unsigned dirty_flags) {
+  for (Element* element = ElementTraversal::FirstWithin(tree_scope.RootNode());
+       element; element = ElementTraversal::NextIncludingPseudo(*element)) {
+    if (ShadowRoot* root = element->GetShadowRoot())
+      SetNeedsStyleRecalcForViewportUnits(*root, dirty_flags);
+    const ComputedStyle* style = element->GetComputedStyle();
+    if (style && (style->ViewportUnitFlags() & dirty_flags)) {
+      element->SetNeedsStyleRecalc(kLocalStyleChange,
+                                   StyleChangeReasonForTracing::Create(
+                                       style_change_reason::kViewportUnits));
+    }
+  }
+}
+
+}  // namespace
+
+void StyleEngine::InvalidateViewportUnitStylesIfNeeded() {
+  if (!viewport_unit_dirty_flags_)
+    return;
+  SetNeedsStyleRecalcForViewportUnits(GetDocument(),
+                                      viewport_unit_dirty_flags_);
+  viewport_unit_dirty_flags_ = 0;
+}
+
 void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
   if (!fonts_need_update_)
     return;
@@ -2845,7 +2880,8 @@ void StyleEngine::UpdateViewportStyle() {
 }
 
 bool StyleEngine::NeedsFullStyleUpdate() const {
-  return NeedsActiveStyleUpdate() || IsViewportStyleDirty();
+  return NeedsActiveStyleUpdate() || IsViewportStyleDirty() ||
+         viewport_unit_dirty_flags_;
 }
 
 void StyleEngine::PropagateWritingModeAndDirectionToHTMLRoot() {
