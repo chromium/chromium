@@ -51,12 +51,12 @@ if (enable_ink) {
 
 # Files to pass directly to preprocess_if_expr() that are used only in Print
 # Preview.
-print_preview_non_webcomponents_files = [ "toolbar_manager.js" ]
+print_preview_non_webcomponents_files = [ "toolbar_manager.ts" ]
 
 # Files that need to be passed to html_to_js() that are used only in Print
 # Preview.
 print_preview_webcomponents_files = [
-  "elements/viewer-page-indicator.js",
+  "elements/viewer-page-indicator.ts",
   "elements/viewer-zoom-button.ts",
   "elements/viewer-zoom-toolbar.ts",
   "pdf_viewer_pp.js",

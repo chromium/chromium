@@ -191,7 +191,10 @@ ts_library("build_ts") {
   manifest_excludes =
       [ "pdf_internal_plugin_wrapper.js" ] +
       print_preview_non_webcomponents_files + print_preview_webcomponents_files
-  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "source_capabilities.d.ts",
+  ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",

@@ -7,37 +7,32 @@ import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 
 /**
  * Idle time in ms before the UI is hidden.
- * @type {number}
  */
-const HIDE_TIMEOUT = 2000;
+const HIDE_TIMEOUT: number = 2000;
 
 /**
  * Velocity required in a mousemove to reveal the UI (pixels/ms). This is
  * intended to be high enough that a fast flick of the mouse is required to
  * reach it.
- * @type {number}
  */
-const SHOW_VELOCITY = 10;
+const SHOW_VELOCITY: number = 10;
 
 /**
  * Distance from right of the screen required to reveal toolbars.
- * @type {number}
  */
-const TOOLBAR_REVEAL_DISTANCE_RIGHT = 150;
+const TOOLBAR_REVEAL_DISTANCE_RIGHT: number = 150;
 
 /**
  * Distance from bottom of the screen required to reveal toolbars.
- * @type {number}
  */
-const TOOLBAR_REVEAL_DISTANCE_BOTTOM = 250;
+const TOOLBAR_REVEAL_DISTANCE_BOTTOM: number = 250;
 
 /**
- * @param {!MouseEvent} e Event to test.
- * @param {Window} window Window to test against.
- * @return {boolean} True if the mouse is close to the bottom-right of the
- * screen.
+ * @param e Event to test.
+ * @param window Window to test against.
+ * @return True if the mouse is close to the bottom-right of the screen.
  */
-function isMouseNearToolbar(e, window) {
+function isMouseNearToolbar(e: MouseEvent, window: Window): boolean {
   const atSide = isRTL() ?
       e.x > window.innerWidth - TOOLBAR_REVEAL_DISTANCE_RIGHT :
       e.x < TOOLBAR_REVEAL_DISTANCE_RIGHT;
@@ -47,49 +42,35 @@ function isMouseNearToolbar(e, window) {
 
 // Responsible for showing and hiding the zoom toolbar.
 export class ToolbarManager {
-  /**
-   * @param {!Window} window The window containing the UI.
-   * @param {!ViewerZoomToolbarElement} zoomToolbar
-   */
-  constructor(window, zoomToolbar) {
-    /** @private {!Window} */
-    this.window_ = window;
+  private window_: Window;
+  private zoomToolbar_: ViewerZoomToolbarElement;
+  private toolbarTimeout_: number|null = null;
+  private isMouseNearToolbar_: boolean = false;
+  private keyboardNavigationActive_: boolean = false;
+  private lastMovementTimestamp_: number|null = null;
 
-    /** @private {!ViewerZoomToolbarElement} */
+  /**
+   * @param window The window containing the UI.
+   */
+  constructor(window: Window, zoomToolbar: ViewerZoomToolbarElement) {
+    this.window_ = window;
     this.zoomToolbar_ = zoomToolbar;
 
-    /** @private {?number} */
-    this.toolbarTimeout_ = null;
-
-    /** @private {boolean} */
-    this.isMouseNearToolbar_ = false;
-
-    /** @private {boolean} */
-    this.keyboardNavigationActive = false;
-
-    /** @private {?number} */
-    this.lastMovementTimestamp = null;
-
-    document.addEventListener(
-        'mousemove',
-        e => this.handleMouseMove_(/** @type {!MouseEvent} */ (e)));
+    document.addEventListener('mousemove', e => this.handleMouseMove_(e));
     document.addEventListener('mouseout', () => this.hideToolbarForMouseOut_());
 
     this.zoomToolbar_.addEventListener('keyboard-navigation-active', e => {
-      this.keyboardNavigationActive = e.detail;
+      this.keyboardNavigationActive_ = (e as CustomEvent).detail;
     });
   }
 
-  /**
-   * @param {!MouseEvent} e
-   * @private
-   */
-  handleMouseMove_(e) {
+  private handleMouseMove_(e: MouseEvent) {
     this.isMouseNearToolbar_ = isMouseNearToolbar(e, this.window_);
 
-    this.keyboardNavigationActive = false;
+    this.keyboardNavigationActive_ = false;
+
     const touchInteractionActive =
-        (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents);
+        e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents;
 
     // Tapping the screen with toolbars open tries to close them.
     if (touchInteractionActive && this.zoomToolbar_.isVisible()) {
@@ -108,21 +89,17 @@ export class ToolbarManager {
 
   /**
    * Whether a mousemove event is high enough velocity to reveal the toolbars.
-   * @param {!MouseEvent} e Event to test.
-   * @return {boolean} true if the event is a high velocity mousemove, false
-   * otherwise.
-   * @private
    */
-  isHighVelocityMouseMove_(e) {
+  private isHighVelocityMouseMove_(e: MouseEvent): boolean {
     if (e.type === 'mousemove') {
-      if (this.lastMovementTimestamp == null) {
-        this.lastMovementTimestamp = this.getCurrentTimestamp_();
+      if (this.lastMovementTimestamp_ == null) {
+        this.lastMovementTimestamp_ = this.getCurrentTimestamp();
       } else {
         const movement =
             Math.sqrt(e.movementX * e.movementX + e.movementY * e.movementY);
-        const newTime = this.getCurrentTimestamp_();
-        const interval = newTime - this.lastMovementTimestamp;
-        this.lastMovementTimestamp = newTime;
+        const newTime = this.getCurrentTimestamp();
+        const interval = newTime - this.lastMovementTimestamp_;
+        this.lastMovementTimestamp_ = newTime;
 
         if (interval !== 0) {
           return movement / interval > SHOW_VELOCITY;
@@ -134,10 +111,8 @@ export class ToolbarManager {
 
   /**
    * Wrapper around Date.now() to make it easily replaceable for testing.
-   * @return {number}
-   * @private
    */
-  getCurrentTimestamp_() {
+  getCurrentTimestamp(): number {
     return Date.now();
   }
 
@@ -147,16 +122,15 @@ export class ToolbarManager {
    * escape is pressed.
    */
   showToolbarForKeyboardNavigation() {
-    this.keyboardNavigationActive = true;
+    this.keyboardNavigationActive_ = true;
     this.zoomToolbar_.show();
   }
 
   /**
    * Hide toolbars after a delay, regardless of the position of the mouse.
    * Intended to be called when the mouse has moved out of the parent window.
-   * @private
    */
-  hideToolbarForMouseOut_() {
+  private hideToolbarForMouseOut_() {
     this.isMouseNearToolbar_ = false;
     this.hideToolbarAfterTimeout();
   }
@@ -165,17 +139,16 @@ export class ToolbarManager {
    * Check if the toolbar is able to be closed, and close it if it is.
    * Toolbar may be kept open based on mouse/keyboard activity and active
    * elements.
-   * @private
    */
-  hideToolbarIfAllowed_() {
-    if (this.isMouseNearToolbar_ || this.keyboardNavigationActive) {
+  private hideToolbarIfAllowed_() {
+    if (this.isMouseNearToolbar_ || this.keyboardNavigationActive_) {
       return;
     }
 
     // Remove focus to make any visible tooltips disappear -- otherwise they'll
     // still be visible on screen when the toolbar is off screen.
     if (document.activeElement === this.zoomToolbar_) {
-      document.activeElement.blur();
+      this.zoomToolbar_.blur();
     }
 
     this.zoomToolbar_.hide();
@@ -194,7 +167,7 @@ export class ToolbarManager {
    * Clears the keyboard navigation state and hides the toolbars after a delay.
    */
   resetKeyboardNavigationAndHideToolbar() {
-    this.keyboardNavigationActive = false;
+    this.keyboardNavigationActive_ = false;
     this.hideToolbarAfterTimeout();
   }
 }

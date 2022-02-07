@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -27,17 +27,12 @@ export class ViewerPageIndicatorElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  label: string;
+  index: number;
+  pageLabels: number[]|null;
+  timerId?: number;
+  private viewport_: Viewport|null = null;
 
-    /** @type {number|undefined} */
-    this.timerId = undefined;
-
-    /** @private @type {?Viewport} */
-    this.viewport_ = null;
-  }
-
-  /** @override */
   ready() {
     super.ready();
     const callback = this.fadeIn_.bind(this);
@@ -46,13 +41,11 @@ export class ViewerPageIndicatorElement extends PolymerElement {
     });
   }
 
-  /** @param {!Viewport} viewport */
-  setViewport(viewport) {
+  setViewport(viewport: Viewport) {
     this.viewport_ = viewport;
   }
 
-  /** @private */
-  fadeIn_() {
+  private fadeIn_() {
     // Vertically position relative to scroll position.
     let percent = 0;
     if (this.viewport_) {
@@ -72,11 +65,11 @@ export class ViewerPageIndicatorElement extends PolymerElement {
     this.style[isRTL() ? 'left' : 'right'] = `${overlayScrollbarWidth}px`;
 
     // Animate opacity.
-    this.style.opacity = 1;
+    this.style.opacity = '1';
     clearTimeout(this.timerId);
 
     this.timerId = setTimeout(() => {
-      this.style.opacity = 0;
+      this.style.opacity = '0';
       this.timerId = undefined;
     }, 2000);
   }
@@ -87,7 +80,7 @@ export class ViewerPageIndicatorElement extends PolymerElement {
 
   indexChanged() {
     if (this.pageLabels) {
-      this.label = this.pageLabels[this.index];
+      this.label = String(this.pageLabels[this.index]);
     } else {
       this.label = String(this.index + 1);
     }

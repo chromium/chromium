@@ -56,10 +56,8 @@ non_preprocessed_tests = [
   "other_options_settings_test.ts",
   "pages_per_sheet_settings_test.ts",
   "pages_settings_test.ts",
+  "pdf_toolbar_manager_test.ts",
 
-  # TODO(rbpotter): Figure out how to enable these while PDF viewer is still
-  # using JS.
-  # "pdf_toolbar_manager_test.js",
   # "pdf_viewer_test.js",
   "pdf_zoom_toolbar_test.ts",
   "preview_area_test.ts",
@@ -128,6 +126,7 @@ ts_library("build_ts") {
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
   ]
+  definitions = [ "//chrome/browser/resources/pdf/source_capabilities.d.ts" ]
   in_files = preprocessed_tests + non_preprocessed_tests
   deps = [
     "//chrome/browser/resources/pdf:build_ts",
