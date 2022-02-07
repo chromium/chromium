@@ -98,7 +98,10 @@ enum class ProfileKeepAliveOrigin {
   // goes away would cause all sorts of problems...
   kFeedbackDialog = 21,
 
-  kMaxValue = kFeedbackDialog,
+  // An extension .crx is being installed.
+  kCrxInstaller = 24,
+
+  kMaxValue = kCrxInstaller,
 };
 
 std::ostream& operator<<(std::ostream& out,

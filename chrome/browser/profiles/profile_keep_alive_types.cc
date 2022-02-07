@@ -51,6 +51,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kPendingNotificationCloseEvent";
     case ProfileKeepAliveOrigin::kFeedbackDialog:
       return out << "kFeedbackDialog";
+    case ProfileKeepAliveOrigin::kCrxInstaller:
+      return out << "kCrxInstaller";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
