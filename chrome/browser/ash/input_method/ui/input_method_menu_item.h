@@ -16,7 +16,6 @@ namespace ime {
 struct UI_CHROMEOS_EXPORT InputMethodMenuItem {
   InputMethodMenuItem(const std::string& in_key,
                       const std::string& in_label,
-                      bool in_is_selection_item,
                       bool in_is_selection_item_checked);
 
   InputMethodMenuItem();
@@ -29,9 +28,7 @@ struct UI_CHROMEOS_EXPORT InputMethodMenuItem {
                       // (e.g. "InputMode.HalfWidthKatakana")
   std::string label;  // A description of the property. Non-empty string.
                       // (e.g. "Switch to full punctuation mode", "Hiragana")
-  bool is_selection_item;          // true if the property is a selection item.
-  bool is_selection_item_checked;  // true if |is_selection_item| is true and
-                                   // the selection_item is selected.
+  bool is_selection_item_checked;  // true if the selection_item is selected.
 };
 typedef std::vector<InputMethodMenuItem> InputMethodMenuItemList;
 

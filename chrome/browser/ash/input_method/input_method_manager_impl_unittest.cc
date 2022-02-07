@@ -845,8 +845,7 @@ TEST_F(InputMethodManagerImplTest, TestXkbSetting) {
 TEST_F(InputMethodManagerImplTest, TestActivateInputMethodMenuItem) {
   const std::string kKey = "key";
   ui::ime::InputMethodMenuItemList menu_list;
-  menu_list.push_back(ui::ime::InputMethodMenuItem(
-      kKey, "label", false, false));
+  menu_list.push_back(ui::ime::InputMethodMenuItem(kKey, "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(menu_list);
 
   manager_->ActivateInputMethodMenuItem(kKey);
@@ -870,8 +869,8 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodProperties) {
       ImeIdFromEngineId(kNaclMozcUsId), false /* show_message */);
 
   ui::ime::InputMethodMenuItemList current_property_list;
-  current_property_list.push_back(ui::ime::InputMethodMenuItem(
-      "key", "label", false, false));
+  current_property_list.push_back(
+      ui::ime::InputMethodMenuItem("key", "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(current_property_list);
 
   ASSERT_EQ(1U, menu_manager_->GetCurrentInputMethodMenuItemList().size());
@@ -894,10 +893,8 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
   EXPECT_TRUE(menu_manager_->GetCurrentInputMethodMenuItemList().empty());
 
   ui::ime::InputMethodMenuItemList current_property_list;
-  current_property_list.push_back(ui::ime::InputMethodMenuItem("key-mozc",
-                                                                "label",
-                                                                false,
-                                                                false));
+  current_property_list.push_back(
+      ui::ime::InputMethodMenuItem("key-mozc", "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(current_property_list);
 
   ASSERT_EQ(1U, menu_manager_->GetCurrentInputMethodMenuItemList().size());
@@ -911,8 +908,8 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
 
   // Asynchronous property update signal from mozc-chewing.
   current_property_list.clear();
-  current_property_list.push_back(ui::ime::InputMethodMenuItem(
-      "key-chewing", "label", false, false));
+  current_property_list.push_back(
+      ui::ime::InputMethodMenuItem("key-chewing", "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(current_property_list);
   ASSERT_EQ(1U, menu_manager_->GetCurrentInputMethodMenuItemList().size());
   EXPECT_EQ("key-chewing",
