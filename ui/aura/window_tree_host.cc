@@ -116,11 +116,18 @@ class WindowTreeHost::HideHelper {
             std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
     layer_for_transition_->SetColor(SK_ColorWHITE);
     aura::Window* host_window = host_->window();
+    ui::Layer* host_window_layer = host_window->layer();
+    ui::Compositor* compositor = host_->compositor();
     // SetRootLayer() resets the `compositor_` member in Layer. If
     // SetRootLayer() were used, it would mean the existing layer hierarchy
     // would no longer think it is in a compositor. As this state is temporary,
     // and purely to release resources, SetRootLayer() is not used.
-    ccLayerFromUiLayer(host_window->layer())->RemoveFromParent();
+    // We do need to call ResetCompositorForAnimatorsInTree since the
+    // animation code expects that its callers ensure that any ticking
+    // animations reference element IDs for layers that are currently in the
+    // layer tree.
+    host_window_layer->ResetCompositorForAnimatorsInTree(compositor);
+    ccLayerFromUiLayer(host_window_layer)->RemoveFromParent();
     layer_for_transition_->SetBounds(host_window->bounds());
     compositor_root_layer_->AddChild(
         ccLayerFromUiLayer(layer_for_transition_.get()));
@@ -128,7 +135,7 @@ class WindowTreeHost::HideHelper {
         host_window->layer()->device_scale_factor());
     // Request a presentation frame. Once the frame is generated the real root
     // layer is added back (from the destructor).
-    host_->compositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
+    compositor->RequestPresentationTimeForNextFrame(base::BindOnce(
         &HideHelper::OnFramePresented, weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -137,6 +144,7 @@ class WindowTreeHost::HideHelper {
     compositor_root_layer_->AddChild(ccLayerFromUiLayer(host_window_layer));
     host_window_layer->OnDeviceScaleFactorChanged(
         layer_for_transition_->device_scale_factor());
+    host_window_layer->SetCompositorForAnimatorsInTree(host_->compositor());
   }
 
  private:

@@ -122,6 +122,11 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
                      scoped_refptr<cc::Layer> root_layer);
   void ResetCompositor();
 
+  // These should be private, but they're used by HideHelper, which needs to
+  // do part but not all of what SetCompositor/ResetCompositor do.
+  void SetCompositorForAnimatorsInTree(Compositor* compositor);
+  void ResetCompositorForAnimatorsInTree(Compositor* compositor);
+
   LayerDelegate* delegate() { return delegate_; }
   void set_delegate(LayerDelegate* delegate) { delegate_ = delegate; }
 
@@ -613,9 +618,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // released by an animation observer. Returns false when it happens and
   // callers should take cautions as well. Otherwise returns true.
   [[nodiscard]] bool SwitchToLayer(scoped_refptr<cc::Layer> new_layer);
-
-  void SetCompositorForAnimatorsInTree(Compositor* compositor);
-  void ResetCompositorForAnimatorsInTree(Compositor* compositor);
 
   void OnMirrorDestroyed(LayerMirror* mirror);
 
