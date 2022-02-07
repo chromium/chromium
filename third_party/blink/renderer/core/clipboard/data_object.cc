@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/clipboard/dragged_isolated_file_system.h"
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -313,7 +314,7 @@ void DataObject::Trace(Visitor* visitor) const {
 }
 
 // static
-DataObject* DataObject::Create(WebDragData data) {
+DataObject* DataObject::Create(const WebDragData& data) {
   DataObject* data_object = Create();
   bool has_file_system = false;
 
@@ -342,13 +343,30 @@ DataObject* DataObject::Create(WebDragData data) {
       case WebDragData::Item::kStorageTypeFileSystemFile: {
         // TODO(http://crbug.com/429077): The file system URL may refer a user
         // visible file.
+        scoped_refptr<BlobDataHandle> blob_data_handle =
+            item.file_system_blob_info.GetBlobHandle();
+
+        // If the browser process has provided a BlobDataHandle to use for
+        // building the File object (as a result of a drop operation being
+        // performed) then use it to create the file here (instead of creating
+        // a File object without one and requiring a call to
+        // BlobRegistry::Register in the browser process to hook up the Blob
+        // remote/receiver pair). If no BlobDataHandle was provided, create a
+        // BlobDataHandle to an empty blob since the File object contents
+        // won't be needed (for example, because this DataObject will be used
+        // for the DragEnter case where the spec only indicates that basic file
+        // metadata should be retrievable via the corresponding
+        // DataTransferItem).
+        if (!blob_data_handle) {
+          blob_data_handle = BlobDataHandle::Create();
+        }
         has_file_system = true;
         FileMetadata file_metadata;
         file_metadata.length = item.file_system_file_size;
-
         data_object->Add(
             File::CreateForFileSystemFile(item.file_system_url, file_metadata,
-                                          File::kIsNotUserVisible),
+                                          File::kIsNotUserVisible,
+                                          std::move(blob_data_handle)),
             item.file_system_id);
       } break;
     }

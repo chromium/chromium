@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/drag/drag.mojom-shared.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
+#include "third_party/blink/renderer/platform/blob/serialized_blob_mojom_traits.h"
 #include "third_party/blink/renderer/platform/mojo/kurl_mojom_traits.h"
 #include "third_party/blink/renderer/platform/mojo/string16_mojom_traits.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -76,6 +77,8 @@ struct PLATFORM_EXPORT
   static blink::KURL url(const blink::WebDragData::Item& item);
   static int64_t size(const blink::WebDragData::Item& item);
   static WTF::String file_system_id(const blink::WebDragData::Item& item);
+  static scoped_refptr<blink::BlobDataHandle> serialized_blob(
+      const blink::WebDragData::Item& item);
   static bool Read(blink::mojom::DragItemFileSystemFileDataView data,
                    blink::WebDragData::Item* out);
 };

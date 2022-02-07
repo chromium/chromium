@@ -14,6 +14,7 @@
 
 namespace content {
 class FileSystemAccessManagerImpl;
+class ChromeBlobStorageContext;
 
 // Convert ui::FileInfos to mojo DataTransferFiles. Creates
 // DataTransferAccessTokens and remaps paths if needed.
@@ -27,7 +28,8 @@ CONTENT_EXPORT
 blink::mojom::DragDataPtr DropDataToDragData(
     const DropData& drop_data,
     FileSystemAccessManagerImpl* file_system_access_manager,
-    int child_id);
+    int child_id,
+    scoped_refptr<ChromeBlobStorageContext> chrome_blob_storage_context);
 
 CONTENT_EXPORT
 blink::mojom::DragDataPtr DropMetaDataToDragData(

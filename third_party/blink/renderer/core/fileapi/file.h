@@ -119,9 +119,18 @@ class CORE_EXPORT File final : public Blob {
     return MakeGarbageCollected<File>(url, metadata, user_visibility);
   }
 
-  File(const String& path,
-       ContentTypeLookupPolicy = kWellKnownContentTypes,
-       UserVisibility = File::kIsUserVisible);
+  static File* CreateForFileSystemFile(
+      const KURL& url,
+      const FileMetadata& metadata,
+      UserVisibility user_visibility,
+      scoped_refptr<BlobDataHandle> blob_data_handle) {
+    return MakeGarbageCollected<File>(url, metadata, user_visibility,
+                                      std::move(blob_data_handle));
+  }
+
+  explicit File(const String& path,
+                ContentTypeLookupPolicy = kWellKnownContentTypes,
+                UserVisibility = File::kIsUserVisible);
   File(const String& path,
        const String& name,
        ContentTypeLookupPolicy,
@@ -139,6 +148,11 @@ class CORE_EXPORT File final : public Blob {
        scoped_refptr<BlobDataHandle>);
   File(const String& name, const FileMetadata&, UserVisibility);
   File(const KURL& file_system_url, const FileMetadata&, UserVisibility);
+  File(const KURL& file_system_url,
+       const FileMetadata& metadata,
+       UserVisibility user_visibility,
+       scoped_refptr<BlobDataHandle> blob_data_handle);
+
   File(const File&);
 
   KURL FileSystemURL() const {

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
@@ -452,9 +453,10 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data,
   StoragePartitionImpl* storage_partition =
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
   GetWidget()->StartDragging(
-      DropDataToDragData(drop_data,
-                         storage_partition->GetFileSystemAccessManager(),
-                         GetProcess()->GetID()),
+      DropDataToDragData(
+          drop_data, storage_partition->GetFileSystemAccessManager(),
+          GetProcess()->GetID(),
+          ChromeBlobStorageContext::GetFor(GetProcess()->GetBrowserContext())),
       blink::kDragOperationEvery, std::move(bitmap), gfx::Vector2d(),
       blink::mojom::DragEventSourceInfo::New());
 }

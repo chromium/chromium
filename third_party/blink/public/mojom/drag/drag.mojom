@@ -12,6 +12,7 @@ import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/data_transfer/data_transfer.mojom";
+import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 
 // This struct encodes what drag-and-drop operations are allowed. It's
 // typemapped to blink::DragOperationsMask.
@@ -58,6 +59,8 @@ struct DragItemFileSystemFile {
   url.mojom.Url url;
   int64 size;
   string? file_system_id;
+  // `serialized_blob` is only set for drop operations.
+  SerializedBlob? serialized_blob;
 };
 
 union DragItem {

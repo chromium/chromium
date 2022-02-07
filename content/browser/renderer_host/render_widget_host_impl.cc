@@ -2034,7 +2034,9 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
     blink_frame_widget_->DragTargetDrop(
         DropDataToDragData(drop_data_with_permissions,
                            storage_partition->GetFileSystemAccessManager(),
-                           GetProcess()->GetID()),
+                           GetProcess()->GetID(),
+                           ChromeBlobStorageContext::GetFor(
+                               GetProcess()->GetBrowserContext())),
         ConvertWindowPointToViewport(client_point), screen_point, key_modifiers,
         std::move(callback));
   }

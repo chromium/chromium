@@ -34,6 +34,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 using base::FilePath;
 using base::UserDataAdapter;
@@ -210,6 +211,37 @@ std::unique_ptr<BlobHandle> ChromeBlobStorageContext::CreateMemoryBackedBlob(
   std::unique_ptr<BlobHandle> blob_handle(
       new BlobHandleImpl(std::move(blob_data_handle)));
   return blob_handle;
+}
+
+void ChromeBlobStorageContext::CreateFileSystemBlob(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
+    const storage::FileSystemURL& url,
+    const std::string& blob_uuid,
+    const std::string& content_type,
+    const uint64_t file_size,
+    const base::Time& file_modification_time) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  auto blob_builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
+  if (file_size > 0) {
+    // Use AppendFileSystemFile here, since we're streaming the file directly
+    // from the file system backend, and the file thus might not actually be
+    // backed by a file on disk.
+    blob_builder->AppendFileSystemFile(url, 0, file_size,
+                                       file_modification_time,
+                                       std::move(file_system_context));
+  }
+  blob_builder->set_content_type(content_type);
+
+  std::unique_ptr<storage::BlobDataHandle> blob_handle =
+      context_->AddFinishedBlob(std::move(blob_builder));
+
+  // Since the blob we're creating doesn't depend on other blobs, and doesn't
+  // require blob memory/disk quota, creating the blob can't fail.
+  DCHECK(!blob_handle->IsBroken());
+
+  storage::BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
 }
 
 // static

@@ -262,6 +262,21 @@ File::File(const String& name,
 
 File::File(const KURL& file_system_url,
            const FileMetadata& metadata,
+           UserVisibility user_visibility,
+           scoped_refptr<BlobDataHandle> blob_data_handle)
+    : Blob(std::move(blob_data_handle)),
+      has_backing_file_(false),
+      user_visibility_(user_visibility),
+      name_(DecodeURLEscapeSequences(file_system_url.LastPathComponent(),
+                                     DecodeURLMode::kUTF8OrIsomorphic)),
+      file_system_url_(file_system_url),
+      snapshot_size_(metadata.length),
+      snapshot_modification_time_(metadata.modification_time) {
+  DCHECK_GE(metadata.length, 0);
+}
+
+File::File(const KURL& file_system_url,
+           const FileMetadata& metadata,
            UserVisibility user_visibility)
     : Blob(BlobDataHandle::Create(
           CreateBlobDataForFileSystemURL(file_system_url, metadata),

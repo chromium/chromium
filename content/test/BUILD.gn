@@ -1142,6 +1142,7 @@ test("content_browsertests") {
     "../browser/download/save_package_browsertest.cc",
     "../browser/fenced_frame/fenced_frame_browsertest.cc",
     "../browser/file_system/file_system_browsertest.cc",
+    "../browser/file_system/file_system_url_drag_drop_browsertest.cc",
     "../browser/file_system/file_system_url_loader_factory_browsertest.cc",
     "../browser/file_system/fileapi_browsertest.cc",
     "../browser/find_request_manager_browsertest.cc",

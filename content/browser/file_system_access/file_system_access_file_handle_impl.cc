@@ -55,37 +55,6 @@ using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
 
 namespace {
 
-void CreateBlobOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const scoped_refptr<ChromeBlobStorageContext>& blob_context,
-    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
-    const storage::FileSystemURL& url,
-    const std::string& blob_uuid,
-    const std::string& content_type,
-    const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  auto blob_builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
-  // Only append if the file has data.
-  if (info.size > 0) {
-    // Use AppendFileSystemFile here, since we're streaming the file directly
-    // from the file system backend, and the file thus might not actually be
-    // backed by a file on disk.
-    blob_builder->AppendFileSystemFile(url, 0, info.size, info.last_modified,
-                                       std::move(file_system_context));
-  }
-  blob_builder->set_content_type(content_type);
-
-  std::unique_ptr<BlobDataHandle> blob_handle =
-      blob_context->context()->AddFinishedBlob(std::move(blob_builder));
-
-  // Since the blob we're creating doesn't depend on other blobs, and doesn't
-  // require blob memory/disk quota, creating the blob can't fail.
-  DCHECK(!blob_handle->IsBroken());
-
-  BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
-}
-
 std::pair<base::File, base::FileErrorOr<int64_t>> GetFileLengthOnBlockingThread(
     base::File file) {
   int64_t file_length = file.GetLength();
@@ -473,11 +442,11 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&CreateBlobOnIOThread,
-                     base::WrapRefCounted(file_system_context()),
+      base::BindOnce(&ChromeBlobStorageContext::CreateFileSystemBlob,
                      base::WrapRefCounted(manager()->blob_context()),
+                     base::WrapRefCounted(file_system_context()),
                      std::move(blob_receiver), url(), std::move(uuid),
-                     std::move(content_type), info));
+                     std::move(content_type), info.size, info.last_modified));
 }
 
 void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(

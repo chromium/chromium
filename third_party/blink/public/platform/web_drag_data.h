@@ -35,6 +35,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -97,6 +98,7 @@ class WebDragData {
     WebURL file_system_url;
     int64_t file_system_file_size;
     WebString file_system_id;
+    WebBlobInfo file_system_blob_info;
   };
 
   WebDragData() = default;

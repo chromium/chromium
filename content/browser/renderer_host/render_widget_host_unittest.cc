@@ -26,6 +26,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/begin_frame_args_test.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
@@ -2092,7 +2093,9 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
           ->GetFileSystemAccessManager();
   blink::DragOperationsMask drag_operation = blink::kDragOperationEvery;
   host_->StartDragging(
-      DropDataToDragData(drop_data, file_system_manager, process_->GetID()),
+      DropDataToDragData(
+          drop_data, file_system_manager, process_->GetID(),
+          ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       drag_operation, SkBitmap(), gfx::Vector2d(),
       blink::mojom::DragEventSourceInfo::New());
   EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
@@ -2101,7 +2104,9 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   host_->RendererExited();
   EXPECT_FALSE(host_->GetView());
   host_->StartDragging(
-      DropDataToDragData(drop_data, file_system_manager, process_->GetID()),
+      DropDataToDragData(
+          drop_data, file_system_manager, process_->GetID(),
+          ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       drag_operation, SkBitmap(), gfx::Vector2d(),
       blink::mojom::DragEventSourceInfo::New());
   EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);

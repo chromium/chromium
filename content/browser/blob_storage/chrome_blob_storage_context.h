@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,6 +28,8 @@ class TaskRunner;
 
 namespace storage {
 class BlobStorageContext;
+class FileSystemContext;
+class FileSystemURL;
 namespace mojom {
 class BlobStorageContext;
 }
@@ -73,6 +76,17 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   std::unique_ptr<BlobHandle> CreateMemoryBackedBlob(
       base::span<const uint8_t> data,
       const std::string& content_type);
+
+  // Creates a FileSystem File blob accessible by the renderer via the blob
+  // remote corresponding to `blob_receiver`.
+  void CreateFileSystemBlob(
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
+      const storage::FileSystemURL& url,
+      const std::string& blob_uuid,
+      const std::string& content_type,
+      const uint64_t file_size,
+      const base::Time& file_modification_time);
 
   // Returns a SharedURLLoaderFactory capable of creating URLLoaders for exactly
   // the one URL associated with the passed in |token|. Attempting to load any
