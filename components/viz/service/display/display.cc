@@ -595,9 +595,15 @@ void Display::InitializeRenderer(bool enable_shared_images) {
       output_surface_->capabilities().only_invalidates_damage_rect &&
       !overlay_processor_->IsOverlaySupported();
 
+  SurfaceAggregator::ExtraPassForReadbackOption extra_pass_option =
+      SurfaceAggregator::ExtraPassForReadbackOption::kNone;
+  if (output_surface_->capabilities().root_is_vulkan_secondary_command_buffer) {
+    extra_pass_option =
+        SurfaceAggregator::ExtraPassForReadbackOption::kAddPassForReadback;
+  }
   aggregator_ = std::make_unique<SurfaceAggregator>(
       surface_manager_, resource_provider_.get(), output_partial_list,
-      overlay_processor_->NeedsSurfaceDamageRectList());
+      overlay_processor_->NeedsSurfaceDamageRectList(), extra_pass_option);
 
   aggregator_->set_output_is_secure(output_is_secure_);
   aggregator_->SetDisplayColorSpaces(display_color_spaces_);
@@ -736,7 +742,6 @@ bool Display::DrawAndSwap(base::TimeTicks frame_time,
     // aggregated again so that the trail exists for a single frame.
     target_damage_bounding_rect.Union(
         renderer_->GetDelegatedInkTrailDamageRect());
-
     frame = aggregator_->Aggregate(
         current_surface_id_, expected_display_time, current_display_transform,
         target_damage_bounding_rect, ++swapped_trace_id_);

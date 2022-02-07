@@ -291,16 +291,19 @@ struct SurfaceAggregator::PrewalkResult {
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
 };
 
-SurfaceAggregator::SurfaceAggregator(SurfaceManager* manager,
-                                     DisplayResourceProvider* provider,
-                                     bool aggregate_only_damaged,
-                                     bool needs_surface_damage_rect_list)
+SurfaceAggregator::SurfaceAggregator(
+    SurfaceManager* manager,
+    DisplayResourceProvider* provider,
+    bool aggregate_only_damaged,
+    bool needs_surface_damage_rect_list,
+    ExtraPassForReadbackOption extra_pass_option)
     : manager_(manager),
       provider_(provider),
       aggregate_only_damaged_(aggregate_only_damaged),
       needs_surface_damage_rect_list_(needs_surface_damage_rect_list),
       de_jelly_enabled_(DeJellyEnabled()),
-      clip_prewalk_damage_(features::IsClipPrewalkDamageEnabled()) {
+      clip_prewalk_damage_(features::IsClipPrewalkDamageEnabled()),
+      extra_pass_for_readback_option_(extra_pass_option) {
   DCHECK(manager_);
   DCHECK(provider_);
 }
@@ -1045,6 +1048,59 @@ void SurfaceAggregator::AddColorConversionPass() {
                       /*quad_state_to_target_transform=*/gfx::Transform(),
                       /*quad_state_contents_opaque=*/false, SkBlendMode::kSrc,
                       root_render_pass->id);
+}
+
+void SurfaceAggregator::AddRootReadbackPass() {
+  if (extra_pass_for_readback_option_ == ExtraPassForReadbackOption::kNone) {
+    return;
+  }
+
+  auto* root_render_pass = dest_pass_list_->back().get();
+  gfx::Rect output_rect = root_render_pass->output_rect;
+  CHECK(root_render_pass->transform_to_root_target == gfx::Transform());
+  bool needs_readback_pass = false;
+  // Check if there are any render passes that draw into the root pass with
+  // a backdrop filter.
+  base::flat_set<AggregatedRenderPassId> pass_ids_drawing_to_root;
+  for (auto* quad : root_render_pass->quad_list) {
+    if (quad->material != DrawQuad::Material::kAggregatedRenderPass)
+      continue;
+    pass_ids_drawing_to_root.insert(
+        AggregatedRenderPassDrawQuad::MaterialCast(quad)->render_pass_id);
+  }
+  if (!pass_ids_drawing_to_root.empty()) {
+    for (auto& render_pass : *dest_pass_list_) {
+      if (!pass_ids_drawing_to_root.contains(render_pass->id))
+        continue;
+      if (!render_pass->backdrop_filters.IsEmpty()) {
+        needs_readback_pass = true;
+        break;
+      }
+    }
+  }
+
+  if (needs_readback_pass != last_frame_had_readback_pass_)
+    root_render_pass->damage_rect = output_rect;
+
+  last_frame_had_readback_pass_ = needs_readback_pass;
+  if (!last_frame_had_readback_pass_)
+    return;
+
+  if (!readback_render_pass_id_) {
+    readback_render_pass_id_ = render_pass_id_generator_.GenerateNextId();
+  }
+
+  // Ensure the root-that's-non-root pass is cleared to fully transparent first.
+  bool has_transparent_background =
+      root_render_pass->has_transparent_background;
+  root_render_pass->has_transparent_background = true;
+  AddRenderPassHelper(output_rect, readback_render_pass_id_, output_rect,
+                      root_render_pass->damage_rect, root_content_color_usage_,
+                      has_transparent_background,
+                      /*pass_is_color_conversion_pass=*/false,
+                      /*quad_state_to_target_transform=*/gfx::Transform(),
+                      /*quad_state_contents_opaque=*/false,
+                      SkBlendMode::kSrcOver, root_render_pass->id);
 }
 
 void SurfaceAggregator::AddDisplayTransformPass() {
@@ -2012,6 +2068,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     HandleDeJelly(surface);
 
   AddColorConversionPass();
+  AddRootReadbackPass();
 
   ProcessAddedAndRemovedSurfaces();
   contained_surfaces_.swap(previous_contained_surfaces_);
