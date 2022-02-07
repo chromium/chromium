@@ -45,7 +45,7 @@ class MetricsReportingHandlerTest : public testing::Test {
 
     base::ListValue args;
     args.Append(std::make_unique<base::Value>(1));
-    handler()->HandleGetMetricsReporting(args.GetList());
+    handler()->HandleGetMetricsReporting(args.GetListDeprecated());
 
     EXPECT_TRUE(handler()->IsJavascriptAllowed());
     EXPECT_EQ(1u, test_web_ui()->call_data().size());
