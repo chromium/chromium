@@ -26,18 +26,12 @@ constexpr gfx::Size kDefaultLandscapeTabletSize(1064, 600);
 // TODO(sstan): Replace by calculating from real display scale factor.
 constexpr float kArcUniformScaleFactor = 1.2;
 
-gfx::Size GetPhoneSize(bool is_disp_landscape) {
-  auto result = kDefaultPortraitPhoneSize;
-  if (is_disp_landscape)
-    result.Transpose();
-  return ScaleToCeiledSize(result, kArcUniformScaleFactor);
+gfx::Size GetPhoneSize() {
+  return ScaleToCeiledSize(kDefaultPortraitPhoneSize, kArcUniformScaleFactor);
 }
 
-gfx::Size GetTabletSize(bool is_disp_landscape) {
-  auto result = kDefaultLandscapeTabletSize;
-  if (!is_disp_landscape)
-    result.Transpose();
-  return ScaleToCeiledSize(result, kArcUniformScaleFactor);
+gfx::Size GetTabletSize() {
+  return ScaleToCeiledSize(kDefaultLandscapeTabletSize, kArcUniformScaleFactor);
 }
 
 // Get window bounds in the middle of a display in global coordinate.
@@ -97,16 +91,14 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
     case arc::mojom::WindowSizeType::kTabletSize:
       window_info->state =
           static_cast<int32_t>(chromeos::WindowStateType::kNormal);
-      window_info->bounds =
-          GetMiddleBounds(disp, GetTabletSize(disp.is_landscape()));
+      window_info->bounds = GetMiddleBounds(disp, GetTabletSize());
       break;
     case arc::mojom::WindowSizeType::kPhoneSize:
     case arc::mojom::WindowSizeType::kUnknown:
     default:
       window_info->state =
           static_cast<int32_t>(chromeos::WindowStateType::kNormal);
-      window_info->bounds =
-          GetMiddleBounds(disp, GetPhoneSize(disp.is_landscape()));
+      window_info->bounds = GetMiddleBounds(disp, GetPhoneSize());
   }
 
   return window_info;
