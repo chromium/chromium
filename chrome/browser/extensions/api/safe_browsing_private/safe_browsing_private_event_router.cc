@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -358,7 +359,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
   if (content_size >= 0)
-    event.SetIntKey(kKeyContentSize, content_size);
+    event.SetKey(kKeyContentSize, base::Int64ToValue(content_size));
   event.SetStringKey(kKeyTrigger, kTriggerFileDownload);
   event.SetStringKey(
       kKeyEventResult,
@@ -524,7 +525,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
   if (content_size >= 0)
-    event.SetIntKey(kKeyContentSize, content_size);
+    event.SetKey(kKeyContentSize, base::Int64ToValue(content_size));
   event.SetStringKey(kKeyTrigger, trigger);
   event.SetStringKey(kKeyEventResult,
                      safe_browsing::EventResultToString(event_result));
@@ -572,7 +573,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
   if (content_size >= 0)
-    event.SetIntKey(kKeyContentSize, content_size);
+    event.SetKey(kKeyContentSize, base::Int64ToValue(content_size));
   event.SetStringKey(kKeyTrigger, trigger);
   event.SetStringKey(kKeyEventResult,
                      safe_browsing::EventResultToString(event_result));
@@ -617,7 +618,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
   if (content_size >= 0)
-    event.SetIntKey(kKeyContentSize, content_size);
+    event.SetKey(kKeyContentSize, base::Int64ToValue(content_size));
   event.SetStringKey(kKeyTrigger, trigger);
   event.SetStringKey(
       kKeyEventResult,
@@ -665,7 +666,7 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
   if (content_size >= 0)
-    event.SetIntKey(kKeyContentSize, content_size);
+    event.SetKey(kKeyContentSize, base::Int64ToValue(content_size));
   event.SetStringKey(kKeyTrigger, trigger);
   event.SetStringKey(kKeyEventResult,
                      safe_browsing::EventResultToString(event_result));
@@ -717,7 +718,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
   if (content_size >= 0)
-    event.SetIntKey(kKeyContentSize, content_size);
+    event.SetKey(kKeyContentSize, base::Int64ToValue(content_size));
   event.SetStringKey(kKeyTrigger, kTriggerFileDownload);
   event.SetStringKey(kKeyEventResult,
                      safe_browsing::EventResultToString(event_result));
@@ -770,7 +771,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.
   if (content_size >= 0)
-    event.SetIntKey(kKeyContentSize, content_size);
+    event.SetKey(kKeyContentSize, base::Int64ToValue(content_size));
   event.SetStringKey(kKeyTrigger, kTriggerFileDownload);
   event.SetStringKey(
       kKeyEventResult,

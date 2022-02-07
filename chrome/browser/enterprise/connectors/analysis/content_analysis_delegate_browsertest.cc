@@ -5,6 +5,8 @@
 #include <memory>
 #include <set>
 
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -815,9 +817,18 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // Create the large file.
   ContentAnalysisDelegate::Data data;
 
-  CreateFilesForTest(
-      {"large.doc"},
-      {std::string(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a')}, &data);
+  CreateFilesForTest({"large.doc"}, {std::string()}, &data);
+
+  // Write data to the file in chunks to avoid memory allocation errors.
+  constexpr int64_t kLargeSize = 3ll * 1024ll * 1024ll * 1024ll;
+  int64_t total_size = 0;
+  std::string chunk = std::string(48 * 1024 * 1024, 'a');
+  base::File file(created_file_paths()[0],
+                  base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+  while (total_size != kLargeSize) {
+    file.WriteAtCurrentPos(chunk.data(), chunk.size());
+    total_size += chunk.size();
+  }
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
 
@@ -826,14 +837,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
       /*filename*/ created_file_paths()[0].AsUTF8Unsafe(),
-      // python3 -c "print('a' * (50 * 1024 * 1024 + 1), end='')" | sha256sum |\
-      // tr '[:lower:]' '[:upper:]'
+      // python3 -c "print('a' * (3 * 1024 * 1024 * 1024), end='')" |\
+      // sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
-      "9EB56DB30C49E131459FE735BA6B9D38327376224EC8D5A1233F43A5B4A25942",
+      "EFC8F27580ADA5D86CFC4451A10A142364DE63A6D70F778F1AC47B284F9D50AA",
       /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
       /*reason*/ "FILE_TOO_LARGE",
       /*mimetypes*/ DocMimeTypes(),
-      /*size*/ BinaryUploadService::kMaxUploadSizeBytes + 1,
+      /*size*/ kLargeSize,
       /*result*/
       expected_result() ? safe_browsing::EventResultToString(
                               safe_browsing::EventResult::ALLOWED)

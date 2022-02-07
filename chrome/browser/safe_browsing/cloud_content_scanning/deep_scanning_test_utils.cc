@@ -46,7 +46,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_trigger,
     const std::string& expected_reason,
     const std::set<std::string>* expected_mimetypes,
-    int expected_content_size,
+    int64_t expected_content_size,
     const std::string& expected_result,
     const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
@@ -75,7 +75,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
     const std::string& expected_trigger,
     const std::string& expected_reason,
     const std::set<std::string>* expected_mimetypes,
-    int expected_content_size,
+    int64_t expected_content_size,
     const std::string& expected_result,
     const std::string& expected_username) {
   DCHECK_EQ(expected_filenames.size(), expected_sha256s.size());
@@ -107,7 +107,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_threat_type,
     const std::string& expected_trigger,
     const std::set<std::string>* expected_mimetypes,
-    int expected_content_size,
+    int64_t expected_content_size,
     const std::string& expected_result,
     const std::string& expected_username,
     const absl::optional<std::string>& expected_scan_id) {
@@ -140,7 +140,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result&
         expected_dlp_verdict,
     const std::set<std::string>* expected_mimetypes,
-    int expected_content_size,
+    int64_t expected_content_size,
     const std::string& expected_result,
     const std::string& expected_username,
     const std::string& expected_scan_id) {
@@ -172,7 +172,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
     const std::vector<enterprise_connectors::ContentAnalysisResponse::Result>&
         expected_dlp_verdicts,
     const std::set<std::string>* expected_mimetypes,
-    int expected_content_size,
+    int64_t expected_content_size,
     const std::vector<std::string>& expected_results,
     const std::string& expected_username,
     const std::vector<std::string>& expected_scan_ids) {
@@ -209,7 +209,7 @@ void EventReportValidator::
         const enterprise_connectors::ContentAnalysisResponse::Result&
             expected_dlp_verdict,
         const std::set<std::string>* expected_mimetypes,
-        int expected_content_size,
+        int64_t expected_content_size,
         const std::string& expected_result,
         const std::string& expected_username,
         const std::string& expected_scan_id) {
@@ -252,7 +252,7 @@ void EventReportValidator::
         const enterprise_connectors::ContentAnalysisResponse::Result&
             expected_dlp_verdict,
         const std::set<std::string>* expected_mimetypes,
-        int expected_content_size,
+        int64_t expected_content_size,
         const std::string& expected_result,
         const std::string& expected_username,
         const std::string& expected_scan_id) {
@@ -293,7 +293,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_threat_type,
     const std::string& expected_trigger,
     const std::set<std::string>* expected_mimetypes,
-    int expected_content_size,
+    int64_t expected_content_size,
     const std::string& expected_result,
     const std::string& expected_username,
     const absl::optional<std::string>& expected_scan_id) {
@@ -381,8 +381,12 @@ void EventReportValidator::ValidateReport(base::Value* report) {
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUrl, url_);
   ValidateFilenameMappedAttributes(event);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTrigger, trigger_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyContentSize,
-                content_size_);
+  // `content_size_` needs a conversion since int64 are strings in base::Value.
+  absl::optional<std::string> size =
+      content_size_.has_value()
+          ? absl::optional<std::string>(base::NumberToString(*content_size_))
+          : absl::nullopt;
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyContentSize, size);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyThreatType,
                 threat_type_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUnscannedReason,

@@ -407,8 +407,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ("exe", *event->FindStringKey(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ(1234, *event->FindIntKey(
-                      SafeBrowsingPrivateEventRouter::kKeyContentSize));
+  EXPECT_EQ("1234", *event->FindStringKey(
+                        SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyTrigger));
   EXPECT_EQ(
@@ -532,8 +532,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ("exe", *event->FindStringKey(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ(
-      567, *event->FindIntKey(SafeBrowsingPrivateEventRouter::kKeyContentSize));
+  EXPECT_EQ("567", *event->FindStringKey(
+                       SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ(
       "POTENTIALLY_UNWANTED",
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyThreatType));
@@ -576,8 +576,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ("exe", *event->FindStringKey(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ(
-      890, *event->FindIntKey(SafeBrowsingPrivateEventRouter::kKeyContentSize));
+  EXPECT_EQ("890", *event->FindStringKey(
+                       SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ(
       "BYPASSED_WARNING",
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyThreatType));
@@ -853,8 +853,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
       wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ(12345, *event->FindIntKey(
-                       SafeBrowsingPrivateEventRouter::kKeyContentSize));
+  EXPECT_EQ("12345", *event->FindStringKey(
+                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindStringKey(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",
@@ -906,8 +906,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
       wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ(12345, *event->FindIntKey(
-                       SafeBrowsingPrivateEventRouter::kKeyContentSize));
+  EXPECT_EQ("12345", *event->FindStringKey(
+                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindStringKey(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",
@@ -959,8 +959,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
       wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ(12345, *event->FindIntKey(
-                       SafeBrowsingPrivateEventRouter::kKeyContentSize));
+  EXPECT_EQ("12345", *event->FindStringKey(
+                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindStringKey(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",
@@ -1003,8 +1003,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
       wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ(12345, *event->FindIntKey(
-                       SafeBrowsingPrivateEventRouter::kKeyContentSize));
+  EXPECT_EQ("12345", *event->FindStringKey(
+                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ("text/plain", *event->FindStringKey(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",

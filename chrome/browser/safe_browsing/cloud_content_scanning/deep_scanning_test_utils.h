@@ -44,7 +44,7 @@ class EventReportValidator {
       const std::string& expected_threat_type,
       const std::string& expected_trigger,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const absl::optional<std::string>& expected_scan_id);
@@ -57,7 +57,7 @@ class EventReportValidator {
       const enterprise_connectors::ContentAnalysisResponse::Result&
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const std::string& expected_scan_id);
@@ -70,7 +70,7 @@ class EventReportValidator {
       const std::vector<enterprise_connectors::ContentAnalysisResponse::Result>&
           expected_dlp_verdicts,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::vector<std::string>& expected_results,
       const std::string& expected_username,
       const std::vector<std::string>& expected_scan_ids);
@@ -84,7 +84,7 @@ class EventReportValidator {
       const enterprise_connectors::ContentAnalysisResponse::Result&
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const std::string& expected_scan_id);
@@ -98,7 +98,7 @@ class EventReportValidator {
       const enterprise_connectors::ContentAnalysisResponse::Result&
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const std::string& expected_scan_id);
@@ -109,7 +109,7 @@ class EventReportValidator {
                                 const std::string& expected_trigger,
                                 const std::string& expected_reason,
                                 const std::set<std::string>* expected_mimetypes,
-                                int expected_content_size,
+                                int64_t expected_content_size,
                                 const std::string& expected_result,
                                 const std::string& expected_username);
 
@@ -120,7 +120,7 @@ class EventReportValidator {
       const std::string& expected_trigger,
       const std::string& expected_reason,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username);
 
@@ -131,7 +131,7 @@ class EventReportValidator {
       const std::string& expected_threat_type,
       const std::string& expected_trigger,
       const std::set<std::string>* expected_mimetypes,
-      int expected_content_size,
+      int64_t expected_content_size,
       const std::string& expected_result,
       const std::string& expected_username,
       const absl::optional<std::string>& expected_scan_id);
@@ -185,7 +185,7 @@ class EventReportValidator {
   absl::optional<std::string> trigger_ = absl::nullopt;
   absl::optional<std::string> threat_type_ = absl::nullopt;
   absl::optional<std::string> unscanned_reason_ = absl::nullopt;
-  absl::optional<int> content_size_ = absl::nullopt;
+  absl::optional<int64_t> content_size_ = absl::nullopt;
   raw_ptr<const std::set<std::string>> mimetypes_ = nullptr;
   std::string username_;
   absl::optional<bool> is_federated_ = absl::nullopt;
