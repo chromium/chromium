@@ -99,6 +99,11 @@ struct HeuristicsTestCase {
   TriggeredHeuristics expected_results;
 };
 
+// Returns the full name for the give interaction histogram.
+std::string GetInteractionHistogram(const char* name) {
+  return std::string("Security.SafetyTips.Interaction.") + name;
+}
+
 // Simulates a link click navigation. We don't use
 // ui_test_utils::NavigateToURL(const GURL&) because it simulates the user
 // typing the URL, causing the site to have a site engagement score of at
@@ -488,9 +493,8 @@ INSTANTIATE_TEST_SUITE_P(
     SafetyTipPageInfoBubbleViewBrowserTest,
     ::testing::Values(UIStatus::kDisabled,
                       UIStatus::kEnabledWithDefaultFeatures,
-                      UIStatus::kEnabledWithSuspiciousSites));
-// Disabled for flakiness. https://crbug.com/1113105.
-// UIStatus::kEnabledWithAllFeatures));
+                      UIStatus::kEnabledWithSuspiciousSites,
+                      UIStatus::kEnabledWithAllFeatures));
 
 // Ensure normal sites with low engagement are not blocked.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
@@ -1053,119 +1057,171 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
       security_state::SafetyTipStatus::kBadReputationIgnored, 1);
 }
 
-// Tests that Safety Tip interactions are recorded in a histogram.
+// Tests that Safety Tip interactions are recorded in a histogram when the user
+// leaves the site using the safety tip.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       InteractionsHistogram) {
-  const std::string kHistogramPrefix = "Security.SafetyTips.Interaction.";
+                       InteractionsHistogram_LeaveSite) {
+  // These histograms are only recorded when the UI feature is enabled, so bail
+  // out when disabled.
+  if (ui_status() != UIStatus::kEnabledWithAllFeatures) {
+    return;
+  }
+  // This domain is an edit distance of one from the top 500.
+  const GURL kNavigatedUrl = GetURL("goooglé.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  base::HistogramTester histogram_tester;
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  // The histogram should not be recorded until the user has interacted with
+  // the safety tip.
+  histogram_tester.ExpectTotalCount(
+      GetInteractionHistogram("SafetyTip_Lookalike"), 0);
+  CloseWarningLeaveSite(browser());
+  histogram_tester.ExpectUniqueSample(
+      GetInteractionHistogram("SafetyTip_Lookalike"),
+      SafetyTipInteraction::kLeaveSite, 1);
+}
 
+// Tests that Safety Tip interactions are recorded in a histogram when the user
+// dismisses the Safety Tip.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       InteractionsHistogram_DismissWithClose) {
   // These histograms are only recorded when the UI feature is enabled, so bail
   // out when disabled.
   if (ui_status() != UIStatus::kEnabledWithAllFeatures) {
     return;
   }
 
-  {
-    // This domain is an edit distance of one from the top 500.
-    const GURL kNavigatedUrl = GetURL("goooglé.com");
-    SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-    base::HistogramTester histogram_tester;
-    NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
-    // The histogram should not be recorded until the user has interacted with
-    // the safety tip.
-    histogram_tester.ExpectTotalCount(kHistogramPrefix + "SafetyTip_Lookalike",
-                                      0);
-    CloseWarningLeaveSite(browser());
-    histogram_tester.ExpectUniqueSample(
-        kHistogramPrefix + "SafetyTip_Lookalike",
-        SafetyTipInteraction::kLeaveSite, 1);
-  }
+  base::HistogramTester histogram_tester;
+  auto kNavigatedUrl = GetURL("site1.com");
+  TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
+                              WindowOpenDisposition::CURRENT_TAB);
+  // The histogram should not be recorded until the user has interacted with
+  // the safety tip.
+  histogram_tester.ExpectTotalCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"), 0);
+  CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
+  histogram_tester.ExpectBucketCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"),
+      SafetyTipInteraction::kDismiss, 1);
+  histogram_tester.ExpectBucketCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"),
+      SafetyTipInteraction::kDismissWithClose, 1);
+}
 
-  {
-    base::HistogramTester histogram_tester;
-    auto kNavigatedUrl = GetURL("site1.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    // The histogram should not be recorded until the user has interacted with
-    // the safety tip.
-    histogram_tester.ExpectTotalCount(
-        kHistogramPrefix + "SafetyTip_BadReputation", 0);
-    CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
-    histogram_tester.ExpectBucketCount(
-        kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kDismiss, 1);
-    histogram_tester.ExpectBucketCount(
-        kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kDismissWithClose, 1);
+// Tests that Safety Tip interactions are recorded in a histogram when the user
+// dismisses the Safety Tip using ESC key.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       InteractionsHistogram_DismissWithEsc) {
+  // These histograms are only recorded when the UI feature is enabled, so bail
+  // out when disabled.
+  if (ui_status() != UIStatus::kEnabledWithAllFeatures) {
+    return;
   }
 
   // Test that the specific dismissal type is recorded correctly.
-  {
-    base::HistogramTester histogram_tester;
-    auto kNavigatedUrl = GetURL("site2.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    CloseWarningIgnore(views::Widget::ClosedReason::kEscKeyPressed);
-    histogram_tester.ExpectBucketCount(
-        kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kDismiss, 1);
-    histogram_tester.ExpectBucketCount(
-        kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kDismissWithEsc, 1);
-  }
+  base::HistogramTester histogram_tester;
+  auto kNavigatedUrl = GetURL("site2.com");
+  TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
+                              WindowOpenDisposition::CURRENT_TAB);
+  CloseWarningIgnore(views::Widget::ClosedReason::kEscKeyPressed);
+  histogram_tester.ExpectBucketCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"),
+      SafetyTipInteraction::kDismiss, 1);
+  histogram_tester.ExpectBucketCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"),
+      SafetyTipInteraction::kDismissWithEsc, 1);
+}
 
+// Tests that Safety Tip interactions are recorded in a histogram.
+// Flaky in general: Closing the tab may or may not run the callbacks.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       DISABLED_InteractionsHistogram_CloseTab) {
+  // These histograms are only recorded when the UI feature is enabled, so bail
+  // out when disabled.
+  if (ui_status() != UIStatus::kEnabledWithAllFeatures) {
+    return;
+  }
   // Test that tab close is recorded properly.
-  {
-    base::HistogramTester histogram_tester;
-    auto kNavigatedUrl = GetURL("site2.com");
+  base::HistogramTester histogram_tester;
+  auto kNavigatedUrl = GetURL("site3.com");
 
-    // Prep the web contents for later observing.
-    NavigateToURL(browser(), GURL("about:blank"),
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
-    ReputationWebContentsObserver* rep_observer =
-        ReputationWebContentsObserver::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents());
+  // Prep the web contents for later observing.
+  NavigateToURL(browser(), GURL("about:blank"),
+                WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  ReputationWebContentsObserver* rep_observer =
+      ReputationWebContentsObserver::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
 
-    // Trigger the warning in the prepped web contents.
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
+  // Trigger the warning in the prepped web contents.
+  TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
+                              WindowOpenDisposition::CURRENT_TAB);
 
-    // Close all tabs and wait for that to happen.
-    base::RunLoop loop;
-    rep_observer->RegisterSafetyTipCloseCallbackForTesting(loop.QuitClosure());
-    browser()->tab_strip_model()->CloseAllTabs();
-    loop.Run();
+  // Close the current tab and wait for that to happen.
+  base::RunLoop loop;
+  rep_observer->RegisterSafetyTipCloseCallbackForTesting(loop.QuitClosure());
+  chrome::CloseTab(browser());
+  loop.Run();
 
-    // Verify histograms.
-    histogram_tester.ExpectBucketCount(
-        kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kCloseTab, 1);
+  // Verify histograms.
+  histogram_tester.ExpectBucketCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"),
+      SafetyTipInteraction::kCloseTab, 1);
+}
+
+// Tests that Safety Tip interactions are recorded in a histogram when the user
+// switches tabs.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       InteractionsHistogram_SwitchTab) {
+  // These histograms are only recorded when the UI feature is enabled, so bail
+  // out when disabled.
+  if (ui_status() != UIStatus::kEnabledWithAllFeatures) {
+    return;
   }
-
   // Test that tab switch is recorded properly.
-  {
-    base::HistogramTester histogram_tester;
-    auto kNavigatedUrl = GetURL("site2.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    NavigateToURL(browser(), GURL("about:blank"),
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
-    histogram_tester.ExpectBucketCount(
-        kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kSwitchTab, 1);
-  }
+  ReputationWebContentsObserver* rep_observer =
+      ReputationWebContentsObserver::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  base::RunLoop loop;
+  rep_observer->RegisterSafetyTipCloseCallbackForTesting(loop.QuitClosure());
 
-  // Test that navigating away is recorded properly.
-  {
-    base::HistogramTester histogram_tester;
-    auto kNavigatedUrl = GetURL("site2.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    NavigateToURL(browser(), GURL("about:blank"),
-                  WindowOpenDisposition::CURRENT_TAB);
-    histogram_tester.ExpectBucketCount(
-        kHistogramPrefix + "SafetyTip_BadReputation",
-        SafetyTipInteraction::kChangePrimaryPage, 1);
+  base::HistogramTester histogram_tester;
+  auto kNavigatedUrl = GetURL("site4.com");
+  TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
+                              WindowOpenDisposition::CURRENT_TAB);
+  NavigateToURL(browser(), GURL("about:blank"),
+                WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  loop.Run();
+  histogram_tester.ExpectBucketCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"),
+      SafetyTipInteraction::kSwitchTab, 1);
+}
+
+// Tests that Safety Tip interactions are recorded in a histogram when the user
+// navigates away from the site.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       InteractionsHistogram_NavigateAway) {
+  // These histograms are only recorded when the UI feature is enabled, so bail
+  // out when disabled.
+  if (ui_status() != UIStatus::kEnabledWithAllFeatures) {
+    return;
   }
+  // Test that navigating away is recorded properly.
+  ReputationWebContentsObserver* rep_observer =
+      ReputationWebContentsObserver::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  base::RunLoop loop;
+  rep_observer->RegisterSafetyTipCloseCallbackForTesting(loop.QuitClosure());
+
+  base::HistogramTester histogram_tester;
+  auto kNavigatedUrl = GetURL("site5.com");
+  TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
+                              WindowOpenDisposition::CURRENT_TAB);
+  NavigateToURL(browser(), GURL("about:blank"),
+                WindowOpenDisposition::CURRENT_TAB);
+  loop.Run();
+  histogram_tester.ExpectBucketCount(
+      GetInteractionHistogram("SafetyTip_BadReputation"),
+      SafetyTipInteraction::kChangePrimaryPage, 1);
 }
 
 // Tests that the histograms recording how long the Safety Tip is open are
