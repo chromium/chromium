@@ -40,7 +40,8 @@ class CONTENT_EXPORT CommonSourceInfo {
                    base::Time impression_time,
                    base::Time expiry_time,
                    SourceType source_type,
-                   int64_t priority);
+                   int64_t priority,
+                   absl::optional<uint64_t> debug_key);
 
   ~CommonSourceInfo();
 
@@ -66,6 +67,10 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   int64_t priority() const { return priority_; }
 
+  absl::optional<uint64_t> debug_key() const { return debug_key_; }
+
+  void ClearDebugKey() { debug_key_ = absl::nullopt; }
+
   // Returns the schemeful site of |conversion_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
@@ -87,6 +92,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   base::Time expiry_time_;
   SourceType source_type_;
   int64_t priority_;
+  absl::optional<uint64_t> debug_key_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

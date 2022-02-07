@@ -314,6 +314,9 @@ void AttributionHost::RegisterConversion(
         return sanitized;
       };
 
+  // TODO(apaseltiner): Set this based on field in `conversion`.
+  absl::optional<int64_t> debug_key;
+
   net::SchemefulSite conversion_destination(main_frame_origin);
 
   AttributionTrigger storable_conversion(
@@ -331,10 +334,15 @@ void AttributionHost::RegisterConversion(
       conversion->priority,
       conversion->dedup_key.is_null()
           ? absl::nullopt
-          : absl::make_optional(conversion->dedup_key->value));
+          : absl::make_optional(conversion->dedup_key->value),
+      debug_key);
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(conversion->reporting_origin);
+
+  // TODO(apaseltiner): It would be nice to be able to report an issue in
+  // DevTools in the event that a debug key is present but the corresponding
+  // cookie is not.
   attribution_manager->HandleTrigger(std::move(storable_conversion));
 }
 

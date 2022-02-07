@@ -67,7 +67,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
         "source_event_id": "123",
         "destination": "https://a.d.test",
         "expiry": "864000000",
-        "priority": "-5"
+        "priority": "-5",
+        "debug_key": "14"
       }
     },
     {
@@ -102,6 +103,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
           .SetConversionOrigin(url::Origin::Create(GURL("https://a.d.test")))
           .SetExpiry(base::Days(10))
           .SetPriority(-5)
+          .SetDebugKey(14)
           .Build(),
       SourceBuilder(kOffsetTime + base::Seconds(1643235573))
           .SetSourceType(CommonSourceInfo::SourceType::kEvent)
@@ -109,8 +111,9 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
           .SetImpressionOrigin(url::Origin::Create(GURL("https://b.s.test")))
           .SetSourceEventId(456)
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.d.test")))
-          .SetExpiry(base::Days(30))  // default
-          .SetPriority(0)             // default
+          .SetExpiry(base::Days(30))   // default
+          .SetPriority(0)              // default
+          .SetDebugKey(absl::nullopt)  // default
           .Build(),
       SourceBuilder(kOffsetTime + base::Seconds(1643235575))
           .SetSourceType(CommonSourceInfo::SourceType::kEvent)
@@ -118,8 +121,9 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
           .SetImpressionOrigin(url::Origin::Create(GURL("https://c.s.test")))
           .SetSourceEventId(789)
           .SetConversionOrigin(url::Origin::Create(GURL("https://c.d.test")))
-          .SetExpiry(base::Days(10))  // rounded to whole number of days
-          .SetPriority(0)             // default
+          .SetExpiry(base::Days(10))   // rounded to whole number of days
+          .SetPriority(0)              // default
+          .SetDebugKey(absl::nullopt)  // default
           .Build(),
   };
 
@@ -138,7 +142,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
         "trigger_data": "10",
         "event_source_trigger_data": "3",
         "priority": "-5",
-        "dedup_key": "123"
+        "dedup_key": "123",
+        "debug_key": "14"
       }
     },
     {
@@ -160,6 +165,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                          .SetEventSourceTriggerData(1)  // sanitized to 1 bit
                          .SetPriority(-5)
                          .SetDedupKey(123)
+                         .SetDebugKey(14)
                          .Build(),
           .time = kOffsetTime + base::Seconds(1643235576),
       },
@@ -173,6 +179,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                          .SetEventSourceTriggerData(0)  // default
                          .SetPriority(0)                // default
                          .SetDedupKey(absl::nullopt)    // default
+                         .SetDebugKey(absl::nullopt)    // default
                          .Build(),
           .time = kOffsetTime + base::Seconds(1643235575),
       },

@@ -64,11 +64,13 @@ AttributionReport::AttributionReport(
     base::Time trigger_time,
     base::Time report_time,
     base::GUID external_report_id,
+    absl::optional<uint64_t> trigger_debug_key,
     absl::variant<EventLevelData, AggregatableContributionData> data)
     : source_(std::move(source)),
       trigger_time_(trigger_time),
       report_time_(report_time),
       external_report_id_(std::move(external_report_id)),
+      trigger_debug_key_(trigger_debug_key),
       data_(std::move(data)) {
   DCHECK(external_report_id_.is_valid());
 }
@@ -150,6 +152,14 @@ base::Value AttributionReport::ReportBody() const {
   // for the first time the values are changed before complicating the codebase.
   dict.SetDoubleKey("randomized_trigger_rate",
                     RandomizedTriggerRate(source_.common_info().source_type()));
+
+  if (absl::optional<uint64_t> debug_key = source_.common_info().debug_key())
+    dict.SetStringKey("source_debug_key", base::NumberToString(*debug_key));
+
+  if (trigger_debug_key_.has_value()) {
+    dict.SetStringKey("trigger_debug_key",
+                      base::NumberToString(*trigger_debug_key_));
+  }
 
   return dict;
 }

@@ -47,6 +47,10 @@ struct WebUIAttributionReport {
   int32 http_response_code;
 };
 
+struct AttributionDebugKey {
+  uint64 value;
+};
+
 // Struct representing a stored attribution source that will be displayed by WebUI.
 struct WebUIAttributionSource {
   uint64 source_event_id;
@@ -58,6 +62,7 @@ struct WebUIAttributionSource {
   double expiry_time;
   SourceType source_type;
   int64 priority;
+  AttributionDebugKey? debug_key;
   array<int64> dedup_keys;
 
   enum Attributability {

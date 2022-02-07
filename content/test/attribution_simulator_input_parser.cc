@@ -92,6 +92,15 @@ uint64_t FindUint64KeyOrExit(const base::Value& dict, const char* key) {
   return ParseUint64OrExit(FindStringKeyOrExit(dict, key));
 }
 
+absl::optional<uint64_t> FindUint64KeyOrNull(const base::Value& dict,
+                                             const char* key) {
+  const std::string* s = dict.FindStringKey(key);
+  if (!s)
+    return absl::nullopt;
+
+  return ParseUint64OrExit(*s);
+}
+
 CommonSourceInfo::SourceType FindSourceTypeKeyOrExit(const base::Value& dict,
                                                      const char* key) {
   std::string v = FindStringKeyOrExit(dict, key);
@@ -132,7 +141,8 @@ StorableSource ParseSource(const base::Value& dict, base::Time offset_time) {
       FindOriginKeyOrExit(cfg, "destination"),
       FindOriginKeyOrExit(dict, "reporting_origin"), source_time,
       GetExpiryTimeForImpression(expiry, source_time, source_type), source_type,
-      FindInt64KeyOrDefault(cfg, "priority", 0)));
+      FindInt64KeyOrDefault(cfg, "priority", 0),
+      FindUint64KeyOrNull(cfg, "debug_key")));
 }
 
 AttributionTriggerAndTime ParseTrigger(const base::Value& dict,
@@ -149,7 +159,8 @@ AttributionTriggerAndTime ParseTrigger(const base::Value& dict,
               FindUint64KeyOrDefault(cfg, "event_source_trigger_data", 0),
               CommonSourceInfo::SourceType::kEvent),
           FindInt64KeyOrDefault(cfg, "priority", 0),
-          FindInt64KeyOrNull(cfg, "dedup_key")),
+          FindInt64KeyOrNull(cfg, "dedup_key"),
+          FindUint64KeyOrNull(cfg, "debug_key")),
       .time = FindTimeKeyOrExit(dict, "trigger_time", offset_time),
   };
 }

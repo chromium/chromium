@@ -25,6 +25,8 @@ class CONTENT_EXPORT StorableSource {
 
   const CommonSourceInfo& common_info() const { return common_info_; }
 
+  CommonSourceInfo& common_info() { return common_info_; }
+
  private:
   CommonSourceInfo common_info_;
 

@@ -90,6 +90,7 @@ class CONTENT_EXPORT AttributionReport {
       base::Time trigger_time,
       base::Time report_time,
       base::GUID external_report_id,
+      absl::optional<uint64_t> trigger_debug_key,
       absl::variant<EventLevelData, AggregatableContributionData> data);
   AttributionReport(const AttributionReport& other);
   AttributionReport& operator=(const AttributionReport& other);
@@ -111,6 +112,10 @@ class CONTENT_EXPORT AttributionReport {
   base::Time report_time() const { return report_time_; }
 
   const base::GUID& external_report_id() const { return external_report_id_; }
+
+  absl::optional<uint64_t> trigger_debug_key() const {
+    return trigger_debug_key_;
+  }
 
   int failed_send_attempts() const { return failed_send_attempts_; }
 
@@ -142,6 +147,8 @@ class CONTENT_EXPORT AttributionReport {
   // External report ID for deduplicating reports received by the reporting
   // origin.
   base::GUID external_report_id_;
+
+  absl::optional<uint64_t> trigger_debug_key_;
 
   // Number of times the browser has tried and failed to send this report.
   int failed_send_attempts_ = 0;

@@ -44,6 +44,27 @@ base::Time GetEventTime(const AttributionSimulationEvent& event) {
   return absl::visit(Visitor{}, event);
 }
 
+// TODO(apaseltiner): Consider exposing other behaviors here.
+class AlwaysSetCookieChecker : public AttributionManagerImpl::CookieChecker {
+ public:
+  AlwaysSetCookieChecker() = default;
+
+  ~AlwaysSetCookieChecker() override = default;
+
+  AlwaysSetCookieChecker(const AlwaysSetCookieChecker&) = delete;
+  AlwaysSetCookieChecker(AlwaysSetCookieChecker&&) = delete;
+
+  AlwaysSetCookieChecker& operator=(const AlwaysSetCookieChecker&) = delete;
+  AlwaysSetCookieChecker& operator=(AlwaysSetCookieChecker&&) = delete;
+
+ private:
+  // AttributionManagerImpl::CookieChecker:
+  void IsDebugCookieSet(const url::Origin& origin,
+                        base::OnceCallback<void(bool)> callback) override {
+    std::move(callback).Run(true);
+  }
+};
+
 class SentReportAccumulator : public AttributionManagerImpl::NetworkSender {
  public:
   SentReportAccumulator(base::Value::ListStorage& reports,
@@ -90,11 +111,11 @@ struct EventHandler {
   base::raw_ptr<AttributionManagerImpl> manager;
 
   void operator()(StorableSource source) {
-    manager->HandleSourceInternalForTesting(std::move(source));
+    manager->MaybeEnqueueEventForTesting(std::move(source));
   }
 
   void operator()(AttributionTriggerAndTime trigger) {
-    manager->HandleTriggerInternalForTesting(std::move(trigger.trigger));
+    manager->MaybeEnqueueEventForTesting(std::move(trigger.trigger));
   }
 };
 
@@ -132,6 +153,7 @@ base::Value RunAttributionSimulationOrExit(
       std::move(always_allow_reports_callback), user_data_directory,
       /*special_storage_policy=*/nullptr,
       std::make_unique<AttributionStorageDelegateImpl>(),
+      std::make_unique<AlwaysSetCookieChecker>(),
       /*network_sender=*/
       std::make_unique<SentReportAccumulator>(reports,
                                               options.remove_report_ids));

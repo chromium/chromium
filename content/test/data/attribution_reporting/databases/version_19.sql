@@ -2,9 +2,9 @@ PRAGMA foreign_keys=OFF;
 
 BEGIN TRANSACTION;
 
-CREATE TABLE impressions(impression_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,impression_data INTEGER NOT NULL,impression_origin TEXT NOT NULL,conversion_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,impression_time INTEGER NOT NULL,expiry_time INTEGER NOT NULL,num_conversions INTEGER DEFAULT 0,active INTEGER DEFAULT 1,conversion_destination TEXT NOT NULL,source_type INTEGER NOT NULL,attributed_truthfully INTEGER NOT NULL,priority INTEGER NOT NULL,impression_site TEXT NOT NULL);
+CREATE TABLE impressions(impression_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,impression_data INTEGER NOT NULL,impression_origin TEXT NOT NULL,conversion_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,impression_time INTEGER NOT NULL,expiry_time INTEGER NOT NULL,num_conversions INTEGER DEFAULT 0,active INTEGER DEFAULT 1,conversion_destination TEXT NOT NULL,source_type INTEGER NOT NULL,attributed_truthfully INTEGER NOT NULL,priority INTEGER NOT NULL,impression_site TEXT NOT NULL,debug_key INTEGER);
 
-CREATE TABLE conversions(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,impression_id INTEGER NOT NULL,conversion_data INTEGER NOT NULL,conversion_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL);
+CREATE TABLE conversions(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,impression_id INTEGER NOT NULL,conversion_data INTEGER NOT NULL,conversion_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER);
 
 CREATE TABLE rate_limits(rate_limit_id INTEGER PRIMARY KEY NOT NULL,impression_id INTEGER NOT NULL,impression_site TEXT NOT NULL,impression_origin TEXT NOT NULL,conversion_destination TEXT NOT NULL,conversion_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,conversion_time INTEGER NOT NULL);
 
@@ -13,8 +13,8 @@ CREATE TABLE dedup_keys(impression_id INTEGER NOT NULL,dedup_key INTEGER NOT NUL
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','18');
-INSERT INTO meta VALUES('last_compatible_version','18');
+INSERT INTO meta VALUES('version','19');
+INSERT INTO meta VALUES('last_compatible_version','19');
 
 CREATE INDEX conversion_destination_idx ON impressions(active,conversion_destination,reporting_origin);
 
@@ -33,7 +33,5 @@ CREATE INDEX rate_limit_report_scope_idx ON rate_limits(conversion_destination,i
 CREATE INDEX rate_limit_conversion_time_idx ON rate_limits(conversion_time);
 
 CREATE INDEX rate_limit_impression_id_idx ON rate_limits(impression_id);
-
-INSERT INTO conversions VALUES (1,2,3,4,5,6,7,8);
 
 COMMIT;

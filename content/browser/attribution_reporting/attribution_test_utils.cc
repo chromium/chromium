@@ -214,6 +214,11 @@ SourceBuilder& SourceBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetDebugKey(absl::optional<uint64_t> debug_key) {
+  debug_key_ = debug_key;
+  return *this;
+}
+
 SourceBuilder& SourceBuilder::SetAttributionLogic(
     StoredSource::AttributionLogic attribution_logic) {
   attribution_logic_ = attribution_logic;
@@ -231,10 +236,11 @@ SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<int64_t> dedup_keys) {
 }
 
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
-  return CommonSourceInfo(
-      source_event_id_, impression_origin_, conversion_origin_,
-      reporting_origin_, impression_time_,
-      /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_);
+  return CommonSourceInfo(source_event_id_, impression_origin_,
+                          conversion_origin_, reporting_origin_,
+                          impression_time_,
+                          /*expiry_time=*/impression_time_ + expiry_,
+                          source_type_, priority_, debug_key_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -291,10 +297,16 @@ TriggerBuilder& TriggerBuilder::SetDedupKey(absl::optional<int64_t> dedup_key) {
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetDebugKey(
+    absl::optional<uint64_t> debug_key) {
+  debug_key_ = debug_key;
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build() const {
   return AttributionTrigger(trigger_data_, conversion_destination_,
                             reporting_origin_, event_source_trigger_data_,
-                            priority_, dedup_key_);
+                            priority_, dedup_key_, debug_key_);
 }
 
 ReportBuilder::ReportBuilder(StoredSource source)
@@ -329,6 +341,12 @@ ReportBuilder& ReportBuilder::SetExternalReportId(
   return *this;
 }
 
+ReportBuilder& ReportBuilder::SetTriggerDebugKey(
+    absl::optional<uint64_t> trigger_debug_key) {
+  trigger_debug_key_ = trigger_debug_key;
+  return *this;
+}
+
 ReportBuilder& ReportBuilder::SetReportId(
     absl::optional<AttributionReport::EventLevelData::Id> id) {
   report_id_ = id;
@@ -338,6 +356,7 @@ ReportBuilder& ReportBuilder::SetReportId(
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
       source_, trigger_time_, report_time_, external_report_id_,
+      trigger_debug_key_,
       AttributionReport::EventLevelData(trigger_data_, priority_, report_id_));
 }
 
@@ -356,7 +375,7 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
                            source.conversion_origin(),
                            source.reporting_origin(), source.impression_time(),
                            source.expiry_time(), source.source_type(),
-                           source.priority());
+                           source.priority(), source.debug_key());
   };
   return tie(a) == tie(b);
 }
@@ -435,6 +454,7 @@ bool operator==(const AttributionReport& a, const AttributionReport& b) {
   const auto tie = [](const AttributionReport& report) {
     return std::make_tuple(report.source(), report.trigger_time(),
                            report.report_time(), report.external_report_id(),
+                           report.trigger_debug_key(),
                            report.failed_send_attempts(), report.data());
   };
   return tie(a) == tie(b);
@@ -556,6 +576,10 @@ std::ostream& operator<<(std::ostream& out,
              << (conversion.dedup_key()
                      ? base::NumberToString(*conversion.dedup_key())
                      : "null")
+             << ",debug_key="
+             << (conversion.debug_key()
+                     ? base::NumberToString(*conversion.debug_key())
+                     : "null")
              << "}";
 }
 
@@ -567,9 +591,11 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << ",impression_time=" << source.impression_time()
              << ",expiry_time=" << source.expiry_time()
              << ",source_type=" << source.source_type()
-             << ",priority=" << source.priority() << "}";
+             << ",priority=" << source.priority() << ",debug_key="
+             << (source.debug_key() ? base::NumberToString(*source.debug_key())
+                                    : "null")
+             << "}";
 }
-
 std::ostream& operator<<(std::ostream& out,
                          const AttributionStorage::Delegate::FakeReport& r) {
   return out << "{trigger_data=" << r.trigger_data
@@ -650,6 +676,10 @@ std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
       << ",trigger_time=" << report.trigger_time()
       << ",report_time=" << report.report_time()
       << ",external_report_id=" << report.external_report_id()
+      << ",trigger_debug_key="
+      << (report.trigger_debug_key()
+              ? base::NumberToString(*report.trigger_debug_key())
+              : "null")
       << ",failed_send_attempts=" << report.failed_send_attempts()
       << ",data=" << report.data() << "}";
   return out;

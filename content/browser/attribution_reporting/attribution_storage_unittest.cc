@@ -1713,4 +1713,23 @@ TEST_F(AttributionStorageTest, GetAttributionsToReport_Shuffles) {
                           EventLevelDataIs(TriggerDataIs(3))));
 }
 
+TEST_F(AttributionStorageTest, SourceDebugKey_RoundTrips) {
+  storage()->StoreSource(
+      SourceBuilder(base::Time::Now()).SetDebugKey(33).Build());
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceDebugKeyIs(33)));
+}
+
+TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
+  storage()->StoreSource(
+      SourceBuilder(base::Time::Now()).SetDebugKey(22).Build());
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      MaybeCreateAndStoreReport(TriggerBuilder().SetDebugKey(33).Build()));
+
+  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
+              ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(22)),
+                                TriggerDebugKeyIs(33))));
+}
+
 }  // namespace content

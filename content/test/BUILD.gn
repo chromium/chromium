@@ -1938,6 +1938,7 @@ test("content_unittests") {
     "../browser/aggregation_service/aggregation_service_network_fetcher_impl_unittest.cc",
     "../browser/aggregation_service/aggregation_service_storage_sql_unittest.cc",
     "../browser/aggregation_service/public_key_parsing_utils_unittest.cc",
+    "../browser/attribution_reporting/attribution_cookie_checker_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_host_unittest.cc",
     "../browser/attribution_reporting/attribution_host_utils_unittest.cc",
     "../browser/attribution_reporting/attribution_manager_impl_unittest.cc",

@@ -65,6 +65,9 @@ mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
       source.common_info().impression_time().ToJsTime(),
       source.common_info().expiry_time().ToJsTime(),
       source.common_info().source_type(), source.common_info().priority(),
+      source.common_info().debug_key()
+          ? mojom::AttributionDebugKey::New(*source.common_info().debug_key())
+          : nullptr,
       source.dedup_keys(), attributability);
 }
 

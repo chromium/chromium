@@ -8,7 +8,8 @@
       "registration_config": {
         "source_event_id": "1337",
         "destination": "https://destination.example",
-        "expiry" : "864000000"
+        "expiry" : "864000000",
+        "debug_key": "789"
       }
     }
   ],
@@ -19,7 +20,8 @@
       "destination": " https://destination.example",
       "registration_config": {
         "trigger_data": "3",
-        "event_source_trigger_data": "1"
+        "event_source_trigger_data": "1",
+        "debug_key": "456"
       }
     },
     {

@@ -229,6 +229,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           {SourceBuilder(now)
                .SetSourceEventId(std::numeric_limits<uint64_t>::max())
                .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
+               .SetDebugKey(19)
                .BuildStored(),
            SourceBuilder(now + base::Hours(1))
                .SetSourceType(CommonSourceInfo::SourceType::kEvent)
@@ -252,12 +253,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[6].innerText === "Event" &&
           table.children[0].children[7].innerText === "0" &&
           table.children[1].children[7].innerText === $2 &&
-          table.children[0].children[8].innerText === "" &&
-          table.children[1].children[8].innerText === "13, 17" &&
-          table.children[0].children[9].innerText === "Unattributable: noised" &&
-          table.children[1].children[9].innerText === "Attributable" &&
-          table.children[2].children[9].innerText === "Unattributable: replaced by newer source" &&
-          table.children[3].children[9].innerText === "Unattributable: reached attribution limit") {
+          table.children[0].children[8].innerText === "19" &&
+          table.children[1].children[8].innerText === "" &&
+          table.children[0].children[9].innerText === "" &&
+          table.children[1].children[9].innerText === "13, 17" &&
+          table.children[0].children[10].innerText === "Unattributable: noised" &&
+          table.children[1].children[10].innerText === "Attributable" &&
+          table.children[2].children[10].innerText === "Unattributable: replaced by newer source" &&
+          table.children[3].children[10].innerText === "Unattributable: reached attribution limit") {
         document.title = $3;
       }
     });

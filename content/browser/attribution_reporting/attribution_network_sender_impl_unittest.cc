@@ -166,6 +166,70 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
   }
 }
 
+TEST_F(AttributionNetworkSenderTest,
+       ReportSentWithDebugKeys_ReportBodySetCorrectly) {
+  const struct {
+    absl::optional<uint64_t> source_debug_key;
+    absl::optional<uint64_t> trigger_debug_key;
+    const char* expected_report;
+  } kTestCases[] = {
+      {absl::nullopt, absl::nullopt,
+       R"({"attribution_destination":"https://conversion.test",)"
+       R"("randomized_trigger_rate":0.0024,)"
+       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("source_event_id":"100",)"
+       R"("source_type":"navigation",)"
+       R"("trigger_data":"5"})"},
+      {7, absl::nullopt,
+       R"({"attribution_destination":"https://conversion.test",)"
+       R"("randomized_trigger_rate":0.0024,)"
+       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("source_debug_key":"7",)"
+       R"("source_event_id":"100",)"
+       R"("source_type":"navigation",)"
+       R"("trigger_data":"5"})"},
+      {absl::nullopt, 7,
+       R"({"attribution_destination":"https://conversion.test",)"
+       R"("randomized_trigger_rate":0.0024,)"
+       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("source_event_id":"100",)"
+       R"("source_type":"navigation",)"
+       R"("trigger_data":"5",)"
+       R"("trigger_debug_key":"7"})"},
+      {7, 8,
+       R"({"attribution_destination":"https://conversion.test",)"
+       R"("randomized_trigger_rate":0.0024,)"
+       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("source_debug_key":"7",)"
+       R"("source_event_id":"100",)"
+       R"("source_type":"navigation",)"
+       R"("trigger_data":"5",)"
+       R"("trigger_debug_key":"8"})"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto impression = SourceBuilder(base::Time())
+                          .SetSourceEventId(100)
+                          .SetDebugKey(test_case.source_debug_key)
+                          .BuildStored();
+    AttributionReport report =
+        ReportBuilder(impression)
+            .SetTriggerData(5)
+            .SetTriggerDebugKey(test_case.trigger_debug_key)
+            .Build();
+    network_sender_->SendReport(report.ReportURL(), report.ReportBody(),
+                                base::DoNothing());
+
+    const network::ResourceRequest* pending_request;
+    EXPECT_TRUE(
+        test_url_loader_factory_.IsPending(kReportUrl, &pending_request));
+    EXPECT_EQ(test_case.expected_report,
+              network::GetUploadData(*pending_request));
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kReportUrl, ""));
+  }
+}
+
 TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
   auto impression =
       SourceBuilder(base::Time())

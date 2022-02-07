@@ -16,6 +16,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -158,11 +159,12 @@ AttributionManagerImpl::CreateForTesting(
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
+    std::unique_ptr<CookieChecker> cookie_checker,
     std::unique_ptr<NetworkSender> network_sender) {
   return absl::WrapUnique(new AttributionManagerImpl(
       std::move(is_report_allowed_callback), user_data_directory,
       std::move(special_storage_policy), std::move(storage_delegate),
-      std::move(network_sender)));
+      std::move(cookie_checker), std::move(network_sender)));
 }
 
 AttributionManagerImpl::AttributionManagerImpl(
@@ -176,6 +178,7 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::make_unique<AttributionStorageDelegateImpl>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kConversionsDebugMode)),
+          std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionNetworkSenderImpl>(storage_partition)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
@@ -183,6 +186,7 @@ AttributionManagerImpl::AttributionManagerImpl(
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
+    std::unique_ptr<CookieChecker> cookie_checker,
     std::unique_ptr<NetworkSender> network_sender)
     : is_report_allowed_callback_(std::move(is_report_allowed_callback)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
@@ -190,9 +194,11 @@ AttributionManagerImpl::AttributionManagerImpl(
           user_data_directory,
           std::move(storage_delegate))),
       special_storage_policy_(std::move(special_storage_policy)),
+      cookie_checker_(std::move(cookie_checker)),
       network_sender_(std::move(network_sender)),
       weak_factory_(this) {
   DCHECK(is_report_allowed_callback_);
+  DCHECK(cookie_checker_);
   DCHECK(network_sender_);
 
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
@@ -231,11 +237,11 @@ void AttributionManagerImpl::HandleSource(StorableSource source) {
   // Process attributions in the order in which they were received, processing
   // the new one after any background attributions are flushed.
   GetContentClient()->browser()->FlushBackgroundAttributions(
-      base::BindOnce(&AttributionManagerImpl::HandleSourceInternal,
+      base::BindOnce(&AttributionManagerImpl::MaybeEnqueueEvent,
                      weak_factory_.GetWeakPtr(), std::move(source)));
 }
 
-void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
+void AttributionManagerImpl::StoreSource(StorableSource source) {
   // Only retrieve deactivated sources if an observer is there to hear it.
   // Technically, an observer could be registered between the time the async
   // call is made and the time the response is received, but this is unlikely.
@@ -267,27 +273,109 @@ void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
           weak_factory_.GetWeakPtr()));
 }
 
-void AttributionManagerImpl::HandleSourceInternalForTesting(
-    StorableSource source) {
-  HandleSourceInternal(std::move(source));
-}
-
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
   GetContentClient()->browser()->FlushBackgroundAttributions(
-      base::BindOnce(&AttributionManagerImpl::HandleTriggerInternal,
+      base::BindOnce(&AttributionManagerImpl::MaybeEnqueueEvent,
                      weak_factory_.GetWeakPtr(), std::move(trigger)));
 }
 
-void AttributionManagerImpl::HandleTriggerInternal(AttributionTrigger trigger) {
+void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger) {
   attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
       .WithArgs(std::move(trigger))
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr()));
 }
 
-void AttributionManagerImpl::HandleTriggerInternalForTesting(
-    AttributionTrigger trigger) {
-  HandleTriggerInternal(std::move(trigger));
+void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
+  const size_t size_before_push = pending_events_.size();
+
+  // Avoid unbounded memory growth with adversarial input.
+  // TODO(apaseltiner): Consider logging UMA / surfacing DevTools issue, since
+  // this will cause data loss.
+  constexpr size_t kMaxPendingEvents = 1000;
+  if (size_before_push == kMaxPendingEvents)
+    return;
+
+  pending_events_.push_back(std::move(event));
+
+  // Only process the new event if it is the only one in the queue. Otherwise,
+  // there's already an async cookie-check in progress.
+  if (size_before_push == 0)
+    ProcessEvents();
+}
+
+void AttributionManagerImpl::MaybeEnqueueEventForTesting(
+    SourceOrTrigger event) {
+  MaybeEnqueueEvent(std::move(event));
+}
+
+void AttributionManagerImpl::ProcessEvents() {
+  struct DebugCookieOriginGetter {
+    const url::Origin* operator()(const StorableSource& source) const {
+      return source.common_info().debug_key().has_value()
+                 ? &source.common_info().reporting_origin()
+                 : nullptr;
+    }
+
+    const url::Origin* operator()(const AttributionTrigger& trigger) const {
+      return trigger.debug_key().has_value() ? &trigger.reporting_origin()
+                                             : nullptr;
+    }
+  };
+
+  // Process as many events not requiring a cookie check (synchronously) as
+  // possible. Once reaching the first to require a cookie check, start the
+  // async check and stop processing further events.
+  while (!pending_events_.empty()) {
+    const url::Origin* cookie_origin =
+        absl::visit(DebugCookieOriginGetter(), pending_events_.front());
+    if (cookie_origin) {
+      cookie_checker_->IsDebugCookieSet(
+          *cookie_origin,
+          base::BindOnce(
+              [](base::WeakPtr<AttributionManagerImpl> manager,
+                 bool is_debug_cookie_set) {
+                if (manager) {
+                  manager->ProcessNextEvent(is_debug_cookie_set);
+                  manager->ProcessEvents();
+                }
+              },
+              weak_factory_.GetWeakPtr()));
+      return;
+    }
+
+    ProcessNextEvent(/*is_debug_cookie_set=*/false);
+  }
+}
+
+void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
+  DCHECK(!pending_events_.empty());
+
+  struct EventStorer {
+    raw_ptr<AttributionManagerImpl> manager;
+    bool is_debug_cookie_set;
+
+    void operator()(StorableSource source) {
+      if (!is_debug_cookie_set)
+        source.common_info().ClearDebugKey();
+
+      manager->StoreSource(std::move(source));
+    }
+
+    void operator()(AttributionTrigger trigger) {
+      if (!is_debug_cookie_set)
+        trigger.ClearDebugKey();
+
+      manager->StoreTrigger(std::move(trigger));
+    }
+  };
+
+  SourceOrTrigger event = std::move(pending_events_.front());
+  pending_events_.pop_front();
+
+  absl::visit(
+      EventStorer{.manager = this, .is_debug_cookie_set = is_debug_cookie_set},
+      std::move(event));
 }
 
 void AttributionManagerImpl::OnReportStored(CreateReportResult result) {

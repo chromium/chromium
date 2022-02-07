@@ -183,7 +183,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                                  base::Time trigger_time,
                                  base::Time report_time,
                                  int64_t priority,
-                                 const base::GUID& external_report_id)
+                                 const base::GUID& external_report_id,
+                                 absl::optional<uint64_t> trigger_debug_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is

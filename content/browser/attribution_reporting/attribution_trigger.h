@@ -27,7 +27,8 @@ class CONTENT_EXPORT AttributionTrigger {
                      url::Origin reporting_origin,
                      uint64_t event_source_trigger_data,
                      int64_t priority,
-                     absl::optional<int64_t> dedup_key);
+                     absl::optional<int64_t> dedup_key,
+                     absl::optional<uint64_t> debug_key);
   AttributionTrigger(const AttributionTrigger& other);
   AttributionTrigger& operator=(const AttributionTrigger& other);
   AttributionTrigger(AttributionTrigger&& other);
@@ -49,6 +50,10 @@ class CONTENT_EXPORT AttributionTrigger {
   int64_t priority() const { return priority_; }
 
   const absl::optional<int64_t>& dedup_key() const { return dedup_key_; }
+
+  const absl::optional<uint64_t>& debug_key() const { return debug_key_; }
+
+  void ClearDebugKey() { debug_key_ = absl::nullopt; }
 
  private:
   // Data associated with trigger.
@@ -73,6 +78,8 @@ class CONTENT_EXPORT AttributionTrigger {
   // Key specified in conversion redirect for deduplication against existing
   // conversions with the same source. If absent, no deduplication is performed.
   absl::optional<int64_t> dedup_key_;
+
+  absl::optional<uint64_t> debug_key_;
 };
 
 }  // namespace content

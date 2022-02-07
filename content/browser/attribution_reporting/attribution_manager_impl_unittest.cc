@@ -12,6 +12,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -162,6 +164,40 @@ class MockNetworkSender : public AttributionManagerImpl::NetworkSender {
   std::vector<ReportSentCallback> callbacks_;
 };
 
+class MockCookieChecker : public AttributionManagerImpl::CookieChecker {
+ public:
+  ~MockCookieChecker() override { EXPECT_THAT(callbacks_, IsEmpty()); }
+
+  // AttributionManagerImpl::CookieChecker:
+  void IsDebugCookieSet(const url::Origin& origin,
+                        base::OnceCallback<void(bool)> callback) override {
+    if (defer_callbacks_) {
+      callbacks_.push_back(std::move(callback));
+    } else {
+      std::move(callback).Run(origins_with_debug_cookie_set_.contains(origin));
+    }
+  }
+
+  void AddOriginWithDebugCookieSet(url::Origin origin) {
+    origins_with_debug_cookie_set_.insert(std::move(origin));
+  }
+
+  void DeferCallbacks() { defer_callbacks_ = true; }
+
+  void RunNextDeferredCallback(bool is_debug_cookie_set) {
+    if (!callbacks_.empty()) {
+      std::move(callbacks_.front()).Run(is_debug_cookie_set);
+      callbacks_.pop_front();
+    }
+  }
+
+ private:
+  base::flat_set<url::Origin> origins_with_debug_cookie_set_;
+
+  bool defer_callbacks_ = false;
+  base::circular_deque<base::OnceCallback<void(bool)>> callbacks_;
+};
+
 }  // namespace
 
 class AttributionManagerImplTest : public testing::Test {
@@ -171,6 +207,7 @@ class AttributionManagerImplTest : public testing::Test {
         browser_context_(std::make_unique<TestBrowserContext>()),
         mock_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
+        cookie_checker_(new MockCookieChecker()),
         network_sender_(new MockNetworkSender()) {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
 
@@ -189,6 +226,7 @@ class AttributionManagerImplTest : public testing::Test {
         AttributionManagerImpl::DefaultIsReportAllowedCallback(
             browser_context_.get()),
         dir_.GetPath(), mock_storage_policy_, std::move(storage_delegate),
+        absl::WrapUnique(cookie_checker_.get()),
         absl::WrapUnique(network_sender_.get()));
   }
 
@@ -196,6 +234,7 @@ class AttributionManagerImplTest : public testing::Test {
     // Allow the network sender to be reused across `CreateManager()`
     // invocations by ensuring that the manager doesn't destroy it.
     if (attribution_manager_) {
+      attribution_manager_->cookie_checker_.release();
       attribution_manager_->network_sender_.release();
       attribution_manager_.reset();
     }
@@ -241,6 +280,7 @@ class AttributionManagerImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
+  const raw_ptr<MockCookieChecker> cookie_checker_;
   const raw_ptr<MockNetworkSender> network_sender_;
   raw_ptr<OverrideRandomizedResponseStorageDelegate> storage_delegate_;
 
@@ -1195,6 +1235,156 @@ TEST_F(AttributionManagerImplTest, FakeReport_UpdatesSendReportTimer) {
 
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+}
+
+// Test that multiple source and trigger registrations, with and without debug
+// keys present, are handled in the order they are received by the manager.
+TEST_F(AttributionManagerImplTest, RegistrationsHandledInOrder) {
+  cookie_checker_->DeferCallbacks();
+
+  const auto r1 = url::Origin::Create(GURL("https://r1.test"));
+  const auto r2 = url::Origin::Create(GURL("https://r2.test"));
+
+  const AttributionManagerImpl::SourceOrTrigger kEvents[] = {
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetDebugKey(11)
+          .SetReportingOrigin(r1)
+          .SetExpiry(kImpressionExpiry)
+          .Build(),
+
+      TriggerBuilder().SetTriggerData(2).SetReportingOrigin(r1).Build(),
+
+      TriggerBuilder()
+          .SetTriggerData(3)
+          .SetDebugKey(13)
+          .SetReportingOrigin(r2)
+          .Build(),
+
+      SourceBuilder()
+          .SetSourceEventId(4)
+          .SetDebugKey(14)
+          .SetReportingOrigin(r2)
+          .SetExpiry(kImpressionExpiry)
+          .Build(),
+
+      TriggerBuilder().SetTriggerData(5).SetReportingOrigin(r2).Build(),
+  };
+
+  for (const auto& event : kEvents) {
+    attribution_manager_->MaybeEnqueueEventForTesting(event);
+  }
+
+  ASSERT_THAT(StoredSources(), IsEmpty());
+  ASSERT_THAT(StoredReports(), IsEmpty());
+
+  // This should cause the first 2 events to be processed.
+  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
+  ASSERT_THAT(StoredSources(), ElementsAre(SourceEventIdIs(1)));
+  ASSERT_THAT(StoredReports(), ElementsAre(EventLevelDataIs(TriggerDataIs(2))));
+
+  // This should cause the next event to be processed. There's no matching
+  // source, so the trigger should be dropped.
+  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
+  ASSERT_THAT(StoredSources(), ElementsAre(SourceEventIdIs(1)));
+  ASSERT_THAT(StoredReports(), ElementsAre(EventLevelDataIs(TriggerDataIs(2))));
+
+  // This should cause the next 2 events to be processed.
+  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
+  ASSERT_THAT(StoredSources(),
+              UnorderedElementsAre(SourceEventIdIs(1), SourceEventIdIs(4)));
+  ASSERT_THAT(StoredReports(),
+              UnorderedElementsAre(EventLevelDataIs(TriggerDataIs(2)),
+                                   EventLevelDataIs(TriggerDataIs(5))));
+}
+
+namespace {
+
+const struct {
+  const char* name;
+  absl::optional<uint64_t> input_debug_key;
+  const char* reporting_origin;
+  absl::optional<uint64_t> expected_debug_key;
+} kDebugKeyTestCases[] = {
+    {
+        "no debug key, no cookie",
+        absl::nullopt,
+        "https://r2.test",
+        absl::nullopt,
+    },
+    {
+        "has debug key, no cookie",
+        123,
+        "https://r2.test",
+        absl::nullopt,
+    },
+    {
+        "no debug key, has cookie",
+        absl::nullopt,
+        "https://r1.test",
+        absl::nullopt,
+    },
+    {
+        "has debug key, has cookie",
+        123,
+        "https://r1.test",
+        123,
+    },
+};
+
+}  // namespace
+
+TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
+  cookie_checker_->AddOriginWithDebugCookieSet(
+      url::Origin::Create(GURL("https://r1.test")));
+
+  for (const auto& test_case : kDebugKeyTestCases) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(
+                url::Origin::Create(GURL(test_case.reporting_origin)))
+            .SetDebugKey(test_case.input_debug_key)
+            .SetExpiry(kImpressionExpiry)
+            .Build());
+
+    EXPECT_THAT(StoredSources(),
+                ElementsAre(SourceDebugKeyIs(test_case.expected_debug_key)))
+        << test_case.name;
+
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    base::NullCallback(), base::DoNothing());
+  }
+}
+
+TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
+  cookie_checker_->AddOriginWithDebugCookieSet(
+      url::Origin::Create(GURL("https://r1.test")));
+
+  for (const auto& test_case : kDebugKeyTestCases) {
+    const auto reporting_origin =
+        url::Origin::Create(GURL(test_case.reporting_origin));
+
+    attribution_manager_->HandleSource(SourceBuilder()
+                                           .SetReportingOrigin(reporting_origin)
+                                           .SetExpiry(kImpressionExpiry)
+                                           .Build());
+
+    EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
+
+    attribution_manager_->HandleTrigger(
+        TriggerBuilder()
+            .SetReportingOrigin(reporting_origin)
+            .SetDebugKey(test_case.input_debug_key)
+            .Build());
+    EXPECT_THAT(
+        StoredReports(),
+        ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(absl::nullopt)),
+                          TriggerDebugKeyIs(test_case.expected_debug_key))))
+        << test_case.name;
+
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    base::NullCallback(), base::DoNothing());
+  }
 }
 
 }  // namespace content
