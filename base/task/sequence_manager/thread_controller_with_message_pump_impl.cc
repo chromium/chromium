@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
+#include "base/task/task_features.h"
 #include "base/threading/hang_watcher.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
@@ -37,7 +38,35 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
   return std::min(next_run_time, lazy_now->Now() + Days(1));
 }
 
+std::atomic_bool g_align_wake_ups = false;
+std::atomic<TimeDelta> g_task_leeway{WakeUp::kDefaultLeeway};
+
+TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
+  if (g_align_wake_ups.load(std::memory_order_relaxed)) {
+    TimeTicks aligned_run_time = wake_up.earliest_time().SnappedToNextTick(
+        TimeTicks(), g_task_leeway.load(std::memory_order_relaxed));
+    if (aligned_run_time <= wake_up.latest_time())
+      return aligned_run_time;
+  }
+  return wake_up.time;
+}
+
 }  // namespace
+
+// static
+void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
+  g_align_wake_ups = FeatureList::IsEnabled(kAlignWakeUps);
+  g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
+}
+
+// static
+void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
+  g_align_wake_ups.store(
+      kAlignWakeUps.default_state == FEATURE_ENABLED_BY_DEFAULT,
+      std::memory_order_relaxed);
+  g_task_leeway.store(kTaskLeewayParam.default_value,
+                      std::memory_order_relaxed);
+}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
@@ -137,7 +166,8 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     LazyNow* lazy_now,
     absl::optional<WakeUp> wake_up) {
   DCHECK(!wake_up || !wake_up->is_immediate());
-  TimeTicks run_time = wake_up.has_value() ? wake_up->time : TimeTicks::Max();
+  TimeTicks run_time =
+      wake_up.has_value() ? WakeUpRunTime(*wake_up) : TimeTicks::Max();
   DCHECK_LT(lazy_now->Now(), run_time);
 
   if (main_thread_only().next_delayed_do_work == run_time)
@@ -291,7 +321,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   // The MessagePump will schedule the wake up on our behalf, so we need to
   // update |main_thread_only().next_delayed_do_work|.
-  main_thread_only().next_delayed_do_work = next_wake_up->time;
+  main_thread_only().next_delayed_do_work = WakeUpRunTime(*next_wake_up);
 
   // Don't request a run time past |main_thread_only().quit_runloop_after|.
   if (main_thread_only().next_delayed_do_work >

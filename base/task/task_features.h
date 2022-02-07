@@ -76,6 +76,10 @@ extern const BASE_EXPORT base::Feature kRemoveCanceledTasksInTaskQueue;
 extern const BASE_EXPORT Feature kAddTaskLeewayFeature;
 extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
 
+// Under this feature, wake ups are aligned at a 4ms boundary when allowed per
+// DelayPolicy.
+extern const BASE_EXPORT base::Feature kAlignWakeUps;
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

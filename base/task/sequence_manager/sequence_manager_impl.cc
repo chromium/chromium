@@ -324,6 +324,7 @@ std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(
 void SequenceManagerImpl::InitializeFeatures() {
   ApplyNoWakeUpsForCanceledTasks();
   TaskQueueImpl::InitializeFeatures();
+  ThreadControllerWithMessagePumpImpl::InitializeFeatures();
   g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
 }
 

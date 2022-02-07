@@ -55,4 +55,7 @@ const BASE_EXPORT Feature kAddTaskLeewayFeature = {
 const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
                                                      "leeway", Milliseconds(8)};
 
+const BASE_EXPORT Feature kAlignWakeUps = {"AlignWakeUps",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace base

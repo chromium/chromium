@@ -38,6 +38,9 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       public RunLoop::Delegate,
       public RunLoop::NestingObserver {
  public:
+  static void InitializeFeatures();
+  static void ResetFeatures();
+
   ThreadControllerWithMessagePumpImpl(
       std::unique_ptr<MessagePump> message_pump,
       const SequenceManager::Settings& settings);
