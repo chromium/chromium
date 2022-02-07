@@ -489,37 +489,9 @@ const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
 const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Deprecated 01/2021
-const char kGoogleServicesHostedDomain[] = "google.services.hosted_domain";
-
-const char kDataReductionProxyLastConfigRetrievalTime[] =
-    "data_reduction.last_config_retrieval_time";
-const char kDataReductionProxyConfig[] = "data_reduction.config";
-
-// Deprecated 2/2021.
-const char kRapporCohortSeed[] = "rappor.cohort_seed";
-const char kRapporLastDailySample[] = "rappor.last_daily_sample";
-const char kRapporSecret[] = "rappor.secret";
-
-// Deprecated 02/2021
-const char kStabilityDebuggerPresent[] =
-    "user_experience_metrics.stability.debugger_present";
-const char kStabilityDebuggerNotPresent[] =
-    "user_experience_metrics.stability.debugger_not_present";
-const char kStabilityBreakpadRegistrationSuccess[] =
-    "user_experience_metrics.stability.breakpad_registration_ok";
-const char kStabilityBreakpadRegistrationFail[] =
-    "user_experience_metrics.stability.breakpad_registration_fail";
-
-// Deprecated 02/2021
-const char kGamesInstallDirPref[] = "games.data_files_paths";
+// Deprecated 03/2021
 const char kLiteModeUserNeedsNotification[] =
     "previews.litepage.user-needs-notification";
-
-#if !BUILDFLAG(IS_ANDROID)
-// Deprecated 02/2021
-const char kCartModuleRemoved[] = "cart_module_removed";
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Deprecated 03/2021
@@ -755,15 +727,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kUsedPolicyCertificates);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  registry->RegisterIntegerPref(kRapporCohortSeed, -1);
-  registry->RegisterInt64Pref(kRapporLastDailySample, 0);
-  registry->RegisterStringPref(kRapporSecret, std::string());
-
-  registry->RegisterIntegerPref(kStabilityBreakpadRegistrationFail, 0);
-  registry->RegisterIntegerPref(kStabilityBreakpadRegistrationSuccess, 0);
-  registry->RegisterIntegerPref(kStabilityDebuggerPresent, 0);
-  registry->RegisterIntegerPref(kStabilityDebuggerNotPresent, 0);
-
   registry->RegisterBooleanPref(kUserAgentClientHintsEnabled, true);
 
   registry->RegisterBooleanPref(kCloudPolicyOverridesPlatformPolicy, false);
@@ -795,17 +758,7 @@ void RegisterProfilePrefsForMigration(
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
-  registry->RegisterStringPref(kGoogleServicesHostedDomain, std::string());
-
-  registry->RegisterInt64Pref(kDataReductionProxyLastConfigRetrievalTime, 0L);
-  registry->RegisterStringPref(kDataReductionProxyConfig, std::string());
-
-  registry->RegisterFilePathPref(kGamesInstallDirPref, base::FilePath());
   registry->RegisterBooleanPref(kLiteModeUserNeedsNotification, true);
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kCartModuleRemoved, false);
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(
@@ -1574,17 +1527,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kSplitSettingsSyncTrialGroup);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Added 2/2021.
-  local_state->ClearPref(kRapporCohortSeed);
-  local_state->ClearPref(kRapporLastDailySample);
-  local_state->ClearPref(kRapporSecret);
-
-  // Added 02/2021
-  local_state->ClearPref(kStabilityBreakpadRegistrationFail);
-  local_state->ClearPref(kStabilityBreakpadRegistrationSuccess);
-  local_state->ClearPref(kStabilityDebuggerPresent);
-  local_state->ClearPref(kStabilityDebuggerNotPresent);
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Added 03/2021
   local_state->ClearPref(kPinnedExtensionsMigrationComplete);
@@ -1642,28 +1584,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 10/2021
   profile_prefs->ClearPref(kHasCameraAppMigratedToSWA);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 01/2021
-  profile_prefs->ClearPref(kGoogleServicesHostedDomain);
-  profile_prefs->ClearPref(kDataReductionProxyLastConfigRetrievalTime);
-  profile_prefs->ClearPref(kDataReductionProxyConfig);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Added 02/2021
-  feed::MigrateObsoleteProfilePrefsFeb_2021(profile_prefs);
-
-  // Added 01/2022.
-  syncer::ClearObsoleteSyncDecoupledFromAndroidMasterSync(profile_prefs);
-#endif  // BUILDFLAG(IS_ANDROID)
-  syncer::ClearObsoletePassphrasePromptPrefs(profile_prefs);
-
-  // Added 02/2021
-  profile_prefs->ClearPref(kGamesInstallDirPref);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 02/2021
-  profile_prefs->ClearPref(kCartModuleRemoved);
-#endif
 
   // Added 03/2021
   profile_prefs->ClearPref(kLiteModeUserNeedsNotification);
@@ -1878,6 +1798,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 01/2022.
   invalidation::InvalidatorRegistrarWithMemory::
       ClearTopicsWithObsoleteOwnerNames(profile_prefs);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 01/2022.
+  syncer::ClearObsoleteSyncDecoupledFromAndroidMasterSync(profile_prefs);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Added 02/2022.

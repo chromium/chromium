@@ -147,7 +147,6 @@ class SyncPrefs {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service);
 #if BUILDFLAG(IS_ANDROID)
 void ClearObsoleteSyncDecoupledFromAndroidMasterSync(PrefService* pref_service);
 #endif  // BUILDFLAG(IS_ANDROID)

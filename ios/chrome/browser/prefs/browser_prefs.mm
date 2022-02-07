@@ -370,9 +370,6 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 12/2020.
   prefs->ClearPref(kDomainsWithCookiePref);
 
-  // Added 2/2021.
-  syncer::ClearObsoletePassphrasePromptPrefs(prefs);
-
   // Added 8/2021.
   prefs->ClearPref(kSigninAllowedByPolicy);
 }

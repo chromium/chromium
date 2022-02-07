@@ -23,14 +23,6 @@ namespace syncer {
 
 namespace {
 
-// Obsolete pref that used to store whether a platform specific passphrase error
-// prompt has been shown to the user (e.g. an Android system notification).
-const char kObsoleteSyncPassphrasePrompted[] = "sync.passphrase_prompted";
-
-// Obsolete pref that used to store the product version from the last restart of
-// Chrome.
-const char kObsoleteSyncLastRunVersion[] = "sync.last_run_version";
-
 // Obsolete pref that used to store if sync should be prevented from
 // automatically starting up. This is now replaced by its inverse
 // kSyncRequested.
@@ -103,8 +95,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   // Obsolete prefs.
   registry->RegisterBooleanPref(kSyncSuppressStart, false);
-  registry->RegisterBooleanPref(kObsoleteSyncPassphrasePrompted, false);
-  registry->RegisterStringPref(kObsoleteSyncLastRunVersion, std::string());
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kObsoleteSyncDecoupledFromAndroidMasterSync,
                                 false);
@@ -352,11 +342,6 @@ void SyncPrefs::SetPassphrasePromptMutedProductVersion(int major_version) {
 
 void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
   pref_service_->ClearPref(prefs::kSyncPassphrasePromptMutedProductVersion);
-}
-
-void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kObsoleteSyncLastRunVersion);
-  pref_service->ClearPref(kObsoleteSyncPassphrasePrompted);
 }
 
 #if BUILDFLAG(IS_ANDROID)
