@@ -62,11 +62,18 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    public void testRenderDialog() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrivacySandboxDialog dialog = new PrivacySandboxDialog(sActivityTestRule.getActivity());
-            dialog.show();
-        });
+    public void testRenderConsent() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { new PrivacySandboxDialogConsent(sActivityTestRule.getActivity()).show(); });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_consent_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderNotice() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { new PrivacySandboxDialogNotice(sActivityTestRule.getActivity()).show(); });
+        renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_notice_dialog");
     }
 }

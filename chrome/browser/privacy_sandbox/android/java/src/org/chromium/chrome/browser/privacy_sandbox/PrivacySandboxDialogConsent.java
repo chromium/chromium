@@ -12,18 +12,25 @@ import android.view.View;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
- * Dialog shown for the Privacy Sandbox.
+ * Dialog in the form of a consent shown for the Privacy Sandbox.
  */
-public class PrivacySandboxDialog extends Dialog {
-    public PrivacySandboxDialog(Context context) {
+public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickListener {
+    public PrivacySandboxDialogConsent(Context context) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        View view = LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_dialog, null);
+        View view = LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent, null);
         setContentView(view);
 
-        // TODO(crbug.com/1286276): Add the actual logic for the buttons.
         ButtonCompat yesButton = (ButtonCompat) view.findViewById(R.id.yes_button);
-        yesButton.setOnClickListener((View v) -> dismiss());
+        yesButton.setOnClickListener(this);
         ButtonCompat noButton = (ButtonCompat) view.findViewById(R.id.no_button);
-        noButton.setOnClickListener((View v) -> dismiss());
+        noButton.setOnClickListener(this);
+    }
+
+    // OnClickListener:
+
+    @Override
+    public void onClick(View view) {
+        // TODO(crbug.com/1286276): Add the actual logic for the buttons.
+        dismiss();
     }
 }

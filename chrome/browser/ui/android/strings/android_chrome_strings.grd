@@ -958,6 +958,12 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PRIVACY_SANDBOX_DIALOG_YES_BUTTON" desc="Button to accept enabling Privacy Sandbox features." translateable="false">
         I’m in
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_ACKNOWLEDGE_BUTTON" desc="Button to acknowledge the notice about Privacy Sandbox features." translateable="false">
+        Got it
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_DIALOG_SETTINGS_BUTTON" desc="Button to go to Privacy Sandbox settings." translateable="false">
+        Settings
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_TITLE" desc="Title for the Privacy Sandbox consent dialog." translateable="false">
         Help us build a more private web
       </message>
@@ -975,6 +981,9 @@ Privacy Sandbox trials are still in active development and are available in sele
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_TWO" desc="Second paragraph for the Privacy Sandbox consent dialog text." translateable="false">
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_NOTICE_TITLE" desc="Title for the Privacy Sandbox notice dialog." translateable="false">
+        Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your data
       </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->

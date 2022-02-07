@@ -10,10 +10,28 @@ import android.content.Context;
  * Controller for the dialog shown for the Privacy Sandbox.
  */
 public class PrivacySandboxDialogController {
-    public static boolean maybeLaunchPrivacySandboxDialog(Context context) {
-        // TODO(crbug.com/1286276): Add logic for conditional display.
-        PrivacySandboxDialog dialog = new PrivacySandboxDialog(context);
-        dialog.show();
-        return true;
+    /**
+     * Launches an appropriate dialog if necessary and returns whether that happened.
+     */
+    public static boolean maybeLaunchPrivacySandboxDialog(Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return false;
+        }
+        @DialogType
+        int dialogType = PrivacySandboxBridge.getRequiredDialogType();
+        switch (dialogType) {
+            case DialogType.NONE:
+                return false;
+            case DialogType.NOTICE:
+                new PrivacySandboxDialogNotice(context).show();
+                return true;
+            case DialogType.CONSENT:
+                new PrivacySandboxDialogConsent(context).show();
+                return true;
+            default:
+                assert false : "Unknown DialogType value.";
+                // Should not be reached.
+                return false;
+        }
     }
 }
