@@ -19,7 +19,7 @@
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/platform/input_file.h"
 #include "services/network/public/mojom/p2p.mojom.h"
-#include "third_party/nearby/src/cpp/core/core.h"
+#include "third_party/nearby/src/connections/core.h"
 
 namespace location {
 namespace nearby {

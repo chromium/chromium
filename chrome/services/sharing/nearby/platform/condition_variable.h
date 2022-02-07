@@ -7,7 +7,7 @@
 
 #include "base/synchronization/condition_variable.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
-#include "third_party/nearby/src/cpp/platform/api/condition_variable.h"
+#include "third_party/nearby/src/internal/platform/implementation/condition_variable.h"
 
 namespace location {
 namespace nearby {

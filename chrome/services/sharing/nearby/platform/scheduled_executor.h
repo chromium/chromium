@@ -16,7 +16,7 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
-#include "third_party/nearby/src/cpp/platform/api/scheduled_executor.h"
+#include "third_party/nearby/src/internal/platform/implementation/scheduled_executor.h"
 
 namespace location {
 namespace nearby {

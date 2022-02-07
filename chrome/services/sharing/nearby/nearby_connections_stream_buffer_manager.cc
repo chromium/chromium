@@ -8,8 +8,8 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "third_party/nearby/src/cpp/platform/base/exception.h"
-#include "third_party/nearby/src/cpp/platform/base/input_stream.h"
+#include "third_party/nearby/src/internal/platform/exception.h"
+#include "third_party/nearby/src/internal/platform/input_stream.h"
 
 namespace location {
 namespace nearby {

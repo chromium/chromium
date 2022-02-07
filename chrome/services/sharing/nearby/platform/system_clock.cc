@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/nearby/src/cpp/platform/api/system_clock.h"
+#include "third_party/nearby/src/internal/platform/implementation/system_clock.h"
 
 #include "base/check_op.h"
 #include "base/threading/platform_thread.h"

@@ -22,7 +22,7 @@ source_set("nearby") {
     "//base",
     "//chrome/services/sharing/public/cpp",
     "//mojo/public/cpp/bindings",
-    "//third_party/nearby:core",
+    "//third_party/nearby:connections",
   ]
 
   deps = [
@@ -48,6 +48,6 @@ source_set("unit_tests") {
     "//chromeos/services/network_config/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/nearby:core_internal_test",
+    "//third_party/nearby:connections_test_util",
   ]
 }

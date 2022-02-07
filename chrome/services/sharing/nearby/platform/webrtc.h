@@ -5,7 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_
 
-#include "third_party/nearby/src/cpp/platform/api/webrtc.h"
+#include "third_party/nearby/src/internal/platform/implementation/webrtc.h"
 
 #include <memory>
 

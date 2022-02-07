@@ -1,10 +1,8 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 import("//build/util/process_version.gni")
 import("//third_party/protobuf/proto_library.gni")
-
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
 }
@@ -13,7 +11,6 @@ if (is_chromeos_device) {
 config("nearby_include_config") {
   include_dirs = [
     "src",
-    "src/cpp",
     "$root_gen_dir/third_party/nearby",
 
     # For WebRTC APIs.
@@ -41,9 +38,9 @@ source_set("analytics") {
   public = [ "src/internal/analytics/analytics_recorder.h" ]
   public_deps = [
     ":connections_enums_proto",
+    ":connections_event_logger",
     ":connections_log_proto",
-    ":core_event_logger",
-    ":core_types",
+    ":connections_types",
     ":error_code_enums_proto",
     ":platform_base",
     ":platform_base_error_code_recorder",
@@ -56,21 +53,21 @@ source_set("analytics") {
 }
 
 ###############################################################################
-# src/cpp/core
+# src/connections
 ###############################################################################
-# src/cpp/core
-source_set("core") {
+# src/connections
+source_set("connections") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/cpp/core/core.cc" ]
-  public = [ "src/cpp/core/core.h" ]
+  sources = [ "src/connections/core.cc" ]
+  public = [ "src/connections/core.h" ]
   public_deps = [
     ":connections_enums_proto",
-    ":core_event_logger",
-    ":core_internal",
-    ":core_types",
+    ":connections_event_logger",
+    ":connections_implementation",
+    ":connections_types",
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
@@ -79,30 +76,30 @@ source_set("core") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-source_set("core_types") {
+source_set("connections_types") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/core/advertising_options.cc",
-    "src/cpp/core/connection_options.cc",
-    "src/cpp/core/discovery_options.cc",
-    "src/cpp/core/payload.cc",
-    "src/cpp/core/strategy.cc",
+    "src/connections/advertising_options.cc",
+    "src/connections/connection_options.cc",
+    "src/connections/discovery_options.cc",
+    "src/connections/payload.cc",
+    "src/connections/strategy.cc",
   ]
   public = [
-    "src/cpp/core/advertising_options.h",
-    "src/cpp/core/connection_options.h",
-    "src/cpp/core/discovery_options.h",
-    "src/cpp/core/listeners.h",
-    "src/cpp/core/options_base.h",
-    "src/cpp/core/out_of_band_connection_metadata.h",
-    "src/cpp/core/params.h",
-    "src/cpp/core/payload.h",
-    "src/cpp/core/power_level.h",
-    "src/cpp/core/status.h",
-    "src/cpp/core/strategy.h",
+    "src/connections/advertising_options.h",
+    "src/connections/connection_options.h",
+    "src/connections/discovery_options.h",
+    "src/connections/listeners.h",
+    "src/connections/options_base.h",
+    "src/connections/out_of_band_connection_metadata.h",
+    "src/connections/params.h",
+    "src/connections/payload.h",
+    "src/connections/power_level.h",
+    "src/connections/status.h",
+    "src/connections/strategy.h",
   ]
   public_deps = [
     ":connections_enums_proto",
@@ -115,98 +112,98 @@ source_set("core_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-source_set("core_event_logger") {
+source_set("connections_event_logger") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  public = [ "src/cpp/core/event_logger.h" ]
+  public = [ "src/connections/event_logger.h" ]
   public_deps = [ ":connections_log_proto" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
-# src/cpp/core/internal
-source_set("core_internal") {
+# src/connections/implementation
+source_set("connections_implementation") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/core/internal/base_endpoint_channel.cc",
-    "src/cpp/core/internal/base_pcp_handler.cc",
-    "src/cpp/core/internal/ble_advertisement.cc",
-    "src/cpp/core/internal/ble_endpoint_channel.cc",
-    "src/cpp/core/internal/bluetooth_bwu_handler.cc",
-    "src/cpp/core/internal/bluetooth_device_name.cc",
-    "src/cpp/core/internal/bluetooth_endpoint_channel.cc",
-    "src/cpp/core/internal/bwu_manager.cc",
-    "src/cpp/core/internal/client_proxy.cc",
-    "src/cpp/core/internal/encryption_runner.cc",
-    "src/cpp/core/internal/endpoint_channel_manager.cc",
-    "src/cpp/core/internal/endpoint_manager.cc",
-    "src/cpp/core/internal/injected_bluetooth_device_store.cc",
-    "src/cpp/core/internal/internal_payload.cc",
-    "src/cpp/core/internal/internal_payload_factory.cc",
-    "src/cpp/core/internal/offline_frames.cc",
-    "src/cpp/core/internal/offline_frames_validator.cc",
-    "src/cpp/core/internal/offline_service_controller.cc",
-    "src/cpp/core/internal/p2p_cluster_pcp_handler.cc",
-    "src/cpp/core/internal/p2p_point_to_point_pcp_handler.cc",
-    "src/cpp/core/internal/p2p_star_pcp_handler.cc",
-    "src/cpp/core/internal/payload_manager.cc",
-    "src/cpp/core/internal/pcp_manager.cc",
-    "src/cpp/core/internal/service_controller_router.cc",
-    "src/cpp/core/internal/webrtc_bwu_handler.cc",
-    "src/cpp/core/internal/webrtc_endpoint_channel.cc",
-    "src/cpp/core/internal/wifi_lan_bwu_handler.cc",
-    "src/cpp/core/internal/wifi_lan_endpoint_channel.cc",
-    "src/cpp/core/internal/wifi_lan_service_info.cc",
+    "src/connections/implementation/base_endpoint_channel.cc",
+    "src/connections/implementation/base_pcp_handler.cc",
+    "src/connections/implementation/ble_advertisement.cc",
+    "src/connections/implementation/ble_endpoint_channel.cc",
+    "src/connections/implementation/bluetooth_bwu_handler.cc",
+    "src/connections/implementation/bluetooth_device_name.cc",
+    "src/connections/implementation/bluetooth_endpoint_channel.cc",
+    "src/connections/implementation/bwu_manager.cc",
+    "src/connections/implementation/client_proxy.cc",
+    "src/connections/implementation/encryption_runner.cc",
+    "src/connections/implementation/endpoint_channel_manager.cc",
+    "src/connections/implementation/endpoint_manager.cc",
+    "src/connections/implementation/injected_bluetooth_device_store.cc",
+    "src/connections/implementation/internal_payload.cc",
+    "src/connections/implementation/internal_payload_factory.cc",
+    "src/connections/implementation/offline_frames.cc",
+    "src/connections/implementation/offline_frames_validator.cc",
+    "src/connections/implementation/offline_service_controller.cc",
+    "src/connections/implementation/p2p_cluster_pcp_handler.cc",
+    "src/connections/implementation/p2p_point_to_point_pcp_handler.cc",
+    "src/connections/implementation/p2p_star_pcp_handler.cc",
+    "src/connections/implementation/payload_manager.cc",
+    "src/connections/implementation/pcp_manager.cc",
+    "src/connections/implementation/service_controller_router.cc",
+    "src/connections/implementation/webrtc_bwu_handler.cc",
+    "src/connections/implementation/webrtc_endpoint_channel.cc",
+    "src/connections/implementation/wifi_lan_bwu_handler.cc",
+    "src/connections/implementation/wifi_lan_endpoint_channel.cc",
+    "src/connections/implementation/wifi_lan_service_info.cc",
   ]
   public = [
-    "src/cpp/core/internal/base_bwu_handler.h",
-    "src/cpp/core/internal/base_endpoint_channel.h",
-    "src/cpp/core/internal/base_pcp_handler.h",
-    "src/cpp/core/internal/ble_advertisement.h",
-    "src/cpp/core/internal/ble_endpoint_channel.h",
-    "src/cpp/core/internal/bluetooth_bwu_handler.h",
-    "src/cpp/core/internal/bluetooth_device_name.h",
-    "src/cpp/core/internal/bluetooth_endpoint_channel.h",
-    "src/cpp/core/internal/bwu_handler.h",
-    "src/cpp/core/internal/bwu_manager.h",
-    "src/cpp/core/internal/client_proxy.h",
-    "src/cpp/core/internal/encryption_runner.h",
-    "src/cpp/core/internal/endpoint_channel.h",
-    "src/cpp/core/internal/endpoint_channel_manager.h",
-    "src/cpp/core/internal/endpoint_manager.h",
-    "src/cpp/core/internal/injected_bluetooth_device_store.h",
-    "src/cpp/core/internal/internal_payload.h",
-    "src/cpp/core/internal/internal_payload_factory.h",
-    "src/cpp/core/internal/message_lite.h",
-    "src/cpp/core/internal/offline_frames.h",
-    "src/cpp/core/internal/offline_frames_validator.h",
-    "src/cpp/core/internal/offline_service_controller.h",
-    "src/cpp/core/internal/p2p_cluster_pcp_handler.h",
-    "src/cpp/core/internal/p2p_point_to_point_pcp_handler.h",
-    "src/cpp/core/internal/p2p_star_pcp_handler.h",
-    "src/cpp/core/internal/payload_manager.h",
-    "src/cpp/core/internal/pcp.h",
-    "src/cpp/core/internal/pcp_handler.h",
-    "src/cpp/core/internal/pcp_manager.h",
-    "src/cpp/core/internal/service_controller.h",
-    "src/cpp/core/internal/service_controller_router.h",
-    "src/cpp/core/internal/webrtc_bwu_handler.h",
-    "src/cpp/core/internal/webrtc_endpoint_channel.h",
-    "src/cpp/core/internal/wifi_lan_bwu_handler.h",
-    "src/cpp/core/internal/wifi_lan_endpoint_channel.h",
-    "src/cpp/core/internal/wifi_lan_service_info.h",
+    "src/connections/implementation/base_bwu_handler.h",
+    "src/connections/implementation/base_endpoint_channel.h",
+    "src/connections/implementation/base_pcp_handler.h",
+    "src/connections/implementation/ble_advertisement.h",
+    "src/connections/implementation/ble_endpoint_channel.h",
+    "src/connections/implementation/bluetooth_bwu_handler.h",
+    "src/connections/implementation/bluetooth_device_name.h",
+    "src/connections/implementation/bluetooth_endpoint_channel.h",
+    "src/connections/implementation/bwu_handler.h",
+    "src/connections/implementation/bwu_manager.h",
+    "src/connections/implementation/client_proxy.h",
+    "src/connections/implementation/encryption_runner.h",
+    "src/connections/implementation/endpoint_channel.h",
+    "src/connections/implementation/endpoint_channel_manager.h",
+    "src/connections/implementation/endpoint_manager.h",
+    "src/connections/implementation/injected_bluetooth_device_store.h",
+    "src/connections/implementation/internal_payload.h",
+    "src/connections/implementation/internal_payload_factory.h",
+    "src/connections/implementation/message_lite.h",
+    "src/connections/implementation/offline_frames.h",
+    "src/connections/implementation/offline_frames_validator.h",
+    "src/connections/implementation/offline_service_controller.h",
+    "src/connections/implementation/p2p_cluster_pcp_handler.h",
+    "src/connections/implementation/p2p_point_to_point_pcp_handler.h",
+    "src/connections/implementation/p2p_star_pcp_handler.h",
+    "src/connections/implementation/payload_manager.h",
+    "src/connections/implementation/pcp.h",
+    "src/connections/implementation/pcp_handler.h",
+    "src/connections/implementation/pcp_manager.h",
+    "src/connections/implementation/service_controller.h",
+    "src/connections/implementation/service_controller_router.h",
+    "src/connections/implementation/webrtc_bwu_handler.h",
+    "src/connections/implementation/webrtc_endpoint_channel.h",
+    "src/connections/implementation/wifi_lan_bwu_handler.h",
+    "src/connections/implementation/wifi_lan_endpoint_channel.h",
+    "src/connections/implementation/wifi_lan_service_info.h",
   ]
   public_deps = [
     ":analytics",
     ":connections_enums_proto",
-    ":core_internal_mediums",
-    ":core_internal_mediums_webrtc",
-    ":core_types",
+    ":connections_implementation_mediums",
+    ":connections_implementation_mediums_webrtc",
+    ":connections_types",
     ":offline_wire_formats_proto",
     ":platform_base",
     ":platform_base_cancellation_flag",
@@ -222,59 +219,58 @@ source_set("core_internal") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
-source_set("core_internal_test") {
+source_set("connections_test_util") {
   testonly = true
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  public = [ "src/cpp/core/internal/mock_service_controller_router.h" ]
+  public = [ "src/connections/implementation/mock_service_controller_router.h" ]
   deps = [
-    ":core_internal",
+    ":connections_implementation",
     "//third_party/googletest:gmock",
   ]
 }
 
-# src/cpp/core/internal/mediums
-source_set("core_internal_mediums") {
+# src/connections/implementation/mediums
+source_set("connections_implementation_mediums") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/core/internal/mediums/ble.cc",
-    "src/cpp/core/internal/mediums/ble_v2/advertisement_read_result.cc",
-    "src/cpp/core/internal/mediums/ble_v2/ble_advertisement.cc",
-    "src/cpp/core/internal/mediums/ble_v2/ble_advertisement_header.cc",
-    "src/cpp/core/internal/mediums/ble_v2/ble_packet.cc",
-    "src/cpp/core/internal/mediums/ble_v2/bloom_filter.cc",
-    "src/cpp/core/internal/mediums/bluetooth_classic.cc",
-    "src/cpp/core/internal/mediums/bluetooth_radio.cc",
-    "src/cpp/core/internal/mediums/mediums.cc",
-    "src/cpp/core/internal/mediums/uuid.cc",
-    "src/cpp/core/internal/mediums/webrtc.cc",
-    "src/cpp/core/internal/mediums/wifi_lan.cc",
+    "src/connections/implementation/mediums/ble.cc",
+    "src/connections/implementation/mediums/ble_v2/advertisement_read_result.cc",
+    "src/connections/implementation/mediums/ble_v2/ble_advertisement.cc",
+    "src/connections/implementation/mediums/ble_v2/ble_advertisement_header.cc",
+    "src/connections/implementation/mediums/ble_v2/ble_packet.cc",
+    "src/connections/implementation/mediums/ble_v2/bloom_filter.cc",
+    "src/connections/implementation/mediums/bluetooth_classic.cc",
+    "src/connections/implementation/mediums/bluetooth_radio.cc",
+    "src/connections/implementation/mediums/mediums.cc",
+    "src/connections/implementation/mediums/uuid.cc",
+    "src/connections/implementation/mediums/webrtc.cc",
+    "src/connections/implementation/mediums/wifi_lan.cc",
   ]
   public = [
-    "src/cpp/core/internal/mediums/ble.h",
-    "src/cpp/core/internal/mediums/ble_v2/advertisement_read_result.h",
-    "src/cpp/core/internal/mediums/ble_v2/ble_advertisement.h",
-    "src/cpp/core/internal/mediums/ble_v2/ble_advertisement_header.h",
-    "src/cpp/core/internal/mediums/ble_v2/ble_packet.h",
-    "src/cpp/core/internal/mediums/ble_v2/ble_peripheral.h",
-    "src/cpp/core/internal/mediums/ble_v2/bloom_filter.h",
-    "src/cpp/core/internal/mediums/bluetooth_classic.h",
-    "src/cpp/core/internal/mediums/bluetooth_radio.h",
-    "src/cpp/core/internal/mediums/lost_entity_tracker.h",
-    "src/cpp/core/internal/mediums/mediums.h",
-    "src/cpp/core/internal/mediums/uuid.h",
-    "src/cpp/core/internal/mediums/webrtc.h",
-    "src/cpp/core/internal/mediums/wifi_lan.h",
+    "src/connections/implementation/mediums/ble.h",
+    "src/connections/implementation/mediums/ble_v2/advertisement_read_result.h",
+    "src/connections/implementation/mediums/ble_v2/ble_advertisement.h",
+    "src/connections/implementation/mediums/ble_v2/ble_advertisement_header.h",
+    "src/connections/implementation/mediums/ble_v2/ble_packet.h",
+    "src/connections/implementation/mediums/ble_v2/ble_peripheral.h",
+    "src/connections/implementation/mediums/ble_v2/bloom_filter.h",
+    "src/connections/implementation/mediums/bluetooth_classic.h",
+    "src/connections/implementation/mediums/bluetooth_radio.h",
+    "src/connections/implementation/mediums/lost_entity_tracker.h",
+    "src/connections/implementation/mediums/mediums.h",
+    "src/connections/implementation/mediums/uuid.h",
+    "src/connections/implementation/mediums/webrtc.h",
+    "src/connections/implementation/mediums/wifi_lan.h",
   ]
   public_deps = [
-    ":core_internal_mediums_webrtc",
-    ":core_types",
+    ":connections_implementation_mediums_webrtc",
+    ":connections_types",
     ":platform_base",
     ":platform_base_cancellation_flag",
     ":platform_base_util",
@@ -289,23 +285,23 @@ source_set("core_internal_mediums") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-source_set("core_internal_mediums_utils") {
+source_set("connections_implementation_mediums_utils") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/core/internal/mediums/utils.cc",
-    "src/cpp/core/internal/mediums/webrtc_peer_id.cc",
+    "src/connections/implementation/mediums/utils.cc",
+    "src/connections/implementation/mediums/webrtc_peer_id.cc",
   ]
   public = [
     "//third_party/abseil-cpp:absl",
-    "src/cpp/core/internal/mediums/utils.h",
-    "src/cpp/core/internal/mediums/webrtc_peer_id.h",
-    "src/cpp/core/internal/mediums/webrtc_socket.h",
+    "src/connections/implementation/mediums/utils.h",
+    "src/connections/implementation/mediums/webrtc_peer_id.h",
+    "src/connections/implementation/mediums/webrtc_socket.h",
   ]
   public_deps = [
-    ":core_internal_mediums_webrtc_data_types",
+    ":connections_implementation_mediums_webrtc_data_types",
     ":offline_wire_formats_proto",
     ":platform_base",
     ":platform_public_types",
@@ -313,15 +309,17 @@ source_set("core_internal_mediums_utils") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-source_set("core_internal_mediums_webrtc_data_types") {
+source_set("connections_implementation_mediums_webrtc_data_types") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/cpp/core/internal/mediums/webrtc/webrtc_socket_impl.cc" ]
-  public = [ "src/cpp/core/internal/mediums/webrtc/webrtc_socket_impl.h" ]
+  sources =
+      [ "src/connections/implementation/mediums/webrtc/webrtc_socket_impl.cc" ]
+  public =
+      [ "src/connections/implementation/mediums/webrtc/webrtc_socket_impl.h" ]
   public_deps = [
-    ":core_types",
+    ":connections_types",
     ":platform_base",
     ":platform_public_types",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -329,26 +327,26 @@ source_set("core_internal_mediums_webrtc_data_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-source_set("core_internal_mediums_webrtc") {
+source_set("connections_implementation_mediums_webrtc") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/core/internal/mediums/webrtc/connection_flow.cc",
-    "src/cpp/core/internal/mediums/webrtc/signaling_frames.cc",
+    "src/connections/implementation/mediums/webrtc/connection_flow.cc",
+    "src/connections/implementation/mediums/webrtc/signaling_frames.cc",
   ]
   public = [
-    "src/cpp/core/internal/mediums/webrtc/connection_flow.h",
-    "src/cpp/core/internal/mediums/webrtc/data_channel_listener.h",
-    "src/cpp/core/internal/mediums/webrtc/local_ice_candidate_listener.h",
-    "src/cpp/core/internal/mediums/webrtc/session_description_wrapper.h",
-    "src/cpp/core/internal/mediums/webrtc/signaling_frames.h",
+    "src/connections/implementation/mediums/webrtc/connection_flow.h",
+    "src/connections/implementation/mediums/webrtc/data_channel_listener.h",
+    "src/connections/implementation/mediums/webrtc/local_ice_candidate_listener.h",
+    "src/connections/implementation/mediums/webrtc/session_description_wrapper.h",
+    "src/connections/implementation/mediums/webrtc/signaling_frames.h",
   ]
   public_deps = [
-    ":core_internal_mediums_utils",
-    ":core_internal_mediums_webrtc_data_types",
-    ":core_types",
+    ":connections_implementation_mediums_utils",
+    ":connections_implementation_mediums_webrtc_data_types",
+    ":connections_types",
     ":platform_base",
     ":platform_public_comm",
     ":platform_public_logging",
@@ -362,23 +360,23 @@ source_set("core_internal_mediums_webrtc") {
 }
 
 ###############################################################################
-# src/cpp/platform
+# src/internal/platform
 ###############################################################################
-# src/cpp/platform/api
+# src/internal/platform/implementation
 source_set("platform_api_comm") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/platform/api/ble.h",
-    "src/cpp/platform/api/ble_v2.h",
-    "src/cpp/platform/api/bluetooth_adapter.h",
-    "src/cpp/platform/api/bluetooth_classic.h",
-    "src/cpp/platform/api/server_sync.h",
-    "src/cpp/platform/api/webrtc.h",
-    "src/cpp/platform/api/wifi.h",
-    "src/cpp/platform/api/wifi_lan.h",
+    "src/internal/platform/implementation/ble.h",
+    "src/internal/platform/implementation/ble_v2.h",
+    "src/internal/platform/implementation/bluetooth_adapter.h",
+    "src/internal/platform/implementation/bluetooth_classic.h",
+    "src/internal/platform/implementation/server_sync.h",
+    "src/internal/platform/implementation/webrtc.h",
+    "src/internal/platform/implementation/wifi.h",
+    "src/internal/platform/implementation/wifi_lan.h",
   ]
   public_deps = [
     ":offline_wire_formats_proto",
@@ -396,23 +394,23 @@ source_set("platform_api_types") {
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/platform/api/atomic_boolean.h",
-    "src/cpp/platform/api/atomic_reference.h",
-    "src/cpp/platform/api/cancelable.h",
-    "src/cpp/platform/api/condition_variable.h",
-    "src/cpp/platform/api/count_down_latch.h",
-    "src/cpp/platform/api/crypto.h",
-    "src/cpp/platform/api/executor.h",
-    "src/cpp/platform/api/future.h",
-    "src/cpp/platform/api/input_file.h",
-    "src/cpp/platform/api/listenable_future.h",
-    "src/cpp/platform/api/log_message.h",
-    "src/cpp/platform/api/mutex.h",
-    "src/cpp/platform/api/output_file.h",
-    "src/cpp/platform/api/scheduled_executor.h",
-    "src/cpp/platform/api/settable_future.h",
-    "src/cpp/platform/api/submittable_executor.h",
-    "src/cpp/platform/api/system_clock.h",
+    "src/internal/platform/implementation/atomic_boolean.h",
+    "src/internal/platform/implementation/atomic_reference.h",
+    "src/internal/platform/implementation/cancelable.h",
+    "src/internal/platform/implementation/condition_variable.h",
+    "src/internal/platform/implementation/count_down_latch.h",
+    "src/internal/platform/implementation/crypto.h",
+    "src/internal/platform/implementation/executor.h",
+    "src/internal/platform/implementation/future.h",
+    "src/internal/platform/implementation/input_file.h",
+    "src/internal/platform/implementation/listenable_future.h",
+    "src/internal/platform/implementation/log_message.h",
+    "src/internal/platform/implementation/mutex.h",
+    "src/internal/platform/implementation/output_file.h",
+    "src/internal/platform/implementation/scheduled_executor.h",
+    "src/internal/platform/implementation/settable_future.h",
+    "src/internal/platform/implementation/submittable_executor.h",
+    "src/internal/platform/implementation/system_clock.h",
   ]
   public_deps = [
     ":platform_base",
@@ -426,7 +424,7 @@ source_set("platform_api_platform") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  public = [ "src/cpp/platform/api/platform.h" ]
+  public = [ "src/internal/platform/implementation/platform.h" ]
   public_deps = [
     ":platform_api_comm",
     ":platform_api_types",
@@ -437,35 +435,35 @@ source_set("platform_api_platform") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
-# src/cpp/platform/base
+# src/internal/platform
 source_set("platform_base") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/platform/base/base64_utils.cc",
-    "src/cpp/platform/base/bluetooth_utils.cc",
-    "src/cpp/platform/base/input_stream.cc",
-    "src/cpp/platform/base/nsd_service_info.cc",
-    "src/cpp/platform/base/prng.cc",
+    "src/internal/platform/base64_utils.cc",
+    "src/internal/platform/bluetooth_utils.cc",
+    "src/internal/platform/input_stream.cc",
+    "src/internal/platform/nsd_service_info.cc",
+    "src/internal/platform/prng.cc",
   ]
   public = [
-    "src/cpp/platform/base/base64_utils.h",
-    "src/cpp/platform/base/bluetooth_utils.h",
-    "src/cpp/platform/base/byte_array.h",
-    "src/cpp/platform/base/callable.h",
-    "src/cpp/platform/base/exception.h",
-    "src/cpp/platform/base/feature_flags.h",
-    "src/cpp/platform/base/input_stream.h",
-    "src/cpp/platform/base/listeners.h",
-    "src/cpp/platform/base/nsd_service_info.h",
-    "src/cpp/platform/base/output_stream.h",
-    "src/cpp/platform/base/payload_id.h",
-    "src/cpp/platform/base/prng.h",
-    "src/cpp/platform/base/runnable.h",
-    "src/cpp/platform/base/socket.h",
-    "src/cpp/platform/base/types.h",
+    "src/internal/platform/base64_utils.h",
+    "src/internal/platform/bluetooth_utils.h",
+    "src/internal/platform/byte_array.h",
+    "src/internal/platform/callable.h",
+    "src/internal/platform/exception.h",
+    "src/internal/platform/feature_flags.h",
+    "src/internal/platform/input_stream.h",
+    "src/internal/platform/listeners.h",
+    "src/internal/platform/nsd_service_info.h",
+    "src/internal/platform/output_stream.h",
+    "src/internal/platform/payload_id.h",
+    "src/internal/platform/prng.h",
+    "src/internal/platform/runnable.h",
+    "src/internal/platform/socket.h",
+    "src/internal/platform/types.h",
   ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -476,10 +474,10 @@ source_set("platform_base_error_code_recorder") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/cpp/platform/base/error_code_recorder.cc" ]
+  sources = [ "src/internal/platform/error_code_recorder.cc" ]
   public = [
-    "src/cpp/platform/base/error_code_params.h",
-    "src/cpp/platform/base/error_code_recorder.h",
+    "src/internal/platform/error_code_params.h",
+    "src/internal/platform/error_code_recorder.h",
   ]
   public_deps = [
     ":connections_enums_proto",
@@ -495,13 +493,13 @@ source_set("platform_base_util") {
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/platform/base/base_input_stream.cc",
-    "src/cpp/platform/base/base_pipe.cc",
+    "src/internal/platform/base_input_stream.cc",
+    "src/internal/platform/base_pipe.cc",
   ]
   public = [
-    "src/cpp/platform/base/base_input_stream.h",
-    "src/cpp/platform/base/base_mutex_lock.h",
-    "src/cpp/platform/base/base_pipe.h",
+    "src/internal/platform/base_input_stream.h",
+    "src/internal/platform/base_mutex_lock.h",
+    "src/internal/platform/base_pipe.h",
   ]
   public_deps = [
     ":platform_api_types",
@@ -516,7 +514,7 @@ source_set("platform_base_logging") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  public = [ "src/cpp/platform/base/logging.h" ]
+  public = [ "src/internal/platform/logging.h" ]
   public_deps = [
     ":platform_api_platform",
     ":platform_api_types",
@@ -530,8 +528,8 @@ source_set("platform_base_cancellation_flag") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/cpp/platform/base/cancellation_flag.cc" ]
-  public = [ "src/cpp/platform/base/cancellation_flag.h" ]
+  sources = [ "src/internal/platform/cancellation_flag.cc" ]
+  public = [ "src/internal/platform/cancellation_flag.h" ]
   public_deps = [
     ":platform_base",
     ":platform_base_util",
@@ -541,14 +539,14 @@ source_set("platform_base_cancellation_flag") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
-# src/cpp/platform/impl/shared
+# src/internal/platform/implementation/shared
 source_set("platform_impl_shared_file") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/cpp/platform/impl/shared/file.cc" ]
-  public = [ "src/cpp/platform/impl/shared/file.h" ]
+  sources = [ "src/internal/platform/implementation/shared/file.cc" ]
+  public = [ "src/internal/platform/implementation/shared/file.h" ]
   public_deps = [
     ":platform_api_platform",
     ":platform_public_types",
@@ -558,39 +556,39 @@ source_set("platform_impl_shared_file") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
-# src/cpp/platform/public
+# src/internal/platform
 source_set("platform_public_types") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/platform/public/monitored_runnable.cc",
-    "src/cpp/platform/public/pending_job_registry.cc",
-    "src/cpp/platform/public/pipe.cc",
+    "src/internal/platform/monitored_runnable.cc",
+    "src/internal/platform/pending_job_registry.cc",
+    "src/internal/platform/pipe.cc",
   ]
   public = [
-    "src/cpp/platform/public/atomic_boolean.h",
-    "src/cpp/platform/public/atomic_reference.h",
-    "src/cpp/platform/public/cancelable.h",
-    "src/cpp/platform/public/cancelable_alarm.h",
-    "src/cpp/platform/public/condition_variable.h",
-    "src/cpp/platform/public/count_down_latch.h",
-    "src/cpp/platform/public/crypto.h",
-    "src/cpp/platform/public/file.h",
-    "src/cpp/platform/public/future.h",
-    "src/cpp/platform/public/logging.h",
-    "src/cpp/platform/public/monitored_runnable.h",
-    "src/cpp/platform/public/multi_thread_executor.h",
-    "src/cpp/platform/public/mutex.h",
-    "src/cpp/platform/public/mutex_lock.h",
-    "src/cpp/platform/public/pending_job_registry.h",
-    "src/cpp/platform/public/pipe.h",
-    "src/cpp/platform/public/scheduled_executor.h",
-    "src/cpp/platform/public/settable_future.h",
-    "src/cpp/platform/public/single_thread_executor.h",
-    "src/cpp/platform/public/submittable_executor.h",
-    "src/cpp/platform/public/system_clock.h",
+    "src/internal/platform/atomic_boolean.h",
+    "src/internal/platform/atomic_reference.h",
+    "src/internal/platform/cancelable.h",
+    "src/internal/platform/cancelable_alarm.h",
+    "src/internal/platform/condition_variable.h",
+    "src/internal/platform/count_down_latch.h",
+    "src/internal/platform/crypto.h",
+    "src/internal/platform/file.h",
+    "src/internal/platform/future.h",
+    "src/internal/platform/logging.h",
+    "src/internal/platform/monitored_runnable.h",
+    "src/internal/platform/multi_thread_executor.h",
+    "src/internal/platform/mutex.h",
+    "src/internal/platform/mutex_lock.h",
+    "src/internal/platform/pending_job_registry.h",
+    "src/internal/platform/pipe.h",
+    "src/internal/platform/scheduled_executor.h",
+    "src/internal/platform/settable_future.h",
+    "src/internal/platform/single_thread_executor.h",
+    "src/internal/platform/submittable_executor.h",
+    "src/internal/platform/system_clock.h",
   ]
   public_deps = [
     ":platform_api_platform",
@@ -611,17 +609,17 @@ source_set("platform_public_comm") {
     ":nearby_defines",
   ]
   sources = [
-    "src/cpp/platform/public/ble.cc",
-    "src/cpp/platform/public/bluetooth_classic.cc",
-    "src/cpp/platform/public/file.cc",
-    "src/cpp/platform/public/wifi_lan.cc",
+    "src/internal/platform/ble.cc",
+    "src/internal/platform/bluetooth_classic.cc",
+    "src/internal/platform/file.cc",
+    "src/internal/platform/wifi_lan.cc",
   ]
   public = [
-    "src/cpp/platform/public/ble.h",
-    "src/cpp/platform/public/bluetooth_adapter.h",
-    "src/cpp/platform/public/bluetooth_classic.h",
-    "src/cpp/platform/public/webrtc.h",
-    "src/cpp/platform/public/wifi_lan.h",
+    "src/internal/platform/ble.h",
+    "src/internal/platform/bluetooth_adapter.h",
+    "src/internal/platform/bluetooth_classic.h",
+    "src/internal/platform/webrtc.h",
+    "src/internal/platform/wifi_lan.h",
   ]
   public_deps = [
     ":platform_api_comm",
@@ -640,7 +638,7 @@ source_set("platform_public_logging") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  public = [ "src/cpp/platform/public/logging.h" ]
+  public = [ "src/internal/platform/logging.h" ]
   public_deps = [ ":platform_base_logging" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]

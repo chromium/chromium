@@ -12,7 +12,7 @@
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
+#include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
 namespace base {
 class SequencedTaskRunner;

@@ -8,7 +8,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
-#include "third_party/nearby/src/cpp/platform/api/mutex.h"
+#include "third_party/nearby/src/internal/platform/implementation/mutex.h"
 
 namespace location {
 namespace nearby {

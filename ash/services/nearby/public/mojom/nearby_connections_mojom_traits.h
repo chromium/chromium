@@ -6,7 +6,7 @@
 #define ASH_SERVICES_NEARBY_PUBLIC_MOJOM_NEARBY_CONNECTIONS_MOJOM_TRAITS_H_
 
 #include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "third_party/nearby/src/cpp/platform/api/log_message.h"
+#include "third_party/nearby/src/internal/platform/implementation/log_message.h"
 
 namespace mojo {
 

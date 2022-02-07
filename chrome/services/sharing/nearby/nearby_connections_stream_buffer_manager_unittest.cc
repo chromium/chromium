@@ -5,10 +5,10 @@
 #include "chrome/services/sharing/nearby/nearby_connections_stream_buffer_manager.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/nearby/src/cpp/core/payload.h"
-#include "third_party/nearby/src/cpp/platform/base/byte_array.h"
-#include "third_party/nearby/src/cpp/platform/base/exception.h"
-#include "third_party/nearby/src/cpp/platform/base/input_stream.h"
+#include "third_party/nearby/src/connections/payload.h"
+#include "third_party/nearby/src/internal/platform/byte_array.h"
+#include "third_party/nearby/src/internal/platform/exception.h"
+#include "third_party/nearby/src/internal/platform/input_stream.h"
 
 namespace location {
 namespace nearby {

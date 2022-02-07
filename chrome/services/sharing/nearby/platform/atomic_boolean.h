@@ -7,7 +7,7 @@
 
 #include <atomic>
 
-#include "third_party/nearby/src/cpp/platform/api/atomic_boolean.h"
+#include "third_party/nearby/src/internal/platform/implementation/atomic_boolean.h"
 
 namespace location {
 namespace nearby {

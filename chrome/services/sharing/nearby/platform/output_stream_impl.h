@@ -5,7 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_OUTPUT_STREAM_IMPL_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_OUTPUT_STREAM_IMPL_H_
 
-#include "third_party/nearby/src/cpp/platform/base/output_stream.h"
+#include "third_party/nearby/src/internal/platform/output_stream.h"
 
 #include <stdint.h>
 #include <memory>

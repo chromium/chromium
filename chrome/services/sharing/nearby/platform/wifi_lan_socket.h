@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
-#include "third_party/nearby/src/cpp/platform/api/wifi_lan.h"
+#include "third_party/nearby/src/internal/platform/implementation/wifi_lan.h"
 
 namespace base {
 class SequencedTaskRunner;

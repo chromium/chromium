@@ -30,7 +30,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/nearby/src/cpp/core/internal/service_controller_router.h"
+#include "third_party/nearby/src/connections/implementation/service_controller_router.h"
 
 namespace location {
 namespace nearby {

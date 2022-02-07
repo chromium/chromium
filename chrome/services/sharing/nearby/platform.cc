@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/nearby/src/cpp/platform/api/platform.h"
+#include "third_party/nearby/src/internal/platform/implementation/platform.h"
 
 #include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
@@ -29,22 +29,22 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/nearby/src/cpp/platform/api/atomic_boolean.h"
-#include "third_party/nearby/src/cpp/platform/api/atomic_reference.h"
-#include "third_party/nearby/src/cpp/platform/api/ble.h"
-#include "third_party/nearby/src/cpp/platform/api/ble_v2.h"
-#include "third_party/nearby/src/cpp/platform/api/bluetooth_adapter.h"
-#include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
-#include "third_party/nearby/src/cpp/platform/api/condition_variable.h"
-#include "third_party/nearby/src/cpp/platform/api/count_down_latch.h"
-#include "third_party/nearby/src/cpp/platform/api/log_message.h"
-#include "third_party/nearby/src/cpp/platform/api/mutex.h"
-#include "third_party/nearby/src/cpp/platform/api/scheduled_executor.h"
-#include "third_party/nearby/src/cpp/platform/api/server_sync.h"
-#include "third_party/nearby/src/cpp/platform/api/submittable_executor.h"
-#include "third_party/nearby/src/cpp/platform/api/webrtc.h"
-#include "third_party/nearby/src/cpp/platform/api/wifi.h"
-#include "third_party/nearby/src/cpp/platform/impl/shared/file.h"
+#include "third_party/nearby/src/internal/platform/implementation/atomic_boolean.h"
+#include "third_party/nearby/src/internal/platform/implementation/atomic_reference.h"
+#include "third_party/nearby/src/internal/platform/implementation/ble.h"
+#include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
+#include "third_party/nearby/src/internal/platform/implementation/bluetooth_adapter.h"
+#include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
+#include "third_party/nearby/src/internal/platform/implementation/condition_variable.h"
+#include "third_party/nearby/src/internal/platform/implementation/count_down_latch.h"
+#include "third_party/nearby/src/internal/platform/implementation/log_message.h"
+#include "third_party/nearby/src/internal/platform/implementation/mutex.h"
+#include "third_party/nearby/src/internal/platform/implementation/scheduled_executor.h"
+#include "third_party/nearby/src/internal/platform/implementation/server_sync.h"
+#include "third_party/nearby/src/internal/platform/implementation/shared/file.h"
+#include "third_party/nearby/src/internal/platform/implementation/submittable_executor.h"
+#include "third_party/nearby/src/internal/platform/implementation/webrtc.h"
+#include "third_party/nearby/src/internal/platform/implementation/wifi.h"
 
 namespace location {
 namespace nearby {

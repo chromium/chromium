@@ -10,7 +10,7 @@
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
+#include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
 namespace location {
 namespace nearby {
