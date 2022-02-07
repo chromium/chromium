@@ -16,8 +16,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-constexpr inline int kEncryptedDataByteSize = 16;
-constexpr inline int kAesBlockByteSize = 16;
+inline constexpr int kEncryptedDataByteSize = 16;
+inline constexpr int kAesBlockByteSize = 16;
 
 namespace ash {
 namespace quick_pair {

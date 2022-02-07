@@ -12,8 +12,8 @@
 
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 
-constexpr inline int kDecryptedResponseAddressByteSize = 6;
-constexpr inline int kDecryptedResponseSaltByteSize = 9;
+inline constexpr int kDecryptedResponseAddressByteSize = 6;
+inline constexpr int kDecryptedResponseSaltByteSize = 9;
 
 namespace ash {
 namespace quick_pair {

@@ -21,13 +21,13 @@ namespace ash {
 namespace login_views_utils {
 
 // The most used font size on login/lock screen.
-constexpr inline int kLoginDefaultFontSize = 13;
+inline constexpr int kLoginDefaultFontSize = 13;
 
 // The most used font on login/lock screen.
-constexpr inline char kLoginDefaultFontName[] = "Roboto";
-constexpr inline char kGoogleSansFont[] = "Google Sans";
+inline constexpr char kLoginDefaultFontName[] = "Roboto";
+inline constexpr char kGoogleSansFont[] = "Google Sans";
 
-constexpr inline int kDefaultLineHeight = 20;
+inline constexpr int kDefaultLineHeight = 20;
 
 // Helper function to get default font list for login/lock screen text label.
 // It is slightly different from views::Label::GetDefaultFontList since the

@@ -12,7 +12,7 @@
 
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 
-constexpr inline int kDecryptedPasskeySaltByteSize = 12;
+inline constexpr int kDecryptedPasskeySaltByteSize = 12;
 
 namespace ash {
 namespace quick_pair {
