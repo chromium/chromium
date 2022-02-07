@@ -40,6 +40,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -78,6 +79,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -2022,52 +2024,19 @@ SkColor TabStrip::GetTabBackgroundColor(
 
 SkColor TabStrip::GetTabForegroundColor(TabActive active,
                                         SkColor background_color) const {
-  const ui::ThemeProvider* tp = GetThemeProvider();
-  if (!tp)
+  const ui::ColorProvider* cp = GetColorProvider();
+  if (!cp)
     return SK_ColorBLACK;
 
-  constexpr int kColorIds[2][2] = {
-      {ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE,
-       ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE},
-      {ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
-       ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE}};
+  constexpr ChromeColorIds kColorIds[2][2] = {
+      {kColorTabForegroundInactiveFrameInactive,
+       kColorTabForegroundInactiveFrameActive},
+      {kColorTabForegroundActiveFrameInactive,
+       kColorTabForegroundActiveFrameActive}};
 
   const bool tab_active = active == TabActive::kActive;
   const bool frame_active = ShouldPaintAsActiveFrame();
-  const int color_id = kColorIds[tab_active][frame_active];
-
-  SkColor color = tp->GetColor(color_id);
-  if (tp->HasCustomColor(color_id))
-    return color;
-  if ((color_id ==
-       ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE) &&
-      tp->HasCustomColor(
-          ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE)) {
-    // If a custom theme sets a background tab text color for active but not
-    // inactive windows, generate the inactive color by blending the active one
-    // at 75% as we do in the default theme.
-    color = tp->GetColor(
-        ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE);
-  }
-
-  if (!frame_active)
-    color = color_utils::AlphaBlend(color, background_color, 0.75f);
-
-  // To minimize any readability cost of custom system frame colors, try to make
-  // the text reach the same contrast ratio that it would in the default theme.
-  const SkColor target = color_utils::GetColorWithMaxContrast(background_color);
-  // These contrast ratios should match the actual ratios in the default theme
-  // colors when no system colors are involved, except for the inactive tab/
-  // inactive frame case, which has been raised from 4.48 to 4.5 to meet
-  // accessibility guidelines.
-  constexpr float kContrast[2][2] = {{4.5f,      // Inactive tab, inactive frame
-                                      7.98f},    // Inactive tab, active frame
-                                     {5.0f,      // Active tab, inactive frame
-                                      10.46f}};  // Active tab, active frame
-  const float contrast = kContrast[tab_active][frame_active];
-  return color_utils::BlendForMinContrast(color, background_color, target,
-                                          contrast)
-      .color;
+  return cp->GetColor(kColorIds[tab_active][frame_active]);
 }
 
 // Returns the accessible tab name for the tab.
