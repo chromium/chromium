@@ -107,17 +107,6 @@ void DlpContentManagerAsh::CheckScreenshotRestriction(
   CheckScreenCaptureRestriction(info, std::move(callback));
 }
 
-bool DlpContentManagerAsh::IsScreenCaptureRestricted(
-    const content::DesktopMediaID& media_id) {
-  const ConfidentialContentsInfo info =
-      GetScreenShareConfidentialContentsInfo(media_id);
-  MaybeReportEvent(info.restriction_info,
-                   DlpRulesManager::Restriction::kScreenShare);
-  DlpBooleanHistogram(dlp::kScreenShareBlockedUMA,
-                      IsBlocked(info.restriction_info));
-  return IsBlocked(info.restriction_info);
-}
-
 void DlpContentManagerAsh::CheckScreenShareRestriction(
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
@@ -220,22 +209,22 @@ void DlpContentManagerAsh::CheckCaptureModeInitRestriction(
   CheckScreenCaptureRestriction(info, std::move(callback));
 }
 
-void DlpContentManagerAsh::OnScreenCaptureStarted(
+void DlpContentManagerAsh::OnScreenShareStarted(
     const std::string& label,
-    std::vector<content::DesktopMediaID> screen_capture_ids,
+    std::vector<content::DesktopMediaID> screen_share_ids,
     const std::u16string& application_title,
     base::RepeatingClosure stop_callback,
     content::MediaStreamUI::StateChangeCallback state_change_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  for (const content::DesktopMediaID& id : screen_capture_ids) {
+  for (const content::DesktopMediaID& id : screen_share_ids) {
     AddScreenShare(label, id, application_title, stop_callback,
                    state_change_callback);
   }
   CheckRunningScreenShares();
 }
 
-void DlpContentManagerAsh::OnScreenCaptureStopped(
+void DlpContentManagerAsh::OnScreenShareStopped(
     const std::string& label,
     const content::DesktopMediaID& media_id) {
   RemoveScreenShare(label, media_id);

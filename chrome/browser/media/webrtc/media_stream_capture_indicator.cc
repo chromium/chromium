@@ -241,7 +241,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
-    policy::DlpContentManager::Get()->OnScreenCaptureStarted(
+    policy::DlpContentManager::Get()->OnScreenShareStarted(
         label, screen_capture_ids, application_title_, stop_callback,
         state_change_callback);
 #endif
@@ -258,7 +258,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   void OnDeviceStopped(const std::string& label,
                        const content::DesktopMediaID& media_id) override {
 #if BUILDFLAG(IS_CHROMEOS)
-    policy::DlpContentManager::Get()->OnScreenCaptureStopped(label, media_id);
+    policy::DlpContentManager::Get()->OnScreenShareStopped(label, media_id);
 #endif
   }
 

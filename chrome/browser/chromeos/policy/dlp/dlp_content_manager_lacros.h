@@ -38,15 +38,15 @@ class DlpContentManagerLacros : public DlpContentManager,
       const content::DesktopMediaID& media_id,
       const std::u16string& application_title,
       OnDlpRestrictionCheckedCallback callback) override;
-  void OnScreenCaptureStarted(
+  void OnScreenShareStarted(
       const std::string& label,
-      std::vector<content::DesktopMediaID> screen_capture_ids,
+      std::vector<content::DesktopMediaID> screen_share_ids,
       const std::u16string& application_title,
       base::RepeatingClosure stop_callback,
       content::MediaStreamUI::StateChangeCallback state_change_callback)
       override;
-  void OnScreenCaptureStopped(const std::string& label,
-                              const content::DesktopMediaID& media_id) override;
+  void OnScreenShareStopped(const std::string& label,
+                            const content::DesktopMediaID& media_id) override;
 
  private:
   friend class DlpContentManagerTestHelper;

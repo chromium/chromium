@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser()->window()->GetNativeWindow()->GetRootWindow();
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
-  manager->OnScreenCaptureStarted(
+  manager->OnScreenShareStarted(
       kLabel, {media_id}, kApplicationTitle, base::BindRepeating([]() {
         FAIL() << "Stop callback should not be called.";
       }),
@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
 
-  manager->OnScreenCaptureStopped(kLabel, media_id);
+  manager->OnScreenShareStopped(kLabel, media_id);
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId));
@@ -902,8 +902,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
       .Times(1);
 
-  manager->OnScreenCaptureStarted(kLabel, {media_id}, kApplicationTitle,
-                                  stop_cb.Get(), state_change_cb.Get());
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                stop_cb.Get(), state_change_cb.Get());
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
@@ -958,8 +958,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       .Times(1);
   EXPECT_CALL(stop_cb, Run()).Times(1);
 
-  manager->OnScreenCaptureStarted(kLabel, {media_id}, kApplicationTitle,
-                                  stop_cb.Get(), state_change_cb.Get());
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                stop_cb.Get(), state_change_cb.Get());
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
@@ -1006,8 +1006,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
       .Times(1);
 
-  manager->OnScreenCaptureStarted(kLabel, {media_id}, kApplicationTitle,
-                                  stop_cb.Get(), state_change_cb.Get());
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                stop_cb.Get(), state_change_cb.Get());
 
   manager->OnWindowRestrictionChanged(browser()->window()->GetNativeWindow(),
                                       kScreenShareWarned);

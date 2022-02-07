@@ -123,13 +123,13 @@ void DlpContentManagerLacros::CheckScreenShareRestriction(
       std::move(area), application_title, std::move(callback));
 }
 
-void DlpContentManagerLacros::OnScreenCaptureStarted(
+void DlpContentManagerLacros::OnScreenShareStarted(
     const std::string& label,
-    std::vector<content::DesktopMediaID> screen_capture_ids,
+    std::vector<content::DesktopMediaID> screen_share_ids,
     const std::u16string& application_title,
     base::RepeatingClosure stop_callback,
     content::MediaStreamUI::StateChangeCallback state_change_callback) {
-  for (const content::DesktopMediaID& media_id : screen_capture_ids) {
+  for (const content::DesktopMediaID& media_id : screen_share_ids) {
     if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
       AddScreenShare(label, media_id, application_title, stop_callback,
                      state_change_callback);
@@ -155,7 +155,7 @@ void DlpContentManagerLacros::OnScreenCaptureStarted(
   CheckRunningScreenShares();
 }
 
-void DlpContentManagerLacros::OnScreenCaptureStopped(
+void DlpContentManagerLacros::OnScreenShareStopped(
     const std::string& label,
     const content::DesktopMediaID& media_id) {
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {

@@ -119,7 +119,7 @@ TEST_F(DlpAshTest, ScreenShareStarted) {
   content::MediaStreamUI::StateChangeCallback state_change_callback;
   content::DesktopMediaID media_id;
 
-  EXPECT_CALL(mock_dlp_content_manager, OnScreenCaptureStarted)
+  EXPECT_CALL(mock_dlp_content_manager, OnScreenShareStarted)
       .WillOnce(
           [&](const std::string& label,
               std::vector<content::DesktopMediaID> ids,
@@ -175,7 +175,7 @@ TEST_F(DlpAshTest, ScreenShareStopped) {
   policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
 
-  EXPECT_CALL(mock_dlp_content_manager, OnScreenCaptureStopped)
+  EXPECT_CALL(mock_dlp_content_manager, OnScreenShareStopped)
       .WillOnce([&](const std::string& label,
                     const content::DesktopMediaID& media_id) {
         EXPECT_EQ(kScreenShareLabel, label);

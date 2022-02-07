@@ -64,11 +64,6 @@ class DlpContentManagerAsh : public DlpContentManager,
       const ScreenshotArea& area,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
-  // Returns whether screen capture of the defined content should be restricted.
-  // TODO(crbug.com/1257493): Remove when it won't be used anymore.
-  virtual bool IsScreenCaptureRestricted(
-      const content::DesktopMediaID& media_id);
-
   // Called when video capturing for |area| is started.
   void OnVideoCaptureStarted(const ScreenshotArea& area);
 
@@ -92,15 +87,15 @@ class DlpContentManagerAsh : public DlpContentManager,
       const content::DesktopMediaID& media_id,
       const std::u16string& application_title,
       OnDlpRestrictionCheckedCallback callback) override;
-  void OnScreenCaptureStarted(
+  void OnScreenShareStarted(
       const std::string& label,
-      std::vector<content::DesktopMediaID> screen_capture_ids,
+      std::vector<content::DesktopMediaID> screen_share_ids,
       const std::u16string& application_title,
       base::RepeatingClosure stop_callback,
       content::MediaStreamUI::StateChangeCallback state_change_callback)
       override;
-  void OnScreenCaptureStopped(const std::string& label,
-                              const content::DesktopMediaID& media_id) override;
+  void OnScreenShareStopped(const std::string& label,
+                            const content::DesktopMediaID& media_id) override;
 
   // Called when an updated restrictions are received for Lacros window.
   void OnWindowRestrictionChanged(aura::Window* window,

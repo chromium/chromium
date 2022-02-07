@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerLacrosBrowserTest,
 
   // Call DLP manager and expect stop callback.
   base::RunLoop stopped_run_loop;
-  manager()->OnScreenCaptureStarted(
+  manager()->OnScreenShareStarted(
       kScreenShareLabel,
       {content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                content::DesktopMediaID::kFakeId)},
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerLacrosBrowserTest,
   base::RunLoop resumed_run_loop;
   content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
                                    content::DesktopMediaID::kFakeId);
-  manager()->OnScreenCaptureStarted(
+  manager()->OnScreenShareStarted(
       kScreenShareLabel, {media_id}, kAppId, base::DoNothing(),
       base::BindLambdaForTesting(
           [&](const content::DesktopMediaID& in_media_id,

@@ -73,18 +73,19 @@ class DlpContentManager : public DlpContentObserver {
       const std::u16string& application_title,
       OnDlpRestrictionCheckedCallback callback) = 0;
 
-  // Called when screen capture is started.
+  // Called when screen share is started.
   // |state_change_callback| will be called when restricted content will appear
-  // or disappear in the captured area.
-  virtual void OnScreenCaptureStarted(
+  // or disappear in the captured area to pause/resume the share.
+  // |stop_callback| will be called after a user dismisses a warning.
+  virtual void OnScreenShareStarted(
       const std::string& label,
-      std::vector<content::DesktopMediaID> screen_capture_ids,
+      std::vector<content::DesktopMediaID> screen_share_ids,
       const std::u16string& application_title,
       base::RepeatingClosure stop_callback,
       content::MediaStreamUI::StateChangeCallback state_change_callback) = 0;
 
-  // Called when screen capture is stopped.
-  virtual void OnScreenCaptureStopped(
+  // Called when screen share is stopped.
+  virtual void OnScreenShareStopped(
       const std::string& label,
       const content::DesktopMediaID& media_id) = 0;
 

@@ -133,7 +133,7 @@ void DlpAsh::OnScreenShareStarted(
   policy::DlpContentManagerAsh* dlp_content_manager =
       policy::DlpContentManagerAsh::Get();
   DCHECK(dlp_content_manager);
-  dlp_content_manager->OnScreenCaptureStarted(
+  dlp_content_manager->OnScreenShareStarted(
       label, {media_id}, application_title, std::move(stop_callback),
       std::move(state_change_callback));
 }
@@ -148,7 +148,7 @@ void DlpAsh::OnScreenShareStopped(const std::string& label,
   policy::DlpContentManagerAsh* dlp_content_manager =
       policy::DlpContentManagerAsh::Get();
   DCHECK(dlp_content_manager);
-  dlp_content_manager->OnScreenCaptureStopped(label, media_id);
+  dlp_content_manager->OnScreenShareStopped(label, media_id);
 }
 
 void DlpAsh::ChangeScreenShareState(

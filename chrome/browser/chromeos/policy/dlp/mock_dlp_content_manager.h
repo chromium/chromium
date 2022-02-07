@@ -35,7 +35,7 @@ class MockDlpContentManager : public DlpContentManager {
                OnDlpRestrictionCheckedCallback),
               (override));
   MOCK_METHOD(void,
-              OnScreenCaptureStarted,
+              OnScreenShareStarted,
               (const std::string&,
                std::vector<content::DesktopMediaID>,
                const std::u16string&,
@@ -43,7 +43,7 @@ class MockDlpContentManager : public DlpContentManager {
                content::MediaStreamUI::StateChangeCallback),
               (override));
   MOCK_METHOD(void,
-              OnScreenCaptureStopped,
+              OnScreenShareStopped,
               (const std::string&, const content::DesktopMediaID&),
               (override));
   MOCK_METHOD(ConfidentialContentsInfo,
