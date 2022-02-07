@@ -1892,6 +1892,7 @@
 <translation id="287205682142673348">Портты бағыттау</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> қосу…</translation>
 <translation id="2872961005593481000">Өшіру</translation>
+<translation id="2873995907777332853">Барлық cookie файлын бөгеу туралы мәліметтерді көрсету</translation>
 <translation id="2874939134665556319">Алдыңғы аудиотрек</translation>
 <translation id="2875698561019555027">(Chrome қате беттері)</translation>
 <translation id="2876336351874743617">2-ші саусақ</translation>
@@ -2198,6 +2199,7 @@
 <translation id="3189187154924005138">Үлкен көрсеткі</translation>
 <translation id="3190558889382726167">Құпия сөз сақталды</translation>
 <translation id="3192947282887913208">Аудио файлдары</translation>
+<translation id="3194786596445804250">Үшінші тараптың cookie файлдарын бөгеу туралы мәліметтерді көрсету</translation>
 <translation id="3197453258332670132">Тінтуірдің оң жақ түймесін бассаңыз немесе ұзақ басып тұрсаңыз, таңдаған мәтініңізге қатысты ақпарат көрсетіледі.</translation>
 <translation id="3199127022143353223">Серверлер</translation>
 <translation id="3200061262156232574">Сатып алу себетіңізде</translation>
@@ -5293,6 +5295,7 @@
 <translation id="6455264371803474013">Белгілі бір сайттарда</translation>
 <translation id="6455894534188563617">&amp;Жаңа қалта</translation>
 <translation id="645705751491738698">JavaScript қосуға салынған тыйымды сақтау</translation>
+<translation id="6458347417133445570">Барлық cookie файлына рұқсат беру туралы мәліметтерді көрсету</translation>
 <translation id="6458701200018867744">Жүктеп салынбады (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Табу үшін таңдауды пайдалану</translation>
 <translation id="6459799433792303855">Қосулы терезе басқа дисплейге ауысты.</translation>
@@ -6725,6 +6728,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> файлын көре алады.</translation>
 <translation id="7920482456679570420">Емлесін тексеруді қажет етпейтін сөздерді қосыңыз</translation>
+<translation id="7922935920104868876">Инкогнито режимінде үшінші тараптың cookie файлдарын бөгеу туралы мәліметтерді көрсету</translation>
 <translation id="7924358170328001543">Портты бағыттау қатесі</translation>
 <translation id="7925108652071887026">Деректерді автотолтыру</translation>
 <translation id="792514962475806987">Бекітілген масштаб деңгейі:</translation>
