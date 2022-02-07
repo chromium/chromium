@@ -83,3 +83,17 @@ GUEST_TEST('GuestStartsWithDefaultFileList', async () => {
   chai.assert.isDefined(window.customLaunchData.files);
   chai.assert.isTrue(window.customLaunchData.files.length === 0);
 });
+
+GUEST_TEST('GuestFailsToFetchMissingFonts', async () => {
+  let error;
+  try {
+    await fetch('/fonts/NotAFont.ttf');
+  } catch (/** @type {TypeError} */ e) {
+    error = e;
+  }
+
+  // Note failed webui requests are completely missing response headers, so
+  // fetch() will throw rather than returning a response.status of 404.
+  assertEquals(error.name, 'TypeError');
+  assertEquals(error.message, 'Failed to fetch');
+});

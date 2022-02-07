@@ -360,3 +360,7 @@ TEST_F('MediaAppUIGtestBrowserTest', 'GuestCanLoadWithCspRestrictions', () => {
 TEST_F('MediaAppUIGtestBrowserTest', 'GuestStartsWithDefaultFileList', () => {
   runTestInGuest('GuestStartsWithDefaultFileList');
 });
+
+TEST_F('MediaAppUIGtestBrowserTest', 'GuestFailsToFetchMissingFonts', () => {
+  runTestInGuest('GuestFailsToFetchMissingFonts');
+});

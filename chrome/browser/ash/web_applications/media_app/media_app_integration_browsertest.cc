@@ -9,6 +9,7 @@
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -190,6 +191,23 @@ base::FilePath TestFile(const std::string& ascii_name) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(path));
   return path;
+}
+
+std::string FindAnyTTF() {
+  const base::FilePath root_path(FILE_PATH_LITERAL("/usr/share/fonts"));
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FileEnumerator enumerator(
+      root_path, true, base::FileEnumerator::FILES, FILE_PATH_LITERAL("*.ttf"),
+      base::FileEnumerator::FolderSearchPolicy::ALL,
+      base::FileEnumerator::ErrorPolicy::IGNORE_ERRORS);
+  const base::FilePath candidate = enumerator.Next();
+  std::vector<std::string> components;
+  candidate.GetComponents(&components);
+  if (components.size() < 5) {
+    return {};
+  }
+  std::vector<std::string> slice(components.begin() + 4, components.end());
+  return base::JoinString(slice, "/");
 }
 
 void PrepareAppForTest(content::WebContents* web_ui) {
@@ -1249,6 +1267,47 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
 
   EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, kToggleFullscreen));
   EXPECT_FALSE(app_browser->window()->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {
+  // For this test, we first need to find a valid font to request from
+  // /usr/share/fonts. build/linux/install-chromeos-fonts.py installs some known
+  // fonts into /usr/*local*/share/fonts, so that's no good. A set of known font
+  // files *should* be available on any machine, but the subdirectory varies.
+  // E.g. NotoSans-Regular.ttf exists in fonts/truetype/noto/ on some machines,
+  // but it has a different parent folder on others.
+  //
+  // For a robust test, poke around on disk and pick the first non-zero .ttf
+  // file to deliver.
+  //
+  // Note that although the path differs across bots, it will be consistent on
+  // the ChromeOS image.
+  const std::string font_to_try = FindAnyTTF();
+  DLOG(INFO) << "Found: " << font_to_try;
+
+  constexpr char kFetchTestFont[] = R"(
+      (async function fetchTestFont() {
+        try {
+          const response = await fetch('/fonts/$1');
+          const blob = await response.blob();
+
+          if (response.status === 200 && blob.size > 0) {
+            domAutomationController.send('success');
+          } else {
+            domAutomationController.send(
+                `Failed: status:$${response.status} size:$${blob.size}`);
+          }
+        } catch (e) {
+          domAutomationController.send(`Failed: $${e}`);
+        }
+      })();
+  )";
+  const std::string script =
+      base::ReplaceStringPlaceholders(kFetchTestFont, {font_to_try}, nullptr);
+
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_ui = LaunchApp(web_app::SystemAppType::MEDIA);
+  EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, script));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

@@ -5,12 +5,13 @@
 #ifndef ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 #define ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 
-#include "content/public/browser/web_contents_observer.h"
-#include "ui/webui/untrusted_web_ui_controller.h"
+#include <string>
 
-namespace content {
-class WebUIDataSource;
-}  // namespace content
+#include "base/files/file_path.h"
+#include "base/task/sequenced_task_runner.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace ash {
 
@@ -34,6 +35,20 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
 
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
+
+ private:
+  void StartFontDataRequest(
+      const std::string& path,
+      content::WebUIDataSource::GotDataCallback got_data_callback);
+  void StartFontDataRequestAfterPathExists(
+      const base::FilePath& font_path,
+      content::WebUIDataSource::GotDataCallback got_data_callback,
+      bool path_exists);
+
+  // The background task runner on which file I/O is performed.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};
 };
 
 }  // namespace ash
