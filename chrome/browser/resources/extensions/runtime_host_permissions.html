@@ -217,3 +217,17 @@
       on-cancel="onHostDialogCancel_">
   </extensions-runtime-hosts-dialog>
 </template>
+<template is="dom-if" if="[[showRemoveSiteDialog_]]" restamp>
+  <cr-dialog id="removeSitesDialog" on-cancel="onRemoveSitesWarningCancel_"
+      show-on-attach>
+    <div slot="title">$i18n{removeSitesDialogTitle}</div>
+    <div slot="button-container">
+      <cr-button class="cancel-button" on-click="onRemoveSitesWarningCancel_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button class="action-button" on-click="onRemoveSitesWarningConfirm_">
+        $i18n{remove}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

@@ -289,6 +289,9 @@
   <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_EMPTY" desc="The text to indicate that an extension does not have any site access.">
     This extension has no additional site access
   </message>
+  <message name="IDS_EXTENSIONS_REMOVE_SITES_DIALOG_TITLE" desc="The title for the dialog to warn the user when changing site access settings will clear the list of specific sites added.">
+    Remove the specific sites you added?
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_SOURCE" desc="The label above an extension's source, which indicates where the extension came from (webstore, third-party, local disk, etc).">
     Source
   </message>

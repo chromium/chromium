@@ -477,4 +477,69 @@ suite('RuntimeHostPermissions', function() {
       assertEquals('https://chromium.org', args[1] /* site */);
     });
   });
+
+  test(
+      'switching away from ON_SPECIFIC_SITES with flag enabled triggers dialog',
+      function() {
+        element.enableEnhancedSiteControls = true;
+
+        const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
+          hostAccess: HostAccess.ON_SPECIFIC_SITES,
+          hasAllHosts: true,
+          hosts: [
+            {host: 'https://example.com', granted: true},
+            {host: 'https://chromium.org', granted: true},
+            {host: '*://*.com/*', granted: false},
+          ],
+        };
+
+        element.permissions = permissions;
+        flush();
+
+        const selectHostAccess = element.getSelectMenu();
+        assertTrue(!!selectHostAccess);
+
+        // Change the `selectHostAccess` value and the dialog should be open.
+        selectHostAccess.value = HostAccess.ON_CLICK;
+        selectHostAccess.dispatchEvent(new CustomEvent('change'));
+        flush();
+
+        let dialog = element.getRemoveSiteDialog();
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        // Clicking cancel on the dialog should revert the `selectHostAccess`
+        // value back to ON_SPECIFIC_SITES.
+        const cancel = dialog.querySelector<HTMLElement>('.cancel-button');
+        assertTrue(!!cancel);
+        cancel.click();
+
+        flush();
+        assertFalse(!!element.getRemoveSiteDialog());
+        assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
+
+        // Change the `selectHostAccess` value and the dialog should be open.
+        selectHostAccess.value = HostAccess.ON_CLICK;
+        selectHostAccess.dispatchEvent(new CustomEvent('change'));
+        flush();
+
+        dialog = element.getRemoveSiteDialog();
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        // Clicking remove on the dialog should a call to the delegate to set
+        // the host access to the `selectHostAccess` value.
+        const remove = dialog.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!remove);
+        remove.click();
+
+        return delegate.whenCalled('setItemHostAccess').then((args) => {
+          assertEquals(ITEM_ID, args[0] /* id */);
+          assertEquals(HostAccess.ON_CLICK, args[1] /* access */);
+
+          flush();
+          assertFalse(!!element.getRemoveSiteDialog());
+          assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
+        });
+      });
 });
