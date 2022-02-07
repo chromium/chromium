@@ -26,6 +26,7 @@ constexpr const char kMacAttributes[]{"mac/attributes"};
 constexpr const char kMacSelection[]{"mac/selection"};
 constexpr const char kMacTextMarker[]{"mac/textmarker"};
 constexpr const char kMacMethods[]{"mac/methods"};
+constexpr const char kRegression[]{"mac/regression"};
 
 #endif
 
@@ -365,6 +366,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityURL) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
   RunTypedTest<kMacMethods>("is-accessibility-element.html");
+}
+
+// Regression tests
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelectedChildren) {
+  RunTypedTest<kRegression>("ax-selected-children.html");
 }
 
 #endif
