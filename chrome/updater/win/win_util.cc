@@ -5,9 +5,11 @@
 #include "chrome/updater/win/win_util.h"
 
 #include <aclapi.h>
+#include <objidl.h>
 #include <shellapi.h>
 #include <shlobj.h>
 #include <windows.h>
+#include <wrl/client.h>
 #include <wtsapi32.h>
 
 #include <cstdlib>
@@ -652,6 +654,16 @@ absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
   }
 
   return goopdate_dir.AppendASCII("GoogleUpdate.exe");
+}
+
+HRESULT DisableCOMExceptionHandling() {
+  Microsoft::WRL::ComPtr<IGlobalOptions> options;
+  HRESULT hr = ::CoCreateInstance(CLSID_GlobalOptions, nullptr,
+                                  CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&options));
+  if (FAILED(hr))
+    return hr;
+  return hr = options->Set(COMGLB_EXCEPTION_HANDLING,
+                           COMGLB_EXCEPTION_DONOT_HANDLE);
 }
 
 }  // namespace updater

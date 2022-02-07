@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/process/process.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -83,6 +84,10 @@ int main(int argc, char** argv) {
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
+  if (FAILED(updater::DisableCOMExceptionHandling())) {
+    // Failing to disable COM exception handling is a critical error.
+    CHECK(false) << "Failed to disable COM exception handling.";
+  }
 #endif
 
   base::TestSuite test_suite(argc, argv);

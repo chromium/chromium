@@ -10,6 +10,7 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -34,6 +35,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
+#include "chrome/updater/win/win_util.h"
 #endif
 
 namespace updater {
@@ -330,6 +332,10 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
+  if (FAILED(DisableCOMExceptionHandling())) {
+    // Failing to disable COM exception handling is a critical error.
+    CHECK(false) << "Failed to disable COM exception handling.";
+  }
 #endif
   chrome::RegisterPathProvider();
   TestEventListeners& listeners = UnitTest::GetInstance()->listeners();

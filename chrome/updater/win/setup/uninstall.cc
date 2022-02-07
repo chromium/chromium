@@ -19,7 +19,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
-#include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -145,10 +144,6 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
   HKEY key =
       scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-
-  auto scoped_com_initializer =
-      std::make_unique<base::win::ScopedCOMInitializer>(
-          base::win::ScopedCOMInitializer::kMTA);
 
   updater::UnregisterWakeTask(scope);
 

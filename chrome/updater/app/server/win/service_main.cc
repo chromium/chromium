@@ -39,13 +39,6 @@ bool IsInternalService() {
 }  // namespace
 
 int ServiceMain::RunComService(const base::CommandLine* command_line) {
-  base::win::ScopedCOMInitializer com_initializer(
-      base::win::ScopedCOMInitializer::kMTA);
-  if (!com_initializer.Succeeded()) {
-    LOG(ERROR) << "Failed to initialize COM";
-    return CO_E_INITIALIZATIONFAILED;
-  }
-
   // Run the COM service.
   ServiceMain* service = ServiceMain::GetInstance();
   if (!service->InitWithCommandLine(command_line))

@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "base/at_exit.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -34,6 +35,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/process_startup_helper.h"
+#include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/win/win_util.h"
@@ -125,8 +127,19 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
 #if BUILDFLAG(IS_WIN)
-  base::win::RegisterInvalidParamHandler();
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  if (!com_initializer.Succeeded()) {
+    PLOG(ERROR) << "Failed to initialize COM";
 
+    // TODO(crbug.com/1294543) - is there a more specific error needed?
+    return -1;
+  }
+  if (FAILED(DisableCOMExceptionHandling())) {
+    // Failing to disable COM exception handling is a critical error.
+    CHECK(false) << "Failed to disable COM exception handling.";
+  }
+  base::win::RegisterInvalidParamHandler();
   VLOG(1) << GetUACState();
 #endif
 

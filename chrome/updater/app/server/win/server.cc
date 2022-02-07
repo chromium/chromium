@@ -157,9 +157,7 @@ scoped_refptr<ComServerApp> AppServerSingletonInstance() {
   return AppSingletonInstance<ComServerApp>();
 }
 
-ComServerApp::ComServerApp()
-    : com_initializer_(base::win::ScopedCOMInitializer::kMTA) {}
-
+ComServerApp::ComServerApp() = default;
 ComServerApp::~ComServerApp() = default;
 
 void ComServerApp::Stop() {
@@ -228,11 +226,6 @@ void ComServerApp::ActiveDutyInternal(
 }
 
 void ComServerApp::Start(base::OnceCallback<HRESULT()> register_callback) {
-  if (!com_initializer_.Succeeded()) {
-    PLOG(ERROR) << "Failed to initialize COM";
-    Shutdown(-1);
-    return;
-  }
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
   CreateWRLModule();
   HRESULT hr = std::move(register_callback).Run();

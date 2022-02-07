@@ -187,6 +187,11 @@ HRESULT RunElevated(const base::FilePath& file_path,
 
 absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 
+// Causes the COM runtime not to handle exceptions. Failing to set this
+// up is a critical error, since ignoring exceptions may lead to corrupted
+// program state.
+[[nodiscard]] HRESULT DisableCOMExceptionHandling();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_
