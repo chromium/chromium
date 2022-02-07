@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -102,10 +103,8 @@ TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_Reclaim) {
   }
 }
 
-// ThreadCache tests disabled when USE_BACKUP_REF_PTR is enabled, because the
-// "original" PartitionRoot has ThreadCache disabled.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED) && !BUILDFLAG(USE_BACKUP_REF_PTR)
+    defined(PA_THREAD_CACHE_SUPPORTED)
 
 namespace {
 // malloc() / free() pairs can be removed by the compiler, this is enough (for
@@ -115,9 +114,11 @@ NOINLINE void FreeForTest(void* data) {
 }
 }  // namespace
 
-// Flaky. https://crbug.com/1208390
-TEST_F(PartitionAllocMemoryReclaimerTest,
-       DISABLED_DoNotAlwaysPurgeThreadCache) {
+TEST_F(PartitionAllocMemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
+  // Make sure the thread cache is enabled in the main partition.
+  base::internal::PartitionAllocMalloc::Allocator()
+      ->EnableThreadCacheIfSupported();
+
   for (size_t i = 0; i < internal::ThreadCache::kDefaultSizeThreshold; i++) {
     void* data = malloc(i);
     FreeForTest(data);
@@ -144,8 +145,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest,
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-        // defined(PA_THREAD_CACHE_SUPPORTED) && \
-        // !BUILDFLAG(USE_BACKUP_REF_PTR)
+        // defined(PA_THREAD_CACHE_SUPPORTED)
 
 }  // namespace base
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
