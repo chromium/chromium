@@ -121,7 +121,7 @@ class CONTENT_EXPORT AuctionRunner {
   //
   // `result` is used for logging purposes only.
   //
-  // `errors` is appended to `errors_`.
+  //`errors` is appended to `errors_`.
   //
   // Public so that the owner can fail the auction on teardown, to invoke any
   // pending Mojo callbacks.
@@ -232,6 +232,143 @@ class CONTENT_EXPORT AuctionRunner {
     const std::unique_ptr<Bid> bid;
   };
 
+  // Handles running an auction rooted at a given AuctionConfig. Separate from
+  // AuctionRunner so that component auctions can use the same logic as the
+  // top-level auction.
+  //
+  // When complete, Auctions will have three phases, with phase transitions
+  // handled by the parent class. All phases complete asynchronously:
+  //
+  // * Loading interest groups phase: This loads interest groups that can
+  // participate in an auction. Waiting for all component auctions to complete
+  // this phase before advance to the next ensures that if any auctions share
+  // bidder worklets, they'll all be loaded together, and only send out a single
+  // trusted bidding signals request.
+  //
+  // * Bidding/scoring phase: This phase loads bidder and seller worklets,
+  // generates bids, scores bids, and the highest scoring bid for each component
+  // auction is passed to its parent auction, which also scores it. When this
+  // phase completes, the winner will have been decided.
+  //
+  // * ReportResult / ReportWin phase: This phase invokes ReportResult() on
+  // winning seller worklets and ReportWin() in the winning bidder worklet.
+  class Auction {
+   public:
+    // Callback that's invoked once interest groups have been loaded. Always
+    // invoked asynchronously.
+    using LoadInterestGroupsCallback = base::OnceCallback<void(bool success)>;
+
+    // All passed in raw pointers must remain valid until the Auction is
+    // destroyed. `config` is typically owned by the AuctionRunner's
+    // `owned_auction_config_` field.
+    Auction(blink::mojom::AuctionAdConfig* config,
+            AuctionWorkletManager* auction_worklet_manager,
+            InterestGroupManagerImpl* interest_group_manager,
+            base::Time auction_start_time);
+
+    ~Auction();
+
+    // Starts loading the interest groups that can participate in an auction.
+    //
+    // Both seller and buyer origins are filtered by
+    // `is_interest_group_api_allowed`, and any any not allowed to use the API
+    // are excluded from participating in the auction.
+    //
+    // Invokes `load_interest_groups_callback` asynchronously on completion.
+    // Passes it false if there are no interest groups that may participate in
+    // the auction (possibly because sellers aren't allowed to participate in
+    // the auction)
+    void LoadInterestGroups(
+        IsInterestGroupApiAllowedCallback
+            is_interest_group_api_allowed_callback,
+        LoadInterestGroupsCallback load_interest_groups_callback);
+
+   private:
+    // TODO(mmenke): Remove this once Auction fully manages its own state.
+    friend class AuctionRunner;
+
+    // Adds `interest_groups` to `bid_states_`. If all bidders have been loaded,
+    // calls OnLoadInterestGroupsComplete().
+    void OnInterestGroupRead(std::vector<StorageInterestGroup> interest_groups);
+
+    // Invoked once the interest group load phase has completed. Never called
+    // synchronously from LoadInterestGroups(), to avoid reentrancy.
+    // `auction_result` is the result of trying to load the interest groups that
+    // can participate in the auction. It's AuctionResult::kSuccess if there are
+    // interest groups that can take part in the auction, and a failure value
+    // otherwise.
+    void OnLoadInterestGroupsComplete(AuctionResult auction_result);
+
+    const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
+    const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
+
+    // Configuration of this auction.
+    raw_ptr<const blink::mojom::AuctionAdConfig> config_;
+
+    // Final result of the auction, once completed. Null before completion.
+    absl::optional<AuctionResult> final_auction_result_;
+
+    // The number of buyers with pending interest group loads from storage.
+    // Decremented each time OnInterestGroupRead() is invoked.
+    // `load_interest_groups_callback` is invoked once this hits 0.
+    size_t num_pending_buyers_ = 0;
+    LoadInterestGroupsCallback load_interest_groups_callback_;
+
+    // True once a seller worklet has been received from the
+    // AuctionWorkletManager.
+    bool seller_worklet_received_ = false;
+
+    // Number of bids that have yet to be sent to the SellerWorklet. This
+    // includes BidderWorklets that have not yet been loaded, those whose
+    // GenerateBid() method is currently being run, and those that are waiting
+    // on the seller worklet to load. Decremented when GenerateBid() fails to
+    // generate a bid, or just after invoking the SellerWorklet's ScoreAd()
+    // method. When this reaches 0, the SellerWorklet's
+    // SendPendingSignalsRequests() should be invoked, so it can send any
+    // pending scoring signals requests.
+    int num_bids_not_sent_to_seller_worklet_;
+    // Number of bids which the seller has not yet finished scoring. These bids
+    // may be fetching URLs, generating bids, waiting for the seller worklet to
+    // load, or the seller worklet may be scoring their bids. When this reaches
+    // 0, the bid with the highest score is the winner, and the auction is
+    // completed, apart from reporting the result.
+    int outstanding_bids_;
+
+    // State of all loaded interest groups.
+    std::vector<BidState> bid_states_;
+
+    // Bids waiting on the seller worklet to load before scoring. Does not
+    // include bids that are currently waiting on the worklet's ScoreAd() method
+    // to complete.
+    std::vector<std::unique_ptr<Bid>> unscored_bids_;
+
+    // The time the auction started. Use a single base time for all Worklets, to
+    // present a more consistent view of the universe.
+    const base::Time auction_start_time_;
+
+    // The number of owners with InterestGroups participating in an auction.
+    int num_owners_with_interest_groups_ = 0;
+
+    // The highest scoring bid so far. Null if no bid has been accepted yet.
+    std::unique_ptr<ScoredBid> top_bid_;
+    // Number of bidders with the same score as `top_bidder`.
+    size_t num_top_bids_ = 0;
+
+    // Holds a reference to the SellerWorklet used by the auction.
+    std::unique_ptr<AuctionWorkletManager::WorkletHandle>
+        seller_worklet_handle_;
+
+    // Report URLs from reportResult() and reportWin() methods. Returned to
+    // caller for it to deal with, so the Auction itself can be deleted at the
+    // end of the auction.
+    std::vector<GURL> report_urls_;
+
+    // All errors reported by worklets thus far.
+    std::vector<std::string> errors_;
+
+    base::WeakPtrFactory<Auction> weak_ptr_factory_{this};
+  };
+
   AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
                 InterestGroupManagerImpl* interest_group_manager,
                 blink::mojom::AuctionAdConfigPtr auction_config,
@@ -247,22 +384,14 @@ class CONTENT_EXPORT AuctionRunner {
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url);
 
-  // Checks that the seller is allowed to partipate in an auction, and starts
-  // retrieving all interest groups owned buyer origins listed in
-  // `auction_config_` from storage, except those for which
-  // `is_interest_group_api_allowed_callback` returns false.
-  //
-  // OnInterestGroupRead() will be invoked with the lookup results for each
-  // buyer origin. If the seller may not participate in an auction, or no listed
-  // interest groups buyers may use the interest group API, asynchronously fails
-  // the auction.
+  // Tells `auction_` to start loading interest groups.
   void StartAuction(
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback);
 
-  // Adds `interest_groups` to `bid_states_`. Continues retrieving bidders from
-  // `pending_buyers_` if any have not been retrieved yet. Otherwise, invokes
-  // StartBidding().
-  void OnInterestGroupRead(std::vector<StorageInterestGroup> interest_groups);
+  // Invoked asynchronously by `auction_` once all interest groups have loaded.
+  // Fails the auction if `success` is false. Otherwise, starts loading
+  // worklets.
+  void OnInterestGroupsLoaded(bool success);
 
   // Requests a seller worklet from the AuctionWorkletManager.
   void RequestSellerWorklet();
@@ -313,7 +442,7 @@ class CONTENT_EXPORT AuctionRunner {
                              const std::vector<std::string>& errors);
 
   // True if all bid results and the seller script load are complete.
-  bool AllBidsScored() const { return outstanding_bids_ == 0; }
+  bool AllBidsScored() const { return auction_.outstanding_bids_ == 0; }
 
   // Calls into the seller asynchronously to score the passed in bid.
   void ScoreBid(std::unique_ptr<Bid> bid);
@@ -355,9 +484,6 @@ class CONTENT_EXPORT AuctionRunner {
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors);
 
-  // Invokes FailAuction asynchronously.
-  void FailAuctionAsync(AuctionResult result);
-
   // Completes the auction, invoking `callback_` and preventing any future
   // calls into `this` by closing mojo pipes and disposing of weak pointers. The
   // owner must be able to safely delete `this` when the callback is invoked.
@@ -382,68 +508,15 @@ class CONTENT_EXPORT AuctionRunner {
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   // Configuration.
-  blink::mojom::AuctionAdConfigPtr auction_config_;
-  // The number of buyers with pending interest group loads from storage.
-  // Decremented each time OnInterestGroupRead() is invoked. The auction is
-  // started once this hits 0.
-  size_t num_pending_buyers_ = 0;
+  blink::mojom::AuctionAdConfigPtr owned_auction_config_;
   RunAuctionCallback callback_;
 
-  // True once a seller worklet has been received from the
-  // AuctionWorkletManager.
-  bool seller_worklet_received_ = false;
-
-  // Number of bids that have yet to be sent to the SellerWorklet. This
-  // includes BidderWorklets that have not yet been loaded, those whose
-  // GenerateBid() method is currently being run, and those that are waiting on
-  // the seller worklet to load. Decremented when GenerateBid() fails to
-  // generate a bid, or just after invoking the SellerWorklet's ScoreAd()
-  // method. When this reaches 0, the SellerWorklet's
-  // SendPendingSignalsRequests() should be invoked, so it can send any pending
-  // scoring signals requests.
-  int num_bids_not_sent_to_seller_worklet_;
-  // Number of bids which the seller has not yet finished scoring. These bids
-  // may be fetching URLs, generating bids, waiting for the seller worklet to
-  // load, or the seller worklet may be scoring their bids. When this reaches 0,
-  // the bid with the highest score is the winner, and the auction is completed,
-  // apart from reporting the result.
-  int outstanding_bids_;
-
-  // State of all loaded interest groups.
-  std::vector<BidState> bid_states_;
-
-  // Bids waiting on the seller worklet to load before scoring. Does not include
-  // bids that are currently waiting on the worklet's ScoreAd() method to
-  // complete.
-  std::vector<std::unique_ptr<Bid>> unscored_bids_;
-
-  // The time the auction started. Use a single base time for all Worklets, to
-  // present a more consistent view of the universe.
-  const base::Time auction_start_time_ = base::Time::Now();
-
-  // The number of owners with InterestGroups participating in an auction.
-  int num_owners_with_interest_groups_ = 0;
-
-  // The highest scoring bid so far. Null if no bid has been accepted yet.
-  std::unique_ptr<ScoredBid> top_bid_;
-  // Number of bidders with the same score as `top_bid_`.
-  size_t num_top_bids_ = 0;
-
-  // Holds a reference to the SellerWorklet used by the auction.
-  std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;
-
-  // Report URLs from reportResult() and reportWin() methods. Returned to caller
-  // for it to deal with, so the AuctionRunner itself can be deleted at the end
-  // of the auction.
-  std::vector<GURL> report_urls_;
+  Auction auction_;
 
   // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
   // forDebuggingOnly.reportAdAuctionWin(url).
   std::vector<GURL> debug_loss_report_urls_;
   std::vector<GURL> debug_win_report_urls_;
-
-  // All errors reported by worklets thus far.
-  std::vector<std::string> errors_;
 
   base::WeakPtrFactory<AuctionRunner> weak_ptr_factory_{this};
 };
