@@ -53,6 +53,10 @@
 #include "ui/gfx/range/range.h"
 #include "v8/include/v8-forward.h"
 
+namespace cc {
+class PaintCanvas;
+}  // namespace cc
+
 namespace gfx {
 class Point;
 class PointF;
