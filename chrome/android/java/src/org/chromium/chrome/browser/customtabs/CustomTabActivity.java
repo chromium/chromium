@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
+import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.AllCachedFieldTrialParameters;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -63,6 +65,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     public static final AllCachedFieldTrialParameters EXPERIMENTS_FOR_AGSA_PARAMS =
             new AllCachedFieldTrialParameters(ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
 
+    private CustomTabsOpenTimeRecorder mOpenTimeRecorder;
+
     private CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
         @Override
@@ -80,6 +84,15 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             resetPostMessageHandlersForCurrentSession();
         }
     };
+
+    @Override
+    protected BaseCustomTabActivityComponent createComponent(
+            ChromeActivityCommonsModule commonsModule) {
+        BaseCustomTabActivityComponent component = super.createComponent(commonsModule);
+        mOpenTimeRecorder =
+                new CustomTabsOpenTimeRecorder(getLifecycleDispatcher(), mNavigationController);
+        return component;
+    }
 
     @Override
     protected Drawable getBackgroundDrawable() {
@@ -156,6 +169,18 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         if (AutofillAssistantFacade.isAutofillAssistantEnabled(getInitialIntent())) {
             AutofillAssistantFacade.start(this);
         }
+    }
+
+    @Override
+    protected void handleFinishAndClose() {
+        mOpenTimeRecorder.updateCloseCause();
+        super.handleFinishAndClose();
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        mOpenTimeRecorder.onUserLeaveHint();
+        super.onUserLeaveHint();
     }
 
     private void resetPostMessageHandlersForCurrentSession() {

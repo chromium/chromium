@@ -35,6 +35,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.AutoclosedSessionDuration" units="ms"
+    expires_after="2022-07-31">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Android: Duration in milliseconds of a custom tab session (between onResume
+    and onPause). This is logged for the sessions closed automatically without
+    user intervention. Sessions closed by user input (back press/close button)
+    will not be logged.
+
+    Note that there can be user inputs that go undetected by the logic. So the
+    histogram can contain false positives i.e. session closed by user but
+    regarded as auto-closed.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
     expires_after="2022-07-24">
   <owner>yusufo@chromium.org</owner>
@@ -81,6 +98,18 @@ chromium-metrics-reviews@google.com.
     CustomTab/TrustedWebActivity close button on a child tab. Starting with M84
     this is is also recorded for webapps/WebAPKs. Filter the platform for just
     CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.CloseCause" enum="CustomTabsCloseCause"
+    expires_after="2022-07-31">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Android: The reason a custom tab is closed. Main interest is whether a
+    custom tab is triggered by user inputs like back press/close button click,
+    or it is automatically closed by the app that opened it.
   </summary>
 </histogram>
 

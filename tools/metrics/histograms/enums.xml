@@ -20020,6 +20020,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Has enough SCTs"/>
 </enum>
 
+<enum name="CustomTabsCloseCause">
+  <int value="0" label="User action in Chrome (back press, close button)"/>
+  <int value="1" label="User action in Android (home)"/>
+  <int value="2" label="Auto-closed"/>
+</enum>
+
 <enum name="CustomTabsConnection">
   <int value="0" label="Disconnected from service w/o KeepAlive connection"/>
   <int value="1" label="Disconnected from service with KeepAlive connection"/>
