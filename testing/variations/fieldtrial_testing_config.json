@@ -1082,10 +1082,7 @@
                         "cache_size": "6",
                         "check_eligibility_after_pagehide": "true",
                         "enable_same_site": "true",
-                        "file_system_api_supported": "true",
                         "foreground_cache_size": "2",
-                        "grace_period_to_finish_loading_in_seconds": "60",
-                        "max_buffered_bytes": "200000",
                         "max_buffered_bytes_per_process": "1024000",
                         "supported_features": "MediaSessionImplOnServiceCreated"
                     },
@@ -1116,9 +1113,7 @@
                         "content_injection_supported": "true",
                         "enable_same_site": "false",
                         "extension_message_supported": "true",
-                        "file_system_api_supported": "true",
                         "foreground_cache_size": "2",
-                        "grace_period_to_finish_loading_in_seconds": "60",
                         "max_buffered_bytes_per_process": "1024000",
                         "unload_support": "opt_in_header_required"
                     },
