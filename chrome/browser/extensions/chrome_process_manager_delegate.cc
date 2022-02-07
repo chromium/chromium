@@ -91,7 +91,7 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 
     // For the ChromeOS login profile, only allow apps installed by device
     // policy or that are explicitly allowlisted.
-    return login_screen_apps_list->HasKey(extension.id()) ||
+    return login_screen_apps_list->FindKey(extension.id()) ||
            IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 

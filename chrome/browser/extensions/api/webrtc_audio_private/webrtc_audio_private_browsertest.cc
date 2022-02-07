@@ -178,9 +178,9 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
 
     // TODO(joi): Verify the contents of these once we start actually
     // filling them in.
-    EXPECT_TRUE(dict.HasKey("isDefault"));
-    EXPECT_TRUE(dict.HasKey("isReady"));
-    EXPECT_TRUE(dict.HasKey("sampleRate"));
+    EXPECT_TRUE(dict.FindKey("isDefault"));
+    EXPECT_TRUE(dict.FindKey("isReady"));
+    EXPECT_TRUE(dict.FindKey("sampleRate"));
   }
 }
 #endif  // BUILDFLAG(IS_MAC)

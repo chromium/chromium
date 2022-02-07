@@ -25,18 +25,17 @@ TEST(PluginFinderTest, JsonSyntax) {
        !plugin_it.IsAtEnd(); plugin_it.Advance()) {
     const base::DictionaryValue* plugin = NULL;
     ASSERT_TRUE(plugin_it.value().GetAsDictionary(&plugin));
-    std::string dummy_str;
-    if (plugin->HasKey("lang"))
-      EXPECT_TRUE(plugin->GetString("lang", &dummy_str));
-    if (plugin->HasKey("url"))
-      EXPECT_TRUE(plugin->GetString("url", &dummy_str));
-    EXPECT_TRUE(plugin->GetString("name", &dummy_str));
-    if (plugin->HasKey("help_url"))
-      EXPECT_TRUE(plugin->GetString("help_url", &dummy_str));
-    if (plugin->HasKey("displayurl")) {
+    if (plugin->FindKey("lang"))
+      EXPECT_TRUE(plugin->FindStringKey("lang"));
+    if (plugin->FindKey("url"))
+      EXPECT_TRUE(plugin->FindStringKey("url"));
+    EXPECT_TRUE(plugin->FindStringKey("name"));
+    if (plugin->FindKey("help_url"))
+      EXPECT_TRUE(plugin->FindStringKey("help_url"));
+    if (plugin->FindKey("displayurl")) {
       EXPECT_THAT(plugin->FindBoolKey("displayurl"), Optional(true));
     }
-    if (plugin->HasKey("requires_authorization"))
+    if (plugin->FindKey("requires_authorization"))
       EXPECT_TRUE(plugin->FindBoolKey("requires_authorization").has_value());
     const base::ListValue* mime_types = NULL;
     if (plugin->GetList("mime_types", &mime_types)) {
@@ -59,13 +58,13 @@ TEST(PluginFinderTest, JsonSyntax) {
     for (const auto& version_value : versions->GetListDeprecated()) {
       const base::DictionaryValue* version_dict = nullptr;
       ASSERT_TRUE(version_value.GetAsDictionary(&version_dict));
-      EXPECT_TRUE(version_dict->GetString("version", &dummy_str));
-      std::string status_str;
-      EXPECT_TRUE(version_dict->GetString("status", &status_str));
+      EXPECT_TRUE(version_dict->FindStringKey("version"));
+      const std::string* status_str = version_dict->FindStringKey("status");
+      ASSERT_TRUE(status_str);
       PluginMetadata::SecurityStatus status =
           PluginMetadata::SECURITY_STATUS_UP_TO_DATE;
-      EXPECT_TRUE(PluginMetadata::ParseSecurityStatus(status_str, &status))
-          << "Invalid security status \"" << status_str << "\"";
+      EXPECT_TRUE(PluginMetadata::ParseSecurityStatus(*status_str, &status))
+          << "Invalid security status \"" << *status_str << "\"";
     }
   }
 }
