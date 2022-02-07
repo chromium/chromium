@@ -130,7 +130,7 @@ bool IsValidDictionary(const base::DictionaryValue& dictionary,
   }
   // Check for required members.
   for (size_t i = 0; i < required_key_count; ++i) {
-    if (!dictionary.HasKey(required_keys[i])) {
+    if (!dictionary.FindKey(required_keys[i])) {
       std::stringstream error_stream;
       error_stream << parent_key << " property '" << container_key
                    << "' does not have required key: '"
@@ -169,7 +169,7 @@ bool IsValidUrlSpec(const base::Value& url_spec,
   } else {
     // URL specifications must not contain "pnacl-translate" keys.
     // This prohibits NaCl clients from invoking PNaCl.
-    if (url_dict->HasKey(kPnaclTranslateKey)) {
+    if (url_dict->FindKey(kPnaclTranslateKey)) {
       std::stringstream error_stream;
       error_stream << "PNaCl-like NMF with application/x-nacl mimetype instead "
                    << "of x-pnacl mimetype (has " << kPnaclTranslateKey << ").";
@@ -197,9 +197,7 @@ bool IsValidUrlSpec(const base::Value& url_spec,
     *error_string = error_stream.str();
     return false;
   }
-  if (url_dict->HasKey(kOptLevelKey)) {
-    const base::Value* opt_level = url_dict->FindKey(kOptLevelKey);
-    DCHECK(opt_level);
+  if (const base::Value* opt_level = url_dict->FindKey(kOptLevelKey)) {
     if (!opt_level->is_int()) {
       std::stringstream error_stream;
       error_stream << parent_key << " property '" << container_key
@@ -335,7 +333,7 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
   }
 
   if (sandbox_isa == kPortableKey) {
-    if (!dictionary->HasKey(kPortableKey)) {
+    if (!dictionary->FindKey(kPortableKey)) {
       error_info->error = PP_NACL_ERROR_MANIFEST_PROGRAM_MISSING_ARCH;
       error_info->string = "manifest: no version of " + parent_key +
                            " given for portable.";
@@ -344,8 +342,8 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
   } else if (must_find_matching_entry) {
     // TODO(elijahtaylor) add ISA resolver here if we expand ISAs to include
     // micro-architectures that can resolve to multiple valid sandboxes.
-    bool has_isa = dictionary->HasKey(sandbox_isa);
-    bool has_portable = dictionary->HasKey(kPortableKey);
+    bool has_isa = dictionary->FindKey(sandbox_isa);
+    bool has_portable = dictionary->FindKey(kPortableKey);
 
     if (!has_isa && !has_portable) {
       error_info->error = PP_NACL_ERROR_MANIFEST_PROGRAM_MISSING_ARCH;
@@ -365,7 +363,7 @@ void GrabUrlAndPnaclOptions(const base::DictionaryValue& url_spec,
   DCHECK(url_str);
   *url = *url_str;
   pnacl_options->translate = PP_TRUE;
-  if (url_spec.HasKey(kOptLevelKey)) {
+  if (url_spec.FindKey(kOptLevelKey)) {
     absl::optional<int32_t> opt_raw = url_spec.FindIntKey(kOptLevelKey);
     DCHECK(opt_raw.has_value());
     // Currently only allow 0 or 2, since that is what we test.
@@ -480,7 +478,7 @@ bool JsonManifest::ResolveKey(const std::string& key,
     return false;
   }
 
-  if (!files_dict->HasKey(key)) {
+  if (!files_dict->FindKey(key)) {
     VLOG(1) << "ResolveKey failed: no such \"files\" entry: " << key;
     return false;
   }
@@ -502,7 +500,7 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
   }
 
   // A manifest file must have a program section.
-  if (!dictionary_->HasKey(kProgramKey)) {
+  if (!dictionary_->FindKey(kProgramKey)) {
     error_info->error = PP_NACL_ERROR_MANIFEST_SCHEMA_VALIDATE;
     error_info->string = std::string("manifest: missing '") + kProgramKey +
                          "' section.";
@@ -520,7 +518,7 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
   // Validate the interpreter section (if given).
   // There must be a matching (portable or sandbox_isa_) entry for interpreter
   // for NaCl.
-  if (dictionary_->HasKey(kInterpreterKey)) {
+  if (dictionary_->FindKey(kInterpreterKey)) {
     if (!IsValidISADictionary(*dictionary_, kInterpreterKey, sandbox_isa_, true,
                               error_info)) {
       return false;
@@ -531,7 +529,7 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
   // The "files" key does not require a matching (portable or sandbox_isa_)
   // entry at schema validation time for NaCl.  This allows manifests to
   // specify resources that are only loaded for a particular sandbox_isa.
-  if (dictionary_->HasKey(kFilesKey)) {
+  if (dictionary_->FindKey(kFilesKey)) {
     const base::DictionaryValue* files_dictionary = nullptr;
     if (!dictionary_->GetDictionaryWithoutPathExpansion(kFilesKey,
                                                         &files_dictionary)) {
@@ -556,7 +554,7 @@ bool JsonManifest::GetKeyUrl(const base::DictionaryValue& dictionary,
                              std::string* full_url,
                              PP_PNaClOptions* pnacl_options) const {
   DCHECK(full_url && pnacl_options);
-  if (!dictionary.HasKey(key)) {
+  if (!dictionary.FindKey(key)) {
     VLOG(1) << "GetKeyUrl failed: file " << key << " not found in manifest.";
     return false;
   }
@@ -611,9 +609,9 @@ bool JsonManifest::GetURLFromISADictionary(
   if (sandbox_isa_ == kPortableKey) {
     chosen_isa = kPortableKey;
   } else {
-    if (dictionary->HasKey(sandbox_isa_)) {
+    if (dictionary->FindKey(sandbox_isa_)) {
       chosen_isa = sandbox_isa_;
-    } else if (dictionary->HasKey(kPortableKey)) {
+    } else if (dictionary->FindKey(kPortableKey)) {
       chosen_isa = kPortableKey;
     } else {
       // Should not reach here, because the earlier IsValidISADictionary()
@@ -633,7 +631,7 @@ bool JsonManifest::GetURLFromISADictionary(
   // If the PNaCl debug flag is turned on, look for pnacl-debug entries first.
   // If found, mark that it is a debug URL. Otherwise, fall back to
   // checking for pnacl-translate URLs, etc. and don't mark it as a debug URL.
-  if (pnacl_debug_ && isa_spec->HasKey(kPnaclDebugKey)) {
+  if (pnacl_debug_ && isa_spec->FindKey(kPnaclDebugKey)) {
     const base::DictionaryValue* pnacl_dict = nullptr;
     if (!isa_spec->GetDictionaryWithoutPathExpansion(kPnaclDebugKey,
                                                      &pnacl_dict)) {
@@ -645,7 +643,7 @@ bool JsonManifest::GetURLFromISADictionary(
     }
     GrabUrlAndPnaclOptions(*pnacl_dict, url, pnacl_options);
     pnacl_options->is_debug = PP_TRUE;
-  } else if (isa_spec->HasKey(kPnaclTranslateKey)) {
+  } else if (isa_spec->FindKey(kPnaclTranslateKey)) {
     const base::DictionaryValue* pnacl_dict = nullptr;
     if (!isa_spec->GetDictionaryWithoutPathExpansion(kPnaclTranslateKey,
                                                      &pnacl_dict)) {
