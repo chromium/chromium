@@ -43,8 +43,8 @@ constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
 void OnNotificationClicked(const std::string id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(kDlpLearnMoreUrl), /*from_user_interaction=*/true);
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(GURL(kDlpLearnMoreUrl),
+                                                /*from_user_interaction=*/true);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(hidehiko): Instantiating BrowserServiceLacros here is an unexpected
   // use case. Get rid of this by replacing with Navigate() API invocation
