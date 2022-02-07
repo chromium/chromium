@@ -17,6 +17,7 @@ const char kNullVersion[] = "0.0.0.0";
 
 // Command line arguments.
 const char kServerSwitch[] = "server";
+const char kWindowsServiceSwitch[] = "windows-service";
 const char kComServiceSwitch[] = "com-service";
 const char kCrashMeSwitch[] = "crash-me";
 const char kCrashHandlerSwitch[] = "crash-handler";

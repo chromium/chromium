@@ -245,7 +245,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   // This assumes the COM service runs elevated and in the system updater scope.
   base::CommandLine com_service_command(com_service_path);
   com_service_command.AppendSwitch(kSystemSwitch);
-  com_service_command.AppendSwitch(kComServiceSwitch);
+  com_service_command.AppendSwitch(kWindowsServiceSwitch);
   com_service_command.AppendSwitchASCII(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
@@ -254,16 +254,13 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                         kLoggingModuleSwitchValue);
 
-  // TODO(crbug.com/1292806) : SERVICE_DEMAND_START will change to
-  // SERVICE_AUTO_START once the Wake task is plumbed into the service startup.
-  // TODO(crbug.com/1292806) : the  `com_service_cmd_line_args` will change from
-  // base::CommandLine(base::CommandLine::NO_PROGRAM) to switches that indicate
-  // a COM activation once the Wake task is plumbed into the service startup.
+  base::CommandLine com_switch(base::CommandLine::NO_PROGRAM);
+  com_switch.AppendSwitch(kComServiceSwitch);
+
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
-      GetServiceDisplayName(internal_service).c_str(), SERVICE_DEMAND_START,
-      com_service_command, base::CommandLine(base::CommandLine::NO_PROGRAM),
-      UPDATER_KEY,
+      GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
+      com_service_command, com_switch, UPDATER_KEY,
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),
       {}));

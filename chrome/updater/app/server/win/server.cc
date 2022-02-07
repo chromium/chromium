@@ -52,10 +52,6 @@
 namespace updater {
 namespace {
 
-bool IsCOMService() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kComServiceSwitch);
-}
-
 std::wstring GetCOMGroup(const std::wstring& prefix, UpdaterScope scope) {
   return base::StrCat({prefix, base::ASCIIToWide(UpdaterScopeToString(scope))});
 }
@@ -261,7 +257,7 @@ bool ComServerApp::SwapInNewVersion() {
     return false;
   }
 
-  if (IsCOMService()) {
+  if (updater_scope() == UpdaterScope::kSystem) {
     AddComServiceWorkItems(updater_path, false, list.get());
   } else {
     for (const CLSID& clsid : GetActiveServers(updater_scope())) {

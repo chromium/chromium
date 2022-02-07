@@ -164,8 +164,8 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return MakeAppUpdate()->Run();
 
 #if BUILDFLAG(IS_WIN)
-  if (command_line->HasSwitch(kComServiceSwitch))
-    return ServiceMain::RunComService(command_line);
+  if (command_line->HasSwitch(kWindowsServiceSwitch))
+    return ServiceMain::RunWindowsService(command_line);
 
   if (command_line->HasSwitch(kHealthCheckSwitch)) {
     return 0;
@@ -203,11 +203,21 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   // Contains the literals which are associated with specific updater commands.
   const char* commands[] = {
-      kComServiceSwitch,    kCrashHandlerSwitch, kHealthCheckSwitch,
-      kInstallSwitch,       kRecoverSwitch,      kServerSwitch,
-      kTagSwitch,           kTestSwitch,         kUninstallIfUnusedSwitch,
-      kUninstallSelfSwitch, kUninstallSwitch,    kUpdateSwitch,
-      kWakeSwitch,          kHealthCheckSwitch,  kHandoffSwitch,
+      kWindowsServiceSwitch,
+      kCrashHandlerSwitch,
+      kHealthCheckSwitch,
+      kInstallSwitch,
+      kRecoverSwitch,
+      kServerSwitch,
+      kTagSwitch,
+      kTestSwitch,
+      kUninstallIfUnusedSwitch,
+      kUninstallSelfSwitch,
+      kUninstallSwitch,
+      kUpdateSwitch,
+      kWakeSwitch,
+      kHealthCheckSwitch,
+      kHandoffSwitch,
   };
   const char** it = std::find_if(
       std::begin(commands), std::end(commands),

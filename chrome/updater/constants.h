@@ -50,10 +50,15 @@ extern const char kServerServiceSwitch[];
 extern const char kServerUpdateServiceInternalSwitchValue[];
 extern const char kServerUpdateServiceSwitchValue[];
 
-// This switch starts the COM service. This switch is invoked by the Service
-// Manager when CoCreate is called on one of several CLSIDs that the server
-// supports.
-// We expect to use the COM service for the following scenarios:
+// This switch starts the Windows service. This switch is invoked by the SCM
+// either as a part of system startup (`SERVICE_AUTO_START`) or when `CoCreate`
+// is called on one of several CLSIDs that the server supports.
+extern const char kWindowsServiceSwitch[];
+
+// This switch indicates that the Windows service is in the COM server mode.
+// This switch is passed to `ServiceMain` by the SCM when CoCreate is called on
+// one of several CLSIDs that the server supports. We expect to use the COM
+// service for the following scenarios:
 // * The Server for the UI when installing Machine applications.
 // * The On-Demand COM Server for Machine applications.
 // * COM Server for launching processes at System Integrity, i.e., an Elevator.
