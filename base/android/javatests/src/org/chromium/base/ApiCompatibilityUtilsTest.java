@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.SystemClock;
@@ -31,7 +30,6 @@ public class ApiCompatibilityUtilsTest {
         int mFinishCallbackCount;
         boolean mIsFinishing;
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void finishAndRemoveTask() {
             mFinishAndRemoveTaskCallbackCount++;

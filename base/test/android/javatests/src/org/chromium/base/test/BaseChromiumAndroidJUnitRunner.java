@@ -4,7 +4,6 @@
 
 package org.chromium.base.test;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
@@ -542,7 +541,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     /** Finishes all tasks Chrome has listed in Android's Overview. */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void finishAllAppTasks(final Context context) {
         // Close all of the tasks one by one.
         ActivityManager activityManager =

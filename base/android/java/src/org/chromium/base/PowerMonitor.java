@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -96,7 +95,6 @@ public class PowerMonitor {
         return getRemainingBatteryCapacityImpl();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static int getRemainingBatteryCapacityImpl() {
         return ((BatteryManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.BATTERY_SERVICE))
