@@ -985,11 +985,13 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 // TabStrip, public:
 
 TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
-    : controller_(std::move(controller)),
+    : tab_container_(AddChildView(std::make_unique<TabContainer>())),
+      controller_(std::move(controller)),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
           controller_.get(),
           base::BindRepeating(&TabStrip::tabs_view_model,
                               base::Unretained(this)))),
+      bounds_animator_(tab_container_),
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(std::make_unique<TabDragContextImpl>(this)) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
@@ -1027,7 +1029,7 @@ TabStrip::~TabStrip() {
 
   // The child tabs may call back to us from their destructors. Delete them so
   // that if they call back we aren't in a weird state.
-  RemoveAllChildViews();
+  tab_container_->RemoveAllChildViews();
 
   CHECK(!IsInObserverList());
 }
@@ -1135,7 +1137,8 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   Tab* tab = new Tab(this);
   tab->set_context_menu_controller(&context_menu_controller_);
   tab->AddObserver(this);
-  AddChildViewAt(tab, GetViewInsertionIndex(tab, absl::nullopt, model_index));
+  tab_container_->AddChildViewAt(
+      tab, GetViewInsertionIndex(tab, absl::nullopt, model_index));
   const bool pinned = data.pinned;
   tabs_.Add(tab, model_index);
   selected_tabs_.IncrementFrom(model_index);
@@ -1200,7 +1203,7 @@ void TabStrip::MoveTab(int from_model_index,
   const bool pinned = data.pinned;
   moving_tab->SetData(std::move(data));
 
-  ReorderChildView(
+  tab_container_->ReorderChildView(
       moving_tab,
       GetViewInsertionIndex(moving_tab, from_model_index, to_model_index));
 
@@ -1335,7 +1338,8 @@ void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
 }
 
 void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
-  auto group_view = std::make_unique<TabGroupViews>(this, group);
+  auto group_view =
+      std::make_unique<TabGroupViews>(tab_container_, this, group);
   layout_helper_->InsertGroupHeader(group, group_view->header());
   group_views_[group] = std::move(group_view);
 }
@@ -1412,17 +1416,17 @@ void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {
 
   TabGroupHeader* group_header = group_views_[group]->header();
   const int first_tab = controller_->GetFirstTabInGroup(group).value();
-  const int header_index = GetIndexOf(group_header);
-  const int first_tab_index = GetIndexOf(tab_at(first_tab));
+  const int header_index = tab_container_->GetIndexOf(group_header);
+  const int first_tab_index = tab_container_->GetIndexOf(tab_at(first_tab));
 
   // The header should be just before the first tab. If it isn't, reorder the
   // header such that it is. Note that the index to reorder to is different
   // depending on whether the header is before or after the tab, since the
   // header itself occupies an index.
   if (header_index < first_tab_index - 1)
-    ReorderChildView(group_header, first_tab_index - 1);
+    tab_container_->ReorderChildView(group_header, first_tab_index - 1);
   if (header_index > first_tab_index - 1)
-    ReorderChildView(group_header, first_tab_index);
+    tab_container_->ReorderChildView(group_header, first_tab_index);
 }
 
 void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
@@ -2109,6 +2113,8 @@ void TabStrip::Layout() {
     SetTabSlotVisibility();
   }
 
+  tab_container_->SetBounds(0, 0, width(), height());
+
   if (IsAnimating()) {
     // Hide tabs that have animated at least partially out of the clip region.
     SetTabSlotVisibility();
@@ -2151,7 +2157,7 @@ void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
               : absl::nullopt;
 
   std::vector<ZOrderableTabStripElement> orderable_children;
-  for (views::View* child : children())
+  for (views::View* child : tab_container_->children())
     orderable_children.emplace_back(child,
                                     dragging_tabs_current_group_underline);
 
@@ -2650,7 +2656,9 @@ int TabStrip::GetViewInsertionIndex(Tab* tab,
   // added to the end of the tab strip. In that case we can just return one
   // beyond the view index of the last existing tab.
   if (to_model_index >= GetTabCount())
-    return (GetTabCount() ? GetIndexOf(tab_at(GetTabCount() - 1)) + 1 : 0);
+    return (GetTabCount()
+                ? tab_container_->GetIndexOf(tab_at(GetTabCount() - 1)) + 1
+                : 0);
 
   // If there is no from_model_index, then the tab is newly added in the middle
   // of the tab strip. In that case we treat it as coming from the end of the
@@ -2663,7 +2671,7 @@ int TabStrip::GetViewInsertionIndex(Tab* tab,
   // Since we don't have an absolute mapping from model index to view index, we
   // anchor on the last known view index at the given to_model_index.
   Tab* other_tab = tab_at(to_model_index);
-  int other_view_index = GetIndexOf(other_tab);
+  int other_view_index = tab_container_->GetIndexOf(other_tab);
 
   if (other_view_index <= 0)
     return 0;

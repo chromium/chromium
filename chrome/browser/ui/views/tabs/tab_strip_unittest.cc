@@ -224,6 +224,14 @@ class TabStripTestBase : public ChromeViewsTestBase {
     }
   }
 
+  std::vector<views::View*> GetChildViews() {
+    // The first (and only) View child of TabStrip is its TabContainer, which
+    // contains the tabs and group views.
+    // TODO(1116121): Move tests that test view/focus order to test
+    // TabContainer directly, once that functionality has been moved there.
+    return tab_strip_->children()[0]->children();
+  }
+
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
     for (auto const& group_view_pair : tab_strip_->group_views_)
@@ -234,7 +242,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
   // Returns all TabSlotViews in the order that they have as ViewChildren of
   // TabStrip. This should match the actual order that they appear in visually.
   views::View::Views GetTabSlotViewsInFocusOrder() {
-    views::View::Views all_children = tab_strip_->children();
+    views::View::Views all_children = GetChildViews();
 
     const int num_tab_slot_views =
         tab_strip_->GetTabCount() + tab_strip_->group_views_.size();
@@ -376,18 +384,18 @@ TEST_P(TabStripTest, RemoveTab) {
   TestTabStripObserver observer(tab_strip_);
   controller_->AddTab(0, false);
   controller_->AddTab(1, false);
-  const size_t num_children = tab_strip_->children().size();
+  const size_t num_children = GetChildViews().size();
   EXPECT_EQ(2, tab_strip_->GetTabCount());
   controller_->RemoveTab(0);
   EXPECT_EQ(0, observer.last_tab_removed());
   // When removing a tab the tabcount should immediately decrement.
   EXPECT_EQ(1, tab_strip_->GetTabCount());
   // But the number of views should remain the same (it's animatining closed).
-  EXPECT_EQ(num_children, tab_strip_->children().size());
+  EXPECT_EQ(num_children, GetChildViews().size());
 
   CompleteAnimationAndLayout();
 
-  EXPECT_EQ(num_children - 1, tab_strip_->children().size());
+  EXPECT_EQ(num_children - 1, GetChildViews().size());
 
   // Remove the last tab to make sure things are cleaned up correctly when
   // the TabStrip is destroyed and an animation is ongoing.

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_animation_state.h"
+#include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -620,6 +621,9 @@ class TabStrip : public views::View,
   // in |layout_helper_| until the remove animation completes.
   views::ViewModelT<Tab> tabs_;
 
+  // The View parent for the tabs and the various group views.
+  TabContainer* tab_container_;
+
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
 
   std::unique_ptr<TabStripController> controller_;
@@ -629,7 +633,7 @@ class TabStrip : public views::View,
   std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 
   // Responsible for animating tabs in response to model changes.
-  views::BoundsAnimator bounds_animator_{this};
+  views::BoundsAnimator bounds_animator_;
 
   // Responsible for animating the scroll of the tab strip.
   std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;

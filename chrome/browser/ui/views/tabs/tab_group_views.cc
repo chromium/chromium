@@ -20,22 +20,23 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
-TabGroupViews::TabGroupViews(TabStrip* tab_strip,
+TabGroupViews::TabGroupViews(views::View* container_view,
+                             TabStrip* tab_strip,
                              const tab_groups::TabGroupId& group)
-    : tab_strip_(tab_strip), group_(group) {
-  header_ = tab_strip_->AddChildView(
+    : container_view_(container_view), tab_strip_(tab_strip), group_(group) {
+  header_ = container_view_->AddChildView(
       std::make_unique<TabGroupHeader>(tab_strip_, group_));
-  underline_ = tab_strip_->AddChildView(
+  underline_ = container_view_->AddChildView(
       std::make_unique<TabGroupUnderline>(this, group_));
-  highlight_ = tab_strip_->AddChildView(
+  highlight_ = container_view_->AddChildView(
       std::make_unique<TabGroupHighlight>(this, group_));
   highlight_->SetVisible(false);
 }
 
 TabGroupViews::~TabGroupViews() {
-  tab_strip_->RemoveChildViewT(std::exchange(header_, nullptr));
-  tab_strip_->RemoveChildViewT(std::exchange(underline_, nullptr));
-  tab_strip_->RemoveChildViewT(std::exchange(highlight_, nullptr));
+  container_view_->RemoveChildViewT(std::exchange(header_, nullptr));
+  container_view_->RemoveChildViewT(std::exchange(underline_, nullptr));
+  container_view_->RemoveChildViewT(std::exchange(highlight_, nullptr));
 }
 
 void TabGroupViews::UpdateBounds() {

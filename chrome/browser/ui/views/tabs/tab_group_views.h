@@ -9,6 +9,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view.h"
 
 class Tab;
 class TabGroupHeader;
@@ -21,9 +22,11 @@ class TabStrip;
 class TabGroupViews {
  public:
   // Creates the various views representing a tab group and adds them to
-  // |tab_strip| as children.  Assumes these views are not destroyed before
+  // |parent_view| as children.  Assumes these views are not destroyed before
   // |this|.
-  TabGroupViews(TabStrip* tab_strip, const tab_groups::TabGroupId& group);
+  TabGroupViews(views::View* container_view,
+                TabStrip* tab_strip,
+                const tab_groups::TabGroupId& group);
 
   // Destroys the views added during the constructor.
   ~TabGroupViews();
@@ -59,6 +62,7 @@ class TabGroupViews {
   SkColor GetGroupBackgroundColor() const;
 
  private:
+  const raw_ptr<views::View> container_view_;
   const raw_ptr<TabStrip> tab_strip_;
   const tab_groups::TabGroupId group_;
   TabGroupHeader* header_;
