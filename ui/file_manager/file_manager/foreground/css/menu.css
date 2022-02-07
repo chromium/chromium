@@ -135,7 +135,8 @@ html.files-ng.pointer-active cr-menu-item > paper-ripple {
   color: var(--cros-ripple-color);
 }
 
-html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled])[selected] {
+html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled])[selected],
+html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled]):active {
   background-color: var(--cros-menu-item-background-hover);
 }
 
