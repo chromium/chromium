@@ -247,6 +247,17 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   void CopyPasses(const ResolvedFrameData& resolved_frame);
   void AddColorConversionPass();
   void AddDisplayTransformPass();
+  void AddRenderPassHelper(const gfx::Rect& output_rect,
+                           AggregatedRenderPassId render_pass_id,
+                           const gfx::Rect& render_pass_output_rect,
+                           const gfx::Rect& pass_damage_rect,
+                           gfx::ContentColorUsage pass_color_usage,
+                           bool pass_has_transparent_background,
+                           bool pass_is_color_conversion_pass,
+                           const gfx::Transform& quad_state_to_target_transform,
+                           bool quad_state_contents_opaque,
+                           SkBlendMode quad_state_blend_mode,
+                           AggregatedRenderPassId quad_pass_id);
 
   // Remove Surfaces that were referenced before but aren't currently
   // referenced from the ResourceProvider.
