@@ -27,13 +27,15 @@ namespace app_list {
 // TODO(crbug.com/1290682): Complete implementation.
 struct KeyboardShortcutData {
   explicit KeyboardShortcutData(const ash::KeyboardShortcutItem& item);
-  KeyboardShortcutData(const KeyboardShortcutData&) = delete;
-  KeyboardShortcutData& operator=(const KeyboardShortcutData&) = delete;
+  // For testing purposes.
+  explicit KeyboardShortcutData(const std::u16string description);
+  KeyboardShortcutData(const KeyboardShortcutData&) = default;
+  KeyboardShortcutData& operator=(const KeyboardShortcutData&) = default;
 
   ~KeyboardShortcutData();
 
   // The description of the shortcut action e.g. "Dock a window on the right".
-  const std::u16string description_message;
+  std::u16string description;
 };
 
 }  // namespace app_list

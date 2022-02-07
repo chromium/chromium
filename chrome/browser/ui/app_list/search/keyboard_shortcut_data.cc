@@ -9,8 +9,7 @@ namespace app_list {
 // TODO(crbug.com/1290682): Continue implementation.
 KeyboardShortcutData::KeyboardShortcutData(
     const ash::KeyboardShortcutItem& item)
-    : description_message(
-          l10n_util::GetStringUTF16(item.description_message_id)) {}
+    : description(l10n_util::GetStringUTF16(item.description_message_id)) {}
 
 KeyboardShortcutData::~KeyboardShortcutData() = default;
 

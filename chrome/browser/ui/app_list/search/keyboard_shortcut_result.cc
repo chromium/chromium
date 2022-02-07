@@ -18,8 +18,13 @@ using chromeos::string_matching::TokenizedStringMatch;
 // TODO(crbug.com/1290682): Complete implementation.
 KeyboardShortcutResult::KeyboardShortcutResult(const KeyboardShortcutData& data,
                                                double relevance)
-    : description_(data.description_message) {
+    : description_(data.description) {
   set_relevance(relevance);
+  SetTitle(data.description);
+  SetResultType(ResultType::kKeyboardShortcut);
+  SetMetricsType(ash::KEYBOARD_SHORTCUT);
+  SetDisplayType(DisplayType::kList);
+  SetCategory(Category::kHelp);
 }
 
 // TODO(crbug.com/1290682): Implement.

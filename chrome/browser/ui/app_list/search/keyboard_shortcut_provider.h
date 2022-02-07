@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_PROVIDER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_PROVIDER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "chrome/browser/ui/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chromeos/components/string_matching/tokenized_string.h"
 
 class Profile;
 
@@ -24,7 +28,28 @@ class KeyboardShortcutProvider : public SearchProvider {
   ash::AppListSearchResultType ResultType() const override;
 
  private:
+  using ShortcutDataAndScores =
+      std::vector<std::pair<KeyboardShortcutData, double>>;
+
+  // Fetch the list of hardcoded shortcuts, process, and save into
+  // |shortcut_data_|.
+  void ProcessShortcutList();
+
+  ShortcutDataAndScores Search();
+  void OnSearchComplete(ShortcutDataAndScores);
+
   Profile* const profile_;
+
+  // A full collection of keyboard shortcuts, against which a query is compared
+  // during a search.
+  std::vector<KeyboardShortcutData> shortcut_data_;
+
+  std::u16string last_query_;
+  absl::optional<chromeos::string_matching::TokenizedString>
+      last_tokenized_query_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<KeyboardShortcutProvider> weak_factory_{this};
 };
 
 }  // namespace app_list
