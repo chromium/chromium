@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fstream>
 #include <iostream>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/json/json_file_value_serializer.h"
+#include "base/files/file_util.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
+#include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/attribution_reporting.h"
@@ -27,6 +30,7 @@ constexpr char kSwitchDelayMode[] = "delay_mode";
 constexpr char kSwitchInputFile[] = "input_file";
 constexpr char kSwitchNoiseMode[] = "noise_mode";
 constexpr char kSwitchRemoveReportIds[] = "remove_report_ids";
+constexpr char kSwitchInputMode[] = "input_mode";
 
 constexpr const char* kAllowedSwitches[] = {
     kSwitchHelp,      kSwitchHelpShort,
@@ -34,6 +38,7 @@ constexpr const char* kAllowedSwitches[] = {
 
     kSwitchInputFile, kSwitchDelayMode,
     kSwitchNoiseMode, kSwitchRemoveReportIds,
+    kSwitchInputMode,
 };
 
 constexpr const char* kRequiredSwitches[] = {
@@ -44,12 +49,13 @@ constexpr char kHelpMsg[] = R"(
 attribution_reporting_simulator --input_file=<input_file>
   [--delay_mode=<mode>]
   [--noise_mode=<mode>]
+  [--input_mode=<input_mode>]
   [--remove_report_ids]
 
 attribution_reporting_simulator is a command-line tool that simulates the
-Attribution Reporting API for a single user on sources and triggers specified
-in an input file. It writes the generated reports, if any, to stdout, with
-associated metadata.
+Attribution Reporting API for for sources and triggers specified in an input
+file. It writes the generated reports, if any, to stdout, with associated
+metadata.
 
 Sources and triggers are registered in chronological order according to their
 `source_time` and `trigger_time` fields, respectively.
@@ -61,7 +67,7 @@ Learn about the meaning of the input and output fields at
 https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md.
 
 Switches:
-  --input_file=<input_file> - Required path to a JSON file containing sources
+  --input_file=<input_file> - Required path to an input file containing sources
                               and triggers to register in the simulation.
                               Input format described below.
 
@@ -83,6 +89,17 @@ Switches:
 
                               none: None of the above applies.
 
+  --input_mode=<input_mode> - Optional. Either `single` (default) or `multi`.
+                              single: the input file must conform to the JSON
+                              input format below. Output will conform to the
+                              JSON output below.
+                              multi: Each line in the input file must
+                              conform to the input format below. Each output
+                              line will conform to the JSON output format.
+                              Input lines are processed independently,
+                              simulating multiple users.
+                              See https://jsonlines.org/.
+
   --remove_report_ids       - Optional. If present, removes the `report_id`
                               field from report bodies, as they are randomly
                               generated. Use this switch to make the tool's
@@ -90,7 +107,7 @@ Switches:
 
   --version                 - Outputs the tool version and exits.
 
-Input format:
+Input JSON format:
 
 {
   // List of zero or more sources to register.
@@ -165,7 +182,7 @@ Input format:
   ]
 }
 
-Output format:
+Output JSON format:
 
 {
   // List of zero or more reports.
@@ -189,8 +206,32 @@ Output format:
 }
 )";
 
+enum class InputMode { kSingle, kMulti };
+
 void PrintHelp() {
   std::cerr << kHelpMsg;
+}
+
+int ProcessJsonString(const std::string& json_input,
+                      const content::AttributionSimulationOptions& options,
+                      int json_write_options) {
+  std::string error_msg;
+  std::unique_ptr<base::Value> input =
+      JSONStringValueDeserializer(json_input).Deserialize(nullptr, &error_msg);
+  if (!input) {
+    std::cerr << "failed to deserialize input: " << error_msg << std::endl;
+    return 1;
+  }
+  base::Value output = content::RunAttributionSimulationOrExit(*input, options);
+  std::string output_json;
+  bool success = base::JSONWriter::WriteWithOptions(output, json_write_options,
+                                                    &output_json);
+  if (!success) {
+    std::cerr << "failed to serialize output JSON" << std::endl;
+    return 1;
+  }
+  std::cout << output_json;
+  return 0;
 }
 
 }  // namespace
@@ -261,32 +302,56 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  std::string error_msg;
-  std::unique_ptr<base::Value> input =
-      JSONFileValueDeserializer(
-          command_line.GetSwitchValuePath(kSwitchInputFile))
-          .Deserialize(nullptr, &error_msg);
-  if (!input) {
-    std::cerr << "failed to read input file: " << error_msg << std::endl;
-    return 1;
+  auto input_mode = InputMode::kSingle;
+  if (command_line.HasSwitch(kSwitchInputMode)) {
+    std::string input_mode_string =
+        command_line.GetSwitchValueASCII(kSwitchInputMode);
+    if (input_mode_string == "multi") {
+      input_mode = InputMode::kMulti;
+    } else if (input_mode_string != "single") {
+      std::cerr << "bad input_mode encountered: `" << input_mode_string << "`"
+                << std::endl;
+      PrintHelp();
+      return 1;
+    }
   }
 
-  base::Value output = content::RunAttributionSimulationOrExit(
-      *input,
-      content::AttributionSimulationOptions{
-          .noise_mode = noise_mode,
-          .delay_mode = delay_mode,
-          .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),
-      });
+  content::AttributionSimulationOptions options({
+      .noise_mode = noise_mode,
+      .delay_mode = delay_mode,
+      .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),
+  });
 
-  std::string output_json;
-  bool success = base::JSONWriter::WriteWithOptions(
-      output, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output_json);
-  if (!success) {
-    std::cerr << "failed to serialize output JSON";
-    return 1;
+  // Required for using mock time in the simulator. Must be initialized exactly
+  // once.
+  TestTimeouts::Initialize();
+
+  switch (input_mode) {
+    case InputMode::kSingle: {
+      std::string input_string;
+      bool success = base::ReadFileToString(
+          command_line.GetSwitchValuePath(kSwitchInputFile), &input_string);
+      if (!success) {
+        std::cerr << "failed to read input file." << std::endl;
+        return 1;
+      }
+      return ProcessJsonString(input_string, options,
+                               base::JSONWriter::OPTIONS_PRETTY_PRINT);
+    }
+    case InputMode::kMulti: {
+      // TODO(csharrison): use base::File if a ReadLine helper ever exists.
+      std::string line;
+      std::ifstream input(command_line.GetSwitchValueASCII(kSwitchInputFile));
+      if (!input.good()) {
+        std::cerr << "failed to read input file." << std::endl;
+        return 1;
+      }
+      int ret = 0;
+      while (std::getline(input, line) && ret == 0) {
+        ret = ProcessJsonString(line, options, 0);
+        std::cout << std::endl;
+      }
+      return ret;
+    }
   }
-
-  std::cout << output_json;
-  return 0;
 }

@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -125,7 +124,6 @@ base::Value RunAttributionSimulationOrExit(
     const base::Value& input,
     const AttributionSimulationOptions& options) {
   // Prerequisites for using an environment with mock time.
-  TestTimeouts::Initialize();
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
