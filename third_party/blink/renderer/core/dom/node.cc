@@ -772,8 +772,7 @@ static bool IsNodeInNodes(
 
 static Node* FindViablePreviousSibling(
     const Node& node,
-    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes
-) {
+    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes) {
   for (Node* sibling = node.previousSibling(); sibling;
        sibling = sibling->previousSibling()) {
     if (!IsNodeInNodes(sibling, nodes))
@@ -784,8 +783,7 @@ static Node* FindViablePreviousSibling(
 
 static Node* FindViableNextSibling(
     const Node& node,
-    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes
-) {
+    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes) {
   for (Node* sibling = node.nextSibling(); sibling;
        sibling = sibling->nextSibling()) {
     if (!IsNodeInNodes(sibling, nodes))
@@ -1365,11 +1363,10 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
   if (change_type > existing_change_type)
     SetStyleChange(change_type);
 
-  auto* this_element = DynamicTo<Element>(this);
   if (existing_change_type == kNoStyleChange)
     MarkAncestorsWithChildNeedsStyleRecalc();
 
-  if (this_element && HasRareData())
+  if (auto* this_element = DynamicTo<Element>(this))
     this_element->SetAnimationStyleChange(false);
 
   if (auto* svg_element = DynamicTo<SVGElement>(this))
