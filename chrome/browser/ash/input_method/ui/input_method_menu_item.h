@@ -22,9 +22,6 @@ struct UI_CHROMEOS_EXPORT InputMethodMenuItem {
   InputMethodMenuItem();
   ~InputMethodMenuItem();
 
-  bool operator==(const InputMethodMenuItem& other) const;
-  bool operator!=(const InputMethodMenuItem& other) const;
-
   // Debug print function.
   std::string ToString() const;
 

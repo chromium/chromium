@@ -27,16 +27,6 @@ InputMethodMenuItem::InputMethodMenuItem()
 
 InputMethodMenuItem::~InputMethodMenuItem() {}
 
-bool InputMethodMenuItem::operator==(const InputMethodMenuItem& other) const {
-  return key == other.key && label == other.label &&
-         is_selection_item == other.is_selection_item &&
-         is_selection_item_checked == other.is_selection_item_checked;
-}
-
-bool InputMethodMenuItem::operator!=(const InputMethodMenuItem& other) const {
-  return !(*this == other);
-}
-
 std::string InputMethodMenuItem::ToString() const {
   std::stringstream stream;
   stream << "key=" << key << ", label=" << label
