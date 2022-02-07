@@ -36,6 +36,8 @@
 #
 # The following parameters only affect non-preflight responses:
 #
+# - redirect: If set, the response code is set to 301 and the `Location`
+#   response header is set to this value.
 # - mime-type: If set, the `Content-Type` response header is set to this value.
 # - file: Specifies a path (relative to this file's directory) to a file. If
 #   set, the response body is copied from this file.
@@ -122,6 +124,11 @@ def _handle_final_request(request, response):
 
     mode = request.GET.get(b"final-headers")
     headers = _get_response_headers(request.method, mode)
+
+  redirect = request.GET.get(b"redirect")
+  if redirect is not None:
+    headers.append(("Location", redirect))
+    return (301, headers, b"")
 
   mime_type = request.GET.get(b"mime-type")
   if mime_type is not None:
