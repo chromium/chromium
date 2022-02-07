@@ -91,7 +91,7 @@ TEST_F(ConfigurationPolicyPrefStoreStringTest, SetValue) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(base::Value("http://chromium.org").Equals(value));
+  EXPECT_EQ(base::Value("http://chromium.org"), *value);
 }
 
 // Test cases for boolean-valued policy settings.
@@ -149,7 +149,7 @@ TEST_F(ConfigurationPolicyPrefStoreIntegerTest, SetValue) {
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
-  EXPECT_TRUE(base::Value(2).Equals(value));
+  EXPECT_EQ(base::Value(2), *value);
 }
 
 // Exercises the policy refresh mechanism.
@@ -183,7 +183,7 @@ TEST_F(ConfigurationPolicyPrefStoreRefreshTest, Refresh) {
   UpdateProviderPolicy(policy);
   observer_.VerifyAndResetChangedKey(kTestPref);
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
-  EXPECT_TRUE(base::Value("http://www.chromium.org").Equals(value));
+  EXPECT_EQ(base::Value("http://www.chromium.org"), *value);
 
   UpdateProviderPolicy(policy);
   EXPECT_TRUE(observer_.changed_keys.empty());

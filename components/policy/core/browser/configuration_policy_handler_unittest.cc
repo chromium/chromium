@@ -849,7 +849,7 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
   prefs.Clear();
   handler_all.ApplyPolicySettings(policy_map_mandatory, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 
   EXPECT_FALSE(
       handler_recommended.CheckPolicySettings(policy_map_mandatory, &errors));
@@ -862,7 +862,7 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
   prefs.Clear();
   handler_mandatory.ApplyPolicySettings(policy_map_mandatory, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 
   EXPECT_FALSE(handler_none.CheckPolicySettings(policy_map_mandatory, &errors));
   EXPECT_FALSE(errors.empty());
@@ -873,7 +873,7 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
   prefs.Clear();
   handler_all.ApplyPolicySettings(policy_map_mandatory, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 
   EXPECT_FALSE(
       handler_mandatory.CheckPolicySettings(policy_map_recommended, &errors));
@@ -886,7 +886,7 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
   prefs.Clear();
   handler_recommended.ApplyPolicySettings(policy_map_mandatory, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 
   EXPECT_FALSE(
       handler_none.CheckPolicySettings(policy_map_recommended, &errors));
@@ -919,7 +919,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, ValidEmbeddedJson) {
   EXPECT_TRUE(errors.empty());
   handler->ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 }
 
 TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, InvalidEmbeddedJson) {
@@ -948,7 +948,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, InvalidEmbeddedJson) {
   EXPECT_FALSE(errors.empty());
   handler->ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 }
 
 TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, UnparsableJson) {
@@ -977,7 +977,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, UnparsableJson) {
   EXPECT_FALSE(errors.empty());
   handler->ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 }
 
 TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, WrongType) {
@@ -1006,7 +1006,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, WrongType) {
   EXPECT_FALSE(errors.empty());
   handler->ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value_set_in_pref));
-  EXPECT_TRUE(value_expected_in_pref->Equals(value_set_in_pref));
+  EXPECT_EQ(*value_expected_in_pref, *value_set_in_pref);
 }
 
 TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, WrongRootType) {
