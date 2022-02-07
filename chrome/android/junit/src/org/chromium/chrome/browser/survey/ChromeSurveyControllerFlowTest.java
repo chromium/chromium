@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.survey;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -211,6 +213,7 @@ public class ChromeSurveyControllerFlowTest {
     @After
     public void tearDown() {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+        ChromeSurveyController.resetMessageShownForTesting();
         ShadowChromeFeatureList.sParamValues.clear();
         ShadowChromeFeatureList.sEnableSurvey = false;
         ShadowChromeFeatureList.sEnableMessages = false;
@@ -605,6 +608,17 @@ public class ChromeSurveyControllerFlowTest {
         Assert.assertFalse(
                 "The enqueued message should not be shown if the survey has expired.", shouldShow);
         verify(mMessageDispatcher).dismissMessage(messageModel, DismissReason.DISMISSED_BY_FEATURE);
+    }
+
+    @Test
+    public void testMessages_MessageShownOnce() {
+        presentMessages();
+        Assert.assertTrue("Message should be shown.", ChromeSurveyController.isMessageShown());
+        verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
+
+        // Simulate survey download that triggers invocation of #showSurveyPrompt.
+        mTestSurveyController.onDownloadSuccessRunnable.run();
+        verifyNoMoreInteractions(mMessageDispatcher);
     }
 
     @Test

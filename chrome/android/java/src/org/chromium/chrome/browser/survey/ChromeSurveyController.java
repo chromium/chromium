@@ -80,6 +80,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     @VisibleForTesting
     static final String SITE_ID_PARAM_NAME = "site-id";
     private static boolean sForceUmaEnabledForTesting;
+    private static boolean sMessageShown;
 
     /**
      * Reasons that the user was rejected from being selected for a survey
@@ -239,6 +240,18 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
                 && mMessageDispatcher != null) {
+            // Return early if the message is already shown once.
+            if (sMessageShown) {
+                String logMessage = String.format(
+                        "The survey prompt for survey with ID %s has already been shown.", siteId);
+                Log.w(TAG, logMessage);
+                PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                        ()
+                                -> ChromePureJavaExceptionReporter.reportJavaException(
+                                        new Throwable(logMessage)));
+                return;
+            }
+
             // Return early without displaying the message prompt if the survey has expired.
             if (SurveyController.getInstance().isSurveyExpired(siteId)) {
                 String logMessage =
@@ -328,6 +341,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
 
             mMessageDispatcher.enqueueMessage(
                     message, mSurveyPromptTab.getWebContents(), MessageScopeType.NAVIGATION, false);
+            sMessageShown = true;
         } else {
             InfoBarContainer.get(tab).addAnimationListener(this);
 
@@ -715,5 +729,17 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     @VisibleForTesting
     public static Long getRequiredVisibilityDurationMs() {
         return REQUIRED_VISIBILITY_DURATION_MS;
+    }
+
+    /** @return Whether the message has been previously shown to the client. */
+    @VisibleForTesting
+    public static boolean isMessageShown() {
+        return sMessageShown;
+    }
+
+    // Reset sMessageShown for testing.
+    @VisibleForTesting
+    public static void resetMessageShownForTesting() {
+        sMessageShown = false;
     }
 }

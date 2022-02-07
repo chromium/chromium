@@ -123,6 +123,7 @@ public class ChromeSurveyControllerIntegrationTest {
         SurveyController.setInstanceForTesting(null);
         mSharedPreferenceManager.removeKey(mPrefKey);
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+        ChromeSurveyController.resetMessageShownForTesting();
     }
 
     @Test
