@@ -3008,8 +3008,8 @@
   },
   {
     "name": "enable-webrtc-pipewire-capturer",
-    "owners": [ "tomas.popela@gmail.com" ],
-    "expiry_milestone": 100
+    "owners": [ "tomas.popela@gmail.com", "grulja@gmail.com", "mfoltz@google.com", "alcooper@chromium.org" ],
+    "expiry_milestone": 110
   },
   {
     "name": "enable-webrtc-remote-event-log",
