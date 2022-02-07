@@ -79,7 +79,7 @@ void ColorChooserUIController::DidChooseColor(uint32_t color) {
   client_->DidChooseColor(color);
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 void ColorChooserUIController::OpenColorChooser() {
   DCHECK(!chooser_);
   frame_->GetBrowserInterfaceBroker().GetInterface(
@@ -93,6 +93,6 @@ void ColorChooserUIController::OpenColorChooser() {
   receiver_.set_disconnect_handler(WTF::Bind(
       &ColorChooserUIController::EndChooser, WrapWeakPersistent(this)));
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 
 }  // namespace blink

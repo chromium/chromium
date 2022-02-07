@@ -281,8 +281,12 @@ void ColorChooserPopupUIController::OpenEyeDropper() {
 }
 
 void ColorChooserPopupUIController::OpenSystemColorChooser() {
-  // TODO(crbug.com/1230817): Implement the other half of this flow.
-  LOG(INFO) << "OpenSystemColorChooser() Called";
+#if BUILDFLAG(IS_MAC)
+  OpenColorChooser();
+#else
+  NOTREACHED() << "ColorChooserPopupUIController -> ColorChooserUIController "
+                  "should only be used on macOS";
+#endif
 }
 
 void ColorChooserPopupUIController::AdjustSettings(Settings& popup_settings) {

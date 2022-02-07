@@ -311,6 +311,9 @@ mojom("mojom_platform") {
   if (use_ozone) {
     enabled_features += [ "is_selection_clipboard_buffer_possible" ]
   }
+  if (is_android || is_mac) {
+    enabled_features += [ "is_using_open_color_chooser" ]
+  }
 
   shared_cpp_typemaps = [
     {
