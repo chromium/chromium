@@ -4432,6 +4432,7 @@ static_library("browser") {
       "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/share/core:share_targets",
       "//chrome/browser/share/proto:proto",
+      "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",

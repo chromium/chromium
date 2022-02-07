@@ -1,0 +1,33 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package support_tool;
+
+// DataCollectorType represent each DataCollector that can be added to
+// SupportToolHandler to collect data.
+enum DataCollectorType {
+  DATA_COLLECTOR_TYPE_UNSPECIFIED = 0;
+  CHROME_INTERNAL = 1;
+  CRASH_IDS = 2;
+  MEMORY_DETAILS = 3;
+  CHROMEOS_UI_HIERARCHY = 4;
+  CHROMEOS_COMMAND_LINE = 5;
+  CHROMEOS_DEVICE_EVENT = 6;
+  CHROMEOS_IWL_WIFI_DUMP = 7;
+  CHROMEOS_TOUCH_EVENTS = 8;
+  CHROMEOS_CROS_API = 9;
+  CHROMEOS_LACROS = 10;
+  CHROMEOS_REVEN = 11;
+}
+
+// Used for storing the information about which data colllectors will be used
+// when Support Tool creates the support packet.
+message DataCollectionModule {
+  // List of DataCollectors that will be used when Support Tool collects data.
+  repeated DataCollectorType included_data_collectors = 1;
+}
