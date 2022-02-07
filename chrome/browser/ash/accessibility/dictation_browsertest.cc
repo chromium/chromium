@@ -1024,7 +1024,22 @@ class DictationCommandsExtensionTest : public DictationExtensionTest {
     waiter.Wait();
   }
 
+  void WaitForHelpUrlVisible() {
+    SuccessWaiter waiter(
+        base::BindRepeating(&DictationCommandsExtensionTest::IsHelpUrlVisible,
+                            base::Unretained(this)));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
  private:
+  bool IsHelpUrlVisible() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return web_contents->GetVisibleURL().spec().rfind(
+               "https://support.google.com/chromebook", /*pos=*/0) != 0;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1163,6 +1178,13 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
                                        /*expected_bucket_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, Help) {
+  SendFinalFakeSpeechResultAndWait("help");
+  WaitForHelpUrlVisible();
+  // Opening a new tab with the help center article toggles Dictation off.
+  WaitForRecognitionStopped();
+}
+
 // Tests the behavior of the Dictation bubble UI.
 class DictationUITest : public DictationCommandsExtensionTest {
  protected:
@@ -1295,23 +1317,6 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
   WaitForVisibleHints(std::vector<std::u16string>{
       u"Try saying:", u"\"Type [word / phrase]\"", u"\"Help\""});
-}
-
-// TODO(1266696): DictationCommandsExtensionTest.Help is failing on
-// linux-chromeos-debug.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Help DISABLED_Help
-#else
-#define MAYBE_Help Help
-#endif
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MAYBE_Help) {
-  SendFinalFakeSpeechResultAndWait("HELP");
-  // Opening a new tab with the help center article toggles Dictation off.
-  WaitForRecognitionStopped();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(web_contents->GetVisibleURL().spec().rfind(
-                  "https://support.google.com/chromebook", /*pos=*/0) != 0);
 }
 
 // TODO(crbug.com/1264544): Test looking at gn args has pumpkin and does
