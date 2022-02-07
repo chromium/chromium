@@ -135,9 +135,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   bool HasInsertionPoint() final;
   void PrepareToStopParsing() final;
   void StopParsing() final;
-  bool IsPaused() const {
-    return IsWaitingForScripts() || is_waiting_for_stylesheets_;
-  }
+  bool IsPaused() const;
   bool IsWaitingForScripts() const final;
   bool IsExecutingScript() const final;
   void ExecuteScriptsWaitingForResources() final;
@@ -175,7 +173,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void end();
 
   bool IsParsingFragment() const;
-  bool InPumpSession() const { return pump_session_nesting_level_ > 0; }
   // ShouldDelayEnd assesses whether any resources, scripts or nested pumps are
   // delaying the end of parsing.
   bool ShouldDelayEnd() const;
@@ -218,10 +215,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   std::unique_ptr<base::ElapsedTimer> yield_timer_;
 
   ThreadScheduler* scheduler_;
-  unsigned pump_session_nesting_level_;
-  bool end_was_delayed_;
-  bool added_pending_parser_blocking_stylesheet_;
-  bool is_waiting_for_stylesheets_;
 };
 
 }  // namespace blink

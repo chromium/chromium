@@ -120,13 +120,7 @@ class HTMLDocumentParserState
   explicit HTMLDocumentParserState(ParserSynchronizationPolicy mode)
       : state_(DeferredParserState::kNotScheduled),
         meta_csp_state_(MetaCSPTokenState::kNotSeen),
-        mode_(mode),
-        end_if_delayed_forbidden_(0),
-        should_complete_(0),
-        should_attempt_to_end_on_eof_(0),
-        times_yielded_(0),
-        needs_link_header_dispatch_(true),
-        have_seen_first_byte_(false) {}
+        mode_(mode) {}
 
   void Trace(Visitor* v) const {}
 
@@ -153,20 +147,33 @@ class HTMLDocumentParserState
   }
   void DispatchedLinkHeaderPreloads() { needs_link_header_dispatch_ = false; }
 
-  bool HaveSeenFirstByte() const { return have_seen_first_byte_; }
-  void SetHaveSeenFirstByte() { have_seen_first_byte_ = true; }
+  bool SeenFirstByte() const { return have_seen_first_byte_; }
+  void MarkSeenFirstByte() { have_seen_first_byte_ = true; }
+
+  bool EndWasDelayed() const { return end_was_delayed_; }
+  void SetEndWasDelayed(bool new_value) { end_was_delayed_ = new_value; }
+
+  bool AddedPendingParserBlockingStylesheet() const {
+    return added_pending_parser_blocking_stylesheet_;
+  }
+  void SetAddedPendingParserBlockingStylesheet(bool new_value) {
+    added_pending_parser_blocking_stylesheet_ = new_value;
+  }
+
+  bool WaitingForStylesheets() const { return is_waiting_for_stylesheets_; }
+  void SetWaitingForStylesheets(bool new_value) {
+    is_waiting_for_stylesheets_ = new_value;
+  }
 
   // Keeps track of whether Document::Finish has been called whilst parsing.
   // ShouldAttemptToEndOnEOF() means that the parser should close when there's
   // no more input.
-  bool ShouldAttemptToEndOnEOF() const {
-    return should_attempt_to_end_on_eof_ > 0;
-  }
+  bool ShouldAttemptToEndOnEOF() const { return should_attempt_to_end_on_eof_; }
   void SetAttemptToEndOnEOF() {
-    // This method should only be called from ::Finish.
-    should_attempt_to_end_on_eof_++;
     // Should only ever call ::Finish once.
-    DCHECK(should_attempt_to_end_on_eof_ < 2);
+    DCHECK(!should_attempt_to_end_on_eof_);
+    // This method should only be called from ::Finish.
+    should_attempt_to_end_on_eof_ = true;
   }
 
   bool ShouldEndIfDelayed() const { return end_if_delayed_forbidden_ == 0; }
@@ -180,6 +187,12 @@ class HTMLDocumentParserState
 
   void MarkYield() { times_yielded_++; }
   int TimesYielded() const { return times_yielded_; }
+
+  NestingLevelIncrementer ScopedPumpSession() {
+    return NestingLevelIncrementer(pump_session_nesting_level_);
+  }
+  bool InPumpSession() const { return pump_session_nesting_level_; }
+  bool InNestedPumpSession() const { return pump_session_nesting_level_ > 1; }
 
   void SetSeenCSPMetaTag(const bool seen) {
     if (meta_csp_state_ == MetaCSPTokenState::kUnenforceable)
@@ -200,32 +213,37 @@ class HTMLDocumentParserState
  private:
   void EnterEndIfDelayedForbidden() { end_if_delayed_forbidden_++; }
   void ExitEndIfDelayedForbidden() {
+    DCHECK(end_if_delayed_forbidden_);
     end_if_delayed_forbidden_--;
-    DCHECK_GE(end_if_delayed_forbidden_, 0);
   }
 
   void EnterAttemptToEndForbidden() {
-    DCHECK(should_attempt_to_end_on_eof_ > 0);
-    should_attempt_to_end_on_eof_ = 0;
+    DCHECK(should_attempt_to_end_on_eof_);
+    should_attempt_to_end_on_eof_ = false;
   }
 
   void EnterShouldComplete() { should_complete_++; }
   void ExitShouldComplete() {
+    DCHECK(should_complete_);
     should_complete_--;
-    DCHECK_GE(should_complete_, 0);
   }
 
   DeferredParserState state_;
   MetaCSPTokenState meta_csp_state_;
   ParserSynchronizationPolicy mode_;
-  int end_if_delayed_forbidden_;
-  int should_complete_;
+  unsigned end_if_delayed_forbidden_ = 0;
+  unsigned should_complete_ = 0;
+  unsigned times_yielded_ = 0;
+  unsigned pump_session_nesting_level_ = 0;
+
   // Set to non-zero if Document::Finish has been called and we're operating
   // asynchronously.
-  int should_attempt_to_end_on_eof_;
-  int times_yielded_;
-  bool needs_link_header_dispatch_;
-  bool have_seen_first_byte_;
+  bool should_attempt_to_end_on_eof_ = false;
+  bool needs_link_header_dispatch_ = true;
+  bool have_seen_first_byte_ = false;
+  bool end_was_delayed_ = false;
+  bool added_pending_parser_blocking_stylesheet_ = false;
+  bool is_waiting_for_stylesheets_ = false;
 };
 
 class EndIfDelayedForbiddenScope {
@@ -384,11 +402,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
           MakeGarbageCollected<HTMLDocumentParserState>(sync_policy)),
       scheduler_(sync_policy == kAllowDeferredParsing
                      ? Thread::Current()->Scheduler()
-                     : nullptr),
-      pump_session_nesting_level_(0),
-      end_was_delayed_(false),
-      added_pending_parser_blocking_stylesheet_(false),
-      is_waiting_for_stylesheets_(false) {
+                     : nullptr) {
   // Report metrics for async document parsing or forced synchronous parsing.
   // The document must be main frame to meet UKM requirements, and must have a
   // high resolution clock for high quality data.
@@ -495,6 +509,10 @@ void HTMLDocumentParser::PrepareToStopParsing() {
     return;
 
   AttemptToRunDeferredScriptsAndEnd();
+}
+
+bool HTMLDocumentParser::IsPaused() const {
+  return IsWaitingForScripts() || task_runner_state_->WaitingForStylesheets();
 }
 
 bool HTMLDocumentParser::IsParsingFragment() const {
@@ -614,13 +632,13 @@ bool HTMLDocumentParser::PumpTokenizer() {
   DCHECK(tokenizer_);
   DCHECK(token_);
 
-  NestingLevelIncrementer session(pump_session_nesting_level_);
+  NestingLevelIncrementer session = task_runner_state_->ScopedPumpSession();
 
   // If we're in kForceSynchronousParsing, always run until all available input
   // is consumed.
   bool should_run_until_completion = task_runner_state_->ShouldComplete() ||
                                      task_runner_state_->IsSynchronous() ||
-                                     pump_session_nesting_level_ > 1;
+                                     task_runner_state_->InNestedPumpSession();
   TRACE_EVENT2("blink", "HTMLDocumentParser::PumpTokenizer", "should_complete",
                should_run_until_completion, "parser", (void*)this);
 
@@ -716,7 +734,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
 void HTMLDocumentParser::SchedulePumpTokenizer() {
   TRACE_EVENT0("blink", "HTMLDocumentParser::SchedulePumpTokenizer");
   DCHECK(!IsStopped());
-  DCHECK(!InPumpSession());
+  DCHECK(!task_runner_state_->InPumpSession());
   DCHECK(!task_runner_state_->ShouldComplete());
   if (task_runner_state_->IsScheduled()) {
     // If the parser is already scheduled, there's no need to do anything.
@@ -734,7 +752,7 @@ void HTMLDocumentParser::SchedulePumpTokenizer() {
 void HTMLDocumentParser::ScheduleEndIfDelayed() {
   TRACE_EVENT0("blink", "HTMLDocumentParser::ScheduleEndIfDelayed");
   DCHECK(!IsStopped());
-  DCHECK(!InPumpSession());
+  DCHECK(!task_runner_state_->InPumpSession());
   DCHECK(!task_runner_state_->ShouldComplete());
 
   // Schedule a pump callback if needed.
@@ -863,7 +881,7 @@ void HTMLDocumentParser::Append(const String& input_source) {
   if (preload_scanner_ && preloader_) {
     preload_scanner_->AppendToEnd(source);
     if (task_runner_state_->GetMode() == kAllowDeferredParsing &&
-        (IsPaused() || !task_runner_state_->HaveSeenFirstByte())) {
+        (IsPaused() || !task_runner_state_->SeenFirstByte())) {
       // Should scan and preload if the parser's paused waiting for a resource,
       // or if we're starting a document for the first time (we want to at least
       // prefetch anything that's in the <head> section).
@@ -872,13 +890,13 @@ void HTMLDocumentParser::Append(const String& input_source) {
   }
 
   input_.AppendToEnd(source);
-  task_runner_state_->SetHaveSeenFirstByte();
+  task_runner_state_->MarkSeenFirstByte();
 
   // Add input_source.length() to "file size" metric.
   if (metrics_reporter_)
     metrics_reporter_->AddInput(input_source.length());
 
-  if (InPumpSession()) {
+  if (task_runner_state_->InPumpSession()) {
     // We've gotten data off the network in a nested write. We don't want to
     // consume any more of the input stream now.  Do not worry.  We'll consume
     // this data in a less-nested write().
@@ -911,7 +929,7 @@ void HTMLDocumentParser::CommitPreloadedData() {
     return;
 
   SetIsPreloading(false);
-  if (task_runner_state_->HaveSeenFirstByte() && !IsStopped())
+  if (task_runner_state_->SeenFirstByte() && !IsStopped())
     FinishAppend();
 }
 
@@ -937,8 +955,8 @@ void HTMLDocumentParser::AttemptToRunDeferredScriptsAndEnd() {
 }
 
 bool HTMLDocumentParser::ShouldDelayEnd() const {
-  return InPumpSession() || IsPaused() || IsExecutingScript() ||
-         task_runner_state_->IsScheduled();
+  return task_runner_state_->InPumpSession() || IsPaused() ||
+         IsExecutingScript() || task_runner_state_->IsScheduled();
 }
 
 void HTMLDocumentParser::AttemptToEnd() {
@@ -952,7 +970,7 @@ void HTMLDocumentParser::AttemptToEnd() {
   // If there are pending scripts, future control flow should pass to
   // EndIfDelayed.
   if (ShouldDelayEnd()) {
-    end_was_delayed_ = true;
+    task_runner_state_->SetEndWasDelayed(true);
     return;
   }
   PrepareToStopParsing();
@@ -967,10 +985,10 @@ void HTMLDocumentParser::EndIfDelayed() {
   if (IsDetached())
     return;
 
-  if (!end_was_delayed_ || ShouldDelayEnd())
+  if (!task_runner_state_->EndWasDelayed() || ShouldDelayEnd())
     return;
 
-  end_was_delayed_ = false;
+  task_runner_state_->SetEndWasDelayed(false);
   PrepareToStopParsing();
 }
 
@@ -1059,7 +1077,8 @@ void HTMLDocumentParser::ResumeParsingAfterPause() {
 
   insertion_preload_scanner_.reset();
   if (task_runner_state_->GetMode() == kAllowDeferredParsing &&
-      !task_runner_state_->ShouldComplete() && !InPumpSession()) {
+      !task_runner_state_->ShouldComplete() &&
+      !task_runner_state_->InPumpSession()) {
     SchedulePumpTokenizer();
   } else {
     ShouldCompleteScope should_complete(task_runner_state_);
@@ -1109,8 +1128,8 @@ void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
 
   DCHECK(GetDocument()->IsScriptExecutionReady());
 
-  if (is_waiting_for_stylesheets_)
-    is_waiting_for_stylesheets_ = false;
+  if (task_runner_state_->WaitingForStylesheets())
+    task_runner_state_->SetWaitingForStylesheets(false);
 
   // Document only calls this when the Document owns the DocumentParser so this
   // will not be called in the DocumentFragment case.
@@ -1127,7 +1146,7 @@ void HTMLDocumentParser::DidAddPendingParserBlockingStylesheet() {
   // token so don't actually set the bit to block parsing here, just track
   // the state of the added sheet in case it does persist beyond a single
   // token.
-  added_pending_parser_blocking_stylesheet_ = true;
+  task_runner_state_->SetAddedPendingParserBlockingStylesheet(true);
 }
 
 void HTMLDocumentParser::DidLoadAllPendingParserBlockingStylesheets() {
@@ -1135,13 +1154,13 @@ void HTMLDocumentParser::DidLoadAllPendingParserBlockingStylesheets() {
   // The document will also call into executeScriptsWaitingForResources
   // which is when the parser will re-start, otherwise it will attempt to
   // resume twice which could cause state machine issues.
-  added_pending_parser_blocking_stylesheet_ = false;
+  task_runner_state_->SetAddedPendingParserBlockingStylesheet(false);
 }
 
 void HTMLDocumentParser::CheckIfBlockingStylesheetAdded() {
-  if (added_pending_parser_blocking_stylesheet_) {
-    added_pending_parser_blocking_stylesheet_ = false;
-    is_waiting_for_stylesheets_ = true;
+  if (task_runner_state_->AddedPendingParserBlockingStylesheet()) {
+    task_runner_state_->SetAddedPendingParserBlockingStylesheet(false);
+    task_runner_state_->SetWaitingForStylesheets(true);
   }
 }
 
@@ -1277,7 +1296,7 @@ void HTMLDocumentParser::FetchQueuedPreloads() {
 std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
   bool is_main_frame = GetDocument() && GetDocument()->GetFrame() &&
                        GetDocument()->GetFrame()->IsMainFrame();
-  bool have_seen_first_byte = task_runner_state_->HaveSeenFirstByte();
+  bool have_seen_first_byte = task_runner_state_->SeenFirstByte();
   return base::StrCat({is_main_frame ? ".MainFrame" : ".Subframe",
                        have_seen_first_byte ? ".NonInitial" : ".Initial"});
 }
