@@ -271,7 +271,7 @@ export class EmojiPicker extends PolymerElement {
       if (this.v2Enabled) {
         this.addEventListener(
             CATEGORY_BUTTON_CLICK,
-            ev => this.set('category', ev.detail.categoryName));
+            ev => this.onCategoryButtonClick(ev.detail.categoryName));
         this.addEventListener(EMOJI_REMAINING_DATA_LOADED, () => {
           this.fetchOrderingData(EMOTICON_ORDERING_JSON).then((data) => {
             this.emoticonData = data;
@@ -414,8 +414,10 @@ export class EmojiPicker extends PolymerElement {
     if (this.scrollTimeout) {
       clearTimeout(this.scrollTimeout);
     }
-    this.scrollTimeout = setTimeout(
-        () => this.updateActiveGroup(/*updateTabsScroll=*/ true), 100);
+    this.scrollTimeout = setTimeout(() => {
+      this.updateActiveCategory();
+      this.updateActiveGroup(/*updateTabsScroll=*/ true);
+    }, 100);
   }
 
   onRightChevronClick() {
@@ -520,14 +522,9 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
-   *
-   * @param {boolean} updateTabsScroll
+   * @returns {string} the id of the emoji or emoticon group currently in view.
    */
-  updateActiveGroup(updateTabsScroll) {
-    // no need to update scroll state if search is showing.
-    if (this.search)
-      return;
-
+  getActiveGroupIdFromScrollPosition() {
     // get bounding rect of scrollable emoji region.
     const thisRect = this.$.groups.getBoundingClientRect();
 
@@ -542,6 +539,18 @@ export class EmojiPicker extends PolymerElement {
 
     const activeGroupId = activeGroup ? activeGroup.dataset.group : 'history';
 
+    return activeGroupId;
+  }
+
+  /**
+   * @param {boolean} updateTabsScroll
+   */
+  updateActiveGroup(updateTabsScroll) {
+    // no need to update scroll state if search is showing.
+    if (this.search)
+      return;
+
+    const activeGroupId = this.getActiveGroupIdFromScrollPosition();
     this.set('pagination', this.getPaginationFromGroupId(activeGroupId));
     this.updateChevrons();
 
@@ -555,8 +564,12 @@ export class EmojiPicker extends PolymerElement {
       this.set(['emojiGroupTabs', i, 'active'], isActive);
     });
 
+    const shouldDeactivateEmojiHistoryTab = this.category === 'emoji' &&
+        index === 0 && this.emojiHistory.emoji.length === 0;
+    const shouldDeactivateEmoticonHistoryTab = this.category === 'emoticon' &&
+        index === 0 && this.emoticonHistory.emoji.length === 0;
     // Ensure that the history tab is not set as active if it is empty.
-    if (index === 0 && this.emojiHistory.emoji.length === 0) {
+    if (shouldDeactivateEmojiHistoryTab || shouldDeactivateEmoticonHistoryTab) {
       this.set(['emojiGroupTabs', 0, 'active'], false);
       this.set(['emojiGroupTabs', 1, 'active'], true);
       index = 1;
@@ -627,6 +640,20 @@ export class EmojiPicker extends PolymerElement {
         // TODO(b/213230435): fix the bar width and left position when the
         // history tab is active
       }
+    }
+  }
+
+  /**
+   * Update active category by using vertical scroll position.
+   */
+  updateActiveCategory() {
+    if (this.v2Enabled) {
+      const activeGroupId = this.getActiveGroupIdFromScrollPosition();
+
+      const currentCategory =
+          V2_SUBCATEGORY_TABS.find((tab) => tab.groupId === activeGroupId)
+              .category;
+      this.set('category', currentCategory);
     }
   }
 
@@ -739,16 +766,23 @@ export class EmojiPicker extends PolymerElement {
    * @param {string} newCategoryName
    */
   onCategoryChanged(newCategoryName) {
-    if (this.v2Enabled) {
-      const categoryTabs =
-          V2_SUBCATEGORY_TABS.filter(tab => tab.category === newCategoryName);
-      this.set('emojiGroupTabs', categoryTabs);
-      this.set('pagination', 1);
-      this.updateChevrons();
-      this.scrollToGroup(this.emojiGroupTabs[0].groupId);
+    const categoryTabs =
+        V2_SUBCATEGORY_TABS.filter(tab => tab.category === newCategoryName);
+    this.set('emojiGroupTabs', categoryTabs);
+    afterNextRender(this, () => {
       this.updateActiveGroup(true);
-      this.$.tabs.scrollLeft = 0;
-    }
+      this.$.tabs.scrollLeft =
+          this.calculateTabScrollLeftPosition(this.pagination);
+    });
+  }
+
+  /**
+   * @param {string} newCategoryName
+   */
+  onCategoryButtonClick(newCategoryName) {
+    this.set('category', newCategoryName);
+    this.set('pagination', 1);
+    this.scrollToGroup(this.emojiGroupTabs[0].groupId);
   }
 
   /**

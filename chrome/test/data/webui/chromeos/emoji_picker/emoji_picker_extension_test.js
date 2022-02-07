@@ -219,20 +219,31 @@ suite('emoji-picker-extension', () => {
       });
 
   test(
-      'Scrolling to an emoticon group should activate the corresponding ' +
-          'subcategory tab.',
+      'Scrolling to an emoticon group should activate the emoticon category ' +
+          'button.',
       async () => {
-        // TODO(b/216103506): Remove emoticon button click
+        const emojiCategoryButton = findInEmojiPicker(
+            'emoji-search', 'emoji-category-button', 'cr-icon-button');
         const emoticonCategoryButton = findInEmojiPicker(
             'emoji-search', 'emoji-category-button:last-of-type',
             'cr-icon-button');
-        emoticonCategoryButton.click();
-        await flush();
 
         const emoticonTestGroupId = '10';
-        const emoticonTabButton = findInEmojiPicker(
-            `.tab[data-group='${emoticonTestGroupId}']`, 'cr-button');
         emojiPicker.scrollToGroup(emoticonTestGroupId);
+
+        await waitForCondition(
+            () => isCategoryButtonActive(emoticonCategoryButton) &&
+                !isCategoryButtonActive(emojiCategoryButton));
+      });
+  test(
+      'Scrolling to an emoticon group should activate the corresponding ' +
+          'subcategory tab.',
+      async () => {
+        const emoticonTestGroupId = '10';
+        emojiPicker.scrollToGroup(emoticonTestGroupId);
+        const emoticonTabButton = await waitForCondition(
+            () => findInEmojiPicker(
+                `.tab[data-group='${emoticonTestGroupId}']`, 'cr-button'));
 
         await waitForCondition(
             () => isGroupButtonActive(emoticonTabButton),
@@ -240,15 +251,9 @@ suite('emoji-picker-extension', () => {
       });
 
   test('Scrolling to an emoticon group should update chevrons.', async () => {
-    const emoticonCategoryButton = findInEmojiPicker(
-        'emoji-search', 'emoji-category-button:last-of-type', 'cr-icon-button');
     const leftChevron = findInEmojiPicker('#left-chevron');
     const rightChevron = findInEmojiPicker('#right-chevron');
     const emoticonTestGroupId = '15';
-
-    // TODO(b/216103506): Remove emoticon button click
-    emoticonCategoryButton.click();
-    await flush();
 
     emojiPicker.scrollToGroup(emoticonTestGroupId);
     // when scrolling to the next page, the chevron display needs to be updated.
