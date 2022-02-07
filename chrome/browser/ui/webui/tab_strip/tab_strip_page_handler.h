@@ -97,7 +97,8 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   void ReportTabDurationHistogram(const char* histogram_fragment,
                                   int tab_count,
                                   base::TimeDelta duration);
-  gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
+  gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
+                              bool active_tab_icon);
 
   // ThemeServiceObserver implementation.
   void OnThemeChanged() override;

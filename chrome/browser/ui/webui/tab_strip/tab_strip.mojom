@@ -30,8 +30,12 @@ struct Tab {
   // Whether the tab is crashed.
   bool crashed;
 
-  // The URL of the favicon in data scheme.
+  // The URL of the favicon in data scheme for a tab.
   url.mojom.Url? favicon_url;
+
+  // The URL of the favicon in data scheme for an active tab. Allows custom
+  // favicon theming for certain chrome:// URLs.
+  url.mojom.Url? active_favicon_url;
 
   // The group identifier of the tab.
   string? group_id;

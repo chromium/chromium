@@ -426,6 +426,29 @@ SkColor ThemeHelper::GetDefaultColor(
                           : TP::COLOR_FRAME_INACTIVE,
                       incognito, theme_supplier);
     }
+    case TP::COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE: {
+      // TODO(crbug.com/1292546): Make into a recipe once we have Color
+      // Pipeline support for Theme Properties.
+      SkColor background_color =
+          GetColor(TP::COLOR_FRAME_ACTIVE, incognito, theme_supplier, nullptr);
+      // TODO(crbug.com/1292546): : Use kColorAccent when porting to color
+      // pipeline.
+      SkColor active_tab_title_color = color_utils::IsDark(background_color)
+                                           ? gfx::kGoogleBlue300
+                                           : gfx::kGoogleBlue600;
+
+      // Check if the preferred light/dark color meets desired minimum contrast
+      // against the current background color and if not, adjust alpha.
+      color_utils::BlendResult blend_color_result =
+          color_utils::BlendForMinContrast(
+              active_tab_title_color, background_color, absl::nullopt,
+              color_utils::kMinimumVisibleContrastRatio);
+      return blend_color_result.color;
+    }
+    case TP::COLOR_THUMBNAIL_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
+      return color_utils::GetColorWithMaxContrast(GetDefaultColor(
+          TP::COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE, incognito,
+          theme_supplier));
   }
 
   return TP::GetDefaultColor(id, incognito, UseDarkModeColors(theme_supplier));

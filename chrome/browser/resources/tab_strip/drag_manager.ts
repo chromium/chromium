@@ -51,9 +51,11 @@ function getDefaultTabData(): Tab {
     title: '',
     url: {url: ''},
 
-    // Remove once Mojo can produce proper TypeScript or TypeScript definitions,
-    // so that these properties are recognized as optional.
+    // TODO(crbug.com/1293911): Remove once Mojo can produce proper TypeScript
+    // or TypeScript definitions, so that these properties are recognized as
+    // optional.
     faviconUrl: undefined,
+    activeFaviconUrl: undefined,
     groupId: undefined,
   };
 }

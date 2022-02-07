@@ -16,6 +16,7 @@ export function createTab(override?: Partial<Tab>): Tab {
         blocked: false,
         crashed: false,
         faviconUrl: undefined,
+        activeFaviconUrl: undefined,
         groupId: undefined,
         id: -1,
         index: -1,

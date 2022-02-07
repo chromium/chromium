@@ -143,7 +143,9 @@ export class TabElement extends CustomElement {
          tab.isDefaultFavicon)) {
       this.faviconEl_.style.backgroundImage = 'none';
     } else if (tab.faviconUrl) {
-      this.faviconEl_.style.backgroundImage = `url(${tab.faviconUrl.url})`;
+      this.faviconEl_.style.backgroundImage = `url(${
+          tab.active && tab.activeFaviconUrl ? tab.activeFaviconUrl.url :
+                                               tab.faviconUrl.url})`;
     } else {
       this.faviconEl_.style.backgroundImage = getFavicon('');
     }

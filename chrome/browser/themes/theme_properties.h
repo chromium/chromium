@@ -283,6 +283,10 @@ class ThemeProperties {
     COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
     COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
 
+    // The colors used for thumbnail tab visualizations,
+    COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
+    COLOR_THUMBNAIL_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
+
     // /!\ If you make any changes to this enum, you must also increment
     // kThemePackVersion in browser_theme_pack.cc, or else themes will display
     // incorrectly.

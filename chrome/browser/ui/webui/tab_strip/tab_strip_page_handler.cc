@@ -514,11 +514,19 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->url = tab_renderer_data.visible_url;
 
   if (!tab_renderer_data.favicon.isNull()) {
-    tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
-        tab_renderer_data.should_themify_favicon
-            ? ThemeFavicon(tab_renderer_data.favicon)
-            : tab_renderer_data.favicon,
-        web_ui_->GetDeviceScaleFactor()));
+    // Themified icons only apply to a few select chrome URLs.
+    if (tab_renderer_data.should_themify_favicon) {
+      tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
+          ThemeFavicon(tab_renderer_data.favicon, false),
+          web_ui_->GetDeviceScaleFactor()));
+      tab_data->active_favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
+          ThemeFavicon(tab_renderer_data.favicon, true),
+          web_ui_->GetDeviceScaleFactor()));
+    } else {
+      tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
+          tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor()));
+    }
+
     tab_data->is_default_favicon =
         tab_renderer_data.favicon.BackedBySameObjectAs(
             favicon::GetDefaultFavicon().AsImageSkia());
@@ -537,6 +545,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
        chrome::GetTabAlertStatesForContents(contents)) {
     tab_data->alert_states.push_back(alert_state);
   }
+
   return tab_data;
 }
 
@@ -615,6 +624,12 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
       embedder_->GetColorProviderColor(ui::kColorButtonBackgroundProminent));
   colors["--tabstrip-focus-outline-color"] = color_utils::SkColorToRgbaString(
       embedder_->GetColorProviderColor(ui::kColorFocusableBorderFocused));
+  colors["--tabstrip-tab-active-title-background-color"] =
+      color_utils::SkColorToRgbaString(embedder_->GetColor(
+          ThemeProperties::COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE));
+  colors["--tabstrip-tab-active-title-content-color"] =
+      color_utils::SkColorToRgbaString(embedder_->GetColor(
+          ThemeProperties::COLOR_THUMBNAIL_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   colors["--tabstrip-scrollbar-thumb-color-rgb"] =
@@ -908,7 +923,22 @@ void TabStripPageHandler::ReportTabDurationHistogram(
   base::UmaHistogramTimes(histogram_name, duration);
 }
 
-gfx::ImageSkia TabStripPageHandler::ThemeFavicon(const gfx::ImageSkia& source) {
+gfx::ImageSkia TabStripPageHandler::ThemeFavicon(const gfx::ImageSkia& source,
+                                                 bool active_tab_icon) {
+  if (active_tab_icon) {
+    return favicon::ThemeFavicon(
+        source,
+        embedder_->GetColor(
+            ThemeProperties::
+                COLOR_THUMBNAIL_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE),
+        embedder_->GetColor(
+            ThemeProperties::
+                COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
+        embedder_->GetColor(
+            ThemeProperties::
+                COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE));
+  }
+
   return favicon::ThemeFavicon(
       source, embedder_->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
       embedder_->GetColor(
