@@ -37,29 +37,6 @@ using security_interstitials::SecurityInterstitialControllerClient;
 
 namespace safe_browsing {
 
-namespace {
-
-SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
-    ThreatSource threat_source) {
-  switch (threat_source) {
-    case ThreatSource::LOCAL_PVER4:
-    case ThreatSource::REMOTE:
-      return SafeBrowsingMetricsCollector::EventType::
-          DATABASE_INTERSTITIAL_BYPASS;
-    case ThreatSource::CLIENT_SIDE_DETECTION:
-      return SafeBrowsingMetricsCollector::EventType::CSD_INTERSTITIAL_BYPASS;
-    case ThreatSource::REAL_TIME_CHECK:
-      return SafeBrowsingMetricsCollector::EventType::
-          REAL_TIME_INTERSTITIAL_BYPASS;
-    default:
-      NOTREACHED() << "Unexpected threat source.";
-      return SafeBrowsingMetricsCollector::EventType::
-          DATABASE_INTERSTITIAL_BYPASS;
-  }
-}
-
-}  // namespace
-
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
     SafeBrowsingBlockingPage::kTypeForTesting =
@@ -150,8 +127,7 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
     OnDontProceedDone();
   } else {
     if (metrics_collector_) {
-      metrics_collector_->AddSafeBrowsingEventToPref(
-          GetEventTypeFromThreatSource(threat_source_));
+      metrics_collector_->AddBypassEventToPref(threat_source_);
     }
   }
   BaseBlockingPage::OnInterstitialClosing();

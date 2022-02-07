@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace {
@@ -183,6 +184,27 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
   }
 
   AddSafeBrowsingEventAndUserStateToPref(GetUserState(), event_type);
+}
+
+void SafeBrowsingMetricsCollector::AddBypassEventToPref(
+    ThreatSource threat_source) {
+  EventType event;
+  switch (threat_source) {
+    case ThreatSource::LOCAL_PVER4:
+    case ThreatSource::REMOTE:
+      event = EventType::DATABASE_INTERSTITIAL_BYPASS;
+      break;
+    case ThreatSource::CLIENT_SIDE_DETECTION:
+      event = EventType::CSD_INTERSTITIAL_BYPASS;
+      break;
+    case ThreatSource::REAL_TIME_CHECK:
+      event = EventType::REAL_TIME_INTERSTITIAL_BYPASS;
+      break;
+    default:
+      NOTREACHED() << "Unexpected threat source.";
+      event = EventType::DATABASE_INTERSTITIAL_BYPASS;
+  }
+  AddSafeBrowsingEventToPref(event);
 }
 
 absl::optional<base::Time>

@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
@@ -114,6 +115,10 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   // Adds |event_type| and the current timestamp to pref.
   void AddSafeBrowsingEventToPref(EventType event_type);
+
+  // Uses |threat_source| to choose which EventType should be passed into
+  // AddSafeBrowsingEventToPref
+  void AddBypassEventToPref(ThreatSource threat_source);
 
   // Gets the latest event timestamp of the |event_type|. Returns nullopt if
   // the |event_type| didn't happen in the past.

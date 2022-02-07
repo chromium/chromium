@@ -153,6 +153,7 @@ source_set("safe_browsing_metrics_collector") {
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
   ]
 }
