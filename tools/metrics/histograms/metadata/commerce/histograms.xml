@@ -224,6 +224,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <token key="ManagementType" variants="ManagementTypes"/>
 </histogram>
 
+<histogram name="Commerce.PriceDrops.{ManagementType}.NotificationReachedCap"
+    enum="Boolean" expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the number of shown notifications in given window (one day
+    by default) has reached the cap limit for specified management type.
+    Recorded when we are trying to show any price drop notifications.
+    Implemented for Android.
+  </summary>
+  <token key="ManagementType" variants="ManagementTypes"/>
+</histogram>
+
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPrice"
     enum="BooleanContainsPrice" expires_after="2022-06-07">

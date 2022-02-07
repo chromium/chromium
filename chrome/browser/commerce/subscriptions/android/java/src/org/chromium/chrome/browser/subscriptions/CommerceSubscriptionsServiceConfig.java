@@ -54,8 +54,8 @@ public class CommerceSubscriptionsServiceConfig {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.COMMERCE_PRICE_TRACKING, IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM,
-                    true);
+                    false);
         }
-        return true;
+        return false;
     }
 }

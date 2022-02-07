@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.ActionType;
@@ -38,6 +39,7 @@ import java.util.List;
  * ImageFetcher} without cache.
  */
 public class PriceDropNotifier {
+    private static final String TAG = "PriceTrackNotif";
     public static final String NOTIFICATION_TAG = "price_drop";
 
     static class NotificationData {
@@ -97,7 +99,7 @@ public class PriceDropNotifier {
     private final Context mContext;
     private ImageFetcher mImageFetcher;
     private final NotificationManagerProxy mNotificationManagerProxy;
-    private final PriceDropNotificationManager mPriceDropNotificationManager;
+    private PriceDropNotificationManager mPriceDropNotificationManager;
 
     /**
      * Creates a {@link PriceDropNotifier} instance.
@@ -156,6 +158,13 @@ public class PriceDropNotifier {
         int notificationId = getNotificationId(notificationData.offerId);
         @SystemNotificationType
         int notificationType = getUmaNotificationType(notificationData);
+        if (mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(
+                    notificationType)) {
+            Log.e(TAG,
+                    "Unable to show this notification"
+                            + " because we have reached the max allowed number.");
+            return;
+        }
         NotificationWrapperBuilder notificationBuilder =
                 getNotificationBuilder(notificationType, notificationId);
         if (icon != null) {
@@ -221,5 +230,10 @@ public class PriceDropNotifier {
         return TextUtils.isEmpty(notificationData.productClusterId)
                 ? SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED
                 : SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
+    }
+
+    @VisibleForTesting
+    void setPriceDropNotificationManagerForTesting(PriceDropNotificationManager manager) {
+        mPriceDropNotificationManager = manager;
     }
 }
