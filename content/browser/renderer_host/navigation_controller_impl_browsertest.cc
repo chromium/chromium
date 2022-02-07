@@ -158,15 +158,16 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
 
 void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
                                  bool enable_back_forward_cache) {
-  if (!enable_back_forward_cache)
-    return;
-
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams> features;
-  features.push_back(
-      {features::kBackForwardCache, {{"enable_same_site", "true"}}});
-  features.push_back({kBackForwardCacheNoTimeEviction, {}});
-  features.push_back({features::kBackForwardCacheMemoryControls, {}});
-  feature_list->InitWithFeaturesAndParameters(features, {});
+  if (enable_back_forward_cache) {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> features;
+    features.push_back(
+        {features::kBackForwardCache, {{"enable_same_site", "true"}}});
+    features.push_back({kBackForwardCacheNoTimeEviction, {}});
+    features.push_back({features::kBackForwardCacheMemoryControls, {}});
+    feature_list->InitWithFeaturesAndParameters(features, {});
+  } else {
+    feature_list->InitAndDisableFeature(features::kBackForwardCache);
+  }
 }
 
 class NavigationControllerBrowserTest
@@ -20629,7 +20630,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SandboxedNavigationControllerWithBfcacheBrowserTest,
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
+                     testing::Values(true)),
     NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(
     All,
