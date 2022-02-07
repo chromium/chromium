@@ -208,7 +208,7 @@ const base::Feature kBorealisBigGl{"BorealisBigGl",
 
 // Enable experimental disk management changes for Borealis.
 const base::Feature kBorealisDiskManagement{"BorealisDiskManagement",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Force the client to be on its beta version. If not set, the client will be on
 // its stable version.
