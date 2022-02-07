@@ -1,8 +1,8 @@
-# Document.domain Setting is Deprecated
+# `document.domain` Setting is Deprecated
 
-Setting [document.domain](https://developer.mozilla.org/en-US/docs/Web/API/Document/domain)
+Setting [`document.domain`](https://developer.mozilla.org/en-US/docs/Web/API/Document/domain)
 is [deprecated](https://html.spec.whatwg.org/multipage/origin.html#relaxing-the-same-origin-restriction).
-Document.domain setting can be used to relax the same-origin restrictions
+`document.domain` setting can be used to relax the same-origin restrictions
 between different frames, hosted within the same site but on different origins.
 Doing so make themselves effectively same-origin for the purpose of
 synchronous access.
@@ -11,7 +11,7 @@ For example, `https.//www.example.test/` might host a media player on
 `media.example.org`. If both the main page and the frame execute
 `document.domain = "example.org";` they may then access each others' DOM
 tree, which they normally couldn't. (A better way would be to cooperate
-by `postMessage`.)
+by `postMessage()`.)
 
 This usage is now being deprecated. (More information can be found
 [here](https://developer.chrome.com/blog/immutable-document-domain/) and
@@ -27,10 +27,10 @@ examine how many pages will be impacted by this change, and will start a
 separate discussion (intent to remove) on the
 [blink-dev mailing list](https://groups.google.com/a/chromium.org/g/blink-dev).
 
-##  Document.domain` and Origin-keyed Agent Clusters
+##  `document.domain` and Origin-keyed Agent Clusters
 
-Most documentation on this change is phrased in terms of Origin-keyed
-Agent Clusters. This is [a concept in the HTML
+Most documentation on this change is phrased in terms of origin-keyed
+agent clusters. This is [a concept in the HTML
 specification](https://html.spec.whatwg.org/multipage/origin.html#origin-keyed-agent-clusters).
 Here we focus on the behaviour of the `document.domain` setter, which is
 the visible effect.
@@ -58,7 +58,7 @@ It is also a no-op in other browsers, since they either match Chromium's
 current default or have not implemented the `Origin-Agent-Cluster` header at
 all.
 
-## How can I test this:
+## How Can I Test This?
 
 In the DevTools console, for a page `www.example.test`:
 
@@ -72,17 +72,17 @@ One can also directly query whether a page is assigned to an origin-keyed
 agent cluster, by querying `window.originAgentCluster`.
 
 ```
-window.originAgentCluster;  // True, if page is assigned to an origin-keyed
+window.originAgentCluster;  // true, if page is assigned to an origin-keyed
                             // agent cluster.
 ```
 
 How to enable/disable the deprecation:
 
-### Enable the warning (Scheduled for M100)
+### Enable the Warning (Scheduled for M100)
 
 * Start Chrome with `--enable-features=OriginAgentClusterDefaultWarning`
 
-### Enable the deprecation (Scheduled for M106)
+### Enable the Deprecation (Scheduled for M106)
 
 * In [chrome://flags](chrome://flags#origin-agent-cluster-default), go to
   the "Origin Agent Cluster Default" setting and enable it.
@@ -98,7 +98,7 @@ be pragrammatically processed using `ReportingObserver`. For example, the
 first code snippet in
 https://developers.google.com/web/updates/2018/07/reportingobserver
 will report these warnings. The message object delivered by this API is a
-`[DeprecationReportBody](https://developer.mozilla.org/en-US/docs/Web/API/DeprecationReportBody)`
+[`DeprecationReportBody`](https://developer.mozilla.org/en-US/docs/Web/API/DeprecationReportBody)
 instance which offers information about the source code location that triggered
 the warning.
 
@@ -108,15 +108,15 @@ If your site does not use `document.domain` setting you don't have to do
 anything. You could explicitly set the `Origin-Agent-Cluster: ?1` header.
 But after M106 this would be the default behaviour anyhow.
 
-If your site uses document.domain setting to enable cross-origin Javascript
+If your site uses `document.domain` setting to enable cross-origin Javascript
 access, you should refactor the code to instead use
-[Window.postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) (or any other mechanism) to cooperate across origins. Or alternatively
-reduce the need for cross-origin cooperation by moving the copperating pieces
+[`window.postMessage()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) (or any other mechanism) to cooperate across origins. Or alternatively
+reduce the need for cross-origin cooperation by moving the cooperating pieces
 onto the same origin.
 
 ## What if I don't have the time right now, or want to continue setting `document.domain`?
 
-You can add the `Origin-Agent-Cluster: ?0` http header to your site. Note that
+You can add the `Origin-Agent-Cluster: ?0` HTTP header to your site. Note that
 the header must be set both for the main page, as well as for the embedded
 frame(s) that wish to use `document.domain` setting.
 
