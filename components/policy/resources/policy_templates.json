@@ -29682,7 +29682,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         'dynamic_refresh': True,
       },
       'id': 933,
-      'supported_on': ['chrome.*:101-', 'chrome_os:101-'],
+      'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
       'tags': [],
       'caption': '''Allows origin-keyed agent clustering by default.''',
       'desc': '''This policy allows origin-keyed agent clustering by default.
@@ -29695,12 +29695,14 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       be set.
 
       The default behaviour - when no Origin-Agent-Cluster: header has been set
-      - changes in M101 from site-keyed to origin-keyed. If this policy
+      - changes in M106 from site-keyed to origin-keyed. If this policy
       is enabled or not set, the browser will follow this new default from that
       version on. If this policy is disabled this change is reversed and
       documents without Origin-Agent-Cluster: headers will be assigned to
       site-keyed agent clusters. As a consequence, the document.domain accessor
       remains settable by default. This matches the legacy behaviour.
+
+      See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/security/document-domain.md for additional details.
       '''
     },
     {
