@@ -8,9 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-namespace syncer {
-
-namespace prefs {
+namespace syncer::prefs {
 
 // Boolean specifying whether the user finished setting up sync at least once.
 constexpr inline char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
@@ -82,8 +80,6 @@ constexpr inline char kEnableLocalSyncBackend[] =
 // flag is present.
 constexpr inline char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
-}  // namespace prefs
-
-}  // namespace syncer
+}  // namespace syncer::prefs
 
 #endif  // COMPONENTS_SYNC_BASE_PREF_NAMES_H_

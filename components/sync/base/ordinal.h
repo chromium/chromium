@@ -226,7 +226,7 @@ template <typename Traits>
 const unsigned int Ordinal<Traits>::kRadix;
 
 template <typename Traits>
-Ordinal<Traits>::LessThanFn::LessThanFn() {}
+Ordinal<Traits>::LessThanFn::LessThanFn() = default;
 
 template <typename Traits>
 bool Ordinal<Traits>::LessThanFn::operator()(const Ordinal<Traits>& lhs,
@@ -235,7 +235,7 @@ bool Ordinal<Traits>::LessThanFn::operator()(const Ordinal<Traits>& lhs,
 }
 
 template <typename Traits>
-Ordinal<Traits>::EqualsFn::EqualsFn() {}
+Ordinal<Traits>::EqualsFn::EqualsFn() = default;
 
 template <typename Traits>
 bool Ordinal<Traits>::EqualsFn::operator()(const Ordinal<Traits>& lhs,
