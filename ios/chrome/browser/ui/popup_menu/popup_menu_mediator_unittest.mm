@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_mediator.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
@@ -308,10 +309,16 @@ TEST_F(PopupMenuMediatorTest, TestToolsMenuItemsCount) {
     number_of_action_items++;
   }
 
+  // Stop/Reload, New Tab, New Incognito Tab.
+  NSUInteger number_of_tab_actions = 3;
+  if (base::ios::IsMultipleScenesSupported()) {
+    // New Window option is added in this case.
+    number_of_tab_actions++;
+  }
+
   // Checks that Tools Menu has the right number of items in each section.
   CheckMediatorSetItems(@[
-    // Stop/Reload, New Tab, New Incognito Tab.
-    @(3),
+    @(number_of_tab_actions),
     // 4 collections, Downloads, Settings.
     @(6),
     // Other actions, depending on configuration.
