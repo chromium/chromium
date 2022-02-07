@@ -107,3 +107,31 @@ export function hasAnyDetailedBatteryInfo(device) {
       getBatteryPercentage(device, BatteryType.CASE) !== undefined ||
       getBatteryPercentage(device, BatteryType.RIGHT_BUD) !== undefined;
 }
+
+/**
+ * Returns true if the device contains True Wireless Images.
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+ *     device
+ * @return {boolean}
+ */
+export function hasTrueWirelessImages(device) {
+  const imageInfo = device.imageInfo;
+  if (!imageInfo) {
+    return false;
+  }
+
+  const trueWirelessImages = imageInfo.trueWirelessImages;
+  if (!trueWirelessImages) {
+    return false;
+  }
+
+  // Only return true if all True Wireless Images are present.
+  const leftBudImageUrl = trueWirelessImages.leftBudImageUrl;
+  const rightBudImageUrl = trueWirelessImages.rightBudImageUrl;
+  const caseImageUrl = trueWirelessImages.caseImageUrl;
+  if (!leftBudImageUrl || !rightBudImageUrl || !caseImageUrl) {
+    return false;
+  }
+
+  return !!leftBudImageUrl.url && !!rightBudImageUrl.url && !!caseImageUrl.url;
+}

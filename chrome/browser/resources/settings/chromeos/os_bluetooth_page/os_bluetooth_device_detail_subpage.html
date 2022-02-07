@@ -86,6 +86,13 @@
     </div>
   </div>
   <template is="dom-if"
+      if="[[shouldShowTrueWirelessImages_(device_.*)]]" restamp>
+    <os-settings-bluetooth-true-wireless-images
+        id="trueWirelessImages"
+        device="[[device_.deviceProperties]]">
+    </os-settings-bluetooth-true-wireless-images>
+  </template>
+  <template is="dom-if"
       if="[[shouldShowNonAudioOutputDeviceMessage_(device_.*)]]" restamp>
     <div id="nonAudioOutputDeviceMessage"
         class="settings-box settings-box-text continuation"

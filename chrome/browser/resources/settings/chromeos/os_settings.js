@@ -70,6 +70,7 @@ import './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 import './os_apps_page/os_apps_page.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';
 import './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';
+import './os_bluetooth_page/os_bluetooth_true_wireless_images.js';
 import './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
 import './os_bluetooth_page/os_bluetooth_pairing_dialog.js';
 import './os_bluetooth_page/os_bluetooth_page.js';

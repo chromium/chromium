@@ -161,6 +161,76 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!getManagedIcon());
   });
 
+  test('True Wireless Images shown when expected', async function() {
+    init();
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+    const getTrueWirelessImages = () =>
+        bluetoothDeviceDetailPage.$$('#trueWirelessImages');
+
+    const navigateToDeviceDetailPage = () => {
+      const params = new URLSearchParams();
+      params.append('id', '12345/6789&');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+    };
+
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '12345/6789&',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse,
+        /*opt_isBlockedByPolicy=*/ true);
+    const fakeUrl = {url: 'fake_image'};
+    // Emulate missing the right bud image.
+    device.deviceProperties.imageInfo = {
+      trueWirelessImages: {leftBudImageUrl: fakeUrl, caseImageUrl: fakeUrl}
+    };
+    device.deviceProperties.batteryInfo = {
+      leftBudInfo: {batteryPercentage: 90}
+    };
+
+    bluetoothConfig.appendToPairedDeviceList([device]);
+    await flushAsync();
+
+    navigateToDeviceDetailPage();
+
+    // Don't display component unless all images are present.
+    await flushAsync();
+    assertFalse(!!getTrueWirelessImages());
+
+    device.deviceProperties.imageInfo.trueWirelessImages.rightBudImageUrl =
+        fakeUrl;
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertTrue(!!getTrueWirelessImages());
+
+    // If detailed battery info is not available, only show True Wireless
+    // component if not connected.
+    device.deviceProperties.batteryInfo = {};
+    device.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kNotConnected;
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertTrue(!!getTrueWirelessImages());
+
+    device.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kConnecting;
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertTrue(!!getTrueWirelessImages());
+
+    device.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kConnected;
+    bluetoothConfig.updatePairedDevice(device);
+    await flushAsync();
+    assertFalse(!!getTrueWirelessImages());
+  });
+
   test('Show change settings row, and navigate to subpages', async function() {
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);

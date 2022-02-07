@@ -243,6 +243,29 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+// TODO(crbug.com/1237598) Move this test back into the list of tests below once
+// Bluetooth revamp is launched.
+var OSSettingsOsBluetoothTrueWirelessImagesV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_true_wireless_images_tests.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled:
+          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
+    };
+  }
+};
+
+TEST_F('OSSettingsOsBluetoothTrueWirelessImagesV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
+
 var OSSettingsSearchEngineV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {

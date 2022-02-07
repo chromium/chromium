@@ -2079,6 +2079,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_RIGHT_BUD_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the right true wireless bud.">
     Right battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_LEFT_BUD_LABEL" desc="Bluetooth True Wireless Images component: Label describing the left bud of a set of True Wireless headphones.">
+    Left
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_CASE_LABEL" desc="Bluetooth True Wireless Images component: Label describing the case of a set of True Wireless headphones.">
+    Case
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_RIGHT_BUD_LABEL" desc="Bluetooth True Wireless Images component: Label describing the right bud of a set of True Wireless headphones.">
+    Right
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is connected.">
     Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph>
   </message>
