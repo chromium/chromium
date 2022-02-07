@@ -292,6 +292,175 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, CallFilterTest) {
   EXPECT_EQ(actual_cancelled, expected_cancelled);
 }
 
+TEST_F(NeuralStylusPalmDetectionFilterTest, CallFilterTestWithAdaptiveHold) {
+  std::bitset<kNumTouchEvdevSlots> actual_held, actual_cancelled;
+  std::bitset<kNumTouchEvdevSlots> expected_held, expected_cancelled;
+
+  // Enable early stage predictions to support adaptive hold.
+  model_config_.nn_delay_start_if_palm = true;
+  model_config_.early_stage_sample_counts = {2};
+
+  // Only one touch in slot 0, nothing happens.
+  touch_[0].touching = true;
+  touch_[0].tracking_id = 500;
+  touch_[0].major = 15;
+  touch_[0].minor = 10;
+  touch_[0].x = 15;
+  touch_[0].y = 10;
+  touch_[0].slot = 0;
+  base::TimeTicks touch_time =
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
+  palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
+                                 &actual_cancelled);
+  EXPECT_TRUE(actual_held.none());
+  EXPECT_TRUE(actual_cancelled.none());
+
+  // And now, let's add touches 1 and 2.
+  touch_[0].x = 17;
+  touch_[0].major = 14;
+  touch_[0].was_touching = true;
+
+  touch_[1].touching = true;
+  touch_[1].major = 11;
+  touch_[1].minor = 9;
+  touch_[1].x = 30;
+  touch_[1].y = 25;
+  touch_[1].tracking_id = 501;
+  touch_[1].slot = 1;
+
+  touch_[2].touching = true;
+  touch_[2].major = 10;
+  touch_[2].minor = 8;
+  touch_[2].x = 5500;
+  touch_[2].y = 2942;
+  touch_[2].tracking_id = 502;
+  touch_[2].slot = 2;
+
+  // Slot 0 now has 2 reports, ready for an early stage prediction.
+  std::vector<float> features = {
+      15, 10, 0, 0.25, 1, 14, 10, 0.05, 0.25, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+      0,  0,  0, 0,    0, 0,  0,  0.4,  0.05, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0,  0,  0, 0,    0, 0,  0,  0,    0,    0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0,  0,  0, 0,    0, 0,  0,  0,    0,    0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0,  0,  0, 0,    0, 0,  0,  0,    0,    0, 0, 0, 0, 0, 0, 0};
+  EXPECT_CALL(*model_,
+              Inference(testing::Pointwise(testing::FloatEq(), features)))
+      .Times(1)
+      .WillOnce(testing::Return(0.5));
+  touch_time += base::Milliseconds(8.0f);
+  palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
+                                 &actual_cancelled);
+  // Slot 0 is held.
+  expected_held.set(0, true);
+  EXPECT_EQ(actual_held, expected_held);
+  EXPECT_TRUE(actual_cancelled.none());
+
+  // Slot 1 and 2 have 2 reports now, do early stage prediction on them.
+  // Slot 0 ends and have 3 reports (more than min_sample_count), do final stage
+  // prediction on it.
+  touch_[3] = touch_[2];
+  touch_[3].slot = 3;
+  touch_[3].x = 8000;
+  touch_[3].tracking_id = 504;
+  touch_[1].was_touching = true;
+  touch_[2].was_touching = true;
+  touch_[0].touching = false;
+  touch_[0].tracking_id = -1;
+  // Early stage for slot 1.
+  features = {11, 9, 0, 0.625,    1,    11, 9, 0,    0.625, 1,  0,  0,    0,
+              0,  0, 0, 0,        0,    0,  0, 0,    0,     0,  0,  0,    0.4,
+              0,  0, 1, 0.512957, 15,   10, 0, 0.25, 1,     14, 10, 0.05, 0.25,
+              1,  0, 0, 0,        0,    0,  0, 0,    0,     0,  0,  0,    0,
+              0,  0, 0, 0.4,      0.05, 0,  0, 0,    0,     0,  0,  0,    0,
+              0,  0, 0, 0,        0,    0,  0, 0,    0,     0,  0,  0,    0,
+              0,  0, 0, 0,        0,    0,  0, 0,    0,     0};
+
+  EXPECT_CALL(*model_,
+              Inference(testing::Pointwise(testing::FloatEq(), features)))
+      .Times(1)
+      .WillOnce(testing::Return(0.5));
+  // Early stage for slot 2.
+  features = {10, 8, 0, 73.55, 1, 10, 8, 0,   73.55, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0.4, 0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0};
+  EXPECT_CALL(*model_,
+              Inference(testing::Pointwise(testing::FloatEq(), features)))
+      .Times(1)
+      .WillOnce(testing::Return(0.5));
+
+  // Final stage for slot 0.
+  features = {15,   10, 0, 0.25,     1,  14, 10, 0.05,  0.25, 1,  0, 0, 0,
+              0,    0,  0, 0,        0,  0,  0,  0,     0,    0,  0, 0, 0.4,
+              0.05, 0,  1, 0.512957, 11, 9,  0,  0.625, 1,    11, 9, 0, 0.625,
+              1,    0,  0, 0,        0,  0,  0,  0,     0,    0,  0, 0, 0,
+              0,    0,  0, 0.4,      0,  0,  0,  0,     0,    0,  0, 0, 0,
+              0,    0,  0, 0,        0,  0,  0,  0,     0,    0,  0, 0, 0,
+              0,    0,  0, 0,        0,  0,  0,  0,     0,    0};
+  EXPECT_CALL(*model_,
+              Inference(testing::Pointwise(testing::FloatEq(), features)))
+      .Times(1)
+      .WillOnce(testing::Return(0.5));
+
+  touch_time += base::Milliseconds(8.0f);
+  palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
+                                 &actual_cancelled);
+
+  // Slot 1 and 2 are held, slot 0 is cancelled.
+  expected_held.reset();
+  expected_held.set(1, true);
+  expected_held.set(2, true);
+  EXPECT_EQ(actual_held, expected_held);
+
+  expected_cancelled.set(0, true);
+  EXPECT_EQ(actual_cancelled, expected_cancelled);
+
+  // At this update, slot 3 has 2 reports, do an early prediction on it.
+  // Slot 2 ends and have 3 reports, do final prediction.
+  touch_[0].was_touching = false;
+  touch_[2].tracking_id = -1;
+  touch_[3].was_touching = true;
+  // Early stage for slot 3.
+  features = {10, 8, 0, 60.1, 1, 10, 8, 0,   60.1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,    0, 0,  0, 0.4, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,    0, 0,  0, 0,   0,    0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,    0, 0,  0, 0,   0,    0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,    0, 0,  0, 0,   0,    0, 0, 0, 0, 0, 0, 0};
+  EXPECT_CALL(*model_,
+              Inference(testing::Pointwise(testing::FloatEq(), features)))
+      .Times(1)
+      .WillOnce(testing::Return(0.5));
+
+  // Final stage for slot 2.
+  features = {10, 8, 0, 73.55, 1, 10, 8, 0,   73.55, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0.4, 0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0};
+  EXPECT_CALL(*model_,
+              Inference(testing::Pointwise(testing::FloatEq(), features)))
+      .Times(1)
+      .WillOnce(testing::Return(0.5));
+  touch_time += base::Milliseconds(8.0f);
+  palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
+                                 &actual_cancelled);
+
+  // Slot 1 was held and at this update it neither ends nor reaches
+  // max_sample_count, so it keeps held. Slot 3 is newly held.
+  expected_held.reset();
+  expected_held.set(1, true);
+  expected_held.set(3, true);
+  EXPECT_EQ(actual_held, expected_held);
+
+  // Slot 0 was cancelled and no new touch comes to this slot, it keeps
+  // cancelled. Slot 2 is newly cancelled.
+  expected_cancelled.reset();
+  expected_cancelled.set(0, true);
+  expected_cancelled.set(2, true);
+  EXPECT_EQ(actual_cancelled, expected_cancelled);
+}
+
 TEST_F(NeuralStylusPalmDetectionFilterTest, InferenceOnceNotPalm) {
   std::bitset<kNumTouchEvdevSlots> actual_held, actual_cancelled;
   base::TimeTicks touch_time =
