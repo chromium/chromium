@@ -873,7 +873,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
     notifications_enabled = deferred;
 
   WindowLayout window_layout =
-      WindowLayoutFromDict(apps->FindDictKey(kWindowLayout));
+      WindowLayoutFromDict(app->FindDictKey(kWindowLayout));
 
   return std::make_unique<AppInfo>(
       name, package_name, activity, intent_uri, icon_resource_id,
