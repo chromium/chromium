@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "url/url_constants.h"
@@ -83,6 +84,77 @@ std::string FormatRequestParamsWithoutScope(const std::string& client_id,
   if (!query.empty())
     query += "&consent_acquired=" + consent_acquired;
   return query;
+}
+
+std::string GetConsoleErrorMessage(RequestIdTokenStatus status) {
+  switch (status) {
+    case RequestIdTokenStatus::kApprovalDeclined: {
+      return "User declined the sign-in attempt.";
+    }
+    case RequestIdTokenStatus::kErrorTooManyRequests: {
+      return "Only one navigator.credentials.get request may be outstanding at "
+             "one time.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound: {
+      return "The provider's .well-known configuration cannot be found.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse: {
+      return "The response body is empty when fetching the provider's "
+             ".well-known configuration.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse: {
+      return "Provider's .well-known configuration is invalid.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataHttpNotFound: {
+      return "The provider's client metadata endpoint cannot be found.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataNoResponse: {
+      return "The response body is empty when fetching the provider's client "
+             "metadata.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataInvalidResponse: {
+      return "Provider's client metadata is invalid.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingSignin: {
+      return "Error attempting to reach the provider's sign-in endpoint.";
+    }
+    case RequestIdTokenStatus::kErrorInvalidSigninResponse: {
+      return "Provider's sign-in response is invalid.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingAccountsHttpNotFound: {
+      return "The provider's accounts list endpoint cannot be found.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingAccountsNoResponse: {
+      return "The response body is empty when fetching the provider's accounts "
+             "list.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse: {
+      return "Provider's accounts list is invalid.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingIdTokenHttpNotFound: {
+      return "The provider's id token endpoint cannot be found.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingIdTokenNoResponse: {
+      return "The response body is empty when fetching the provider's id "
+             "token.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingIdTokenInvalidResponse: {
+      return "Provider's id token is invalid.";
+    }
+    case RequestIdTokenStatus::kErrorFetchingIdTokenInvalidRequest: {
+      return "The id token fetching request is invalid.";
+    }
+    case RequestIdTokenStatus::kErrorCanceled: {
+      return "The request has been aborted.";
+    }
+    case RequestIdTokenStatus::kError: {
+      return "Error retrieving an id token.";
+    }
+    case RequestIdTokenStatus::kSuccess: {
+      DCHECK(false);
+      return "";
+    }
+  }
 }
 
 }  // namespace
@@ -891,6 +963,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
     // an error, so it would be cleaner to do this by reporting the inspector
     // issue from the browser.
     AddInspectorIssue(status);
+    AddConsoleErrorMessage(status);
   }
 
   CleanUp();
@@ -934,6 +1007,13 @@ void FederatedAuthRequestImpl::AddInspectorIssue(
       blink::mojom::InspectorIssueInfo::New(
           blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue,
           std::move(details)));
+}
+
+void FederatedAuthRequestImpl::AddConsoleErrorMessage(
+    RequestIdTokenStatus status) {
+  std::string message = GetConsoleErrorMessage(status);
+  render_frame_host_->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError, message);
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(

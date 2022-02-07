@@ -861,6 +861,39 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
   EXPECT_EQ(main_test_rfh()->GetFederatedAuthRequestIssueCount(
                 test_case.expected.devtools_issue_status),
             auth_response.first == RequestIdTokenStatus::kSuccess ? 0 : 1);
+  static std::unordered_map<RequestIdTokenStatus, absl::optional<std::string>>
+      status_to_message = {
+          {RequestIdTokenStatus::kSuccess, absl::nullopt},
+          {RequestIdTokenStatus::kApprovalDeclined,
+           "User declined the sign-in attempt."},
+          {RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound,
+           "The provider's .well-known configuration cannot be found."},
+          {RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse,
+           "The response body is empty when fetching the provider's "
+           ".well-known "
+           "configuration."},
+          {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+           "Provider's .well-known configuration is invalid."},
+          {RequestIdTokenStatus::kErrorFetchingSignin,
+           "Error attempting to reach the provider's sign-in endpoint."},
+          {RequestIdTokenStatus::kErrorInvalidSigninResponse,
+           "Provider's sign-in response is invalid."},
+          {RequestIdTokenStatus::kError, "Error retrieving an id token."},
+          {RequestIdTokenStatus::kErrorFetchingAccountsNoResponse,
+           "The response body is empty when fetching the provider's accounts "
+           "list."},
+          {RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse,
+           "Provider's accounts list is invalid."}};
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  absl::optional<std::string> expected_message =
+      status_to_message[test_case.expected.devtools_issue_status];
+  if (!expected_message) {
+    EXPECT_EQ(0u, messages.size());
+  } else {
+    ASSERT_EQ(1u, messages.size());
+    EXPECT_EQ(expected_message.value(), messages[0]);
+  }
 }
 
 // Test Logout method success with multiple relying parties.

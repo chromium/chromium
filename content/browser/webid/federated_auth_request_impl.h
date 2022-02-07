@@ -123,6 +123,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // the Issues panel in DevTools.
   void AddInspectorIssue(blink::mojom::RequestIdTokenStatus status);
 
+  // Adds a console error message related to a federated authentication request
+  // issue. The Issues panel is preferred, but for now we also surface console
+  // error messages since it is much simpler to add.
+  // TODO(crbug.com/1294415): When the FedCM API is more stable, we should
+  // ensure that the Issues panel contains all of the needed debugging
+  // information and then we can remove the console error messages.
+  void AddConsoleErrorMessage(blink::mojom::RequestIdTokenStatus status);
+
   const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
   const url::Origin origin_;
 
