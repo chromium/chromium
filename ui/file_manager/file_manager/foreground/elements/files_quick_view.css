@@ -32,8 +32,7 @@ dialog:focus {
 }
 
 dialog::backdrop {
-  background-color: #000;
-  opacity: 0.6;
+  background-color: var(--cros-app-shield-80);
 }
 
 dialog#delete-confirm-dialog::backdrop {
@@ -132,13 +131,10 @@ dialog#delete-confirm-dialog::backdrop {
 
 #file-path {
   flex: 1;
+  margin-inline-start: 8px;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-:host([files-ng]) #file-path {
-  margin-inline-start: 8px;
 }
 
 .buttons-group {
@@ -161,22 +157,22 @@ cr-button {
   width: 36px;
 }
 
-:host-context(html.pointer-active.files-ng) cr-button:not(:active):hover {
+:host-context(html.pointer-active) cr-button:not(:active):hover {
   --hover-bg-color: none;
   cursor: unset;
 }
 
-:host([files-ng]) cr-button::after {
+cr-button::after {
   content: '';
   height: 48px;
   position: absolute;
   width: 48px;
 }
 
-:host([files-ng]) #back-button > .icon,
-:host([files-ng]) #open-button > .icon,
-:host([files-ng]) #delete-button > .icon,
-:host([files-ng]) #info-button > .icon {
+#back-button > .icon,
+#open-button > .icon,
+#delete-button > .icon,
+#info-button > .icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   background-color: currentColor;
@@ -190,15 +186,15 @@ iron-icon {
   width: 16px;
 }
 
-:host([files-ng]) #back-button > iron-icon {
+#back-button > iron-icon {
   display: none;
 }
 
-:host([files-ng]) #back-button > .icon {
+#back-button > .icon {
   -webkit-mask-image: url(../images/files/ui/back.svg);
 }
 
-:host([files-ng]) #open-button > .icon {
+#open-button > .icon {
   -webkit-mask-image: url(../images/files/ui/external_link.svg);
 }
 
@@ -216,7 +212,7 @@ iron-icon {
   -webkit-mask-image: url(../images/files/ui/info.svg);
 }
 
-:host-context(html.focus-outline-visible.files-ng) cr-button:not(:active):focus {
+:host-context(html.focus-outline-visible) cr-button:not(:active):focus {
   border: 2px solid var(--cros-focus-ring-color);
 }
 
