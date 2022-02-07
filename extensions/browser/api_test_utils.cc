@@ -140,7 +140,7 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
       !function->GetResultList()->GetListDeprecated().empty()) {
     const base::Value& single_result =
         function->GetResultList()->GetListDeprecated()[0];
-    return single_result.CreateDeepCopy();
+    return std::make_unique<base::Value>(single_result.Clone());
   }
   return nullptr;
 }
