@@ -201,6 +201,17 @@ class OzonePlatformScenic : public OzonePlatform,
     overlay_manager_ = std::make_unique<OverlayManagerScenic>();
   }
 
+  const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    static OzonePlatform::PlatformRuntimeProperties properties;
+
+    // This property is set when the GetPlatformRuntimeProperties is
+    // called on the gpu process side.
+    if (has_initialized_gpu())
+      properties.supports_native_pixmaps = true;
+
+    return properties;
+  }
+
   void AddInterfaces(mojo::BinderMap* binders) override {
     binders->Add<mojom::ScenicGpuService>(
         scenic_gpu_service_->GetBinderCallback(),

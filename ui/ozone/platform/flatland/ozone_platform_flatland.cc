@@ -193,6 +193,17 @@ class OzonePlatformFlatland : public OzonePlatform,
     // TODO(crbug.com/1230150): Add overlay manager.
   }
 
+  const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    static OzonePlatform::PlatformRuntimeProperties properties;
+
+    // This property is set when the GetPlatformRuntimeProperties is
+    // called on the gpu process side.
+    if (has_initialized_gpu())
+      properties.supports_native_pixmaps = true;
+
+    return properties;
+  }
+
   void AddInterfaces(mojo::BinderMap* binders) override {
     binders->Add<mojom::ScenicGpuService>(
         flatland_gpu_service_->GetBinderCallback(),

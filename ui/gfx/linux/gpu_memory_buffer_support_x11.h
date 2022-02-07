@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
     return supported_configs_;
   }
 
+  bool has_gbm_device() const { return device_ != nullptr; }
+
  private:
   friend class base::NoDestructor<GpuMemoryBufferSupportX11>;
 

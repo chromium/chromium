@@ -230,4 +230,12 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
 #endif
 }
 
+bool WaylandSurfaceFactory::IsGmbDeviceAvailable() {
+#if defined(WAYLAND_GBM)
+  return buffer_manager_->GetGbmDevice() != nullptr;
+#else
+  return false;
+#endif
+}
+
 }  // namespace ui

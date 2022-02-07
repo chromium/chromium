@@ -248,6 +248,9 @@ class OzonePlatformDrm : public OzonePlatform {
     surface_factory_ =
         std::make_unique<GbmSurfaceFactory>(drm_thread_proxy_.get());
 
+    // Native pixmaps are always available on ozone/drm.
+    host_properties_.supports_native_pixmaps = true;
+
     overlay_manager_ = std::make_unique<DrmOverlayManagerGpu>(
         drm_thread_proxy_.get(),
         args.allow_sync_and_real_buffer_page_flip_testing);

@@ -214,6 +214,19 @@ class OzonePlatformX11 : public OzonePlatform,
     return *properties;
   }
 
+  const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    static OzonePlatform::PlatformRuntimeProperties properties;
+
+    if (has_initialized_gpu() &&
+        ui::GpuMemoryBufferSupportX11::GetInstance()->has_gbm_device()) {
+      // This property is set when the GetPlatformRuntimeProperties is
+      // called on the gpu process side.
+      properties.supports_native_pixmaps = true;
+    }
+
+    return properties;
+  }
+
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
     // Native pixmap support is determined on gpu process via gpu extra info

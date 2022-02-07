@@ -192,6 +192,9 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // without a backing image via a wayland protocol.
     bool supports_non_backed_solid_color_buffers = false;
 
+    // Indicates whether the platform supports native pixmaps.
+    bool supports_native_pixmaps = false;
+
     // Wayland only: determines whether BufferQueue needs a background image to
     // be stacked below an AcceleratedWidget to make a widget opaque.
     bool needs_background_image = false;
