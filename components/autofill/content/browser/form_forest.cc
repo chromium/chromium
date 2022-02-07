@@ -35,8 +35,7 @@
 #define AFCRASHDUMP() base::debug::DumpWithoutCrashing()
 #endif
 
-namespace autofill {
-namespace internal {
+namespace autofill::internal {
 
 namespace {
 
@@ -611,8 +610,8 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
       };
       // Fields in frames whose permissions policy allows shared-autofill may
       // be filled if the |triggered_origin| is the main origin.
-      auto has_shared_autofill_permission = [&mutable_this](
-                                                LocalFrameToken frame_token) {
+      auto HasSharedAutofillPermission = [&mutable_this](
+                                             LocalFrameToken frame_token) {
         FrameData* frame = mutable_this.GetFrameData(frame_token);
         return frame && frame->driver && frame->driver->render_frame_host() &&
                frame->driver->render_frame_host()->IsFeatureEnabled(
@@ -625,9 +624,10 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
           it != field_type_map.end() ? it->second : UNKNOWN_TYPE;
       return field.origin == triggered_origin ||
              (field.origin == main_origin &&
+              HasSharedAutofillPermission(renderer_form->host_frame) &&
               !IsSensitiveFieldType(field_type)) ||
              (triggered_origin == main_origin &&
-              has_shared_autofill_permission(renderer_form->host_frame));
+              HasSharedAutofillPermission(renderer_form->host_frame));
     };
 
     renderer_form->fields.push_back(browser_field);
@@ -638,5 +638,4 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
   return renderer_forms;
 }
 
-}  // namespace internal
-}  // namespace autofill
+}  // namespace autofill::internal

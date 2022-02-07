@@ -17,8 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace autofill {
-namespace internal {
+namespace autofill::internal {
 
 // FormForest converts renderer forms into a browser form and vice versa.
 //
@@ -371,7 +370,6 @@ class FormForest {
       frame_datas_;
 };
 
-}  // namespace internal
-}  // namespace autofill
+}  // namespace autofill::internal
 
 #endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
