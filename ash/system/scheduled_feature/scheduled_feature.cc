@@ -76,21 +76,19 @@ ScheduledFeature::ScheduleType ScheduledFeature::GetScheduleType() const {
 }
 
 TimeOfDay ScheduledFeature::GetCustomStartTime() const {
-  if (active_user_pref_service_) {
-    return TimeOfDay(
-        active_user_pref_service_->GetInteger(prefs_path_custom_start_time_));
-  }
-
-  return TimeOfDay(kDefaultStartTimeOffsetMinutes);
+  return TimeOfDay(active_user_pref_service_
+                       ? active_user_pref_service_->GetInteger(
+                             prefs_path_custom_start_time_)
+                       : kDefaultStartTimeOffsetMinutes)
+      .SetClock(clock_);
 }
 
 TimeOfDay ScheduledFeature::GetCustomEndTime() const {
-  if (active_user_pref_service_) {
-    return TimeOfDay(
-        active_user_pref_service_->GetInteger(prefs_path_custom_end_time_));
-  }
-
-  return TimeOfDay(kDefaultEndTimeOffsetMinutes);
+  return TimeOfDay(active_user_pref_service_
+                       ? active_user_pref_service_->GetInteger(
+                             prefs_path_custom_end_time_)
+                       : kDefaultEndTimeOffsetMinutes)
+      .SetClock(clock_);
 }
 
 bool ScheduledFeature::IsNowWithinSunsetSunrise() const {

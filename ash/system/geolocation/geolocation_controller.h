@@ -103,6 +103,10 @@ class ASH_EXPORT GeolocationController
                      bool server_error,
                      const base::TimeDelta elapsed);
 
+  // Virtual so that it can be overridden by a fake implementation in unit tests
+  // that doesn't request actual geopositions.
+  virtual void RequestGeoposition();
+
  private:
   // Gets now time from the `clock_` or `base::Time::Now()` if `clock_` does
   // not exist.
@@ -115,10 +119,6 @@ class ASH_EXPORT GeolocationController
   // |possible_change_in_timezone| to indicate whether timezone might have
   // changed as a result of the geoposition change.
   void NotifyGeopositionChange(bool possible_change_in_timezone);
-
-  // Virtual so that it can be overridden by a fake implementation in unit tests
-  // that doesn't request actual geopositions.
-  virtual void RequestGeoposition();
 
   // Note that the below computation is intentionally performed every time
   // GetSunsetTime() or GetSunriseTime() is called rather than once whenever we
