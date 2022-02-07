@@ -85,8 +85,11 @@ DeactivatedSource& DeactivatedSource::operator=(DeactivatedSource&&) = default;
 
 StoreSourceResult::StoreSourceResult(
     Status status,
-    std::vector<DeactivatedSource> deactivated_sources)
-    : status(status), deactivated_sources(std::move(deactivated_sources)) {}
+    std::vector<DeactivatedSource> deactivated_sources,
+    absl::optional<base::Time> min_fake_report_time)
+    : status(status),
+      deactivated_sources(std::move(deactivated_sources)),
+      min_fake_report_time(min_fake_report_time) {}
 
 StoreSourceResult::~StoreSourceResult() = default;
 

@@ -484,6 +484,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   if (!statement.Run())
     return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
+  absl::optional<base::Time> min_fake_report_time;
+
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
     const StoredSource::Id source_id(db_->GetLastInsertRowId());
     const base::Time trigger_time = common_info.impression_time();
@@ -494,6 +496,11 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
                        /*priority=*/0, delegate_->NewReportID())) {
         return StoreSourceResult(StoreSourceResult::Status::kInternalError);
       }
+
+      if (!min_fake_report_time.has_value() ||
+          fake_report.report_time < *min_fake_report_time) {
+        min_fake_report_time = fake_report.report_time;
+      }
     }
   }
 
@@ -501,7 +508,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
   return StoreSourceResult(StoreSourceResult::Status::kSuccess,
-                           std::move(*deactivated_sources));
+                           std::move(*deactivated_sources),
+                           min_fake_report_time);
 }
 
 // Checks whether a new report is allowed to be stored for the given source

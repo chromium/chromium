@@ -1127,6 +1127,33 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
               ElementsAre(expected_report));
 }
 
+TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
+  const base::Time now = base::Time::Now();
+
+  const struct {
+    AttributionStorage::Delegate::RandomizedResponse randomized_response;
+    absl::optional<base::Time> expected;
+  } kTestCases[] = {
+      {absl::nullopt, absl::nullopt},
+      {std::vector<AttributionStorage::Delegate::FakeReport>(), absl::nullopt},
+      {std::vector<AttributionStorage::Delegate::FakeReport>{
+           {.trigger_data = 0, .report_time = now + base::Days(2)},
+           {.trigger_data = 0, .report_time = now + base::Days(1)},
+           {.trigger_data = 0, .report_time = now + base::Days(3)},
+       },
+       now + base::Days(1)},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    delegate()->set_randomized_response(test_case.randomized_response);
+
+    auto result = storage()->StoreSource(SourceBuilder().Build());
+    EXPECT_EQ(result.status,
+              AttributionStorage::StoreSourceResult::Status::kSuccess);
+    EXPECT_EQ(result.min_fake_report_time, test_case.expected);
+  }
+}
+
 TEST_F(AttributionStorageTest, TriggerPriority) {
   delegate()->set_max_attributions_per_source(1);
 

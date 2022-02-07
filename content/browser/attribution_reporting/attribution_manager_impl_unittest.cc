@@ -103,13 +103,20 @@ constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 
 // Uses the behavior of the real delegate other than disabling randomized
 // responses, in order to prevent test flakiness.
-class NoRandomizedResponseStorageDelegate
+class OverrideRandomizedResponseStorageDelegate
     : public AttributionStorageDelegateImpl {
  public:
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) const override {
-    return absl::nullopt;
+    return randomized_response_;
   }
+
+  void set_randomized_response(RandomizedResponse response) {
+    randomized_response_ = std::move(response);
+  }
+
+ private:
+  RandomizedResponse randomized_response_ = absl::nullopt;
 };
 
 class MockNetworkSender : public AttributionManagerImpl::NetworkSender {
@@ -174,11 +181,14 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   void CreateManager() {
+    auto storage_delegate =
+        std::make_unique<OverrideRandomizedResponseStorageDelegate>();
+    storage_delegate_ = storage_delegate.get();
+
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
         AttributionManagerImpl::DefaultIsReportAllowedCallback(
             browser_context_.get()),
-        dir_.GetPath(), mock_storage_policy_,
-        std::make_unique<NoRandomizedResponseStorageDelegate>(),
+        dir_.GetPath(), mock_storage_policy_, std::move(storage_delegate),
         absl::WrapUnique(network_sender_.get()));
   }
 
@@ -232,6 +242,7 @@ class AttributionManagerImplTest : public testing::Test {
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
   const raw_ptr<MockNetworkSender> network_sender_;
+  raw_ptr<OverrideRandomizedResponseStorageDelegate> storage_delegate_;
 
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
 };
@@ -1165,6 +1176,25 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
 
   histograms.ExpectTotalCount("Conversions.ExtraReportDelay2", 0);
   histograms.ExpectTotalCount("Conversions.TimeFromConversionToReportSend", 0);
+}
+
+// Regression test for https://crbug.com/1294519.
+TEST_F(AttributionManagerImplTest, FakeReport_UpdatesSendReportTimer) {
+  storage_delegate_->set_randomized_response(
+      std::vector<AttributionStorage::Delegate::FakeReport>{
+          {
+              .trigger_data = 0,
+              .report_time = base::Time::Now() + base::Days(1),
+          },
+      });
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  task_environment_.FastForwardBy(base::Days(1));
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
 
 }  // namespace content

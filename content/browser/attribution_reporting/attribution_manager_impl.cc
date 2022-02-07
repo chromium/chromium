@@ -253,6 +253,11 @@ void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
             if (!manager)
               return;
 
+            if (result.min_fake_report_time.has_value()) {
+              manager->UpdateGetReportsToSendTimer(
+                  *result.min_fake_report_time);
+            }
+
             manager->NotifySourcesChanged();
 
             for (const auto& source : result.deactivated_sources) {

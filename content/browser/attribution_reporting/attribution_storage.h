@@ -159,7 +159,8 @@ class AttributionStorage {
 
     explicit StoreSourceResult(
         Status status,
-        std::vector<DeactivatedSource> deactivated_sources = {});
+        std::vector<DeactivatedSource> deactivated_sources = {},
+        absl::optional<base::Time> min_fake_report_time = absl::nullopt);
 
     ~StoreSourceResult();
 
@@ -171,6 +172,9 @@ class AttributionStorage {
 
     Status status;
     std::vector<DeactivatedSource> deactivated_sources;
+    // The earliest report time for any fake reports stored alongside the
+    // source, if any.
+    absl::optional<base::Time> min_fake_report_time;
   };
 
   virtual ~AttributionStorage() = default;
