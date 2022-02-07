@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/files/file.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -65,12 +67,9 @@ class StringWriterDelegate : public WriterDelegate {
 
 StringWriterDelegate::StringWriterDelegate(size_t max_read_bytes,
                                            std::string* output)
-    : max_read_bytes_(max_read_bytes),
-      output_(output) {
-}
+    : max_read_bytes_(max_read_bytes), output_(output) {}
 
-StringWriterDelegate::~StringWriterDelegate() {
-}
+StringWriterDelegate::~StringWriterDelegate() {}
 
 bool StringWriterDelegate::PrepareOutput() {
   return true;
@@ -116,38 +115,23 @@ void SetPosixFilePermissions(int fd, int mode) {
 
 }  // namespace
 
-// TODO(satorux): The implementation assumes that file names in zip files
-// are encoded in UTF-8. This is true for zip files created by Zip()
-// function in zip.h, but not true for user-supplied random zip files.
-ZipReader::EntryInfo::EntryInfo(const std::string& file_name_in_zip,
+ZipReader::EntryInfo::EntryInfo(base::FilePath file_path,
+                                std::string file_path_in_original_encoding,
                                 const unz_file_info& raw_file_info)
-    : file_path_(base::FilePath::FromUTF8Unsafe(file_name_in_zip)),
-      is_directory_(false),
-      is_unsafe_(false),
-      is_encrypted_(false),
+    : file_path_(std::move(file_path)),
+      file_path_in_original_encoding_(
+          std::move(file_path_in_original_encoding)),
       posix_mode_(0) {
   original_size_ = raw_file_info.uncompressed_size;
 
   // Directory entries in zip files end with "/".
-  is_directory_ = base::EndsWith(file_name_in_zip, "/",
-                                 base::CompareCase::INSENSITIVE_ASCII);
+  is_directory_ = base::EndsWith(file_path_in_original_encoding_, "/");
 
   // Check the file name here for directory traversal issues.
-  is_unsafe_ = file_path_.ReferencesParent();
-
-  // We also consider that the file name is unsafe, if it's invalid UTF-8.
-  std::u16string file_name_utf16;
-  if (!base::UTF8ToUTF16(file_name_in_zip.data(), file_name_in_zip.size(),
-                         &file_name_utf16)) {
-    is_unsafe_ = true;
-  }
-
   // We also consider that the file name is unsafe, if it's absolute.
   // On Windows, IsAbsolute() returns false for paths starting with "/".
-  if (file_path_.IsAbsolute() ||
-      base::StartsWith(file_name_in_zip, "/",
-                       base::CompareCase::INSENSITIVE_ASCII))
-    is_unsafe_ = true;
+  is_unsafe_ = file_path_.ReferencesParent() || file_path_.IsAbsolute() ||
+               base::StartsWith(file_path_in_original_encoding_, "/");
 
   // Whether the file is encrypted is bit 0 of the flag.
   is_encrypted_ = raw_file_info.flag & 1;
@@ -256,21 +240,30 @@ bool ZipReader::OpenCurrentEntryInZip() {
   DCHECK(zip_file_);
 
   unz_file_info raw_file_info = {};
-  char raw_file_name_in_zip[internal::kZipMaxPath] = {};
-  const int result = unzGetCurrentFileInfo(zip_file_,
-                                           &raw_file_info,
-                                           raw_file_name_in_zip,
-                                           sizeof(raw_file_name_in_zip) - 1,
-                                           NULL,  // extraField.
-                                           0,  // extraFieldBufferSize.
-                                           NULL,  // szComment.
-                                           0);  // commentBufferSize.
+  char file_path_in_zip[internal::kZipMaxPath] = {};
+  const int result = unzGetCurrentFileInfo(
+      zip_file_, &raw_file_info, file_path_in_zip, sizeof(file_path_in_zip) - 1,
+      nullptr,  // extraField.
+      0,        // extraFieldBufferSize.
+      nullptr,  // szComment.
+      0);       // commentBufferSize.
   if (result != UNZ_OK)
     return false;
-  if (raw_file_name_in_zip[0] == '\0')
+
+  // Convert file path from original encoding to Unicode.
+  const base::StringPiece file_path_in_original_encoding(file_path_in_zip);
+  std::u16string file_path_in_utf16;
+  const char* const encoding = encoding_.empty() ? "UTF-8" : encoding_.c_str();
+  if (!base::CodepageToUTF16(file_path_in_original_encoding, encoding,
+                             base::OnStringConversionError::SUBSTITUTE,
+                             &file_path_in_utf16)) {
+    LOG(ERROR) << "Cannot convert file path from encoding " << encoding;
     return false;
-  current_entry_info_.reset(
-      new EntryInfo(raw_file_name_in_zip, raw_file_info));
+  }
+
+  current_entry_info_.reset(new EntryInfo(
+      base::FilePath::FromUTF16Unsafe(file_path_in_utf16),
+      std::string(file_path_in_original_encoding), raw_file_info));
   return true;
 }
 
@@ -440,7 +433,7 @@ bool ZipReader::OpenInternal() {
 }
 
 void ZipReader::Reset() {
-  zip_file_ = NULL;
+  zip_file_ = nullptr;
   num_entries_ = 0;
   reached_end_ = false;
   current_entry_info_.reset();
@@ -453,9 +446,8 @@ void ZipReader::ExtractChunk(base::File output_file,
                              const int64_t offset) {
   char buffer[internal::kZipBufSize];
 
-  const int num_bytes_read = unzReadCurrentFile(zip_file_,
-                                                buffer,
-                                                internal::kZipBufSize);
+  const int num_bytes_read =
+      unzReadCurrentFile(zip_file_, buffer, internal::kZipBufSize);
 
   if (num_bytes_read == 0) {
     unzCloseCurrentFile(zip_file_);

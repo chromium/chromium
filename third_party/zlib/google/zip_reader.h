@@ -80,7 +80,8 @@ class ZipReader {
   // a zip file.
   class EntryInfo {
    public:
-    EntryInfo(const std::string& filename_in_zip,
+    EntryInfo(base::FilePath file_path,
+              std::string file_path_in_original_encoding,
               const unz_file_info& raw_file_info);
 
     EntryInfo(const EntryInfo&) = delete;
@@ -89,6 +90,14 @@ class ZipReader {
     // Returns the file path. The path is usually relative like
     // "foo/bar.txt", but if it's absolute, is_unsafe() returns true.
     const base::FilePath& file_path() const { return file_path_; }
+
+    // Returns the file path in its original encoding as it is stored in the ZIP
+    // archive. The encoding is not specified here. It might not be UTF-8, and
+    // the caller needs to use other means to determine the encoding if it wants
+    // to interpret this file path correctly.
+    const std::string& file_path_in_original_encoding() const {
+      return file_path_in_original_encoding_;
+    }
 
     // Returns the size of the original file (i.e. after uncompressed).
     // Returns 0 if the entry is a directory.
@@ -121,7 +130,8 @@ class ZipReader {
     int posix_mode() const { return posix_mode_; }
 
    private:
-    const base::FilePath file_path_;
+    base::FilePath file_path_;
+    std::string file_path_in_original_encoding_;
     int64_t original_size_;
     base::Time last_modified_;
     bool is_directory_;
@@ -154,6 +164,10 @@ class ZipReader {
   // destructor of the class, so you usually don't need to call this.
   void Close();
 
+  // Sets the encoding of file paths in the ZIP archive.
+  // By default, file paths are assumed to be in UTF-8.
+  void SetEncoding(std::string encoding) { encoding_ = std::move(encoding); }
+
   // Returns true if there is at least one entry to read. This function is
   // used to scan entries with AdvanceToNextEntry(), like:
   //
@@ -167,12 +181,12 @@ class ZipReader {
   bool AdvanceToNextEntry();
 
   // Opens the current entry in the zip file. On success, returns true and
-  // updates the the current entry state (i.e. current_entry_info() is
-  // updated). This function should be called before operations over the
-  // current entry like ExtractCurrentEntryToFile().
+  // updates the current entry state (i.e. current_entry_info() is updated).
+  // This function should be called before operations over the current entry
+  // like ExtractCurrentEntryToFile().
   //
-  // Note that there is no CloseCurrentEntryInZip(). The the current entry
-  // state is reset automatically as needed.
+  // Note that there is no CloseCurrentEntryInZip(). The current entry state is
+  // reset automatically as needed.
   bool OpenCurrentEntryInZip();
 
   // Extracts |num_bytes_to_extract| bytes of the current entry to |delegate|,
@@ -210,9 +224,7 @@ class ZipReader {
 
   // Returns the current entry info. Returns NULL if the current entry is
   // not yet opened. OpenCurrentEntryInZip() must be called beforehand.
-  EntryInfo* current_entry_info() const {
-    return current_entry_info_.get();
-  }
+  EntryInfo* current_entry_info() const { return current_entry_info_.get(); }
 
   // Returns the number of entries in the zip file.
   // Open() must be called beforehand.
@@ -233,6 +245,7 @@ class ZipReader {
                     const ProgressCallback& progress_callback,
                     const int64_t offset);
 
+  std::string encoding_;
   unzFile zip_file_;
   int num_entries_;
   bool reached_end_;

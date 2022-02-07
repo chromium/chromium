@@ -18,6 +18,7 @@ if (build_with_chromium) {
     ]
     deps = [
       "//base",
+      "//base:i18n",
       "//third_party/zlib:minizip",
     ]
   }

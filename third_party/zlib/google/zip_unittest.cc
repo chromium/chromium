@@ -346,16 +346,14 @@ TEST_F(ZipTest, UnzipEvil) {
 TEST_F(ZipTest, UnzipEvil2) {
   base::FilePath path;
   ASSERT_TRUE(GetTestDataDirectory(&path));
-  // The zip file contains an evil file with invalid UTF-8 in its file
-  // name.
+  // The ZIP file contains a file with invalid UTF-8 in its file name.
   path = path.AppendASCII("evil_via_invalid_utf8.zip");
   // See the comment at UnzipEvil() for why we do this.
   base::FilePath output_dir = test_dir_.AppendASCII("out");
-  // This should fail as it contains an evil file.
-  ASSERT_FALSE(zip::Unzip(path, output_dir));
-  base::FilePath evil_file = output_dir;
-  evil_file = evil_file.AppendASCII("../evil.txt");
-  ASSERT_FALSE(base::PathExists(evil_file));
+  ASSERT_TRUE(zip::Unzip(path, output_dir));
+  ASSERT_TRUE(base::PathExists(
+      output_dir.Append(base::FilePath::FromUTF8Unsafe(".�.\\evil.txt"))));
+  ASSERT_FALSE(base::PathExists(output_dir.AppendASCII("../evil.txt")));
 }
 
 TEST_F(ZipTest, UnzipWithFilter) {
