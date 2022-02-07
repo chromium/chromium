@@ -239,7 +239,8 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // InstanceRegistry, call MaybeModifyInstance to check the saved app id and
   // the expected shelf_app_id, and if they are not consistent, modify the app
   // id to use `shelf_app_id`.
-  MaybeModifyInstance(primary_account_profile, window, shelf_app_id);
+  if (!shelf_app_id.empty())
+    MaybeModifyInstance(primary_account_profile, window, shelf_app_id);
   return shelf_app_id;
 }
 
