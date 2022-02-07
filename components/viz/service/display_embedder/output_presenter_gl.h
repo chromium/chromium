@@ -65,9 +65,10 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) final;
+  void ScheduleOneOverlay(const OverlayCandidate& overlay,
+                          ScopedOverlayAccess* access) final;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                         std::vector<ScopedOverlayAccess*> accesses) final;
-  void ScheduleBackground(Image* image) final;
 
 #if BUILDFLAG(IS_MAC)
   void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) final;

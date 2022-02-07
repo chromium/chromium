@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
@@ -369,26 +370,24 @@ void OutputPresenterGL::SchedulePrimaryPlane(
           /*hdr_metadata=*/absl::nullopt));
 }
 
-void OutputPresenterGL::ScheduleBackground(Image* image) {
-  auto* presenter_image = static_cast<PresenterImageGL*>(image);
-  // Background is not seen by user, and is created before buffer queue buffers.
-  // So fence is not needed.
-  auto* gl_image = presenter_image->GetGLImage(nullptr);
-
-  // Background is also z-order 0.
-  constexpr int kPlaneZOrder = INT32_MIN;
-  // Background always uses the full texture.
-  constexpr gfx::RectF kUVRect(0.f, 0.f, 1.0f, 1.0f);
-  gl_surface_->ScheduleOverlayPlane(
-      gl_image, /*gpu_fence=*/nullptr,
-      gfx::OverlayPlaneData(kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE,
-                            gfx::RectF(),
-                            /*crop_rect=*/kUVRect,
-                            /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
-                            /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone,
-                            /*rounded_corners=*/gfx::RRectF(),
-                            /*color_space=*/presenter_image->color_space(),
-                            /*hdr_metadata=*/absl::nullopt));
+void OutputPresenterGL::ScheduleOneOverlay(const OverlayCandidate& overlay,
+                                           ScopedOverlayAccess* access) {
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+  auto* gl_image = access ? access->gl_image() : nullptr;
+  if (gl_image || overlay.solid_color.has_value()) {
+    DCHECK(!overlay.gpu_fence_id);
+    gl_surface_->ScheduleOverlayPlane(
+        gl_image, access ? TakeGpuFence(access->TakeAcquireFences()) : nullptr,
+        gfx::OverlayPlaneData(
+            overlay.plane_z_order, overlay.transform, overlay.display_rect,
+            overlay.uv_rect, !overlay.is_opaque,
+            ToEnclosingRect(overlay.damage_rect), overlay.opacity,
+            overlay.priority_hint, overlay.rounded_corners, overlay.color_space,
+            overlay.hdr_metadata, overlay.solid_color));
+  }
+#else   //  BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+  NOTREACHED();
+#endif  //  BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(

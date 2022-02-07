@@ -14,8 +14,10 @@
 #include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/viz/common/switches.h"
+#include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -24,8 +26,10 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_surface.h"
 
@@ -41,11 +45,6 @@ NOINLINE void CheckForLoopFailuresBufferQueue() {
   }
   g_last_reshape_failure = now;
 }
-
-// See |needs_background_image| for details.
-constexpr size_t kNumberOfBackgroundImages = 2u;
-constexpr gfx::Size kBackgroundImageSize(4, 4);
-
 }  // namespace
 
 namespace viz {
@@ -254,7 +253,8 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     const absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
   // See |needs_background_image|.
-  MaybeScheduleBackgroundImage();
+  MaybeScheduleBackgroundImage(plane.has_value() ? plane->display_rect
+                                                 : gfx::RectF{4.f, 4.f});
 
   if (plane) {
     // If the current_image_ is nullptr, it means there is no change on the
@@ -330,8 +330,62 @@ const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
       image_mailbox, std::make_pair(color, std::move(solid_color))));
   return image_mailbox;
 }
-
 #endif
+
+SkiaOutputDeviceBufferQueue::OverlayData*
+SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(
+    const gpu::Mailbox& mailbox) {
+  if (!mailbox.IsSharedImage())
+    return nullptr;
+
+  auto it = overlays_.find(mailbox);
+  if (it != overlays_.end()) {
+    // If the overlay is in |overlays_|, we will reuse it, and a ref will be
+    // added to keep it alive. This ref will be removed, when the overlay is
+    // replaced by a new frame.
+    it->Ref();
+    return &*it;
+  }
+
+  auto shared_image = representation_factory_->ProduceOverlay(mailbox);
+  // When display is re-opened, the first few frames might not have video
+  // resource ready. Possible investigation crbug.com/1023971.
+  if (!shared_image) {
+    LOG(ERROR) << "Invalid mailbox.";
+    return nullptr;
+  }
+
+  // Fuchsia does not provide a GLImage overlay.
+#if BUILDFLAG(IS_FUCHSIA)
+  const bool needs_gl_image = false;
+#else
+  const bool needs_gl_image = true;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+  // TODO(penghuang): do not depend on GLImage.
+  auto shared_image_access =
+      shared_image->BeginScopedReadAccess(needs_gl_image);
+  if (!shared_image_access) {
+    LOG(ERROR) << "Could not access SharedImage for read.";
+    return nullptr;
+  }
+
+  // TODO(penghuang): do not depend on GLImage.
+  DLOG_IF(FATAL, needs_gl_image && !shared_image_access->gl_image())
+      << "Cannot get GLImage.";
+
+  bool result;
+  std::tie(it, result) = overlays_.emplace(std::move(shared_image),
+                                           std::move(shared_image_access));
+  DCHECK(result);
+  DCHECK(it->unique());
+
+  // Add an extra ref to keep it alive. This extra ref will be removed when
+  // the backing is not used by system compositor anymore.
+  it->Ref();
+  return &*it;
+}
+
 void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   DCHECK(pending_overlay_mailboxes_.empty());
@@ -352,58 +406,11 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     }
 #endif
 
-    if (!overlay.mailbox.IsSharedImage())
+    auto* overlay_data = GetOrCreateOverlayData(overlay.mailbox);
+    if (!overlay_data)
       continue;
 
-    auto it = overlays_.find(overlay.mailbox);
-    if (it != overlays_.end()) {
-      // If the overlay is in |overlays_|, we will reuse it, and a ref will be
-      // added to keep it alive. This ref will be removed, when the overlay is
-      // replaced by a new frame.
-      it->Ref();
-      accesses[i] = it->scoped_read_access();
-      pending_overlay_mailboxes_.emplace_back(overlay.mailbox);
-      continue;
-    }
-
-    auto shared_image =
-        representation_factory_->ProduceOverlay(overlay.mailbox);
-    // When display is re-opened, the first few frames might not have video
-    // resource ready. Possible investigation crbug.com/1023971.
-    if (!shared_image) {
-      LOG(ERROR) << "Invalid mailbox.";
-      continue;
-    }
-
-    // Fuchsia does not provide a GLImage overlay.
-#if BUILDFLAG(IS_FUCHSIA)
-    const bool needs_gl_image = false;
-#else
-    const bool needs_gl_image = true;
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-    // TODO(penghuang): do not depend on GLImage.
-    auto shared_image_access =
-        shared_image->BeginScopedReadAccess(needs_gl_image);
-    if (!shared_image_access) {
-      LOG(ERROR) << "Could not access SharedImage for read.";
-      continue;
-    }
-
-    // TODO(penghuang): do not depend on GLImage.
-    DLOG_IF(FATAL, needs_gl_image && !shared_image_access->gl_image())
-        << "Cannot get GLImage.";
-
-    bool result;
-    std::tie(it, result) = overlays_.emplace(std::move(shared_image),
-                                             std::move(shared_image_access));
-    DCHECK(result);
-    DCHECK(it->unique());
-
-    // Add an extra ref to keep it alive. This extra ref will be removed when
-    // the backing is not used by system compositor anymore.
-    it->Ref();
-    accesses[i] = it->scoped_read_access();
+    accesses[i] = overlay_data->scoped_read_access();
     pending_overlay_mailboxes_.emplace_back(overlay.mailbox);
   }
 
@@ -650,9 +657,6 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
 
   overlay_transform_ = transform;
 
-  // See |needs_background_image|.
-  MaybeAllocateBackgroundImages();
-
   if (color_space_ == color_space && image_size_ == size)
     return true;
   color_space_ = color_space;
@@ -686,38 +690,34 @@ bool SkiaOutputDeviceBufferQueue::RecreateImages() {
   return !images_.empty();
 }
 
-void SkiaOutputDeviceBufferQueue::MaybeAllocateBackgroundImages() {
-  if (!needs_background_image_ || !background_images_.empty())
-    return;
-
-  background_images_ = presenter_->AllocateImages(
-      color_space_, kBackgroundImageSize, kNumberOfBackgroundImages);
-  DCHECK(!background_images_.empty());
-
-  // Clear the background images to avoid undesired artifacts.
-  for (auto& image : background_images_) {
-    image->BeginWriteSkia();
-    image->sk_surface()->getCanvas()->clear(SkColors::kTransparent);
-    image->EndWriteSkia(/*force_flush*/ true);
-  }
-}
-
-void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
+void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage(
+    const gfx::RectF& display_rect) {
   if (!needs_background_image_)
     return;
 
-  if (current_background_image_)
-    current_background_image_->EndPresent({});
-  current_background_image_ = GetNextBackgroundImage();
-  current_background_image_->BeginPresent();
-  presenter_->ScheduleBackground(current_background_image_);
-}
+  gpu::SharedImageRepresentationOverlay::ScopedReadAccess* access = nullptr;
+  OverlayCandidate candidate;
+  candidate.color_space = color_space_;
+  candidate.display_rect = display_rect;
+  candidate.solid_color = SK_ColorTRANSPARENT;
+  candidate.plane_z_order = INT32_MIN;
 
-OutputPresenter::Image* SkiaOutputDeviceBufferQueue::GetNextBackgroundImage() {
-  DCHECK_EQ(background_images_.size(), kNumberOfBackgroundImages);
-  return current_background_image_ == background_images_.front().get()
-             ? background_images_.back().get()
-             : background_images_.front().get();
+#if defined(USE_OZONE)
+  if (!supports_non_backed_solid_color_images_) {
+    auto mailbox = GetImageMailboxForColor(candidate.solid_color.value());
+    DCHECK(mailbox.IsSharedImage());
+
+    auto* overlay_data = GetOrCreateOverlayData(mailbox);
+    DCHECK(overlay_data);
+
+    access = overlay_data->scoped_read_access();
+    pending_overlay_mailboxes_.emplace_back(mailbox);
+  }
+#else   //  defined(USE_OZONE)
+  NOTREACHED();
+#endif  //  !defined(USE_OZONE)
+
+  presenter_->ScheduleOneOverlay(candidate, access);
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(

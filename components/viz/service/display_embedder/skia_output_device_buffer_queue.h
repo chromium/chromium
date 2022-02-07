@@ -90,9 +90,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   gfx::Size GetSwapBuffersSize();
   bool RecreateImages();
 
-  void MaybeAllocateBackgroundImages();
-  void MaybeScheduleBackgroundImage();
-  OutputPresenter::Image* GetNextBackgroundImage();
+  void MaybeScheduleBackgroundImage(const gfx::RectF& display_rect);
+
+  // Given an overlay mailbox, returns the corresponding OverlayData* from
+  // |overlays_|. Inserts an OverlayData if mailbox is not in |overlays_|.
+  OverlayData* GetOrCreateOverlayData(const gpu::Mailbox& mailbox);
 
   std::unique_ptr<OutputPresenter> presenter_;
 
@@ -154,14 +156,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // it for opaque accelerated widgets and event wiring. Please see details on
   // the number of background images below.
   bool needs_background_image_ = false;
-  // 4x4 small images that will be scaled to cover an opaque region.
-  // It's required to have two background images to be scheduled so that
-  // Desktop Wayland compositors are able to apply state changes to root
-  // surfaces. Otherwise, they unref the attached buffer after processing it
-  // and never update the state changes of the root surface, which leads to
-  // a broken resize opetion.
-  std::vector<std::unique_ptr<OutputPresenter::Image>> background_images_;
-  OutputPresenter::Image* current_background_image_ = nullptr;
   // Whether the platform supports non-backed solid color overlays. The Wayland
   // backend is able to delegate these overlays without buffer backings
   // depending on the availability of a certain protocol.
