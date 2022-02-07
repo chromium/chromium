@@ -11,8 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-namespace performance_manager {
-namespace features {
+namespace performance_manager::features {
 
 const base::Feature kRunOnMainThread{"RunOnMainThread",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -55,23 +54,4 @@ const base::Feature kHighPMFDiscardPolicy{"HighPMFDiscardPolicy",
 const base::Feature kBFCachePerformanceManagerPolicy{
     "BFCachePerformanceManagerPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
-constexpr base::FeatureParam<bool>
-    BFCachePerformanceManagerPolicyParams::kFlushOnModeratePressure;
-
-constexpr base::FeatureParam<int>
-    BFCachePerformanceManagerPolicyParams::kDelayToFlushBackgroundTabInSeconds;
-
-// static
-BFCachePerformanceManagerPolicyParams
-BFCachePerformanceManagerPolicyParams::GetParams() {
-  BFCachePerformanceManagerPolicyParams params;
-  params.flush_on_moderate_pressure_ =
-      BFCachePerformanceManagerPolicyParams::kFlushOnModeratePressure.Get();
-  params.delay_to_flush_background_tab_ = base::Seconds(
-      BFCachePerformanceManagerPolicyParams::kDelayToFlushBackgroundTabInSeconds
-          .Get());
-  return params;
-}
-
-}  // namespace features
-}  // namespace performance_manager
+}  // namespace performance_manager::features

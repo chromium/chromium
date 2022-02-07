@@ -18,10 +18,32 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
+
+// Whether or not the BFCache of all pages should be flushed when the system
+// is under *moderate* memory pressure. The policy always flushes the bfcache
+// under critical pressure.
+bool IsFlushOnModeratePressureEnabled() {
+  static constexpr base::FeatureParam<bool> flush_on_moderate_pressure{
+      &features::kBFCachePerformanceManagerPolicy, "flush_on_moderate_pressure",
+      false};
+
+  return flush_on_moderate_pressure.Get();
+}
+
+// The back forward cache should be flushed after the tab goes to background
+// and elapses this delay. If the value is negative (such as -1), the back
+// forward cache in the background tabs will not be flushed.
+base::TimeDelta DelayToFlushBackgroundTab() {
+  static constexpr base::FeatureParam<int>
+      delay_to_flush_background_tab_in_seconds{
+          &features::kBFCachePerformanceManagerPolicy,
+          "delay_to_flush_background_tab_in_seconds", -1};
+
+  return base::Seconds(delay_to_flush_background_tab_in_seconds.Get());
+}
 
 bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
   // TODO(crbug.com/1211368): Use PageState when that actually works.
@@ -52,13 +74,8 @@ void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy) {
 }  // namespace
 
 BFCachePolicy::BFCachePolicy()
-    : flush_on_moderate_pressure_{features::
-                                      BFCachePerformanceManagerPolicyParams::
-                                          GetParams()
-                                              .flush_on_moderate_pressure()},
-      delay_to_flush_background_tab_{
-          features::BFCachePerformanceManagerPolicyParams::GetParams()
-              .delay_to_flush_background_tab()} {}
+    : flush_on_moderate_pressure_{IsFlushOnModeratePressureEnabled()},
+      delay_to_flush_background_tab_{DelayToFlushBackgroundTab()} {}
 
 BFCachePolicy::~BFCachePolicy() = default;
 
@@ -154,5 +171,4 @@ void BFCachePolicy::OnMemoryPressure(
   }
 }
 
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies
