@@ -92,7 +92,6 @@ static const char kRedirectUrl[] = "https://example.com/";
 base::WeakPtr<SpdySession> CreateSpdyProxySession(
     const url::SchemeHostPort& destination,
     HttpNetworkSession* http_session,
-    SpdySessionDependencies* session_deps,
     const SpdySessionKey& key,
     const CommonConnectJobParams* common_connect_job_params) {
   EXPECT_FALSE(http_session->spdy_session_pool()->FindAvailableSession(
@@ -269,8 +268,8 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
 
   // Creates the SPDY session and stream.
   spdy_session_ = CreateSpdyProxySession(
-      url::SchemeHostPort(url_), session_.get(), &session_deps_,
-      endpoint_spdy_session_key_, common_connect_job_params_.get());
+      url::SchemeHostPort(url_), session_.get(), endpoint_spdy_session_key_,
+      common_connect_job_params_.get());
 
   base::WeakPtr<SpdyStream> spdy_stream(
       CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, spdy_session_, url_,
