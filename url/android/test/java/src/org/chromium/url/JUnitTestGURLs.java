@@ -50,6 +50,7 @@ public class JUnitTestGURLs {
     public static final String TEXT_FRAGMENT_URL = "https://www.example.com/#:~:text=selector";
     public static final String MULTI_TEXT_FRAGMENT_URL =
             "https://www.example.com/#:~:text=selector1&text=selector2&text=selector3";
+    public static final String INVALID_URL = "http://0x100.0/";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -121,6 +122,8 @@ public class JUnitTestGURLs {
                 "100,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,25,16,false,false,https://www.example.com/#:~:text=selector");
         map.put(MULTI_TEXT_FRAGMENT_URL,
                 "131,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,25,47,false,false,https://www.example.com/#:~:text=selector1&text=selector2&text=selector3");
+        map.put(INVALID_URL,
+                "73,1,false,0,4,0,-1,0,-1,7,7,0,-1,14,1,0,-1,0,-1,false,false,http://0x100.0/");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

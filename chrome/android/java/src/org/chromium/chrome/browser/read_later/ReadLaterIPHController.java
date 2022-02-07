@@ -32,10 +32,15 @@ public class ReadLaterIPHController {
      */
     public ReadLaterIPHController(
             Activity activity, View toolbarMenuButton, AppMenuHandler appMenuHandler) {
+        this(activity, toolbarMenuButton, appMenuHandler,
+                new UserEducationHelper(activity, new Handler(Looper.getMainLooper())));
+    }
+
+    ReadLaterIPHController(Activity activity, View toolbarMenuButton, AppMenuHandler appMenuHandler,
+            UserEducationHelper userEducationHelper) {
         mToolbarMenuButton = toolbarMenuButton;
         mAppMenuHandler = appMenuHandler;
-        mUserEducationHelper =
-                new UserEducationHelper(activity, new Handler(Looper.getMainLooper()));
+        mUserEducationHelper = userEducationHelper;
     }
 
     /**

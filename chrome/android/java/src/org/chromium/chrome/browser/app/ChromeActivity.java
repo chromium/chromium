@@ -2531,7 +2531,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.delete_from_reading_list_menu_id) {
-            ReadingListUtils.deleteFromReadingList(mSnackbarManager, /*activity=*/this, currentTab);
+            ReadingListUtils.deleteFromReadingList(
+                    new BookmarkModel(), mSnackbarManager, /*activity=*/this, currentTab);
             RecordUserAction.record("MobileMenuDeleteFromReadingList");
             return true;
         }

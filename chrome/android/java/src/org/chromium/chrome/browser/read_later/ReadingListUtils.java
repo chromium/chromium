@@ -29,6 +29,7 @@ import java.util.List;
 /** Utility functions for reading list feature. */
 public final class ReadingListUtils {
     private static Boolean sReadingListSupportedForTesting;
+    private static Boolean sSkipShowSaveFlowForTesting;
 
     /** Returns whether the URL can be added as reading list article. */
     public static boolean isReadingListSupported(GURL url) {
@@ -41,9 +42,8 @@ public final class ReadingListUtils {
     }
 
     /** Removes from the reading list the entry for the current tab. */
-    public static void deleteFromReadingList(
+    public static void deleteFromReadingList(final BookmarkModel bookmarkModel,
             SnackbarManager snackbarManager, Activity activity, Tab currentTab) {
-        final BookmarkModel bookmarkModel = new BookmarkModel();
         // This undo controller will dismiss itself when any action is taken.
         BookmarkUndoController.createOneshotBookmarkUndoController(
                 activity, bookmarkModel, snackbarManager);
@@ -70,14 +70,14 @@ public final class ReadingListUtils {
      *
      * @param activity The current Activity.
      * @param bottomsheetController The BottomsheetController, used to show the save flow.
-     * @param bookmarkModel The BookmarkModel which is used for bookmark operations.
+     * @param bookmarkBridge The BookmarkBridge which is used for bookmark operations.
      * @param bookmarkId The existing BookmarkId.
      * @param bookmarkType The intended bookmark type.
      * @return Whether the given bookmark item has been type-swapped and the save flow shown.
      */
     public static boolean maybeTypeSwapAndShowSaveFlow(@NonNull Activity activity,
             @NonNull BottomSheetController bottomsheetController,
-            @NonNull BookmarkModel bookmarkModel, @NonNull BookmarkId bookmarkId,
+            @NonNull BookmarkBridge bookmarkBridge, @NonNull BookmarkId bookmarkId,
             @BookmarkType int bookmarkType) {
         if (!ReadingListFeatures.shouldAllowBookmarkTypeSwapping() || bookmarkId == null
                 || bookmarkId.getType() != BookmarkType.NORMAL
@@ -90,7 +90,8 @@ public final class ReadingListUtils {
         List<BookmarkId> bookmarkIds = new ArrayList<>();
         bookmarkIds.add(bookmarkId);
         ReadingListUtils.typeSwapBookmarksIfNecessary(
-                bookmarkModel, bookmarkIds, bookmarkModel.getReadingListFolder());
+                bookmarkBridge, bookmarkIds, bookmarkBridge.getReadingListFolder());
+        if (sSkipShowSaveFlowForTesting) return true;
         BookmarkUtils.showSaveFlow(activity, bottomsheetController,
                 /*fromExplicitTrackUi=*/false, bookmarkIds.get(0), /*wasBookmarkMoved=*/true);
         return true;
@@ -139,5 +140,10 @@ public final class ReadingListUtils {
     /** For cases where GURLs are faked for testing (e.g. test pages). */
     public static void setReadingListSupportedForTesting(Boolean supported) {
         sReadingListSupportedForTesting = supported;
+    }
+
+    /** For cases where we don't want to mock the entire bookmarks save flow infra. */
+    public static void setSkipShowSaveFlowForTesting(Boolean skipShowSaveFlowForTesting) {
+        sSkipShowSaveFlowForTesting = skipShowSaveFlowForTesting;
     }
 }
