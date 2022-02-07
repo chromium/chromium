@@ -2626,7 +2626,14 @@ void Textfield::StopBlinkingCursor() {
 
 void Textfield::OnCursorBlinkTimerFired() {
   DCHECK(ShouldBlinkCursor());
-  DCHECK_EQ(CalculateCursorViewBounds(), cursor_view_->bounds());
+  // TODO(crbug.com/1294712): The cursor position is not updated appropriately
+  // when locale changes from a left-to-right script to a right-to-left script.
+  // Thus the cursor is displayed at a wrong position immediately after the
+  // locale change. As a band-aid solution, we update the cursor here, so that
+  // the cursor can be at the wrong position only up until the next blink. It
+  // would be better to detect locale change explicitly (how?) and update
+  // there.
+  UpdateCursorViewPosition();
   cursor_view_->SetVisible(!cursor_view_->GetVisible());
 }
 
