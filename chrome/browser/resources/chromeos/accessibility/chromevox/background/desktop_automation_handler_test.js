@@ -161,14 +161,22 @@ TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'DatalistSelection', function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
-    <input list="list">
+    <input aria-label="Choose one" list="list">
     <datalist id="list">
     <option>foo</option>
     <option>bar</option>
     </datalist>
   `;
-      this.runWithLoadedTree(site, function(root) {
-        root.find({role: RoleType.TEXT_FIELD_WITH_COMBO_BOX}).focus();
+      this.runWithLoadedTree(site, async function(root) {
+        const combobox = root.find({
+          role: RoleType.TEXT_FIELD_WITH_COMBO_BOX,
+          attributes: {name: 'Choose one'}
+        });
+        assertTrue(!!combobox);
+        combobox.focus();
+        await new Promise(r => combobox.addEventListener(EventType.FOCUS, r));
+
+        // The combobox is now actually focused, safe to send arrows.
         mockFeedback.call(press(KeyCode.DOWN))
             .expectSpeech('foo', 'List item', ' 1 of 2 ')
             .expectBraille('foo lstitm 1/2 (x)')
