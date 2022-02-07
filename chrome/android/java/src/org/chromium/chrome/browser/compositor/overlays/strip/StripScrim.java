@@ -9,14 +9,14 @@ import org.chromium.chrome.R;
  */
 public class StripScrim {
     private float mDrawX;
-    private float mDrawY;
     private float mWidth;
+    private float mHeight;
+    private float mAlpha;
     private boolean mIsShowing;
 
-    public StripScrim(float width) {
-        mWidth = width;
-        mDrawY = 0.f;
-        mDrawX = 0.f;
+    public StripScrim(float width, float height) {
+        this.mWidth = width;
+        this.mHeight = height;
     }
 
     public float getX() {
@@ -27,16 +27,20 @@ public class StripScrim {
         this.mDrawX = mDrawX;
     }
 
-    public float getY() {
-        return mDrawY;
-    }
-
     public float getWidth() {
         return mWidth;
     }
 
+    public float getHeight() {
+        return mHeight;
+    }
+
     public void setWidth(float mWidth) {
         this.mWidth = mWidth;
+    }
+
+    public void setHeight(float mHeight) {
+        this.mHeight = mHeight;
     }
 
     public void setVisible(boolean visible) {
@@ -49,5 +53,17 @@ public class StripScrim {
 
     public boolean isVisible() {
         return mIsShowing;
+    }
+
+    public void setAlpha(float alpha) {
+        mAlpha = alpha;
+    }
+
+    public float getY() {
+        return 0.f;
+    }
+
+    public float getAlpha() {
+        return mAlpha;
     }
 }

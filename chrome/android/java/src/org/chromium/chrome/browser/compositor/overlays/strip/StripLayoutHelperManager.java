@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
@@ -53,6 +55,7 @@ import java.util.List;
  * all input and model events to the proper destination.
  */
 public class StripLayoutHelperManager implements SceneOverlay {
+    private static final long FADE_SCRIM_DURATION_MS = 500;
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
 
@@ -82,6 +85,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
     private final CompositorButton mModelSelectorButton;
 
     private final StripScrim mStripScrim;
+    private ValueAnimator mScrimFadeAnimation;
 
     private TabStripSceneLayer mTabStripTreeProvider;
 
@@ -185,6 +189,22 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
         private void updateScrimVisibility(boolean visibility) {
             if (!isGridTabSwitcherEnabled()) return;
+
+            if (mScrimFadeAnimation != null) {
+                mScrimFadeAnimation.cancel();
+            }
+
+            float startAlpha = visibility ? 0.f : 1.f;
+            float endAlpha = visibility ? 1.f : 0.f;
+            mScrimFadeAnimation = ValueAnimator.ofFloat(startAlpha, endAlpha);
+            mScrimFadeAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+            mScrimFadeAnimation.setDuration(FADE_SCRIM_DURATION_MS);
+            mScrimFadeAnimation.addUpdateListener((anim -> {
+                final float currentAlpha = (float) anim.getAnimatedValue();
+                mStripScrim.setAlpha(currentAlpha);
+                mTabStripTreeProvider.updateStripScrim(mStripScrim);
+            }));
+            mScrimFadeAnimation.start();
             mStripScrim.setVisible(visibility);
         }
     }
@@ -240,7 +260,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
 
-        mStripScrim = new StripScrim(mWidth);
+        mStripScrim = new StripScrim(mWidth, mHeight);
         mStripScrim.setVisible(false);
 
         onContextChanged(context);

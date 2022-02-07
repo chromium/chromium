@@ -107,12 +107,7 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jfloat y_offset,
                                              jfloat background_tab_brightness,
                                              jfloat brightness,
-                                             jboolean should_readd_background,
-                                             jfloat scrim_x,
-                                             jfloat scrim_y,
-                                             jfloat scrim_width,
-                                             jfloat scrim_color,
-                                             jboolean scrim_visible) {
+                                             jboolean should_readd_background) {
   background_tab_brightness_ = background_tab_brightness;
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
@@ -125,15 +120,6 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
     if (brightness_ < 1.f)
       filters.Append(cc::FilterOperation::CreateBrightnessFilter(brightness_));
     tab_strip_layer_->SetFilters(filters);
-  }
-
-  if (scrim_visible) {
-    scrim_layer_->SetBackgroundColor(scrim_color);
-    scrim_layer_->SetBounds(gfx::Size(scrim_width, height));
-    scrim_layer_->SetPosition(gfx::PointF(scrim_x, scrim_y));
-    scrim_layer_->SetHideLayerAndSubtree(false);
-  } else {
-    scrim_layer_->SetHideLayerAndSubtree(true);
   }
 
   // Content tree should not be affected by tab strip scene layer visibility.
@@ -153,6 +139,26 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
     DCHECK(layer()->children()[background_index] == tab_strip_layer_);
     layer()->InsertChild(tab_strip_layer_, background_index);
   }
+}
+
+void TabStripSceneLayer::UpdateStripScrim(JNIEnv* env,
+                                          const JavaParamRef<jobject>& jobj,
+                                          jfloat x,
+                                          jfloat y,
+                                          jfloat width,
+                                          jfloat height,
+                                          jint color,
+                                          jfloat alpha) {
+  if (alpha == 0.f) {
+    scrim_layer_->SetIsDrawable(false);
+    return;
+  }
+
+  scrim_layer_->SetIsDrawable(true);
+  scrim_layer_->SetBackgroundColor(color);
+  scrim_layer_->SetBounds(gfx::Size(width, height));
+  scrim_layer_->SetPosition(gfx::PointF(x, y));
+  scrim_layer_->SetOpacity(alpha);
 }
 
 void TabStripSceneLayer::UpdateNewTabButton(

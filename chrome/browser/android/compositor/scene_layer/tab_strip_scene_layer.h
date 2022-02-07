@@ -55,12 +55,16 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat y_offset,
                            jfloat background_tab_brightness,
                            jfloat brightness,
-                           jboolean should_readd_background,
-                           jfloat scrim_x,
-                           jfloat scrim_y,
-                           jfloat scrim_width,
-                           jfloat scrim_color,
-                           jboolean scrim_visible);
+                           jboolean should_readd_background);
+
+  void UpdateStripScrim(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& jobj,
+                        jfloat x,
+                        jfloat y,
+                        jfloat width,
+                        jfloat height,
+                        jint color,
+                        jfloat alpha);
 
   void UpdateNewTabButton(
       JNIEnv* env,
