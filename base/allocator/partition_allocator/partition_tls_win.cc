@@ -6,8 +6,8 @@
 
 #include <windows.h>
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
+
 namespace {
 
 // Store the key as the thread destruction callback doesn't get it.
@@ -51,8 +51,7 @@ void PartitionTlsSetOnDllProcessDetach(void (*callback)()) {
   g_on_dll_process_detach = callback;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 // See thread_local_storage_win.cc for details and reference.
 //
@@ -93,7 +92,7 @@ extern "C" {
 // linker doesn't discard it.
 extern const PIMAGE_TLS_CALLBACK partition_tls_thread_exit_callback;
 const PIMAGE_TLS_CALLBACK partition_tls_thread_exit_callback =
-    base::internal::PartitionTlsOnThreadExit;
+    partition_alloc::internal::PartitionTlsOnThreadExit;
 
 // Reset the default section.
 #pragma const_seg()
@@ -102,10 +101,10 @@ const PIMAGE_TLS_CALLBACK partition_tls_thread_exit_callback =
 
 #pragma data_seg(".CRT$XLY")
 PIMAGE_TLS_CALLBACK partition_tls_thread_exit_callback =
-    base::internal::PartitionTlsOnThreadExit;
+    partition_alloc::internal::PartitionTlsOnThreadExit;
 
 // Reset the default section.
 #pragma data_seg()
 
 #endif  // _WIN64
-}
+}  // extern "C"
