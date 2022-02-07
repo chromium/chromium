@@ -160,6 +160,15 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // has zero 0, but continue and also stop sending HTTP/2-style priority
   // information in HEADERS frames and PRIORITY frames if it has value 1.
   bool enable_priority_update;
+
+  // If true, objects used by a HttpNetworkTransaction are asked not to perform
+  // disruptive work after there has been an IP address change (which usually
+  // means that the "default network" has possibly changed).
+  // This is currently used by HttpNetworkSessions that are bound to a specific
+  // network: for these, the underlying network does never change, even if the
+  // default network does (hence underlying objects should not drop their
+  // state).
+  bool ignore_ip_address_changes;
 };
 
   // Structure with pointers to the dependencies of the HttpNetworkSession.

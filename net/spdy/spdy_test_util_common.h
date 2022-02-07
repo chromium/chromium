@@ -216,6 +216,7 @@ struct SpdySessionDependencies {
   bool key_auth_cache_server_entries_by_network_isolation_key;
   bool enable_priority_update;
   bool go_away_on_ip_change;
+  bool ignore_ip_address_changes;
 };
 
 class SpdyURLRequestContext : public URLRequestContext {

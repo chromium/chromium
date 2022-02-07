@@ -146,7 +146,7 @@ class NET_EXPORT SpdySessionPool
                   bool go_away_on_ip_change,
                   SpdySessionPool::TimeFunc time_func,
                   NetworkQualityEstimator* network_quality_estimator,
-                  bool cleanup_sessions_on_ip_address_changed = true);
+                  bool cleanup_sessions_on_ip_address_changed);
 
   SpdySessionPool(const SpdySessionPool&) = delete;
   SpdySessionPool& operator=(const SpdySessionPool&) = delete;

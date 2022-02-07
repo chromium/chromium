@@ -104,7 +104,8 @@ HttpNetworkSessionParams::HttpNetworkSessionParams()
       enable_quic_proxies_for_https_urls(false),
       disable_idle_sockets_close_on_memory_pressure(false),
       key_auth_cache_server_entries_by_network_isolation_key(false),
-      enable_priority_update(false) {
+      enable_priority_update(false),
+      ignore_ip_address_changes(false) {
   enable_early_data =
       base::FeatureList::IsEnabled(features::kEnableTLS13EarlyData);
 }
@@ -198,7 +199,9 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                          params.enable_priority_update,
                          params.spdy_go_away_on_ip_change,
                          params.time_func,
-                         context.network_quality_estimator),
+                         context.network_quality_estimator,
+                         // cleanup_sessions_on_ip_address_changed
+                         !params.ignore_ip_address_changes),
       http_stream_factory_(std::make_unique<HttpStreamFactory>(this)),
       params_(params),
       context_(context) {
@@ -209,12 +212,16 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
   normal_socket_pool_manager_ = std::make_unique<ClientSocketPoolManagerImpl>(
       CreateCommonConnectJobParams(false /* for_websockets */),
       CreateCommonConnectJobParams(true /* for_websockets */),
-      NORMAL_SOCKET_POOL);
+      NORMAL_SOCKET_POOL,
+      // cleanup_on_ip_address_change
+      !params.ignore_ip_address_changes);
   websocket_socket_pool_manager_ =
       std::make_unique<ClientSocketPoolManagerImpl>(
           CreateCommonConnectJobParams(false /* for_websockets */),
           CreateCommonConnectJobParams(true /* for_websockets */),
-          WEBSOCKET_SOCKET_POOL);
+          WEBSOCKET_SOCKET_POOL,
+          // cleanup_on_ip_address_change
+          !params.ignore_ip_address_changes);
 
   if (params_.enable_http2) {
     next_protos_.push_back(kProtoHTTP2);

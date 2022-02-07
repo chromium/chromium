@@ -323,10 +323,11 @@ SpdySessionDependencies::SpdySessionDependencies(
       key_auth_cache_server_entries_by_network_isolation_key(false),
       enable_priority_update(false),
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-      go_away_on_ip_change(true) {
+      go_away_on_ip_change(true),
 #else
-      go_away_on_ip_change(false) {
+      go_away_on_ip_change(false),
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+      ignore_ip_address_changes(false) {
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }
@@ -392,6 +393,7 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
       session_deps->key_auth_cache_server_entries_by_network_isolation_key;
   params.enable_priority_update = session_deps->enable_priority_update;
   params.spdy_go_away_on_ip_change = session_deps->go_away_on_ip_change;
+  params.ignore_ip_address_changes = session_deps->ignore_ip_address_changes;
   return params;
 }
 
