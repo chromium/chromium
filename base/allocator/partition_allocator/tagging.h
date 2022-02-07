@@ -16,13 +16,6 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-constexpr int kMemTagGranuleSize = 16u;
-#if defined(PA_HAS_MEMORY_TAGGING)
-constexpr uint64_t kMemTagUnmask = 0x00ffffffffffffffuLL;
-#else
-constexpr uint64_t kMemTagUnmask = 0xffffffffffffffffuLL;
-#endif
-
 namespace partition_alloc {
 
 // Enum configures Arm's MTE extension to operate in different modes
@@ -43,6 +36,13 @@ BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(
     TagViolationReportingMode);
 
 namespace internal {
+
+constexpr int kMemTagGranuleSize = 16u;
+#if defined(PA_HAS_MEMORY_TAGGING)
+constexpr uint64_t kMemTagUnmask = 0x00ffffffffffffffuLL;
+#else
+constexpr uint64_t kMemTagUnmask = 0xffffffffffffffffuLL;
+#endif  // defined(PA_HAS_MEMORY_TAGGING)
 
 #if BUILDFLAG(IS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
