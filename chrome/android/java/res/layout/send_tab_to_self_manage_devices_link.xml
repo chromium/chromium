@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/default_bg_color_secondary">
+    android:background="@drawable/rectangle_surface_1">
 
   <View
         style="@style/HorizontalDivider"
