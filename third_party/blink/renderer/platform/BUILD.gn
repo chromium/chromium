@@ -1816,7 +1816,7 @@ component("platform") {
   }
 
   if (skia_use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn:dawncpp" ]
+    deps += [ "//third_party/dawn/src/dawn:cpp" ]
   }
 
   if (!is_debug && !optimize_for_size) {
