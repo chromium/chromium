@@ -1270,12 +1270,18 @@ void RuleFeatureSet::Clear() {
   type_rule_invalidation_set_ = nullptr;
   viewport_dependent_media_query_results_.clear();
   device_dependent_media_query_results_.clear();
+  media_query_unit_flags_ = 0;
   classes_in_has_argument_.clear();
   attributes_in_has_argument_.clear();
   ids_in_has_argument_.clear();
   tag_names_in_has_argument_.clear();
   universal_in_has_argument_ = false;
   pseudos_in_has_argument_.clear();
+}
+
+bool RuleFeatureSet::HasDynamicViewportDependentMediaQueries() const {
+  return media_query_unit_flags_ &
+         MediaQueryExpValue::UnitFlags::kDynamicViewport;
 }
 
 void RuleFeatureSet::CollectInvalidationSetsForClass(

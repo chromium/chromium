@@ -30,6 +30,11 @@ MediaQueryExpValue RemValue(double value) {
   return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kRems);
 }
 
+MediaQueryExpValue DvhValue(double value) {
+  return MediaQueryExpValue(
+      value, CSSPrimitiveValue::UnitType::kDynamicViewportHeight);
+}
+
 MediaQueryExpValue InvalidValue() {
   return MediaQueryExpValue();
 }
@@ -361,6 +366,9 @@ TEST(MediaQueryExpTest, UnitFlags) {
   // 10rem < width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
             LeftExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
+  // 10dvh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kDynamicViewport,
+            LeftExp("width", LtCmp(DvhValue(10.0))).GetUnitFlags());
 }
 
 TEST(MediaQueryExpTest, UtilsNullptrHandling) {

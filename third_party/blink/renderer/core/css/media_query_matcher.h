@@ -60,6 +60,8 @@ class CORE_EXPORT MediaQueryMatcher final
 
   void MediaFeaturesChanged();
   void ViewportChanged();
+  // Invokes ViewportChanged, if this matcher depends on the dynamic viewport.
+  void DynamicViewportChanged();
   bool Evaluate(const MediaQuerySet*);
 
   void Trace(Visitor*) const;
@@ -75,6 +77,14 @@ class CORE_EXPORT MediaQueryMatcher final
 
   using ViewportListenerSet = HeapLinkedHashSet<Member<MediaQueryListListener>>;
   ViewportListenerSet viewport_listeners_;
+
+  // The set of unit flags seen by Evaluate.
+  //
+  // We currently only act on kDynamicViewport. In the future we could also
+  // look at the other values to improve invalidation in those cases.
+  //
+  // See MediaQueryExpValue::UnitFlags.
+  unsigned unit_flags_ = 0;
 };
 
 }  // namespace blink

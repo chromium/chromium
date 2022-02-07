@@ -4584,11 +4584,9 @@ void Document::LayoutViewportWasResized() {
 void Document::DynamicViewportUnitsChanged() {
   if (!RuntimeEnabledFeatures::CSSViewportUnits4Enabled())
     return;
-  // TODO(crbug.com/1093055): Avoid invalidating media queries if dv* is not
-  // used.
-  MediaQueryAffectingValueChanged(MediaValueChange::kSize);
+  MediaQueryAffectingValueChanged(MediaValueChange::kDynamicViewport);
   if (media_query_matcher_)
-    media_query_matcher_->ViewportChanged();
+    media_query_matcher_->DynamicViewportChanged();
   if (!HasDynamicViewportUnits())
     return;
   GetStyleResolver().SetResizedForViewportUnits();

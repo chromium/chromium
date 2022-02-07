@@ -92,6 +92,7 @@ class CORE_EXPORT MediaQueryExpValue {
     kNone = 0x0,
     kFontRelative = 0x1,
     kRootFontRelative = 0x2,
+    kDynamicViewport = 0x4,
   };
 
   UnitFlags GetUnitFlags() const;

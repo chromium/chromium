@@ -483,7 +483,8 @@ bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
   bool match_media = evaluator.Eval(
       *media_queries, MediaQueryEvaluator::Results{
                           &features_.ViewportDependentMediaQueryResults(),
-                          &features_.DeviceDependentMediaQueryResults()});
+                          &features_.DeviceDependentMediaQueryResults(),
+                          &features_.MediaQueryUnitFlags()});
   media_query_set_results_.push_back(
       MediaQuerySetResult(*media_queries, match_media));
   return match_media;

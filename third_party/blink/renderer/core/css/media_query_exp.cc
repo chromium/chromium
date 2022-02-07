@@ -577,6 +577,13 @@ MediaQueryExpValue::UnitFlags MediaQueryExpValue::GetUnitFlags() const {
       return UnitFlags::kFontRelative;
     case CSSPrimitiveValue::UnitType::kRems:
       return UnitFlags::kRootFontRelative;
+    case CSSPrimitiveValue::UnitType::kDynamicViewportWidth:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportHeight:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
+      return UnitFlags::kDynamicViewport;
     default:
       return UnitFlags::kNone;
   }

@@ -62,7 +62,7 @@ bool MediaQueryMatcher::Evaluate(const MediaQuerySet* media) {
     evaluator_ = CreateEvaluator();
 
   if (evaluator_)
-    return evaluator_->Eval(*media);
+    return evaluator_->Eval(*media, {nullptr, nullptr, &unit_flags_});
 
   return false;
 }
@@ -133,6 +133,11 @@ void MediaQueryMatcher::ViewportChanged() {
     listeners_to_notify.push_back(listener);
 
   document_->EnqueueMediaQueryChangeListeners(listeners_to_notify);
+}
+
+void MediaQueryMatcher::DynamicViewportChanged() {
+  if (unit_flags_ & MediaQueryExpValue::UnitFlags::kDynamicViewport)
+    ViewportChanged();
 }
 
 void MediaQueryMatcher::Trace(Visitor* visitor) const {
