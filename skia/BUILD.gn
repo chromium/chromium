@@ -525,11 +525,11 @@ component("skia") {
     ":skia_core_and_effects",
   ]
   if (skia_use_dawn) {
-    public_deps += [ "//third_party/dawn/src/dawn:dawncpp_headers" ]
+    public_deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 
@@ -672,7 +672,7 @@ skia_source_set("skia_core_and_effects") {
     deps = [ "//gpu/config:workaround_list" ]
   }
   if (skia_use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn:dawncpp_headers" ]
+    deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
 
   visibility = [ ":skia" ]
@@ -829,7 +829,7 @@ if (is_mac) {
     ]
     deps = [ "//gpu/config:workaround_list" ]
     if (skia_use_dawn) {
-      deps += [ "//third_party/dawn/src/dawn:dawncpp_headers" ]
+      deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
     }
   }
 }
