@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/files/justifications.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "components/prefs/pref_service.h"
@@ -140,10 +142,10 @@ void ZeroStateFileProvider::SetSearchResults(
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (size_t i = 0; i < std::min(valid_results.size(), kMaxLocalFiles); ++i) {
-    const auto& filepath_score = valid_results[i];
-    double score = filepath_score.second;
+    const auto& filepath = valid_results[i].first;
+    double score = valid_results[i].second;
     auto result = std::make_unique<FileResult>(
-        kSchema, filepath_score.first,
+        kSchema, filepath, GetJustificationString(filepath),
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
         std::u16string(), FileResult::Type::kFile, profile_);
     // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
@@ -195,7 +197,7 @@ void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
         kSchema,
         base::FilePath(FILE_PATH_LITERAL(
             base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
-        ash::AppListSearchResultType::kZeroStateFile,
+        u"-", ash::AppListSearchResultType::kZeroStateFile,
         ash::SearchResultDisplayType::kContinue, 0.1f, std::u16string(),
         FileResult::Type::kFile, profile_));
   }

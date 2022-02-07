@@ -28,6 +28,7 @@ class FileResult : public ChromeSearchResult {
 
   FileResult(const std::string& schema,
              const base::FilePath& filepath,
+             const absl::optional<std::u16string>& details,
              ResultType result_type,
              DisplayType display_type,
              float relevance,

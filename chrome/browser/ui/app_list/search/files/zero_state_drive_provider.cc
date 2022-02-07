@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/files/justifications.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {
@@ -298,8 +300,9 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const base::FilePath& filepath,
     const absl::optional<std::string>& prediction_reason,
     const float relevance) {
+  const auto reparented_path = ReparentToDriveMount(filepath, drive_service_);
   auto result = std::make_unique<FileResult>(
-      kSchema, ReparentToDriveMount(filepath, drive_service_),
+      kSchema, reparented_path, GetJustificationString(reparented_path),
       ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
       relevance, std::u16string(), FileResult::Type::kFile, profile_);
   // If it exists, override the details text with the prediction reason in the

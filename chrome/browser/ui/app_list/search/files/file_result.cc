@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -26,10 +25,8 @@
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -86,6 +83,7 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
 
 FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,
+                       const absl::optional<std::u16string>& details,
                        ResultType result_type,
                        DisplayType display_type,
                        float relevance,
@@ -129,11 +127,8 @@ FileResult::FileResult(const std::string& schema,
       StripHostedFileExtensions(filepath.BaseName().value())));
   SetTitleTags(CalculateTags(query, title()));
 
-  // Set the details to the display name of the Files app.
-  std::u16string sanitized_name = base::CollapseWhitespace(
-      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
-  base::i18n::SanitizeUserSuppliedString(&sanitized_name);
-  SetDetails(sanitized_name);
+  if (details)
+    SetDetails(details.value());
 
   // Launcher search results UI is light by default, so use icons for light
   // background if dark/light mode feature is not enabled.

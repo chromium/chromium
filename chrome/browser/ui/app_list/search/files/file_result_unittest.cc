@@ -14,6 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
@@ -32,13 +33,14 @@ class FileResultTest : public testing::Test {
 };
 
 TEST_F(FileResultTest, CheckMetadata) {
-  FileResult result("zero_state_file://",
-                    base::FilePath("/my/test/MIXED_case_FILE.Pdf"),
-                    ash::AppListSearchResultType::kZeroStateFile,
-                    ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
-                    FileResult::Type::kFile, profile_.get());
+  FileResult result(
+      "zero_state_file://", base::FilePath("/my/test/MIXED_case_FILE.Pdf"),
+      u"some details", ash::AppListSearchResultType::kZeroStateFile,
+      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+      FileResult::Type::kFile, profile_.get());
   EXPECT_EQ(base::UTF16ToUTF8(result.title()),
             std::string("MIXED_case_FILE.Pdf"));
+  EXPECT_EQ(result.details(), u"some details");
   EXPECT_EQ(result.id(), "zero_state_file:///my/test/MIXED_case_FILE.Pdf");
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kZeroStateFile);
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kList);
@@ -46,16 +48,16 @@ TEST_F(FileResultTest, CheckMetadata) {
 }
 
 TEST_F(FileResultTest, HostedExtensionsIgnored) {
-  FileResult result_1("zero_state_file://", base::FilePath("my/Document.gdoc"),
-                      ash::AppListSearchResultType::kZeroStateFile,
-                      ash::SearchResultDisplayType::kList, 0.2f,
-                      std::u16string(), FileResult::Type::kFile,
-                      profile_.get());
-  FileResult result_2("zero_state_file://", base::FilePath("my/Map.gmaps"),
-                      ash::AppListSearchResultType::kZeroStateFile,
-                      ash::SearchResultDisplayType::kList, 0.2f,
-                      std::u16string(), FileResult::Type::kFile,
-                      profile_.get());
+  FileResult result_1(
+      "zero_state_file://", base::FilePath("my/Document.gdoc"), absl::nullopt,
+      ash::AppListSearchResultType::kZeroStateFile,
+      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+      FileResult::Type::kFile, profile_.get());
+  FileResult result_2(
+      "zero_state_file://", base::FilePath("my/Map.gmaps"), absl::nullopt,
+      ash::AppListSearchResultType::kZeroStateFile,
+      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+      FileResult::Type::kFile, profile_.get());
 
   EXPECT_EQ(base::UTF16ToUTF8(result_1.title()), std::string("Document"));
   EXPECT_EQ(base::UTF16ToUTF8(result_2.title()), std::string("Map"));

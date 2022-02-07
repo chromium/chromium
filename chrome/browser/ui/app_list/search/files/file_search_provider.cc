@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/files/file_enumerator.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 namespace {
@@ -155,10 +158,16 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const double relevance) {
   const auto type = path.is_directory ? FileResult::Type::kDirectory
                                       : FileResult::Type::kFile;
-  auto result = std::make_unique<FileResult>(
-      kFileSearchSchema, path.path, ash::AppListSearchResultType::kFileSearch,
-      ash::SearchResultDisplayType::kList, relevance, last_query_, type,
-      profile_);
+  // Use the display name of the Files app as the details text.
+  std::u16string details_text = base::CollapseWhitespace(
+      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
+  base::i18n::SanitizeUserSuppliedString(&details_text);
+
+  auto result =
+      std::make_unique<FileResult>(kFileSearchSchema, path.path, details_text,
+                                   ash::AppListSearchResultType::kFileSearch,
+                                   ash::SearchResultDisplayType::kList,
+                                   relevance, last_query_, type, profile_);
   result->RequestThumbnail(&thumbnail_loader_);
   return result;
 }

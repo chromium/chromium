@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {
@@ -132,7 +133,7 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
       drive_service_->GetMountPointPath().Append(relative_path.value());
 
   return std::make_unique<FileResult>(
-      kDriveSearchSchema, reparented_path,
+      kDriveSearchSchema, reparented_path, absl::nullopt,
       ash::AppListSearchResultType::kDriveSearch,
       ash::SearchResultDisplayType::kList, relevance, last_query_, type,
       profile_);
