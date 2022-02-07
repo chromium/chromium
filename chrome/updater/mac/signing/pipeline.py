@@ -90,7 +90,7 @@ def sign_all(orig_paths,
              config,
              disable_packaging=False,
              do_notarization=True,
-             skip_brands=[]
+             skip_brands=[],
              channels=[]):
     """Code signs, packages, and signs the package, placing the result into
     |orig_paths.output|. |orig_paths.input| must contain the products to
