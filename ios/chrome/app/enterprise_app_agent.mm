@@ -21,6 +21,12 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+constexpr CGFloat kTimeout = 30;
+
+}  // namespace
+
 @interface EnterpriseAppAgent () <
     ChromeBrowserCloudManagementControllerObserver,
     CloudPolicyClientObserver,
@@ -37,6 +43,9 @@
 
 // Browser policy connector for iOS.
 @property(nonatomic, assign) BrowserPolicyConnectorIOS* policyConnector;
+
+// YES if enterprise launch screen has been dismissed.
+@property(nonatomic, assign) BOOL launchScreenDismissed;
 
 @end
 
@@ -83,11 +92,22 @@
       _cloudPolicyClientObserver =
           std::make_unique<CloudPolicyClientObserverBridge>(self, client);
 
+      self.launchScreenDismissed = NO;
       for (SceneState* scene in appState.connectedScenes) {
         if (scene.activationLevel > SceneActivationLevelBackground) {
           [self showUIInScene:scene];
         }
       }
+
+      // Ensure to never stay stuck on enterprise launch screen.
+      __weak EnterpriseAppAgent* weakSelf = self;
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kTimeout * NSEC_PER_SEC)),
+          dispatch_get_main_queue(), ^{
+            if (!weakSelf.launchScreenDismissed) {
+              [weakSelf cloudPolicyDidError:nullptr];
+            }
+          });
     } else {
       [self.appState queueTransitionToNextInitStage];
     }
@@ -116,7 +136,8 @@
 #pragma mark - ChromeBrowserCloudManagementControllerObserverBridge
 
 - (void)policyRegistrationDidCompleteSuccessfuly:(BOOL)succeeded {
-  if (!succeeded) {
+  if (!succeeded && !self.launchScreenDismissed) {
+    self.launchScreenDismissed = YES;
     [self.appState queueTransitionToNextInitStage];
   }
 }
@@ -124,11 +145,17 @@
 #pragma mark - CloudPolicyClientObserverBridge
 
 - (void)cloudPolicyWasFetched:(policy::CloudPolicyClient*)client {
-  [self.appState queueTransitionToNextInitStage];
+  if (!self.launchScreenDismissed) {
+    self.launchScreenDismissed = YES;
+    [self.appState queueTransitionToNextInitStage];
+  }
 }
 
 - (void)cloudPolicyDidError:(policy::CloudPolicyClient*)client {
-  [self.appState queueTransitionToNextInitStage];
+  if (!self.launchScreenDismissed) {
+    self.launchScreenDismissed = YES;
+    [self.appState queueTransitionToNextInitStage];
+  }
 }
 
 - (void)cloudPolicyRegistrationChanged:(policy::CloudPolicyClient*)client {
