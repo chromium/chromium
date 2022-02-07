@@ -352,9 +352,7 @@ class MODULES_EXPORT AXObjectCacheImpl
       const LayoutObject& layout_object);
   static bool IsRelevantSlotElement(const HTMLSlotElement& slot);
 
-#if DCHECK_IS_ON()
   bool HasBeenDisposed() { return has_been_disposed_; }
-#endif
 
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
   // since the last query. Clears the vector so that the next time it's
@@ -495,10 +493,8 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   std::unique_ptr<AXRelationCache> relation_cache_;
 
-#if DCHECK_IS_ON()
   // Verified when finalizing.
   bool has_been_disposed_ = false;
-#endif
 
   HeapVector<Member<AXEventParams>> notifications_to_post_main_;
   HeapVector<Member<AXEventParams>> notifications_to_post_popup_;

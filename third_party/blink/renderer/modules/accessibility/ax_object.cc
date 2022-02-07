@@ -757,6 +757,19 @@ void AXObject::RepairMissingParent() const {
 // TODO(accessibility) Consider forcing all ax objects to be created from
 // the top down, eliminating the need for ComputeParent().
 AXObject* AXObject::ComputeParent() const {
+  AXObject* ax_parent = ComputeParentOrNull();
+
+  CHECK(!ax_parent || !ax_parent->IsDetached())
+      << "Computed parent should never be detached:"
+      << "\n* Child: " << GetNode()
+      << "\n* Parent: " << ax_parent->ToString(true, true);
+
+  return ax_parent;
+}
+
+// Same as ComputeParent, but without the extra check for valid parent in the
+// end. This is for use in RestoreParentOrPrune.
+AXObject* AXObject::ComputeParentOrNull() const {
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!IsDetached());
 
@@ -783,11 +796,6 @@ AXObject* AXObject::ComputeParent() const {
     ax_parent =
         ComputeNonARIAParent(AXObjectCache(), GetNode(), GetLayoutObject());
   }
-
-  CHECK(!ax_parent || !ax_parent->IsDetached())
-      << "Computed parent should never be detached:"
-      << "\n* Child: " << GetNode()
-      << "\n* Parent: " << ax_parent->ToString(true, true);
 
   return ax_parent;
 }
