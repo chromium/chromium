@@ -578,6 +578,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.VaultKeysetMetric.{VaultKeysetMetric}"
+    units="count" expires_after="2022-06-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Any given ChromeOS user has some number of vault keysets to store file name
+    encryption keys, depending on registered authentication factors at the time.
+    This histogram records how many vault keysets with {VaultKeysetMetric} a
+    user has. Recorded once on startup, and during every call to ListKeys or
+    MassRemoveKeys through the ChromeOS cryptohome daemon.
+  </summary>
+  <token key="VaultKeysetMetric">
+    <variant name="EmptyLabelCount"/>
+    <variant name="EmptyLabelPINCount"/>
+    <variant name="FingerprintCount"/>
+    <variant name="KioskCount"/>
+    <variant name="PasswordCount"/>
+    <variant name="PINCount"/>
+    <variant name="SmartCardCount"/>
+    <variant name="SmartUnlockCount"/>
+    <variant name="UnclassifedKeysetCount"/>
+  </token>
+</histogram>
+
 <histogram name="Cryptohome.WrappingKeyDerivation.Create"
     enum="WrappingKeyDerivation" expires_after="2022-05-01">
   <owner>tnagel@chromium.org</owner>
