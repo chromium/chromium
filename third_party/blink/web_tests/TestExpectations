@@ -3203,7 +3203,7 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/css/filter-effects/filter-function/fi
 crbug.com/626703 [ Mac10.15 ] external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Timeout Failure ]
+crbug.com/626703 [ Mac11 ] external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure Timeout ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-001.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-002.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-003.html [ Failure ]

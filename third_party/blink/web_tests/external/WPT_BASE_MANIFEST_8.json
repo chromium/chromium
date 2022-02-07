@@ -324536,10 +324536,6 @@
        []
       ]
      },
-     "shared-worker-import-meta-expected.txt": [
-      "229c339fe84726d41b1e1ee9b92d1a8428cef90a",
-      []
-     ],
      "shared-worker-options-credentials.html.headers": [
       "8da851ab7363870014a32121a3cd87979aa2099d",
       []
@@ -549938,7 +549934,7 @@
       ]
      ],
      "shared-worker-import-meta.html": [
-      "44cd9df9ee7097abfee68b01a8868249bee63f3b",
+      "e8e9b51f6a50bf2f362cb3d66d2940d402474838",
       [
        null,
        {}
