@@ -81,12 +81,19 @@ public class AccessibilityNodeInfoUtils {
                     .append(node.getText().toString().replace("\n", "\\n"))
                     .append("\"");
         }
+        // Print hint unless it is null or empty.
+        if (node.getHintText() != null && !node.getHintText().toString().isEmpty()) {
+            builder.append(" hint:\"").append(node.getHintText()).append("\"");
+        }
 
         // Text properties - Only print when non-null.
         if (node.getContentDescription() != null) {
             builder.append(" contentDescription:\"")
                     .append(node.getContentDescription().toString().replace("\n", "\\n"))
                     .append("\"");
+        }
+        if (node.getPaneTitle() != null) {
+            builder.append(" paneTitle:\"").append(node.getPaneTitle()).append("\"");
         }
         if (node.getViewIdResourceName() != null) {
             builder.append(" viewIdResName:\"").append(node.getViewIdResourceName()).append("\"");
