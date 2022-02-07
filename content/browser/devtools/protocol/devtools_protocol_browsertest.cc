@@ -936,7 +936,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrash) {
   WaitForNotification("Inspector.targetReloadedAfterCrash", true);
 }
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsProtocolTest, PageCrashInFrame) {
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PageCrashInFrame DISABLED_PageCrashInFrame
+#else
+#define MAYBE_PageCrashInFrame PageCrashInFrame
+#endif
+IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsProtocolTest,
+                       MAYBE_PageCrashInFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url =
       embedded_test_server()->GetURL("/devtools/page-with-oopif.html");
