@@ -30,7 +30,7 @@ namespace syncer {
 
 // Enables the retry of the token fetch without backoff on the first fetch
 // cancellation.
-constexpr inline base::Feature kSyncRetryFirstCanceledTokenFetch = {
+inline constexpr base::Feature kSyncRetryFirstCanceledTokenFetch = {
     "SyncRetryFirstCanceledTokenFetch", base::FEATURE_ENABLED_BY_DEFAULT};
 
 struct SyncCredentials;

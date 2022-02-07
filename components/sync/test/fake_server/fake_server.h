@@ -32,7 +32,7 @@
 
 namespace switches {
 
-constexpr inline char kDisableFakeServerFailureOutput[] =
+inline constexpr char kDisableFakeServerFailureOutput[] =
     "disable-fake-server-failure-output";
 
 }  // namespace switches

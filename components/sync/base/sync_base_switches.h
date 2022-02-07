@@ -10,10 +10,10 @@
 namespace switches {
 
 // Overrides the default server used for profile sync.
-constexpr inline char kSyncServiceURL[] = "sync-url";
+inline constexpr char kSyncServiceURL[] = "sync-url";
 
 // Specifies the vault server used for trusted vault passphrase.
-constexpr inline char kTrustedVaultServiceURL[] = "trusted-vault-service-url";
+inline constexpr char kTrustedVaultServiceURL[] = "trusted-vault-service-url";
 
 }  // namespace switches
 

@@ -11,15 +11,15 @@ namespace switches {
 
 // TODO(crbug.com/1232951): remove the feature toggle once most of bookmarks
 // have been reuploaded.
-constexpr inline base::Feature kSyncReuploadBookmarks{
+inline constexpr base::Feature kSyncReuploadBookmarks{
     "SyncReuploadBookmarks", base::FEATURE_ENABLED_BY_DEFAULT};
 
-constexpr inline base::Feature kSyncUseClientTagForBookmarkCommits{
+inline constexpr base::Feature kSyncUseClientTagForBookmarkCommits{
     "SyncUseClientTagForBookmarkCommits", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // TODO(crbug.com/1177798): remove this code after a quick verification that it
 // doesn't cause issues.
-constexpr inline base::Feature kSyncBookmarksEnforceLateMaxEntriesToCommit{
+inline constexpr base::Feature kSyncBookmarksEnforceLateMaxEntriesToCommit{
     "SyncBookmarksEnforceLateMaxEntriesToCommit",
     base::FEATURE_ENABLED_BY_DEFAULT};
 

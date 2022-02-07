@@ -35,11 +35,11 @@ class ModelTypeState;
 
 namespace wallet_helper {
 
-constexpr inline char kDefaultCardID[] = "wallet card ID";
-constexpr inline char kDefaultAddressID[] = "wallet address ID";
-constexpr inline char kDefaultCustomerID[] = "deadbeef";
-constexpr inline char kDefaultBillingAddressID[] = "billing address entity ID";
-constexpr inline char kDefaultCreditCardCloudTokenDataID[] =
+inline constexpr char kDefaultCardID[] = "wallet card ID";
+inline constexpr char kDefaultAddressID[] = "wallet address ID";
+inline constexpr char kDefaultCustomerID[] = "deadbeef";
+inline constexpr char kDefaultBillingAddressID[] = "billing address entity ID";
+inline constexpr char kDefaultCreditCardCloudTokenDataID[] =
     "cloud token data ID";
 
 // Used to access the personal data manager within a particular sync profile.

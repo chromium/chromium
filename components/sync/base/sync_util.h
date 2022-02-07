@@ -19,11 +19,11 @@ namespace syncer {
 namespace internal {
 
 // Default sync server URL. Visible for testing.
-constexpr inline char kSyncServerUrl[] =
+inline constexpr char kSyncServerUrl[] =
     "https://clients4.google.com/chrome-sync";
 
 // Sync server URL for dev channel users. Visible for testing.
-constexpr inline char kSyncDevServerUrl[] =
+inline constexpr char kSyncDevServerUrl[] =
     "https://clients4.google.com/chrome-sync/dev";
 
 // Formats user agent string from system string and channel. Visible for

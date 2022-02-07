@@ -11,7 +11,7 @@ namespace switches {
 
 // If enabled, interested data types, excluding Wallet and Offer, will be sent
 // to the Sync Server as part of DeviceInfo.
-constexpr inline base::Feature kSyncSendInterestedDataTypes = {
+inline constexpr base::Feature kSyncSendInterestedDataTypes = {
     "SyncSendInterestedDataTypes", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, the device will register with FCM and listen to new
@@ -20,7 +20,7 @@ constexpr inline base::Feature kSyncSendInterestedDataTypes = {
 // The device will not subscribe to old invalidations for any data types except
 // Wallet and Offer, since that will be covered by the new system.
 // SyncSendInterestedDataTypes must be enabled for this to take effect.
-constexpr inline base::Feature kUseSyncInvalidations = {
+inline constexpr base::Feature kUseSyncInvalidations = {
     "UseSyncInvalidations", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, types related to Wallet and Offer will be included in interested
@@ -28,7 +28,7 @@ constexpr inline base::Feature kUseSyncInvalidations = {
 // (if they are enabled).
 // The device will not register for old invalidations at all.
 // UseSyncInvalidations must be enabled for this to take effect.
-constexpr inline base::Feature kUseSyncInvalidationsForWalletAndOffer = {
+inline constexpr base::Feature kUseSyncInvalidationsForWalletAndOffer = {
     "UseSyncInvalidationsForWalletAndOffer", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace switches

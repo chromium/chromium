@@ -79,9 +79,9 @@ class SyncServiceImpl;
 
 namespace switches {
 
-constexpr inline char kPasswordFileForTest[] = "password-file-for-test";
-constexpr inline char kSyncUserForTest[] = "sync-user-for-test";
-constexpr inline char kSyncPasswordForTest[] = "sync-password-for-test";
+inline constexpr char kPasswordFileForTest[] = "password-file-for-test";
+inline constexpr char kSyncUserForTest[] = "sync-user-for-test";
+inline constexpr char kSyncPasswordForTest[] = "sync-password-for-test";
 
 }  // namespace switches
 

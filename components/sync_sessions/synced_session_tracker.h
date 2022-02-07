@@ -29,10 +29,10 @@ class SyncSessionsClient;
 
 // TODO(crbug.com/882489): Remove feature toggle during code cleanup when a
 // satisfying solution is found for closed tabs.
-constexpr inline base::Feature kDeferRecyclingOfSyncTabNodesIfUnsynced{
+inline constexpr base::Feature kDeferRecyclingOfSyncTabNodesIfUnsynced{
     "DeferRecyclingOfSyncTabNodesIfUnsynced", base::FEATURE_ENABLED_BY_DEFAULT};
 
-constexpr inline base::Feature kSyncPopulateTabBrowserTypeInGetData{
+inline constexpr base::Feature kSyncPopulateTabBrowserTypeInGetData{
     "SyncPopulateTabBrowserTypeInGetData", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Class to manage synced sessions. The tracker will own all SyncedSession

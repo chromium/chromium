@@ -13,7 +13,7 @@ namespace switches {
 // Allows device registration within trusted vault server without having trusted
 // vault key. Effectively disabled if kSyncTrustedVaultPassphraseRecovery
 // is disabled.
-constexpr inline base::Feature kAllowSilentTrustedVaultDeviceRegistration{
+inline constexpr base::Feature kAllowSilentTrustedVaultDeviceRegistration{
     "AllowSilentTrustedVaultDeviceRegistration",
     base::FEATURE_ENABLED_BY_DEFAULT};
 

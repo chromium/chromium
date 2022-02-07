@@ -12,7 +12,7 @@
 
 namespace switches {
 
-constexpr inline char kStatusChangeCheckerTimeoutInSeconds[] =
+inline constexpr char kStatusChangeCheckerTimeoutInSeconds[] =
     "sync-status-change-checker-timeout";
 
 }  // namespace switches

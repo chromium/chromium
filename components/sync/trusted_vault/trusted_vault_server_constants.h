@@ -13,17 +13,17 @@
 
 namespace syncer {
 
-constexpr inline int kUnknownConstantKeyVersion = 0;
+inline constexpr int kUnknownConstantKeyVersion = 0;
 
-constexpr inline char kSyncSecurityDomainName[] =
+inline constexpr char kSyncSecurityDomainName[] =
     "users/me/securitydomains/chromesync";
-constexpr inline char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
-constexpr inline char kJoinSecurityDomainsURLPath[] =
+inline constexpr char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
+inline constexpr char kJoinSecurityDomainsURLPath[] =
     "users/me/securitydomains/chromesync:join";
-constexpr inline char kJoinSecurityDomainsErrorDetailTypeURL[] =
+inline constexpr char kJoinSecurityDomainsErrorDetailTypeURL[] =
     "type.googleapis.com/"
     "google.internal.identity.securitydomain.v1.JoinSecurityDomainErrorDetail";
-constexpr inline char kGetSecurityDomainURLPathAndQuery[] =
+inline constexpr char kGetSecurityDomainURLPathAndQuery[] =
     "users/me/securitydomains/chromesync?view=2";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey();

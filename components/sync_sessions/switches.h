@@ -11,7 +11,7 @@ namespace switches {
 
 // Enables syncing Sessions data type in case when the window doesn't have open
 // tabs anymore.
-constexpr inline base::Feature kSyncConsiderEmptyWindowsSyncable{
+inline constexpr base::Feature kSyncConsiderEmptyWindowsSyncable{
     "SyncConsiderEmptyWindowsSyncable", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace switches
