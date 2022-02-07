@@ -84,7 +84,7 @@ void FeatureNotificationGuideServiceImpl::CheckForLowEnagedUser() {
   // Skip low engagement check if enabled. For testing only.
   if (base::FeatureList::IsEnabled(
           feature_guide::features::kSkipCheckForLowEngagedUsers)) {
-    is_low_engaged_user_ = false;
+    is_low_engaged_user_ = true;
     return;
   }
 
@@ -94,7 +94,7 @@ void FeatureNotificationGuideServiceImpl::CheckForLowEnagedUser() {
 #if BUILDFLAG(IS_ANDROID)
     if (tracker_->ShouldTriggerHelpUI(
             feature_engagement::kIPHLowUserEngagementDetectorFeature)) {
-      is_low_engaged_user_ = false;
+      is_low_engaged_user_ = true;
     }
 #endif
     return;
