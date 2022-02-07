@@ -61,6 +61,10 @@ class BrowserImpl : public Browser {
   // Called from BrowserPersister when restore has completed.
   void OnRestoreCompleted();
 
+  void set_is_minimal_restore_in_progress(bool value) {
+    is_minimal_restore_in_progress_ = value;
+  }
+
 #if defined(OS_ANDROID)
   bool CompositorHasSurface();
 
@@ -171,6 +175,7 @@ class BrowserImpl : public Browser {
   std::string persistence_id_;
   std::unique_ptr<BrowserPersister> browser_persister_;
   base::OnceClosure visible_security_state_changed_callback_for_tests_;
+  bool is_minimal_restore_in_progress_ = false;
 };
 
 }  // namespace weblayer

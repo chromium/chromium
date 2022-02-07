@@ -355,7 +355,8 @@ std::vector<uint8_t> BrowserImpl::GetMinimalPersistenceState() {
 }
 
 bool BrowserImpl::IsRestoringPreviousState() {
-  return browser_persister_ && browser_persister_->is_restore_in_progress();
+  return is_minimal_restore_in_progress_ ||
+         (browser_persister_ && browser_persister_->is_restore_in_progress());
 }
 
 void BrowserImpl::AddObserver(BrowserObserver* observer) {
