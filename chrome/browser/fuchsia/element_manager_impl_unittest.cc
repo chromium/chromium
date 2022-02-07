@@ -16,6 +16,58 @@
 
 namespace {
 
+struct AnnotationKeyProxy {
+  AnnotationKeyProxy(
+      std::string key,
+      std::string namespace_ = "namespace")  // NOLINT(runtime/explicit)
+      : key(std::move(key)), namespace_(std::move(namespace_)) {}
+  std::string key;
+  std::string namespace_;
+
+  fuchsia::element::AnnotationKey ToAnnotationKey() const {
+    fuchsia::element::AnnotationKey result;
+    result.value = key;
+    result.namespace_ = namespace_;
+    return result;
+  }
+};
+
+struct AnnotationProxy {
+  AnnotationProxy(std::string key, std::string value)
+      : key(std::move(key)), value(std::move(value)) {}
+  AnnotationProxy(std::string key, std::string namespace_, std::string value)
+      : key(std::move(key), std::move(namespace_)), value(std::move(value)) {}
+
+  AnnotationKeyProxy key;
+  std::string value;
+
+  fuchsia::element::Annotation ToAnnotation() const {
+    fuchsia::element::Annotation result;
+    result.key = key.ToAnnotationKey();
+    result.value =
+        fuchsia::element::AnnotationValue::WithText(std::string(value));
+    return result;
+  }
+};
+
+std::vector<fuchsia::element::AnnotationKey> TestAnnotationKeys(
+    std::initializer_list<AnnotationKeyProxy> keys) {
+  std::vector<fuchsia::element::AnnotationKey> results;
+  for (const auto& key : keys) {
+    results.push_back(key.ToAnnotationKey());
+  }
+  return results;
+}
+
+std::vector<fuchsia::element::Annotation> TestAnnotations(
+    std::initializer_list<AnnotationProxy> annotations) {
+  std::vector<fuchsia::element::Annotation> results;
+  for (const auto& annotation : annotations) {
+    results.push_back(annotation.ToAnnotation());
+  }
+  return results;
+}
+
 class TestElementManagerImpl : public testing::Test {
  public:
   TestElementManagerImpl()
@@ -87,8 +139,9 @@ TEST_F(TestElementManagerImpl, TestController) {
   valid_spec.set_component_url(
       "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
 
-  element_manager->ProposeElement(std::move(valid_spec),
-                                  controller.NewRequest(), [&](auto result) {});
+  element_manager->ProposeElement(
+      std::move(valid_spec), controller.NewRequest(),
+      [&](auto result) { ASSERT_TRUE(result.is_response()); });
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(controller.is_bound());
 
@@ -96,10 +149,80 @@ TEST_F(TestElementManagerImpl, TestController) {
   invalid_spec.set_component_url("foobar");
 
   controller = fuchsia::element::ControllerPtr();
-  element_manager->ProposeElement(std::move(invalid_spec),
-                                  controller.NewRequest(), [&](auto result) {});
+  element_manager->ProposeElement(
+      std::move(invalid_spec), controller.NewRequest(),
+      [&](auto result) { ASSERT_FALSE(result.is_response()); });
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(controller.is_bound());
+}
+
+TEST_F(TestElementManagerImpl, Annotations) {
+  EXPECT_EQ(0u, element_manager_.GetAnnotations().size());
+
+  auto element_manager = GetElementManagerPtr();
+
+  fuchsia::element::ControllerPtr controller;
+
+  {
+    base::RunLoop run_loop;
+    fuchsia::element::Spec valid_spec;
+    valid_spec.set_component_url(
+        "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+    *valid_spec.mutable_annotations() = TestAnnotations(
+        {{"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}});
+    element_manager->ProposeElement(std::move(valid_spec),
+                                    controller.NewRequest(), [&](auto result) {
+                                      ASSERT_TRUE(result.is_response());
+                                      run_loop.Quit();
+                                    });
+    run_loop.Run();
+  }
+
+  std::vector<fuchsia::element::Annotation> annotations =
+      element_manager_.GetAnnotations();
+  EXPECT_EQ(3u, annotations.size());
+  for (const auto* key : {"key1", "key2", "key3"}) {
+    EXPECT_NE(annotations.end(),
+              std::find_if(annotations.begin(), annotations.end(),
+                           [&](const auto& annotation) {
+                             return annotation.key.value == key;
+                           }));
+  }
+
+  {
+    base::RunLoop run_loop;
+    controller->GetAnnotations([&](auto result) {
+      ASSERT_TRUE(result.is_response());
+      annotations = std::move(result.response().annotations);
+      run_loop.Quit();
+    });
+    run_loop.Run();
+  }
+  EXPECT_EQ(3u, annotations.size());
+
+  {
+    base::RunLoop run_loop;
+    controller->UpdateAnnotations(
+        TestAnnotations({{"key1", "other_value1"},
+                         {"key4", "value4"},
+                         {"key3", "other_namespace", "value5"}}),
+        TestAnnotationKeys(
+            {{"key1", "nonexistant_namespace"}, {"key2"}, {"key3"}}),
+        [&](auto result) {
+          ASSERT_TRUE(result.is_response());
+          run_loop.Quit();
+        });
+    run_loop.Run();
+  }
+  annotations = element_manager_.GetAnnotations();
+  EXPECT_EQ(3u, annotations.size());
+  for (const auto* key : {"key1", "key3", "key4"}) {
+    EXPECT_NE(annotations.end(),
+              std::find_if(annotations.begin(), annotations.end(),
+                           [&](const auto& annotation) {
+                             return annotation.key.value == key;
+                           }));
+  }
 }
 
 }  // namespace

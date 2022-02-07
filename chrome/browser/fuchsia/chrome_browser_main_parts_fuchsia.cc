@@ -25,6 +25,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/process_lifecycle.h"
 #include "base/fuchsia/scoped_service_binding.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "chrome/browser/fuchsia/element_manager_impl.h"
@@ -502,7 +503,8 @@ constexpr fuchsia::ui::composition::TransformId
 // View for each new top-level window.
 class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
  public:
-  UseGraphicalPresenter() {
+  explicit UseGraphicalPresenter(ElementManagerImpl* element_manager)
+      : element_manager_(element_manager) {
     ui::fuchsia::SetScenicViewPresenter(base::BindRepeating(
         &UseGraphicalPresenter::PresentScenicView, base::Unretained(this)));
     ui::fuchsia::SetFlatlandViewPresenter(base::BindRepeating(
@@ -524,6 +526,7 @@ class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
     fuchsia::element::ViewSpec view_spec;
     view_spec.set_view_holder_token(std::move(view_holder_token));
     view_spec.set_view_ref(std::move(view_ref));
+    view_spec.set_annotations(fidl::Clone(element_manager_->GetAnnotations()));
     graphical_presenter_->PresentView(std::move(view_spec), nullptr, nullptr,
                                       [](auto result) {});
   }
@@ -534,10 +537,12 @@ class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
     fuchsia::element::ViewSpec view_spec;
     view_spec.set_viewport_creation_token(std::move(viewport_creation_token));
     view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
+    view_spec.set_annotations(fidl::Clone(element_manager_->GetAnnotations()));
     graphical_presenter_->PresentView(std::move(view_spec), nullptr, nullptr,
                                       [](auto result) {});
   }
 
+  base::raw_ptr<ElementManagerImpl> element_manager_;
   fuchsia::element::GraphicalPresenterPtr graphical_presenter_;
 };
 
@@ -626,13 +631,14 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableCFv2)) {
     // Configure Ozone to create top-level Views via GraphicalPresenter.
-    use_graphical_presenter_ = std::make_unique<UseGraphicalPresenter>();
     element_manager_ = std::make_unique<ElementManagerImpl>(
         base::ComponentContextForProcess()->outgoing().get(),
         base::BindRepeating(&NotifyNewBrowserWindow));
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA,
         KeepAliveRestartOption::ENABLED);
+    use_graphical_presenter_ =
+        std::make_unique<UseGraphicalPresenter>(element_manager_.get());
   } else {
     // Register the ViewProvider API.
     view_provider_ = std::make_unique<ViewProviderRouter>(

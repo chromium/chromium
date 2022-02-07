@@ -9,6 +9,13 @@
 #include "base/logging.h"
 #include "chrome/browser/chrome_browser_main.h"
 
+bool ElementManagerImpl::AnnotationKeyCompare::operator()(
+    const fuchsia::element::AnnotationKey& lhs,
+    const fuchsia::element::AnnotationKey& rhs) const {
+  return std::tie(lhs.namespace_, lhs.value) <
+         std::tie(rhs.namespace_, rhs.value);
+}
+
 ElementManagerImpl::ElementManagerImpl(
     sys::OutgoingDirectory* outgoing_directory,
     NewProposalCallback callback)
@@ -17,6 +24,14 @@ ElementManagerImpl::ElementManagerImpl(
 }
 
 ElementManagerImpl::~ElementManagerImpl() = default;
+
+std::vector<fuchsia::element::Annotation> ElementManagerImpl::GetAnnotations() {
+  std::vector<fuchsia::element::Annotation> annotations;
+  for (const auto& annotation : annotations_) {
+    annotations.push_back(fidl::Clone(annotation.second));
+  }
+  return annotations;
+}
 
 void ElementManagerImpl::ProposeElement(
     fuchsia::element::Spec spec,
@@ -38,6 +53,11 @@ void ElementManagerImpl::ProposeElement(
   if (element_controller) {
     controller_bindings_.AddBinding(this, std::move(element_controller));
   }
+  annotations_.clear();
+  for (auto& annotation : *spec.mutable_annotations()) {
+    auto key = fidl::Clone(annotation.key);
+    annotations_.insert_or_assign(std::move(key), std::move(annotation));
+  }
   callback(fuchsia::element::Manager_ProposeElement_Result::WithResponse({}));
 }
 
@@ -45,13 +65,20 @@ void ElementManagerImpl::UpdateAnnotations(
     std::vector<fuchsia::element::Annotation> annotations_to_set,
     std::vector<fuchsia::element::AnnotationKey> annotations_to_delete,
     UpdateAnnotationsCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  for (const auto& key : annotations_to_delete) {
+    annotations_.erase(key);
+  }
+  for (auto& annotation : annotations_to_set) {
+    auto key = fidl::Clone(annotation.key);
+    annotations_.insert_or_assign(std::move(key), std::move(annotation));
+  }
   callback(fuchsia::element::AnnotationController_UpdateAnnotations_Result::
                WithResponse({}));
 }
 
 void ElementManagerImpl::GetAnnotations(GetAnnotationsCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  fuchsia::element::AnnotationController_GetAnnotations_Response response(
+      GetAnnotations());
   callback(fuchsia::element::AnnotationController_GetAnnotations_Result::
-               WithResponse({}));
+               WithResponse(std::move(response)));
 }

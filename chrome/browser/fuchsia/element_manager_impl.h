@@ -9,6 +9,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/fuchsia/scoped_service_binding.h"
 
 namespace base {
@@ -37,6 +38,8 @@ class ElementManagerImpl final : public fuchsia::element::Manager,
   ElementManagerImpl(const ElementManagerImpl&) = delete;
   ElementManagerImpl& operator=(const ElementManagerImpl&) = delete;
 
+  std::vector<fuchsia::element::Annotation> GetAnnotations();
+
   // fuchsia::element::Manager implementation
   void ProposeElement(
       fuchsia::element::Spec spec,
@@ -51,9 +54,18 @@ class ElementManagerImpl final : public fuchsia::element::Manager,
   void GetAnnotations(GetAnnotationsCallback callback) override;
 
  private:
+  struct AnnotationKeyCompare {
+    bool operator()(const fuchsia::element::AnnotationKey& lhs,
+                    const fuchsia::element::AnnotationKey& rhs) const;
+  };
+
   base::ScopedServiceBinding<fuchsia::element::Manager> binding_;
   const NewProposalCallback callback_;
   fidl::BindingSet<fuchsia::element::Controller> controller_bindings_;
+  base::flat_map<fuchsia::element::AnnotationKey,
+                 fuchsia::element::Annotation,
+                 AnnotationKeyCompare>
+      annotations_;
 };
 
 #endif  // CHROME_BROWSER_FUCHSIA_ELEMENT_MANAGER_IMPL_H_
