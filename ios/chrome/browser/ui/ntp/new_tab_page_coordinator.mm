@@ -353,6 +353,15 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   }
   if (visible) {
     self.didAppearTime = base::TimeTicks::Now();
+    if ([self isFeedHeaderVisible]) {
+      if ([self.feedExpandedPref value]) {
+        ntp_home::RecordNTPImpression(ntp_home::REMOTE_SUGGESTIONS);
+      } else {
+        ntp_home::RecordNTPImpression(ntp_home::REMOTE_COLLAPSED);
+      }
+    } else {
+      ntp_home::RecordNTPImpression(ntp_home::LOCAL_SUGGESTIONS);
+    }
   } else {
     if (!self.didAppearTime.is_null()) {
       UmaHistogramMediumTimes("NewTabPage.TimeSpent",
