@@ -10,8 +10,10 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.provider.Settings;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnDragListener;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -55,6 +57,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private @Nullable AnchoredPopupWindow mPopupWindow;
     private View mLayout;
     private OnLayoutChangeListener mOnLayoutChangeListener;
+    private OnDragListener mOnDragListener;
 
     private int mTopMarginPx;
     private int mBottomMarginPx;
@@ -203,6 +206,17 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             }
         };
         (mIsPopup ? mLayout : mContentView).addOnLayoutChangeListener(mOnLayoutChangeListener);
+
+        // Forward the drag events to delegate view if drag happens on top of container.
+        if (isDialogNonModal()) {
+            mOnDragListener = new OnDragListener() {
+                @Override
+                public boolean onDrag(View view, DragEvent dragEvent) {
+                    return mTouchEventDelegateView.dispatchDragEvent(dragEvent);
+                }
+            };
+            mLayout.setOnDragListener(mOnDragListener);
+        }
     }
 
     private void startEnterAnimation() {
@@ -235,6 +249,10 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             if (mOnLayoutChangeListener != null) {
                 mLayout.removeOnLayoutChangeListener(mOnLayoutChangeListener);
                 mOnLayoutChangeListener = null;
+            }
+            if (mOnDragListener != null) {
+                mLayout.setOnDragListener(null);
+                mOnDragListener = null;
             }
             super.dismiss();
 
@@ -275,7 +293,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             dismiss();
             return true;
         }
-        if (mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null) {
+        if (isDialogNonModal()) {
             return mTouchEventDelegateView.dispatchTouchEvent(event);
         }
         return false;
@@ -307,5 +325,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         animation.setDuration((long) (duration * durationScale));
         animation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         return animation;
+    }
+
+    private boolean isDialogNonModal() {
+        return mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null;
     }
 }

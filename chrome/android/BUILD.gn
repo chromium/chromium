@@ -1556,6 +1556,7 @@ android_library("chrome_test_java") {
     "//components/webauthn/android:java",
     "//components/webauthn/android:test_support_java",
     "//content/public/android:content_java",
+    "//content/public/common:common_java",
     "//content/public/test/android:content_java_test_support",
     "//media/base/android:java_switches",
     "//media/base/android:media_java",

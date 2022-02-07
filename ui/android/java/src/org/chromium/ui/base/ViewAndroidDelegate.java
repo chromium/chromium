@@ -16,7 +16,6 @@ import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputConnection;
-import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
@@ -32,6 +31,16 @@ import org.chromium.ui.mojom.CursorType;
  */
 @JNINamespace("ui")
 public class ViewAndroidDelegate {
+    /**
+     * Delegate to re-route the call to {@link #startDragAndDrop(Bitmap, DropDataAndroid).}
+     */
+    public interface DragAndDropDelegate {
+        boolean startDragAndDrop(View containerView, Bitmap shadowImage, DropDataAndroid dropData);
+    }
+
+    private static DragAndDropDelegate sDragAndDropTestDelegate;
+    private DragAndDropDelegate mDragAndDropDelegate;
+
     /**
      * The current container view. This view can be updated with
      * {@link #setContainerView()}.
@@ -59,6 +68,8 @@ public class ViewAndroidDelegate {
 
     protected ViewAndroidDelegate(ViewGroup containerView) {
         mContainerView = containerView;
+        mDragAndDropDelegate = sDragAndDropTestDelegate != null ? sDragAndDropTestDelegate
+                                                                : new DragAndDropDelegateImpl();
     }
 
     /**
@@ -181,12 +192,7 @@ public class ViewAndroidDelegate {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return false;
 
-        ImageView imageView = new ImageView(containerView.getContext());
-        imageView.setImageBitmap(shadowImage);
-        imageView.layout(0, 0, shadowImage.getWidth(), shadowImage.getHeight());
-        String text = dropData.text;
-        return ApiHelperForN.startDragAndDrop(containerView, ClipData.newPlainText(null, text),
-                new View.DragShadowBuilder(imageView), null, View.DRAG_FLAG_GLOBAL);
+        return mDragAndDropDelegate.startDragAndDrop(containerView, shadowImage, dropData);
     }
 
     @VisibleForTesting
@@ -490,5 +496,10 @@ public class ViewAndroidDelegate {
     @CalledByNative
     protected int[] getDisplayFeature() {
         return null;
+    }
+
+    @VisibleForTesting
+    public static void setDragAndDropDelegateForTest(DragAndDropDelegate testDelegate) {
+        sDragAndDropTestDelegate = testDelegate;
     }
 }

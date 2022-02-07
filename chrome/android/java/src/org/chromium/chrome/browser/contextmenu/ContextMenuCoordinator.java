@@ -413,4 +413,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         }
         return null;
     }
+
+    @VisibleForTesting
+    public ContextMenuDialog getDialogForTest() {
+        return mDialog;
+    }
 }

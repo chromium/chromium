@@ -1199,6 +1199,14 @@ const char kBigLittleSchedulingNetworkMainBigParam[] =
 const char kBigLittleSchedulingGpuMainBigParam[] =
     "BigLittleSchedulingGpuMainBigParam";
 
+// When the context menu is triggered, the browser allows motion in a small
+// region around the initial touch location menu to allow for finger jittering.
+// This param holds the movement threshold in DIPs to consider drag an
+// intentional drag, which will dismiss the current context menu and prevent new
+//  menu from showing.
+const char kDragAndDropMovementThresholdDipParam[] =
+    "DragAndDropMovementThresholdDipParam";
+
 // Temporarily pauses the compositor early in navigation.
 const base::Feature kOptimizeEarlyNavigation{"OptimizeEarlyNavigation",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

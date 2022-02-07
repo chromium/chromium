@@ -68,6 +68,11 @@ void ContextMenuHelper::ShowContextMenu(
       view->content_offset() * view->GetDipScale());
 }
 
+void ContextMenuHelper::DismissContextMenu() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ContextMenuHelper_dismissContextMenu(env, java_obj_);
+}
+
 void ContextMenuHelper::OnContextMenuClosed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {

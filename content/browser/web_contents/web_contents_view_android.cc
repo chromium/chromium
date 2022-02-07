@@ -39,6 +39,7 @@
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/android/motion_event_android.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/android/view_configuration.h"
 #include "ui/gfx/image/image_skia.h"
 
 using base::android::AttachCurrentThread;
@@ -48,6 +49,15 @@ using base::android::ScopedJavaLocalRef;
 namespace content {
 
 namespace {
+
+// Returns the minimum distance in DIPs, for drag event being considered as an
+// intentional drag.
+float DragMovementThresholdDip() {
+  static float radius = base::GetFieldTrialParamByFeatureAsDouble(
+      features::kDragAndDrop, features::kDragAndDropMovementThresholdDipParam,
+      /*default_value=*/gfx::ViewConfiguration::GetTouchSlopInDips());
+  return radius;
+}
 
 // True if we want to disable Android native event batching and use
 // compositor event queue.
@@ -59,11 +69,15 @@ bool ShouldRequestUnbufferedDispatch() {
   return should_request_unbuffered_dispatch;
 }
 
-bool IsDragEnabledForDropData(const DropData& drop_data) {
+bool IsDragAndDropEnabled() {
   // Cache the feature flag value so it isn't queried on every drag start.
   static const bool drag_feature_enabled =
       base::FeatureList::IsEnabled(features::kDragAndDrop);
-  if (!drag_feature_enabled) {
+  return drag_feature_enabled;
+}
+
+bool IsDragEnabledForDropData(const DropData& drop_data) {
+  if (!IsDragAndDropEnabled()) {
     return drop_data.text.has_value();
   }
   return !drop_data.url.is_empty() || !drop_data.file_contents.empty() ||
@@ -275,6 +289,9 @@ void WebContentsViewAndroid::OnCapturerCountChanged() {}
 
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
                                              const ContextMenuParams& params) {
+  if (is_active_drag_ && drag_exceeded_movement_threshold_)
+    return;
+
   auto* rwhv = static_cast<RenderWidgetHostViewAndroid*>(
       web_contents_->GetRenderWidgetHostView());
 
@@ -430,6 +447,24 @@ void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
   drag_location_ = location;
   drag_screen_location_ = screen_location;
 
+  // When drag and drop is enabled, attempt to dismiss the context menu if drag
+  // leaves start location.
+  if (IsDragAndDropEnabled()) {
+    // On Android DragEvent.ACTION_DRAG_ENTER does not have a valid location.
+    // See https://developer.android.com/guide/topics/ui/drag-drop#table2.
+    if (!is_active_drag_) {
+      is_active_drag_ = true;
+      drag_entered_location_ = location;
+    } else if (!drag_exceeded_movement_threshold_) {
+      float radius = DragMovementThresholdDip();
+      if (!drag_location_.IsWithinDistance(drag_entered_location_, radius)) {
+        drag_exceeded_movement_threshold_ = true;
+        if (delegate_)
+          delegate_->DismissContextMenu();
+      }
+    }
+  }
+
   blink::DragOperationsMask allowed_ops =
       static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
                                              blink::kDragOperationMove);
@@ -469,6 +504,9 @@ void WebContentsViewAndroid::OnDragEnded() {
       base::DoNothing());
   OnSystemDragEnded();
 
+  is_active_drag_ = false;
+  drag_exceeded_movement_threshold_ = false;
+  drag_entered_location_ = gfx::PointF();
   drag_location_ = gfx::PointF();
   drag_screen_location_ = gfx::PointF();
 }

@@ -178,6 +178,14 @@ class WebContentsViewAndroid : public WebContentsView,
   // Show/hide popup UI for <select> tag.
   std::unique_ptr<SelectPopup> select_popup_;
 
+  // Whether drag went beyond the movement threshold to be considered as an
+  // intentional drag. If true, ::ShowContextMenu will be ignored.
+  bool drag_exceeded_movement_threshold_ = false;
+  // Whether there's an active drag process.
+  bool is_active_drag_ = false;
+  // The first drag location during a specific drag process.
+  gfx::PointF drag_entered_location_;
+
   gfx::PointF drag_location_;
   gfx::PointF drag_screen_location_;
 };

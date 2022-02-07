@@ -303,6 +303,7 @@ extern const char kBigLittleSchedulingBrowserIOBigParam[];
 extern const char kBigLittleSchedulingRenderMainBigParam[];
 extern const char kBigLittleSchedulingNetworkMainBigParam[];
 extern const char kBigLittleSchedulingGpuMainBigParam[];
+extern const char kDragAndDropMovementThresholdDipParam[];
 
 CONTENT_EXPORT extern const base::Feature kOptimizeEarlyNavigation;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A helper class that handles generating context menus for {@link WebContents}s.
+ * A helper class that handles generating and dismissing context menus for {@link WebContents}.
  */
 public class ContextMenuHelper {
     private static Callback<ContextMenuCoordinator> sMenuShownCallbackForTests;
@@ -62,10 +62,7 @@ public class ContextMenuHelper {
 
     @CalledByNative
     private void destroy() {
-        if (mCurrentContextMenu != null) {
-            mCurrentContextMenu.dismiss();
-            mCurrentContextMenu = null;
-        }
+        dismissContextMenu();
         if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
         mNativeContextMenuHelper = 0;
@@ -73,10 +70,7 @@ public class ContextMenuHelper {
 
     @CalledByNative
     private void setPopulatorFactory(ContextMenuPopulatorFactory populatorFactory) {
-        if (mCurrentContextMenu != null) {
-            mCurrentContextMenu.dismiss();
-            mCurrentContextMenu = null;
-        }
+        dismissContextMenu();
         if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         mCurrentPopulator = null;
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
@@ -149,6 +143,14 @@ public class ContextMenuHelper {
         };
 
         displayContextMenu(topContentOffsetPx);
+    }
+
+    @CalledByNative
+    private void dismissContextMenu() {
+        if (mCurrentContextMenu != null) {
+            mCurrentContextMenu.dismiss();
+            mCurrentContextMenu = null;
+        }
     }
 
     /**
