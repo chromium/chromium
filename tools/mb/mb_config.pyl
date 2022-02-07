@@ -646,7 +646,7 @@
 
     'client.devtools-frontend.integration': {
       'DevTools Linux': 'release_trybot_blink_do_typecheck',
-      'DevTools Linux Fastbuild': 'release_trybot_blink_skip_typecheck',
+      'DevTools Linux Fastbuild': 'release_trybot_blink',
     },
 
     'client.openscreen.chromium': {
@@ -1218,7 +1218,7 @@
     'tryserver.devtools-frontend': {
       # Align devtools blink builders with chromium linux-rel
       'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink_do_typecheck',
-      'devtools_frontend_linux_blink_light_rel_fastbuild': 'release_trybot_blink_skip_typecheck',
+      'devtools_frontend_linux_blink_light_rel_fastbuild': 'release_trybot_blink',
       'devtools_frontend_linux_blink_rel': 'release_trybot_blink_do_typecheck',
     },
 
@@ -2995,11 +2995,6 @@
       'release_trybot_blink',
     ],
 
-    # TODO(crbug.com/1278663): remove this when disable typecheck by default.
-    'release_trybot_blink_skip_typecheck': [
-      'release_trybot_blink', 'devtools_skip_typecheck',
-    ],
-
     'release_trybot_blink_do_typecheck': [
       'release_trybot_blink', 'devtools_do_typecheck',
     ],
@@ -3441,11 +3436,6 @@
 
     'debug_static_bot_reclient': {
       'mixins': ['debug', 'static', 'minimal_symbols', 'reclient'],
-    },
-
-    # TODO(crbug.com/1278663): remove this when disable typecheck by default.
-    'devtools_skip_typecheck': {
-      'gn_args': 'devtools_skip_typecheck=true',
     },
 
     'devtools_do_typecheck': {
