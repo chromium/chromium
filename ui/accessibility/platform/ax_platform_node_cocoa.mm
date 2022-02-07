@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/logging.h"
+
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
@@ -784,8 +786,14 @@ bool IsAXSetter(SEL selector) {
 
   // Caret navigation and text selection attributes.
   if (!ui::IsPlatformDocument(_node->GetRole())) {
-    [axAttributes
-        addObjectsFromArray:@[ NSAccessibilityFocusableAncestorAttribute ]];
+    [axAttributes addObject:NSAccessibilityFocusableAncestorAttribute];
+
+    if (_node->HasState(ax::mojom::State::kEditable)) {
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityEditableAncestorAttribute,
+        NSAccessibilityHighestEditableAncestorAttribute
+      ]];
+    }
   }
 
   // Live regions.
@@ -1102,6 +1110,16 @@ bool IsAXSetter(SEL selector) {
   return nil;
 }
 
+- (id)AXEditableAncestor {
+  if (![self instanceActive])
+    return nil;
+  ui::AXPlatformNodeBase* text_field_ancestor =
+      _node->GetPlatformTextFieldAncestor();
+  if (text_field_ancestor)
+    return text_field_ancestor->GetNativeViewAccessible();
+  return nil;
+}
+
 - (NSNumber*)AXElementBusy {
   if (![self instanceActive])
     return nil;
@@ -1122,6 +1140,24 @@ bool IsAXSetter(SEL selector) {
   if (![self instanceActive])
     return nil;
   return @(_node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+}
+
+- (id)AXHighestEditableAncestor {
+  if (![self instanceActive])
+    return nil;
+
+  AXPlatformNodeCocoa* highestEditableAncestor = [self AXEditableAncestor];
+
+  while (highestEditableAncestor) {
+    AXPlatformNodeCocoa* ancestorParent = [highestEditableAncestor AXParent];
+    if (!ancestorParent || ![ancestorParent isKindOfClass:[self class]])
+      break;
+    AXPlatformNodeCocoa* higherAncestor = [ancestorParent AXEditableAncestor];
+    if (!higherAncestor)
+      break;
+    highestEditableAncestor = higherAncestor;
+  }
+  return highestEditableAncestor;
 }
 
 - (NSString*)AXInvalid {

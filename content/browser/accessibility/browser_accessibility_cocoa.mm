@@ -68,10 +68,6 @@ static_assert(
 namespace {
 
 // Private WebKit accessibility attributes.
-NSString* const NSAccessibilityEditableAncestorAttribute =
-    @"AXEditableAncestor";
-NSString* const NSAccessibilityHighestEditableAncestorAttribute =
-    @"AXHighestEditableAncestor";
 NSString* const NSAccessibilityLoadingProgressAttribute = @"AXLoadingProgress";
 NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
 NSString* const
@@ -627,15 +623,12 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityDisclosedByRowAttribute, @"disclosedByRow"},
       {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
       {NSAccessibilityDisclosedRowsAttribute, @"disclosedRows"},
-      {NSAccessibilityEditableAncestorAttribute, @"editableAncestor"},
       {NSAccessibilityEnabledAttribute, @"enabled"},
       {NSAccessibilityEndTextMarkerAttribute, @"endTextMarker"},
       {NSAccessibilityExpandedAttribute, @"expanded"},
       {NSAccessibilityFocusedAttribute, @"focused"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityHelpAttribute, @"help"},
-      {NSAccessibilityHighestEditableAncestorAttribute,
-       @"highestEditableAncestor"},
       {NSAccessibilityIndexAttribute, @"index"},
       {NSAccessibilityInsertionPointLineNumberAttribute,
        @"insertionPointLineNumber"},
@@ -930,15 +923,6 @@ bool content::IsNSRange(id value) {
   return nil;
 }
 
-- (id)editableAncestor {
-  if (![self instanceActive])
-    return nil;
-  auto* text_field_ancestor =
-      const_cast<BrowserAccessibility*>(_owner->PlatformGetTextFieldAncestor());
-  return text_field_ancestor ? text_field_ancestor->GetNativeViewAccessible()
-                             : nil;
-}
-
 - (NSNumber*)enabled {
   if (![self instanceActive])
     return nil;
@@ -1007,26 +991,6 @@ bool content::IsNSRange(id value) {
     return nil;
   return NSStringForStringAttribute(_owner,
                                     ax::mojom::StringAttribute::kDescription);
-}
-
-- (id)highestEditableAncestor {
-  if (![self instanceActive])
-    return nil;
-
-  BrowserAccessibilityCocoa* highestEditableAncestor = [self editableAncestor];
-  while (highestEditableAncestor) {
-    BrowserAccessibilityCocoa* ancestorParent =
-        [highestEditableAncestor parent];
-    if (!ancestorParent || ![ancestorParent isKindOfClass:[self class]]) {
-      break;
-    }
-    BrowserAccessibilityCocoa* higherAncestor =
-        [ancestorParent editableAncestor];
-    if (!higherAncestor)
-      break;
-    highestEditableAncestor = higherAncestor;
-  }
-  return highestEditableAncestor;
 }
 
 - (NSNumber*)index {
@@ -2877,17 +2841,6 @@ bool content::IsNSRange(id value) {
       NSAccessibilitySelectedRowsAttribute, NSAccessibilityRowsAttribute,
       NSAccessibilityColumnsAttribute, NSAccessibilityOrientationAttribute
     ]];
-  }
-
-  // Caret navigation and text selection attributes.
-  if (_owner->HasState(ax::mojom::State::kEditable)) {
-    // Add ancestor attributes if not a web area.
-    if (!ui::IsPlatformDocument(_owner->GetRole())) {
-      [ret addObjectsFromArray:@[
-        NSAccessibilityEditableAncestorAttribute,
-        NSAccessibilityHighestEditableAncestorAttribute
-      ]];
-    }
   }
 
   if (_owner->IsTextField()) {

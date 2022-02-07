@@ -214,6 +214,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDOMIdentifier) {
   RunTypedTest<kMacAttributes>("ax-dom-identifier.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXEditableAncestor) {
+  RunTypedTest<kMacAttributes>("ax-editable-ancestor.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDropEffects) {
   RunTypedTest<kMacAttributes>("ax-drop-effects.html");
 }
@@ -232,6 +236,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXGrabbed) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHasPopup) {
   RunTypedTest<kMacAttributes>("ax-has-popup.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHighestEditableAncestor) {
+  RunTypedTest<kMacAttributes>("ax-highest-editable-ancestor.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {

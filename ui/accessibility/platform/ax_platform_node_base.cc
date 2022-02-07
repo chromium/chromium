@@ -138,6 +138,12 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformParent() const {
   return nullptr;
 }
 
+AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformTextFieldAncestor() const {
+  if (delegate_)
+    return FromNativeViewAccessible(delegate_->GetTextFieldAncestor());
+  return nullptr;
+}
+
 int AXPlatformNodeBase::GetChildCount() const {
   if (delegate_)
     return delegate_->GetChildCount();

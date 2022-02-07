@@ -452,12 +452,15 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
 
   std::set<const BrowserAccessibilityCocoa*> changed_editable_roots;
   for (const auto& change : changes) {
-    BrowserAccessibility* obj = GetFromAXNode(change.node);
-    if (obj && obj->HasState(ax::mojom::State::kEditable)) {
-      const BrowserAccessibilityCocoa* editable_root =
-          [obj->GetNativeViewAccessible() editableAncestor];
-      if (editable_root && [editable_root instanceActive])
-        changed_editable_roots.insert(editable_root);
+    if (change.node->HasState(ax::mojom::State::kEditable)) {
+      auto* ancestor = change.node->GetTextFieldAncestor();
+      if (ancestor) {
+        BrowserAccessibility* obj = GetFromAXNode(ancestor);
+        const BrowserAccessibilityCocoa* editable_root =
+            obj->GetNativeViewAccessible();
+        if ([editable_root instanceActive])
+          changed_editable_roots.insert(editable_root);
+      }
     }
   }
 
