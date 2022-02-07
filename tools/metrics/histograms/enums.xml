@@ -3891,6 +3891,14 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Crashed"/>
 </enum>
 
+<enum name="ArcContinueBootImpulseStatus">
+<!-- To be kept in sync with ChromeOS enum ArcContinueBootImpulseStatus -->
+
+  <int value="0" label="Arc continue boot impulse succeeded."/>
+  <int value="1" label="Arc continue boot impulse failed."/>
+  <int value="2" label="Arc continue boot impulse timed out."/>
+</enum>
+
 <enum name="ArcCorePriAbiMigEvent">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 
