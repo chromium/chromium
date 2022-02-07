@@ -841,8 +841,6 @@ component("net") {
     "quic/web_transport_client.h",
     "quic/web_transport_error.cc",
     "quic/web_transport_error.h",
-    "quiche/common/platform/impl/quiche_command_line_flags_impl.cc",
-    "quiche/common/platform/impl/quiche_command_line_flags_impl.h",
     "quiche/common/platform/impl/quiche_flag_utils_impl.h",
     "quiche/common/platform/impl/quiche_flags_impl.cc",
     "quiche/common/platform/impl/quiche_flags_impl.h",
@@ -4576,7 +4574,6 @@ test("net_unittests") {
     sources += [
       "quic/platform/impl/quic_epoll_clock_test.cc",
       "quic/platform/impl/quic_flags_test.cc",
-      "quiche/common/platform/impl/quiche_command_line_flags_test.cc",
       "tools/quic/quic_http_proxy_backend_stream_test.cc",
       "tools/quic/quic_http_proxy_backend_test.cc",
       "tools/quic/quic_simple_server_test.cc",

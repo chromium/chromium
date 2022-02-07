@@ -688,25 +688,8 @@ class QuicNetworkTransactionTest
     EXPECT_EQ(status_line, response->headers->GetStatusLine());
     EXPECT_TRUE(response->was_fetched_via_spdy);
     EXPECT_TRUE(response->was_alpn_negotiated);
-    auto connection_info =
-        QuicHttpStream::ConnectionInfoFromQuicVersion(version);
-    if (connection_info == response->connection_info) {
-      return;
-    }
-    // QUIC v1 and QUIC v2 are considered a match, because they have the same
-    // ALPN token.
-    if ((connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
-         connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1) &&
-        (response->connection_info ==
-             HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
-         response->connection_info ==
-             HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1)) {
-      return;
-    }
-
-    // They do not match.  This EXPECT_EQ will fail and print useful
-    // information.
-    EXPECT_EQ(connection_info, response->connection_info);
+    EXPECT_EQ(QuicHttpStream::ConnectionInfoFromQuicVersion(version),
+              response->connection_info);
   }
 
   void CheckWasQuicResponse(HttpNetworkTransaction* trans,
@@ -1017,53 +1000,6 @@ class QuicNetworkTransactionTest
     } else {
       EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_direct());
     }
-  }
-
-  // Verify that the set of QUIC protocols in `alt_svc_info_vector` and
-  // `supported_versions` is the same.  Since QUICv1 and QUICv2 have the same
-  // ALPN token "h3", they cannot be distinguished when parsing ALPN, so
-  // consider them equal.  This is accomplished by comparing the set of ALPN
-  // strings (instead of comparing the set of ParsedQuicVersion entities).
-  static void VerifyQuicVersionsInAlternativeServices(
-      const AlternativeServiceInfoVector& alt_svc_info_vector,
-      const quic::ParsedQuicVersionVector& supported_versions) {
-    // Versions that support the legacy Google-specific Alt-Svc format are sent
-    // in a single Alt-Svc entry, therefore they are accumulated in a single
-    // AlternativeServiceInfo, whereas more recent versions all have their own
-    // Alt-Svc entry and AlternativeServiceInfo entry.  Flatten to compare.
-    std::vector<std::string> alt_svc_negotiated_alpn;
-    for (const auto& alt_svc_info : alt_svc_info_vector) {
-      EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
-      for (const auto& version : alt_svc_info.advertised_versions()) {
-        alt_svc_negotiated_alpn.push_back(quic::AlpnForVersion(version));
-      }
-    }
-
-    // Sort and deduplicate.
-    std::sort(alt_svc_negotiated_alpn.begin(), alt_svc_negotiated_alpn.end());
-    auto last = std::unique(alt_svc_negotiated_alpn.begin(),
-                            alt_svc_negotiated_alpn.end());
-    if (last != alt_svc_negotiated_alpn.end()) {
-      alt_svc_negotiated_alpn.erase(last, alt_svc_negotiated_alpn.end());
-    }
-
-    // Process supported versions.
-    std::vector<std::string> supported_alpn;
-    for (const auto& version : supported_versions) {
-      supported_alpn.push_back(quic::AlpnForVersion(version));
-    }
-
-    // Sort and deduplicate.
-    std::sort(supported_alpn.begin(), supported_alpn.end());
-    last = std::unique(supported_alpn.begin(), supported_alpn.end());
-    if (last != supported_alpn.end()) {
-      supported_alpn.erase(last, supported_alpn.end());
-    }
-
-    // Compare.
-    ASSERT_EQ(supported_alpn.size(), alt_svc_negotiated_alpn.size());
-    EXPECT_TRUE(std::equal(supported_alpn.begin(), supported_alpn.end(),
-                           alt_svc_negotiated_alpn.begin()));
   }
 
   const quic::ParsedQuicVersion version_;
@@ -1865,8 +1801,34 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   alt_svc_info_vector =
       session_->http_server_properties()->GetAlternativeServiceInfos(
           server, NetworkIsolationKey());
-  VerifyQuicVersionsInAlternativeServices(alt_svc_info_vector,
-                                          supported_versions_);
+  // Versions that support the legacy Google-specific Alt-Svc format are sent in
+  // a single Alt-Svc entry, therefore they are accumulated in a single
+  // AlternativeServiceInfo, whereas more recent versions all have their own
+  // Alt-Svc entry and AlternativeServiceInfo entry.  Flatten to compare.
+  quic::ParsedQuicVersionVector alt_svc_negotiated_versions;
+  for (const auto& alt_svc_info : alt_svc_info_vector) {
+    EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
+    for (const auto& version : alt_svc_info.advertised_versions()) {
+      if (std::find(alt_svc_negotiated_versions.begin(),
+                    alt_svc_negotiated_versions.end(),
+                    version) == alt_svc_negotiated_versions.end()) {
+        alt_svc_negotiated_versions.push_back(version);
+      }
+    }
+  }
+
+  ASSERT_EQ(supported_versions_.size(), alt_svc_negotiated_versions.size());
+  auto version_compare = [](const quic::ParsedQuicVersion& a,
+                            const quic::ParsedQuicVersion& b) {
+    return std::tie(a.transport_version, a.handshake_protocol) <
+           std::tie(b.transport_version, b.handshake_protocol);
+  };
+  std::sort(supported_versions_.begin(), supported_versions_.end(),
+            version_compare);
+  std::sort(alt_svc_negotiated_versions.begin(),
+            alt_svc_negotiated_versions.end(), version_compare);
+  EXPECT_TRUE(std::equal(supported_versions_.begin(), supported_versions_.end(),
+                         alt_svc_negotiated_versions.begin()));
 }
 
 // Regression test for https://crbug.com/546991.
@@ -2190,30 +2152,20 @@ TEST_P(QuicNetworkTransactionTest,
 }
 
 TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceWithVersionForQuic1) {
-  // Both client and server supports two QUIC versions:
-  // Client supports |supported_versions_[0]| and |supported_versions_[1]|,
-  // server supports |version_| and |advertised_version_2|.
-  // Only |version_| (same as |supported_versions_[0]|) is supported by both.
+  // Both server advertises and client supports two QUIC versions.
+  // Only |version_| is advertised and supported.
   // The QuicStreamFactoy will pick up |version_|, which is verified as the
   // PacketMakers are using |version_|.
 
-  // Compare ALPN strings instead of ParsedQuicVersions because QUIC v1 and v2
-  // have the same ALPN string.
-  ASSERT_EQ(1u, supported_versions_.size());
-  ASSERT_EQ(supported_versions_[0], version_);
+  // Add support for another QUIC version besides |version_| on the client side.
+  // Also find a different version advertised by the server.
   quic::ParsedQuicVersion advertised_version_2 =
       quic::ParsedQuicVersion::Unsupported();
   for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
-    if (quic::AlpnForVersion(version) == quic::AlpnForVersion(version_)) {
+    if (version == version_)
       continue;
-    }
     if (supported_versions_.size() != 2) {
       supported_versions_.push_back(version);
-      continue;
-    }
-    if (supported_versions_.size() == 2 &&
-        quic::AlpnForVersion(supported_versions_[1]) ==
-            quic::AlpnForVersion(version)) {
       continue;
     }
     advertised_version_2 = version;
@@ -2548,8 +2500,34 @@ TEST_P(QuicNetworkTransactionTest,
   const AlternativeServiceInfoVector alt_svc_info_vector =
       session_->http_server_properties()->GetAlternativeServiceInfos(
           https_server, NetworkIsolationKey());
-  VerifyQuicVersionsInAlternativeServices(alt_svc_info_vector,
-                                          supported_versions_);
+  // Versions that support the legacy Google-specific Alt-Svc format are sent in
+  // a single Alt-Svc entry, therefore they are accumulated in a single
+  // AlternativeServiceInfo, whereas more recent versions all have their own
+  // Alt-Svc entry and AlternativeServiceInfo entry.  Flatten to compare.
+  quic::ParsedQuicVersionVector alt_svc_negotiated_versions;
+  for (const auto& alt_svc_info : alt_svc_info_vector) {
+    EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
+    for (const auto& version : alt_svc_info.advertised_versions()) {
+      if (std::find(alt_svc_negotiated_versions.begin(),
+                    alt_svc_negotiated_versions.end(),
+                    version) == alt_svc_negotiated_versions.end()) {
+        alt_svc_negotiated_versions.push_back(version);
+      }
+    }
+  }
+
+  ASSERT_EQ(supported_versions_.size(), alt_svc_negotiated_versions.size());
+  auto version_compare = [](const quic::ParsedQuicVersion& a,
+                            const quic::ParsedQuicVersion& b) {
+    return std::tie(a.transport_version, a.handshake_protocol) <
+           std::tie(b.transport_version, b.handshake_protocol);
+  };
+  std::sort(supported_versions_.begin(), supported_versions_.end(),
+            version_compare);
+  std::sort(alt_svc_negotiated_versions.begin(),
+            alt_svc_negotiated_versions.end(), version_compare);
+  EXPECT_TRUE(std::equal(supported_versions_.begin(), supported_versions_.end(),
+                         alt_svc_negotiated_versions.begin()));
 }
 
 TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceAllSupportedVersion) {

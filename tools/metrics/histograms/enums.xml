@@ -15327,8 +15327,6 @@ Called by update_net_error_codes.py.-->
   <int value="37" label="HTTP/3 (draft-28)"/>
   <int value="38" label="HTTP/3 (draft-29)"/>
   <int value="39" label="HTTP/3 (T051)"/>
-  <int value="40" label="QUIC (RFC)"/>
-  <int value="41" label="QUICv2 (draft-01)"/>
 </enum>
 
 <enum name="ConnectionResult">

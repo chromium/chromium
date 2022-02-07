@@ -36,7 +36,6 @@
 #include "base/logging.h"
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
 #include "net/third_party/quiche/src/quic/core/quic_error_codes.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
@@ -92,9 +91,9 @@ int main(int argc, char* argv[]) {
 
   // All non-flag arguments should be interpreted as URLs to fetch.
   std::vector<std::string> urls =
-      quiche::QuicheParseCommandLineFlags(usage, argc, argv);
+      quic::QuicParseCommandLineFlags(usage, argc, argv);
   if (urls.size() != 1) {
-    quiche::QuichePrintCommandLineFlagHelp(usage);
+    quic::QuicPrintCommandLineFlagHelp(usage);
     exit(0);
   }
 
