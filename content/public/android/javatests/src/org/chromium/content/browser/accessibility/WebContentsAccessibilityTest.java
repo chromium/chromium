@@ -84,6 +84,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -1977,6 +1978,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1294296")
     public void testPerformAction_showOnScreen() throws Throwable {
         // Build a simple web page with a scrollable view.
         setupTestFromFile("content/test/data/android/scroll_element_offscreen.html");
