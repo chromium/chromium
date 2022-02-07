@@ -25,6 +25,7 @@
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/session_manager/core/session_manager.h"
@@ -78,7 +79,7 @@ class FamilyUserChromeActivityMetricsTest
 
     // Install Chrome.
     scoped_refptr<extensions::Extension> chrome = app_time::CreateExtension(
-        extension_misc::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
+        app_constants::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
     extension_service_->AddComponentExtension(chrome.get());
 
     PushChromeApp();

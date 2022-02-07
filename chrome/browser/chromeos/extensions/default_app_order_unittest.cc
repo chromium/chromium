@@ -15,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_path_override.h"
-#include "extensions/common/constants.h"
+#include "components/app_constants/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -141,7 +141,7 @@ TEST_F(DefaultAppOrderTest, ImportDefault) {
   default_app_order::Get(&apps);
   EXPECT_EQ(default_app_order::kDefaultAppOrderCount + 2, apps.size());
   EXPECT_EQ(std::string("app1"), apps[0]);
-  EXPECT_EQ(extension_misc::kChromeAppId, apps[1]);
+  EXPECT_EQ(app_constants::kChromeAppId, apps[1]);
   EXPECT_EQ(std::string("app2"),
             apps[default_app_order::kDefaultAppOrderCount + 1]);
 }

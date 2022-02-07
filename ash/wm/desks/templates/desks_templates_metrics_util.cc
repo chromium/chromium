@@ -5,9 +5,9 @@
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/desk_model.h"
-#include "extensions/common/constants.h"
 
 namespace ash {
 
@@ -52,7 +52,7 @@ void RecordWindowAndTabCountHistogram(DeskTemplate* desk_template) {
   for (const auto& iter : launch_list) {
     // Since apps aren't guaranteed to have the url field set up correctly, this
     // is necessary to ensure things are not double-counted.
-    if (iter.first != extension_misc::kChromeAppId) {
+    if (iter.first != app_constants::kChromeAppId) {
       ++window_count;
       ++total_count;
       continue;

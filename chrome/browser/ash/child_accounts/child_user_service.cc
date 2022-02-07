@@ -16,9 +16,9 @@
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/common/constants.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -107,7 +107,7 @@ void ChildUserService::PauseWebActivity(const std::string& app_service_id) {
   DCHECK(app_time_controller_);
 
   // Pause web activity only if the app is chrome.
-  if (app_service_id != extension_misc::kChromeAppId)
+  if (app_service_id != app_constants::kChromeAppId)
     return;
 
   app_time::WebTimeLimitEnforcer* web_time_enforcer =
@@ -127,7 +127,7 @@ void ChildUserService::ResumeWebActivity(const std::string& app_service_id) {
   DCHECK(app_time_controller_);
 
   // Only unpause web activity if the app is chrome.
-  if (app_service_id != extension_misc::kChromeAppId)
+  if (app_service_id != app_constants::kChromeAppId)
     return;
 
   app_time::WebTimeLimitEnforcer* web_time_enforcer =

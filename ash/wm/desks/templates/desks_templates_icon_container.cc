@@ -12,9 +12,9 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "base/containers/contains.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -93,7 +93,7 @@ void InsertIdentifierInfoFromLaunchList(
     // id so to determine whether `restore_data` is an SWA we need to check
     // whether it's a browser.
     const bool is_browser =
-        app_id == extension_misc::kChromeAppId &&
+        app_id == app_constants::kChromeAppId &&
         (!restore_data.second->app_type_browser.has_value() ||
          !restore_data.second->app_type_browser.value());
     const int activation_index = restore_data.second->activation_index.value();
@@ -115,7 +115,7 @@ void InsertIdentifierInfoFromLaunchList(
       // their app id from their app name if possible.
       std::string new_app_id = app_id;
       absl::optional<std::string> app_name = restore_data.second->app_name;
-      if (app_id == extension_misc::kChromeAppId && app_name.has_value())
+      if (app_id == app_constants::kChromeAppId && app_name.has_value())
         new_app_id = app_restore::GetAppIdFromAppName(app_name.value());
 
       InsertIdentifierInfo(new_app_id, activation_index, out_identifier_info);

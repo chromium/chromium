@@ -4,6 +4,7 @@ include_rules = [
   "+cc/output",
   "+cc/paint",
   "+components/account_id",
+  "+components/app_constants",
   "+components/app_restore",
   "+components/desks_storage",
   "+components/discardable_memory/public",

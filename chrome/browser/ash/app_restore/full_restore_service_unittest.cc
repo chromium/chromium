@@ -23,6 +23,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
@@ -43,7 +44,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -267,7 +267,7 @@ class FullRestoreServiceTestHavingFullRestoreFile
     // Add app launch infos.
     ::full_restore::SaveAppLaunchInfo(
         profile->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kWindowId));
+                                app_constants::kChromeAppId, kWindowId));
 
     ::full_restore::FullRestoreSaveHandler* save_handler =
         ::full_restore::FullRestoreSaveHandler::GetInstance();

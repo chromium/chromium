@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -18,8 +19,8 @@
 
 // Extensions that should not be attempted to be uninstalled and reinstalled.
 const char* const kExemptExtensions[] = {
-    extension_misc::kChromeAppId,
-    extension_misc::kLacrosAppId,
+    app_constants::kChromeAppId,
+    app_constants::kLacrosAppId,
 };
 
 namespace chromeos {

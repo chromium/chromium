@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/services/keymaster/public", # nocheck
   "+chrome/services/wilco_dtc_supportd/public",
   "+components/account_manager_core",
+  "+components/app_constants",
   "+components/app_restore",
   "+components/guest_os",
   "+components/services/app_service/public",

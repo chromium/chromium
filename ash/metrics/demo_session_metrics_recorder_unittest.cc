@@ -15,6 +15,7 @@
 #include "ash/wm/window_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -517,7 +518,7 @@ TEST_F(DemoSessionMetricsRecorderTest, UniqueAppsLaunchedOnDeletion) {
   wm::ActivateWindow(chrome_app_window.get());
 
   std::unique_ptr<aura::Window> chrome_browser_window =
-      CreateChromeAppWindow(extension_misc::kChromeAppId);
+      CreateChromeAppWindow(app_constants::kChromeAppId);
   wm::ActivateWindow(chrome_browser_window.get());
   wm::DeactivateWindow(chrome_browser_window.get());
   wm::ActivateWindow(chrome_browser_window.get());
@@ -601,7 +602,7 @@ TEST_F(DemoSessionMetricsRecorderTest, AppLaunched) {
 
   // Chrome browser window
   std::unique_ptr<aura::Window> chrome_browser_window =
-      CreateChromeAppWindow(extension_misc::kChromeAppId);
+      CreateChromeAppWindow(app_constants::kChromeAppId);
   wm::ActivateWindow(chrome_browser_window.get());
   wm::DeactivateWindow(chrome_browser_window.get());
   wm::ActivateWindow(chrome_browser_window.get());

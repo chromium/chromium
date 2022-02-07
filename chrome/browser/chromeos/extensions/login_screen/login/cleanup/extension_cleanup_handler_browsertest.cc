@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
+#include "components/app_constants/constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "content/public/test/browser_test.h"
@@ -33,8 +34,8 @@
 namespace {
 
 const char* const kExemptExtensions[] = {
-    extension_misc::kChromeAppId,
-    extension_misc::kLacrosAppId,
+    app_constants::kChromeAppId,
+    app_constants::kLacrosAppId,
 };
 
 const char kAccountId[] = "public-session@test";

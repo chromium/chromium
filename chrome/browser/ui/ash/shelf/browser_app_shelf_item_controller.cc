@@ -248,7 +248,7 @@ void BrowserAppShelfItemController::OnLoadMediumIcon(
     // Lacros and Ash windows, so we can assign the icons to the instances that
     // have already been created.
     std::string app_id = shelf_id().app_id;
-    if (app_id == extension_misc::kLacrosAppId) {
+    if (app_id == app_constants::kLacrosAppId) {
       for (auto* instance : registry_.GetLacrosBrowserWindowInstances()) {
         views::NativeWidgetAura::AssignIconToAuraWindow(
             instance->window, bitty_icon_, medium_icon_);

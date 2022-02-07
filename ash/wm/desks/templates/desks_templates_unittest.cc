@@ -49,12 +49,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/prefs/pref_service.h"
-#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -926,13 +926,13 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
 // Tests that icons are ordered such that active tabs and windows are ordered
 // before inactive tabs.
 TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
-  const std::string kAppId1 = extension_misc::kChromeAppId;
+  const std::string kAppId1 = app_constants::kChromeAppId;
   constexpr int kWindowId1 = 1;
   constexpr int kActiveTabIndex1 = 1;
   const std::vector<GURL> kTabs1{GURL("http://a.com"), GURL("http://b.com"),
                                  GURL("http://c.com")};
 
-  const std::string kAppId2 = extension_misc::kChromeAppId;
+  const std::string kAppId2 = app_constants::kChromeAppId;
   constexpr int kWindowId2 = 2;
   constexpr int kActiveTabIndex2 = 2;
   const std::vector<GURL> kTabs2{GURL("http://d.com"), GURL("http://e.com"),
@@ -2185,13 +2185,13 @@ TEST_F(DesksTemplatesTest, UnsupportedAppDialogRecordsMetric) {
 // Tests that the window and tab counts are properly recorded in their
 // resepctive metrics.
 TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
-  const std::string kAppId1 = extension_misc::kChromeAppId;
+  const std::string kAppId1 = app_constants::kChromeAppId;
   constexpr int kWindowId1 = 1;
   constexpr int kActiveTabIndex1 = 1;
   const std::vector<GURL> kTabs1{GURL("http://a.com"), GURL("http://b.com"),
                                  GURL("http://c.com")};
 
-  const std::string kAppId2 = extension_misc::kChromeAppId;
+  const std::string kAppId2 = app_constants::kChromeAppId;
   constexpr int kWindowId2 = 2;
   constexpr int kActiveTabIndex2 = 2;
   const std::vector<GURL> kTabs2{GURL("http://d.com"), GURL("http://e.com"),

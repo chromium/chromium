@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 
 namespace chromeos {
@@ -42,7 +43,7 @@ const char kImportDefaultOrderAttr[] = "import_default_order";
 
 // Canonical ordering specified in: go/default-apps
 const char* const kDefaultAppOrder[] = {
-    extension_misc::kChromeAppId,
+    app_constants::kChromeAppId,
     arc::kPlayStoreAppId,
 
     extension_misc::kFilesManagerAppId,

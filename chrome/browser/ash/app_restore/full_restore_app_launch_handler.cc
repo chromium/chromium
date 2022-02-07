@@ -28,10 +28,10 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
-#include "extensions/common/constants.h"
 
 namespace ash {
 namespace full_restore {
@@ -253,7 +253,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
   // If the browser is not launched before reboot, don't launch browser during
   // the startup phase.
   const auto& launch_list = restore_data()->app_id_to_launch_list();
-  if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end())
+  if (launch_list.find(app_constants::kChromeAppId) == launch_list.end())
     return;
 
   SessionRestore::AddObserver(this);
@@ -261,7 +261,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
   VLOG(1) << "Restore browser for " << profile()->GetPath();
   RecordRestoredAppLaunch(apps::AppTypeName::kChromeBrowser);
 
-  restore_data()->RemoveApp(extension_misc::kChromeAppId);
+  restore_data()->RemoveApp(app_constants::kChromeAppId);
 
   if (ExitTypeService::GetLastSessionExitType(profile()) ==
       ExitType::kCrashed) {
@@ -338,11 +338,11 @@ void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
   // 2. Handle the migration scenario, e.g. from flag disable to enable.
   // 3. Add metrics to check whether the Lacros is restored successfully.
   if (!base::Contains(restore_data()->app_id_to_launch_list(),
-                      extension_misc::kLacrosAppId)) {
+                      app_constants::kLacrosAppId)) {
     return;
   }
 
-  restore_data()->RemoveApp(extension_misc::kLacrosAppId);
+  restore_data()->RemoveApp(app_constants::kLacrosAppId);
 
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     crosapi::BrowserManager::Get()->NewWindow(
@@ -441,7 +441,7 @@ void FullRestoreAppLaunchHandler::LogRestoreData() {
   int arc_app_count = 0;
   int other_app_count = 0;
   for (const auto& it : restore_data()->app_id_to_launch_list()) {
-    if (it.first == extension_misc::kChromeAppId || it.second.empty())
+    if (it.first == app_constants::kChromeAppId || it.second.empty())
       continue;
 
     if (it.second.begin()->second->event_flag.has_value()) {
@@ -476,7 +476,7 @@ void FullRestoreAppLaunchHandler::MaybeStartSaveTimer() {
   }
 
   if (base::Contains(restore_data()->app_id_to_launch_list(),
-                     extension_misc::kChromeAppId)) {
+                     app_constants::kChromeAppId)) {
     // If the browser hasn't been restored yet, Wait for the browser
     // restoration. LaunchBrowser will call this function again to start the
     // save timer after restore the browser sessions.

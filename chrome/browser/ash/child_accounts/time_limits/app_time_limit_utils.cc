@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "url/gurl.h"
@@ -34,7 +35,7 @@ enterprise_management::App::AppType AppTypeForReporting(
 }
 
 AppId GetChromeAppId() {
-  return AppId(apps::mojom::AppType::kChromeApp, extension_misc::kChromeAppId);
+  return AppId(apps::mojom::AppType::kChromeApp, app_constants::kChromeAppId);
 }
 
 bool IsWebAppOrExtension(const AppId& app_id) {
