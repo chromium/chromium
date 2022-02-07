@@ -37,8 +37,6 @@ interface KeySystemSupport {
   // the list of registered CDMs, and hardware secure support check also needs
   // to run in the browser process because the render process is sandboxed.
   // KeySystemSupport clients run in the renderer process.
-  // TODO(crbug.com/853264): Make this an async call.
-  [Sync]
   IsKeySystemSupported(string key_system)
     => (bool is_supported, KeySystemCapability? key_system_capability);
 };

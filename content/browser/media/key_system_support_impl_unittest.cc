@@ -133,14 +133,25 @@ class KeySystemSupportImplTest : public testing::Test {
         base::Version(kVersion), base::FilePath::FromUTF8Unsafe(kTestPath)));
   }
 
+  void OnIsKeySystemSupported(base::OnceClosure done_cb,
+                              bool is_supported,
+                              media::mojom::KeySystemCapabilityPtr capability) {
+    is_supported_ = is_supported;
+    capability_ = std::move(capability);
+    std::move(done_cb).Run();
+  }
+
   // Determines if |key_system| is registered. If it is, updates |codecs_|
   // and |persistent_|.
   bool IsSupported(const std::string& key_system) {
     DVLOG(1) << __func__;
-    bool is_supported = false;
-    key_system_support_->IsKeySystemSupported(key_system, &is_supported,
-                                              &capability_);
-    return is_supported;
+    base::RunLoop run_loop;
+    key_system_support_->IsKeySystemSupported(
+        key_system,
+        base::BindOnce(&KeySystemSupportImplTest::OnIsKeySystemSupported,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    return is_supported_;
   }
 
   [[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
@@ -180,6 +191,7 @@ class KeySystemSupportImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   // Updated by IsSupported().
+  bool is_supported_ = false;
   media::mojom::KeySystemCapabilityPtr capability_;
 };
 

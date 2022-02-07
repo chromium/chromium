@@ -11,19 +11,31 @@
 
 namespace content {
 
-bool IsKeySystemSupported(
-    const std::string& key_system,
-    media::mojom::KeySystemCapabilityPtr* key_system_capability) {
-  DVLOG(3) << __func__ << " key_system: " << key_system;
+namespace {
 
-  bool is_supported = false;
+// Helper function to help hold the `key_system_support` remote.
+void OnIsKeySystemSupportedResult(
+    mojo::Remote<media::mojom::KeySystemSupport> key_system_support,
+    IsKeySystemSupportedCB cb,
+    bool is_supported,
+    media::mojom::KeySystemCapabilityPtr capability) {
+  std::move(cb).Run(is_supported, std::move(capability));
+}
+
+}  // namespace
+
+void IsKeySystemSupported(const std::string& key_system,
+                          IsKeySystemSupportedCB cb) {
+  DVLOG(3) << __func__ << ": key_system=" << key_system;
+
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
   content::RenderThread::Get()->BindHostReceiver(
       key_system_support.BindNewPipeAndPassReceiver());
 
-  key_system_support->IsKeySystemSupported(key_system, &is_supported,
-                                           key_system_capability);
-  return is_supported;
+  auto* key_system_support_raw = key_system_support.get();
+  key_system_support_raw->IsKeySystemSupported(
+      key_system, base::BindOnce(&OnIsKeySystemSupportedResult,
+                                 std::move(key_system_support), std::move(cb)));
 }
 
 }  // namespace content
