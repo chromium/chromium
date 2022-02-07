@@ -10157,11 +10157,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Continue blocking this site from having full control of MIDI devices
       </message>
 
-      <!-- Protocol Handler -->
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_TOOLTIP" desc="Location bar icon tooltip text when a page wants to use registerProtocolHandler.">
-        This page wants to install a service handler.
-      </message>
-
       <!-- Media Stream -->
       <message name="IDS_MICROPHONE_CAMERA_ALLOWED" desc="Status text that is used as location bar icon tooltip text and as media settings bubble status text when a page is allowed to use the camera and microphone.">
         This page is accessing your camera and microphone.
@@ -10409,36 +10404,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_MOUSELOCK" desc="Text displayed in the bubble to tell users how to return from mouselock mode (where the mouse cursor is hidden) to normal mode. Please surround the name of the key (e.g. 'Esc') in pipe characters so it can be rendered as a key.">
         Press |<ph name="ACCELERATOR">$1<ex>Esc</ex></ph>| to show your cursor
-      </message>
-
-      <!-- Register Protocol Handler Strings -->
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_MAILTO_NAME" desc="A more user friendly way of describing mailto: links.">
-        email
-      </message>
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_WEBCAL_NAME" desc="A more user friendly way of describing webcal: links.">
-        web calendar
-      </message>
-
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM" desc="The message to display when asking a user to confirm the registration of a protocol handler.">
-        Allow <ph name="HANDLER_HOSTNAME">$1<ex>google.com</ex></ph> to open all <ph name="PROTOCOL">$2<ex>search</ex></ph> links?
-      </message>
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE" desc="The message to display when asking a user to confirm the registration of a protocol handler.">
-        Allow <ph name="HANDLER_HOSTNAME">$1<ex>google.com</ex></ph> to open all <ph name="PROTOCOL">$2<ex>search</ex></ph> links instead of <ph name="REPLACED_HANDLER_TITLE">$3<ex>Elgoog Search</ex></ph>?
-      </message>
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_FRAGMENT" desc="The permission fragment to display when asking a user to confirm the registration of a protocol handler in a permission bubble. Follows a prompt 'This site would like to:'.">
-        Open <ph name="PROTOCOL">$1<ex>search</ex></ph> links
-      </message>
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE_FRAGMENT" desc="The permission fragment to display when asking a user to confirm the registration of a protocol handler. Follows a prompt 'This site would like to:'.">
-        Open <ph name="PROTOCOL">$1<ex>search</ex></ph> links instead of <ph name="REPLACED_HANDLER_TITLE">$2<ex>Elgoog Search</ex></ph>
-      </message>
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_ACCEPT" desc="Text to show for the accept button for the register protocol handler request infobar.">
-        Allow
-      </message>
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_DENY" desc="Text to show for the deny button for the register protocol handler request infobar.">
-        Deny
-      </message>
-      <message name="IDS_REGISTER_PROTOCOL_HANDLER_IGNORE" desc="Text to show for an ignore prompt for a register protocol handler registration request.">
-        Ignore
       </message>
 
       <!-- Media Capture messages -->
@@ -11222,14 +11187,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       </if>
     </if>
-
-  <!-- Protocol Handling intent prompt -->
-    <if expr="not is_android">
-      <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION" desc="Label on the protocol handler intent picker.">
-    Allow app to open <ph name="PROTOCOL_SCHEME">$1<ex>mailto</ex></ph> links?
-  </message>
-  </if>
-
 
     <!-- Font Access chooser -->
     <if expr="not is_android">

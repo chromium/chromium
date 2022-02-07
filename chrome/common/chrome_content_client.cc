@@ -41,6 +41,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"

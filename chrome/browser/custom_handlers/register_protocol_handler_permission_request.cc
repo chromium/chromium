@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/permissions/request_type.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 

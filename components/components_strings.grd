@@ -323,6 +323,7 @@
       <part file="print_media_strings.grdp" />
       <part file="printing_component_strings.grdp" />
       <part file="privacy_sandbox_strings.grdp" />
+      <part file="protocol_handler_strings.grdp" />
       <part file="reset_password_strings.grdp" />
       <part file="security_interstitials_strings.grdp" />
       <part file="send_tab_to_self_strings.grdp" />
