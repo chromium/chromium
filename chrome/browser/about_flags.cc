@@ -4924,7 +4924,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadLaterDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(reading_list::switches::kReadLater,
                                     kReadLaterVariations,
-                                    "ReadLater")},
+                                    "Collections")},
 #else
     {flag_descriptions::kReadLaterFlagId, flag_descriptions::kReadLaterName,
      flag_descriptions::kReadLaterDescription, kOsDesktop,
@@ -7618,7 +7618,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarksRefreshDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kBookmarksRefresh,
                                     kBookmarksRefreshVariations,
-                                    "BookmarksRefresh")},
+                                    "Collections")},
 #endif
 
     {"enable-tab-audio-muting", flag_descriptions::kTabAudioMutingName,
