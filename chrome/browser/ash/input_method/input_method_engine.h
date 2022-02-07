@@ -54,7 +54,6 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
  public:
   enum {
     MENU_ITEM_MODIFIED_LABEL = 0x0001,
-    MENU_ITEM_MODIFIED_STYLE = 0x0002,
     MENU_ITEM_MODIFIED_CHECKED = 0x0010,
   };
 

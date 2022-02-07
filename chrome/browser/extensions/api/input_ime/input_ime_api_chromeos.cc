@@ -82,7 +82,6 @@ void SetMenuItemToMenu(const input_ime::MenuItem& input,
   }
 
   if (input.style != input_ime::MENU_ITEM_STYLE_NONE) {
-    out->modified |= InputMethodEngine::MENU_ITEM_MODIFIED_STYLE;
     out->style =
         static_cast<ash::input_method::InputMethodManager::MenuItemStyle>(
             input.style);
