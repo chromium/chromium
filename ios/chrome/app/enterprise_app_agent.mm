@@ -10,6 +10,7 @@
 #import "components/policy/core/common/policy_namespace.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
+#import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
@@ -190,7 +191,8 @@ constexpr CGFloat kTimeout = 30;
       machineLevelUserCloudPolicyManager =
           self.policyConnector->machine_level_user_cloud_policy_manager();
 
-  return self.policyConnector->chrome_browser_cloud_management_controller()
+  return !tests_hook::DisableFirstRun() &&
+         self.policyConnector->chrome_browser_cloud_management_controller()
              ->IsEnabled() &&
          machineLevelUserCloudPolicyManager &&
          !machineLevelUserCloudPolicyManager->IsFirstPolicyLoadComplete(

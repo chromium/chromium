@@ -213,6 +213,7 @@ source_set("enterprise_app_agent") {
     ":enterprise_app_agent_ui",
     "//base",
     "//components/policy/core/common",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser",
     "//ios/chrome/browser/policy",
