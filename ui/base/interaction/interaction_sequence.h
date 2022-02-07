@@ -70,7 +70,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     kActivated,
     // Represents an element with the specified ID becoming hidden or
     // destroyed, or no elements with the specified ID being visible.
-    kHidden
+    kHidden,
+    // Represents a custom event with a specific custom event type. You may
+    // further specify a required element name or ID to filter down which
+    // events you actually want to step on vs. ignore.
+    kCustomEvent
   };
 
   // Details why a sequence was aborted.
@@ -120,6 +124,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
     StepType type = StepType::kShown;
     ElementIdentifier id;
+    CustomElementEventType custom_event_type;
     std::string element_name;
     ElementContext context;
 
@@ -185,11 +190,12 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     void operator=(StepBuilder& other) = delete;
 
     // Sets the unique identifier for this step. Either this or
-    // SetElementName() is required.
+    // SetElementName() is required for all step types except kCustomEvent.
     StepBuilder& SetElementID(ElementIdentifier element_id);
 
     // Sets the step to refer to a named element instead of an
-    // ElementIdentifier. Either this or SetElementID() is required.
+    // ElementIdentifier. Either this or SetElementID() is required for all
+    // step types other than kCustomEvent.
     StepBuilder& SetElementName(const base::StringPiece& name);
 
     // Sets the context for the element; useful for setting up the initial
@@ -197,8 +203,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Prefer to use Builder::SetContext() if possible.
     StepBuilder& SetContext(ElementContext context);
 
-    // Sets the type of step. Required.
-    StepBuilder& SetType(StepType step_type);
+    // Sets the type of step. Required. You must set `event_type` if and only
+    // if `step_type` is kCustomEvent.
+    StepBuilder& SetType(
+        StepType step_type,
+        CustomElementEventType event_type = CustomElementEventType());
 
     // Indicates that the specified element must be visible at the start of the
     // step. Defaults to true for StepType::kActivated, false otherwise. Failure
@@ -303,16 +312,17 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   void OnElementShown(TrackedElement* element);
   void OnElementActivated(TrackedElement* element);
   void OnElementHidden(TrackedElement* element);
+  void OnCustomEvent(TrackedElement* element);
 
   // Callbacks used only during step transitions to cache certain events.
-  void OnElementActivatedDuringStepTransition(TrackedElement* element);
+  void OnTriggerDuringStepTransition(TrackedElement* element);
   void OnElementHiddenDuringStepTransition(TrackedElement* element);
   void OnElementHiddenWaitingForActivate(TrackedElement* element);
 
   // While we're transitioning steps, it's possible for an activation that
   // would trigger the following step to come in. This method adds a callback
   // that's valid only during the step transition to watch for this event.
-  void MaybeWatchForActivationDuringStepTransition();
+  void MaybeWatchForTriggerDuringStepTransition();
 
   // A note on the next three methods - DoStepTransition(), StageNextStep(), and
   // Abort(): To prevent re-entrancy issues, they must always be the final call
@@ -352,7 +362,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
   bool missing_first_element_ = false;
   bool started_ = false;
-  bool activated_during_callback_ = false;
+  bool trigger_during_callback_ = false;
   bool processing_step_ = false;
   std::unique_ptr<Step> current_step_;
   ElementTracker::Subscription next_step_hidden_subscription_;

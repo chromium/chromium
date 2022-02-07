@@ -5,6 +5,7 @@
 #include "ui/base/interaction/element_test_util.h"
 
 #include "base/test/bind.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace ui {
 
@@ -42,6 +43,11 @@ void TestElementBase::Hide() {
     return;
   visible_ = false;
   ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(this);
+}
+
+void TestElementBase::SendCustomEvent(CustomElementEventType event_type) {
+  DCHECK(visible_);
+  ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this, event_type);
 }
 
 // static

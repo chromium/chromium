@@ -23,10 +23,13 @@ namespace ui {
 
 // Represents a unique type of event, you may create these as needed using the
 // DECLARE_CUSTOM_ELEMENT_EVENT_TYPE() and DEFINE_CUSTOM_ELEMENT_EVENT_TYPE()
-// macros.
+// macros (see definitions at the bottom of this file).
 //
-// Currently, imlpemented using ElementIdentifier, since both have the same
-// API requirements.
+// For testing purposes, if you need a local event type guaranteed to avoid
+// global name collisions, use DEFINE_LOCAL_ELEMENT_EVENT_TYPE() instead.
+//
+// Currently, custom event types are imlpemented using ElementIdentifier, since
+// both have the same API requirements.
 using CustomElementEventType = ElementIdentifier;
 
 // Represents a visible UI element in a platform-agnostic manner.
@@ -215,10 +218,19 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
 
 }  // namespace ui
 
-// Macros for declaring custom element event types:
+// Macros for declaring custom element event types. Put the DECLARE call in
+// your public header file and the DEFINE in corresponding .cc file. For local
+// values to be used in tests, use DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE()
+// defined below instead.
 #define DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
   DECLARE_ELEMENT_IDENTIFIER_VALUE(EventName)
 #define DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
   DEFINE_ELEMENT_IDENTIFIER_VALUE(EventName)
+
+// This produces a unique, mangled name that can safely be used in tests
+// without having to worry about global name collisions. For production code,
+// use DECLARE/DEFINE above instead.
+#define DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(EventName)
 
 #endif  // UI_BASE_INTERACTION_ELEMENT_TRACKER_H_

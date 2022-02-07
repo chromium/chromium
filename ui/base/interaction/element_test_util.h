@@ -26,6 +26,9 @@ class TestElementBase : public TrackedElement {
   // Simulate the element hidden event.
   void Hide();
 
+  // Simuate a custom event on this element.
+  void SendCustomEvent(CustomElementEventType event_type);
+
  private:
   bool visible_ = false;
 };

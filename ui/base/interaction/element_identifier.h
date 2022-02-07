@@ -287,8 +287,17 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // text of the name generated is unique, though that makes the exact text
 // harder to predict.
 
-#define LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, Name) \
+// This helper macro is required because of how __LINE__ is handled when passed
+// between macros, you need an intermediate macro in order to stringify it.
+// DO NOT CALL DIRECTLY; used by DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE().
+#define LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER(File, Line, Name) \
   File "::" #Line "::" #Name
+
+// Intermediate macro required to stringify __LINE__; see
+// LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER().
+// DO NOT CALL DIRECTLY; used by DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE().
+#define LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, Name) \
+  LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER(File, Line, Name)
 
 // Use this code to declare a local identifier in a function body.
 #define DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                 \

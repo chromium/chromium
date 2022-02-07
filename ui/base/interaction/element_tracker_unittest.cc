@@ -23,11 +23,9 @@ namespace {
 // ElementIdentifier's name is predictable.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
-DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 const char* const kElementIdentifier1Name = "kElementIdentifier1";
-
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 const ElementContext kElementContext1(1);
 const ElementContext kElementContext2(2);
 
