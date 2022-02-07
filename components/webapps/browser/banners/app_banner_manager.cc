@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -622,17 +623,28 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   // only allow the page to enter the cache if we know for sure that no
   // installation is needed. Note: this check must happen before calling
   // Terminate as it might set the installable_web_app_check_result_ to kNo.
-  if (installable_web_app_check_result_ != InstallableWebAppCheckResult::kNo &&
-      state_ != State::INACTIVE) {
-    content::BackForwardCache::DisableForRenderFrameHost(
-        handle->GetPreviousRenderFrameHostId(),
-        back_forward_cache::DisabledReason(
-            back_forward_cache::DisabledReasonId::kAppBannerManager));
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheAppBanner)) {
+    if (installable_web_app_check_result_ !=
+            InstallableWebAppCheckResult::kNo &&
+        state_ != State::INACTIVE) {
+      content::BackForwardCache::DisableForRenderFrameHost(
+          handle->GetPreviousRenderFrameHostId(),
+          back_forward_cache::DisabledReason(
+              back_forward_cache::DisabledReasonId::kAppBannerManager));
+    }
   }
 
-  if (state_ != State::COMPLETE && state_ != State::INACTIVE)
-    Terminate();
-  ResetCurrentPageData();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheAppBanner) &&
+      handle->IsServedFromBackForwardCache()) {
+    UpdateState(State::INACTIVE);
+    RequestAppBanner(validated_url_);
+  } else {
+    if (state_ != State::COMPLETE && state_ != State::INACTIVE)
+      Terminate();
+    ResetCurrentPageData();
+  }
 }
 
 void AppBannerManager::DidFinishLoad(
