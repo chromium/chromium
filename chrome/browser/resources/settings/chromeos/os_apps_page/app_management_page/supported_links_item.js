@@ -120,9 +120,6 @@ Polymer({
    * @private
    */
   isHidden_(app) {
-    if (!loadTimeData.getBoolean('appManagementIntentSettingsEnabled')) {
-      return true;
-    }
     return !app.supportedLinks.length;
   },
 

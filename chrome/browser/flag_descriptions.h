@@ -2084,9 +2084,6 @@ extern const char kOmniboxPedalsAndroidBatch1Description[];
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 
-extern const char kAppManagementIntentSettingsName[];
-extern const char kAppManagementIntentSettingsDescription[];
-
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 

@@ -68,13 +68,6 @@ const base::Feature kAppDiscoveryForOobe{"AppDiscoveryForOobe",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Controls whether intent settings are available in App Management.
-// TODO(crbug/1226925): Do not enable flag unless this has been resolved.
-const base::Feature kAppManagementIntentSettings{
-    "AppManagementIntentSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !BUILDFLAG(IS_ANDROID)
 // App Service related flags. See components/services/app_service/README.md.
 const base::Feature kAppServiceLoadIconWithoutMojom{

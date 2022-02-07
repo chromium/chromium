@@ -30,7 +30,6 @@
 #include "ui/gfx/image/image_skia_rep.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
 #endif
 
@@ -284,11 +283,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
  public:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAppManagementIntentSettings);
-#endif
-
     proxy_ = AppServiceProxyFactory::GetForProfile(&profile_);
 
     auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
@@ -305,10 +299,6 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
-
   TestingProfile profile_;
   raw_ptr<AppServiceProxy> proxy_;
 };

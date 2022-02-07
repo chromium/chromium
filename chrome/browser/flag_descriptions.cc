@@ -3636,12 +3636,6 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
-const char kAppManagementIntentSettingsName[] =
-    "App Management intent settings";
-const char kAppManagementIntentSettingsDescription[] =
-    "Enables and displays the intent settings link handling setting for App "
-    "Management.";
-
 const char kEnableAccessibilityLiveCaptionName[] = "Live Caption";
 const char kEnableAccessibilityLiveCaptionDescription[] =
     "Enables the live caption feature which generates captions for "

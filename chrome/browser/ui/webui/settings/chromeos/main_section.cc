@@ -163,10 +163,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
   html_source->AddBoolean("isChildAccount", profile()->IsChild());
 
-  html_source->AddBoolean(
-      "appManagementIntentSettingsEnabled",
-      base::FeatureList::IsEnabled(::features::kAppManagementIntentSettings));
-
   html_source->AddBoolean("isPersonalizationHubEnabled",
                           ash::features::IsPersonalizationHubEnabled());
 

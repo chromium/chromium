@@ -590,33 +590,20 @@ void AppServiceProxyBase::AddPreferredApp(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Link capturing behavior is changing with the launch of this feature so that
-  // link capturing is enabled on a per app (rather than per-intent-filter)
-  // basis. Non-Chrome OS platforms do not currently use persistent link
-  // capturing preferences and so this is not a breaking change for them.
-  bool supported_links_behavior_enabled =
-      base::FeatureList::IsEnabled(features::kAppManagementIntentSettings);
-#else
-  bool supported_links_behavior_enabled = true;
-#endif
+  // Treat kUseBrowserForLink like an app with a single supported link, so
+  // that any apps with overlapping supported links will have their preference
+  // removed correctly.
+  if (app_id == apps::kUseBrowserForLink) {
+    std::vector<apps::mojom::IntentFilterPtr> filters;
+    filters.push_back(std::move(intent_filter));
+    app_service_->SetSupportedLinksPreference(apps::mojom::AppType::kUnknown,
+                                              app_id, std::move(filters));
+    return;
+  }
 
-  if (supported_links_behavior_enabled) {
-    // Treat kUseBrowserForLink like an app with a single supported link, so
-    // that any apps with overlapping supported links will have their preference
-    // removed correctly.
-    if (app_id == apps::kUseBrowserForLink) {
-      std::vector<apps::mojom::IntentFilterPtr> filters;
-      filters.push_back(std::move(intent_filter));
-      app_service_->SetSupportedLinksPreference(apps::mojom::AppType::kUnknown,
-                                                app_id, std::move(filters));
-      return;
-    }
-
-    if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
-      SetSupportedLinksPreference(app_id);
-      return;
-    }
+  if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
+    SetSupportedLinksPreference(app_id);
+    return;
   }
 
   preferred_apps_.AddPreferredApp(app_id, intent_filter);

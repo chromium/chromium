@@ -25,11 +25,6 @@ suite('<app-management-supported-links-item>', () => {
 
     replaceBody(supportedLinksItem);
     test_util.flushTasks();
-
-    // TODO(crbug.com/1204324): Remove this line when the feature is launched.
-    loadTimeData.overrideValues({
-      appManagementIntentSettingsEnabled: true,
-    });
   });
 
   test('PWA - preferred -> browser', async function() {
