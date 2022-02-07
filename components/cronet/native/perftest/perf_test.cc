@@ -62,9 +62,9 @@ std::string GetConfigString(const char* key) {
 
 // Return an int configuration option.
 int GetConfigInt(const char* key) {
-  int value;
-  CHECK(g_options->GetInteger(key, &value)) << "Cannot find key: " << key;
-  return value;
+  absl::optional<int> config = g_options->FindIntKey(key);
+  CHECK(config) << "Cannot find key: " << key;
+  return *config;
 }
 
 // Put together a benchmark configuration into a benchmark name.

@@ -92,17 +92,16 @@ AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
   if (!dict)
     return absl::nullopt;
 
-  int ads_violation;
+  absl::optional<int> ads_violation = dict->FindIntKey(kLastAdsViolationKey);
   absl::optional<double> last_violation_time =
       dict->FindDoubleKey(kLastAdsViolationTimeKey);
 
-  if (dict->GetInteger(kLastAdsViolationKey, &ads_violation) &&
-      last_violation_time) {
+  if (ads_violation && last_violation_time) {
     base::TimeDelta diff =
         clock_->Now() - base::Time::FromDoubleT(*last_violation_time);
 
     return LastAdsIntervention(
-        {diff, static_cast<mojom::AdsViolation>(ads_violation)});
+        {diff, static_cast<mojom::AdsViolation>(*ads_violation)});
   }
 
   return absl::nullopt;

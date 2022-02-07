@@ -2312,25 +2312,26 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
     return false;
   }
 
-  // TODO(dhoss): Replace deprecated base::DictionaryValue::Get<Type>() calls
-  if (!job_settings->GetInteger(kPreviewUIID,
-                                &settings->params->preview_ui_id)) {
+  absl::optional<int> preview_ui_id = job_settings->FindIntKey(kPreviewUIID);
+  if (!preview_ui_id) {
     NOTREACHED();
     print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
     return false;
   }
+  settings->params->preview_ui_id = *preview_ui_id;
 
   // Validate expected print preview settings.
   absl::optional<bool> is_first_request =
       job_settings->FindBoolKey(kIsFirstRequest);
-  if (!job_settings->GetInteger(kPreviewRequestID,
-                                &settings->params->preview_request_id) ||
-      !is_first_request.has_value()) {
+  absl::optional<int> preview_request_id =
+      job_settings->FindIntKey(kPreviewRequestID);
+  if (!preview_request_id.has_value() || !is_first_request.has_value()) {
     NOTREACHED();
     print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
     return false;
   }
   settings->params->is_first_request = is_first_request.value();
+  settings->params->preview_request_id = preview_request_id.value();
 
   settings->params->print_to_pdf = IsPrintToPdfRequested(*job_settings);
   UpdateFrameMarginsCssInfo(*job_settings);

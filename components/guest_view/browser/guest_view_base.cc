@@ -239,7 +239,8 @@ void GuestViewBase::InitWithWebContents(
   GetGuestViewManager()->AddGuest(guest_instance_id_, guest_web_contents);
 
   // Populate the view instance ID if we have it on creation.
-  create_params.GetInteger(kParameterInstanceId, &view_instance_id_);
+  view_instance_id_ = create_params.FindIntKey(kParameterInstanceId)
+                          .value_or(view_instance_id_);
 
   SetUpSizing(create_params);
 
@@ -466,7 +467,8 @@ void GuestViewBase::Destroy(bool also_delete) {
 
 void GuestViewBase::SetAttachParams(const base::DictionaryValue& params) {
   attach_params_.reset(params.DeepCopy());
-  attach_params_->GetInteger(kParameterInstanceId, &view_instance_id_);
+  view_instance_id_ = attach_params_->FindIntKey(kParameterInstanceId)
+                          .value_or(view_instance_id_);
 }
 
 void GuestViewBase::SetOpener(GuestViewBase* guest) {
@@ -816,15 +818,15 @@ void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
       params.FindBoolKey(kAttributeAutoSize);
   bool auto_size_enabled = auto_size_enabled_opt.value_or(auto_size_enabled_);
 
-  int max_height = max_auto_size_.height();
-  int max_width = max_auto_size_.width();
-  params.GetInteger(kAttributeMaxHeight, &max_height);
-  params.GetInteger(kAttributeMaxWidth, &max_width);
+  int max_height =
+      params.FindIntKey(kAttributeMaxHeight).value_or(max_auto_size_.height());
+  int max_width =
+      params.FindIntKey(kAttributeMaxWidth).value_or(max_auto_size_.width());
 
-  int min_height = min_auto_size_.height();
-  int min_width = min_auto_size_.width();
-  params.GetInteger(kAttributeMinHeight, &min_height);
-  params.GetInteger(kAttributeMinWidth, &min_width);
+  int min_height =
+      params.FindIntKey(kAttributeMinHeight).value_or(min_auto_size_.height());
+  int min_width =
+      params.FindIntKey(kAttributeMinWidth).value_or(min_auto_size_.width());
 
   double element_height = params.FindDoublePath(kElementHeight).value_or(0.0);
   double element_width = params.FindDoublePath(kElementWidth).value_or(0.0);

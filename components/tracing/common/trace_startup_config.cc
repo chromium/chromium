@@ -305,8 +305,8 @@ bool TraceStartupConfig::ParseTraceConfigFileContent(
 
   trace_config_ = base::trace_event::TraceConfig(*trace_config_dict);
 
-  if (!dict->GetInteger(kStartupDurationParam, &startup_duration_in_seconds_))
-    startup_duration_in_seconds_ = 0;
+  startup_duration_in_seconds_ =
+      dict->FindIntKey(kStartupDurationParam).value_or(0);
 
   if (startup_duration_in_seconds_ < 0)
     startup_duration_in_seconds_ = 0;
