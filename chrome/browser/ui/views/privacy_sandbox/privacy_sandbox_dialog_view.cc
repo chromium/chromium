@@ -57,7 +57,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   web_ui->Initialize(
       browser->profile(),
       base::BindOnce(&PrivacySandboxDialogView::Close, base::Unretained(this)),
-      dialog_type);
+      dialog_type, browser);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetModalType(ui::MODAL_TYPE_WINDOW);

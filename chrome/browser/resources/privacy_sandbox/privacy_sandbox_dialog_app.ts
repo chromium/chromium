@@ -11,7 +11,7 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrivacySandboxDialogBrowserProxy} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from './privacy_sandbox_dialog_browser_proxy.js';
 
 const PrivacySandboxDialogAppElementBase = PolymerElement;
 
@@ -27,7 +27,10 @@ export class PrivacySandboxDialogAppElement extends
 
   static get properties() {
     return {
-      expanded_: Boolean,
+      expanded_: {
+        type: Boolean,
+        observer: 'onLearnMoreExpandedChanged_',
+      },
       isConsent_: {
         type: Boolean,
         value: () => {
@@ -40,8 +43,35 @@ export class PrivacySandboxDialogAppElement extends
   private expanded_: boolean;
   private isConsent_: boolean;
 
-  private onClose_() {
-    PrivacySandboxDialogBrowserProxy.getInstance().closeDialog();
+  private onNoticeOpenSettings_() {
+    this.dialogActionOccurred(PrivacySandboxDialogAction.NOTICE_OPEN_SETTINGS);
+  }
+
+  private onNoticeAcknowledge_() {
+    this.dialogActionOccurred(PrivacySandboxDialogAction.NOTICE_ACKNOWLEDGE);
+  }
+
+  private onConsentAccepted_() {
+    this.dialogActionOccurred(PrivacySandboxDialogAction.CONSENT_ACCEPTED);
+  }
+
+  private onConsentDeclined_() {
+    this.dialogActionOccurred(PrivacySandboxDialogAction.CONSENT_DECLINED);
+  }
+
+  private onLearnMoreExpandedChanged_(newVal: boolean, oldVal: boolean) {
+    if (!oldVal && newVal) {
+      this.dialogActionOccurred(
+          PrivacySandboxDialogAction.CONSENT_MORE_INFO_OPENED);
+    }
+    if (oldVal && !newVal) {
+      this.dialogActionOccurred(
+          PrivacySandboxDialogAction.CONSENT_MORE_INFO_CLOSED);
+    }
+  }
+
+  private dialogActionOccurred(action: PrivacySandboxDialogAction) {
+    PrivacySandboxDialogBrowserProxy.getInstance().dialogActionOccurred(action);
   }
 }
 

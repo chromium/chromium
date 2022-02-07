@@ -4,23 +4,56 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h"
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
+
 PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
-    base::OnceClosure close_callback)
-    : close_callback_(std::move(close_callback)) {}
+    base::OnceClosure close_callback,
+    Browser* browser)
+    : close_callback_(std::move(close_callback)), browser_(browser) {}
 
 PrivacySandboxDialogHandler::~PrivacySandboxDialogHandler() {
   DisallowJavascript();
 }
 
 void PrivacySandboxDialogHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
-      "closeDialog",
-      base::BindRepeating(&PrivacySandboxDialogHandler::HandleCloseDialog,
-                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "dialogActionOccurred",
+      base::BindRepeating(
+          &PrivacySandboxDialogHandler::HandleDialogActionOccurred,
+          base::Unretained(this)));
 }
 
-void PrivacySandboxDialogHandler::HandleCloseDialog(
-    const base::ListValue* args) {
-  if (close_callback_)
-    std::move(close_callback_).Run();
+void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args.size());
+  auto action =
+      static_cast<PrivacySandboxService::DialogAction>(args[0].GetInt());
+
+  // TODO(crbug.com/1286276): Handle all other actions.
+  if (action == PrivacySandboxService::DialogAction::kNoticeOpenSettings) {
+    DCHECK(browser_);
+    chrome::ShowPrivacySandboxSettings(browser_);
+  }
+
+  switch (action) {
+    case PrivacySandboxService::DialogAction::kNoticeAcknowledge:
+    case PrivacySandboxService::DialogAction::kNoticeOpenSettings:
+    case PrivacySandboxService::DialogAction::kConsentAccepted:
+    case PrivacySandboxService::DialogAction::kConsentDeclined:
+      if (close_callback_)
+        std::move(close_callback_).Run();
+      break;
+    default:
+      break;
+  }
+
+  LogDialogAction(action);
+}
+
+void PrivacySandboxDialogHandler::LogDialogAction(
+    PrivacySandboxService::DialogAction action) {
+  // TODO(crbug.com/1286276):Add metrics.
 }

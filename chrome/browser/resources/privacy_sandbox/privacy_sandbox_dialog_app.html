@@ -76,13 +76,19 @@
 
 <div class="buttons-container">
   <template is="dom-if" if="[[isConsent_]]">
-    <cr-button class="action-button">Cancel</cr-button>
-    <cr-button class="action-button" on-click="onClose_">Close</cr-button>
+    <cr-button class="action-button" on-click="onConsentDeclined_">
+      No
+    </cr-button>
+    <cr-button class="action-button" on-click="onConsentAccepted_">
+      Ok
+    </cr-button>
   </template>
 
   <template is="dom-if" if="[[!isConsent_]]">
-    <cr-button>Settings</cr-button>
-    <cr-button class="action-button" on-click="onClose_">Close</cr-button>
+    <cr-button on-click="onNoticeOpenSettings_">Settings</cr-button>
+    <cr-button class="action-button" on-click="onNoticeAcknowledge_">
+      Ok
+    </cr-button>
 </div>
 </template>
 </div>
