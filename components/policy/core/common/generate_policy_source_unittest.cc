@@ -232,7 +232,7 @@ TEST(GeneratePolicySource, SetEnterpriseDefaults) {
   const base::Value* multiprof_behavior =
       policy_map.GetValue(key::kChromeOsMultiProfileUserBehavior);
   base::Value expected("primary-only");
-  EXPECT_TRUE(expected.Equals(multiprof_behavior));
+  EXPECT_EQ(expected, *multiprof_behavior);
 
   // If policy already configured, it's not changed to enterprise defaults.
   policy_map.Set(key::kChromeOsMultiProfileUserBehavior, POLICY_LEVEL_MANDATORY,
@@ -242,7 +242,7 @@ TEST(GeneratePolicySource, SetEnterpriseDefaults) {
   multiprof_behavior =
       policy_map.GetValue(key::kChromeOsMultiProfileUserBehavior);
   expected = base::Value("test_value");
-  EXPECT_TRUE(expected.Equals(multiprof_behavior));
+  EXPECT_EQ(expected, *multiprof_behavior);
 }
 
 TEST(GeneratePolicySource, SetEnterpriseSystemWideDefaults) {

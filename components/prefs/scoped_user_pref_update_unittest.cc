@@ -57,7 +57,7 @@ TEST_F(ScopedUserPrefUpdateTest, RegularUse) {
     // Modifications happen online and are instantly visible, though.
     const base::Value* current_value = prefs_.GetDictionary(kPref);
     ASSERT_TRUE(current_value);
-    EXPECT_TRUE(expected_dictionary.Equals(current_value));
+    EXPECT_EQ(expected_dictionary, *current_value);
 
     // Now we are leaving the scope of the update so we should be notified.
     observer_.Expect(kPref, &expected_dictionary);
@@ -66,7 +66,7 @@ TEST_F(ScopedUserPrefUpdateTest, RegularUse) {
 
   const base::Value* current_value = prefs_.GetDictionary(kPref);
   ASSERT_TRUE(current_value);
-  EXPECT_TRUE(expected_dictionary.Equals(current_value));
+  EXPECT_EQ(expected_dictionary, *current_value);
 }
 
 TEST_F(ScopedUserPrefUpdateTest, NeverTouchAnything) {

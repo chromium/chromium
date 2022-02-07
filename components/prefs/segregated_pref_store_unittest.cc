@@ -381,15 +381,15 @@ TEST_F(SegregatedPrefStoreTest, GetValues) {
   const base::Value* value = nullptr;
   // Check that a selected preference is returned.
   ASSERT_TRUE(values->Get(kSelectedPref, &value));
-  EXPECT_TRUE(base::Value(kValue1).Equals(value));
+  EXPECT_EQ(base::Value(kValue1), *value);
 
   // Check that a a default preference is returned.
   ASSERT_TRUE(values->Get(kUnselectedPref, &value));
-  EXPECT_TRUE(base::Value(kValue2).Equals(value));
+  EXPECT_EQ(base::Value(kValue2), *value);
 
   // Check that the selected preference is preferred.
   ASSERT_TRUE(values->Get(kSharedPref, &value));
-  EXPECT_TRUE(base::Value(kValue1).Equals(value));
+  EXPECT_EQ(base::Value(kValue1), *value);
 }
 
 INSTANTIATE_TEST_SUITE_P(
