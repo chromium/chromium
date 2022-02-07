@@ -517,13 +517,14 @@ void ClientAndroid::FetchPaymentsClientToken(
 void ClientAndroid::OnPaymentsClientToken(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
-    const JavaParamRef<jstring>& jclient_token) {
+    const JavaParamRef<jbyteArray>& jclient_token) {
   if (!fetch_payments_client_token_callback_) {
     return;
   }
-  std::move(fetch_payments_client_token_callback_)
-      .Run(ui_controller_android_utils::SafeConvertJavaStringToNative(
-          AttachCurrentThread(), jclient_token));
+  std::string client_token;
+  base::android::JavaByteArrayToString(AttachCurrentThread(), jclient_token,
+                                       &client_token);
+  std::move(fetch_payments_client_token_callback_).Run(client_token);
 }
 
 AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {

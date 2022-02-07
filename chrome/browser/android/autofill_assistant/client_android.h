@@ -82,7 +82,7 @@ class ClientAndroid : public Client,
   void OnPaymentsClientToken(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jstring>& jclient_token);
+      const base::android::JavaParamRef<jbyteArray>& jclient_token);
 
   void FetchWebsiteActions(
       JNIEnv* env,

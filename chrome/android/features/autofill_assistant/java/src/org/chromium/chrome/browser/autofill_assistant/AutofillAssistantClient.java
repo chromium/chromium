@@ -328,10 +328,11 @@ public class AutofillAssistantClient {
             mShouldFetchPaymentsClientToken = true;
             return;
         }
+        byte[] emptyToken = new byte[0];
         if (mAccount == null) {
             // If there is no account, send an empty token.
             AutofillAssistantClientJni.get().onPaymentsClientToken(
-                    mNativeClientAndroid, AutofillAssistantClient.this, "");
+                    mNativeClientAndroid, AutofillAssistantClient.this, emptyToken);
             return;
         }
 
@@ -342,14 +343,13 @@ public class AutofillAssistantClient {
         if (activity == null) {
             // We require an activity to retrieve the token.
             AutofillAssistantClientJni.get().onPaymentsClientToken(
-                    mNativeClientAndroid, AutofillAssistantClient.this, "");
+                    mNativeClientAndroid, AutofillAssistantClient.this, emptyToken);
             return;
         }
         GmsIntegrator gmsIntegrator = new GmsIntegrator(mAccount.name, activity);
         gmsIntegrator.getClientToken((Callback<byte[]>) result -> {
-            String clientToken = result == null ? "" : new String(result);
-            AutofillAssistantClientJni.get().onPaymentsClientToken(
-                    mNativeClientAndroid, AutofillAssistantClient.this, clientToken);
+            AutofillAssistantClientJni.get().onPaymentsClientToken(mNativeClientAndroid,
+                    AutofillAssistantClient.this, result == null ? emptyToken : result);
         });
     }
 
@@ -408,7 +408,7 @@ public class AutofillAssistantClient {
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
         void onPaymentsClientToken(
-                long nativeClientAndroid, AutofillAssistantClient caller, String clientToken);
+                long nativeClientAndroid, AutofillAssistantClient caller, byte[] clientToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);
         void onJavaDestroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
         void transferUITo(
