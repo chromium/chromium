@@ -1973,9 +1973,24 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       logical_offset, *layout_result, fragment,
       self_collapsing_child_had_clearance);
 
-  *previous_inline_break_token =
-      child.IsInline() ? To<NGInlineBreakToken>(physical_fragment.BreakToken())
-                       : nullptr;
+  if (child.IsInline()) {
+    const auto* inline_break_token =
+        To<NGInlineBreakToken>(physical_fragment.BreakToken());
+    if (UNLIKELY(inline_break_token &&
+                 inline_break_token->BlockInInlineBreakToken())) {
+      if (inline_break_token->BlockInInlineBreakToken()->IsAtBlockEnd()) {
+        // We resumed a block in inline in a parallel flow, and broke
+        // again. This will have to wait until we get to the next
+        // fragmentainer. The break token has already been added to the fragment
+        // builder.
+        DCHECK(child_break_token);
+        inline_break_token = nullptr;
+      }
+    }
+    *previous_inline_break_token = inline_break_token;
+  } else {
+    *previous_inline_break_token = nullptr;
+  }
 
   // Update |lines_until_clamp_| from the LayoutResult.
   if (lines_until_clamp_) {

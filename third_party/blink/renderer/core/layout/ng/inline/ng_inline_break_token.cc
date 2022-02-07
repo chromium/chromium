@@ -21,18 +21,31 @@ ASSERT_SIZE(NGInlineBreakToken, SameSizeAsNGInlineBreakToken);
 
 }  // namespace
 
-const Member<const NGBlockBreakToken>*
-NGInlineBreakToken::BlockInInlineBreakTokenAddress() const {
-  CHECK(flags_ & kHasBlockInInlineToken);
-  return block_in_inline_break_token_;
+const Member<const NGBreakToken>* NGInlineBreakToken::SubBreakTokenAddress()
+    const {
+  CHECK(flags_ & kHasSubBreakToken);
+  return sub_break_token_;
 }
 
 const NGBlockBreakToken* NGInlineBreakToken::BlockInInlineBreakToken() const {
-  if (!(flags_ & kHasBlockInInlineToken))
+  if (!(flags_ & kHasSubBreakToken))
     return nullptr;
-  const Member<const NGBlockBreakToken>* ptr = BlockInInlineBreakTokenAddress();
+  const Member<const NGBreakToken>* ptr = SubBreakTokenAddress();
   DCHECK(*ptr);
-  return ptr->Get();
+  if ((*ptr)->IsBlockType())
+    return To<NGBlockBreakToken>(ptr->Get());
+  return nullptr;
+}
+
+const NGInlineBreakToken* NGInlineBreakToken::SubBreakTokenInParallelFlow()
+    const {
+  if (!(flags_ & kHasSubBreakToken))
+    return nullptr;
+  const Member<const NGBreakToken>* ptr = SubBreakTokenAddress();
+  DCHECK(*ptr);
+  if ((*ptr)->IsInlineType())
+    return To<NGInlineBreakToken>(ptr->Get());
+  return nullptr;
 }
 
 // static
@@ -42,19 +55,22 @@ NGInlineBreakToken* NGInlineBreakToken::Create(
     unsigned item_index,
     unsigned text_offset,
     unsigned flags /* NGInlineBreakTokenFlags */,
-    const NGBlockBreakToken* block_in_inline_break_token) {
+    const NGBreakToken* sub_break_token) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
   wtf_size_t size = sizeof(NGInlineBreakToken);
-  if (UNLIKELY(block_in_inline_break_token)) {
-    size += sizeof(Member<const NGBlockBreakToken>);
-    flags |= kHasBlockInInlineToken;
+  if (UNLIKELY(sub_break_token)) {
+    if (sub_break_token->IsInlineType())
+      size += sizeof(Member<const NGInlineBreakToken>);
+    else
+      size += sizeof(Member<const NGBlockBreakToken>);
+    flags |= kHasSubBreakToken;
   }
 
   return MakeGarbageCollected<NGInlineBreakToken>(
       AdditionalBytes(size), PassKey(), node, style, item_index, text_offset,
-      flags, block_in_inline_break_token);
+      flags, sub_break_token);
 }
 
 NGInlineBreakToken::NGInlineBreakToken(
@@ -64,16 +80,19 @@ NGInlineBreakToken::NGInlineBreakToken(
     unsigned item_index,
     unsigned text_offset,
     unsigned flags /* NGInlineBreakTokenFlags */,
-    const NGBlockBreakToken* block_in_inline_break_token)
+    const NGBreakToken* sub_break_token)
     : NGBreakToken(kInlineBreakToken, node, flags),
       style_(style),
       item_index_(item_index),
       text_offset_(text_offset) {
-  if (UNLIKELY(block_in_inline_break_token)) {
-    const Member<const NGBlockBreakToken>* ptr =
-        BlockInInlineBreakTokenAddress();
-    *const_cast<Member<const NGBlockBreakToken>*>(ptr) =
-        block_in_inline_break_token;
+  if (UNLIKELY(sub_break_token)) {
+#if DCHECK_IS_ON()
+    // Only one level of inline break token nesting is expected.
+    DCHECK(!sub_break_token->IsInlineType() ||
+           To<NGInlineBreakToken>(sub_break_token)->BlockInInlineBreakToken());
+#endif
+    const Member<const NGBreakToken>* ptr = SubBreakTokenAddress();
+    *const_cast<Member<const NGBreakToken>*>(ptr) = sub_break_token;
   }
 }
 
@@ -104,8 +123,8 @@ String NGInlineBreakToken::ToString() const {
 void NGInlineBreakToken::Trace(Visitor* visitor) const {
   // It is safe to check flags_ here because it is a const value and initialized
   // in ctor.
-  if (flags_ & kHasBlockInInlineToken)
-    visitor->Trace(*block_in_inline_break_token_);
+  if (flags_ & kHasSubBreakToken)
+    visitor->Trace(*sub_break_token_);
   NGBreakToken::Trace(visitor);
 }
 
