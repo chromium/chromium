@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1650222530560417226">[ログ記録を開始] をタップすると、今後 JavaScript コンソールに表示されるすべてのタブのログやエラーが収集されます。ログは、このページを閉じるか [ログ記録を停止] をタップするまで収集（およびメモリにのみ保存）されます。</translation>
+<translation id="1654232554734641711">マイクへのアクセスが許可されています</translation>
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
 <translation id="1657641691196698092">ブロックされた Cookie</translation>
 <translation id="165877110639533037">開いているタブはありません</translation>
@@ -396,6 +397,7 @@
 <translation id="4682686630151240767">1. iPhone の [設定] を開く</translation>
 <translation id="4689564913179979534">お支払い方法を管理...</translation>
 <translation id="470966556546083668">同期をオンにしない</translation>
+<translation id="4731472194328757163">カメラとマイクへのアクセスが許可されています</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">新しいシークレット タブ</translation>
@@ -547,6 +549,7 @@
 <translation id="6059830886158432458">ここで記事やアクティビティを管理します</translation>
 <translation id="6064824697233747382">組織が同期をオフにするよう求めています。</translation>
 <translation id="6066301408025741299">タップしてキャンセルします。</translation>
+<translation id="6077126322656614846">カメラへのアクセスが許可されています</translation>
 <translation id="60829778314739003">同意して続行</translation>
 <translation id="6084848228346514841">タブを選択</translation>
 <translation id="6103540626693881831">オンデバイスの暗号化</translation>

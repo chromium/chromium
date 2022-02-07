@@ -223,7 +223,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1567040042588613346">Ovo pravilo radi kako je predviđeno, ali je ista vrijednost postavljena negdje drugo i ovo pravilo ju je zaobišlo.</translation>
 <translation id="1569487616857761740">Unesite datum isteka</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Prijavite se u virtualnu karticu</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Došlo je do problema prilikom prikazivanja ove web stranice.</translation>
 <translation id="1586541204584340881">Koje ekstenzije ste instalirali</translation>
@@ -390,7 +389,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2101225219012730419">Verzija:</translation>
 <translation id="2102134110707549001">Predloži jaku lozinku…</translation>
 <translation id="2102495993840063010">Android aplikacije</translation>
-<translation id="2106249949168291652">Sačuvano. Pojačajte sigurnost s virtuelnom karticom?</translation>
 <translation id="2107021941795971877">Podrška za štampanje</translation>
 <translation id="2108755909498034140">Ponovo pokreni svoj računar</translation>
 <translation id="2111166930115883695">Pritisnite tipku za razmak da igrate</translation>
@@ -552,7 +550,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="262745152991669301">Može tražiti da se poveže na USB uređaje</translation>
 <translation id="2629325967560697240">Da postignete najviši nivo sigurnosti Chromea, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />uključite poboljšanu zaštitu<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">IP adresa poslužitelja hosta <ph name="HOST_NAME" /> nije pronađena.</translation>
-<translation id="2638001509205834345">Pojačati sigurnost kartice?</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="264810637653812429">Nije pronađen nijedan kompatibilni uređaj.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3113284927548439113">Treća smjena</translation>
 <translation id="3115874930288085374">Domena <ph name="ENROLLMENT_DOMAIN" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminiranje</translation>
-<translation id="311958134571892113">povezano sa</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Pokušajte pokrenuti dijagnostiku povezivosti<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Idi na <ph name="DOMAIN" /></translation>
@@ -2386,7 +2382,6 @@ Dodatni detalji:
 <translation id="8669306706049782872">Koristi informacije o vašim ekranima radi otvaranja i postavljanja prozora</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8676424191133491403">Bez odgode</translation>
-<translation id="8679903780129190080">Pristajem</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Web stranica na <ph name="PAGE" /> nije učitana zbog sljedećeg:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

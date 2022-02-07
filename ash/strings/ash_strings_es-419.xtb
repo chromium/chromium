@@ -100,7 +100,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1479909375538722835">Menú de accesibilidad flotante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Se intercambió <ph name="FIRST_ITEM_TITLE" /> con <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Ya realizaste esta búsqueda. Si borras la consulta "<ph name="QUERY" />" del Historial, se quitará permanentemente de tu cuenta en todos los dispositivos.</translation>
 <translation id="1503394326855300303">El propietario de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="1510238584712386396">Selector</translation>
 <translation id="1516740043221086139">No interrumpir está activado.</translation>
@@ -146,6 +145,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1836215606488044471">Asistente (cargando…)</translation>
 <translation id="1838895407229022812">La luz nocturna está apagada.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
+<translation id="1879018240766558464">Por el momento, las ventanas de incógnito no son compatibles. Se guardarán las demás apps.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Duplicando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear con huella dactilar</translation>
@@ -215,7 +215,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2360625459710946148">Reordenar por</translation>
 <translation id="2367186422933365202">No se puede acceder a la Chromebook</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
@@ -422,6 +421,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir cuando se complete la descarga</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y<ph name="UNAVAILABLE_APPS_COUNT" /> más no están disponibles en este dispositivo.</translation>
+<translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
 <translation id="3773700760453577392">Un administrador inhabilitó el acceso múltiple para <ph name="USER_EMAIL" />.
@@ -481,6 +481,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4173958948577803258">J</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 día}other{Actualiza el dispositivo dentro de los próximos # días}}</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4195814663415092787">Continuar la sesión desde donde la dejaste</translation>
 <translation id="4195877955194704651">Botón de clic automáticos</translation>
 <translation id="4197790712631116042">No</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
@@ -948,6 +949,7 @@ Nueva instalación</translation>
 <translation id="7366890467478514168">Conectar <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Grabar ventana</translation>
 <translation id="7377169924702866686">Bloq Mayús está activado.</translation>
+<translation id="7377481913241237033">Conéctate con un código</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área que quieras grabar</translation>
 <translation id="7378594059915113390">Controles de contenido multimedia</translation>
 <translation id="7378889811480108604">El modo de Ahorro de batería está desactivado</translation>
@@ -975,6 +977,7 @@ Nueva instalación</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Por el momento, las apps de Linux y las ventanas de incógnito no son compatibles. Se guardarán las demás apps.</translation>
 <translation id="7544300628205093162">La retroiluminación del teclado está activada</translation>
 <translation id="7548434653388805669">Es hora de ir a la cama</translation>
 <translation id="7551643184018910560">Fijar en la barra</translation>

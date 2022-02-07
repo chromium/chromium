@@ -223,7 +223,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1567040042588613346">Dit beleid werkt zoals bedoeld, maar ergens anders is dezelfde waarde ingesteld die wordt vervangen door dit beleid.</translation>
 <translation id="1569487616857761740">Vervaldatum invoeren</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Inschrijven voor een virtuele kaart</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Er is iets misgegaan met het weergeven van deze webpagina.</translation>
 <translation id="1586541204584340881">Welke extensies je hebt geïnstalleerd</translation>
@@ -387,7 +386,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2101225219012730419">Versie:</translation>
 <translation id="2102134110707549001">Sterk wachtwoord voorstellen…</translation>
 <translation id="2102495993840063010">Android-apps</translation>
-<translation id="2106249949168291652">Opgeslagen. Wil je deze kaart beter beveiligen met een virtuele kaart?</translation>
 <translation id="2107021941795971877">Afdruksteunen</translation>
 <translation id="2108755909498034140">Je computer opnieuw opstarten</translation>
 <translation id="2111166930115883695">Druk op de spatiebalk om te spelen</translation>
@@ -549,7 +547,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="262745152991669301">Kan vragen of deze site verbinding mag maken met USB-apparaten</translation>
 <translation id="2629325967560697240"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Zet de geoptimaliseerde beveiliging aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om het hoogste beveiligingsniveau van Chrome te gebruiken</translation>
 <translation id="2634124572758952069">Het IP-adres van de server van <ph name="HOST_NAME" /> kan niet worden gevonden.</translation>
-<translation id="2638001509205834345">Je kaart beter beveiligen?</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="264810637653812429">Geen geschikte apparaten gevonden.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -683,7 +680,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3113284927548439113">Derde dienst</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt.</translation>
 <translation id="3116158981186517402">Lamineren</translation>
-<translation id="311958134571892113">gekoppeld aan</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Voer Verbindingsdiagnose uit<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Naar <ph name="DOMAIN" /></translation>
@@ -2377,7 +2373,6 @@ Aanvullende informatie:
 <translation id="8669306706049782872">Informatie over je schermen gebruiken om vensters te openen en te plaatsen</translation>
 <translation id="867224526087042813">Handtekening</translation>
 <translation id="8676424191133491403">Geen vertraging</translation>
-<translation id="8679903780129190080">Ja, is goed</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, antwoord, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">De webpagina op <ph name="PAGE" /> kan niet worden geladen vanwege het volgende:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

@@ -223,7 +223,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1567040042588613346">Questo criterio funziona come previsto, ma altrove è impostato lo stesso valore, che viene sostituito da questo criterio.</translation>
 <translation id="1569487616857761740">Inserisci data di scadenza</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Registra come carta virtuale</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Si è verificato un problema durante la visualizzazione della pagina web.</translation>
 <translation id="1586541204584340881">Le estensioni che hai installato</translation>
@@ -390,7 +389,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2101225219012730419">Versione:</translation>
 <translation id="2102134110707549001">Suggerisci password efficace…</translation>
 <translation id="2102495993840063010">App Android</translation>
-<translation id="2106249949168291652">Salvata. Vuoi renderla più sicura con una carta virtuale?</translation>
 <translation id="2107021941795971877">Supporti di stampa</translation>
 <translation id="2108755909498034140">Riavvia il computer</translation>
 <translation id="2111166930115883695">Premi la barra spaziatrice per giocare</translation>
@@ -552,7 +550,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="262745152991669301">Può chiedere di connettersi ai dispositivi USB</translation>
 <translation id="2629325967560697240">Per il massimo livello di sicurezza di Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />attiva la protezione avanzata<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Impossibile trovare l'indirizzo IP del server di <ph name="HOST_NAME" />.</translation>
-<translation id="2638001509205834345">Vuoi rendere più sicura la tua carta?</translation>
 <translation id="2639739919103226564">Stato:</translation>
 <translation id="264810637653812429">Nessun dispositivo compatibile trovato.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3113284927548439113">Terzo turno</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Plastificazione</translation>
-<translation id="311958134571892113">collegata con</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Prova a eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Vai a <ph name="DOMAIN" /></translation>
@@ -2383,7 +2379,6 @@ Ulteriori dettagli:
 <translation id="8669306706049782872">Usare informazioni sui tuoi schermi per aprire e posizionare finestre</translation>
 <translation id="867224526087042813">Firma</translation>
 <translation id="8676424191133491403">Nessun ritardo</translation>
-<translation id="8679903780129190080">Sì, accetto</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, risposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Impossibile caricare la pagina web all'indirizzo <ph name="PAGE" /> perché:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

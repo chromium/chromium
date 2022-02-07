@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Interne fout</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Het venster voor het updaten van firmware voor externe apparaten is geopend. <ph name="NUM_UPDATES" /> updates beschikbaar.</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Updaten (<ph name="PERCENTAGE_VALUE" />% klaar)</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beschikbaar</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Thuisnetwerk zonder roaming</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1491076385728777984">Firmware op <ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1565038567006703504">Kan <ph name="DEVICE_NAME" /> niet updaten</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
 <translation id="2517472476991765520">Scannen</translation>
+<translation id="253029298928638905">Opnieuw opstarten…</translation>
 <translation id="2536159006530886390">Kan geen verbinding met internet maken.</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
+<translation id="3993704782688964914">Je <ph name="DEVICE_NAME" /> is nu up-to-date</translation>
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4044093238444069296">Kan geen verbinding maken met de gateway</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4382484599443659549">Pdf</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> wordt opnieuw opgestart</translation>
 <translation id="4418498623216225764">Randapparaten updaten</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> staat uit</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Overeenkomst voor alternatieve naam van onderwerp</translation>
 <translation id="4536864596629708641">IP-configuratie</translation>
 <translation id="4548483925627140043">Signaal niet gevonden</translation>
+<translation id="4556753742174065117">Alle firmware is up-to-date</translation>
 <translation id="455835558791489930">Batterij van <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Simkaart ontgrendeld</translation>
 <translation id="4562494484721939086">Geen service</translation>
@@ -433,6 +441,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
+<translation id="6889786074662672253">Koppel dit externe apparaat niet los en zet je computer niet uit tijdens het opnieuw opstarten. Je kunt dit venster minimaliseren. Dit kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens dit proces.</translation>
 <translation id="6905724422583748843">Terug naar <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">De klep van de scanner staat open. Sluit de klep en probeer het opnieuw.</translation>
 <translation id="6911383237894364323">Kan geen verbinding maken met mediaservers</translation>

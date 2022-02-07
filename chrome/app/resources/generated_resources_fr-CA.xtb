@@ -769,6 +769,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="176587472219019965">&amp;Nouvelle fenêtre</translation>
 <translation id="1766575458646819543">Mode plein écran désactivé</translation>
 <translation id="1766957085594317166">Enregistrez les mots de passe en toute sécurité dans votre compte Google pour ne plus jamais avoir à les entrer</translation>
+<translation id="1767043563165955993">Utiliser avec les applications Android</translation>
 <translation id="1768212860412467516">Envoyer des commentaires sur <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Oups! Un problème est survenu lors du contact avec le serveur de connexion. Veuillez vérifier votre connexion au réseau et le nom du domaine, puis réessayez.</translation>
 <translation id="1769104665586091481">Ouvrir le lien dans une nouvelle &amp;fenêtre</translation>
@@ -1104,6 +1105,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2113479184312716848">Ouvrir un &amp;fichier...</translation>
 <translation id="2113921862428609753">Accès à l'information de l'autorité</translation>
 <translation id="2114326799768592691">Actualiser le &amp;cadre</translation>
+<translation id="2114413269775311385">Utilisez ce compte avec des applications Android. Vous pouvez définir les autorisations pour les applications Android dans <ph name="LINK_BEGIN" />Paramètres des applications<ph name="LINK_END" />.</translation>
 <translation id="2114896190328250491">Photo de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Aucune carte SIM dans l'appareil</translation>
 <translation id="2116619964159595185">Les sites se connectent généralement aux appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un moniteur de santé ou d'activité physique, ou d'une ampoule intelligente</translation>
@@ -1383,7 +1385,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2359345697448000899">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Outils ».</translation>
 <translation id="2359556993567737338">Connecter un appareil Bluetooth</translation>
 <translation id="2359808026110333948">Continuer</translation>
-<translation id="2360625459710946148">Réorganiser par</translation>
 <translation id="2361100938102002520">Vous ajoutez un profil géré à ce navigateur. L'administrateur peut gérer ce profil et accéder à ses données.</translation>
 <translation id="236117173274098341">Optimiser</translation>
 <translation id="2361340419970998028">Envoi des commentaires en cours…</translation>
@@ -3182,12 +3183,14 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4210048056321123003">Téléchargement de la machine virtuelle en cours…</translation>
 <translation id="421182450098841253">&amp;Afficher la barre des favoris</translation>
 <translation id="4211851069413100178">Envoyer les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
+<translation id="4211904048067111541">Arrêter d'utiliser avec les applications Android</translation>
 <translation id="42126664696688958">Exporter</translation>
 <translation id="42137655013211669">L'accès à ces ressources a été interdit par le serveur.</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4219558185499589032">Case</translation>
 <translation id="4220648711404560261">Une erreur s'est produite lors de l'activation.</translation>
 <translation id="4225397296022057997">Sur tous les sites</translation>
+<translation id="4227605727325220318">Ajouter un nouveau téléphone Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Cette extension n'est pas autorisée}one{Cette extension n'est pas autorisée}other{Certaines extensions ne sont pas autorisées}}</translation>
 <translation id="4231095370974836764">Installez des applications et des jeux de Google Play sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
@@ -5896,6 +5899,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7086672505018440886">Inclure les fichiers journaux de Chrome dans l'archive.</translation>
 <translation id="7088434364990739311">Échec du lancement de la vérification des mises à jour (code d'erreur <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Cet appareil a été mis en état « révoqué » par l'administrateur. Pour activer son inscription, veuillez demander à l'administrateur d'activer l'état « en attente » pour cet appareil.</translation>
+<translation id="7090160970140261931">Vous pouvez ajouter des comptes supplémentaires à votre <ph name="DEVICE_TYPE" /> pour les utiliser avec les sites Web et les applications Android. Vous pouvez également définir quels comptes sont utilisés avec les applications Android.</translation>
 <translation id="7093220653036489319">Réponses rapides</translation>
 <translation id="7093416310351037609">Pour assurer la sécurité des données, votre organisation exige que tous les téléchargements admissibles soient enregistrés dans le compte <ph name="WEB_DRIVE" /> de votre organisation.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -6577,6 +6581,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7797246427375693110">Activé / Se désactivera automatiquement à <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Désactivé</translation>
 <translation id="7798844538707273832">Bloqué automatiquement <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Le fond d'écran a été défini</translation>
 <translation id="7799817062559422778">Mode clair</translation>
 <translation id="7800159967992492578">Basculer la recherche latérale. La recherche latérale est activée.</translation>
@@ -6591,7 +6596,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7810202088502699111">Des fenêtres contextuelles ont été bloquées sur cette page.</translation>
 <translation id="781167124805380294">Diffuser <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Aidez-nous à améliorer les fonctionnalités ainsi que les performances de Chrome et de Chrome OS en envoyant automatiquement des données d'utilisation et de diagnostic à Google. Certaines données agrégées seront également utiles aux applications Android et aux partenaires Google. Si le paramètre Activité sur le Web et dans les applications est activé pour votre compte Google, vos données Android peuvent être enregistrées dans ce dernier.</translation>
-<translation id="7814277578404816512">Découvrir les nouveautés sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Copier</translation>
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7817361223956157679">Le clavier à l'écran ne fonctionne pas encore avec les applications Linux</translation>
@@ -6953,6 +6957,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8147900440966275470"><ph name="NUM" /> onglet trouvé</translation>
 <translation id="8148760431881541277">Limiter les connexions</translation>
 <translation id="8149564499626272569">Vérifier par l'intermédiaire de votre téléphone avec un câble USB</translation>
+<translation id="815114315010033526">Utiliser le code QR à la place</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
 <translation id="8154912474061769055">Des fonctionnalités de nombreux sites pourraient ne pas fonctionner</translation>
@@ -6978,6 +6983,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8176332201990304395">Rose et blanc</translation>
 <translation id="8177196903785554304">Détails sur le réseau</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
+<translation id="8179188928355984576">Non utilisé avec les applications Android</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8180786512391440389">« <ph name="EXTENSION" /> » dispose d'un droit d'accès en lecture et en écriture aux images, aux vidéos et aux fichiers audio figurant dans les dossiers sélectionnés.</translation>
 <translation id="8181215761849004992">Impossible d'associer le domaine. Vérifiez votre compte pour vous assurer que vous disposez de privilèges suffisants pour ajouter des appareils.</translation>

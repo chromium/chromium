@@ -115,6 +115,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="196896377990863006">Havolaning qisqa mazmunini koʻrsatish</translation>
 <translation id="1973912524893600642">Maʼlumotlar joyida qolsin</translation>
 <translation id="1974060860693918893">Qo‘shimcha</translation>
+<translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Tanlash</translation>
 <translation id="199425419756152024">Parolni koʻrish</translation>
 <translation id="2015722694326466240">Parollarni ko‘rish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
@@ -235,6 +236,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Nimalarni sinxronlash mumkin<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Hammasini bloklash</translation>
 <translation id="313283613037595347">Yangi inkognito varaq ochish.</translation>
+<translation id="3150887674190166798">Chrome bu saytni har doim qaysi rejimda ochishini tanlang</translation>
 <translation id="3153862085237805241">Bildirgini saqlash</translation>
 <translation id="3157387275655328056">Mutolaa ro‘yxatiga qo‘shish</translation>
 <translation id="3157684681743766797">Hammasini belgilash…</translation>
@@ -348,6 +350,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4181841719683918333">Tillar</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Asosiy brauzer ilovasi<ph name="END_BOLD" /> ustiga bosing</translation>
 <translation id="424315890655130736">Kodli iborani kiriting</translation>
+<translation id="4249955472157341256">Oxirgilar asosida saralash</translation>
 <translation id="4263576668337963058">Sahifa amallarini chiqarish</translation>
 <translation id="4267380167363222949">Keyingi varaq</translation>
 <translation id="4272631900155121838">QR-kodni skanerlash uchun sozlamalar orqali kamerani yoqing.</translation>
@@ -504,6 +507,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="575902488528307720">Rasmni qidirish</translation>
 <translation id="5781453543752460388">Photos xizmatiga kiritish</translation>
 <translation id="5782227691023083829">Tarjima qilinmoqda...</translation>
+<translation id="5791632441210678828">Kuzatish tasmasi uchun saralash tugmasi.</translation>
 <translation id="5802829331520313983">Sozlash</translation>
 <translation id="5803566855766646066">Bu yangi karta inkor etilsinmi?</translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
@@ -618,6 +622,7 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6561262006871132942">Yaqinlashtirish</translation>
 <translation id="6583087784430677195">Faolsizlantirish uchun avval <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" />, keyin Parollarni avtomatik kiritish sahifasini oching.</translation>
 <translation id="6585618849026997638">Siz uchun muhim sahifalarga bukmark kiritish orqali qaytish mumkin</translation>
+<translation id="6598875554591387303">Noshirlar asosida saralash</translation>
 <translation id="6603393121510733479">Inkognito rejimi tashkilotingiz tomonidan faolsizlantirildi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Tarjima parametrlari</translation>
@@ -758,6 +763,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7911190106180361398">Tashkilotingiz hamma narsa sinxronlanishiga ruxsat bermaydi.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Parollarni eksport qilish...</translation>
+<translation id="793971554166979165">Saytning birlamchi rejimi</translation>
 <translation id="794799177247607889">Yozib olishni bas qilish</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Hech qaysi parolingiz oshkor etilmagan}=1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
@@ -863,6 +869,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8881801611828450202">Bu rasmni <ph name="SEARCH_ENGINE" /> orqali qidirish</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
 <translation id="8917490105272468696">Ha, roziman</translation>
+<translation id="8928133177108699615">Ish stoli</translation>
 <translation id="8952559610785099500">Parol kiritish</translation>
 <translation id="895541991026785598">Muammo haqida xabar yuborish</translation>
 <translation id="8974714402877957201">1. iPad sozlamalarini oching</translation>

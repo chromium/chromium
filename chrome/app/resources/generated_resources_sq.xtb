@@ -339,6 +339,7 @@
 <translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="1341988552785875222">Imazhi aktual i sfondit është caktuar nga "<ph name="APP_NAME" />". Mund të duhet ta çinstalosh "<ph name="APP_NAME" />" para se të zgjedhësh një imazh tjetër të sfondit.</translation>
 <translation id="1343865611738742294">Jepu autorizim aplikacioneve të Linux që të kenë qasje në pajisjet USB. Linux nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
+<translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
 <translation id="1346630054604077329">Konfirmo dhe rinis</translation>
 <translation id="1347256498747320987">Instalo përditësimet dhe aplikacionet. Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori yt celular dhe prodhuesi i pajisjes, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit. <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Hapësira ruajtëse e Linux</translation>
@@ -1384,7 +1385,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2359345697448000899">Menaxho shtesat duke klikuar "Shtesat" në menynë e "Veglave".</translation>
 <translation id="2359556993567737338">Lidh pajisje me Bluetooth</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
-<translation id="2360625459710946148">Rirenditur sipas</translation>
 <translation id="2361100938102002520">Po shton një profil të menaxhuar te ky shfletues. Administratori yt ka kontroll mbi profilin dhe mund të ketë qasje në të dhënat e tij.</translation>
 <translation id="236117173274098341">Optimizo</translation>
 <translation id="2361340419970998028">Komentet po dërgohen...</translation>
@@ -1940,6 +1940,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2915873080513663243">Skanimi automatik</translation>
 <translation id="2916073183900451334">Shtypja e Skedës në lidhjet e theksuara të faqeve të uebit, si dhe në fushat e formularëve</translation>
 <translation id="2916745397441987255">Kërko për shtesa</translation>
+<translation id="2918484639460781603">Shko te cilësimet</translation>
 <translation id="2918484644467055090">Kjo pajisje nuk mund të regjistrohet në organizatën të cilës i përket llogaria jote sepse pajisja është e shënuar për menaxhim nga një organizatë tjetër.</translation>
 <translation id="2920852127376356161">Nuk lejohen të menaxhojnë protokollet</translation>
 <translation id="2921081876747860777">Krijo një fjalëkalimin për të mbrojtur të dhënat e tua lokale.</translation>
@@ -5380,6 +5381,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="654871471440386944">Të aktivizohet shfletimi me kursorin e tekstit?</translation>
 <translation id="6549038875972762904">Ribëj konfigurimin</translation>
 <translation id="6550675742724504774">Opsionet</translation>
+<translation id="65513682072153627">Do të shohësh ikonën "Menaxhuar" kur një cilësim ose veçori menaxhohet nga administratori yt.</translation>
 <translation id="6551508934388063976">Komanda nuk ofrohet. Shtyp CTRL+N për të hapur një dritare të re.</translation>
 <translation id="6551612971599078809">Sajti përdor pajisje USB</translation>
 <translation id="6551739526055143276">Menaxhohet nga Family Link</translation>
@@ -6583,6 +6585,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7797246427375693110">Aktive / Do të çaktivizohet automatikisht në <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Joaktiv</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> është bllokuar automatikisht</translation>
+<translation id="7799220949286681310">Kyçja e ekranit inteligjent</translation>
 <translation id="7799299114731150374">Imazhi i sfondit u caktua me sukses</translation>
 <translation id="7799817062559422778">Modaliteti i ndriçuar</translation>
 <translation id="7800159967992492578">Aktivizo/çaktivizo kërkimin anësor. Kërkimi anësor është aktivizuar.</translation>
@@ -6597,7 +6600,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7810202088502699111">Dritaret kërcyese u bllokuan në këtë faqe.</translation>
 <translation id="781167124805380294">Transmeto <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Ndihmo në përmirësimin e veçorive dhe performancës së Chrome dhe ChromeOS duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostike. Disa të dhëna të përmbledhura do të ndihmojnë gjithashtu aplikacionet për Android dhe partnerët e Google. Nëse cilësimi "Aktiviteti i uebit dhe i aplikacioneve" është aktiv për "Llogarinë tënde të Google", të dhënat e tua të Android mund të ruhen në atë llogari.</translation>
-<translation id="7814277578404816512">Shiko se çfarë ka të re në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Kopjo</translation>
 <translation id="7815680994978050279">Një shkarkim i rrezikshëm u bllokua</translation>
 <translation id="7817361223956157679">Tastiera në ekran nuk funksionin ende në aplikacionet e Linux</translation>

@@ -1385,7 +1385,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2359345697448000899">Aby zarządzać zainstalowanymi rozszerzeniami, kliknij Rozszerzenia w menu Narzędzia.</translation>
 <translation id="2359556993567737338">Łączenie z urządzeniem Bluetooth</translation>
 <translation id="2359808026110333948">Dalej</translation>
-<translation id="2360625459710946148">Uporządkuj według</translation>
 <translation id="2361100938102002520">Dodajesz do tej przeglądarki profil zarządzany. Kontrolę nad nim i dostęp do jego danych ma administrator.</translation>
 <translation id="236117173274098341">Optymalizuj</translation>
 <translation id="2361340419970998028">Wysyłam opinię...</translation>
@@ -6587,6 +6586,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7797246427375693110">Włączony / Wyłączy się automatycznie o <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Wyłączono</translation>
 <translation id="7798844538707273832">Automatycznie zablokowano uprawnienie: <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Inteligentna blokada ekranu</translation>
 <translation id="7799299114731150374">Tapeta została ustawiona</translation>
 <translation id="7799817062559422778">Tryb jasny</translation>
 <translation id="7800159967992492578">Przełącz wyszukiwanie na boku. Wyszukiwanie na boku jest włączone.</translation>
@@ -6601,7 +6601,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7810202088502699111">Wyskakujące okienka na tej stronie zostały zablokowane.</translation>
 <translation id="781167124805380294">Prześlij plik <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Pomóż ulepszać funkcje i działanie Chrome OS, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu. Niektóre dane zbiorcze pomagają również w opracowywaniu lepszych aplikacji na Androida i usług partnerów Google. Jeśli na swoim koncie Google włączysz ustawienie Aktywność w internecie i aplikacjach, mogą być na nim zapisywane dane Androida.</translation>
-<translation id="7814277578404816512">Sprawdź, co nowego oferuje <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Kopiuj</translation>
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7817361223956157679">W aplikacjach na Linuksa klawiatura ekranowa jeszcze nie działa</translation>

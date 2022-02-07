@@ -1392,7 +1392,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2359345697448000899">Laienduste haldamiseks klõpsake menüüs Tööriistad valikul Laiendused.</translation>
 <translation id="2359556993567737338">Bluetooth-seadme ühendamine</translation>
 <translation id="2359808026110333948">Jätka</translation>
-<translation id="2360625459710946148">Ümberjärjestamise alus</translation>
 <translation id="2361100938102002520">Lisate sellesse brauserisse hallatud profiili. Teie administraator saab seda profiili hallata ja selle andmetele juurde pääseda.</translation>
 <translation id="236117173274098341">Optimeeri</translation>
 <translation id="2361340419970998028">Tagasiside saatmine …</translation>
@@ -6594,6 +6593,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7797246427375693110">Sees / Lülitub automaatselt välja kell <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Väljas</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> blokeeriti automaatselt</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Taustapildi määramine õnnestus</translation>
 <translation id="7799817062559422778">Hele režiim</translation>
 <translation id="7800159967992492578">Kõrvalotsingu lülitamine. Kõrvalotsing on aktiveeritud.</translation>
@@ -6608,7 +6608,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7810202088502699111">Hüpikaknad blokeeriti sellel lehel.</translation>
 <translation id="781167124805380294">Faili <ph name="FILE_NAME" /> ülekandmine</translation>
 <translation id="7811886112806886172">Aidake Chrome'i ja Chrome OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid. Mõningaid koondandmeid kasutatakse ka Androidi rakenduste ja Google'i partnerite aitamiseks. Kui veebi- ja rakendustegevused on teie Google'i kontol sisse lülitatud, võidakse teie Androidi andmed salvestada teie Google'i kontole.</translation>
-<translation id="7814277578404816512">Vaadake, mis on seadmes <ph name="DEVICE_TYPE" /> uut</translation>
 <translation id="7814458197256864873">&amp;Kopeeri</translation>
 <translation id="7815680994978050279">Ohtlik allalaadimine blokeeriti</translation>
 <translation id="7817361223956157679">Ekraanil kuvatav klaviatuur Linuxi rakendustes veel ei tööta</translation>

@@ -97,7 +97,6 @@
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">「<ph name="FIRST_ITEM_TITLE" />」已替換為「<ph name="SECOND_ITEM_TITLE" />」</translation>
-<translation id="1498028757988366001">你過去曾搜尋這個項目。如果將「<ph name="QUERY" />」從搜尋記錄中刪除，該項目將從你所有裝置上的帳戶記錄中永久移除。</translation>
 <translation id="1503394326855300303">擁有者帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1516740043221086139">零打擾模式已開啟。</translation>
@@ -110,6 +109,7 @@
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1570871743947603115">切換藍牙設定。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">存取你在這個工作階段內的所有活動</translation>
+<translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
@@ -143,6 +143,7 @@
 <translation id="1836215606488044471">小幫手 (載入中…)</translation>
 <translation id="1838895407229022812">夜燈模式已關閉。</translation>
 <translation id="1864454756846565995">USB-C 裝置 (背面連接埠)</translation>
+<translation id="1879018240766558464">目前不支援無痕式視窗。系統將儲存其他應用程式。</translation>
 <translation id="1882814835921407042">沒有行動網路</translation>
 <translation id="1882897271359938046">正在建立 <ph name="DISPLAY_NAME" /> 鏡像</translation>
 <translation id="1885785240814121742">使用指紋解鎖</translation>
@@ -212,7 +213,6 @@
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2360625459710946148">重新排序依據</translation>
 <translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2369165858548251131">「你好」的英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
@@ -244,6 +244,7 @@
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2607678425161541573">需要線上登入</translation>
 <translation id="2621713457727696555">已受到安全保護</translation>
+<translation id="263399434338050016">「全選」</translation>
 <translation id="2653019840645008922">擷取視窗畫面</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">按住並拖曳</translation>
@@ -260,6 +261,7 @@
 <translation id="2727175239389218057">回覆</translation>
 <translation id="2727977024730340865">使用低功率充電器，可能導致充電狀態不穩定。</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
+<translation id="2750932254614666392">「刪除」</translation>
 <translation id="2778650143428714839">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">結束擷取模式</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
@@ -303,6 +305,7 @@
 <translation id="3038571455154067151">如要登入帳戶，請輸入 Family Link 家長存取碼</translation>
 <translation id="3039939407102840004">觸控筆電量：<ph name="PERCENTAGE" />%。</translation>
 <translation id="3045488863354895414">午安，</translation>
+<translation id="3047761520276763270">試著說出：</translation>
 <translation id="3051189971848907985">正在重新命名設定檔，請稍後片刻。</translation>
 <translation id="3055162170959710888">你今天的裝置使用時間：<ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">在左側顯示檔案櫃</translation>
@@ -419,6 +422,7 @@
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3713734891607377840">下載完成後開啟</translation>
 <translation id="3726171378575546917">這部裝置未安裝「<ph name="UNAVAILABLE_APPS_ONE" />」、「<ph name="UNAVAILABLE_APPS_TWO" />」和另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 個應用程式。</translation>
+<translation id="3735740477244556633">排序依據</translation>
 <translation id="3742055079367172538">已拍攝螢幕截圖</translation>
 <translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
@@ -477,6 +481,7 @@
 <translation id="4173958948577803258">四</translation>
 <translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="4181841719683918333">語言</translation>
+<translation id="4195814663415092787">繼續瀏覽上次開啟的網頁</translation>
 <translation id="4195877955194704651">自動點擊按鈕</translation>
 <translation id="4197790712631116042">關閉</translation>
 <translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
@@ -548,6 +553,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4570957409596482333">隨選朗讀按鈕</translation>
+<translation id="4573176682887762361">「輸入 [文字/詞組]」</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4578196883126898996">你的麥克風已關閉。請開啟裝置的麥克風按鈕。</translation>
@@ -943,6 +949,7 @@
 <translation id="7366890467478514168">連結 <ph name="NAME" /></translation>
 <translation id="7371404428569700291">錄製視窗畫面</translation>
 <translation id="7377169924702866686">大寫鍵已啟用。</translation>
+<translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="7378203170292176219">拖曳選取要錄影的區域</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378889811480108604">省電模式已關閉</translation>
@@ -970,6 +977,7 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">目前不支援 Linux 應用程式和無痕式視窗。系統將儲存其他應用程式。</translation>
 <translation id="7544300628205093162">鍵盤背光功能已開啟</translation>
 <translation id="7548434653388805669">就寢時間到了</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
@@ -1160,6 +1168,7 @@
 <translation id="8785070478575117577">連線至「<ph name="NETWORK_NAME" />」</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" />資料夾</translation>
+<translation id="880709030178078220">「說明」</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">輸入法設定</translation>
 <translation id="8818320199597151042">正在移除設定檔，請稍後片刻。</translation>

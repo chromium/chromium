@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">Правилово работи како што е предвидено, но истата вредност е поставена некаде на друго место и е заменета од правилово.</translation>
 <translation id="1569487616857761740">Внесете датум на истекување</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Регистрирајте се за виртуелна картичка</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Нешто тргна наопаку при прикажувањето на оваа веб-страница.</translation>
 <translation id="1586541204584340881">кои екстензии сте ги инсталирале</translation>
@@ -390,7 +389,6 @@
 <translation id="2101225219012730419">Верзија:</translation>
 <translation id="2102134110707549001">Предложи силна лозинка…</translation>
 <translation id="2102495993840063010">Апликации за Android</translation>
-<translation id="2106249949168291652">Зачувана. Дали сакате поголема безбедност со виртуелна картичка?</translation>
 <translation id="2107021941795971877">Поддршка на печатењето</translation>
 <translation id="2108755909498034140">Рестартирајте го компјутерот</translation>
 <translation id="2111166930115883695">Притиснете го копчето за празно место за да пуштите</translation>
@@ -552,7 +550,6 @@
 <translation id="262745152991669301">Може да прашува за да се поврзува со USB-уреди</translation>
 <translation id="2629325967560697240">За да го добиете нависокото ниво на безбедност на Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />вклучете ја „Подобрената заштита“<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">IP-адресата за серверот на <ph name="HOST_NAME" /> не може да се најде.</translation>
-<translation id="2638001509205834345">Сакате подобра безбедност за вашата картичка?</translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="264810637653812429">Не се најдени компатибилни уреди.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@
 <translation id="3113284927548439113">Трета смена</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Пластифицирање</translation>
-<translation id="311958134571892113">поврзана со</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Обидете се да извршите дијагностика на поврзливоста<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Оди во <ph name="DOMAIN" /></translation>
@@ -2386,7 +2382,6 @@
 <translation id="8669306706049782872">Користење податоци за вашите екрани за отворање и поставување прозорци</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8676424191133491403">Без одложување</translation>
-<translation id="8679903780129190080">Да, прифаќам</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страницата на <ph name="PAGE" /> не може да се вчита бидејќи:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

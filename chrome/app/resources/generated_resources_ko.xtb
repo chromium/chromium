@@ -341,6 +341,7 @@
 <translation id="1340527397989195812">파일 앱을 사용하여 기기의 미디어를 백업합니다.</translation>
 <translation id="1341988552785875222">현재 배경화면은 '<ph name="APP_NAME" />'에서 설정했습니다. 다른 배경화면을 선택하려면 '<ph name="APP_NAME" />'을(를) 제거해야 할 수도 있습니다.</translation>
 <translation id="1343865611738742294">Linux 앱에 USB 기기 액세스 권한을 부여합니다. Linux는 삭제된 USB 기기를 기억하지 않습니다.</translation>
+<translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
 <translation id="1346630054604077329">확인 후 다시 시작</translation>
 <translation id="1347256498747320987">업데이트 및 앱을 설치합니다. 계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데에도 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux 저장용량</translation>
@@ -1401,7 +1402,6 @@
 <translation id="2359345697448000899">도구 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2359556993567737338">블루투스 기기 연결</translation>
 <translation id="2359808026110333948">계속</translation>
-<translation id="2360625459710946148">재정렬 기준</translation>
 <translation id="2361100938102002520">브라우저에 관리되는 프로필을 추가하려고 합니다. 관리자가 프로필을 제어하고 프로필 데이터에 액세스할 수 있습니다.</translation>
 <translation id="236117173274098341">최적화</translation>
 <translation id="2361340419970998028">의견을 보내는 중...</translation>
@@ -5397,6 +5397,7 @@
 <translation id="654871471440386944">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
 <translation id="6549038875972762904">다시 설정</translation>
 <translation id="6550675742724504774">옵션</translation>
+<translation id="65513682072153627">관리자가 관리하는 설정이나 기능의 경우 관리됨 아이콘이 표시됩니다</translation>
 <translation id="6551508934388063976">명령어가 없습니다. 컨트롤 키와 N을 눌러 새 창을 여세요.</translation>
 <translation id="6551612971599078809">사이트에서 USB를 사용하고 있습니다.</translation>
 <translation id="6551739526055143276">Family Link로 관리됨</translation>
@@ -6167,6 +6168,7 @@
 <translation id="7376553024552204454">이동 시 마우스 커서 강조표시</translation>
 <translation id="737728204345822099">이 사이트를 방문한 기록이 보안 키에 보관될 수 있습니다.</translation>
 <translation id="7377451353532943397">계속해서 센서 액세스 차단</translation>
+<translation id="7377481913241237033">코드를 사용한 연결</translation>
 <translation id="7378611153938412599">취약한 비밀번호는 추측하기 쉽습니다. 안전한 비밀번호를 설정하세요. <ph name="BEGIN_LINK" />보안 도움말 더보기<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>
 <translation id="7380622428988553498">기기 이름에 잘못된 문자가 포함되어 있습니다.</translation>
@@ -6601,6 +6603,7 @@
 <translation id="7797246427375693110">사용 중 / <ph name="TIME" />에 자동으로 꺼짐</translation>
 <translation id="7797571222998226653">꺼짐</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> 권한이 자동으로 차단됨</translation>
+<translation id="7799220949286681310">스마트 화면 잠금</translation>
 <translation id="7799299114731150374">배경화면 설정이 완료되었습니다.</translation>
 <translation id="7799817062559422778">밝은 모드</translation>
 <translation id="7800159967992492578">사이드 검색을 전환합니다. 사이트 검색이 활성화되었습니다.</translation>
@@ -6615,7 +6618,6 @@
 <translation id="7810202088502699111">이 페이지에서 팝업이 차단되었습니다.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> 전송</translation>
 <translation id="7811886112806886172">진단 및 사용 데이터를 Google에 자동으로 전송하여 Chrome 및 ChromeOS의 기능과 성능을 개선할 수 있도록 도와주세요. 일부 합산 데이터도 Android 앱 및 Google 파트너에게 도움이 됩니다. Google 계정에 이미 웹 및 앱 활동이 사용 설정되어 있다면 Android 데이터가 Google 계정에 저장될 수 있습니다.</translation>
-<translation id="7814277578404816512"><ph name="DEVICE_TYPE" />의 새로운 기능 알아보기</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7817361223956157679">Linux 앱에서는 아직 터치 키보드가 지원되지 않습니다.</translation>

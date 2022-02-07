@@ -100,7 +100,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" /> realizada</translation>
-<translation id="1498028757988366001">Você já pesquisou isso. Se você excluir "<ph name="QUERY" />" do seu histórico, essa consulta será permanentemente removida da sua conta em todos os seus dispositivos.</translation>
 <translation id="1503394326855300303">Esta conta de proprietário precisa ser a primeira conta a fazer login em uma sessão de login múltiplo.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1516740043221086139">O "Não perturbe" está ativado.</translation>
@@ -216,7 +215,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2352467521400612932">Configurações da stylus</translation>
 <translation id="2354174487190027830">Ativando <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2360625459710946148">Reordenar por</translation>
 <translation id="2367186422933365202">Não foi possível fazer login no Chromebook</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Configurações de localidade</translation>
@@ -423,6 +421,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir quando o download for concluído</translation>
 <translation id="3726171378575546917">Os apps <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> não estão no dispositivo.</translation>
+<translation id="3735740477244556633">Classificar por</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador desativou o login múltiplo para <ph name="USER_EMAIL" />. Todos os usuários precisam sair para continuar.</translation>
@@ -481,6 +480,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4173958948577803258">Q</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo em 1 dia}one{Atualize o dispositivo em # dia}other{Atualize o dispositivo em # dias}}</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4195814663415092787">Continuar de onde você parou</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
 <translation id="4197790712631116042">Desativado</translation>
 <translation id="4201033867194214117">O recurso <ph name="FEATURE_NAME" /> não está disponível.</translation>

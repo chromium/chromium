@@ -100,12 +100,12 @@ Here are some things that you can try to get started.</translation>
 <translation id="1479909375538722835">Floating accessibility menu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> swapped with <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">You searched for this before. Deleting '<ph name="QUERY" />' from your history will permanently remove it from your account across all your devices.</translation>
 <translation id="1503394326855300303">This owner account has to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">Do Not Disturb is on.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Show notification settings. Notifications are off for an app}other{Show notification settings. Notifications are off for # apps}}</translation>
 <translation id="1525508553941733066">DISMISS</translation>
+<translation id="1528259147807435347">Edited in the past week</translation>
 <translation id="1536604384701784949">To use <ph name="USER_EMAIL_ADDRESS" /> you need to sign out of all accounts first. To sign out, select Cancel to go back. Then select the time to open the status area and select Sign out. Then sign in to <ph name="USER_EMAIL_ADDRESS_2" /> again.</translation>
 <translation id="15373452373711364">Large mouse cursor</translation>
 <translation id="1546492247443594934">Desk 2</translation>
@@ -217,7 +217,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2352467521400612932">Stylus settings</translation>
 <translation id="2354174487190027830">Activating <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continue</translation>
-<translation id="2360625459710946148">Reorder by</translation>
 <translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
 <translation id="2390318262976603432">Locale settings</translation>
@@ -229,6 +228,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="243878895369688216">Opened yesterday</translation>
 <translation id="24452542372838207">Expand notification</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -277,6 +277,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Shelf</translation>
+<translation id="2834813915651407382">Recently opened</translation>
 <translation id="2841907151129139818">Switched to tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (left side front port)</translation>
 <translation id="2849936225196189499">Critical</translation>
@@ -395,6 +396,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
 <translation id="3560866052109807830">Marker drawing tools</translation>
 <translation id="3563775809269155755">Enable hotspot</translation>
+<translation id="3566240529365775567">Opened just now</translation>
 <translation id="3571734092741541777">Set up</translation>
 <translation id="3573179567135747900">Change back to "<ph name="FROM_LOCALE" />" (requires restart)</translation>
 <translation id="3576141592585647168">Change timezone</translation>
@@ -427,7 +429,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="371370241367527062">Front microphone</translation>
 <translation id="3713734891607377840">Open when complete</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> and <ph name="UNAVAILABLE_APPS_COUNT" /> more aren't on this device.</translation>
+<translation id="3735740477244556633">Sort by</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
+<translation id="3765841986579723851">Edited today</translation>
 <translation id="3771549900096082774">High contrast mode</translation>
 <translation id="3773700760453577392">An administrator has disallowed multiple sign-in for <ph name="USER_EMAIL" />. All users must sign out to continue.</translation>
 <translation id="3779139509281456663">Connecting <ph name="NAME" /></translation>
@@ -446,6 +450,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3846575436967432996">No network information available</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
+<translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
 <translation id="3897533311200664389">Start a text query</translation>
@@ -485,6 +490,8 @@ Here are some things that you can try to get started.</translation>
 <translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
 <translation id="4181841719683918333">Languages</translation>
+<translation id="4192112279662688596">Or</translation>
+<translation id="4195814663415092787">Continue where you left off</translation>
 <translation id="4195877955194704651">Automatic clicks button</translation>
 <translation id="4197790712631116042">Off</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is not available.</translation>
@@ -532,6 +539,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4421231901400348175">Sharing control of your screen with <ph name="HELPER_NAME" /> via Remote Assistance.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4430019312045809116">volume</translation>
+<translation id="4441283832827406317">Apps are sorted by name</translation>
 <translation id="4445159312344259901">Sign in to unlock</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>
 <translation id="4450893287417543264">Don't show again</translation>
@@ -673,6 +681,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
+<translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
 <translation id="5400461572260843123">Quick Settings: press search + left to access the notification centre.</translation>
@@ -778,6 +787,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
 <translation id="6062360702481658777">You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stop recording</translation>
+<translation id="6099678161144790572">Edited in the past month</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> speech files downloaded</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirm download <ph name="FILENAME" /></translation>
@@ -877,6 +887,7 @@ New install</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
 <translation id="6786750046913594791">Close folder</translation>
 <translation id="6790428901817661496">Play</translation>
+<translation id="6801878137098616817">Recently edited</translation>
 <translation id="6803622936009808957">Could not mirror displays since no supported resolutions found. Entered extended desktop instead.</translation>
 <translation id="6811454077060061666">Google Drive for desktop is unavailable</translation>
 <translation id="6818242057446442178">Back by word</translation>
@@ -885,10 +896,12 @@ New install</translation>
 <translation id="6836499262298959512">Dangerous file</translation>
 <translation id="6837064795450991317">Hide deskbar</translation>
 <translation id="6852052252232534364">Click to activate</translation>
+<translation id="6855029042976311970">Edited just now</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
 <translation id="6867938213751067702">Download paused <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Shortcut turned off</translation>
+<translation id="6880133753431418782">You searched for this query before. Deleting this search from your history will permanently remove it from your Google Account across all of your devices.</translation>
 <translation id="6884665277231944629">Go back to today</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>
@@ -927,6 +940,7 @@ New install</translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7106330611027933926">Show deskbar</translation>
 <translation id="7118268675952955085">screenshot</translation>
+<translation id="7126996685418858413">Opened in the past week</translation>
 <translation id="7130207228079676353">MOST LIKELY</translation>
 <translation id="7131634465328662194">You will automatically be signed out.</translation>
 <translation id="7143207342074048698">Connecting</translation>
@@ -938,6 +952,7 @@ New install</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
 <translation id="7256634071279256947">Rear microphone</translation>
+<translation id="7258828758145722155">Edited yesterday</translation>
 <translation id="726276584504105859">Drag here to use split screen</translation>
 <translation id="7262906531272962081">Create reminder</translation>
 <translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> marker colour</translation>
@@ -957,6 +972,7 @@ New install</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
 <translation id="7378594059915113390">Media controls</translation>
 <translation id="7378889811480108604">Battery saver mode is off</translation>
+<translation id="7384028040782072252">Right-click anywhere to reorder your apps</translation>
 <translation id="7392563512730092880">You can always perform setup later from Settings.</translation>
 <translation id="7405710164030118432">To unlock the device, enter your Family Link parent access code</translation>
 <translation id="7406608787870898861">Finish setting up your mobile network</translation>
@@ -975,6 +991,7 @@ New install</translation>
 <translation id="7483025031359818980">Selection area set to full screen</translation>
 <translation id="7486227320194954040">Collapse marker tools</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
+<translation id="7508690557411636492">Opened in the past month</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7513622367902644023">Screenshot mode selected</translation>
 <translation id="7513922695575567867">Calendar, week of <ph name="DATE" />, <ph name="SELECTED_DATE" /> is currently selected.</translation>
@@ -1008,6 +1025,7 @@ New install</translation>
 <translation id="7654687942625752712">Press and hold both volume keys for five seconds to disable spoken feedback.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
+<translation id="7671610481353807627">Apps are sorted by colour</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
@@ -1144,6 +1162,7 @@ New install</translation>
 <translation id="8563862697512465947">Notification Settings</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Sort your apps by name or colour</translation>
 <translation id="8627191004499078455">Connected to <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Accessibility settings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>

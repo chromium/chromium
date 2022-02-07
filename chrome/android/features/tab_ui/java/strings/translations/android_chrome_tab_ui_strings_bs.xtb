@@ -34,7 +34,6 @@
 <translation id="3882834874697329510">Da dobijete obavještenje kada je niža cijena na otvorenoj kartici, uključite obavještenja u Postavkama.</translation>
 <translation id="3940195383040445971">Pratite cijene na karticama</translation>
 <translation id="3996880007329611795">Šalji obavještenja</translation>
-<translation id="4095555372828143870">Zatvoriti sve kartice čime će se izgubiti svi podaci koji nisu sačuvani?</translation>
 <translation id="4133493477912226187">Čini se da su neke kartice povezane (njih <ph name="NUMBER_OF_TABS" />). Grupirati ih?</translation>
 <translation id="4212246570487010370">Nastavite pregledati</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
@@ -70,7 +69,6 @@
 <translation id="7204204600596740190">Način rada višestrukog odabira</translation>
 <translation id="7326879924029668159">Pogledajte pravila povrata i drugo</translation>
 <translation id="7352298686197644113">Pogledajte koja stavka u otvorenim karticama ima nižu cijenu</translation>
-<translation id="7475676397080516143">UPOZORENJE: Ovu radnju nije moguće opozvati. Zatvoriti sve kartice čime će se izgubiti svi podaci koji nisu sačuvani?</translation>
 <translation id="753732157349120914">Prebacivač kartica</translation>
 <translation id="7559245342362162951">Prikaži kartice grupe na mreži cijelog ekrana</translation>
 <translation id="7792771145871471484">Pregled prijedloga.</translation>

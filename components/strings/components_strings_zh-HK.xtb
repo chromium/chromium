@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">此政策運作正常，但與其他地方設定的值相同，並已取代該值。</translation>
 <translation id="1569487616857761740">輸入到期日</translation>
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
-<translation id="1581767074483369314">註冊虛擬卡</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
 <translation id="1586541204584340881">您已安裝的擴充程式</translation>
@@ -386,7 +385,6 @@
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102134110707549001">建議安全性強的密碼…</translation>
 <translation id="2102495993840063010">Android 應用程式</translation>
-<translation id="2106249949168291652">已儲存。要透過虛擬卡來提升卡的安全性嗎？</translation>
 <translation id="2107021941795971877">列印支援</translation>
 <translation id="2108755909498034140">重新啟動您的電腦</translation>
 <translation id="2111166930115883695">按一下空格鍵即可開始遊戲</translation>
@@ -548,7 +546,6 @@
 <translation id="262745152991669301">可要求連接 USB 裝置</translation>
 <translation id="2629325967560697240">如要獲得 Chrome 最高程度的安全防護，請<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />啟用強化保護功能<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
-<translation id="2638001509205834345">要提升卡的安全性嗎？</translation>
 <translation id="2639739919103226564">狀態：</translation>
 <translation id="264810637653812429">找不到任何兼容的裝置。</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" />，<ph name="CITY" /></translation>
@@ -682,7 +679,6 @@
 <translation id="3113284927548439113">第三批</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> 要求您備份資料，並歸還此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="3116158981186517402">粘合</translation>
-<translation id="311958134571892113">已連結以下卡：</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />嘗試執行連線診斷<ph name="END_LINK" />。</translation>
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
@@ -2376,7 +2372,6 @@
 <translation id="8669306706049782872">使用螢幕中的資料開啟及放置視窗</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8676424191133491403">不延遲</translation>
-<translation id="8679903780129190080">是，我同意</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">無法載入 <ph name="PAGE" /> 的網頁，原因如下：</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

@@ -339,6 +339,7 @@
 <translation id="1340527397989195812">ファイルアプリを使用してデバイスからメディアをバックアップします。</translation>
 <translation id="1341988552785875222">現在の壁紙は「<ph name="APP_NAME" />」により設定されています。別の壁紙を選択する前に「<ph name="APP_NAME" />」のアンインストールが必要となる場合があります。</translation>
 <translation id="1343865611738742294">Linux アプリに USB デバイスへのアクセスを許可します。USB デバイスを取り外した後は、Linux にデバイスのデータは残りません。</translation>
+<translation id="1343920184519992513">前回中断したところから再開して、特定のページを開く</translation>
 <translation id="1346630054604077329">確定して再起動</translation>
 <translation id="1347256498747320987">アップデートとアプリをインストールします。続行すると、このデバイスで Google、携帯通信会社、デバイスの製造元からのアップデートやアプリが自動的にダウンロードおよびインストールされることについても同意したと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。また、こうしたアプリの一部ではアプリ内購入をすすめられる場合があります。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux ストレージ</translation>
@@ -1383,7 +1384,6 @@
 <translation id="2359345697448000899">[ツール] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
 <translation id="2359556993567737338">Bluetooth デバイスの接続</translation>
 <translation id="2359808026110333948">続行</translation>
-<translation id="2360625459710946148">並べ替え</translation>
 <translation id="2361100938102002520">このブラウザに管理対象プロファイルを追加します。このプロファイルは管理者の制御下にあり、管理者はプロファイルのデータにアクセスできます。</translation>
 <translation id="236117173274098341">最適化</translation>
 <translation id="2361340419970998028">フィードバックを送信しています...</translation>
@@ -5369,6 +5369,7 @@
 <translation id="654871471440386944">カーソル ブラウジングをオンにしますか？</translation>
 <translation id="6549038875972762904">設定をやり直す</translation>
 <translation id="6550675742724504774">オプション</translation>
+<translation id="65513682072153627">設定や機能が管理者に管理されていると、この管理対象アイコンが表示されます。</translation>
 <translation id="6551508934388063976">コマンドを使用できません。Ctrl+N を押して新しいウィンドウを開いてください。</translation>
 <translation id="6551612971599078809">サイトで USB が使用されています</translation>
 <translation id="6551739526055143276">ファミリー リンクの管理対象</translation>
@@ -6572,6 +6573,7 @@
 <translation id="7797246427375693110">オン / <ph name="TIME" /> に自動的にオフ</translation>
 <translation id="7797571222998226653">オフ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
+<translation id="7799220949286681310">スマート画面ロック</translation>
 <translation id="7799299114731150374">壁紙の設定が完了しました</translation>
 <translation id="7799817062559422778">ライトモード</translation>
 <translation id="7800159967992492578">サイド検索を切り替えます。サイド検索は有効になっています。</translation>
@@ -6586,7 +6588,6 @@
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> のキャスト</translation>
 <translation id="7811886112806886172">診断データと使用状況データを Google に自動送信して、Chrome および Chrome OS の機能とパフォーマンスの改善にご協力ください。一部の集計データは、Android アプリと Google パートナーによっても利用されます。あなたの Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、Google アカウントにあなたの Android データが保存されることがあります。</translation>
-<translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> の新機能のご案内</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7817361223956157679">画面キーボードは現在のところ Linux アプリでは使用できません</translation>

@@ -1402,7 +1402,6 @@
 <translation id="2359345697448000899">टूल मेन्यू में एक्सटेंशन क्लिक करके अपने एक्सटेंशन प्रबंधित करें.</translation>
 <translation id="2359556993567737338">ब्लूटूथ डिवाइस कनेक्ट करें</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
-<translation id="2360625459710946148">इस क्रम से लगाएं</translation>
 <translation id="2361100938102002520">आप इस ब्राउज़र पर, एक मैनेज की जा रही प्रोफ़ाइल जोड़ रहे हैं. इस प्रोफ़ाइल को आपका एडमिन कंट्रोल करता है और इसका डेटा ऐक्सेस कर सकता है.</translation>
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">सुझाव भेजा जा रहा है...</translation>
@@ -6603,6 +6602,7 @@
 <translation id="7797246427375693110"><ph name="TIME" /> पर अपने-आप चालू / बंद हो जाएगा</translation>
 <translation id="7797571222998226653">बंद है</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> को अपने-आप ब्लॉक किया गया है</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">वॉलपेपर सही तरीके से सेट हो गया</translation>
 <translation id="7799817062559422778">हल्के रंग वाला मोड</translation>
 <translation id="7800159967992492578">खोज के लिए स्क्रीन के बाईं ओर दिया गया बटन टॉगल करें. बाईं और दी गई खोज की सुविधा चालू है.</translation>
@@ -6617,7 +6617,6 @@
 <translation id="7810202088502699111">इस पेज पर पॉप-अप अवरोधित किए गए थे.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> कास्ट करें</translation>
 <translation id="7811886112806886172">Chrome और ChromeOS को बेहतर बनाने में हमारी मदद करने के लिए, Google को इनके इस्तेमाल से जुड़े डेटा और इनकी परफ़ॉर्मेंस की जानकारी अपने-आप भेजने की सुविधा चालू करें. इकट्ठा किए गए कुछ डेटा से, Android ऐप्लिकेशन और Google के पार्टनर को भी मदद मिलेगी. अगर आपके Google खाते की वेब और ऐप्लिकेशन गतिविधि वाली सेटिंग चालू है, तो आपके Android डिवाइस का डेटा आपके Google खाते में सेव हो सकता है.</translation>
-<translation id="7814277578404816512">देखें कि आपके <ph name="DEVICE_TYPE" /> पर नया क्या है</translation>
 <translation id="7814458197256864873">&amp;प्रतिलिपि बनाएं</translation>
 <translation id="7815680994978050279">खतरनाक डाउनलोड अवरोधित किया गया</translation>
 <translation id="7817361223956157679">फ़िलहाल, ऑन-स्क्रीन कीबोर्ड Linux ऐप्लिकेशन के साथ काम नहीं करता</translation>

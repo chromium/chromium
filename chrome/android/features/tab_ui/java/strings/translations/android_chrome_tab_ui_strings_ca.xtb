@@ -34,7 +34,6 @@
 <translation id="3882834874697329510">Per rebre una alerta quan hi hagi un preu més baix en una pestanya oberta, activa les notificacions a Configuració.</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3996880007329611795">Rep notificacions</translation>
-<translation id="4095555372828143870">Vols tancar totes les pestanyes i perdre totes les dades que no s'hagin desat?</translation>
 <translation id="4133493477912226187">Sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
@@ -70,7 +69,6 @@
 <translation id="7204204600596740190">Mode de multiselecció</translation>
 <translation id="7326879924029668159">Consulta la política de devolució i més detalls</translation>
 <translation id="7352298686197644113">Descobreix quin element de les pestanyes que hi ha obertes té un preu més baix</translation>
-<translation id="7475676397080516143">ADVERTIMENT: aquesta acció no es pot desfer. Vols tancar totes les pestanyes i perdre totes les dades que no s'hagin desat?</translation>
 <translation id="753732157349120914">Selector de pestanyes</translation>
 <translation id="7559245342362162951">Mostra les pestanyes del grup en una quadrícula en pantalla completa</translation>
 <translation id="7792771145871471484">Revisa els suggeriments.</translation>

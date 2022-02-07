@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">Ове смернице раде као што је предвиђено, али иста вредност је подешена на другом месту и замењују је ове смернице.</translation>
 <translation id="1569487616857761740">Унесите датум истека</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Региструјте се за виртуелну картицу</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Дошло је до грешке при приказивању ове веб-странице.</translation>
 <translation id="1586541204584340881">додатке које сте инсталирали</translation>
@@ -390,7 +389,6 @@
 <translation id="2101225219012730419">Верзија:</translation>
 <translation id="2102134110707549001">Предложи јаку лозинку…</translation>
 <translation id="2102495993840063010">Android апликације</translation>
-<translation id="2106249949168291652">Сачувано је. Желите да ово буде безбедније уз виртуелну картицу?</translation>
 <translation id="2107021941795971877">Подршка за штампање</translation>
 <translation id="2108755909498034140">Поново покрените рачунар</translation>
 <translation id="2111166930115883695">Притисните тастер за размак да бисте играли</translation>
@@ -552,7 +550,6 @@
 <translation id="262745152991669301">Може да тражи да се повезује са USB уређајима</translation>
 <translation id="2629325967560697240">Да бисте добили највиши ниво заштите у Chrome-у, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />укључите побољшану заштиту<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Нисмо успели да пронађемо IP адресу сервера хоста <ph name="HOST_NAME" />.</translation>
-<translation id="2638001509205834345">Желите да вам картица буде безбеднија?</translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="264810637653812429">Није пронађен ниједан компатибилан уређај.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@
 <translation id="3113284927548439113">Трећа смена</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламинирање</translation>
-<translation id="311958134571892113">повезано са картицом</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Покушајте да покренете дијагностику везе<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Иди на <ph name="DOMAIN" /></translation>
@@ -2386,7 +2382,6 @@
 <translation id="8669306706049782872">Користи информације о екранима да би отварао и постављао прозоре</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8676424191133491403">Без одлагања</translation>
-<translation id="8679903780129190080">Да, прихватам</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страница на адреси <ph name="PAGE" /> не може да се учита из следећих разлога:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

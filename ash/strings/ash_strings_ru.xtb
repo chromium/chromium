@@ -100,7 +100,6 @@
 <translation id="1479909375538722835">Плавающее меню специальных возможностей</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Вы поменяли местами объекты "<ph name="FIRST_ITEM_TITLE" />" и "<ph name="SECOND_ITEM_TITLE" />"</translation>
-<translation id="1498028757988366001">Вы уже искали эту информацию. Если вы удалите запрос "<ph name="QUERY" />" из истории, он будет навсегда скрыт на всех ваших устройствах, где выполнен вход в аккаунт.</translation>
 <translation id="1503394326855300303">При одновременной работе в нескольких аккаунтах необходимо сначала зайти в аккаунт владельца.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="1516740043221086139">Режим "Не беспокоить" включен</translation>
@@ -113,6 +112,7 @@
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1570871743947603115">Изменить настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
+<translation id="1610778689852195798">"Отменить"</translation>
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">Ассистент (загрузка…)</translation>
 <translation id="1838895407229022812">Ночная подсветка отключена</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
+<translation id="1879018240766558464">Окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
@@ -215,7 +216,6 @@
 <translation id="2352467521400612932">Настройки стилуса</translation>
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продолжить</translation>
-<translation id="2360625459710946148">Изменить порядок</translation>
 <translation id="2367186422933365202">Не удалось войти в аккаунт на устройстве Chromebook.</translation>
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
 <translation id="2390318262976603432">Региональные настройки</translation>
@@ -247,6 +247,7 @@
 <translation id="2596078834055697711">Сделать скриншот окна</translation>
 <translation id="2607678425161541573">Войдите в аккаунт в режиме онлайн</translation>
 <translation id="2621713457727696555">Защищена</translation>
+<translation id="263399434338050016">"Выбрать все"</translation>
 <translation id="2653019840645008922">Съемка окна</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2658778018866295321">Перетаскивание</translation>
@@ -263,6 +264,7 @@
 <translation id="2727175239389218057">Ответить</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Удалить"</translation>
 <translation id="2778650143428714839">Устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="2782591952652094792">Выйти из режима съемки</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
@@ -306,6 +308,7 @@
 <translation id="3038571455154067151">Чтобы войти, введите родительский код доступа Family Link.</translation>
 <translation id="3039939407102840004">Заряд батареи стилуса составляет <ph name="PERCENTAGE" /> процентов.</translation>
 <translation id="3045488863354895414">Добрый день!</translation>
+<translation id="3047761520276763270">Скажите:</translation>
 <translation id="3051189971848907985">Профиль переименовывается. Подождите несколько минут.</translation>
 <translation id="3055162170959710888">Сегодня вы уже использовали это устройство <ph name="USED_TIME" />.</translation>
 <translation id="3068711042108640621">Временное хранилище расположено слева</translation>
@@ -422,6 +425,7 @@
 <translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3713734891607377840">Открыть после скачивания</translation>
 <translation id="3726171378575546917">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" и ещё несколько сервисов (<ph name="UNAVAILABLE_APPS_COUNT" />) не установлены на этом устройстве.</translation>
+<translation id="3735740477244556633">Сортировать по:</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3771549900096082774">Режим высокой контрастности</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
@@ -480,6 +484,7 @@
 <translation id="4173958948577803258">Ч</translation>
 <translation id="4177913004758410636">{0,plural, =1{Перезагрузите устройство в течение 1 дня}one{Перезагрузите устройство в течение # дня}few{Перезагрузите устройство в течение # дней}many{Перезагрузите устройство в течение # дней}other{Перезагрузите устройство в течение # дня}}</translation>
 <translation id="4181841719683918333">Языки</translation>
+<translation id="4195814663415092787">Ранее открытые вкладки</translation>
 <translation id="4195877955194704651">Меню "Автоматическое нажатие"</translation>
 <translation id="4197790712631116042">Отключено</translation>
 <translation id="4201033867194214117">Функция "<ph name="FEATURE_NAME" />" недоступна</translation>
@@ -551,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
 <translation id="4570957409596482333">Кнопка "Озвучивание при нажатии"</translation>
+<translation id="4573176682887762361">"Напечатать [слово или фраза]"</translation>
 <translation id="4577274620589681794">Время истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Включить предпросмотр</translation>
 <translation id="4578196883126898996">Микрофон выключен. Включите его на устройстве.</translation>
@@ -947,6 +953,7 @@
 <translation id="7366890467478514168">Подключите устройство "<ph name="NAME" />"</translation>
 <translation id="7371404428569700291">Запись контента в окне</translation>
 <translation id="7377169924702866686">Включен режим Caps Lock.</translation>
+<translation id="7377481913241237033">Подключиться с помощью кода</translation>
 <translation id="7378203170292176219">Выделите область для записи с помощью перетаскивания</translation>
 <translation id="7378594059915113390">Элементы управления медиафайлами</translation>
 <translation id="7378889811480108604">Режим энергосбережения отключен</translation>
@@ -974,6 +981,7 @@
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="7544300628205093162">Подсветка клавиатуры включена.</translation>
 <translation id="7548434653388805669">Пора ложиться спать</translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
@@ -1165,6 +1173,7 @@
 <translation id="8785070478575117577">Подключиться к сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" />.</translation>
+<translation id="880709030178078220">"Справка"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Настройки способов ввода</translation>
 <translation id="8818320199597151042">Профиль удаляется. Подождите несколько минут.</translation>

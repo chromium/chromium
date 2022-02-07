@@ -97,7 +97,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1479909375538722835">Menu Accessibilità mobile</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> è stato scambiato con <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Hai eseguito questa ricerca in precedenza. Se elimini "<ph name="QUERY" />" dalla cronologia, la query verrà rimossa in modo permanente dal tuo account su tutti i tuoi dispositivi.</translation>
 <translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="1510238584712386396">Avvio app</translation>
 <translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
@@ -212,7 +211,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2352467521400612932">Impostazioni di stilo</translation>
 <translation id="2354174487190027830">Attivazione di <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2360625459710946148">Riordina per</translation>
 <translation id="2367186422933365202">Impossibile accedere a Chromebook</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
 <translation id="2390318262976603432">Impostazioni internazionali</translation>
@@ -419,6 +417,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e altre <ph name="UNAVAILABLE_APPS_COUNT" /> app non sono disponibili su questo dispositivo.</translation>
+<translation id="3735740477244556633">Ordina per</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
@@ -478,6 +477,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4173958948577803258">G</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}one{Aggiorna il dispositivo entro # giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
 <translation id="4181841719683918333">Lingue</translation>
+<translation id="4195814663415092787">Continuare dal punto in cui avevi interrotto</translation>
 <translation id="4195877955194704651">Pulsante Clic automatici</translation>
 <translation id="4197790712631116042">Off</translation>
 <translation id="4201033867194214117">La funzionalità <ph name="FEATURE_NAME" /> non è disponibile.</translation>

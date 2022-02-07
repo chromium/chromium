@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">এই নীতি আশানুরূপ কাজ করছে। আসলে অন্য একটি জায়গাতে একই ধরনের মান সেট করা হয়েছে এবং সেই মানের জায়গাতে এই নীতি প্রয়োগ করা হয়।</translation>
 <translation id="1569487616857761740">মেয়াদ শেষ হওয়ার তারিখ লিখুন</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">কোনও ভার্চুয়াল কার্ডে এনরোল করুন</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">এই ওয়েবপৃষ্ঠাটি দেখানোর সময় কোনো সমস্যা হয়েছে।</translation>
 <translation id="1586541204584340881">কোন কোন এক্সটেনশন আপনি ইনস্টল করেছেন</translation>
@@ -391,7 +390,6 @@
 <translation id="2101225219012730419">ভার্সন:</translation>
 <translation id="2102134110707549001">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন…</translation>
 <translation id="2102495993840063010">Android অ্যাপ্লিকেশানগুলি</translation>
-<translation id="2106249949168291652">সেভ করা হয়েছে। কোনও ভার্চুয়াল কার্ডের মাধ্যমে এটি আরও সুরক্ষিত করতে চান?</translation>
 <translation id="2107021941795971877">প্রিন্ট সংক্রান্ত সহায়তা</translation>
 <translation id="2108755909498034140">আপনার কম্পিউটার পুনরায় চালু করুন</translation>
 <translation id="2111166930115883695">গেম খেলতে, স্পেসবার প্রেস করুন</translation>
@@ -553,7 +551,6 @@
 <translation id="262745152991669301">USB ডিভাইসের সাথে কানেক্ট করতে, অনুমতি চাইতে পারে</translation>
 <translation id="2629325967560697240">Chrome-এ সবচেয়ে বেশি সুরক্ষা পেতে, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />উন্নত সুরক্ষা চালু করুন<ph name="END_ENHANCED_PROTECTION_LINK" />।</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-এর সার্ভার আইপি অ্যাড্রেস পাওয়া যায়নি।</translation>
-<translation id="2638001509205834345">আপনার কার্ড আরও সুরক্ষিত করতে চান?</translation>
 <translation id="2639739919103226564">স্থিতি: </translation>
 <translation id="264810637653812429">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি।</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -687,7 +684,6 @@
 <translation id="3113284927548439113">থার্ড শিফ্ট</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> আপনাকে নিজের ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে।</translation>
 <translation id="3116158981186517402">ল্যামিনেট করুন</translation>
-<translation id="311958134571892113">এর সাথে লিঙ্ক করা হয়েছে</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />সংযোগের ডায়গনিস্টিক্স চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />-এ যান</translation>
@@ -2386,7 +2382,6 @@
 <translation id="8669306706049782872">উইন্ডো খুলে রাখার জন্য আপনার স্ক্রিনের বিষয়ে তথ্য ব্যবহার করুন</translation>
 <translation id="867224526087042813">স্বাক্ষর</translation>
 <translation id="8676424191133491403">কোনও দেরি হয়নি</translation>
-<translation id="8679903780129190080">হ্যাঁ, আমি রাজি</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, উত্তর, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি লোড করা যায়নি কারণ:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

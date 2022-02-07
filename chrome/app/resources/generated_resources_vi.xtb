@@ -1399,7 +1399,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2359345697448000899">Quản lý tiện ích của bạn bằng cách nhấp vào Tiện ích trong menu Công cụ.</translation>
 <translation id="2359556993567737338">Kết nối thiết bị Bluetooth</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
-<translation id="2360625459710946148">Sắp xếp lại theo</translation>
 <translation id="2361100938102002520">Bạn đang thêm một hồ sơ được quản lý vào trình duyệt này. Quản trị viên của bạn có quyền kiểm soát hồ sơ đó và có thể truy cập vào dữ liệu của hồ sơ.</translation>
 <translation id="236117173274098341">Tối ưu hóa</translation>
 <translation id="2361340419970998028">Đang gửi ý kiến phản hồi...</translation>
@@ -6599,6 +6598,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7797246427375693110">Bật / Sẽ tự động tắt lúc <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Đang tắt</translation>
 <translation id="7798844538707273832">Đã tự động chặn <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Đã đặt hình nền thành công</translation>
 <translation id="7799817062559422778">Chế độ sáng</translation>
 <translation id="7800159967992492578">Bật/tắt bảng tìm kiếm bên. Đã kích hoạt bảng tìm kiếm bên.</translation>
@@ -6613,7 +6613,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="781167124805380294">Truyền <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Giúp cải thiện hiệu suất và các tính năng của Chrome và Chrome OS bằng cách tự động gửi báo cáo sự cố cũng như dữ liệu sử dụng và chẩn đoán cho Google. Một số dữ liệu tổng hợp cũng sẽ giúp ích cho ứng dụng Android và đối tác của Google. Nếu bạn bật chế độ Hoạt động trên web và ứng dụng cho Tài khoản Google, thì dữ liệu Android có thể sẽ được lưu vào Tài khoản Google của bạn.</translation>
-<translation id="7814277578404816512">Xem những tính năng mới trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">Sao &amp;chép</translation>
 <translation id="7815680994978050279">Tải xuống nguy hiểm đã chặn</translation>
 <translation id="7817361223956157679">Bàn phím ảo chưa hoạt động trên các ứng dụng Linux</translation>

@@ -223,7 +223,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1567040042588613346">A política está funcionando da maneira esperada, mas o mesmo valor foi definido em outro lugar e foi substituído por esta política.</translation>
 <translation id="1569487616857761740">Informar data de validade</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Inscrever-se em um cartão virtual</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Algo deu errado ao exibir esta página da Web.</translation>
 <translation id="1586541204584340881">quais extensões você instalou;</translation>
@@ -386,7 +385,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2101225219012730419">Versão:</translation>
 <translation id="2102134110707549001">Sugerir senha forte…</translation>
 <translation id="2102495993840063010">Apps Android</translation>
-<translation id="2106249949168291652">Salvo. Aumentar a segurança com um cartão virtual?</translation>
 <translation id="2107021941795971877">Compatibilidades de impressão</translation>
 <translation id="2108755909498034140">Reiniciar seu computador</translation>
 <translation id="2111166930115883695">Pressione a barra de espaço para jogar</translation>
@@ -548,7 +546,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="262745152991669301">Pode pedir para se conectar a dispositivos USB</translation>
 <translation id="2629325967560697240">Para usar o nível mais alto de segurança do Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ative a proteção reforçada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
-<translation id="2638001509205834345">Tornar seu cartão mais seguro?</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="264810637653812429">Nenhum dispositivo compatível encontrado.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -682,7 +679,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3113284927548439113">Terceiro turno</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminar</translation>
-<translation id="311958134571892113">vinculado a</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
@@ -2378,7 +2374,6 @@ Mais detalhes:
 <translation id="8669306706049782872">usar as informações das suas telas para abrir e posicionar janelas.</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8676424191133491403">Sem atraso</translation>
-<translation id="8679903780129190080">Sim, vamos lá</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

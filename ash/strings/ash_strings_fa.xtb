@@ -100,7 +100,6 @@
 <translation id="1479909375538722835">منوی دسترس‌پذیری شناور</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> با <ph name="SECOND_ITEM_TITLE" /> جابه‌جا شد</translation>
-<translation id="1498028757988366001">قبلاً این را جستجو کردید. اگر «<ph name="QUERY" />» را از سابقه‌تان حذف کنید، این پرسمان در همه دستگاه‌ها از حسابتان به‌طور دائم برداشته خواهد شد.</translation>
 <translation id="1503394326855300303">این حساب مالک باید اولین حسابی باشد که در یک جلسه ورود به سیستم چندگانه به سیستم وارد می‌شود.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="1516740043221086139">«مزاحم نشوید» روشن است.</translation>
@@ -113,6 +112,7 @@
 <translation id="1555130319947370107">آبی</translation>
 <translation id="1570871743947603115">روشن/خاموش کردن بلوتوث. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
+<translation id="1610778689852195798">«واگرد»</translation>
 <translation id="1611993646327628135">روشن</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> دستگاه</translation>
@@ -216,7 +216,6 @@
 <translation id="2352467521400612932">تنظیمات قلم</translation>
 <translation id="2354174487190027830">فعال‌سازی <ph name="NAME" /></translation>
 <translation id="2359808026110333948">ادامه</translation>
-<translation id="2360625459710946148">مرتب‌سازی مجدد براساس</translation>
 <translation id="2367186422933365202">‏نمی‌توان به سیستم Chromebook وارد شد</translation>
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
 <translation id="2390318262976603432">تنظیمات منطقه زبانی</translation>
@@ -248,6 +247,7 @@
 <translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
 <translation id="2607678425161541573">ورود به سیستم آنلاین لازم است</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
+<translation id="263399434338050016">«انتخاب همه»</translation>
 <translation id="2653019840645008922">ضبط پنجره</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2658778018866295321">کلیک کنید و بکشید</translation>
@@ -264,6 +264,7 @@
 <translation id="2727175239389218057">پاسخ دادن</translation>
 <translation id="2727977024730340865">باتری به شارژر برق ضعیف متصل است. شارژ باتری ممکن است قابل اطمینان نباشد.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">«حذف»</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">خروج از حالت ضبط</translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
@@ -307,6 +308,7 @@
 <translation id="3038571455154067151">‏برای ورود به سیستم، کد دسترسی ولی Family Link خود را وارد کنید</translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="3045488863354895414">بعدازظهر به‌خیر،</translation>
+<translation id="3047761520276763270">بگویید:</translation>
 <translation id="3051189971848907985">درحال تغییر نام نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="3055162170959710888">امروز از این دستگاه به‌مدت <ph name="USED_TIME" /> استفاده کردید</translation>
 <translation id="3068711042108640621">قفسه در سمت راست است</translation>
@@ -423,6 +425,7 @@
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="3713734891607377840">بعداز تکمیل بارگیری باز می‌شود</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، و <ph name="UNAVAILABLE_APPS_COUNT" /> برنامه دیگر در این دستگاه وجود ندارند.</translation>
+<translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
 <translation id="3771549900096082774">حالت تضاد بالا</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
@@ -481,6 +484,7 @@
 <translation id="4173958948577803258">پنجشنبه</translation>
 <translation id="4177913004758410636">{0,plural, =1{دستگاه را تا یک روز دیگر به‌روزرسانی کنید}one{دستگاه را تا # روز دیگر به‌روزرسانی کنید}other{دستگاه را تا # روز دیگر به‌روزرسانی کنید}}</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
+<translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
 <translation id="4195877955194704651">دکمه کلیک خودکار</translation>
 <translation id="4197790712631116042">خاموش</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> دردسترس نیست.</translation>
@@ -552,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4570957409596482333">دکمه «انتخاب برای شنیدن»</translation>
+<translation id="4573176682887762361">«تایپ [کلمه/ عبارت]»</translation>
 <translation id="4577274620589681794">وقت تمام است · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">نمایش پیش‌نمایش‌ها</translation>
 <translation id="4578196883126898996">میکروفون شما خاموش است، دکمه میکروفون دستگاهتان را روشن کنید.</translation>
@@ -1168,6 +1173,7 @@
 <translation id="8785070478575117577">اتصال به <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">پوشه <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">«راهنمایی»</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">تنظیمات روش‌های ورودی</translation>
 <translation id="8818320199597151042">درحال برداشتن نمایه. چند دقیقه صبر کنید.</translation>

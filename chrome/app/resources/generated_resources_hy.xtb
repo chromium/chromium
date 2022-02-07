@@ -1388,7 +1388,6 @@
 <translation id="2359345697448000899">Կառավարեք ձեր ընդլայնումները` Գործիքների ընտրացանկում սեղմելով Ընդլայնումներ:</translation>
 <translation id="2359556993567737338">Միացնել Bluetooth սարքը</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
-<translation id="2360625459710946148">Վերադասավորել ըստ</translation>
 <translation id="2361100938102002520">Դուք ավելացնում եք կառավարվող պրոֆիլ այս դիտարկիչում։ Ադմինիստրատորը վերահսկում է պրոֆիլը, և նրան հասանելի են դրա տվյալները։</translation>
 <translation id="236117173274098341">Օպտիմալացնել</translation>
 <translation id="2361340419970998028">Կարծիքն ուղարկվում է…</translation>
@@ -6591,6 +6590,7 @@
 <translation id="7797246427375693110">Միացված է / Ավտոմատ կանջատվի <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Անջատ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />՝ ավտոմատ արգելափակվել է</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Պաստառը տեղադրվեց</translation>
 <translation id="7799817062559422778">Բաց ռեժիմ</translation>
 <translation id="7800159967992492578">Ցույց տալ/թաքցնել որոնման կողագոտին։ Որոնման կողագոտին ակտիվացված է։</translation>
@@ -6605,7 +6605,6 @@
 <translation id="7810202088502699111">Ելնող պատուհաններն արգելափակված են այս էջում:</translation>
 <translation id="781167124805380294">Հեռարձակել «<ph name="FILE_NAME" />» ֆայլը</translation>
 <translation id="7811886112806886172">Օգնեք բարելավել Chrome-ի և ChromeOS-ի գործառույթներն ու աշխատանքը՝ Google-ին ավտոմատ կերպով ուղարկելով օգտագործման և դիագնոստիկ տվյալները։ Որոշ ագրեգացված տվյալներ օգտակար կլինեն նաև Android-ի հավելվածների և Google-ի գործընկերների համար։ Եթե Վեբ որոնման և հավելվածների պատմությունը միացված է ձեր Google հաշվում, ապա դրանում կարող են պահվել Android-ի տվյալները։</translation>
-<translation id="7814277578404816512">Ինչ նոր բան կա <ph name="DEVICE_TYPE" />-ում</translation>
 <translation id="7814458197256864873">&amp;Պատճենել</translation>
 <translation id="7815680994978050279">Արգելափակվել է վտանգավոր ներբեռնում</translation>
 <translation id="7817361223956157679">Էկրանի ստեղնաշարն առայժմ չի աշխատում Լինուքսի հավելվածներում</translation>

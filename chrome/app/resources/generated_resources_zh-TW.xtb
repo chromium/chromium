@@ -338,6 +338,7 @@
 <translation id="1340527397989195812">使用「檔案」應用程式備份裝置上的媒體。</translation>
 <translation id="1341988552785875222">目前使用的桌布是由「<ph name="APP_NAME" />」設定。您可能需要先解除安裝「<ph name="APP_NAME" />」，才能選用其他桌布。</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住這部 USB 裝置。</translation>
+<translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
 <translation id="1346630054604077329">確認並重新啟動</translation>
 <translation id="1347256498747320987">安裝更新和應用程式。如果您選擇繼續，即表示您允許這個裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，且下載程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購項目。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux 儲存空間</translation>
@@ -1385,7 +1386,6 @@
 <translation id="2359345697448000899">如要管理擴充功能，只要按一下 [工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="2359556993567737338">連線至藍牙裝置</translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2360625459710946148">重新排序依據</translation>
 <translation id="2361100938102002520">你即將在這個瀏覽器中新增受管理的設定檔。管理員可以控管該設定檔，並存取其中的資料。</translation>
 <translation id="236117173274098341">最佳化</translation>
 <translation id="2361340419970998028">正在傳送意見回饋…</translation>
@@ -5380,6 +5380,7 @@
 <translation id="654871471440386944">要開啟鍵盤瀏覽功能嗎？</translation>
 <translation id="6549038875972762904">重做設定</translation>
 <translation id="6550675742724504774">選項</translation>
+<translation id="65513682072153627">當某項設定或功能是由系統管理員管理時，系統會顯示這個受管理的圖示。</translation>
 <translation id="6551508934388063976">無法使用指令。按下 Ctrl + N 鍵可開啟新視窗。</translation>
 <translation id="6551612971599078809">網站正在使用 USB 裝置</translation>
 <translation id="6551739526055143276">由 Family Link 管理</translation>
@@ -6150,6 +6151,7 @@
 <translation id="7376553024552204454">滑鼠游標移動時醒目顯示</translation>
 <translation id="737728204345822099">安全金鑰可能保留你造訪這個網站的記錄。</translation>
 <translation id="7377451353532943397">繼續禁止存取感應器</translation>
+<translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="7378611153938412599">低強度密碼很容易讓有心人士猜中，請務必建立高強度密碼。<ph name="BEGIN_LINK" />查看更多安全性提示。<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">開啟 Chrome 線上應用程式商店</translation>
 <translation id="7380622428988553498">裝置名稱包含無效字元</translation>
@@ -6584,6 +6586,7 @@
 <translation id="7797246427375693110">開啟/將於<ph name="TIME" /> 自動關閉</translation>
 <translation id="7797571222998226653">關閉</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">已成功設定桌布</translation>
 <translation id="7799817062559422778">淺色模式</translation>
 <translation id="7800159967992492578">切換側邊搜尋面板。側邊搜尋面板已啟用。</translation>
@@ -6598,7 +6601,6 @@
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="781167124805380294">投放 <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">自動將診斷與使用資料傳送給 Google，協助改善 Chrome 和 ChromeOS 的功能與效能。此外，部分匯總資料還能協助 Android 應用程式和 Google 合作夥伴改善產品和服務。Google 帳戶的「網路和應用程式活動」設定為開啟時，系統可能會將 Android 資料儲存到你的 Google 帳戶。</translation>
-<translation id="7814277578404816512">看看 <ph name="DEVICE_TYPE" /> 的新功能</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援螢幕小鍵盤</translation>

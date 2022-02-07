@@ -1389,7 +1389,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2359345697448000899">Ak chcete spravovať rozšírenia, kliknite na možnosť Rozšírenia v ponuke Nástroje.</translation>
 <translation id="2359556993567737338">Pripojiť zariadenie Bluetooth</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
-<translation id="2360625459710946148">Zoradenie podľa</translation>
 <translation id="2361100938102002520">Do tohto prehliadača pridávate spravovaný profil. Ovláda ho správca, ktorý má tiež prístup k jeho údajom.</translation>
 <translation id="236117173274098341">Optimalizovať</translation>
 <translation id="2361340419970998028">Odosiela sa spätná väzba...</translation>
@@ -6592,6 +6591,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7797246427375693110">Zapnuté / vypne sa automaticky o <ph name="TIME" /></translation>
 <translation id="7797571222998226653">vypnuté</translation>
 <translation id="7798844538707273832">Prehliadač automaticky blokuje <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Inteligentná zámka obrazovky</translation>
 <translation id="7799299114731150374">Tapeta bola úspešne nastavená</translation>
 <translation id="7799817062559422778">Svetlý režim</translation>
 <translation id="7800159967992492578">Prepnúť bočné vyhľadávanie Bočné vyhľadávanie bolo aktivované.</translation>
@@ -6606,7 +6606,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7810202088502699111">Na tejto stránke boli zablokované kontextové okná.</translation>
 <translation id="781167124805380294">Prenos súboru <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Pomôžte zlepšovať funkcie a výkonnosť Chromu aj systému Chrome OS automatickým odosielaním diagnostík a údajov o využití do Googlu. Niektoré súhrnné dáta pomôžu aj aplikáciám pre Android a partnerom Googlu. Ak pre svoj účet Google zapnete nastavenie Aktivita na internete a v aplikáciách, údaje Androidu sa môžu ukladať do vášho účtu Google.</translation>
-<translation id="7814277578404816512">Novinky v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Kopírovať</translation>
 <translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7817361223956157679">Klávesnica na obrazovke ešte nie je v systéme Linux funkčná</translation>

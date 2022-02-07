@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">यह नीति उम्मीद के मुताबिक काम कर रही है. हालांकि, किसी दूसरी जगह ऐसा ही मान सेट किया गया है और उसकी जगह इस नीति को लागू कर दिया गया है.</translation>
 <translation id="1569487616857761740">खत्म होने की तारीख डालें</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">वर्चुअल कार्ड के लिए नाम दर्ज करें</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">इस वेबपेज को दिखाने के दौरान कुछ गड़बड़ी हुई है.</translation>
 <translation id="1586541204584340881">आपने कौनसे एक्सटेंशन इंस्टॉल किए हैं</translation>
@@ -391,7 +390,6 @@
 <translation id="2101225219012730419">वर्शन:</translation>
 <translation id="2102134110707549001">मज़बूत पासवर्ड सुझाएं…</translation>
 <translation id="2102495993840063010">Android ऐप्लिकेशन</translation>
-<translation id="2106249949168291652">सेव किया गया. वर्चुअल कार्ड की मदद से इसे और सुरक्षित बनाएं?</translation>
 <translation id="2107021941795971877">प्रिंट सहायता</translation>
 <translation id="2108755909498034140">अपना कंप्यूटर फिर से चालू करें</translation>
 <translation id="2111166930115883695">गेम चलाने के लिए, space दबाएं</translation>
@@ -553,7 +551,6 @@
 <translation id="262745152991669301">साइट, यूएसबी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="2629325967560697240">Chrome की सबसे बेहतर सुरक्षा पाने के लिए, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />बेहतर सुरक्षा की सुविधा चालू करें<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> का सर्वर आईपी पता नहीं मिल सका.</translation>
-<translation id="2638001509205834345">अपने कार्ड को और सुरक्षित बनाएं?</translation>
 <translation id="2639739919103226564">स्थिति:</translation>
 <translation id="264810637653812429">कोई संगत डिवाइस नहीं मिला.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -687,7 +684,6 @@
 <translation id="3113284927548439113">तीसरी शिफ़्ट</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को लौटा दें.</translation>
 <translation id="3116158981186517402">लैमनेट</translation>
-<translation id="311958134571892113">इससे जोड़ा गया</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />कनेक्टिविटी निदान चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> पर जाएं</translation>
@@ -2387,7 +2383,6 @@
 <translation id="8669306706049782872">विंडो खोलने और उन्हें प्लेस करने के लिए, यह साइट आपकी स्क्रीन की जानकारी का इस्तेमाल करेगी</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8676424191133491403">बिना देरी के</translation>
-<translation id="8679903780129190080">हां, मैं सहमत हूं</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> पर वेबपेज को लोड नहीं किया जा सका क्योंकि:</translation>
 <translation id="8685155993131031756">पीआरसी-16के</translation>

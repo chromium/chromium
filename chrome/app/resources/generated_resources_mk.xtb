@@ -1402,7 +1402,6 @@
 <translation id="2359345697448000899">Уредувајте со наставки со кликнување на Наставки во менито Алатки.</translation>
 <translation id="2359556993567737338">Поврзи уред со Bluetooth</translation>
 <translation id="2359808026110333948">Продолжи</translation>
-<translation id="2360625459710946148">Прередил</translation>
 <translation id="2361100938102002520">Додавате управуван профил на прелистувачов. Вашиот администратор го контролира профилот и може да пристапува до неговите податоци.</translation>
 <translation id="236117173274098341">Оптимизирај</translation>
 <translation id="2361340419970998028">Се испраќаат повратни информации…</translation>
@@ -6605,6 +6604,7 @@
 <translation id="7797246427375693110">Вклучена/Ќе се исклучи автоматски во <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Исклучено</translation>
 <translation id="7798844538707273832">Автоматски ја блокираше <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Тапетот е успешно поставен</translation>
 <translation id="7799817062559422778">Светол режим</translation>
 <translation id="7800159967992492578">Вклучете/исклучете го страничното пребарување. Страничното пребарување е активирано.</translation>
@@ -6619,7 +6619,6 @@
 <translation id="7810202088502699111">На оваа страница се блокирани појавни прозорци.</translation>
 <translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Помогнете да се подобрат функциите и изведбата на Chrome и ChromeOS со автоматско испраќање дијагностички податоци и податоци за користењето во Google. Некои збирни податоци ќе им помогнат и на апликациите на Android и на партнерите на Google. Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google, податоците на Android може да ви се зачувуваат во сметката на Google.</translation>
-<translation id="7814277578404816512">Погледнете што има ново на <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Копирај</translation>
 <translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7817361223956157679">Тастатурата на екран сѐ уште не функционира во апликациите на Linux</translation>

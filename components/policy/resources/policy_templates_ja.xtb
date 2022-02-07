@@ -285,9 +285,6 @@
       このポリシーを有効に設定した場合、改善された国際キーボード ショートカットが有効になります。
       未設定の場合、このポリシーは管理対象のデバイスに対して有効になり、ユーザーが所有するデバイスに対しても有効になります。
       なお、これは管理対象のユーザーが、サポートの終了した従来のショートカットを引き続き使用できるようにするための一時的なポリシーです。このポリシーは、キーボード ショートカットのカスタマイズが可能になった時点でサポート終了となります。</translation>
-<translation id="1359553908012294236">このポリシーが true に設定されているか未設定の場合、<ph name="PRODUCT_NAME" /> ではゲストモードでのログインが可能です。ゲストモードでのログインには、すべてのウィンドウをシークレット モードで表示する <ph name="PRODUCT_NAME" /> プロフィールが適用されます。
-
-このポリシーが false に設定されている場合、ゲストモードのプロフィールで <ph name="PRODUCT_NAME" /> を使用することはできません。</translation>
 <translation id="1361661842732478894">ツールバーにホームボタンを表示する</translation>
 <translation id="1363275621236827384">ハードウェア プロファイルを Quirks サーバーに問い合わせられるようにする</translation>
 <translation id="1371626834351873151">ユーザー エージェントの削減をすべてのオリジンで有効にする。</translation>
@@ -859,6 +856,7 @@
 <translation id="199764499252435679"><ph name="PRODUCT_NAME" /> でのコンポーネントの更新を有効にする</translation>
 <translation id="1998504583649140526">プライベート ネットワーク リクエスト設定</translation>
 <translation id="1999000620918508488">ログイン画面でシステム情報を表示または非表示にする。</translation>
+<translation id="1999942889260716089">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> のアドレスバーで検索候補が有効になります。このポリシーを False に設定した場合、検索候補が無効になります。ブックマークや履歴に基づく候補は、このポリシーの影響を受けません。このポリシーを設定した場合、ユーザーはこの設定を変更できません。ポリシーを設定しない場合、検索候補は最初は有効ですが、ユーザーはいつでも無効にできます。</translation>
 <translation id="2000937390924915996">ログイン中に自動ディスク クリーンアップを実行しない</translation>
 <translation id="2001420846508294174">このポリシーでは、<ph name="PRODUCT_NAME" /> のデフォルト プリンタを選択するルールを設定して、デフォルトのルールをオーバーライドできます。プリンタの選択は、ユーザーが初めて印刷しようとしたときに行われます。このとき、<ph name="PRODUCT_NAME" /> では指定された属性に一致するプリンタが検索されます。完全に一致するものがない場合、<ph name="PRODUCT_NAME" /> では検索順で最初に見つかったプリンタが選択されるように設定できます。
 
@@ -1142,13 +1140,6 @@
 <translation id="2290270645214705008">このポリシーを無効に設定した場合、リモート アクセス ホストサービスを開始したり、受信方向の接続を許可するよう設定したりできなくなります。このポリシーは、リモート サポートのシナリオには影響しません。
 
           このポリシーを有効に設定するか、空白または未設定のままにした場合、ポリシーは無視されます。</translation>
-<translation id="2290589982136082117">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可します。
-
-      BrowserAddPersonEnabled、BrowserGuestModeEnabled と同じように、このポリシーを false に設定するか未設定のままにした場合、ユーザーは予備のプロフィールを作成、使用できず、ゲストモードも使用できません。以前に作成した予備のプロフィールがある場合は、使用できなくなります。
-
-      このポリシーを true に設定した場合、ユーザーは予備のプロフィールを作成、使用でき、ゲストモードも使用できます。
-
-      なお、このポリシーを true に設定しても、BrowserAddPersonEnabled が false に設定されている場合、ユーザーは予備のプロフィールを作成できません。BrowserGuestModeEnabled とゲストモードについても同様です。</translation>
 <translation id="229322770310505679">ポリシーの最小単位グループの概念を有効にする</translation>
 <translation id="2293378264822766451">このポリシーを有効にした場合、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> ポリシーと競合した場合に、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> アカウントに関連付けられたポリシーが優先されます。なお、統合できるのはセキュア ユーザーのポリシーのみです。セキュア ユーザーとは、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> を使用してブラウザを管理している組織に所属するユーザーです。他のユーザーレベルのポリシーはすべて、デフォルトの優先順位になります。このポリシーは <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> と組み合わせることができます。両方のポリシーが有効な場合、ユーザーのクラウド ポリシーも、競合するプラットフォーム ポリシーより優先されます。ポリシーを未設定のままにするか無効に設定した場合、ユーザーレベルのクラウド ポリシーがデフォルトの優先順位になります。</translation>
 <translation id="22941467117331786">このポリシーを True に設定した場合、アクティブなセッション中に画面がロックされていなければ、システムトレイに赤い大きなログアウト ボタンが表示されます。このポリシーを False に設定するか未設定のままにした場合、ボタンは表示されません。</translation>
@@ -1203,6 +1194,7 @@
       このポリシーを未設定のままにした場合、サードパーティ Cookie は有効になりますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="2386362615870139244">ウェイクアップ画面のロックを許可する</translation>
 <translation id="238885588439957890">デバイスで交流電流を使用してバッテリーを充電する時間（デバイスのローカル タイムゾーン）です。</translation>
+<translation id="2393862222659066027">URL を開き、最後のセッションを復元する</translation>
 <translation id="2394674739523870144">このポリシーを文字列のリストに設定すると、文字列がスペースで結合され、コマンドライン パラメータとして <ph name="IE_PRODUCT_NAME" /> から <ph name="PRODUCT_NAME" /> に渡されます。パラメータに <ph name="URL_PLACEHOLDER" /> が含まれる場合、<ph name="URL_PLACEHOLDER" /> は開くページの URL に置き換えられます。パラメータに <ph name="URL_PLACEHOLDER" /> が含まれない場合、URL はコマンドラインの末尾に追加されます。
 
       環境変数は展開されます。<ph name="MS_WIN_NAME" /> の場合は <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> が <ph name="ENV_VARIABLE_VALUE" /> 環境変数の値と置き換えられます。このポリシーを未設定のままにした場合、<ph name="IE_PRODUCT_NAME" /> はコマンドライン パラメータとして <ph name="PRODUCT_NAME" /> への URL のみを渡します。
@@ -2049,6 +2041,7 @@
 <translation id="3284094172359247914">WebUSB API の使用を管理する</translation>
 <translation id="3288595667065905535">リリース チャンネル</translation>
 <translation id="3291318845269544294">プロジェクターを有効にする</translation>
+<translation id="3292784416244243447">画面の情報を使ってウィンドウを開いて配置できるサイトをユーザーが選択できるようにする</translation>
 <translation id="3294430356898755483">このポリシーを設定した場合、管理者はユーザー用のプリンタのリストを設定できます。プリンタの選択は、ユーザーが初めて印刷しようとしたときに行われます。
 
       このポリシーの使用方法:
@@ -3303,9 +3296,6 @@
 
       セーフ ブラウジングについて詳しくは、https://developers.google.com/safe-browsing をご覧ください。</translation>
 <translation id="4960597185231686653">画面キーボードで音声入力を有効にするかどうかを示すブール値のフラグです。</translation>
-<translation id="4962262530309732070">このポリシーが true に設定されているか未設定の場合は、<ph name="PRODUCT_NAME" /> のユーザー管理画面で [ユーザーを追加] を使用することができます。
-
-      このポリシーが false に設定されている場合は、<ph name="PRODUCT_NAME" /> のユーザー管理画面で新しいプロフィールを作成することはできません。</translation>
 <translation id="4970046075219007744">File Handling API を通じたファイル形式へのアクセスをユーザーに求めることをウェブアプリに許可する</translation>
 <translation id="4970855112942626932">ブラウザのログインを無効にする</translation>
 <translation id="4976928720873547342">このポリシーを設定した場合、指定したすべてのデータタイプが <ph name="CHROME_SYNC_NAME" /> とローミング プロファイルの同期から除外されます。これにより、ローミング プロファイルのサイズを抑えたり、<ph name="CHROME_SYNC_NAME" /> サーバーにアップロードされるデータのタイプを制限したりできます。
@@ -3756,6 +3746,7 @@
 <translation id="5526184558582921522">Quirks サーバーへのクエリの送信と、必要に応じたハードウェア固有の設定ファイルのダウンロードを許可する</translation>
 <translation id="5526701598901867718">すべて（安全ではありません）</translation>
 <translation id="5534079385061985566">完全復元機能を有効にする</translation>
+<translation id="5535012472025435092">このポリシーを有効にすると、ウィンドウの配置に関する権限がすべてのサイトに自動的に付与されます。これにより、サイトは接続された画面の情報を参照し、それを使用してウィンドウを開いて配置できるようになります。設定しないか無効にした場合、このポリシーはブラウザのデフォルトに従うようになり、この権限をユーザーがサイトごとに選択できるようになります。</translation>
 <translation id="5535256585099022933">再起動の時間間隔を設定する</translation>
 <translation id="5535973522252703021">Kerberos 委任サーバーのホワイトリスト</translation>
 <translation id="553806128266843748">ネットワーク制限を有効にするかどうかを示すブール値のフラグです。</translation>
@@ -3843,6 +3834,7 @@
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
 <translation id="5645779841392247734">これらのサイトの Cookie を許可する</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise コネクタの設定ポリシー</translation>
+<translation id="5647868527087096729">すべてのサイトで画面の情報を使ってウィンドウを開いて配置することを許可する</translation>
 <translation id="5649046890958064703"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLACKLIST" /> が選択されている場合、<ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
 
       このポリシーはサポートが終了しています。代わりに <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> を使用してください。</translation>
@@ -5574,6 +5566,7 @@
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">システム通知の使用を許可する</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> に表示されるアカウントを制限する</translation>
+<translation id="7644125656003029520">すべてのサイトでウィンドウの配置の権限を有効にする</translation>
 <translation id="7648664871086956188">このポリシーは、DataLeakPreventionRulesList ポリシーで定義されたすべてのルールに対する一般的なスイッチです。
       このポリシーを True に設定すると、データ漏洩防止イベントのリアルタイム レポートがオンになります。
       このポリシーを False に設定するか未設定のままにした場合、レポートはオフになります。
@@ -5786,6 +5779,11 @@
 <translation id="7908384265697653397"><ph name="PRODUCT_OS_NAME" /> のバージョンが指定の <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> よりも前の場合に、ユーザーがログアウトされるまでの期間（日）</translation>
 <translation id="7912255076272890813">許可されるアプリ/拡張機能のタイプを設定する</translation>
 <translation id="791267408364877739">危険性のあるコマンドライン フラグが使用されたときにセキュリティ警告を表示する</translation>
+<translation id="79156801312131034">このポリシーでは、起動時のシステムの動作を指定できます。<ph name="PRODUCT_NAME" /> では起動時の動作を指定する必要があるため、この設定をオフにすると未設定の場合と同じ扱いになります。
+
+      このポリシーを設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> でこの設定を変更できません。未設定の場合、ユーザーは起動時の動作を変更できます。
+
+      このポリシーを <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> または <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> に設定すると、セッションに依存する設定や終了時になんらかの処理（終了時の閲覧データ消去、セッション限定の Cookie など）を行う設定が一部無効になります。このポリシーが <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> に設定されている場合、ブラウザは前回のセッションを復元し、<ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> から設定された URL を表示する別のウィンドウを開きます。この URL を閉じずに置いておくと、その後のセッションでも復元されます。<ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこの機能を使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="7922358664346625612">最後のタブを Chrome で開いたままにします。</translation>
 <translation id="7924321157669251966">バッテリーでの使用中の画面の明るさの割合（%）</translation>
 <translation id="7925224837072026018">このポリシーでは、拡張機能または Android アプリに対し、企業キーへのアクセスを許可します。管理対象アカウントで chrome.enterprise.platformKeys API を使用して生成したキーは、企業専用のキーと指定されます。ユーザーは、拡張機能または Android アプリに企業キーへのアクセス権を付与することはできず、拡張機能または Android アプリに付与された企業キーへのアクセス権を取り消すこともできません。

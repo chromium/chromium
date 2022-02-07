@@ -223,7 +223,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1567040042588613346">This policy is working as intended but the same value is set elsewhere and is superseded by this policy.</translation>
 <translation id="1569487616857761740">Enter expiry date</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Enrol in a virtual card</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
 <translation id="1586541204584340881">Which extensions you have installed</translation>
@@ -389,7 +388,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2101225219012730419">Version:</translation>
 <translation id="2102134110707549001">Suggest strong password…</translation>
 <translation id="2102495993840063010">Android apps</translation>
-<translation id="2106249949168291652">Saved. Make it more secure with a virtual card?</translation>
 <translation id="2107021941795971877">Print supports</translation>
 <translation id="2108755909498034140">Restart your computer</translation>
 <translation id="2111166930115883695">Press space to play</translation>
@@ -425,6 +423,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2212735316055980242">Policy not found</translation>
 <translation id="2213606439339815911">Fetching entries...</translation>
+<translation id="2213612003795704869">Page is printed</translation>
 <translation id="2215727959747642672">File editing</translation>
 <translation id="2218879909401188352">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> could install dangerous apps that damage your device, add hidden charges to your mobile bill or steal your personal information. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">No Internet</translation>
@@ -551,7 +550,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="262745152991669301">Can ask to connect to USB devices</translation>
 <translation id="2629325967560697240">To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />’s server IP address could not be found.</translation>
-<translation id="2638001509205834345">Make your card more secure?</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="264810637653812429">No compatible devices found.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -685,7 +683,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3113284927548439113">Third shift</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminate</translation>
-<translation id="311958134571892113">linked with</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Try running Connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Go to <ph name="DOMAIN" /></translation>
@@ -965,6 +962,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3996311196211510766">The site <ph name="ORIGIN" /> has requested that an origin policy will
     apply to all requests to it, but this policy cannot presently be applied.</translation>
+<translation id="4009243425692662128">The content of pages that you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="4010758435855888356">Allow storage access?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF document containing {COUNT} page}other{PDF document containing {COUNT} pages}}</translation>
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
@@ -1059,6 +1057,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4250680216510889253">No</translation>
 <translation id="4253168017788158739">Note</translation>
 <translation id="425582637250725228">Changes that you made may not be saved.</translation>
+<translation id="425869179292622354">Make it more secure with a virtual card?</translation>
 <translation id="4258748452823770588">Bad signature</translation>
 <translation id="4261046003697461417">Protected documents cannot be annotated</translation>
 <translation id="4265872034478892965">Allowed by your administrator</translation>
@@ -1569,6 +1568,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5921639886840618607">Save card to Google Account?</translation>
 <translation id="5922853866070715753">Almost finished</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
+<translation id="5938153366081463283">Add virtual card</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Opening <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Can't enrol with consumer account (packaged licence available).</translation>
@@ -2193,6 +2193,7 @@ Additional details:
 <translation id="7976214039405368314">Too many requests</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Linked with</translation>
 <translation id="798134797138789862">Can ask to use virtual reality devices and data</translation>
 <translation id="7984945080620862648">You cannot visit <ph name="SITE" /> at the moment because the website sent scrambled credentials that Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2385,7 +2386,6 @@ Additional details:
 <translation id="8669306706049782872">Use info about your screens to open and place windows</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8676424191133491403">No delay</translation>
-<translation id="8679903780129190080">Yes, I'm in</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, answer, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">The web page at <ph name="PAGE" /> could not be loaded because:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

@@ -100,7 +100,6 @@
 <translation id="1479909375538722835">फ्लोटिंग अ‍ॅक्सेसिबिलिटी मेनू</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> हा <ph name="SECOND_ITEM_TITLE" /> सोबत स्वॅप केला</translation>
-<translation id="1498028757988366001">तुम्ही यापूर्वी याचा शोध घेतला होता. तुमच्या इतिहासामधून "<ph name="QUERY" />" हटवल्याने ती तुमच्या संपूर्ण डिव्हाइसवरील सर्व खात्यामधून कायमची काढून टाकली जाईल.</translation>
 <translation id="1503394326855300303">हे मालक खाते मल्टिपल साइन-इन सेशनमधील प्रथम साइन-इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1516740043221086139">व्यत्यय आणू नका सुरू आहे.</translation>
@@ -113,6 +112,7 @@
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1570871743947603115">ब्लूटूथ टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
+<translation id="1610778689852195798">"पहिल्यासारखे करा"</translation>
 <translation id="1611993646327628135">सुरू करा</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिव्हाइस</translation>
@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">साहाय्यक (लोड होत आहे...)</translation>
 <translation id="1838895407229022812">रात्रीचा प्रकाश बंद आहे.</translation>
 <translation id="1864454756846565995">USB-C डिव्‍हाइस (मागील बाजूचे पोर्ट)</translation>
+<translation id="1879018240766558464">गुप्त विंडोना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
 <translation id="1882814835921407042">मोबाइल नेटवर्क नाही</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> वर मिरर करत आहे</translation>
 <translation id="1885785240814121742">फिंगरप्रिंटने अनलॉक करा</translation>
@@ -215,7 +216,6 @@
 <translation id="2352467521400612932">स्टायलस सेटिंग्ज</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> सक्रिय करत आहे</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
-<translation id="2360625459710946148">यानुसार पुन्हा क्रमाने लावा</translation>
 <translation id="2367186422933365202">तुमच्या Chromebook मध्ये साइन इन करू शकत नाही</translation>
 <translation id="2369165858548251131">चिनी भाषेत "हॅलो"</translation>
 <translation id="2390318262976603432">लोकॅल सेटिंग्ज</translation>
@@ -247,6 +247,7 @@
 <translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करणे आवश्यक आहे</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
+<translation id="263399434338050016">"सर्व निवडा"</translation>
 <translation id="2653019840645008922">विंडो कॅप्चर</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2658778018866295321">क्लिक आणि ड्रॅग करा</translation>
@@ -263,6 +264,7 @@
 <translation id="2727175239389218057">उत्तर द्या</translation>
 <translation id="2727977024730340865">एका निम्न-उर्जेच्या चार्जरवर प्लग इन केले. बॅटरी चार्जिंग विश्वसनीय असू शकत नाही.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"हटवा"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> हे <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
 <translation id="2782591952652094792">कॅप्चर मोडमधून बाहेर पडा</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -306,6 +308,7 @@
 <translation id="3038571455154067151">साइन इन करण्यासाठी, तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
 <translation id="3039939407102840004">स्टायलसची बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>
 <translation id="3045488863354895414">शुभ दुपार,</translation>
+<translation id="3047761520276763270">हे म्हणून पहा:</translation>
 <translation id="3051189971848907985">प्रोफाइलचे नाव बदलत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="3055162170959710888">तुम्ही हे डिव्हाइस आज <ph name="USED_TIME" /> साठी वापरले</translation>
 <translation id="3068711042108640621">शेल्फ डावीकडे आहे</translation>
@@ -422,6 +425,7 @@
 <translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="3713734891607377840">पूर्ण झाल्यावर उघडा</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> आणि<ph name="UNAVAILABLE_APPS_COUNT" /> ही ॲप्स या डिव्हाइसवर उपलब्ध नाहीत.</translation>
+<translation id="3735740477244556633">यानुसार क्रमाने लावा</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
 <translation id="3771549900096082774">उच्च कॉन्ट्रास्ट मोड</translation>
 <translation id="3773700760453577392">ॲडमिनिस्ट्रेटरने <ph name="USER_EMAIL" /> साठी एकाहून अधिक साइन-इन बंद केले आहे. सुरू ठेवण्यासाठी सर्व वापरकर्त्यांनी साइन आउट करणे आवश्यक आहे.</translation>
@@ -480,6 +484,7 @@
 <translation id="4173958948577803258">गु</translation>
 <translation id="4177913004758410636">{0,plural, =1{डिव्हाइस एका दिवसाच्या आत अपडेट करा}other{डिव्हाइस # दिवसांच्या आत अपडेट करा}}</translation>
 <translation id="4181841719683918333">भाषा</translation>
+<translation id="4195814663415092787">तुम्ही सोडले होते तिथून पुढे सुरू करा</translation>
 <translation id="4195877955194704651">आपोआप क्लिक बटण</translation>
 <translation id="4197790712631116042">बंद</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> उपलब्ध नाही.</translation>
@@ -551,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4570957409596482333">बोलण्यासाठी निवडा बटण</translation>
+<translation id="4573176682887762361">"[शब्द / वाक्य] टाइप करा"</translation>
 <translation id="4577274620589681794">वेळ संपली · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">पूर्वावलोकने दाखवा</translation>
 <translation id="4578196883126898996">तुमचा मायक्रोफोन बंद आहे. तुमच्या डिव्हाइसचे मायक्रोफोन बटण सुरू करा.</translation>
@@ -947,6 +953,7 @@
 <translation id="7366890467478514168"><ph name="NAME" /> कनेक्ट करा</translation>
 <translation id="7371404428569700291">विंडो रेकॉर्ड करा</translation>
 <translation id="7377169924702866686">Caps Lock सुरू आहे.</translation>
+<translation id="7377481913241237033">कोड वापरून कनेक्ट करा</translation>
 <translation id="7378203170292176219">रेकॉर्ड करायचे असलेले भाग निवडण्यासाठी ड्रॅग करा</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
 <translation id="7378889811480108604">बॅटरी सेव्हर मोड बंद आहे</translation>
@@ -974,6 +981,7 @@
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux अ‍ॅप्स आणि गुप्त विंडोना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
 <translation id="7544300628205093162">कीबोर्ड बॅकलाइट सुरू आहे</translation>
 <translation id="7548434653388805669">झोपण्याची वेळ</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
@@ -1165,6 +1173,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> शी कनेक्ट करा</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> फोल्डर</translation>
+<translation id="880709030178078220">"मदत"</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
 <translation id="881757059229893486">इनपुट पद्धती सेटिंग्ज</translation>
 <translation id="8818320199597151042">प्रोफाइल काढून टाकत आहे. काही मिनिटे प्रतीक्षा करा.</translation>

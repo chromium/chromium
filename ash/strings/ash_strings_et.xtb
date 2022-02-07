@@ -100,7 +100,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1479909375538722835">Hõljuv juurdepääsetavuse menüü</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> vahetati üksuse <ph name="SECOND_ITEM_TITLE" /> vastu</translation>
-<translation id="1498028757988366001">Olete seda varem otsinud. Päringu „<ph name="QUERY" />” kustutamisel ajaloost eemaldatakse see teie kontolt jäädavalt kõigis teie seadmetes.</translation>
 <translation id="1503394326855300303">See omaniku konto peab olema esimene sisselogitud konto mitmele kontole sisselogimise seansil.</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
 <translation id="1516740043221086139">Režiim Mitte segada on sees.</translation>
@@ -215,7 +214,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2352467521400612932">Elektronpliiatsi seaded</translation>
 <translation id="2354174487190027830">Võrgu <ph name="NAME" /> aktiveerimine</translation>
 <translation id="2359808026110333948">Jätka</translation>
-<translation id="2360625459710946148">Ümberjärjestamise alus</translation>
 <translation id="2367186422933365202">Teie Chromebooki ei õnnestu sisse logida</translation>
 <translation id="2369165858548251131">„Tere” hiina keeles</translation>
 <translation id="2390318262976603432">Lokaadi seaded</translation>
@@ -422,6 +420,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="371370241367527062">Eesmine mikrofon</translation>
 <translation id="3713734891607377840">Lõpetamisel avatakse</translation>
 <translation id="3726171378575546917">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja veel <ph name="UNAVAILABLE_APPS_COUNT" /> rakendust pole selles seadmes.</translation>
+<translation id="3735740477244556633">Sortimisalus:</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
@@ -481,6 +480,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4173958948577803258">N</translation>
 <translation id="4177913004758410636">{0,plural, =1{Värskendage seadet päeva jooksul}other{Värskendage seadet # päeva jooksul}}</translation>
 <translation id="4181841719683918333">Keeled</translation>
+<translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
 <translation id="4195877955194704651">Nupp Automaatsed klikid</translation>
 <translation id="4197790712631116042">Väljas</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> pole saadaval.</translation>

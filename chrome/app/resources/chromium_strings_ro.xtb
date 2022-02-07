@@ -201,6 +201,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6734291798041940871">Chromium este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
 <translation id="673636774878526923">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="6774082503108938489">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chromium. Activarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
+<translation id="6808964260981102146">Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot aplica acestui cont. Dacă nu vrei ca site-urile sau aplicațiile să îți acceseze informațiile contului, folosește <ph name="LINK_BEGIN" />modul pentru invitați<ph name="LINK_END" /> în browserul Chromium. În plus, îți poți gestiona Conturile Google din <ph name="LINK_2_BEGIN" />Setări<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium te anunță dacă parolele tale sunt compromise</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiat în Chromium)</translation>

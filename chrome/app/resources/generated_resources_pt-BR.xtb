@@ -1402,7 +1402,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2359345697448000899">Gerencie suas extensões clicando em Extensões no menu Ferramentas.</translation>
 <translation id="2359556993567737338">Conectar dispositivo Bluetooth</translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2360625459710946148">Reordenar por</translation>
 <translation id="2361100938102002520">Você está adicionando um perfil gerenciado a este navegador. Seu administrador poderá controlar o perfil e acessar os dados dele.</translation>
 <translation id="236117173274098341">Otimizar</translation>
 <translation id="2361340419970998028">Enviando feedback…</translation>
@@ -6608,6 +6607,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7797246427375693110">Ativado / Será desativado automaticamente às <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Desativado</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> bloqueada automaticamente</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Plano de fundo definido</translation>
 <translation id="7799817062559422778">Modo claro</translation>
 <translation id="7800159967992492578">Ativar ou desativar a pesquisa lateral. Pesquisa lateral ativada.</translation>
@@ -6622,7 +6622,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7810202088502699111">As pop-ups foram bloqueadas nesta página.</translation>
 <translation id="781167124805380294">Transmitir <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Ajude a melhorar os recursos e o desempenho do Chrome e do ChromeOS enviando automaticamente dados de uso e diagnóstico ao Google. Alguns dados agregados também ajudam apps Android e parceiros do Google. Se a configuração "Atividade na Web e de apps" estiver ativada para sua Conta do Google, esses dados do Android vão poder ser salvos na sua Conta do Google.</translation>
-<translation id="7814277578404816512">Veja as novidades do <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">Co&amp;piar</translation>
 <translation id="7815680994978050279">Download perigoso bloqueado</translation>
 <translation id="7817361223956157679">O teclado na tela ainda não funciona com aplicativos do Linux</translation>

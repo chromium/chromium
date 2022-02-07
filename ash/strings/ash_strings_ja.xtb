@@ -100,7 +100,6 @@
 <translation id="1479909375538722835">フローティング ユーザー補助機能メニュー</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />（HDMI / DP）</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> と <ph name="SECOND_ITEM_TITLE" /> が置き換わりました</translation>
-<translation id="1498028757988366001">このキーワードは以前に検索したことがあります。「<ph name="QUERY" />」を履歴から削除すると、アカウントから完全に（つまりすべてのデバイスから）削除されます。</translation>
 <translation id="1503394326855300303">この所有者アカウントは、マルチログイン セッションで最初にログインするアカウントである必要があります。</translation>
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1516740043221086139">サイレント モードはオンです。</translation>
@@ -113,6 +112,7 @@
 <translation id="1555130319947370107">青</translation>
 <translation id="1570871743947603115">Bluetooth を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
+<translation id="1610778689852195798">"元に戻す"</translation>
 <translation id="1611993646327628135">オン</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
@@ -216,7 +216,6 @@
 <translation id="2352467521400612932">タッチペンの設定</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> を有効にしています</translation>
 <translation id="2359808026110333948">続行</translation>
-<translation id="2360625459710946148">並べ替え</translation>
 <translation id="2367186422933365202">Chromebook にログインできません</translation>
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
 <translation id="2390318262976603432">言語 / 地域設定</translation>
@@ -248,6 +247,7 @@
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2607678425161541573">オンライン ログインが必要です</translation>
 <translation id="2621713457727696555">保護あり</translation>
+<translation id="263399434338050016">"すべて選択"</translation>
 <translation id="2653019840645008922">ウィンドウ キャプチャ</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
@@ -264,6 +264,7 @@
 <translation id="2727175239389218057">返信</translation>
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />、<ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"削除"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
@@ -307,6 +308,7 @@
 <translation id="3038571455154067151">ログインするには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
 <translation id="3039939407102840004">タッチペンのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="3045488863354895414">こんにちは</translation>
+<translation id="3047761520276763270">次のように言ってみてください。</translation>
 <translation id="3051189971848907985">プロファイルの名前を変更しています。数分お待ちください。</translation>
 <translation id="3055162170959710888">あなたは今日、このデバイスを <ph name="USED_TIME" />使用しました</translation>
 <translation id="3068711042108640621">シェルフは左側にあります</translation>
@@ -373,7 +375,7 @@
 <translation id="3477079411857374384">Control+Shift+Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">シェルフは自動的に非表示になります</translation>
-<translation id="3509391053705095206">スマートフォンが見つかりません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
+<translation id="3509391053705095206">スマートフォンが見つかりません。スマートフォンの Bluetooth がオンであることを確認してください</translation>
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
 <translation id="3518604429872942239">ステータス トレイ、時間 <ph name="TIME" />、
@@ -423,6 +425,7 @@
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />、<ph name="UNAVAILABLE_APPS_COUNT" /> はこのデバイスにありません。</translation>
+<translation id="3735740477244556633">並べ替え</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> へのマルチログインは、管理者によって禁止されています。続行するには、すべてのユーザーがログアウトする必要があります。</translation>
@@ -481,6 +484,7 @@
 <translation id="4173958948577803258">木</translation>
 <translation id="4177913004758410636">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
 <translation id="4181841719683918333">言語</translation>
+<translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4195877955194704651">自動クリックボタン</translation>
 <translation id="4197790712631116042">オフ</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> は使用できません。</translation>
@@ -552,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4570957409596482333">[選択して読み上げ] ボタン</translation>
+<translation id="4573176682887762361">"[単語 / フレーズ] をタイプ"</translation>
 <translation id="4577274620589681794">時間です · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">プレビューを表示</translation>
 <translation id="4578196883126898996">マイクはオフになっています。デバイスのマイクボタンをオンにしてください。</translation>
@@ -1071,7 +1076,7 @@
 <translation id="8061464966246066292">ハイコントラスト</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> への画面のキャストを停止する</translation>
 <translation id="8113423164597455979">オン: 全アプリ</translation>
-<translation id="8120151603115102514">スマートフォンにロック画面が設定されていません。Chromebook のロックを解除するには、パスワードを入力してください。</translation>
+<translation id="8120151603115102514">スマートフォンにロック画面が設定されていません。パスワードを入力してChromebookのロックを解除してください</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8132487352815776550">字幕を停止</translation>
@@ -1130,7 +1135,7 @@
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
-<translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。Chromebook のロックを解除するには、パスワードを入力してください。</translation>
+<translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>
@@ -1169,6 +1174,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> に接続</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">フォルダ <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"ヘルプ"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">入力方法の設定</translation>
 <translation id="8818320199597151042">プロファイルを削除しています。数分お待ちください。</translation>

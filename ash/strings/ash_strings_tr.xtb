@@ -100,7 +100,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1479909375538722835">Kayan erişilebilirlik menüsü</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" /> ile değiştirildi</translation>
-<translation id="1498028757988366001">Bunu daha önce aradınız. "<ph name="QUERY" />" sorgusunu geçmişinizden sildiğinizde bu sorgu tüm cihazlarınızda hesabınızdan kalıcı olarak kaldırılır.</translation>
 <translation id="1503394326855300303">Bu sahip hesabının bir çoklu oturumda ilk oturum açan hesap olması gerekir.</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1516740043221086139">Rahatsız Etmeyin modu açık.</translation>
@@ -215,7 +214,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2352467521400612932">Ekran kalemi ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> etkinleştiriliyor</translation>
 <translation id="2359808026110333948">Devam et</translation>
-<translation id="2360625459710946148">Yeniden sıralama ölçütü</translation>
 <translation id="2367186422933365202">Chromebook'unuzda oturum açılamıyor</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
 <translation id="2390318262976603432">Yerel Ayarlar</translation>
@@ -422,6 +420,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3713734891607377840">Tamamlandığında aç</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ve <ph name="UNAVAILABLE_APPS_COUNT" /> uygulama daha bu cihazda yok.</translation>
+<translation id="3735740477244556633">Sıralama ölçütü</translation>
 <translation id="3742055079367172538">Ekran görüntüsü alındı</translation>
 <translation id="3771549900096082774">Yüksek Kontrast Modu</translation>
 <translation id="3773700760453577392">Bir yönetici <ph name="USER_EMAIL" /> için çoklu oturum açmayı engellemiş. Tüm kullanıcılar devam etmek için çıkış yapmalıdır.</translation>
@@ -480,6 +479,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4173958948577803258">P</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cihazı bir gün içinde güncelleyin}other{Cihazı # gün içinde güncelleyin}}</translation>
 <translation id="4181841719683918333">Diller</translation>
+<translation id="4195814663415092787">Kaldığım yerden devam et</translation>
 <translation id="4195877955194704651">Otomatik tıklamalar düğmesi</translation>
 <translation id="4197790712631116042">Kapalı</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> kullanılamıyor.</translation>

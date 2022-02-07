@@ -1399,7 +1399,6 @@
 <translation id="2359345697448000899">সঁজুলি মেনুৰ এক্সটেনশ্বনত ক্লিক কৰি আপোনাৰ এক্সটেনশ্বনবোৰ পৰিচালনা কৰক।</translation>
 <translation id="2359556993567737338">ব্লুটুথ ডিভাইচৰ সৈতে সংযোগ কৰক</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
-<translation id="2360625459710946148">এই অনুসৰি পুনৰ সজাওক</translation>
 <translation id="2361100938102002520">আপুনি এই ব্ৰাউজাৰটোত এটা পৰিচালনা কৰা প্ৰ’ফাইল যোগ দি আছে। আপোনাৰ প্ৰশাসকে প্ৰ’ফাইলটো নিয়ন্ত্ৰণ কৰিব পাৰে আৰু ইয়াৰ ডেটা এক্সেছ কৰিব পাৰে।</translation>
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">মতামত পঠিয়াই থকা হৈছে…</translation>
@@ -6599,6 +6598,7 @@
 <translation id="7797246427375693110">অন হৈ আছে/ <ph name="TIME" />ত স্বয়ংক্ৰিয়ভাৱে অফ হ’ব</translation>
 <translation id="7797571222998226653">অফ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">ৱালপেপাৰ সফলতাৰে ছেট কৰা হ’ল</translation>
 <translation id="7799817062559422778">উজ্জ্বল ম’ড</translation>
 <translation id="7800159967992492578">ছাইড ছাৰ্চ ট’গল কৰক। ছাইড ছাৰ্চ সক্ৰিয় কৰা হৈছে।</translation>
@@ -6613,7 +6613,6 @@
 <translation id="7810202088502699111">এই পৃষ্ঠাটোট পপ্-আপ অৱৰোধ কৰা হৈছে।</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> কাষ্ট কৰক</translation>
 <translation id="7811886112806886172">Googleলৈ স্বয়ংক্ৰিয়ভাৱে ডায়েগন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াই Chrome আৰু ChromeOSৰ সুবিধাসমূহ আৰু কাৰ্যক্ষমতা উন্নত কৰাত সহায় কৰক। কিছু একত্ৰিত ডেটায়ো Android এপ্‌ আৰু Googleৰ অংশীদাৰসমূহক সহায় কৰিব। আপোনাৰ Google একাউণ্টৰ বাবে ৱেব আৰু এপৰ কাৰ্যকলাপৰ ছেটিং অন হৈ থাকিলে আপোনাৰ Android ডেটা আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে।</translation>
-<translation id="7814277578404816512">আপোনাৰ <ph name="DEVICE_TYPE" />ত কি নতুন আছে চাওক</translation>
 <translation id="7814458197256864873">&amp;প্ৰতিলিপি কৰক</translation>
 <translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7817361223956157679">অন-স্ক্রীণ কীব’ৰ্ডখনে এতিয়ালৈকে Linux এপত কাম কৰা হোৱা নাই</translation>

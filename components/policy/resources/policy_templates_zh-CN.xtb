@@ -287,9 +287,6 @@
       如果此政策已启用，改进后的国际键盘快捷键会处于启用状态。
       如果未设置，此政策在受管设备上会处于启用状态，在消费者拥有的设备上也会处于启用状态。
       请注意，此政策只是一项临时性政策，旨在让受管用户仍能使用已弃用的旧版快捷键。待自定义键盘快捷键可用后，此政策将被弃用。</translation>
-<translation id="1359553908012294236">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 将允许使用访客身份登录。访客身份是指 <ph name="PRODUCT_NAME" /> 个人资料，使用此类个人资料登录后，所有窗口均处于隐身模式。
-
-      如果此政策设为 false，<ph name="PRODUCT_NAME" /> 将禁止使用访客个人资料登录。</translation>
 <translation id="1361661842732478894">在工具栏上显示首页按钮</translation>
 <translation id="1363275621236827384">允许在 Quirks Server 中查询硬件配置文件</translation>
 <translation id="1371626834351873151">系统将为所有来源启用“用户代理字符串缩短”功能。</translation>
@@ -1163,13 +1160,6 @@
 <translation id="2290270645214705008">如果此政策已停用，系统将无法启动远程访问主机服务，也无法将该服务配置为接受传入连接。此政策不影响远程支持场景。
 
           如果已启用、留空或未设置，此政策将不会产生任何影响。</translation>
-<translation id="2290589982136082117">此设置允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式。
-
-      与 BrowserAddPersonEnabled 和 BrowserGuestModeEnabled 这两项政策类似，如果此政策设为 false 或未设置，用户将无法创建或使用次级个人资料，也无法使用访客模式。以前创建的次级个人资料（若有）将会不可用。
-
-      如果此政策设为 true，用户将能够创建和使用次级个人资料以及使用访客模式。
-
-      请注意，如果此政策设为 true 但 BrowserAddPersonEnabled 设为 false，用户将无法创建次级个人资料。同理，如果此政策设为 true 但 BrowserGuestModeEnabled 设为 false，用户将无法使用访客模式。</translation>
 <translation id="229322770310505679">启用政策原子组的概念</translation>
 <translation id="2293378264822766451">如果此政策已启用，当与 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帐号关联的政策和 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> 政策冲突时，系统会以前者为准。
 
@@ -3378,9 +3368,6 @@
 
       详细了解“安全浏览”功能 (https://developers.google.com/safe-browsing)。</translation>
 <translation id="4960597185231686653">一个布尔值标记，用于表明屏幕键盘能否提供语音输入功能。</translation>
-<translation id="4962262530309732070">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 会允许通过用户管理器添加用户。
-
-      如果此政策设为 false，<ph name="PRODUCT_NAME" /> 会禁止通过用户管理器创建新的个人资料。</translation>
 <translation id="4970046075219007744">允许 Web 应用通过 File Handling API 请求用户授权其访问各类文件</translation>
 <translation id="4970855112942626932">禁止登录浏览器</translation>
 <translation id="4976928720873547342">如果您设置了此政策，系统将会从同步操作（无论是 <ph name="CHROME_SYNC_NAME" />还是漫游个人资料同步）中排除所有指定的数据类型。这有助于缩减漫游个人资料的大小，或者限制向 <ph name="CHROME_SYNC_NAME" />服务器上传的数据类型。

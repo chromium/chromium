@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Interne fout</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">"Dateer fermware op vir eksterne toestelle"-venster is oop. <ph name="NUM_UPDATES" /> opdaterings beskikbaar.</translation>
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwyder</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Kontroleringsportaal vermoed</translation>
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Opdatering is (<ph name="PERCENTAGE_VALUE" />% voltooi)</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beskikbaar nie</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Tuisnetwerk, swerf tans nie</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Aanbiedings</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bestuur hierdie toestel en sal dalk jou aktiwiteit kan monitor.</translation>
 <translation id="1478594628797167447">Skandeerder</translation>
+<translation id="1491076385728777984">Dateer fermware op <ph name="DEVICE_NAME" /> op</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
+<translation id="1565038567006703504">Kan nie <ph name="DEVICE_NAME" /> opdateer nie</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Stel as muurpapier</translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Herlaai die huidige muurpapierprent</translation>
 <translation id="2517472476991765520">Skandeer</translation>
+<translation id="253029298928638905">Herbegin tans …</translation>
 <translation id="2536159006530886390">Kan nie aan die internet koppel nie.</translation>
 <translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
 <translation id="2584559707064218956">Gaan na Instellings om dit op te stel</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
 <translation id="39823212440917567">Druktake ouer as <ph name="NUMBER_OF_DAYS" /> dae sal verwyder word</translation>
+<translation id="3993704782688964914">Jou <ph name="DEVICE_NAME" /> is nou bygewerk</translation>
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
 <translation id="4034824040120875894">Drukker</translation>
 <translation id="4044093238444069296">Kan nie deurgang kontak nie</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">Herbegin tans <ph name="DEVICE_NAME" /></translation>
 <translation id="4418498623216225764">Dateer randtoestelle op</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> is af</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Passing vir onderwerp se alternatiewe naam</translation>
 <translation id="4536864596629708641">IP-opstelling</translation>
 <translation id="4548483925627140043">Kon nie sein kry nie</translation>
+<translation id="4556753742174065117">Alle fermware is bygewerk</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-battery</translation>
 <translation id="4561801978359312462">SIM is ontsluit</translation>
 <translation id="4562494484721939086">Geen diens nie</translation>
@@ -434,6 +442,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Inligting is beskikbaar wat met jou keuse verband hou. Gebruik oppylsleutel om dit te sien.</translation>
 <translation id="6853312040151791195">Ontlaaikoers</translation>
+<translation id="6889786074662672253">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl dit herbegin het. Jy kan hierdie venster klein maak. Dit kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
 <translation id="6905724422583748843">Terug na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Die skandeerder se deksel is oop. Maak die deksel toe en probeer weer.</translation>
 <translation id="6911383237894364323">Kan nie aan mediabedieners koppel nie</translation>

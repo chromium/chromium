@@ -287,9 +287,6 @@
       如果啟用這項政策，系統會啟用經過改善的國際鍵盤快速鍵。
       如果不設定，系統會為受管理的裝置以及消費者擁有的裝置啟用這項政策。
       請注意，這只是一項臨時政策，允許受管理的使用者仍可使用已淘汰的舊版快速鍵。這項政策將在自訂鍵盤快速鍵推出後遭到淘汰。</translation>
-<translation id="1359553908012294236">如果將這項政策設為 True 或未設定，<ph name="PRODUCT_NAME" /> 會啟用訪客登入。訪客登入是 <ph name="PRODUCT_NAME" /> 設定檔，其中的所有視窗都處於無痕模式。
-
-      如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 將會禁止啟動訪客設定檔。</translation>
 <translation id="1361661842732478894">在工具列上顯示首頁按鈕</translation>
 <translation id="1363275621236827384">允許在 Quirks Server 中查詢硬體設定檔</translation>
 <translation id="1371626834351873151">系統將為所有來源啟用使用者代理程式縮減功能。</translation>
@@ -890,6 +887,11 @@
 <translation id="199764499252435679">允許更新 <ph name="PRODUCT_NAME" /> 的元件</translation>
 <translation id="1998504583649140526">私人網路要求設定</translation>
 <translation id="1999000620918508488">強制登入畫面顯示或隱藏系統資訊。</translation>
+<translation id="1999942889260716089">如果將這項政策設為 True，系統會在 <ph name="PRODUCT_NAME" /> 的網址列中啟用搜尋建議功能。如果將這項政策設為 False，系統會停用這類搜尋建議功能。
+
+      根據書籤或歷史記錄顯示的建議內容則不會受到這項政策影響。
+
+      如果你設定這項政策，使用者將無法變更設定。如果未設定，系統會先啟用搜尋建議功能，但使用者隨時可以停用。</translation>
 <translation id="2000937390924915996">不要在登入期間執行自動清理磁碟作業</translation>
 <translation id="2001420846508294174">你可以透過這項政策設定 <ph name="PRODUCT_NAME" /> 預設印表機的選取規則，並覆寫預設的規則。印表機選取作業會在使用者第一次嘗試列印時啟動，過程中 <ph name="PRODUCT_NAME" /> 會搜尋符合指定屬性的印表機。如果找不到完全相符的結果，則可設定 <ph name="PRODUCT_NAME" /> 選取任何部分相符的印表機 (依找到的順序為準)。
 
@@ -1165,15 +1167,6 @@
 <translation id="2290270645214705008">如果將這項政策設為「停用」，將無法開啟遠端存取主機服務，也無法將該服務設為接受外來連線。這項政策不適用於遠端支援情境。
 
           如果設為「啟用」、保留空白或不設定，這項政策就不會生效。</translation>
-<translation id="2290589982136082117">如果啟用這項設定，使用者就能在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，也可以使用訪客模式。
-
-      這項設定類似 BrowserAddPersonEnabled 和 BrowserGuestModeEnabled；如果將這項政策設為 false 或未設定，使用者就無法建立及使用次要設定檔，也無法使用訪客模式。
-
-      如果先前已建立任何次要設定檔，這些次要設定檔將無法使用。
-
-      如果將這項政策設為 true，代表使用者可以建立及使用次要設定檔，也可以使用訪客模式。
-
-      但請注意，如果將這項政策設為 true，但 BrowserAddPersonEnabled 設為 false，使用者便無法建立次要設定檔。這個原則也適用於 BrowserGuestModeEnabled 和訪客模式。</translation>
 <translation id="229322770310505679">啟用不可部分完成的政策群組概念</translation>
 <translation id="2293378264822766451">如果將這項政策設為 Enabled，當與 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帳戶相關聯的政策和 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />政策發生衝突時，前者的優先順序會高於後者。
 
@@ -1242,6 +1235,7 @@
       如果不設定，系統會啟用第三方 Cookie，但使用者可以變更這項設定。</translation>
 <translation id="2386362615870139244">允許使用螢幕喚醒鎖</translation>
 <translation id="238885588439957890">裝置使用交流電源為電池充電的時間 (根據裝置當地時區)。</translation>
+<translation id="2393862222659066027">開啟網址清單並還原前次的工作階段</translation>
 <translation id="2394674739523870144">如果將這項政策設為字串清單，系統會使用空格連接字串，並將字串以指令列參數的形式從 <ph name="IE_PRODUCT_NAME" /> 傳送至 <ph name="PRODUCT_NAME" />。如果有參數包含 <ph name="URL_PLACEHOLDER" />，系統會將 <ph name="URL_PLACEHOLDER" /> 替換成要開啟的網頁網址。如果沒有參數包含 <ph name="URL_PLACEHOLDER" />，則網址會附加在指令列結尾。
 
       系統會展開環境變數。在 <ph name="MS_WIN_NAME" /> 上，系統會將 <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> 替換為 <ph name="ENV_VARIABLE_VALUE" /> 環境變數的值。
@@ -1652,6 +1646,7 @@
 <translation id="285627849510728211">設定日間進階充電模式配置</translation>
 <translation id="2856674246949497058">如果作業系統比目標版本還新，則復原並維持在目標版本，並在作業過程中執行 Powerwash。</translation>
 <translation id="2866619962692161453">中繼政策類型</translation>
+<translation id="2866726566162790531">允許所有 HTTP 驗證機制的來源清單</translation>
 <translation id="2869762730352628426">在登入畫面上啟用自動點擊功能</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2874209944580848064">支援 Android 裝置的 <ph name="PRODUCT_OS_NAME" />裝置注意事項：</translation>
@@ -1680,6 +1675,10 @@
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報 Android 狀態資訊</translation>
 <translation id="288923520817177650">允許建立 <ph name="WEBXR_API_NAME_SHORT" /> 的 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段</translation>
 <translation id="2890645751406497668">自動授予權限給這些網站，以連結至指定廠商和產品 ID 的 USB 裝置。</translation>
+<translation id="2891049933730408118">你可以透過這項政策指定哪些來源允許 <ph name="PRODUCT_NAME" /> 支援的所有 HTTP 驗證機制 (無論 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策設定的值為何)。
+
+      依據 <ph name="URL_SCHEME_FORMAT_LINK" /> 的說明，為來源模式套用適當的格式。<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
+      可將萬用字元用於整個來源或部分來源，包括通訊標準、主機名稱和通訊埠。</translation>
 <translation id="2893546967669465276">將系統記錄傳送到管理伺服器</translation>
 <translation id="2893660462311365527">以毫秒為單位的網路遙測收集率。</translation>
 <translation id="2896434627453256512">設定這項政策可啟用 ghost 視窗功能。
@@ -1738,6 +1737,15 @@
       如果你設定這項政策，使用者將無法變更設定。
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />。</translation>
+<translation id="2948268792364772890">這項政策可讓管理員指定頁面是否能在關閉時傳送同步 XHR 要求。
+
+      如果將這項政策設為啟用，頁面可以在關閉時傳送同步 XHR 要求。
+
+      如果將這項政策設為停用或不予設定，則頁面無法在關閉時傳送同步 XHR 要求。
+
+     這項政策已在 Chrome 99 版中遭到移除。
+
+      詳情請參閱 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="2952347049958405264">限制：</translation>
 <translation id="2957506574938329824">不允許任何網站透過 Web Bluetooth API 要求存取藍牙裝置</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> 驗證模式的帳戶類型</translation>
@@ -2097,6 +2105,7 @@
 <translation id="3284094172359247914">控制 WebUSB API 使用權限</translation>
 <translation id="3288595667065905535">發布頻道</translation>
 <translation id="3291318845269544294">啟用 Projector</translation>
+<translation id="3292784416244243447">允許使用者選擇哪些網站可以使用畫面的相關資訊來開啟及放置視窗</translation>
 <translation id="3294430356898755483">你可以透過這項政策，讓管理員為使用者設定印表機清單。印表機選取作業會在使用者第一次嘗試列印時啟動。
 
       這項政策的用途如下：
@@ -3375,9 +3384,6 @@
 
       如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="4960597185231686653">布林值標記，表示螢幕小鍵盤是否能提供語音輸入功能。</translation>
-<translation id="4962262530309732070">如果將這項政策設為 True 或未設定，<ph name="PRODUCT_NAME" /> 將允許從使用者管理工具新增使用者。
-
-      如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 就無法讓使用者從使用者管理工具建立新設定檔。</translation>
 <translation id="4970046075219007744">允許網頁應用程式要求使用者授予透過 File Handling API 存取特定類型檔案的權限</translation>
 <translation id="4970855112942626932">禁止登入瀏覽器</translation>
 <translation id="4976928720873547342">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 <ph name="CHROME_SYNC_NAME" />和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 <ph name="CHROME_SYNC_NAME" />伺服器的資料類型。
@@ -3860,6 +3866,9 @@
 <translation id="5526184558582921522">允許向 Quirks Server 發送查詢，並有機會下載硬體專屬設定檔</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
 <translation id="5534079385061985566">啟用完整還原功能。</translation>
+<translation id="5535012472025435092">如果啟用這項政策，系統將自動針對所有網站授予視窗放置的權限。
+      這可以讓網站查看和使用已連線畫面的相關資訊來開啟及放置視窗。
+      如果未設定或已停用，這項政策將沿用瀏覽器的預設值，並允許使用者選擇每個網站的這項權限。</translation>
 <translation id="5535256585099022933">設定重新啟動的時間間隔</translation>
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
@@ -3948,6 +3957,7 @@
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="5645779841392247734">允許這些網站的 Cookie</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise Connector 的配置政策</translation>
+<translation id="5647868527087096729">允許所有網站使用畫面的相關資訊來開啟及放置視窗</translation>
 <translation id="5649046890958064703">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLACKLIST" />，系統會根據 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
 
       這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。</translation>
@@ -5719,6 +5729,7 @@
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">允許使用系統通知</translation>
 <translation id="7643883929273267746">限制在 <ph name="PRODUCT_NAME" /> 中顯示的帳戶</translation>
+<translation id="7644125656003029520">在所有網站上啟用視窗放置權限</translation>
 <translation id="7648664871086956188">這項政策可用來開啟或關閉 DataLeakPreventionRulesList 政策中定義的所有規則。
       如果將這項政策設為 True，系統會開啟資料外洩防護事件的即時回報功能；
       如果將這項政策設為 False 或不設定，系統則會關閉回報功能，
@@ -5931,6 +5942,15 @@
 <translation id="7908384265697653397">將使用者登出前的緩衝天數。如果使用者未將 <ph name="PRODUCT_OS_NAME" />版本更新為指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> 版，系統會在設定的天數過後將該使用者登出</translation>
 <translation id="7912255076272890813">設定允許的應用程式/擴充功能類型</translation>
 <translation id="791267408364877739">在使用具有安全疑慮的指令列旗標時，顯示安全性警告。</translation>
+<translation id="79156801312131034">你可以透過這項政策指定系統的啟動行為。關閉這項設定等同於未設定，因為 <ph name="PRODUCT_NAME" /> 必須有指定的啟動行為。
+
+      如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果未設定，使用者可以進行變更。
+
+      如果將這項政策設為 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> 或 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，系統會關閉部分與工作階段相依的設定或在結束時執行動作的設定，例如結束時清除瀏覽資料或僅在工作階段有效的 Cookie。
+
+          如果將這項政策設為 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，瀏覽器將還原至前一個工作階段並開啟獨立視窗，以顯示透過 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 設定的網址。請注意，使用者可選擇讓那些網址保持開啟，這些網址也可以於日後的工作階段中復原。
+
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7922358664346625612">讓 Chrome 中的最後一個分頁保持開啟。</translation>
 <translation id="7924321157669251966">使用電池供電時的螢幕亮度百分比</translation>
 <translation id="7925224837072026018">設定這項政策會將企業金鑰的存取權授予擴充功能或 Android 應用程式。在受管理的帳戶中使用 chrome.enterprise.platformKeys API 產生的金鑰僅供企業使用。使用者無法將企業金鑰的存取權授予擴充功能或 Android 應用程式，也無法撤銷擴充功能或 Android 應用程式對企業金鑰的存取權。

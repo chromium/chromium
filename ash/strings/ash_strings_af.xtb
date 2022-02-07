@@ -100,7 +100,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1479909375538722835">Swewende toeganklikheidkieslys</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> is geruil met <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Jy het voorheen hiervoor gesoek. As jy "<ph name="QUERY" />" in jou geskiedenis uitvee, word dit permanent op al jou toestelle van jou rekening af uitgevee.</translation>
 <translation id="1503394326855300303">Hierdie eienaarrekening moet die eerste rekening wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="1516740043221086139">Moenie Steur Nie is aan.</translation>
@@ -113,6 +112,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1570871743947603115">Wissel Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
+<translation id="1610778689852195798">"Ontdoen"</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> toestelle</translation>
@@ -216,7 +216,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2352467521400612932">Stilusinstellings</translation>
 <translation id="2354174487190027830">Aktiveer tans <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Gaan voort</translation>
-<translation id="2360625459710946148">Herrangskik volgens</translation>
 <translation id="2367186422933365202">Kan nie by jou Chromebook aanmeld nie</translation>
 <translation id="2369165858548251131">"Hallo" in Chinees</translation>
 <translation id="2390318262976603432">Locale-instellings</translation>
@@ -248,6 +247,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2596078834055697711">Neem vensterskermkiekie</translation>
 <translation id="2607678425161541573">Aanlyn aanmelding word vereis</translation>
 <translation id="2621713457727696555">Beveilig</translation>
+<translation id="263399434338050016">"Kies alles"</translation>
 <translation id="2653019840645008922">Vensterskoot</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2658778018866295321">Klik en sleep</translation>
@@ -264,6 +264,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2727175239389218057">Antwoord</translation>
 <translation id="2727977024730340865">By 'n laekrag-laaier ingeprop. Laai van battery is dalk nie betroubaar nie.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Vee uit"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> bestuur deur <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Verlaat vasvangmodus</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -307,6 +308,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3038571455154067151">Voer jou Family Link-ouertoegangskode in om aan te meld</translation>
 <translation id="3039939407102840004">Stilusbattery is op <ph name="PERCENTAGE" /> persent.</translation>
 <translation id="3045488863354895414">Goeiemiddag</translation>
+<translation id="3047761520276763270">Probeer die volgende sê:</translation>
 <translation id="3051189971848907985">Hernoem tans profiel. Wag 'n paar minute.</translation>
 <translation id="3055162170959710888">Jy het hierdie toestel vandag <ph name="USED_TIME" /> lank gebruik</translation>
 <translation id="3068711042108640621">Rak aan linkerkant</translation>
@@ -423,6 +425,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="371370241367527062">Voorste mikrofoon</translation>
 <translation id="3713734891607377840">Maak oop wanneer dit volledig is</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> is nie op hierdie toestel nie.</translation>
+<translation id="3735740477244556633">Rangskik volgens</translation>
 <translation id="3742055079367172538">Skermkiekie geneem</translation>
 <translation id="3771549900096082774">Hoëkontrasmodus</translation>
 <translation id="3773700760453577392">'n Administrateur laat nie veelvuldige aanmeldings deur <ph name="USER_EMAIL" /> toe nie.
@@ -482,6 +485,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4173958948577803258">D</translation>
 <translation id="4177913004758410636">{0,plural, =1{Dateer toestel binne 'n dag op}other{Dateer toestel binne # dae op}}</translation>
 <translation id="4181841719683918333">Tale</translation>
+<translation id="4195814663415092787">Gaan voort waar jy opgehou het</translation>
 <translation id="4195877955194704651">Outomatiese Klikke-knoppie</translation>
 <translation id="4197790712631116042">Af</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is nie beskikbaar nie.</translation>
@@ -553,6 +557,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4570957409596482333">Hardoplees-knoppie</translation>
+<translation id="4573176682887762361">"Tik [woord / frase]"</translation>
 <translation id="4577274620589681794">Tyd is verby · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Wys voorskoue</translation>
 <translation id="4578196883126898996">Jou mikrofoon is af. Skakel jou toestel se mikrofoonknoppie aan.</translation>
@@ -1169,6 +1174,7 @@ Nuwe installasie</translation>
 <translation id="8785070478575117577">Koppel aan <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Vouer <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Help"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Invoermetodesinstellings</translation>
 <translation id="8818320199597151042">Verwyder tans profiel. Wag 'n paar minute.</translation>

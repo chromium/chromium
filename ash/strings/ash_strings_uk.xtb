@@ -100,7 +100,6 @@
 <translation id="1479909375538722835">Плаваюче меню спеціальних можливостей</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Заміна: "<ph name="FIRST_ITEM_TITLE" />" на "<ph name="SECOND_ITEM_TITLE" />"</translation>
-<translation id="1498028757988366001">Ви раніше це шукали. Якщо видалити запит "<ph name="QUERY" />" з історії, він назавжди зникне з вашого облікового запису на всіх пристроях.</translation>
 <translation id="1503394326855300303">Цей обліковий запис власника має бути першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
 <translation id="1516740043221086139">Режим "Не турбувати" ввімкнено.</translation>
@@ -113,6 +112,7 @@
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1570871743947603115">Увімкнути/вимкнути Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
+<translation id="1610778689852195798">"Відмінити"</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">Асистент (завантаження…)</translation>
 <translation id="1838895407229022812">Нічний екран вимкнено.</translation>
 <translation id="1864454756846565995">Пристрій із портом USB типу C (на задній панелі)</translation>
+<translation id="1879018240766558464">Вікна в режимі анонімного перегляду наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="1882814835921407042">Немає мобільних мереж</translation>
 <translation id="1882897271359938046">Дзеркалювання на <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Розблоковуйте відбитком пальця</translation>
@@ -215,7 +216,6 @@
 <translation id="2352467521400612932">Налаштування стилуса</translation>
 <translation id="2354174487190027830">Активація <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продовжити</translation>
-<translation id="2360625459710946148">Упорядкувати</translation>
 <translation id="2367186422933365202">Не вдається ввійти в обліковий запис на Chromebook</translation>
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
 <translation id="2390318262976603432">Налаштування мовного коду</translation>
@@ -247,6 +247,7 @@
 <translation id="2596078834055697711">Зробити знімок екрана вікна</translation>
 <translation id="2607678425161541573">Необхідно ввійти в режимі онлайн</translation>
 <translation id="2621713457727696555">Захищено</translation>
+<translation id="263399434338050016">"Вибрати все"</translation>
 <translation id="2653019840645008922">Зйомка вікна</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2658778018866295321">Натиснути й перетягнути</translation>
@@ -263,6 +264,7 @@
 <translation id="2727175239389218057">Відповісти</translation>
 <translation id="2727977024730340865">Підключено до зарядного пристрою низької потужності. Акумулятор може заряджатися неналежним чином.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Видалити"</translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Вийти з режиму зйомки</translation>
 <translation id="2792498699870441125">Alt+клавіша пошуку</translation>
@@ -306,6 +308,7 @@
 <translation id="3038571455154067151">Щоб увійти, введіть свій батьківський код доступу з Family Link</translation>
 <translation id="3039939407102840004">Заряд акумулятора стилуса у відсотках становить <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Доброго дня!</translation>
+<translation id="3047761520276763270">Спробуйте сказати:</translation>
 <translation id="3051189971848907985">Профіль перейменовується. Зачекайте кілька хвилин.</translation>
 <translation id="3055162170959710888">Сьогодні цей пристрій працював <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Полицю розташовано ліворуч</translation>
@@ -422,6 +425,7 @@
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
 <translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
+<translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
 <translation id="3771549900096082774">Режим високого контрасту</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
@@ -480,6 +484,7 @@
 <translation id="4173958948577803258">Чт</translation>
 <translation id="4177913004758410636">{0,plural, =1{Оновіть пристрій протягом дня}one{Оновіть пристрій протягом # дня}few{Оновіть пристрій протягом # днів}many{Оновіть пристрій протягом # днів}other{Оновіть пристрій протягом # дня}}</translation>
 <translation id="4181841719683918333">Мови</translation>
+<translation id="4195814663415092787">Продовжити з місця зупинки</translation>
 <translation id="4195877955194704651">Кнопка автоматичного натискання</translation>
 <translation id="4197790712631116042">Вимкнено</translation>
 <translation id="4201033867194214117">Функція "<ph name="FEATURE_NAME" />" недоступна.</translation>
@@ -551,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
 <translation id="4570957409596482333">Кнопка "Читання з екрана"</translation>
+<translation id="4573176682887762361">"Написати [слово або фразу]"</translation>
 <translation id="4577274620589681794">Час минув   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Увімкнути попередній перегляд</translation>
 <translation id="4578196883126898996">Мікрофон вимкнено. Увімкніть його відповідною кнопкою на пристрої.</translation>
@@ -947,6 +953,7 @@
 <translation id="7366890467478514168">Підключити пристрій <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Записувати вікно</translation>
 <translation id="7377169924702866686">Клавішу Caps Lock увімкнено.</translation>
+<translation id="7377481913241237033">Підключити за допомогою коду</translation>
 <translation id="7378203170292176219">Потягніть, щоб вибрати область для запису</translation>
 <translation id="7378594059915113390">Елементи керування медіа</translation>
 <translation id="7378889811480108604">Режим енергозбереження вимкнено</translation>
@@ -974,6 +981,7 @@
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7526573455193969409">Мережевий трафік може відстежуватися</translation>
 <translation id="7536035074519304529">ІР-адреса: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Додатки Linux і вікна в режимі анонімного перегляду наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="7544300628205093162">Підсвітку клавіатури ввімкнено</translation>
 <translation id="7548434653388805669">Час спати</translation>
 <translation id="7551643184018910560">Закріпити на панелі запуску</translation>
@@ -1165,6 +1173,7 @@
 <translation id="8785070478575117577">Підключитися: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Довідка"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Налаштування методів введення</translation>
 <translation id="8818320199597151042">Видаляється профіль. Зачекайте кілька хвилин.</translation>

@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1650222530560417226">برای جمع‌آوری گزارش‌ها و خطاهای آتی کنسول جاوا اسکریپت در همه برگه‌ها، روی دکمه «شروع گزارش‌گیری» ضربه بزنید. گزارش‌ها تا زمان بسته شدن این صفحه یا ضربه زدن روی «توقف گزارش‌گیری» جمع‌آوری می‌شود (و فقط در حافظه ذخیره می‌شود).</translation>
+<translation id="1654232554734641711">دسترس به میکروفون مجاز شد</translation>
 <translation id="1657011748321897393">اشتراک‌گذاری انجام نشد چون به شبکه وصل نیستید.</translation>
 <translation id="1657641691196698092">کوکی‌های مسدودشده</translation>
 <translation id="165877110639533037">برگه‌ای باز نیست</translation>
@@ -348,6 +349,7 @@
 <translation id="4181841719683918333">زبان‌ها</translation>
 <translation id="4237377247299956313">روی <ph name="BEGIN_BOLD" />برنامه مرور پیش‌فرض<ph name="END_BOLD" /> ضربه بزنید</translation>
 <translation id="424315890655130736">گذرعبارت را وارد کنید</translation>
+<translation id="4249955472157341256">مرتب‌سازی براساس جدیدترین</translation>
 <translation id="4263576668337963058">نمایش کنش‌های موجود صفحه</translation>
 <translation id="4267380167363222949">برگه بعدی</translation>
 <translation id="4272631900155121838">برای اسکن کردن رمزینه پاسخ‌سریع، دوربین را در تنظیمات فعال کنید</translation>
@@ -396,6 +398,7 @@
 <translation id="4682686630151240767">‏۱. iPhone Settings (تنظیمات iPhone) را باز کنید</translation>
 <translation id="4689564913179979534">مدیریت روش‌های پرداخت…</translation>
 <translation id="470966556546083668">همگام‌سازی روشن نشود</translation>
+<translation id="4731472194328757163">دسترسی به دوربین و میکروفن مجاز شد</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4747097190499141774">‏رمزگذاری گذرعبارت شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود. فقط افرادی که گذرعبارتتان را داشته باشند می‌توانند داده‌های رمزگذاری‌شده‌تان را بخوانند. گذرعبارت به Google ارسال یا در سرورهای آن ذخیره نمی‌شود. اگر گذرعبارتتان را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید همگام‌سازی را بازنشانی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">برگه ناشناس جدید</translation>
@@ -504,6 +507,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="575902488528307720">تصویر را جستجو کنید</translation>
 <translation id="5781453543752460388">‏افزودن به Photos</translation>
 <translation id="5782227691023083829">در حال ترجمه...</translation>
+<translation id="5791632441210678828">دکمه مرتب‌سازی برای جارزن‌هایی که دنبال می‌کنید.</translation>
 <translation id="5802829331520313983">راه‌اندازی…</translation>
 <translation id="5803566855766646066">مطمئنید می‌خواهید از این کارت جدید صرف‌نظر کنید؟</translation>
 <translation id="5804241973901381774">مجوزها</translation>
@@ -547,6 +551,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
 <translation id="6064824697233747382">سازمانتان اجازه نمی‌دهد همگام‌سازی را روشن کنید.</translation>
 <translation id="6066301408025741299">برای لغو ضربه بزنید.</translation>
+<translation id="6077126322656614846">دسترسی به دوربین مجاز شد</translation>
 <translation id="60829778314739003">پذیرش و ادامه</translation>
 <translation id="6084848228346514841">انتخاب برگه‌ها</translation>
 <translation id="6103540626693881831">رمزگذاری درون‌دستگاهی</translation>
@@ -618,6 +623,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6561262006871132942">بزرگ کردن</translation>
 <translation id="6583087784430677195">برای خاموش کردن، <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> را باز کنید و به «تکمیل خودکار گذرواژه‌ها» بروید.</translation>
 <translation id="6585618849026997638">با اضافه کردن نشانک، می‌توانید به صفحه‌ای که برایتان مهم است برگردید</translation>
+<translation id="6598875554591387303">مرتب‌سازی براساس ناشر</translation>
 <translation id="6603393121510733479">سازمانتان مرور خصوصی را خاموش کرده است.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">گزینه‌های ترجمه</translation>

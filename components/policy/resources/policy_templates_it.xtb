@@ -289,9 +289,6 @@
       Se viene attivato, le scorciatoie da tastiera internazionali migliorate vengono abilitate.
       Se non viene configurato, questo criterio viene attivato per i dispositivi gestiti e per i dispositivi di proprietà del consumatore.
       Tieni presente che questo criterio è temporaneo per consentire agli utenti gestiti di poter ancora utilizzare le scorciatoie precedenti deprecate. Verrà ritirato quando le scorciatoie da tastiera personalizzate saranno disponibili.</translation>
-<translation id="1359553908012294236">Se questa norma viene impostata su true o non viene configurata, in <ph name="PRODUCT_NAME" /> verranno attivati gli accessi come ospite, che sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono in modalità di navigazione in incognito.
-
-      Se questa norma viene impostata su false, in <ph name="PRODUCT_NAME" /> non sarà possibile avviare profili ospite.</translation>
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1371626834351873151">La riduzione dello user agent verrà attivata per tutte le origini.</translation>
@@ -1190,13 +1187,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2290270645214705008">Se questo criterio viene impostato su Disattivato, non è possibile avviare o configurare il servizio host di accesso remoto per accettare le connessioni in arrivo.  Questo criterio non influisce sugli scenari di assistenza remota.
 
           Il criterio non ha effetto se viene impostato su Attivato, se viene lasciato vuoto o se non viene configurato.</translation>
-<translation id="2290589982136082117">Questa impostazione consente agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" />.
-
-      In modo simile ai criteri BrowserAddPersonEnabled e BrowserGuestModeEnabled, se questo criterio è impostato su falso o se non è configurato, gli utenti non possono creare e usare profili secondari né utilizzare la modalità ospite. Gli eventuali profili secondari creati in precedenza non sono disponibili.
-
-      Se questo criterio è impostato su vero, l'utente può creare e usare profili secondari e utilizzare la modalità ospite.
-
-      Tieni presente che se questo criterio è impostato su vero, ma il criterio BrowserAddPersonEnabled è impostato su falso, gli utenti non possono creare profili secondari. Lo stesso vale per il criterio BrowserGuestModeEnabled e la modalità ospite.</translation>
 <translation id="229322770310505679">Consenti il concetto di gruppi atomici di criteri</translation>
 <translation id="2293378264822766451">Se il criterio viene impostato su Attivato, i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hanno la precedenza in caso di conflitto con i criteri <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
@@ -3422,9 +3412,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Ulteriori informazioni su Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="4960597185231686653">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di input vocale.</translation>
-<translation id="4962262530309732070">Se questo criterio è impostato su true o non viene configurato, su <ph name="PRODUCT_NAME" /> sarà possibile aggiungere persone con la funzione Aggiungi persona di Gestione utenti.
-
-      Se questo criterio è impostato su false, in <ph name="PRODUCT_NAME" /> non sarà possibile creare nuovi profili da Gestione utenti.</translation>
 <translation id="4970046075219007744">Consenti alle app web di richiedere all'utente l'accesso ai tipi di file tramite l'API File Handling</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
 <translation id="4976928720873547342">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per <ph name="CHROME_SYNC_NAME" /> sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di <ph name="CHROME_SYNC_NAME" />.

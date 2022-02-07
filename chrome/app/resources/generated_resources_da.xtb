@@ -342,6 +342,7 @@
 <translation id="1340527397989195812">Sikkerhedskopiér medier fra enheden ved hjælp af appen Filer.</translation>
 <translation id="1341988552785875222">Den nuværende baggrund er konfigureret af "<ph name="APP_NAME" />". Det kan være nødvendigt at afinstallere "<ph name="APP_NAME" />", inden du vælger en anden baggrund.</translation>
 <translation id="1343865611738742294">Giv Linux-apps adgang til USB-enheder. Linux husker ikke en USB-enhed, når den er fjernet.</translation>
+<translation id="1343920184519992513">Fortsæt, hvor du slap, og åbn en bestemt række sider</translation>
 <translation id="1346630054604077329">Bekræft og genstart</translation>
 <translation id="1347256498747320987">Installer opdateringer og apps. Hvis du fortsætter, accepterer du, at denne enhed også kan downloade og installere opdateringer og apps automatisk fra Google, dit mobilselskab og producenten af din enhed. Dette kan ske ved hjælp af mobildata. Nogle af disse apps tilbyder muligvis køb i appen. <ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-lagerplads</translation>
@@ -1402,7 +1403,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2359345697448000899">Administrer dine udvidelser ved at klikke på Udvidelser i værktøjsmenuen.</translation>
 <translation id="2359556993567737338">Opret forbindelse til Bluetooth-enhed</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
-<translation id="2360625459710946148">Omorganiser efter</translation>
 <translation id="2361100938102002520">Du er ved at føje en administreret profil til denne browser. Din administrator har kontrol over profilen og har adgang til dens data.</translation>
 <translation id="236117173274098341">Optimer</translation>
 <translation id="2361340419970998028">Sender feedback...</translation>
@@ -5401,6 +5401,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="654871471440386944">Vil du aktivere tastenavigation?</translation>
 <translation id="6549038875972762904">Fortryd konfiguration</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
+<translation id="65513682072153627">Du vil se dette ikon for Administreret, når en indstilling eller funktion er administreret af din administrator.</translation>
 <translation id="6551508934388063976">Kommandoen er utilgængelig. Tryk på Ctrl+N for at åbne et nyt vindue.</translation>
 <translation id="6551612971599078809">Websitet anvender en USB-enhed</translation>
 <translation id="6551739526055143276">Administreres af Family Link</translation>
@@ -6604,6 +6605,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7797246427375693110">Aktiveret – deaktiveres automatisk kl. <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Fra</translation>
 <translation id="7798844538707273832">Blokerede automatisk <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Baggrunden blev indstillet</translation>
 <translation id="7799817062559422778">Lys tilstand</translation>
 <translation id="7800159967992492578">Slå sideløbende søgning til/fra. Sideløbende søgning er aktiveret.</translation>
@@ -6618,7 +6620,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
 <translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Vær med til at forbedre funktionerne og ydeevnen i Chrome og Chrome OS ved automatisk at sende diagnostik- og brugsdata til Google. Visse samlede data er også nyttige for Android-apps og Google-partnere. Hvis indstillingen Web- og appaktivitet er aktiveret for din Google-konto, gemmes dine Android-data muligvis på din Google-konto.</translation>
-<translation id="7814277578404816512">Se nyheder på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7817361223956157679">Skærmtastaturet fungerer endnu ikke i Linux-apps</translation>

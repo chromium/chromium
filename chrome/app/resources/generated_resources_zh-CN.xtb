@@ -1383,7 +1383,6 @@
 <translation id="2359345697448000899">您可以通过点击“工具”菜单中的“扩展程序”，管理您的扩展程序。</translation>
 <translation id="2359556993567737338">连接蓝牙设备</translation>
 <translation id="2359808026110333948">继续</translation>
-<translation id="2360625459710946148">重新排序方式</translation>
 <translation id="2361100938102002520">您正要向此浏览器添加一份受管理的个人资料。您的管理员可控制该个人资料，且可访问其中的数据。</translation>
 <translation id="236117173274098341">优化</translation>
 <translation id="2361340419970998028">正在发送反馈…</translation>
@@ -6583,6 +6582,7 @@
 <translation id="7797246427375693110">已开启 / 将在<ph name="TIME" /> 自动关闭</translation>
 <translation id="7797571222998226653">已关闭</translation>
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">已成功设置壁纸</translation>
 <translation id="7799817062559422778">浅色模式</translation>
 <translation id="7800159967992492578">开启/关闭侧边搜索。已启用侧边搜索。</translation>
@@ -6597,7 +6597,6 @@
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="781167124805380294">投射“<ph name="FILE_NAME" />”</translation>
 <translation id="7811886112806886172">自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。部分汇总数据还会对 Android 应用和 Google 合作伙伴有所帮助。如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。</translation>
-<translation id="7814277578404816512">了解 <ph name="DEVICE_TYPE" /> 的新变化</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>

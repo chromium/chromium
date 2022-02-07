@@ -100,7 +100,6 @@
 <translation id="1479909375538722835">Қалқымалы арнайы мүмкіндіктер мәзірі</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> және <ph name="SECOND_ITEM_TITLE" /> өзара ауыстырылды.</translation>
-<translation id="1498028757988366001">Оны бұған дейін іздегенсіз. Тарихтан "<ph name="QUERY" />" сұрауын жойып тастасаңыз, ол барлық құрылғыңыздағы аккаунтыңыздан өшіп қалады.</translation>
 <translation id="1503394326855300303">Бұл иеленуші аккаунтсы көп кіру сеансында алғашқы жүйеге кірген аккаунт болуы керек.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1516740043221086139">Мазаламау режимі қосулы.</translation>
@@ -146,6 +145,7 @@
 <translation id="1836215606488044471">Assistant (жүктелуде...)</translation>
 <translation id="1838895407229022812">"Түнгі жарық" функциясы өшірулі.</translation>
 <translation id="1864454756846565995">USB-C құрылғысы (артқы ұяшық)</translation>
+<translation id="1879018240766558464">Инкогнито терезелеріне қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
 <translation id="1882814835921407042">Мобильдік желі жоқ.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> арқылы экран көшірмесін көрсету</translation>
 <translation id="1885785240814121742">Құлыпты саусақ ізімен ашыңыз</translation>
@@ -215,7 +215,6 @@
 <translation id="2352467521400612932">Стилус параметрлері</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> белсендіру</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
-<translation id="2360625459710946148">Ретті өзгерту шарты</translation>
 <translation id="2367186422933365202">Chromebook құрылғысына кіру мүмкін емес.</translation>
 <translation id="2369165858548251131">Қытай тілінде "Сәлем" қалай болады?</translation>
 <translation id="2390318262976603432">Тіл параметрлері</translation>
@@ -422,6 +421,7 @@
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> және тағы <ph name="UNAVAILABLE_APPS_COUNT" /> қолданба бұл құрылғыда жоқ.</translation>
+<translation id="3735740477244556633">Сұрыптау шарты</translation>
 <translation id="3742055079367172538">Скриншот түсірілді</translation>
 <translation id="3771549900096082774">Жоғары контраст режимі</translation>
 <translation id="3773700760453577392">Әкімшінің шешімі бойынша енді <ph name="USER_EMAIL" /> электрондық поштасына бір уақытта бірнеше пайдаланушы кіре алмайды. Жалғастыру үшін пайдаланушылардың барлығы аккаунттан шығуы керек.</translation>
@@ -480,6 +480,7 @@
 <translation id="4173958948577803258">Б</translation>
 <translation id="4177913004758410636">{0,plural, =1{Құрылғыны бір күнде жаңарту керек}other{Құрылғыны # күнде жаңарту керек}}</translation>
 <translation id="4181841719683918333">Тілдер</translation>
+<translation id="4195814663415092787">Тоқтаған жерден жалғастыру</translation>
 <translation id="4195877955194704651">Автоматты басу түймесі</translation>
 <translation id="4197790712631116042">Өшірулі</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> қолжетімді емес.</translation>
@@ -927,6 +928,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> уақыт ішінде ескі ажыратымдылыққа ауысады</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
+<translation id="718361511487535372">Google Calendar арқылы ашу</translation>
 <translation id="7188494361780961876">Мәзір экранның жоғарғы сол жақ бұрышына жылжытылды.</translation>
 <translation id="7189412385142492784">Шолпан қаншалықты алыс орналасқан?</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңартылған нұсқаны қолдану үшін бұл Chromebook-ті қайта қосу қажет. Оған 1 минуттай кетуі мүмкін.</translation>
@@ -946,6 +948,7 @@
 <translation id="7366890467478514168"><ph name="NAME" /> құрылғысын қосу</translation>
 <translation id="7371404428569700291">Терезені жазу</translation>
 <translation id="7377169924702866686">Caps Lock қосулы.</translation>
+<translation id="7377481913241237033">Код арқылы қосылу</translation>
 <translation id="7378203170292176219">Жазуға керек аймақты таңдау үшін сүйреңіз.</translation>
 <translation id="7378594059915113390">Медианы басқару элементтері</translation>
 <translation id="7378889811480108604">Батареяны үнемдеу режимі өшірулі.</translation>
@@ -973,6 +976,7 @@
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux қолданбалары мен инкогнито терезелеріне қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
 <translation id="7544300628205093162">Пернетақта жарығы қосулы</translation>
 <translation id="7548434653388805669">Ұйықтайтын уақыт болды</translation>
 <translation id="7551643184018910560">Сөреге бекіту</translation>

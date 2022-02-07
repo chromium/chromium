@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">Гэта палітыка працуе належным чынам, але замяняе аднолькавае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="1569487616857761740">Увядзіце тэрмін дзеяння</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Зарэгіструйце віртуальную картку</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Падчас паказу вэб-старонкі нешта пайшло не так.</translation>
 <translation id="1586541204584340881">Якія пашырэнні вы ўсталявалі.</translation>
@@ -390,7 +389,6 @@
 <translation id="2101225219012730419">Версія:</translation>
 <translation id="2102134110707549001">Прапанаваць надзейны пароль…</translation>
 <translation id="2102495993840063010">Праграмы для Android</translation>
-<translation id="2106249949168291652">Картка захавана. Абараніць яе, выкарыстоўваючы віртуальную картку?</translation>
 <translation id="2107021941795971877">Апоры прынтара</translation>
 <translation id="2108755909498034140">Перазапусціце камп'ютар.</translation>
 <translation id="2111166930115883695">Каб пачаць гульню, націсніце прабел</translation>
@@ -552,7 +550,6 @@
 <translation id="262745152991669301">Сайт можа запытваць дазвол на падключэнне да прылад USB</translation>
 <translation id="2629325967560697240">Каб у браўзеры Chrome падтрымліваўся найвышэйшы ўзровень бяспекі, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />уключыце палепшаную абарону<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">IP-адрас сервера хоста <ph name="HOST_NAME" /> не знойдзены.</translation>
-<translation id="2638001509205834345">Хочаце, каб ваша картка была абаронена лепш?</translation>
 <translation id="2639739919103226564">Стан:</translation>
 <translation id="264810637653812429">Сумяшчальныя прылады не знойдзены.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@
 <translation id="3113284927548439113">Трэцяя змена</translation>
 <translation id="3115874930288085374">Вы выкарыстоўваеце дамен "<ph name="ENROLLMENT_DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламінацыя</translation>
-<translation id="311958134571892113">картка звязана з наступнай карткай:</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Перайсці на <ph name="DOMAIN" /></translation>
@@ -2386,7 +2382,6 @@
 <translation id="8669306706049782872">Выкарыстоўваць звесткі пра экраны, каб адкрываць і размяшчаць вокны.</translation>
 <translation id="867224526087042813">Подпіс</translation>
 <translation id="8676424191133491403">Без затрымкі</translation>
-<translation id="8679903780129190080">Так, я згаджаюся</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, адказ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Немагчыма загрузіць вэб-старонку па адрасе <ph name="PAGE" />, бо:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે પરંતુ સમાન મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેની જગ્યા લે છે.</translation>
 <translation id="1569487616857761740">સમાપ્તિ તારીખ દાખલ કરો</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">કોઈ વર્ચ્યુઅલ કાર્ડ માટે નોંધણી કરાવો</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">આ વેબપેજ બતાવતી વખતે કંઈક ખોટું થયું.</translation>
 <translation id="1586541204584340881">તમે કયા એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે</translation>
@@ -390,7 +389,6 @@
 <translation id="2101225219012730419">વર્ઝન:</translation>
 <translation id="2102134110707549001">સશક્ત પાસવર્ડ સૂચવો…</translation>
 <translation id="2102495993840063010">Android ઍપ્લિકેશનો</translation>
-<translation id="2106249949168291652">સાચવ્યું. શું કોઈ વર્ચ્યુઅલ કાર્ડ વડે તેને વધુ સુરક્ષિત કરવા માગો છો?</translation>
 <translation id="2107021941795971877">પ્રિન્ટ માટેના સપોર્ટ</translation>
 <translation id="2108755909498034140">તમારું કમ્પ્યુટર પુનઃપ્રારંભ કરો</translation>
 <translation id="2111166930115883695">રમવા માટે સ્પેસબાર દબાવો</translation>
@@ -552,7 +550,6 @@
 <translation id="262745152991669301">USB ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="2629325967560697240">Chromeની સૌથી ઉચ્ચ લેવલની સુરક્ષા મેળવવા માટે, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />વધારેલી સુરક્ષા ચાલુ કરો<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />નું સર્વર IP ઍડ્રેસ ન મળ્યું.</translation>
-<translation id="2638001509205834345">શું તમારું કાર્ડ વધુ સુરક્ષિત કરવું છે?</translation>
 <translation id="2639739919103226564">સ્થિતિ:</translation>
 <translation id="264810637653812429">કોઈ સુસંગત ઉપકરણો મળ્યાં નથી.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@
 <translation id="3113284927548439113">ત્રીજી પાળી</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> પરત કરો.</translation>
 <translation id="3116158981186517402">લૅમિનેટ કરો</translation>
-<translation id="311958134571892113">આની સાથે લિંક કર્યું</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />કનેક્ટિવિટી ડાયગ્નોસ્ટિક્સ ચલાવવાનો પ્રયાસ કરો<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> પર જાઓ</translation>
@@ -2386,7 +2382,6 @@
 <translation id="8669306706049782872">વિન્ડો ખોલવા અને મૂકવા માટે, તમારી સ્ક્રીન વિશેની માહિતીનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="867224526087042813">સહી</translation>
 <translation id="8676424191133491403">કોઈ વિલંબ વિના</translation>
-<translation id="8679903780129190080">હા, હું સંમત છું</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, જવાબ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> પરનું વેબપેજ લોડ કરી શકાયું નથી કારણ કે:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

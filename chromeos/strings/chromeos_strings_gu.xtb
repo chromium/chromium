@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">બાહ્ય ડિવાઇસનું ફર્મવેયર અપડેટ કરવા માટેની વિન્ડો ખુલ્લી છે. <ph name="NUM_UPDATES" /> અપડેટ ઉપલબ્ધ છે.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે.</translation>
 <translation id="1175951029573070619">સરેરાશ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">શંકાસ્પદ કૅપ્ટિવ પોર્ટલ</translation>
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">અપડેટ કરી રહ્યાં છીએ (<ph name="PERCENTAGE_VALUE" />% પૂર્ણ)</translation>
 <translation id="1310380015393971138">કોઈ <ph name="NETWORK_NAME" /> નેટવર્ક ઉપલબ્ધ નથી</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">હોમ નેટવર્ક, રોમિંગ નહીં</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">ઑફરો</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને કદાચ તમારી પ્રવૃત્તિનું નિરીક્ષણ કરી શકે છે.</translation>
 <translation id="1478594628797167447">સ્કૅનર</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> માટે ફર્મવેયર અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> આ વપરાશકર્તાને મેનેજ કરે છે તથા સેટિંગ અને વપરાશકર્તાની પ્રવૃત્તિને દૂરથી મેનેજ અને તેનું નિરીક્ષણ કરે એવું બની શકે.</translation>
 <translation id="150962533380566081">અમાન્ય PUK.</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1565038567006703504"><ph name="DEVICE_NAME" /> અપડેટ કરી શકાતું નથી</translation>
 <translation id="1567064801249837505">આલ્બમ</translation>
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">હાલની વૉલપેપર છબી રિફ્રેશ કરો</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
+<translation id="253029298928638905">ફરી શરૂ કરી રહ્યાં છીએ…</translation>
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
+<translation id="3993704782688964914">તમારું <ph name="DEVICE_NAME" /> હવે અપ ટૂ ડેટ છે</translation>
 <translation id="4003384961948020559">નિષ્ફળ થયું - પ્રિન્ટરનું આઉટપુટ ભરાઈ ગયું છે</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
 <translation id="4044093238444069296">ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">ચલાવ્યું નથી</translation>
 <translation id="4378551569595875038">કનેક્ટિંગ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> ફરી શરૂ કરી રહ્યાં છીએ</translation>
 <translation id="4418498623216225764">પેરિફેરલ અપડેટ કરો</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> બંધ છે</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">વિષયના નામનો વૈકલ્પિક મેળ</translation>
 <translation id="4536864596629708641">IP કન્ફિગ્યુરેશન</translation>
 <translation id="4548483925627140043">નેટવર્કનું કોઈ સિગ્નલ મળી રહ્યું નથી</translation>
+<translation id="4556753742174065117">તમામ ફર્મવેયર અપ ટૂ ડેટ છે</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh બૅટરી</translation>
 <translation id="4561801978359312462">સિમ કાર્ડ અનલૉક છે</translation>
 <translation id="4562494484721939086">કોઈ સેવા નથી</translation>
@@ -352,6 +360,7 @@
 <translation id="5691511426247308406">કુટુંબ</translation>
 <translation id="5701381305118179107">મધ્યમાં</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" /></translation>
+<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> અપડેટ કરો</translation>
 <translation id="5760715441271661976">પોર્ટલની સ્થિતિ</translation>
 <translation id="5784136236926853061">HTTPની ઉચ્ચ વિલંબતા</translation>
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
@@ -432,6 +441,7 @@
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
+<translation id="6889786074662672253">ફરી શરૂ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> પર પાછા જાઓ</translation>
 <translation id="6910312834584889076">સ્કૅનરનું કવર ખુલ્લું છે. કવર બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6911383237894364323">મીડિયા સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>

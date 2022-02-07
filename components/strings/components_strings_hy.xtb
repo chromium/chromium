@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն միևնույն արժեքը սահմանված է այլ տեղում և փոխարինվում է կանոնի կողմից։</translation>
 <translation id="1569487616857761740">Մուտքագրեք գործողության ժամկետը</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Գրանցեք վիրտուալ քարտ</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Չհաջողվեց բացել վեբէջը:</translation>
 <translation id="1586541204584340881">Ինչ ընդլայնումներ եք դուք տեղադրել</translation>
@@ -390,7 +389,6 @@
 <translation id="2101225219012730419">Տարբերակ՝</translation>
 <translation id="2102134110707549001">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="2102495993840063010">Android հավելվածներ</translation>
-<translation id="2106249949168291652">Պահված է։ Ուզո՞ւմ եք, որ այն ավելի ապահով լինի վիրտուալ քարտի շնորհիվ։</translation>
 <translation id="2107021941795971877">Տպման աջակցում</translation>
 <translation id="2108755909498034140">Վերագործարկեք համակարգիչը</translation>
 <translation id="2111166930115883695">Նվագարկելու հաար սեղմեք բացատի ստեղնը</translation>
@@ -552,7 +550,6 @@
 <translation id="262745152991669301">Կարող է հայցել USB սարքերին միանալու թույլտվություն</translation>
 <translation id="2629325967560697240">Chrome-ի լավագույն պաշտպանության համակարգերն օգտագործելու համար <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />միացրեք լրացուցիչ պաշտպանությունը<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Չհաջողվեց գտնել <ph name="HOST_NAME" /> տիրույթի սերվերի IP հասցեն։</translation>
-<translation id="2638001509205834345">Ուզո՞ւմ եք, որ ձեր քարտն ավելի ապահով լինի</translation>
 <translation id="2639739919103226564">Կարգավիճակ`</translation>
 <translation id="264810637653812429">Համատեղելի սարքեր չեն գտնվել:</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@
 <translation id="3113284927548439113">Մինչև երրորդ հերթափոխը</translation>
 <translation id="3115874930288085374">Տիրույթի (<ph name="ENROLLMENT_DOMAIN" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="3116158981186517402">Լամինացիա</translation>
-<translation id="311958134571892113">կապված է հետևյալ քարտի հետ՝</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Գործարկեք կապակցման ախտորոշումը<ph name="END_LINK" />:</translation>
 <translation id="3121994479408824897">Անցնել <ph name="DOMAIN" /></translation>
@@ -2387,7 +2383,6 @@
 <translation id="8669306706049782872">Օգտագործել ձեր էկրանների մասին տեղեկությունները՝ պատուհաններ բացելու և տեղակայելու նպատակով</translation>
 <translation id="867224526087042813">Ստորագրություն</translation>
 <translation id="8676424191133491403">Առանց հետաձգման</translation>
-<translation id="8679903780129190080">Ընդունել</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, պատասխան, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ի կայքէջը չհաջողվեց բեռնել, քանի որ՝</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

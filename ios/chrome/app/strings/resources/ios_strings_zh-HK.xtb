@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">相機</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1650222530560417226">輕按 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
+<translation id="1654232554734641711">已允許存取麥克風</translation>
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
 <translation id="1657641691196698092">已封鎖的 Cookie</translation>
 <translation id="165877110639533037">沒有開啟的分頁</translation>
@@ -396,6 +397,7 @@
 <translation id="4682686630151240767">1. 開啟 iPhone 的「設定」</translation>
 <translation id="4689564913179979534">管理付款方法…</translation>
 <translation id="470966556546083668">不要開啟同步功能</translation>
+<translation id="4731472194328757163">已允許存取相機和麥克風</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
@@ -547,6 +549,7 @@
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
 <translation id="6064824697233747382">您的機構要求您關閉同步功能。</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
+<translation id="6077126322656614846">已允許存取相機</translation>
 <translation id="60829778314739003">接受並繼續</translation>
 <translation id="6084848228346514841">選取分頁</translation>
 <translation id="6103540626693881831">裝置內置加密</translation>

@@ -99,7 +99,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1479909375538722835">Kelluva esteettömyysvalikko</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> vaihdettiin: <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Hait tätä aiemmin. Jos <ph name="QUERY" /> poistetaan historiastasi, se poistetaan pysyvästi tililtäsi kaikilla laitteillasi.</translation>
 <translation id="1503394326855300303">Tämän omistajatilin täytyy olla ensimmäinen sisään kirjautuva tili useiden tilien istunnossa.</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="1516740043221086139">Älä häiritse ‑tila on päällä.</translation>
@@ -112,6 +111,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="1570871743947603115">Laita Bluetooth päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>
+<translation id="1610778689852195798">"Kumoa"</translation>
 <translation id="1611993646327628135">Päällä</translation>
 <translation id="1632985212731562677">Kytkimen käytön voi laittaa pois päältä kohdassa Asetukset &gt; Esteettömyys.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> laitetta</translation>
@@ -214,7 +214,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2352467521400612932">Näyttökynäasetukset</translation>
 <translation id="2354174487190027830">Aktivoidaan <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
-<translation id="2360625459710946148">Järjestä uudelleen:</translation>
 <translation id="2367186422933365202">Chromebookiin kirjautuminen ei onnistu</translation>
 <translation id="2369165858548251131">"Hei" kiinaksi</translation>
 <translation id="2390318262976603432">Kieli- ja maa-asetukset</translation>
@@ -246,6 +245,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2596078834055697711">Ota kuvakaappaus</translation>
 <translation id="2607678425161541573">Edellyttää kirjautumista verkossa</translation>
 <translation id="2621713457727696555">Suojattu</translation>
+<translation id="263399434338050016">"Valitse kaikki"</translation>
 <translation id="2653019840645008922">Ikkunan tallennus</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2658778018866295321">Klikkaa ja vedä</translation>
@@ -262,6 +262,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Poista"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sulje tallennustila</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
@@ -305,6 +306,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3038571455154067151">Voit kirjautua sisään vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="3039939407102840004">Näyttökynän akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
 <translation id="3045488863354895414">Hyvää päivää</translation>
+<translation id="3047761520276763270">Kokeile sanoa:</translation>
 <translation id="3051189971848907985">Nimetään profiilia uudelleen. Odota muutama minuutti.</translation>
 <translation id="3055162170959710888">Olet käyttänyt tätä laitetta tänään <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Hylly vasemmalla</translation>
@@ -421,6 +423,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="371370241367527062">Etumikrofoni</translation>
 <translation id="3713734891607377840">Avaa kun valmis</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja <ph name="UNAVAILABLE_APPS_COUNT" /> muuta puuttuvat laitteelta.</translation>
+<translation id="3735740477244556633">Lajitteluperuste</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
 <translation id="3771549900096082774">Suuri kontrasti ‑tila</translation>
 <translation id="3773700760453577392">Järjestelmänvalvoja on estänyt käyttäjää <ph name="USER_EMAIL" /> kirjautumasta sisään useille tileille. Kaikkien käyttäjien on kirjauduttava ulos jatkaakseen käyttöä.</translation>
@@ -479,6 +482,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4173958948577803258">To</translation>
 <translation id="4177913004758410636">{0,plural, =1{Päivitä laite vuorokauden kuluessa}other{Päivitä laite # vuorokauden kuluessa}}</translation>
 <translation id="4181841719683918333">Kielet</translation>
+<translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
 <translation id="4195877955194704651">Automaattinen klikkaus ‑painike</translation>
 <translation id="4197790712631116042">Poissa päältä</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ei ole käytettävissä.</translation>
@@ -550,6 +554,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4570957409596482333">Teksti puhuttuna ‑painike</translation>
+<translation id="4573176682887762361">"Kirjoita [sana tai lause]"</translation>
 <translation id="4577274620589681794">Aika loppui · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Näytä esikatselut</translation>
 <translation id="4578196883126898996">Mikrofoni ei ole päällä. Laita päälle laitteen mikrofonipainike.</translation>
@@ -1164,6 +1169,7 @@ Uusi asennus</translation>
 <translation id="8785070478575117577">Yhdistä: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Kansio <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Ohje"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Syöttötapojen asetukset</translation>
 <translation id="8818320199597151042">Poistetaan profiilia. Odota muutama minuutti.</translation>

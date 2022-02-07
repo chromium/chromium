@@ -100,7 +100,6 @@
 <translation id="1479909375538722835">Калкыма атайын мүмкүнчүлүктөр менюсу</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> <ph name="SECOND_ITEM_TITLE" /> менен алмаштырылды</translation>
-<translation id="1498028757988366001">Муну буга чейин издегенсиз. "<ph name="QUERY" />" таржымалыңыздан өчүрүлсө, ал бардык түзмөктөрүңүздөгү аккаунтуңуздан биротоло өчүрүлөт.</translation>
 <translation id="1503394326855300303">Бир нече профилге кирүү сеансында ушул негизги каттоо эсеби биринчи кириши керек.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1516740043221086139">"Тынчымды алба" режими күйүк.</translation>
@@ -113,6 +112,7 @@
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1570871743947603115">Bluetooth'ду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Бул сеанста аткарган иш-аракеттериңизди көрөт</translation>
+<translation id="1610778689852195798">"Кайтаруу"</translation>
 <translation id="1611993646327628135">Күйүк</translation>
 <translation id="1632985212731562677">Switch Access функциясын Жөндөөлөр &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
@@ -216,7 +216,6 @@
 <translation id="2352467521400612932">Стилус жөндөөлөрү</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> жандыруу</translation>
 <translation id="2359808026110333948">Улантуу</translation>
-<translation id="2360625459710946148">Төмөнкү боюнча иреттөө:</translation>
 <translation id="2367186422933365202">Chromebook'ка кирген жоксуз</translation>
 <translation id="2369165858548251131">Кытайча "Салам"</translation>
 <translation id="2390318262976603432">Тил жөндөөлөрү</translation>
@@ -248,6 +247,7 @@
 <translation id="2596078834055697711">Терезенин скриншотун тартып алуу</translation>
 <translation id="2607678425161541573">Онлайн аккаунтка кирүү талап кылынат</translation>
 <translation id="2621713457727696555">Корголгон</translation>
+<translation id="263399434338050016">"Баарын тандоо"</translation>
 <translation id="2653019840645008922">Терезени сүрөткө тартып алуу</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2658778018866295321">Чыкылдатып, сүйрөө</translation>
@@ -264,6 +264,7 @@
 <translation id="2727175239389218057">Жооп берүү</translation>
 <translation id="2727977024730340865">Кубаттуулугу төмөн кубаттагычка сайылды. Батареяны кубаттоо аракети ишенимдүү эмес.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Өчүрүү"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
 <translation id="2782591952652094792">Сүрөткө тартуу режиминен чыгуу</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
@@ -307,6 +308,7 @@
 <translation id="3038571455154067151">Кирүү үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
 <translation id="3039939407102840004">Стилус батареясынын кубаты <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="3045488863354895414">Кутман күнүңүз менен,</translation>
+<translation id="3047761520276763270">Мындай деп көрүңүз:</translation>
 <translation id="3051189971848907985">Профилдин аталышы өзгөрүүдө. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="3055162170959710888">Бүгүн бул түзмөктү <ph name="USED_TIME" /> колдондуңуз</translation>
 <translation id="3068711042108640621">Текче экрандын сол жагында</translation>
@@ -423,6 +425,7 @@
 <translation id="371370241367527062">Маңдайкы микрофон</translation>
 <translation id="3713734891607377840">Жүктөлүп бүткөндөн кийин ачылсын</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> жана дагы<ph name="UNAVAILABLE_APPS_COUNT" /> колдонмо бул түзмөктө жок.</translation>
+<translation id="3735740477244556633">Төмөнкү боюнча иргөө</translation>
 <translation id="3742055079367172538">Скриншот тартылды</translation>
 <translation id="3771549900096082774">Жогорку контраст режими</translation>
 <translation id="3773700760453577392">Администратор <ph name="USER_EMAIL" /> дарегине бир убакта бир нече колдонуучуга кирүүгө тыюу салды. Улантуу үчүн бардык колдонуучулар чыгышы керек.</translation>
@@ -481,6 +484,7 @@
 <translation id="4173958948577803258">Ше</translation>
 <translation id="4177913004758410636">{0,plural, =1{Түзмөктү бир күндүн ичинде жаңыртыңыз}other{Түзмөктү # күндүн ичинде жаңыртыңыз}}</translation>
 <translation id="4181841719683918333">Тилдер</translation>
+<translation id="4195814663415092787">Чыгып кеткен жерден улантыңыз</translation>
 <translation id="4195877955194704651">Автоматтык чыкылдатуу баскычы</translation>
 <translation id="4197790712631116042">Өчүк</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> жеткиликтүү эмес.</translation>
@@ -552,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Сырсөздү жашыруу</translation>
 <translation id="4570957409596482333">Басып туруп угуу баскычы</translation>
+<translation id="4573176682887762361">"[Сөз / сөз айкашын] терүү"</translation>
 <translation id="4577274620589681794">Убакыт бүттү · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көрүүнү жашыруу</translation>
 <translation id="4578196883126898996">Микрофонуңуз өчүк. Түзмөгүңүздүн микрофон баскычын күйгүзүңүз.</translation>
@@ -1168,6 +1173,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> түзмөгүнө туташуу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> папкасы</translation>
+<translation id="880709030178078220">"Жардам"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Киргизүү ыкмаларынын жөндөөлөрү</translation>
 <translation id="8818320199597151042">Профиль өчүрүлүүдө. Бир нече мүнөт күтө туруңуз.</translation>

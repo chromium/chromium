@@ -341,6 +341,7 @@
 <translation id="1340527397989195812">Rugsteun media van die toestel af met die lêerprogram.</translation>
 <translation id="1341988552785875222">Die huidige muurpapier is deur "<ph name="APP_NAME" />" gestel. Jy sal dalk <ph name="APP_NAME" /> moet deïnstalleer voordat jy 'n ander muurpaier kies.</translation>
 <translation id="1343865611738742294">Gee Linux-programme toestemming om toegang tot USB-toestelle te kry. Linux sal nie 'n USB-toestel onthou nadat dit verwyder is nie.</translation>
+<translation id="1343920184519992513">Gaan voort waar jy opgehou het en maak 'n spesifieke stel bladsye oop</translation>
 <translation id="1346630054604077329">Bevestig en herbegin</translation>
 <translation id="1347256498747320987">Installeer opdaterings en programme. Deur voort te gaan, stem jy in dat hierdie toestel ook outomaties opdaterings en programme van Google, jou diensverskaffer en jou toestel se vervaardiger af mag aflaai en installeer, wat dalk sellulêre data sal gebruik. Sommige van hierdie programme kan inprogram-aankope aanbied.<ph name="BEGIN_LINK1" />Kom meer te wete<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-berging</translation>
@@ -1401,7 +1402,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2359345697448000899">Bestuur jou uitbreidings deur Uitbreidings in die Nutsgoed-kieslys te klik.</translation>
 <translation id="2359556993567737338">Koppel Bluetooth-toestel</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
-<translation id="2360625459710946148">Herrangskik volgens</translation>
 <translation id="2361100938102002520">Jy voeg tans 'n bestuurde profiel by hierdie blaaier. Jou administrateur het beheer oor die profiel en het toegang tot die data daarvan.</translation>
 <translation id="236117173274098341">Optimeer</translation>
 <translation id="2361340419970998028">Stuur tans terugvoer …</translation>
@@ -1958,6 +1958,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2915873080513663243">Outoskandeer</translation>
 <translation id="2916073183900451334">As jy die tabelsleutel (Tab) op 'n webbladsy druk, bring dit skakels en vormvelde na vore</translation>
 <translation id="2916745397441987255">Deursoek uitbreidings</translation>
+<translation id="2918484639460781603">Gaan na instellings</translation>
 <translation id="2918484644467055090">Hierdie toestel kan nie ingeskryf word by die organisasie waaraan jou rekening behoort nie omdat die toestel gemerk is vir bestuur deur 'n ander organisasie.</translation>
 <translation id="2920852127376356161">Nie toegelaat om protokolle te hanteer nie</translation>
 <translation id="2921081876747860777">Skep asseblief 'n wagwoord om jou plaaslike data te beskerm.</translation>
@@ -5400,6 +5401,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="654871471440386944">Skakel karetblaai aan?</translation>
 <translation id="6549038875972762904">Herdoen opstelling</translation>
 <translation id="6550675742724504774">Opsies</translation>
+<translation id="65513682072153627">Jy sal hierdie Bestuur-ikoon sien wanneer 'n instelling of kenmerk deur jou administrateur bestuur word.</translation>
 <translation id="6551508934388063976">Bevel nie beskikbaar nie. Druk control-N om 'n nuwe venster oop te maak.</translation>
 <translation id="6551612971599078809">Werf gebruik tans USB</translation>
 <translation id="6551739526055143276">Bestuur deur Family Link</translation>
@@ -6605,6 +6607,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7797246427375693110">Aan / Sal outomaties om <ph name="TIME" /> afskakel</translation>
 <translation id="7797571222998226653">Af</translation>
 <translation id="7798844538707273832">Het <ph name="PERMISSION" /> outomaties geblokkeer</translation>
+<translation id="7799220949286681310">Slimskermslot</translation>
 <translation id="7799299114731150374">Muurpapier is suksesvol gestel</translation>
 <translation id="7799817062559422778">Ligmodus</translation>
 <translation id="7800159967992492578">Wissel kantsoektog. Kantsoektog is geaktiveer.</translation>
@@ -6619,7 +6622,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7810202088502699111">Opspringers is op hierdie bladsy geblokkeer.</translation>
 <translation id="781167124805380294">Saai <ph name="FILE_NAME" /> uit</translation>
 <translation id="7811886112806886172">Help om Chrome- en Chrome-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur. Sekere aggregaatdata sal Android-programme en Google-vennote ook help. As die Web- en Programaktiwiteit-instelling vir jou Google-rekening aangeskakel is, kan jou Android-data in jou Google-rekening gestoor word.</translation>
-<translation id="7814277578404816512">Sien wat nuut is op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">Kopieer</translation>
 <translation id="7815680994978050279">Gevaarlike aflaai is geblokkeer</translation>
 <translation id="7817361223956157679">Die skermsleutelbord werk nog nie in Linux-programme nie</translation>

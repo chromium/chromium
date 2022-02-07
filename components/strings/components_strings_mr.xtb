@@ -223,7 +223,6 @@
 <translation id="1567040042588613346">हे धोरण अपेक्षेनुसार काम करत आहे पण, कुठेतरी समान मूल्य सेट केले आहे आणि हे धोरण ते मूल्य अधिग्रहित करत आहे.</translation>
 <translation id="1569487616857761740">एक्स्पायरीची तारीख एंटर करा</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">व्हर्च्युअल कार्डमध्ये नोंदणी करा</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">हे वेबपेज प्रदर्शित करताना काहीतरी चूक झाली.</translation>
 <translation id="1586541204584340881">तुम्ही कोणती एक्स्टेंशन इंस्टॉल केली आहेत</translation>
@@ -390,7 +389,6 @@
 <translation id="2101225219012730419">आवृत्ती:</translation>
 <translation id="2102134110707549001">क्लिष्ट पासवर्ड सुचवा…</translation>
 <translation id="2102495993840063010">Android अ‍ॅप्स</translation>
-<translation id="2106249949168291652">सेव्ह केले. व्हर्च्युअल कार्डसह ते आणखी सुरक्षित करायचे आहे का?</translation>
 <translation id="2107021941795971877">प्रिंट सपोर्ट</translation>
 <translation id="2108755909498034140">तुमचा कॉंप्युटर रीस्टार्ट करा</translation>
 <translation id="2111166930115883695">खेळण्यासाठी स्पेस दाबा</translation>
@@ -552,7 +550,6 @@
 <translation id="262745152991669301">USB डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
 <translation id="2629325967560697240">Chrome ची सर्वोत्तम सुरक्षितता मिळवण्यासाठी, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />सुधारित केलेली सुरक्षितता सुरू करा<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> चा सर्व्हर आयपी ॲड्रेस सापडला नाही.</translation>
-<translation id="2638001509205834345">तुमचे कार्ड आणखी सुरक्षित करायचे आहे का?</translation>
 <translation id="2639739919103226564">स्थिती:</translation>
 <translation id="264810637653812429">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@
 <translation id="3113284927548439113">तिसरी शिफ्ट</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> साठी तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> परत करणे आवश्यक आहे.</translation>
 <translation id="3116158981186517402">लॅमिनेट</translation>
-<translation id="311958134571892113">यासह लिंक केलेले</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />कनेक्टिव्हिटी निदान चालवून पहा<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> वर जा</translation>
@@ -2386,7 +2382,6 @@
 <translation id="8669306706049782872">विंडो उघडण्यासाठी आणि त्यांचे स्थान नियोजित करण्यासाठी तुमच्या स्क्रीनशी संबंधित माहिती वापरा</translation>
 <translation id="867224526087042813">स्वाक्षरी</translation>
 <translation id="8676424191133491403">विलंब नाही</translation>
-<translation id="8679903780129190080">होय, मला मान्य आहे</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> वरील वेबपेज लोड केले जाऊ शकले नाही कारण:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

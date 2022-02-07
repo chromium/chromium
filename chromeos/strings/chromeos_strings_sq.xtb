@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Përditëso firmuerin për pajisjet e jashtme kur dritarja është e hapur. Ofrohen <ph name="NUM_UPDATES" /> përditësime.</translation>
 <translation id="1175697296044146566">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Mesatar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Hiq</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">U dyshua portal izolues</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Po përditësohet (<ph name="PERCENTAGE_VALUE" />% e përfunduar)</translation>
 <translation id="1310380015393971138">Nuk ofrohet asnjë rrjet <ph name="NETWORK_NAME" /></translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Rrjeti vendor, jo në roaming</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Ofertat</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
 <translation id="1478594628797167447">Skaner</translation>
+<translation id="1491076385728777984">Po përditësohet firmueri në <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
 <translation id="155865706765934889">Blloku me prekje</translation>
+<translation id="1565038567006703504"><ph name="DEVICE_NAME" /> nuk mund të përditësohet</translation>
 <translation id="1567064801249837505">Albumet</translation>
 <translation id="1572585716423026576">Vendose si imazh sfondi</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
 <translation id="2517472476991765520">Skano</translation>
+<translation id="253029298928638905">Po riniset...</translation>
 <translation id="2536159006530886390">S'mund të lidhet me internetin.</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Për ta konfiguruar, shko te "Cilësimet"</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
+<translation id="3993704782688964914"><ph name="DEVICE_NAME" /> tani është përditësuar</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
 <translation id="4034824040120875894">Printeri</translation>
 <translation id="4044093238444069296">Portëkalimi nuk mund të kontaktohet</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> po riniset</translation>
 <translation id="4418498623216225764">Përditëso pajisjet periferike</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> është joaktiv</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Përputhje e emrit alternativ të subjektit</translation>
 <translation id="4536864596629708641">Konfigurimi i IP-së</translation>
 <translation id="4548483925627140043">Sinjali nuk u gjet</translation>
+<translation id="4556753742174065117">I gjithë firmueri është i përditësuar</translation>
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Karta SIM e shkyçur</translation>
 <translation id="4562494484721939086">Nuk ka shërbim</translation>
@@ -432,6 +440,7 @@
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
+<translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="6905724422583748843">Prapa te <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kapaku i skanerit është i hapur. Mbylle kapakun dhe provo përsëri.</translation>
 <translation id="6911383237894364323">Nuk mund të lidhet me serverët e medias.</translation>

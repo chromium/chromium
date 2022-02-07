@@ -289,9 +289,6 @@
       Si habilitas esta política, se activarán las combinaciones de teclas internacionales mejoradas.
       Si no la estableces, se habilitará esta política para los dispositivos administrados y se habilitará para los dispositivos que pertenezcan a los usuarios.
       Ten en cuenta que esta es solo una política temporaria para permitir que los usuarios administrados sigan usando las combinaciones de teclas heredadas que se dieron de baja. Esta política se dará de baja después de que las combinaciones de teclas personalizadas estén disponibles.</translation>
-<translation id="1359553908012294236">Si esta política no se configura o se establece en true, <ph name="PRODUCT_NAME" /> permitirá acceder como invitado. Los accesos como invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que todas las ventanas están en modo de navegación de incógnito.
-
-      Si esta política se establece en false, <ph name="PRODUCT_NAME" /> no permitirá que se inicien perfiles de invitado.</translation>
 <translation id="1361661842732478894">Mostrar el botón Página principal en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar las consultas a Quirks Server para perfiles de hardware</translation>
 <translation id="1371626834351873151">Se habilitará la reducción de usuario-agente para todos los orígenes</translation>
@@ -1203,13 +1200,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2290270645214705008">Si inhabilitas esta política, no podrá iniciarse el servicio de host de acceso remoto ni configurarse para aceptar conexiones entrantes.  Esta política no afecta los diferentes escenarios de asistencia remota.
 
           Tampoco tiene efecto si la habilitas, la dejas vacía o no la estableces.</translation>
-<translation id="2290589982136082117">Esta configuración le permite a los usuarios crear y utilizar perfiles secundarios y usar el modo de invitado en el navegador <ph name="LACROS_NAME" />.
-
-      Si estableces esta política como falsa o no la estableces, el usuario no podrá crear ni usar perfiles secundarios ni usar el modo de invitado, de manera similar que con las políticas BrowserAddPersonEnabled y BrowserGuestModeEnabled. Si hay perfiles secundarios que se hayan creado anteriormente, no estarán disponibles.
-
-      Si estableces esta política como verdadera, el usuario podrá crear y utilizar perfiles secundarios, y usar el modo de invitado.
-
-      Ten en cuenta que, si estableces esta política como verdadera, pero se estableció BrowserAddPersonEnabled como falsa, el usuario no podrá crear perfiles secundarios. Del mismo modo, si se estableció BrowserGuestModeEnabled como falsa, el usuario tampoco podrá usar el modo de invitado.</translation>
 <translation id="229322770310505679">Habilita el concepto de grupos atómicos de políticas</translation>
 <translation id="2293378264822766451">Si habilitas la política, prevalecerán las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> si entran en conflicto con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
@@ -1691,6 +1681,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="285627849510728211">Establecer la configuración para el modo avanzado de carga de la batería durante el día</translation>
 <translation id="2856674246949497058">Implementa la reversión y mantén la versión objetivo si la versión del sistema operativo es más reciente que la objetivo. Aplica la función Powerwash durante el proceso.</translation>
 <translation id="2866619962692161453">Tipo de metapolítica</translation>
+<translation id="2866726566162790531">Lista de orígenes que permiten todas las autenticaciones de HTTP</translation>
 <translation id="2869762730352628426">Habilita la función de clic automático en la pantalla de acceso</translation>
 <translation id="2872961005593481000">Cerrar</translation>
 <translation id="2874209944580848064">Nota para dispositivos <ph name="PRODUCT_OS_NAME" /> compatibles con apps de Android:</translation>
@@ -1719,6 +1710,10 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas la política o no la estableces, los dispositivos inscritos no informarán sobre el estado de Android.</translation>
 <translation id="288923520817177650">Permite crear sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> de <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Otorgar permiso automáticamente a estos sitios para conectarse a dispositivos USB con los ID de producto y proveedor correspondientes</translation>
+<translation id="2891049933730408118">Si estableces la política, se especificará para qué orígenes se permiten todos los esquemas de autenticación de HTTP compatibles con <ph name="PRODUCT_NAME" />, independientemente de la política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Debes configurar el patrón de origen conforme a este formato (<ph name="URL_SCHEME_FORMAT_LINK" />). Se puede definir hasta 1000 excepciones en <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Se permite el uso de caracteres comodín en todo el origen, o solo en algunas partes, como en el esquema, el host o el puerto.</translation>
 <translation id="2893546967669465276">Enviar registros del sistema al servidor de administración</translation>
 <translation id="2893660462311365527">Tasa de recopilación de telemetría de la red en milisegundos</translation>
 <translation id="2896434627453256512">Si estableces la política, se habilitará la función de ventana fantasma.
@@ -1777,6 +1772,15 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si estableces la política, los usuarios no podrán cambiarla.
 
       Esta política es obsoleta; usa la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> en su lugar.</translation>
+<translation id="2948268792364772890">Esta política permite que un administrador especifique si una página puede enviar solicitudes XHR síncronas cuando el usuario la abandona.
+
+      Si habilitas la política, cuando el usuario abandone las páginas, estas podrán enviar solicitudes XHR síncronas.
+
+      Si la inhabilitas o no la estableces, cuando el usuario abandone las páginas, estas no podrán enviar solicitudes XHR síncronas.
+
+      En Chrome 99, se quitó esta política.
+
+      Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Restricciones:</translation>
 <translation id="2957506574938329824">No permitir que ningún sitio solicite acceso a dispositivos Bluetooth mediante la API de Bluetooth web</translation>
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
@@ -3432,9 +3436,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Obtén más información sobre la Navegación segura ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="4960597185231686653">Función experimental booleana que indica si el teclado en pantalla puede proporcionar entrada de voz.</translation>
-<translation id="4962262530309732070">Si esta política se establece como verdadera o no se configura, <ph name="PRODUCT_NAME" /> permitirá la opción para agregar una persona desde el Administrador de usuarios.
-
-      Si esta política se establece como falsa, <ph name="PRODUCT_NAME" /> no permitirá la creación de perfiles nuevos desde el Administrador de usuarios.</translation>
 <translation id="4970046075219007744">Permitir que las aplicaciones web le soliciten al usuario acceso a determinados tipos de archivos a través de la API de File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar el acceso en el navegador</translation>
 <translation id="4976928720873547342">Si estableces esta política, todos los tipos de datos especificados se excluirán de la sincronización para <ph name="CHROME_SYNC_NAME" /> y de la sincronización de perfiles en roaming. Esta política puede ayudar a reducir el tamaño del perfil de roaming o limitar los tipos de datos que se suben a los servidores de <ph name="CHROME_SYNC_NAME" />.

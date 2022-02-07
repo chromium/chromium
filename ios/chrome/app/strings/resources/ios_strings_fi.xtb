@@ -85,6 +85,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1650222530560417226">Aloita JavaScript-konsolilokien ja kaikilla välilehdillä havaittujen virheiden kerääminen valitsemalla Kirjausten käynnistys. Lokeja kerätään (niitä säilytetään vain muistissa), kunnes suljet tämän sivun tai valitset Kirjauksen lopetus.</translation>
+<translation id="1654232554734641711">Pääsy mikrofoniin myönnetty</translation>
 <translation id="1657011748321897393">Jakaminen epäonnistui, koska verkkoyhteyttä ei ole.</translation>
 <translation id="1657641691196698092">Estetyt evästeet</translation>
 <translation id="165877110639533037">Ei avoimia välilehtiä</translation>
@@ -396,6 +397,7 @@ Tietosi salataan synkronoinnin tunnuslauseesi avulla. Aloita synkronointi antama
 <translation id="4682686630151240767">1. Avaa iPhonen asetukset</translation>
 <translation id="4689564913179979534">Ylläpidä maksutapoja…</translation>
 <translation id="470966556546083668">Älä laita synkronointia päälle</translation>
+<translation id="4731472194328757163">Pääsy kameraan ja mikrofoniin myönnetty</translation>
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4747097190499141774">Google Payn maksutapoja tai osoitteita ei salata tunnuslauseella. Salattua dataa voidaan lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, synkronointi täytyy nollata. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Uusi incognito-välilehti</translation>
@@ -547,6 +549,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6059830886158432458">Muuta tarinoiden ja toiminnan asetuksia täällä</translation>
 <translation id="6064824697233747382">Organisaatiosi edellyttää, että laitat synkronoinnin pois päältä.</translation>
 <translation id="6066301408025741299">Peru napauttamalla.</translation>
+<translation id="6077126322656614846">Pääsy kameraan myönnetty</translation>
 <translation id="60829778314739003">Hyväksy ja jatka</translation>
 <translation id="6084848228346514841">Valitse välilehdet</translation>
 <translation id="6103540626693881831">Laitteen salaus</translation>

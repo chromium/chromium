@@ -289,9 +289,6 @@
       Nếu bạn bật chính sách này, phím tắt quốc tế cải tiến sẽ được bật.
       Nếu bạn không đặt chính sách này, hệ thống sẽ không áp dụng chính sách cho các thiết bị được quản lý mà áp dụng cho các thiết bị thuộc sở hữu của người dùng thông thường.
       Xin lưu ý rằng đây chỉ là chính sách tạm thời để những người dùng được quản lý vẫn có thể sử dụng các phím tắt cũ không dùng nữa. Chính sách này sẽ ngừng hoạt động sau khi phím tắt tuỳ chỉnh ra mắt.</translation>
-<translation id="1359553908012294236">Nếu chính sách này được đặt thành true hoặc không được định cấu hình, <ph name="PRODUCT_NAME" /> sẽ bật chế độ đăng nhập khách. Chế độ đăng nhập khách là hồ sơ <ph name="PRODUCT_NAME" /> trong đó tất cả cửa sổ đều ở chế độ ẩn danh.
-
-      Nếu chính sách này được đặt thành false, <ph name="PRODUCT_NAME" /> sẽ không cho phép bắt đầu hồ sơ khách.</translation>
 <translation id="1361661842732478894">Hiện nút Màn hình chính trên thanh công cụ</translation>
 <translation id="1363275621236827384">Bật truy vấn cấu hình Máy chủ Quirks cho phần cứng</translation>
 <translation id="1371626834351873151">Tính năng Giảm thiểu tác nhân người dùng sẽ được bật cho mọi bản dùng thử theo nguyên gốc.</translation>
@@ -1196,13 +1193,6 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
 <translation id="2290270645214705008">Nếu bạn Tắt chính sách này, dịch vụ lưu trữ truy cập từ xa sẽ không thể khởi động hoặc được định cấu hình để chấp nhận các kết nối đến.  Chính sách này không ảnh hưởng đến các trường hợp hỗ trợ từ xa.
 
           Chính sách này không có hiệu lực nếu bạn đặt thành Bật, để trống hoặc không đặt.</translation>
-<translation id="2290589982136082117">Chế độ cài đặt này cho phép người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" />.
-
-      Tương tự như hai chính sách BrowserAddPersonEnabled và BrowserGuestModeEnabled, nếu bạn tắt hoặc không đặt chính sách này, thì người dùng sẽ không thể tạo hoặc sử dụng các hồ sơ phụ, cũng như không thể dùng chế độ khách. Các hồ sơ phụ đã tạo trước đây (nếu có) sẽ không dùng được.
-
-      Nếu bạn bật chính sách này, người dùng có thể tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách.
-
-      Xin lưu ý rằng nếu bạn bật chính sách này nhưng lại tắt chính sách BrowserAddPersonEnabled, thì người dùng sẽ không thể tạo hồ sơ phụ. Điều tương tự cũng áp dụng với chính sách BrowserGuestModeEnabled và chế độ khách.</translation>
 <translation id="229322770310505679">Cho phép dùng khái niệm về nhóm chính sách không thể phân chia</translation>
 <translation id="2293378264822766451">Khi bạn bật chính sách này, các chính sách liên kết với tài khoản <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />sẽ được ưu tiên áp dụng nếu chúng xung đột với các chính sách <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
@@ -3420,9 +3410,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 
       Xem thêm về dịch vụ Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
 <translation id="4960597185231686653">Một cờ boolean cho biết liệu bàn phím ảo có thể cung cấp tính năng nhập bằng giọng nói hay không.</translation>
-<translation id="4962262530309732070">Nếu chính sách này được đặt thành true hoặc không được định cấu hình, <ph name="PRODUCT_NAME" /> sẽ cho phép Thêm người từ trình quản lý người dùng.
-
-      Nếu chính sách này được đặt thành false, <ph name="PRODUCT_NAME" /> sẽ không cho phép tạo hồ sơ mới từ trình quản lý người dùng.</translation>
 <translation id="4970046075219007744">Cho phép các ứng dụng web yêu cầu người dùng cấp quyền truy cập vào các loại tệp thông qua API Xử lý tệp</translation>
 <translation id="4970855112942626932">Vô hiệu hóa đăng nhập vào trình duyệt</translation>
 <translation id="4976928720873547342">Nếu bạn đặt chính sách này, thì hệ thống sẽ loại trừ tất cả loại dữ liệu đã chỉ định khỏi quá trình đồng bộ hóa của <ph name="CHROME_SYNC_NAME" /> cũng như quá trình đồng bộ hóa cấu hình chuyển vùng. Điều này có thể giúp giảm kích thước của cấu hình chuyển vùng hoặc giới hạn loại dữ liệu đã tải lên các máy chủ <ph name="CHROME_SYNC_NAME" />.

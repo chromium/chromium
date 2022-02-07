@@ -1385,7 +1385,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2359345697448000899">Per gestionar les extensions, feu clic a Extensions al menú Eines.</translation>
 <translation id="2359556993567737338">Connecta un dispositiu Bluetooth</translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2360625459710946148">Canvia l'ordre per</translation>
 <translation id="2361100938102002520">Estàs afegint un perfil gestionat a aquest navegador. El teu administrador té control sobre el perfil i pot accedir a les dades associades.</translation>
 <translation id="236117173274098341">Optimitza</translation>
 <translation id="2361340419970998028">S'estan enviant els suggeriments...</translation>
@@ -6588,6 +6587,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7797246427375693110">Activat / Es desactivarà automàticament a les <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Desactivat</translation>
 <translation id="7798844538707273832">S'ha bloquejat automàticament <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">El fons de pantalla s'ha establert correctament</translation>
 <translation id="7799817062559422778">Mode clar</translation>
 <translation id="7800159967992492578">Commuta la cerca lateral. La cerca lateral està activada.</translation>
@@ -6602,7 +6602,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
 <translation id="781167124805380294">Emet <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Ajuda a millorar les funcions i el rendiment de Chrome i Chrome OS enviant automàticament dades de diagnòstic i d'ús a Google. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google. Si l'opció de configuració Activitat al web i en aplicacions està activada per al teu Compte de Google, és possible que les teves dades d'Android es desin al teu Compte de Google.</translation>
-<translation id="7814277578404816512">Consulta les novetats que hi ha al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7815680994978050279">S'ha bloquejat una baixada perillosa</translation>
 <translation id="7817361223956157679">El teclat en pantalla encara no funciona en aplicacions per a Linux</translation>

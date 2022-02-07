@@ -1383,7 +1383,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2359345697448000899">Para administrar tus extensiones, haz clic en la opción Extensiones en el menú Herramientas.</translation>
 <translation id="2359556993567737338">Conectar el dispositivo Bluetooth</translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2360625459710946148">Reordenar por</translation>
 <translation id="2361100938102002520">Estás agregando un perfil administrado a este navegador. El administrador controla tu perfil y puede acceder a sus datos.</translation>
 <translation id="236117173274098341">Optimizar</translation>
 <translation id="2361340419970998028">Enviando comentarios…</translation>
@@ -6151,6 +6150,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7376553024552204454">Resaltar el cursor del mouse cuando se mueve</translation>
 <translation id="737728204345822099">Es posible que se guarde un registro de tu visita a este sitio en tu llave de seguridad.</translation>
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
+<translation id="7377481913241237033">Conéctate con un código</translation>
 <translation id="7378611153938412599">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras. <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
 <translation id="7380622428988553498">El nombre del dispositivo incluye caracteres no válidos</translation>
@@ -6585,6 +6585,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7797246427375693110">Activado: Se desactivará automáticamente a las <ph name="TIME" /></translation>
 <translation id="7797571222998226653">No</translation>
 <translation id="7798844538707273832">Se bloqueó automáticamente <ph name="PERMISSION" /></translation>
+<translation id="7799220949286681310">Bloqueo de pantalla inteligente</translation>
 <translation id="7799299114731150374">Se estableció el fondo de pantalla correctamente</translation>
 <translation id="7799817062559422778">Modo claro</translation>
 <translation id="7800159967992492578">Activa o desactiva la búsqueda lateral. La búsqueda lateral está activada.</translation>
@@ -6599,7 +6600,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="781167124805380294">Transmitir <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Para ayudar a mejorar las funciones y el rendimiento de Chrome y Chrome OS, envía automáticamente datos de uso y diagnóstico a Google. Algunos datos agregados también ayudarán a los socios de Google y las apps para Android. Si habilitaste la configuración Actividad web y de aplicaciones en tu Cuenta de Google, es posible que se almacenen tus datos de Android en la cuenta.</translation>
-<translation id="7814277578404816512">Conoce las novedades de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7817361223956157679">El teclado en pantalla todavía no es compatible con apps de Linux</translation>

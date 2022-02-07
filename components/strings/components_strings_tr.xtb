@@ -223,7 +223,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1567040042588613346">Bu politika beklenildiği gibi çalışıyor, ancak başka bir yerde ayarlanmış aynı değeri geçersiz kılıyor.</translation>
 <translation id="1569487616857761740">Son kullanma tarihi girin</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Sanal karta kaydolun</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Bu web sayfasını görüntülerken bir hata oluştu.</translation>
 <translation id="1586541204584340881">Hangi uzantıları yüklediğiniz</translation>
@@ -387,7 +386,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2101225219012730419">Sürüm:</translation>
 <translation id="2102134110707549001">Güçlü Şifre Öner…</translation>
 <translation id="2102495993840063010">Android uygulamaları</translation>
-<translation id="2106249949168291652">Kaydedildi. Sanal kartla daha güvenli hale getirilsin mi?</translation>
 <translation id="2107021941795971877">Yazdırma destekleri</translation>
 <translation id="2108755909498034140">Bilgisayarınızı yeniden başlatın</translation>
 <translation id="2111166930115883695">Oynamak için boşluk tuşuna basın</translation>
@@ -549,7 +547,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="262745152991669301">USB cihazlara bağlanmak isteyebilir</translation>
 <translation id="2629325967560697240">Chrome’un sağladığı en yüksek güvenlik düzeyinden faydalanmak için <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />gelişmiş korumayı açın<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ana makinesinin sunucu IP adresi bulunamadı.</translation>
-<translation id="2638001509205834345">Kartınız daha güvenli hale getirilsin mi?</translation>
 <translation id="2639739919103226564">Durum:</translation>
 <translation id="264810637653812429">Uyumlu cihaz bulunamadı.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -683,7 +680,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3113284927548439113">Üçüncü vardiya</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" />, verilerinizi yedeklemenizi ve bu <ph name="DEVICE_TYPE" /> cihazı iade etmenizi gerektiriyor.</translation>
 <translation id="3116158981186517402">Lamine</translation>
-<translation id="311958134571892113">bağlı olduğu kart:</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Bağlantı Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Git: <ph name="DOMAIN" /></translation>
@@ -2380,7 +2376,6 @@ Ek ayrıntılar:
 <translation id="8669306706049782872">Pencere açıp yerleştirmek için ekranlarınızla ilgili bilgileri kullanma</translation>
 <translation id="867224526087042813">İmza</translation>
 <translation id="8676424191133491403">Gecikme yok</translation>
-<translation id="8679903780129190080">Evet, kabul ediyorum</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, yanıt, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> adresindeki web sayfası şu nedenle yüklenemedi:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

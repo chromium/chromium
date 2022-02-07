@@ -289,9 +289,6 @@
       Als je dit beleid toepast, staan verbeterde sneltoetsen voor internationale toetsenborden aan.
       Als je dit beleid niet instelt, wordt het niet toegepast op beheerde apparaten en wel toegepast op apparaten van consumenten.
       Houd er rekening mee dat dit een tijdelijk beleid is zodat beheerde gebruikers nog steeds beëindigde verouderde sneltoetsen kunnen gebruiken. Dit beleid wordt beëindigd nadat aangepaste sneltoetsen beschikbaar zijn gekomen.</translation>
-<translation id="1359553908012294236">Als dit beleid is ingesteld op True of niet is ingesteld, zet <ph name="PRODUCT_NAME" /> gast-logins aan. Gast-logins zijn profielen van <ph name="PRODUCT_NAME" /> waarbij alle vensters in de incognitomodus worden geopend.
-
-      Als dit beleid is ingesteld op False, staat <ph name="PRODUCT_NAME" /> niet toe dat er gastprofielen worden gestart.</translation>
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1371626834351873151">Inkorting van user-agent wordt aangezet voor alle origins.</translation>
@@ -1162,13 +1159,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2290270645214705008">Als dit beleid niet is toegepast, kan de hostservice voor externe toegang niet worden gestart of ingesteld om inkomende verbindingen te accepteren.  Dit beleid heeft geen effect op scenario's voor support op afstand.
 
           Dit beleid is niet geldig als het is ingesteld op Enabled (Aangezet), leeg wordt gelaten of niet wordt ingesteld.</translation>
-<translation id="2290589982136082117">Met deze instelling kunnen gebruikers secundaire profielen maken en gebruiken en kunnen ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser.
-
-      Als je dit beleid instelt op False of niet instelt, kunnen gebruikers geen secundaire profielen maken of gebruiken en kunnen ze de gastmodus niet gebruiken. Dit is vergelijkbaar met BrowserAddPersonEnabled en BrowserGuestModeEnabled. Eventuele eerder gemaakte secundaire profielen zijn niet beschikbaar.
-
-      Als je dit beleid instelt op True, kunnen gebruikers secundaire profielen maken en gebruiken en kunnen ze de gastmodus gebruiken.
-
-      Als je dit beleid instelt op True maar BrowserAddPersonEnabled is ingesteld op False, kunnen gebruikers geen secundaire profielen maken. Hetzelfde geldt voor BrowserGuestModeEnabled en de gastmodus.</translation>
 <translation id="229322770310505679">Hiermee wordt het concept van atomische beleidsgroepen toegepast</translation>
 <translation id="2293378264822766451">Als je het beleid toepast, krijgen beleidsregels die zijn gekoppeld aan een <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-account voorrang als er een conflict is met <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-beleidsregels.
 
@@ -3378,9 +3368,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 
       Meer informatie over Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="4960597185231686653">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor spraakinvoer heeft.</translation>
-<translation id="4962262530309732070">Als dit beleid is ingesteld op 'True' of niet wordt geconfigureerd, staat <ph name="PRODUCT_NAME" /> 'Persoon toevoegen' toe vanuit gebruikersbeheer.
-
-      Als dit beleid is ingesteld op 'False', staat <ph name="PRODUCT_NAME" /> het maken van nieuwe profielen niet toe vanuit gebruikersbeheer.</translation>
 <translation id="4970046075219007744">Web-apps toestaan om de gebruiker toegang te geven tot bestandstypen via de File Handling API</translation>
 <translation id="4970855112942626932">Inloggen bij browser uitzetten</translation>
 <translation id="4976928720873547342">Als je het beleid instelt, worden alle opgegeven gegevenstypen uitgesloten van synchronisatie voor zowel <ph name="CHROME_SYNC_NAME" /> als synchronisatie van roamingprofielen. Dit kan handig zijn om het roamingprofiel te verkleinen of het type gegevens te beperken dat wordt geüpload naar de <ph name="CHROME_SYNC_NAME" />-servers.

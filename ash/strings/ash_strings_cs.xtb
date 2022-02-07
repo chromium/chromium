@@ -100,7 +100,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1479909375538722835">Plovoucí nabídka usnadnění přístupu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> byla prohozená s položkou <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Toto jste v minulosti vyhledávali. Když dotaz „<ph name="QUERY" />“ vymažete z historie, bude trvale odstraněn z vašeho účtu na všech zařízeních.</translation>
 <translation id="1503394326855300303">Účet tohoto vlastníka musí být v relaci multiprofilu přihlášen jako první.</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1516740043221086139">Režim Nerušit je zapnutý.</translation>
@@ -216,7 +215,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2352467521400612932">Nastavení dotykového pera</translation>
 <translation id="2354174487190027830">Aktivace sítě <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Pokračovat</translation>
-<translation id="2360625459710946148">Seřadit podle</translation>
 <translation id="2367186422933365202">Přihlášení do Chromebooku se nezdařilo</translation>
 <translation id="2369165858548251131">„Ahoj“ čínsky</translation>
 <translation id="2390318262976603432">Nastavení národního prostředí</translation>
@@ -423,6 +421,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="371370241367527062">Přední mikrofon</translation>
 <translation id="3713734891607377840">Po dokončení otevřít</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> a další aplikace (<ph name="UNAVAILABLE_APPS_COUNT" />) na tomto zařízení nejsou.</translation>
+<translation id="3735740477244556633">Seřadit podle</translation>
 <translation id="3742055079367172538">Byl vytvořen snímek obrazovky</translation>
 <translation id="3771549900096082774">Režim vysokého kontrastu</translation>
 <translation id="3773700760453577392">Administrátor zakázal vícenásobné přihlášení pro účet <ph name="USER_EMAIL" />. Všichni uživatelé se před pokračováním musejí odhlásit.</translation>
@@ -481,6 +480,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4173958948577803258">Č</translation>
 <translation id="4177913004758410636">{0,plural, =1{Do jednoho dne zařízení aktualizujte}few{Do # dní zařízení aktualizujte}many{Do # dne zařízení aktualizujte}other{Do # dní zařízení aktualizujte}}</translation>
 <translation id="4181841719683918333">Jazyky</translation>
+<translation id="4195814663415092787">Pokračovat tam, kde jste přestali</translation>
 <translation id="4195877955194704651">Tlačítko automatických kliknutí</translation>
 <translation id="4197790712631116042">Vypnuto</translation>
 <translation id="4201033867194214117">Funkce <ph name="FEATURE_NAME" /> není dostupná.</translation>

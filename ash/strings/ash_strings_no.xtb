@@ -100,7 +100,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1479909375538722835">Flytende tilgjengelighetsmeny</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har byttet plass med <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Du har søkt etter dette før. Hvis du sletter «<ph name="QUERY" />» fra loggen, blir det fjernet permanent fra kontoen din på alle enhetene dine.</translation>
 <translation id="1503394326855300303">Denne eierkontoen må være den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1516740043221086139">Ikke forstyrr er på.</translation>
@@ -113,6 +112,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1570871743947603115">Slå av/på Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
+<translation id="1610778689852195798">«Angre»</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
@@ -216,7 +216,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2352467521400612932">Innstillinger for pekepenn</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
-<translation id="2360625459710946148">Endre rekkefølge basert på</translation>
 <translation id="2367186422933365202">Kan ikke logge på Chromebooken</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
@@ -248,6 +247,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2607678425161541573">Nettbasert pålogging kreves</translation>
 <translation id="2621713457727696555">Sikret</translation>
+<translation id="263399434338050016">«Merk alt»</translation>
 <translation id="2653019840645008922">Vindusopptak</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
@@ -264,6 +264,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilkoblet laveffektslader. Batteriladingen kan være upålitelig.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" /> – <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">«Slett»</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Avslutt opptaksmodus</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
@@ -307,6 +308,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3038571455154067151">For å logge på, skriv inn koden din for foreldretilgang til Family Link</translation>
 <translation id="3039939407102840004">Pekepennen har <ph name="PERCENTAGE" /> prosent batteri.</translation>
 <translation id="3045488863354895414">God ettermiddag</translation>
+<translation id="3047761520276763270">Prøv å si:</translation>
 <translation id="3051189971848907985">Gir profilen nytt navn. Vent i noen minutter.</translation>
 <translation id="3055162170959710888">Du har brukt denne enheten i <ph name="USED_TIME" /> i dag</translation>
 <translation id="3068711042108640621">Hyllen er til venstre</translation>
@@ -423,6 +425,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="3713734891607377840">Åpne når nedlastingen er fullført</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> til er ikke på denne enheten.</translation>
+<translation id="3735740477244556633">Sortér etter</translation>
 <translation id="3742055079367172538">Skjermdump tatt</translation>
 <translation id="3771549900096082774">Høykontrastmodus</translation>
 <translation id="3773700760453577392">En administrator har slått av multipålogging for <ph name="USER_EMAIL" />. Alle brukere må logge av for å fortsette.</translation>
@@ -481,6 +484,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{Oppdater enheten innen en dag}other{Oppdater enheten innen # dager}}</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4195814663415092787">Fortsett der du slapp</translation>
 <translation id="4195877955194704651">Automatisk klikk-knapp</translation>
 <translation id="4197790712631116042">Av</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgjengelig.</translation>
@@ -552,6 +556,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4570957409596482333">Tekstopplesingsknapp</translation>
+<translation id="4573176682887762361">«Skriv inn [ord/frase]»</translation>
 <translation id="4577274620589681794">Tiden er ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4578196883126898996">Mikrofonen din er av. Slå på mikrofonknappen på enheten.</translation>
@@ -1168,6 +1173,7 @@ Nylig installert</translation>
 <translation id="8785070478575117577">Koble til <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">«Hjelp»</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Innstillinger for inndatametoder</translation>
 <translation id="8818320199597151042">Fjerner profilen. Vent i noen minutter.</translation>

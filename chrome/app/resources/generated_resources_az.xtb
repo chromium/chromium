@@ -337,6 +337,7 @@
 <translation id="1340527397989195812">Fayllar tətbiqini istifadə etməklə medianı cihazdan yedəkləyin.</translation>
 <translation id="1341988552785875222">Carı divar kağızı '<ph name="APP_NAME" />' tərəfindən ayarlanıb. Başqa divar kağızı seçmədən öncə '<ph name="APP_NAME" />' tətbiqini sistemdən silməli olacaqsınız.</translation>
 <translation id="1343865611738742294">USB cihazlarına daxil olmaq üçün Linux tətbiqlərinə giriş icazəsi verin. Linux USB cihazı silindikdən sonra onu yadda saxlamayacaq.</translation>
+<translation id="1343920184519992513">Qaldığınız yerdən davam edin və xüsusi səhifələr dəstini açın</translation>
 <translation id="1346630054604077329">Təsdiqləyin və yenidən başladın</translation>
 <translation id="1347256498747320987">Güncəlləmə və tətbiqləri quraşdırın. Davam etməklə razılaşırsınız ki, bu cihaz Google, operator və cihaz istehsalçınızın güncəlləmə və tətbiqlərini mobil data istifadə etməklə avtomatik endirə və quraşdıra bilər. Bu tətbiqlərdən bəzisi tətbiqdaxili alışlar təklif edə bilər. <ph name="BEGIN_LINK1" />Ətraflı Məlumat<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux yaddaşı</translation>
@@ -1385,7 +1386,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2359345697448000899">Alətlər menyusundan Artırmalara klikləyərək artırmaları idarə edin.</translation>
 <translation id="2359556993567737338">Bluetooth cihazını qoşun</translation>
 <translation id="2359808026110333948">Davam edin</translation>
-<translation id="2360625459710946148">Yenidən sıralama meyarı:</translation>
 <translation id="2361100938102002520">Bu brauzerə idarə edilən profil əlavə edirsiniz. Administrator profilə nəzarət edir və oradakı dataya girişi var.</translation>
 <translation id="236117173274098341">Optimallaşdırın</translation>
 <translation id="2361340419970998028">Rəy göndərilir...</translation>
@@ -1941,6 +1941,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2915873080513663243">Avtomatik skan etmə</translation>
 <translation id="2916073183900451334">Ve səhifə başlıqlarında, həmçinin forma sahələrində Panel basılır</translation>
 <translation id="2916745397441987255">Artırmaları axtarın</translation>
+<translation id="2918484639460781603">Ayarlara keçin</translation>
 <translation id="2918484644467055090">Bu cihaz hesabın aid olduğu təşkilat siyahısına alına bilməz, çünki cihaz başqa təşkilat tərəfindən idarəetmə üçün qeyd olunub.</translation>
 <translation id="2920852127376356161">Protokolları nizamlamaq icazəsi verilməyib</translation>
 <translation id="2921081876747860777">Yerli datanı qorumaq üçün parol yaradın.</translation>
@@ -5377,6 +5378,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="654871471440386944">Klaviatura ilə baxış aktiv edilsin?</translation>
 <translation id="6549038875972762904">Ayarlamanı təkrarlayın</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
+<translation id="65513682072153627">Ayar və ya funksiya administratorunuz tərəfindən idarə edildikdə bu "İdarə olunur" ikonasını görəcəksiniz.</translation>
 <translation id="6551508934388063976">Əmr əlçatmazdır. Yeni pəncərə açmaq üçün control-N basın.</translation>
 <translation id="6551612971599078809">Sayt USB istifadə edir</translation>
 <translation id="6551739526055143276">Family Link tərəfindən idarə edilir</translation>
@@ -6582,6 +6584,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7797246427375693110">Aktiv / <ph name="TIME" /> olduqda avtomatik olaraq deaktiv olacaq</translation>
 <translation id="7797571222998226653">Deaktiv</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> avtomatik bloklanıb</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Divar kağızı ayarlandı</translation>
 <translation id="7799817062559422778">İşıqlı rejim</translation>
 <translation id="7800159967992492578">Yan axtarışı keçirin. Yan axtarış aktivdir.</translation>
@@ -6596,7 +6599,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7810202088502699111">Bu səhifədə popaplar bloklanıb.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> faylını yayımlayın</translation>
 <translation id="7811886112806886172">Diaqnostika və istifadə datasını avtomatik Google'a göndərməklə Chrome və ChromeOS funksiyalarını və performansını təkmilləşdirməyə yardım edin. Bəzi birləşdirilmiş data Android tətbiqləri və Google partnyorlarına da kömək edəcək. Veb və Tətbiq Fəaliyyəti ayarı Google Hesabınız üçün aktiv edilərsə, Android datanız Google Hesabınızda yadda saxlanıla bilər.</translation>
-<translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> cihazındakı yeniliklərə baxın</translation>
 <translation id="7814458197256864873">&amp;Kopyalayın</translation>
 <translation id="7815680994978050279">Təhlükəli endirmə blok edildi</translation>
 <translation id="7817361223956157679">Ekran klaviaturası Linux tətbiqlərində hələ dəstəklənmir</translation>

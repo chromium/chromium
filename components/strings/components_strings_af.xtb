@@ -223,7 +223,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1567040042588613346">Hierdie beleid werk soos bedoel, maar dieselfde waarde is elders gestel en word deur hierdie beleid vervang.</translation>
 <translation id="1569487616857761740">Voer vervaldatum in</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1581767074483369314">Skryf in vir 'n virtuele kaart</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Kon nie hierdie webbladsy vertoon nie.</translation>
 <translation id="1586541204584340881">Watter uitbreidings jy geïnstalleer het</translation>
@@ -390,7 +389,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2101225219012730419">Weergawe:</translation>
 <translation id="2102134110707549001">Stel sterk wagwoord voor …</translation>
 <translation id="2102495993840063010">Android-programme</translation>
-<translation id="2106249949168291652">Gestoor. Maak dit veiliger met 'n virtuele kaart?</translation>
 <translation id="2107021941795971877">Drukondersteuning</translation>
 <translation id="2108755909498034140">Herbegin jou rekenaar</translation>
 <translation id="2111166930115883695">Druk spasie om te speel</translation>
@@ -552,7 +550,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="262745152991669301">Kan vra om aan USB-toestelle te koppel</translation>
 <translation id="2629325967560697240"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Skakel gevorderde beskerming aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om Chrome se hoogste vlak van beskerming te kry</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> se bediener se IP-adres kon nie gevind word nie.</translation>
-<translation id="2638001509205834345">Maak jou kaart veiliger?</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="264810637653812429">Geen versoenbare toestelle gekry nie.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -686,7 +683,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3113284927548439113">Derde skof</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> terugstuur.</translation>
 <translation id="3116158981186517402">Lamineer</translation>
-<translation id="311958134571892113">gekoppel met</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Probeer konnektiwiteitdiagnostiek uitvoer<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Gaan na <ph name="DOMAIN" /> toe</translation>
@@ -2386,7 +2382,6 @@ Bykomende besonderhede:
 <translation id="8669306706049782872">Gebruik inligting oor jou skerms om vensters oop te maak en te plaas</translation>
 <translation id="867224526087042813">Handtekening</translation>
 <translation id="8676424191133491403">Geen wagperiode nie</translation>
-<translation id="8679903780129190080">Ja, ek's in</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, antwoord, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Die webbladsy by <ph name="PAGE" /> kon nie gelaai word nie, want:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>

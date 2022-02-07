@@ -100,7 +100,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1479909375538722835">Menú flotant d'accessibilitat</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> s'ha intercanviat amb <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Ja has fet aquesta cerca anteriorment. En suprimir "<ph name="QUERY" />" de l'historial, també se suprimirà permanentment del teu compte en tots els dispositius.</translation>
 <translation id="1503394326855300303">Aquest compte de propietari ha de ser el primer compte amb la sessió iniciada en un inici de sessió múltiple.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1516740043221086139">El mode No molestis està activat.</translation>
@@ -215,7 +214,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2360625459710946148">Canvia l'ordre per</translation>
 <translation id="2367186422933365202">No es pot iniciar la sessió al Chromebook</translation>
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2390318262976603432">Configuració regional</translation>
@@ -422,6 +420,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="3713734891607377840">Obre'l en acabar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacions més no estan disponibles en aquest dispositiu.</translation>
+<translation id="3735740477244556633">Ordena per</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
@@ -480,6 +479,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4173958948577803258">Dj.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualitza el dispositiu en 1 dia}other{Actualitza el dispositiu en # dies}}</translation>
 <translation id="4181841719683918333">Idiomes</translation>
+<translation id="4195814663415092787">Continua des d'on ho vaig deixar</translation>
 <translation id="4195877955194704651">Botó Clics automàtics</translation>
 <translation id="4197790712631116042">Desactivat</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no està disponible.</translation>

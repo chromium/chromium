@@ -1387,7 +1387,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2359345697448000899">Gestisci le tue estensioni facendo clic su Estensioni nel menu Strumenti.</translation>
 <translation id="2359556993567737338">Connettere dispositivo Bluetooth</translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2360625459710946148">Riordina per</translation>
 <translation id="2361100938102002520">Stai per aggiungere un profilo gestito a questo browser. L'amministratore ha il controllo del profilo e può accedere ai relativi dati.</translation>
 <translation id="236117173274098341">Ottimizza</translation>
 <translation id="2361340419970998028">Invio del feedback in corso…</translation>
@@ -6589,6 +6588,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7797246427375693110">On / Verrà disattivato automaticamente alle ore <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Off</translation>
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
+<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Sfondo impostato correttamente</translation>
 <translation id="7799817062559422778">Modalità Luce</translation>
 <translation id="7800159967992492578">Attiva/Disattiva ricerca laterale. Ricerca laterale attivata.</translation>
@@ -6603,7 +6603,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
 <translation id="781167124805380294">Trasmetti <ph name="FILE_NAME" /></translation>
 <translation id="7811886112806886172">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome e Chrome OS inviando automaticamente a Google dati diagnostici e sull'utilizzo. Alcuni dati aggregati saranno utili anche alle app per Android e ai partner di Google. Se l'impostazione Attività web e app è attiva per il tuo Account Google, i tuoi dati Android potrebbero essere salvati nell'account.</translation>
-<translation id="7814277578404816512">Scopri le novità del dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7815680994978050279">Download pericoloso bloccato</translation>
 <translation id="7817361223956157679">La tastiera sullo schermo non funziona ancora nelle app Linux</translation>
