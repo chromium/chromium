@@ -104,7 +104,7 @@ class DropdownItemViewInfoListBuilder {
         registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, iconBridgeSupplier,
                 mExploreIconProvider, GlobalDiscardableReferencePool.getReferencePool()));
         registerSuggestionProcessor(new PedalSuggestionProcessor(context, host, textProvider,
-                iconBridgeSupplier, mBookmarkState, mOmniboxPedalDelegate));
+                iconBridgeSupplier, mBookmarkState, mOmniboxPedalDelegate, delegate));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
                 context, host, textProvider, iconBridgeSupplier, mBookmarkState));
     }

@@ -9,23 +9,30 @@ import android.content.Context;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArraySet;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Set;
+
 /**
  * A class that handles model and view creation for the pedal omnibox suggestion.
  */
 public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     private final @NonNull OmniboxPedalDelegate mOmniboxPedalDelegate;
+    private final @NonNull AutocompleteDelegate mAutocompleteDelegate;
+    private @NonNull Set<Integer> mLastVisiblePedals = new ArraySet<>();
 
     /**
      * @param context An Android context.
@@ -40,9 +47,11 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
             @NonNull Supplier<LargeIconBridge> iconBridgeSupplier,
             @NonNull BookmarkState bookmarkState,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
+            @NonNull AutocompleteDelegate autocompleteDelegate) {
         super(context, suggestionHost, editingTextProvider, iconBridgeSupplier, bookmarkState);
         mOmniboxPedalDelegate = omniboxPedalDelegate;
+        mAutocompleteDelegate = autocompleteDelegate;
     }
 
     @Override
@@ -66,6 +75,13 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
         setPedal(model, suggestion.getOmniboxPedal());
     }
 
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (!hasFocus) {
+            recordPedalShownForAllPedals();
+        }
+    }
+
     /**
      * Setup pedals base on the suggestion.
      *
@@ -75,8 +91,14 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     protected void setPedal(PropertyModel model, @NonNull OmniboxPedal omniboxPedal) {
         model.set(PedalSuggestionViewProperties.PEDAL, omniboxPedal);
         model.set(PedalSuggestionViewProperties.PEDAL_ICON, getPedalIcon(omniboxPedal));
-        model.set(PedalSuggestionViewProperties.ON_PEDAL_CLICK,
-                v -> mOmniboxPedalDelegate.executeAction(omniboxPedal.getID()));
+        final int pedalID = omniboxPedal.getID();
+        model.set(PedalSuggestionViewProperties.ON_PEDAL_CLICK, v -> {
+            SuggestionsMetrics.recordPedalUsed(pedalID);
+            mOmniboxPedalDelegate.executeAction(pedalID);
+            mAutocompleteDelegate.clearOmniboxFocus();
+        });
+
+        mLastVisiblePedals.add(pedalID);
     }
 
     /**
@@ -88,5 +110,15 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     @DrawableRes
     int getPedalIcon(@NonNull OmniboxPedal omniboxPedal) {
         return mOmniboxPedalDelegate.getPedalIcon(omniboxPedal.getID());
+    }
+
+    /**
+     * Record the pedals shown for all pedal types.
+     */
+    private void recordPedalShownForAllPedals() {
+        for (Integer pedal : mLastVisiblePedals) {
+            SuggestionsMetrics.recordPedalShown(pedal);
+        }
+        mLastVisiblePedals.clear();
     }
 }

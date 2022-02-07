@@ -16,11 +16,13 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -53,6 +55,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
@@ -74,11 +77,20 @@ public class OmniboxPedalsTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule
+    public HistogramTestRule mHistogramTester = new HistogramTestRule();
+
     private OmniboxTestUtils mOmniboxUtils;
     private boolean mIncognito;
 
     public OmniboxPedalsTest(boolean incognito) {
         mIncognito = incognito;
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
     @Before
@@ -171,6 +183,35 @@ public class OmniboxPedalsTest {
                 activityType, () -> { clickOnPedal(locationBarLayout, pedalType); });
     }
 
+    /**
+     * Ensure the histogram for the pedal suggestion was recorded.
+     *
+     * @param pedalType The Omnibox pedal type.
+     */
+    private void verifyHistogram(@OmniboxPedalType int pedalType) {
+        Assert.assertEquals(
+                1, mHistogramTester.getHistogramValueCount("Omnibox.PedalShown", pedalType));
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount("Omnibox.SuggestionUsed.Pedal", pedalType));
+    }
+
+    /**
+     * Check the settings fragment is shownm, and the Omnibox did not hold the focus.
+     *
+     * @param settingsActivity A Settings activity containing the fragment been shown.
+     * @param fragmentClass The fragment should be shown.
+     */
+    private void checkSettingsWasShownAndOmniboxNoFocus(
+            SettingsActivity settingsActivity, Class<? extends Fragment> fragmentClass) {
+        UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        CriteriaHelper.pollUiThread(() -> {
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(fragmentClass));
+            Criteria.checkThat(urlBar.hasFocus(), Matchers.is(false));
+        });
+    }
+
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
@@ -192,12 +233,10 @@ public class OmniboxPedalsTest {
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.CLEAR_BROWSING_DATA);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
-        // Make sure the clear browsing data setting page was opened.
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(ClearBrowsingDataTabsFragment.class));
-        });
+        checkSettingsWasShownAndOmniboxNoFocus(
+                settingsActivity, ClearBrowsingDataTabsFragment.class);
+
+        verifyHistogram(OmniboxPedalType.CLEAR_BROWSING_DATA);
 
         settingsActivity.finish();
     }
@@ -218,12 +257,9 @@ public class OmniboxPedalsTest {
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_PASSWORDS);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
-        // Make sure the manage passwords setting page was opened.
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(PasswordSettings.class));
-        });
+        checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, PasswordSettings.class);
+
+        verifyHistogram(OmniboxPedalType.MANAGE_PASSWORDS);
 
         settingsActivity.finish();
     }
@@ -244,12 +280,10 @@ public class OmniboxPedalsTest {
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.UPDATE_CREDIT_CARD);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
-        // Make sure the manage passwords setting page was opened.
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(AutofillPaymentMethodsFragment.class));
-        });
+        checkSettingsWasShownAndOmniboxNoFocus(
+                settingsActivity, AutofillPaymentMethodsFragment.class);
+
+        verifyHistogram(OmniboxPedalType.UPDATE_CREDIT_CARD);
 
         settingsActivity.finish();
     }
@@ -273,6 +307,8 @@ public class OmniboxPedalsTest {
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
         });
+
+        verifyHistogram(OmniboxPedalType.LAUNCH_INCOGNITO);
     }
 
     @Test
@@ -291,12 +327,9 @@ public class OmniboxPedalsTest {
                 locationBarLayout, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
-        // Make sure the chrome safety check setting page was opened.
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(SafetyCheckSettingsFragment.class));
-        });
+        checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, SafetyCheckSettingsFragment.class);
+
+        verifyHistogram(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
 
         settingsActivity.finish();
     }
@@ -317,12 +350,9 @@ public class OmniboxPedalsTest {
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_SITE_SETTINGS);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
-        // Make sure the manage site setting page was opened.
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(SiteSettings.class));
-        });
+        checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, SiteSettings.class);
+
+        verifyHistogram(OmniboxPedalType.MANAGE_SITE_SETTINGS);
 
         settingsActivity.finish();
     }
@@ -343,12 +373,9 @@ public class OmniboxPedalsTest {
                 SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_CHROME_SETTINGS);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
-        // Make sure the chrome setting page was opened.
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(MainSettings.class));
-        });
+        checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, MainSettings.class);
+
+        verifyHistogram(OmniboxPedalType.MANAGE_CHROME_SETTINGS);
 
         settingsActivity.finish();
     }
@@ -372,6 +399,8 @@ public class OmniboxPedalsTest {
         // Make sure the history setting page was opened.
         Assert.assertNotNull("Could not find the history activity", historyActivity);
 
+        verifyHistogram(OmniboxPedalType.VIEW_CHROME_HISTORY);
+
         historyActivity.finish();
     }
 
@@ -392,12 +421,9 @@ public class OmniboxPedalsTest {
                 locationBarLayout, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
-        // Make sure the manage accessibility setting page was opened.
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(AccessibilitySettings.class));
-        });
+        checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, AccessibilitySettings.class);
+
+        verifyHistogram(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
 
         settingsActivity.finish();
     }
@@ -423,5 +449,7 @@ public class OmniboxPedalsTest {
             Criteria.checkThat(
                     tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.CHROME_DINO_URL));
         });
+
+        verifyHistogram(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
     }
 }

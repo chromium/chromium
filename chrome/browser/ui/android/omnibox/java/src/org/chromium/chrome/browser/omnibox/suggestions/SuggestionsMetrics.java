@@ -9,6 +9,7 @@ import android.os.Debug;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * This class collects a variety of different Suggestions related metrics.
  */
-class SuggestionsMetrics {
+public class SuggestionsMetrics {
     // The expected range for measure and layout durations.
     // If the combination of (N*Create)+Measure+Layout, where N is a maximum number of suggestions
     // exceeds:
@@ -149,5 +150,25 @@ class SuggestionsMetrics {
     static final void recordRefineActionUsage(@RefineActionUsage int refineActionUsage) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Omnibox.RefineActionUsage", refineActionUsage, RefineActionUsage.COUNT);
+    }
+
+    /**
+     * Record the pedal shown when the user used the omnibox to go somewhere.
+     *
+     * @param type the shown pedal's {@link OmniboxActionType}.
+     */
+    public static final void recordPedalShown(@OmniboxPedalType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.PedalShown", type, OmniboxPedalType.TOTAL_COUNT);
+    }
+
+    /**
+     * Record a pedal is used.
+     *
+    @param omniboxActionType the clicked pedal's {@link OmniboxActionType}.
+     */
+    public static final void recordPedalUsed(@OmniboxPedalType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.SuggestionUsed.Pedal", type, OmniboxPedalType.TOTAL_COUNT);
     }
 }
