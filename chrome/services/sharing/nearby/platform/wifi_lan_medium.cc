@@ -427,6 +427,13 @@ void WifiLanMedium::OnFirewallHoleCreated(
 // End: ListenForService()
 /*============================================================================*/
 
+absl::optional<std::pair<std::int32_t, std::int32_t>>
+WifiLanMedium::GetDynamicPortRange() {
+  return std::pair<std::int32_t, std::int32_t>(
+      ash::nearby::TcpServerSocketPort::kMin,
+      ash::nearby::TcpServerSocketPort::kMax);
+}
+
 /*============================================================================*/
 // Begin: Not implemented
 /*============================================================================*/
@@ -446,11 +453,6 @@ bool WifiLanMedium::StartDiscovery(const std::string& service_type,
 bool WifiLanMedium::StopDiscovery(const std::string& service_type) {
   NOTIMPLEMENTED();
   return false;
-}
-absl::optional<std::pair<std::int32_t, std::int32_t>>
-WifiLanMedium::GetDynamicPortRange() {
-  NOTIMPLEMENTED();
-  return absl::nullopt;
 }
 /*============================================================================*/
 // End: Not implemented

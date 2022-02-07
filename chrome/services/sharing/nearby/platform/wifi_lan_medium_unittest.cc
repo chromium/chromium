@@ -568,6 +568,16 @@ TEST_F(WifiLanMediumTest, Listen_DestroyWhileWaiting) {
 // End: ListenForService()
 /*============================================================================*/
 
+TEST_F(WifiLanMediumTest, GetDynamicPortRange) {
+  Initialize(WifiInitState::kComplete);
+
+  absl::optional<std::pair<std::int32_t, std::int32_t>> port_range =
+      wifi_lan_medium_->GetDynamicPortRange();
+
+  EXPECT_EQ(ash::nearby::TcpServerSocketPort::kMin, port_range->first);
+  EXPECT_EQ(ash::nearby::TcpServerSocketPort::kMax, port_range->second);
+}
+
 }  // namespace chrome
 }  // namespace nearby
 }  // namespace location
