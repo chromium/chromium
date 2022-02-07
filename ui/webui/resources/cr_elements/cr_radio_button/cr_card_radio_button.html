@@ -11,11 +11,19 @@
     <style include="cr-radio-button-style">
       :host {
         background-color: var(--cr-card-background-color);
-        border: solid 2px;
         border-radius: 8px;
         box-shadow: var(--cr-elevation-1);
         margin: var(--cr-card-radio-button-margin, 8px);
         width: var(--cr-card-radio-button-width, 200px);
+        --focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
+        --hover-bg-color: rgba(var(--google-blue-500-rgb), .04);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --focus-shadow-color: rgba(var(--google-blue-300-rgb), .5);
+          --hover-bg-color: rgba(var(--google-blue-300-rgb), .08);
+        }
       }
 
       /* Overwrite paper-ripple defined in cr-radio-button-style
@@ -34,19 +42,19 @@
         width: var(--paper-ripple-width);
       }
 
-      :host([checked]) {
-        border-color: var(--cr-checked-color);
-      }
-
-      :host(:not([checked])) {
-        border-color: var(--cr-card-background-color);
-      }
-
       #button {
         height: var(--cr-card-radio-button-height, auto);
         padding: var(--cr-card-radio-button-padding, 24px);
         position: relative;
         width: 100%;
+      }
+
+      :host-context(.focus-outline-visible) #button:focus {
+        box-shadow: 0 0 0 2px var(--focus-shadow-color);
+      }
+
+      #button:hover {
+        background-color: var(--hover-bg-color);
       }
 
       #checkMark {
