@@ -631,6 +631,13 @@
         {}
        ]
       ],
+      "math-block-container-child-crash.html": [
+       "00b6836655e904f1f0d64f7e3f42afaf02fc351b",
+       [
+        null,
+        {}
+       ]
+      ],
       "pseudo-container-crash.html": [
        "f998c3a4464ca3eb3ce07687cf24d9dcdc9a16af",
        [
@@ -233766,6 +233773,10 @@
       "7de4ae2e6a5093fce5cc4405c0f1b92bf5f0981a",
       []
      ],
+     "domain-attribute-idn-host.sub.https-expected.txt": [
+      "a557114d331eeecd63bb2d426e70725b3e2ecce8",
+      []
+     ],
      "domain-attribute-matches-host.sub.https.html.sub.headers": [
       "8a2329e8c2f7fdd09847ae8a51e543e4b9495c87",
       []
@@ -233773,7 +233784,17 @@
      "domain-attribute-missing.sub.html.headers": [
       "3ee2833a45297755fc50dfa9848b124cc3c5dd8f",
       []
-     ]
+     ],
+     "support": {
+      "idn-child.sub.https.html": [
+       "d3510959fb018c7d11571c2608c9453e74c69d06",
+       []
+      ],
+      "idn.py": [
+       "d75ed056f527acb7291eb9a245065a5426b0e014",
+       []
+      ]
+     }
     },
     "ordering": {
      "resources": {
@@ -279093,7 +279114,7 @@
       []
      ],
      "testharness-tutorial.md": [
-      "72d88b1b5dec8613a85a1fecbee7904efa708610",
+      "6689ad53415891e516d04d14549ca708faa3d2a9",
       []
      ],
      "testharness.md": [
@@ -315345,7 +315366,7 @@
       []
      ],
      "test-utils.js": [
-      "0b112a377bd1a0e6b668fb3b29659e13a4b605d6",
+      "88a671b08bf8820685709580e8631b615650721d",
       []
      ]
     },
@@ -326090,7 +326111,7 @@
       ]
      ],
      "Blob-stream.any.js": [
-      "792b6639c35a265de4902af83ab5724a178ae8a9",
+      "08cca8dbe687b8d5e31cbee6a877886ef9c09324",
       [
        "FileAPI/blob/Blob-stream.any.html",
        {
@@ -356896,6 +356917,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "domain-attribute-idn-host.sub.https.html": [
+      "ae4bf3cbb39ee0bea14b24c328a7a443221efbc2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "domain-attribute-matches-host.sub.https.html": [
@@ -508127,7 +508157,7 @@
       ]
      ],
      "garbage-collection.any.js": [
-      "622b3ff74bfa0deb385eb69397fc63f60725651f",
+      "f7e2d06ae5cdf362591699f52a938da7c714ecd9",
       [
        "streams/readable-streams/garbage-collection.any.html",
        {

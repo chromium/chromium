@@ -47,8 +47,11 @@ self.constructorThrowsForAll = (constructor, firstArgs) => {
                                                  'constructor should throw a TypeError'));
 };
 
-self.garbageCollect = () => {
-  if (self.gc) {
+self.garbageCollect = async () => {
+  if (self.testUtils?.gc) {
+    // https://testutils.spec.whatwg.org/#the-testutils-object
+    await testUtils.gc();
+  } else if (self.gc) {
     // Use --expose_gc for V8 (and Node.js)
     // to pass this flag at chrome launch use: --js-flags="--expose-gc"
     // Exposed in SpiderMonkey shell as well
