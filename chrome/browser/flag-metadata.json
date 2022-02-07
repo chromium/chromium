@@ -2045,7 +2045,7 @@
   {
     "name": "enable-first-party-sets",
     "owners": [ "chrome-first-party-sets@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 110
   },
   {
     "name": "enable-force-dark",
