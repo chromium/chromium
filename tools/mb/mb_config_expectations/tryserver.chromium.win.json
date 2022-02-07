@@ -229,6 +229,16 @@
       "use_libfuzzer": true
     }
   },
+  "win10-clang-tidy-rel": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_goma": true
+    }
+  },
   "win10-rel-orchestrator": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
