@@ -176,6 +176,19 @@ constexpr CGFloat kContentMaxWidth = 500;
       lowPriorityWidthConstraint
     ]];
     scrollViewBottomAnchor = actionStackView.topAnchor;
+
+    GradientView* gradientView = [self createGradientView];
+    [self.view addSubview:gradientView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [gradientView.bottomAnchor
+          constraintEqualToAnchor:actionStackView.topAnchor],
+      [gradientView.leadingAnchor
+          constraintEqualToAnchor:scrollView.leadingAnchor],
+      [gradientView.trailingAnchor
+          constraintEqualToAnchor:scrollView.trailingAnchor],
+      [gradientView.heightAnchor constraintEqualToConstant:kGradientHeight],
+    ]];
   }
 
   [NSLayoutConstraint activateConstraints:@[
@@ -232,19 +245,6 @@ constexpr CGFloat kContentMaxWidth = 500;
                      multiplier:imageAspectRatio];
     self.imageViewAspectRatioConstraint.active = YES;
   }
-
-  GradientView* gradientView = [self createGradientView];
-  [self.view addSubview:gradientView];
-
-  // GradientView  constraints.
-  [NSLayoutConstraint activateConstraints:@[
-    [gradientView.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
-    [gradientView.leadingAnchor
-        constraintEqualToAnchor:scrollView.leadingAnchor],
-    [gradientView.trailingAnchor
-        constraintEqualToAnchor:scrollView.trailingAnchor],
-    [gradientView.heightAnchor constraintEqualToConstant:kGradientHeight],
-  ]];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
