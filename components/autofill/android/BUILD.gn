@@ -14,6 +14,48 @@ java_strings_grd("autofill_strings_grd") {
                 [ "values-{{source_name_part}}/autofill_strings.xml" ])
 }
 
+android_resources("autofill_payments_java_resources") {
+  sources = [
+    "payments/java/res/drawable-hdpi/amex_card.png",
+    "payments/java/res/drawable-hdpi/diners_card.png",
+    "payments/java/res/drawable-hdpi/jcb_card.png",
+    "payments/java/res/drawable-hdpi/mc_card.png",
+    "payments/java/res/drawable-hdpi/troy_card.png",
+    "payments/java/res/drawable-hdpi/unionpay_card.png",
+    "payments/java/res/drawable-mdpi/amex_card.png",
+    "payments/java/res/drawable-mdpi/diners_card.png",
+    "payments/java/res/drawable-mdpi/jcb_card.png",
+    "payments/java/res/drawable-mdpi/mc_card.png",
+    "payments/java/res/drawable-mdpi/troy_card.png",
+    "payments/java/res/drawable-mdpi/unionpay_card.png",
+    "payments/java/res/drawable-xhdpi/amex_card.png",
+    "payments/java/res/drawable-xhdpi/diners_card.png",
+    "payments/java/res/drawable-xhdpi/jcb_card.png",
+    "payments/java/res/drawable-xhdpi/mc_card.png",
+    "payments/java/res/drawable-xhdpi/troy_card.png",
+    "payments/java/res/drawable-xhdpi/unionpay_card.png",
+    "payments/java/res/drawable-xxhdpi/amex_card.png",
+    "payments/java/res/drawable-xxhdpi/diners_card.png",
+    "payments/java/res/drawable-xxhdpi/jcb_card.png",
+    "payments/java/res/drawable-xxhdpi/mc_card.png",
+    "payments/java/res/drawable-xxhdpi/troy_card.png",
+    "payments/java/res/drawable-xxhdpi/unionpay_card.png",
+    "payments/java/res/drawable-xxxhdpi/amex_card.png",
+    "payments/java/res/drawable-xxxhdpi/diners_card.png",
+    "payments/java/res/drawable-xxxhdpi/jcb_card.png",
+    "payments/java/res/drawable-xxxhdpi/mc_card.png",
+    "payments/java/res/drawable-xxxhdpi/troy_card.png",
+    "payments/java/res/drawable-xxxhdpi/unionpay_card.png",
+    "payments/java/res/drawable/discover_card.xml",
+    "payments/java/res/drawable/elo_card.xml",
+    "payments/java/res/drawable/google_pay_plex.xml",
+    "payments/java/res/drawable/ic_credit_card_black.xml",
+    "payments/java/res/drawable/mir_card.xml",
+    "payments/java/res/drawable/visa_card.xml",
+  ]
+  deps = [ "//ui/android:ui_java_resources" ]
+}
+
 android_resources("autofill_java_resources") {
   sources = [
     "java/res/layout/autofill_dropdown_footer_item_refresh.xml",
@@ -46,7 +88,9 @@ java_cpp_features("java_features_srcjar") {
       "//components/autofill/android/java_templates/AutofillFeatures.java.tmpl"
 }
 
-android_library("full_autofill_java") {
+# We intentionally do not include :autofill_payments_java_resources not to
+# bloat targets that may not require it.
+android_library("main_autofill_java") {
   deps = [
     ":autofill_java_resources",
     ":payments_autofill_java",
@@ -86,7 +130,7 @@ android_library("payments_autofill_java") {
 
 java_group("autofill_java") {
   deps = [
-    ":full_autofill_java",
+    ":main_autofill_java",
     ":payments_autofill_java",
   ]
 }
