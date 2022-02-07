@@ -5,14 +5,21 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_MOUSE_CAPTURE_DELEGATE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_MOUSE_CAPTURE_DELEGATE_H_
 
+#if defined(__OBJC__)
 @class NSEvent;
 @class NSWindow;
+#else
+class NSEvent;
+class NSWindow;
+#endif
 
 namespace remote_cocoa {
 
 // Delegate for receiving captured events from a CocoaMouseCapture.
 class CocoaMouseCaptureDelegate {
  public:
+  virtual ~CocoaMouseCaptureDelegate() = default;
+
   // Called when an event has been captured. This may be an event local to the
   // application, or a global event (sent to another application). If it is a
   // local event, regular event handling will be suppressed.

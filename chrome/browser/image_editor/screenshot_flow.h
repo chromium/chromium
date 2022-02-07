@@ -116,6 +116,7 @@ class ScreenshotFlow : public content::WebContentsObserver,
   // ui:EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnScrollEvent(ui::ScrollEvent* event) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -166,6 +167,10 @@ class ScreenshotFlow : public content::WebContentsObserver,
 
   // Requests to set the cursor type.
   void SetCursor(ui::mojom::CursorType cursor_type);
+
+  // Attempts to capture the region defined by |drag_start_| and |drag_end_|
+  // while also making sure the points are within the web contents view bounds.
+  void AttemptRegionCapture(gfx::Rect view_bounds);
 
   base::WeakPtr<ScreenshotFlow> weak_this_;
 

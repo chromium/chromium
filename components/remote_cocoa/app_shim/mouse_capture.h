@@ -9,7 +9,11 @@
 
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
+#if defined(__OBJC__)
 @class NSWindow;
+#else
+class NSWindow;
+#endif
 
 namespace remote_cocoa {
 
