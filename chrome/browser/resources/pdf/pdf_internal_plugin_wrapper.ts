@@ -6,13 +6,16 @@ import {Point} from './constants.js';
 import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 import {ViewportScroller} from './viewport_scroller.js';
 
+interface InProcessPdfPluginElement extends HTMLEmbedElement {
+  postMessage(message: any): void;
+}
+
 const channel = new MessageChannel();
 
-const sizer = document.querySelector('#sizer');
-const plugin =
-    /** @type {!HTMLEmbedElement} */ (document.querySelector('embed'));
+const sizer = document.querySelector<HTMLElement>('#sizer')!;
+const plugin = document.querySelector<InProcessPdfPluginElement>('embed')!;
 
-const srcUrl = new URL(plugin.getAttribute('src'));
+const srcUrl = new URL(plugin.src);
 let parentOrigin = srcUrl.origin;
 if (parentOrigin === 'chrome-untrusted://print') {
   // Within Print Preview, the source origin differs from the parent origin.
@@ -24,13 +27,11 @@ if (parentOrigin === 'chrome-untrusted://print') {
  * operations.
  */
 class SimulatedViewport {
-  /** @return {!Point} */
-  get position() {
+  get position(): Point {
     return {x: window.scrollX, y: window.scrollY};
   }
 
-  /** @param {!Point} point */
-  setPosition(point) {
+  setPosition(point: Point): void {
     window.scrollTo(point.x, point.y);
   }
 }
@@ -41,20 +42,21 @@ const viewportScroller =
 // messages may affect this frame, too.
 let isFormFieldFocused = false;
 plugin.addEventListener('message', e => {
-  switch (e.data.type) {
+  const message = (e as MessageEvent).data;
+  switch (message.type) {
     case 'formFocusChange':
       // TODO(crbug.com/1279516): Ideally, the plugin would just consume
       // interesting keyboard events first.
-      isFormFieldFocused = /** @type {{focused:boolean}} */ (e.data).focused;
+      isFormFieldFocused = (message as {focused: boolean}).focused;
       break;
 
     case 'setIsSelecting':
       viewportScroller.setEnableScrolling(
-          /** @type {{ isSelecting: boolean }} */ (e.data).isSelecting);
+          (message as {isSelecting: boolean}).isSelecting);
       break;
   }
 
-  channel.port1.postMessage(e.data);
+  channel.port1.postMessage(message);
 });
 
 // Parent-to-plugin message handlers. Most messages are passed through, but some
@@ -143,10 +145,10 @@ window.addEventListener('scroll', () => {
 
 /**
  * Relays gesture events to the parent frame.
- * @param {!Event} e The gesture event.
+ * @param e The gesture event.
  */
-function relayGesture(e) {
-  const gestureEvent = /** @type {!CustomEvent<!PinchEventDetail>} */ (e);
+function relayGesture(e: Event): void {
+  const gestureEvent = e as CustomEvent<PinchEventDetail>;
   channel.port1.postMessage({
     type: 'gesture',
     gesture: {
@@ -242,11 +244,7 @@ document.addEventListener('keypress', e => {
 });
 
 // TODO(crbug.com/1252096): Load from pdf_viewer_utils.js instead.
-/**
- * @param {!KeyboardEvent} e
- * @return {boolean}
- */
-function hasCtrlModifier(e) {
+function hasCtrlModifier(e: KeyboardEvent): boolean {
   let hasModifier = e.ctrlKey;
   // <if expr="is_macosx">
   hasModifier = e.metaKey;  // AKA Command.
@@ -255,10 +253,6 @@ function hasCtrlModifier(e) {
 }
 
 // TODO(crbug.com/1252096): Load from chrome://resources/js/util.m.js instead.
-/**
- * @param {!Event} e
- * @return {boolean}
- */
-function hasKeyModifiers(e) {
+function hasKeyModifiers(e: KeyboardEvent): boolean {
   return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
 }

@@ -11,7 +11,7 @@ pdf_non_webcomponents_files = [
   "local_storage_proxy.js",
   "navigator.js",
   "pdf_viewer_wrapper.js",
-  "pdf_internal_plugin_wrapper.js",
+  "pdf_internal_plugin_wrapper.ts",
 ]
 
 if (enable_ink) {
