@@ -10,6 +10,8 @@
 
 #include "base/check_op.h"
 #include "base/component_export.h"
+#include "base/files/file_path.h"
+#include "base/native_library.h"
 #include "gpu/config/vulkan_info.h"
 #include "ui/gfx/extension_set.h"
 
@@ -29,8 +31,17 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
   // The extensions in |required_extensions| and the layers in |required_layers|
   // will be enabled in the created instance. See the "Extended Functionality"
   // section of vulkan specification for more information.
-  bool Initialize(const std::vector<const char*>& required_extensions,
+  bool Initialize(const base::FilePath& vulkan_loader_library_path,
+                  const std::vector<const char*>& required_extensions,
                   const std::vector<const char*>& required_layers);
+
+  // These are the steps of `Initialize`. Most caller can use Initialize
+  // directly. These are useful if unassigned functions are needed to compute
+  // `required_extensions` or `required_layers`.
+  bool BindUnassignedFunctionPointers(
+      const base::FilePath& vulkan_loader_library_path);
+  bool InitializeInstace(const std::vector<const char*>& required_extensions,
+                         const std::vector<const char*>& required_layers);
 
   const VulkanInfo& vulkan_info() const { return vulkan_info_; }
 
@@ -52,9 +63,10 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
 
   VulkanInfo vulkan_info_;
 
+  base::NativeLibrary loader_library_ = nullptr;
+
   VkInstance owned_vk_instance_ = VK_NULL_HANDLE;
   VkInstance vk_instance_ = VK_NULL_HANDLE;
-  bool init_called_ = false;
   bool debug_report_enabled_ = false;
 #if DCHECK_IS_ON()
   VkDebugReportCallbackEXT error_callback_ = VK_NULL_HANDLE;

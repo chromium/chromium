@@ -40,22 +40,17 @@ bool InitVulkanForWebView(VkInstance instance,
 
   // If we are re-initing, we don't need to re-load the shared library or
   // re-bind unassociated pointers. These shouldn't change.
-  bool need_bind_unassigned = false;
-  {
-    base::AutoLock lock(vulkan_function_pointers->write_lock);
-    if (!vulkan_function_pointers->vulkan_loader_library) {
-      base::NativeLibraryLoadError native_library_load_error;
-      vulkan_function_pointers->vulkan_loader_library = base::LoadNativeLibrary(
-          base::FilePath("libvulkan.so"), &native_library_load_error);
-      if (!vulkan_function_pointers->vulkan_loader_library)
-        return false;
-    }
-    need_bind_unassigned = !vulkan_function_pointers->vkGetInstanceProcAddr;
-  }
-
-  if (need_bind_unassigned) {
-    if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
+  if (!vulkan_function_pointers->vkGetInstanceProcAddr) {
+    base::NativeLibraryLoadError native_library_load_error;
+    base::NativeLibrary vulkan_loader_library = base::LoadNativeLibrary(
+        base::FilePath("libvulkan.so"), &native_library_load_error);
+    if (!vulkan_loader_library)
       return false;
+    if (!vulkan_function_pointers
+             ->BindUnassociatedFunctionPointersFromLoaderLib(
+                 vulkan_loader_library)) {
+      return false;
+    }
   }
 
   // These vars depend on |instance| and |device| and should be

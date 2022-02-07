@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/native_library.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_instance.h"
@@ -25,21 +24,15 @@ VulkanImplementationGbm::~VulkanImplementationGbm() {}
 
 bool VulkanImplementationGbm::InitializeVulkanInstance(bool using_surface) {
   DLOG_IF(ERROR, using_surface) << "VK_KHR_surface is not supported.";
-  gpu::VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
-
-  base::NativeLibraryLoadError native_library_load_error;
-  vulkan_function_pointers->vulkan_loader_library = base::LoadNativeLibrary(
-      base::FilePath("libvulkan.so.1"), &native_library_load_error);
-  if (!vulkan_function_pointers->vulkan_loader_library)
-    return false;
 
   std::vector<const char*> required_extensions = {
       "VK_KHR_external_fence_capabilities",
       "VK_KHR_get_physical_device_properties2",
   };
-  if (!vulkan_instance_.Initialize(required_extensions, {}))
+  if (!vulkan_instance_.Initialize(base::FilePath("libvulkan.so.1"),
+                                   required_extensions, {})) {
     return false;
+  }
 
   vkGetPhysicalDeviceExternalFencePropertiesKHR_ =
       reinterpret_cast<PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR>(

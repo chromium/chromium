@@ -425,8 +425,9 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunctionPointers();
   ~VulkanFunctionPointers();
 
-  bool BindUnassociatedFunctionPointers(
-      PFN_vkGetInstanceProcAddr proc = nullptr);
+  bool BindUnassociatedFunctionPointersFromLoaderLib(base::NativeLibrary lib);
+  bool BindUnassociatedFunctionPointersFromGetProcAddr(
+      PFN_vkGetInstanceProcAddr proc);
 
   // These functions assume that vkGetInstanceProcAddr has been populated.
   bool BindInstanceFunctionPointers(
@@ -439,13 +440,6 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
       VkDevice vk_device,
       uint32_t api_version,
       const gfx::ExtensionSet& enabled_extensions);
-
-  // The `Bind*` functions will acquires lock, so should not be called with
-  // with this lock held. Code that writes to members directly should take this
-  // lock as well.
-  base::Lock write_lock;
-
-  base::NativeLibrary vulkan_loader_library = nullptr;
 
   // This is used to allow thread safe access to a given vulkan queue when
   // multiple gpu threads are accessing it. Note that this map will be only
@@ -504,6 +498,15 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   WriteFunctionDeclarations(out_file, VULKAN_DEVICE_FUNCTIONS)
 
   out_file.write("""\
+
+ private:
+  bool BindUnassociatedFunctionPointersCommon();
+  // The `Bind*` functions will acquires lock, so should not be called with
+  // with this lock held. Code that writes to members directly should take this
+  // lock as well.
+  base::Lock write_lock_;
+
+  base::NativeLibrary loader_library_ = nullptr;
 };
 
 }  // namespace gpu
@@ -585,23 +588,33 @@ VulkanFunctionPointers* GetVulkanFunctionPointers() {
 VulkanFunctionPointers::VulkanFunctionPointers() = default;
 VulkanFunctionPointers::~VulkanFunctionPointers() = default;
 
-bool VulkanFunctionPointers::BindUnassociatedFunctionPointers(
-  PFN_vkGetInstanceProcAddr proc) {
-  base::AutoLock lock(write_lock);
+bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromLoaderLib(
+    base::NativeLibrary lib) {
+  base::AutoLock lock(write_lock_);
+  loader_library_ = lib;
 
-  if (proc) {
-    DCHECK(!vulkan_loader_library);
-    vkGetInstanceProcAddr = proc;
-  } else {
-    // vkGetInstanceProcAddr must be handled specially since it gets its
-    // function pointer through base::GetFunctionPOinterFromNativeLibrary().
-    // Other Vulkan functions don't do this.
-    vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
-        base::GetFunctionPointerFromNativeLibrary(vulkan_loader_library,
-                                                  "vkGetInstanceProcAddr"));
-    if (!vkGetInstanceProcAddr)
-      return false;
-  }
+  // vkGetInstanceProcAddr must be handled specially since it gets its
+  // function pointer through base::GetFunctionPOinterFromNativeLibrary().
+  // Other Vulkan functions don't do this.
+  vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
+      base::GetFunctionPointerFromNativeLibrary(loader_library_,
+                                                "vkGetInstanceProcAddr"));
+  if (!vkGetInstanceProcAddr)
+    return false;
+  return BindUnassociatedFunctionPointersCommon();
+}
+
+bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromGetProcAddr(
+  PFN_vkGetInstanceProcAddr proc) {
+  DCHECK(proc);
+  DCHECK(!loader_library_);
+
+  base::AutoLock lock(write_lock_);
+  vkGetInstanceProcAddr = proc;
+  return BindUnassociatedFunctionPointersCommon();
+}
+
+bool VulkanFunctionPointers::BindUnassociatedFunctionPointersCommon() {
 """)
 
   WriteUnassociatedFunctionPointerInitialization(
@@ -617,7 +630,7 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
-  base::AutoLock lock(write_lock);
+  base::AutoLock lock(write_lock_);
 """)
 
   WriteInstanceFunctionPointerInitialization(
@@ -633,7 +646,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
-  base::AutoLock lock(write_lock);
+  base::AutoLock lock(write_lock_);
   // Device functions
 """)
   WriteDeviceFunctionPointerInitialization(out_file, VULKAN_DEVICE_FUNCTIONS)

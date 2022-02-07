@@ -55,8 +55,9 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunctionPointers();
   ~VulkanFunctionPointers();
 
-  bool BindUnassociatedFunctionPointers(
-      PFN_vkGetInstanceProcAddr proc = nullptr);
+  bool BindUnassociatedFunctionPointersFromLoaderLib(base::NativeLibrary lib);
+  bool BindUnassociatedFunctionPointersFromGetProcAddr(
+      PFN_vkGetInstanceProcAddr proc);
 
   // These functions assume that vkGetInstanceProcAddr has been populated.
   bool BindInstanceFunctionPointers(
@@ -68,13 +69,6 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   bool BindDeviceFunctionPointers(VkDevice vk_device,
                                   uint32_t api_version,
                                   const gfx::ExtensionSet& enabled_extensions);
-
-  // The `Bind*` functions will acquires lock, so should not be called with
-  // with this lock held. Code that writes to members directly should take this
-  // lock as well.
-  base::Lock write_lock;
-
-  base::NativeLibrary vulkan_loader_library = nullptr;
 
   // This is used to allow thread safe access to a given vulkan queue when
   // multiple gpu threads are accessing it. Note that this map will be only
@@ -313,6 +307,15 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunction<PFN_vkGetImageDrmFormatModifierPropertiesEXT>
       vkGetImageDrmFormatModifierPropertiesEXT;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+ private:
+  bool BindUnassociatedFunctionPointersCommon();
+  // The `Bind*` functions will acquires lock, so should not be called with
+  // with this lock held. Code that writes to members directly should take this
+  // lock as well.
+  base::Lock write_lock_;
+
+  base::NativeLibrary loader_library_ = nullptr;
 };
 
 }  // namespace gpu

@@ -23,23 +23,33 @@ VulkanFunctionPointers* GetVulkanFunctionPointers() {
 VulkanFunctionPointers::VulkanFunctionPointers() = default;
 VulkanFunctionPointers::~VulkanFunctionPointers() = default;
 
-bool VulkanFunctionPointers::BindUnassociatedFunctionPointers(
-    PFN_vkGetInstanceProcAddr proc) {
-  base::AutoLock lock(write_lock);
+bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromLoaderLib(
+    base::NativeLibrary lib) {
+  base::AutoLock lock(write_lock_);
+  loader_library_ = lib;
 
-  if (proc) {
-    DCHECK(!vulkan_loader_library);
-    vkGetInstanceProcAddr = proc;
-  } else {
-    // vkGetInstanceProcAddr must be handled specially since it gets its
-    // function pointer through base::GetFunctionPOinterFromNativeLibrary().
-    // Other Vulkan functions don't do this.
-    vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
-        base::GetFunctionPointerFromNativeLibrary(vulkan_loader_library,
-                                                  "vkGetInstanceProcAddr"));
-    if (!vkGetInstanceProcAddr)
-      return false;
-  }
+  // vkGetInstanceProcAddr must be handled specially since it gets its
+  // function pointer through base::GetFunctionPOinterFromNativeLibrary().
+  // Other Vulkan functions don't do this.
+  vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
+      base::GetFunctionPointerFromNativeLibrary(loader_library_,
+                                                "vkGetInstanceProcAddr"));
+  if (!vkGetInstanceProcAddr)
+    return false;
+  return BindUnassociatedFunctionPointersCommon();
+}
+
+bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromGetProcAddr(
+    PFN_vkGetInstanceProcAddr proc) {
+  DCHECK(proc);
+  DCHECK(!loader_library_);
+
+  base::AutoLock lock(write_lock_);
+  vkGetInstanceProcAddr = proc;
+  return BindUnassociatedFunctionPointersCommon();
+}
+
+bool VulkanFunctionPointers::BindUnassociatedFunctionPointersCommon() {
   vkEnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(
       vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
   if (!vkEnumerateInstanceVersion) {
@@ -83,7 +93,7 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
-  base::AutoLock lock(write_lock);
+  base::AutoLock lock(write_lock_);
   vkCreateDevice = reinterpret_cast<PFN_vkCreateDevice>(
       vkGetInstanceProcAddr(vk_instance, "vkCreateDevice"));
   if (!vkCreateDevice) {
@@ -370,7 +380,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
-  base::AutoLock lock(write_lock);
+  base::AutoLock lock(write_lock_);
   // Device functions
   vkAllocateCommandBuffers = reinterpret_cast<PFN_vkAllocateCommandBuffers>(
       vkGetDeviceProcAddr(vk_device, "vkAllocateCommandBuffers"));
