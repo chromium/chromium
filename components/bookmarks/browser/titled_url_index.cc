@@ -6,10 +6,15 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <unordered_set>
+#include <utility>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "build/build_config.h"
@@ -23,6 +28,11 @@
 namespace bookmarks {
 
 namespace {
+
+// The maximum number of nodes to fetch when looking for nodes that match any
+// term (i.e. when invoking `RetrieveNodesMatchingAnyTerms()`). Parameterized
+// for testing.
+constexpr size_t kMatchingAnyTermsMaxNodes = 3000;
 
 // Returns a normalized version of the UTF16 string |text|.  If it fails to
 // normalize the string, returns |text| itself as a best-effort.
@@ -77,6 +87,8 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
     bool match_ancestor_titles) {
   const std::u16string query = Normalize(input_query);
   std::vector<std::u16string> terms = ExtractQueryWords(query);
+  if (terms.empty())
+    return {};
 
   // When |match_ancestor_titles| is true, |matches| shouldn't exclude nodes
   // that don't match every query term, as the query terms may match in the
@@ -84,8 +96,10 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   // neither match nor ancestor-match every query term.
   TitledUrlNodeSet matches =
       match_ancestor_titles
-          ? RetrieveNodesMatchingAnyTerms(terms, matching_algorithm)
+          ? RetrieveNodesMatchingAnyTerms(terms, matching_algorithm,
+                                          kMatchingAnyTermsMaxNodes)
           : RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
+
   if (matches.empty())
     return {};
 
@@ -99,20 +113,8 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   query_parser::QueryParser::ParseQueryNodes(query, matching_algorithm,
                                              &query_nodes);
 
-  // The highest typed counts should be at the beginning of the results vector
-  // so that the best matches will always be included in the results. The loop
-  // that calculates result relevance in HistoryContentsProvider::ConvertResults
-  // will run backwards to assure higher relevance will be attributed to the
-  // best matches.
-  std::vector<TitledUrlMatch> results;
-  for (TitledUrlNodes::const_iterator i = sorted_nodes.begin();
-       i != sorted_nodes.end() && results.size() < max_count; ++i) {
-    absl::optional<TitledUrlMatch> match =
-        MatchTitledUrlNodeWithQuery(*i, query_nodes, match_ancestor_titles);
-    if (match)
-      results.push_back(match.value());
-  }
-  return results;
+  return MatchTitledUrlNodesWithQuery(sorted_nodes, query_nodes, max_count,
+                                      match_ancestor_titles);
 }
 
 void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
@@ -122,6 +124,27 @@ void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
   } else {
     sorted_nodes->insert(sorted_nodes->end(), matches.begin(), matches.end());
   }
+}
+
+std::vector<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodesWithQuery(
+    const TitledUrlNodes& nodes,
+    const query_parser::QueryNodeVector& query_nodes,
+    size_t max_count,
+    bool match_ancestor_titles) {
+  // The highest typed counts should be at the beginning of the `matches` vector
+  // so that the best matches will always be included in the results. The loop
+  // that calculates match relevance in
+  // `HistoryContentsProvider::ConvertResults()` will run backwards to assure
+  // higher relevance will be attributed to the best matches.
+  std::vector<TitledUrlMatch> matches;
+  for (TitledUrlNodes::const_iterator i = nodes.begin();
+       i != nodes.end() && matches.size() < max_count; ++i) {
+    absl::optional<TitledUrlMatch> match =
+        MatchTitledUrlNodeWithQuery(*i, query_nodes, match_ancestor_titles);
+    if (match)
+      matches.emplace_back(std::move(match).value());
+  }
+  return matches;
 }
 
 absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
@@ -193,9 +216,7 @@ absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
 TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAllTerms(
     const std::vector<std::u16string>& terms,
     query_parser::MatchingAlgorithm matching_algorithm) const {
-  if (terms.empty())
-    return {};
-
+  DCHECK(!terms.empty());
   TitledUrlNodeSet matches =
       RetrieveNodesMatchingTerm(terms[0], matching_algorithm);
   for (size_t i = 1; i < terms.size() && !matches.empty(); ++i) {
@@ -210,20 +231,64 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAllTerms(
 
 TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
     const std::vector<std::u16string>& terms,
-    query_parser::MatchingAlgorithm matching_algorithm) const {
-  if (terms.empty())
-    return {};
+    query_parser::MatchingAlgorithm matching_algorithm,
+    size_t max_nodes) const {
+  DCHECK(!terms.empty());
 
-  TitledUrlNodes matches =
-      RetrieveNodesMatchingTerm(terms[0], matching_algorithm);
-  for (size_t i = 1; i < terms.size(); ++i) {
+  std::vector<TitledUrlNodes> matches_per_term;
+  for (const std::u16string& term : terms) {
+    // Use `matching_algorithm`, as opposed to exact matching, to allow inputs
+    // like 'myFolder goog' to match a 'google.com' bookmark in a 'myFolder'
+    // folder.
     TitledUrlNodes term_matches =
-        RetrieveNodesMatchingTerm(terms[i], matching_algorithm);
-    std::copy(term_matches.begin(), term_matches.end(),
-              std::back_inserter(matches));
+        RetrieveNodesMatchingTerm(term, matching_algorithm);
+    matches_per_term.push_back(std::move(term_matches));
   }
 
-  return TitledUrlNodeSet(matches);
+  // Sort `matches_per_term` least frequent first. This prevents terms like
+  // 'https', which match a lot of nodes, from wasting `max_nodes` capacity.
+  base::ranges::sort(
+      matches_per_term,
+      [](size_t first, size_t second) { return first < second; },
+      [](const auto& matches) { return matches.size(); });
+
+  // Use an `unordered_set` to avoid potentially 1000's of linear time
+  // insertions into the ordered `TitledUrlNodeSet` (i.e. `flat_set`).
+  std::unordered_set<const TitledUrlNode*> matches;
+  for (const auto& term_matches : matches_per_term) {
+    for (const TitledUrlNode* node : term_matches) {
+      matches.insert(node);
+      if (matches.size() == max_nodes)
+        break;
+    }
+    if (matches.size() == max_nodes)
+      break;
+  }
+
+  // Append all nodes that match every input term. This is necessary because
+  // with the `max_nodes` threshold above, it's possible that `matches` is
+  // missing some nodes that match every input term. Since `matches_per_term[i]`
+  // is a superset of the intersection of `matches_per_term`s, if
+  // `matches_per_term[0].size() <= max_nodes`, all of `matches_per_term[0]`,
+  // and therefore the intersection matches`, are already in `matches`.
+  TitledUrlNodeSet all_term_matches;
+  if (matches_per_term[0].size() > max_nodes) {
+    all_term_matches = matches_per_term[0];
+    for (size_t i = 1; i < matches_per_term.size() && !all_term_matches.empty();
+         ++i) {
+      // Compute intersection between the two sets.
+      base::EraseIf(all_term_matches,
+                    base::IsNotIn<TitledUrlNodeSet>(matches_per_term[i]));
+    }
+    // `all_term_matches` is the intersection of each term's node matches; the
+    // same as `RetrieveNodesMatchingAllTerms()`. We don't call the latter as a
+    // performance optimization.
+    DCHECK(all_term_matches ==
+           RetrieveNodesMatchingAllTerms(terms, matching_algorithm));
+  }
+
+  matches.insert(all_term_matches.begin(), all_term_matches.end());
+  return TitledUrlNodeSet(matches.begin(), matches.end());
 }
 
 TitledUrlIndex::TitledUrlNodes TitledUrlIndex::RetrieveNodesMatchingTerm(

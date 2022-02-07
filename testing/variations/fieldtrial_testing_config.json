@@ -2445,27 +2445,6 @@
             ]
         }
     ],
-    "DesktopOmniboxBookmarkPaths": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows",
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "OmniboxBookmarkPaths"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopReadingListAddFromDialog": [
         {
             "platforms": [
@@ -4222,14 +4201,17 @@
                     "params": {
                         "EntitySuggestionsReduceLatencyDecoderTimeout": "405",
                         "MaxZeroSuggestMatches": "10",
+                        "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
                         "OmniboxMaxURLMatches": "7",
                         "RichAutocompletionAutocompleteNonPrefixAll": "true",
                         "RichAutocompletionAutocompleteTitles": "true",
+                        "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
                         "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
                         "OmniboxAggregateShortcuts",
                         "OmniboxBlurWithEscape",
+                        "OmniboxBookmarkPaths",
                         "OmniboxClosePopupWithEscape",
                         "OmniboxDocumentProviderAso",
                         "OmniboxEntitySuggestionsReduceLatency",
@@ -4239,11 +4221,10 @@
                         "OmniboxPreserveLongerShortcutsText",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
+                        "OmniboxShortBookmarkSuggestionsByTotalInputLength",
                         "OmniboxUIExperimentMaxAutocompleteMatches"
                     ],
-                    "disable_features": [
-                        "OmniboxShortBookmarkSuggestionsByTotalInputLength"
-                    ]
+                    "disable_features": []
                 }
             ]
         },

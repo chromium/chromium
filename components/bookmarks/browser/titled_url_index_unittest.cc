@@ -236,6 +236,7 @@ TEST_F(TitledUrlIndexTest, GetResultsMatching) {
       {"abc def", "abc d", ""},
   };
   for (const TestData& test_data : data) {
+    SCOPED_TRACE("Query: " + test_data.query);
     ResetNodes();
 
     for (const std::string& title :
@@ -563,7 +564,7 @@ TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
 
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
   TitledUrlNode* node =
-      AddNode("termA termB otherTerm xyz ab", GURL("http://foo.com"));
+      AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
 
   struct TestData {
     const std::string query;
@@ -594,23 +595,24 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
 
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
   TitledUrlNode* node =
-      AddNode("termA termB otherTerm xyz ab", GURL("http://foo.com"));
+      AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
 
   struct TestData {
     const std::string query;
     const bool should_be_retrieved;
-  } data[] = {// Should return matches if any input terms match, even if not all
-              // node terms match.
-              {"term not", true},
-              // Should not return duplicate matches.
-              {"term termA termB", true},
-              // Should not early exit when there are no intermediate matches.
-              {"not term", true},
-              // Should not match midword.
-              {"ther", false},
-              // Short input terms should only return exact matches.
-              {"xy", false},
-              {"ab", true}};
+  } data[] = {
+      // Should return matches if any input terms match, even if not all node
+      // terms match.
+      {"term not", true},
+      // Should not return duplicate matches.
+      {"term term1 term2", true},
+      // Should not early exit when there are no intermediate matches.
+      {"not term", true},
+      // Should not match midword.
+      {"ther", false},
+      // Short input terms should only return exact matches.
+      {"xy", false},
+      {"ab", true}};
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
@@ -618,12 +620,63 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
         base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
-        terms, query_parser::MatchingAlgorithm::DEFAULT);
+        terms, query_parser::MatchingAlgorithm::DEFAULT, 9);
+
+    // Verify whether the node matched.
     if (test_data.should_be_retrieved) {
       EXPECT_EQ(matches.size(), 1u);
       EXPECT_TRUE(matches.contains(node));
     } else
       EXPECT_TRUE(matches.empty());
+  };
+}
+
+TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTermsMaxNodes) {
+  std::vector<TitledUrlNode*> nodes = {
+      AddNode("common11", GURL("http://foo.com")),
+      AddNode("common12", GURL("http://foo.com")),
+      AddNode("common13 uncommon", GURL("http://foo.com")),
+      AddNode("common21 uncommon1", GURL("http://foo.com")),
+      AddNode("common22 uncommon1", GURL("http://foo.com")),
+      AddNode("common23 uncommon1", GURL("http://foo.com")),
+  };
+
+  struct TestData {
+    const std::string query;
+    std::vector<int> retrieved_node_indexes;
+  } data[] = {
+      // Should not look for all-term matches if at least 1 term matches at most
+      // `max_nodes`.
+      {"uncommon1", {3, 4, 5}},
+      // Like above, but even if some terms match more than `max_nodes`. Should
+      // look for per term matches even after `max_nodes` matches have been
+      // found.
+      {"common uncommon1", {3, 4, 5}},
+      // Should look for all-term matches if all terms match more than
+      // `ma_nodes`.
+      {"uncommon", {2, 3, 4, 5}},
+      {"common", {0, 1, 2, 3, 4, 5}},
+      {"common uncommon", {2, 3, 4, 5}},
+      {"common x", {0, 1, 2}},
+      // Should not crash if no term has matches.
+      {"x", {}},
+  };
+
+  for (const TestData& test_data : data) {
+    SCOPED_TRACE("Query: " + test_data.query);
+    std::vector<std::u16string> terms =
+        base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
+        terms, query_parser::MatchingAlgorithm::DEFAULT, 3);
+
+    // Verify the correct nodes matched.
+    ASSERT_EQ(matches.size(), test_data.retrieved_node_indexes.size());
+    for (int index : test_data.retrieved_node_indexes) {
+      SCOPED_TRACE("node: " +
+                   base::UTF16ToUTF8(nodes[index]->GetTitledUrlNodeTitle()));
+      EXPECT_TRUE(matches.contains(nodes[index]));
+    }
   };
 }
 
@@ -654,12 +707,14 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
       {"pa", true, false, false},
       // Should not return matches if a term matches neither the title
       // nor ancestor.
-      {"term not parent", true, false, false}};
+      {"leaf not parent", true, false, false}};
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
     auto matches = GetResultsMatching(test_data.query, 10,
                                       test_data.match_ancestor_titles);
+
+    // Verify whether the match.
     if (test_data.should_be_retrieved) {
       EXPECT_EQ(matches.size(), 1u);
       EXPECT_EQ(matches[0].node, node);
