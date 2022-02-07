@@ -31,7 +31,7 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // The entry of prerender.
   // Calling this method will lead to the cancellation of the previous prerender
-  // if the given `match`'s search terms are differ from the ongoing one's.
+  // if the given `match`'s search terms differ from the ongoing one's.
   // TODO(https://crbug.com/1278634): return a TriggerResult enum so that
   // callers can record some metrics if they want.
   void StartPrerenderAutocompleteMatch(const AutocompleteMatch& match);

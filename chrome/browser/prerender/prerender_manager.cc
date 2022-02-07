@@ -45,6 +45,7 @@ bool IsSearchDestinationMatch(const std::u16string& prerendered_search_terms,
 }
 
 }  // namespace
+
 PrerenderManager::~PrerenderManager() = default;
 
 void PrerenderManager::PrimaryPageChanged(content::Page& page) {
@@ -70,7 +71,7 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
                           std::ref(*web_contents()));
 
   // TODO(https://crbug.com/1278634): Make up a destination url based on
-  // DefaultSearchProvider. This can be differ from `match.destination_url`.
+  // DefaultSearchProvider. This can differ from `match.destination_url`.
   search_prerender_handle_ = web_contents()->StartPrerendering(
       match.destination_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kDefaultSearchEngineMetricSuffix,

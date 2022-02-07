@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerender_url);
 }
 
-// Test that prerender maintain the previous prerendered page if the new
+// Tests that prerender maintain the previous prerendered page if the new
 // prerendering aims to load a same url to the prerendered page.
 IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
                        SameSuggestion) {
