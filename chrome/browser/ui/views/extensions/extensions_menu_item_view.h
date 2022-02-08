@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/extensions/extension_site_access_combobox_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -15,9 +16,13 @@ class Browser;
 class ExtensionContextMenuController;
 class ExtensionsMenuButton;
 class HoverButton;
-class Profile;
 class ToolbarActionViewController;
 class ToolbarActionsModel;
+class ExtensionSiteAccessComboboxModel;
+
+namespace views {
+class Combobox;
+}  // namespace views
 
 // ExtensionsMenuItemView is a single row inside the extensions menu for a
 // particular extension. Includes information about the extension in addition to
@@ -51,6 +56,9 @@ class ExtensionsMenuItemView : public views::View {
   // views::View:
   void OnThemeChanged() override;
 
+  // Updates the controller and child views to be on sync with the parent views.
+  void Update();
+
   // Updates the pin button. `item_type_` must be `ItemType::kExtensions`.
   void UpdatePinButton();
 
@@ -76,6 +84,9 @@ class ExtensionsMenuItemView : public views::View {
     return context_menu_button_;
   }
   HoverButton* pin_button_for_testing() { return pin_button_; }
+  views::Combobox* site_access_combobox_for_testing() {
+    return site_access_combobox_;
+  }
 
  private:
   // Adds a pin button as a child view. `item_type_` must be
@@ -86,27 +97,44 @@ class ExtensionsMenuItemView : public views::View {
   // `ItemType::kExtensions`.
   void AddContextMenuButton();
 
+  // Adds a site access combobox as a child view. `item_type_` must be
+  // `ItemType::kSiteAccess`.
+  void AddSiteAccessCombobox();
+
+  // Handles the selection of a combobox option. `item_type_` must be
+  // `ItemType::kSiteAccess`.
+  void OnComboboxSelectionChanged();
+
   // Maybe adjust |icon_color| to assure high enough contrast with the
   // background.
   SkColor GetAdjustedIconColor(SkColor icon_color) const;
 
+  // Determines which views will be added as children of this item view.
   const MenuItemType item_type_;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Browser> browser_;
 
+  // Extension action button present in `ItemType::kSiteAccess` and
+  // `ItemType::kExtensions`.
   const raw_ptr<ExtensionsMenuButton> primary_action_button_;
-
-  std::unique_ptr<ToolbarActionViewController> controller_;
-
-  raw_ptr<HoverButton> context_menu_button_ = nullptr;
-
-  const raw_ptr<ToolbarActionsModel> model_;
-
+  // Pin button present in `ItemType::kExtensions`.
   raw_ptr<HoverButton> pin_button_ = nullptr;
+  // Context menu button present in `ItemType::kExtensions`.
+  raw_ptr<HoverButton> context_menu_button_ = nullptr;
+  // Dropdown list present in `ItemType::kSiteAccess`.
+  raw_ptr<views::Combobox> site_access_combobox_ = nullptr;
 
-  // This controller is responsible for showing the context menu for an
-  // extension.
+  // Controller responsible for an action that is shown in the toolbar.
+  std::unique_ptr<ToolbarActionViewController> controller_;
+  // Controller responsible for showing the context menu for an extension.
   std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;
+
+  // Model for the browser actions toolbar that provides information such as the
+  // action pin status or visibility.
+  const raw_ptr<ToolbarActionsModel> model_;
+  // Model for `site_access_combobox_` to select an option.
+  raw_ptr<ExtensionSiteAccessComboboxModel> site_access_combobox_model_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_ITEM_VIEW_H_

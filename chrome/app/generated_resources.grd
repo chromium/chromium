@@ -4713,6 +4713,15 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSION_ACTION_INSPECT_POPUP" desc="The text for the right-click menu of page and browser actions which shows the popup and opens the developer tools (sentence case).">
             Inspect popup
           </message>
+          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_CLICK" desc="The label in an extension's site access combobox to allow the extension access to the page only when the user click on the extension action (sentence case).">
+            When I click the extension
+          </message>
+          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_SITE" desc="The label in an extension's site access combobox to always allow the extension access to the current origin (sentence case).">
+            Always
+          </message>
+          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_ALL_SITES" desc="The label in an extension's site access combobox to always allow the extension access on all sites (sentence case).">
+            Always on all sites
+          </message>
         </if>
         <if expr="use_titlecase">
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE" desc="The label in an extension's context menu indicating the extension cannot access the current page. (title case)">
@@ -4768,6 +4777,15 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_EXTENSION_ACTION_INSPECT_POPUP" desc="The text for the right-click menu of page and browser actions which shows the popup and opens the developer tools (title case).">
             Inspect Popup
+          </message>
+          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_CLICK" desc="The label in an extension's site access combobox to allow the extension access to the page only when the user click on the extension action (title case).">
+            When I Click the Extension
+          </message>
+          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_SITE" desc="The label in an extension's site access combobox to always allow the extension access to the current origin (title case).">
+            Always
+          </message>
+          <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX_RUN_ON_ALL_SITES" desc="The label in an extension's site access combobox to always allow the extension access on all sites (title case).">
+            Always on All Sites
           </message>
         </if>
       </if>
@@ -6586,6 +6604,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCNAME_MUTE_TAB" desc="The accessible name for the Mute tab button.">
         Mute tab
+      </message>
+      <message name="IDS_ACCNAME_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX" desc="The accessible name for the extension's site access combobox in the extensions menu.">
+        Site Access Option
       </message>
 
       <!-- Clipboard permission -->

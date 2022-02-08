@@ -5126,6 +5126,8 @@ static_library("ui") {
       "extensions/extension_removal_watcher.h",
       "extensions/extension_settings_overridden_dialog.cc",
       "extensions/extension_settings_overridden_dialog.h",
+      "extensions/extension_site_access_combobox_model.cc",
+      "extensions/extension_site_access_combobox_model.h",
       "extensions/extensions_container.h",
       "extensions/hosted_app_browser_controller.cc",
       "extensions/hosted_app_browser_controller.h",

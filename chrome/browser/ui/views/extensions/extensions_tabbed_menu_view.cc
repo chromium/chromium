@@ -112,7 +112,8 @@ int FindIndex(const std::u16string extension_name, views::View* parent_view) {
 // Updates the `item_view` state and its position under `parent_view`.
 void UpdateMenuItemView(ExtensionsMenuItemView* item_view,
                         views::View* parent_view) {
-  item_view->view_controller()->UpdateState();
+  item_view->Update();
+
   int new_index =
       FindIndex(item_view->view_controller()->GetActionName(), parent_view);
   parent_view->ReorderChildView(item_view, new_index);
@@ -366,20 +367,22 @@ void ExtensionsTabbedMenuView::Populate() {
 }
 
 void ExtensionsTabbedMenuView::Update() {
-  auto update_items = [](views::View* parent_view) {
-    for (views::View* view : parent_view->children()) {
-      auto* item_view = GetAsMenuItemView(view);
-      UpdateMenuItemView(item_view, parent_view);
-    }
-  };
+  // An extension that previously did not want access, and therefore was not in
+  // a site access section, may want access now. This means moving existent
+  // items between sections is not sufficient. Therefore, we need to clear the
+  // site access sections and re-insert items in the correct place.
+  requests_access_.items->RemoveAllChildViews();
+  has_access_.items->RemoveAllChildViews();
 
-  update_items(installed_items_);
-  update_items(requests_access_.items);
-  update_items(has_access_.items);
-
-  MoveItemsBetweenSectionsIfNecessary();
+  for (views::View* view : installed_items_->children()) {
+    auto* item_view = GetAsMenuItemView(view);
+    UpdateMenuItemView(item_view, installed_items_);
+    MaybeCreateAndInsertSiteAccessItem(item_view->view_controller()->GetId());
+  }
 
   UpdateSiteAccessSectionsVisibility();
+
+  ConsistencyCheck();
 }
 
 void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
@@ -578,21 +581,25 @@ void ExtensionsTabbedMenuView::ConsistencyCheck() {
 #if DCHECK_IS_ON()
   const base::flat_set<std::string>& action_ids = toolbar_model_->action_ids();
 
-  // Check that all items are owned by the view hierarchy, and that each
-  // corresponds to an item in the model.
-  std::vector<std::u16string> installed_items_names;
-  for (views::View* view : installed_items_->children()) {
-    DCHECK(Contains(view));
-    auto* installed_item_view = GetAsMenuItemView(view);
-    DCHECK(base::Contains(action_ids,
-                          installed_item_view->view_controller()->GetId()));
-    installed_items_names.push_back(base::i18n::ToLower(
-        installed_item_view->view_controller()->GetActionName()));
-  }
+  auto check_items = [action_ids, this](views::View* parent_view) {
+    // Check that all items are owned by the view hierarchy, and that each
+    // corresponds to an item in the model.
+    std::vector<std::u16string> item_names;
+    for (views::View* view : parent_view->children()) {
+      DCHECK(Contains(view));
+      auto* item_view = GetAsMenuItemView(view);
+      DCHECK(base::Contains(action_ids, item_view->view_controller()->GetId()));
+      item_names.push_back(
+          base::i18n::ToLower(item_view->view_controller()->GetActionName()));
+    }
 
-  // Verify that all installed extensions are properly sorted.
-  DCHECK(std::is_sorted(installed_items_names.begin(),
-                        installed_items_names.end()));
+    // Verify that all items are properly sorted.
+    DCHECK(std::is_sorted(item_names.begin(), item_names.end()));
+  };
+
+  check_items(installed_items_);
+  check_items(requests_access_.items);
+  check_items(has_access_.items);
 #endif
 }
 

@@ -8031,6 +8031,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Toolbar.SiteAccessCombobox.OnAllSitesSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user selected run on all sites using the extension's site access
+    combobox in the Extensions Menu. This is recorded for both keyboard and
+    mouse activation.
+  </description>
+</action>
+
+<action name="Extensions.Toolbar.SiteAccessCombobox.OnClickSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user selected run on click using the extension's site access combobox in
+    the Extensions Menu. This is recorded for both keyboard and mouse
+    activation.
+  </description>
+</action>
+
+<action name="Extensions.Toolbar.SiteAccessCombobox.OnSiteSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user selected run on site using the extension's site access combobox in
+    the Extensions Menu. This is recorded for both keyboard and mouse
+    activation.
+  </description>
+</action>
+
 <action name="Extensions.UninstallDialogCancelClick">
   <owner>archanasimha@chromium.org</owner>
   <description>
