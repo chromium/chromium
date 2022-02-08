@@ -932,13 +932,6 @@ void Textfield::OnDragExited() {
   SchedulePaint();
 }
 
-DragOperation Textfield::OnPerformDrop(const ui::DropTargetEvent& event) {
-  auto cb = Textfield::GetDropCallback(event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback Textfield::GetDropCallback(
     const ui::DropTargetEvent& event) {
   DCHECK(CanDrop(event.data()));

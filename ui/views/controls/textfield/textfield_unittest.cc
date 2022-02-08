@@ -1967,7 +1967,10 @@ TEST_F(TextfieldTest, DragAndDrop_AcceptDrop) {
       ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE);
   EXPECT_EQ(ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE,
             textfield_->OnDragUpdated(drop));
-  EXPECT_EQ(ui::mojom::DragOperation::kCopy, textfield_->OnPerformDrop(drop));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = textfield_->GetDropCallback(drop);
+  std::move(cb).Run(drop, output_drag_op);
+  EXPECT_EQ(ui::mojom::DragOperation::kCopy, output_drag_op);
   EXPECT_EQ(u"hello string world", textfield_->GetText());
 
   // Ensure that textfields do not accept non-OSExchangeData::STRING types.
@@ -2060,7 +2063,10 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheRight) {
   EXPECT_TRUE(textfield_->CanDrop(data));
   ui::DropTargetEvent drop_a(data, kDropPoint, kDropPoint, operations);
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
-  EXPECT_EQ(ui::mojom::DragOperation::kMove, textfield_->OnPerformDrop(drop_a));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = textfield_->GetDropCallback(drop_a);
+  std::move(cb).Run(drop_a, output_drag_op);
+  EXPECT_EQ(ui::mojom::DragOperation::kMove, output_drag_op);
   EXPECT_EQ(u"h welloorld", textfield_->GetText());
   textfield_->OnDragDone();
 
@@ -2111,7 +2117,10 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   gfx::PointF drop_point(GetCursorPositionX(1), cursor_y);
   ui::DropTargetEvent drop_a(data, drop_point, drop_point, operations);
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
-  EXPECT_EQ(ui::mojom::DragOperation::kMove, textfield_->OnPerformDrop(drop_a));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = textfield_->GetDropCallback(drop_a);
+  std::move(cb).Run(drop_a, output_drag_op);
+  EXPECT_EQ(ui::mojom::DragOperation::kMove, output_drag_op);
   EXPECT_EQ(u"h worlellod", textfield_->GetText());
   textfield_->OnDragDone();
 
@@ -2128,45 +2137,6 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   EXPECT_EQ(u"h worlellod", textfield_->GetText());
   SendKeyEvent(ui::VKEY_Z, true, true);
   EXPECT_EQ(u"h worlellod", textfield_->GetText());
-}
-
-TEST_F(TextfieldTest, DropCallbackRun) {
-  InitTextfield();
-  textfield_->SetText(u"hello world");
-  const int cursor_y = GetCursorYForTesting();
-
-  std::u16string string;
-  ui::OSExchangeData data;
-  int formats = 0;
-  int operations = 0;
-  std::set<ui::ClipboardFormatType> format_types;
-
-  // Start dragging "hello".
-  textfield_->SetSelectedRange(gfx::Range(0, 5));
-  gfx::Point point(GetCursorPositionX(3), cursor_y);
-  MoveMouseTo(point);
-  PressLeftMouseButton();
-  EXPECT_TRUE(textfield_->CanStartDragForView(textfield_, point, gfx::Point()));
-  operations = textfield_->GetDragOperationsForView(textfield_, point);
-  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
-            operations);
-  textfield_->WriteDragDataForView(nullptr, point, &data);
-  EXPECT_TRUE(data.GetString(&string));
-  EXPECT_EQ(textfield_->GetSelectedText(), string);
-  EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
-  EXPECT_EQ(ui::OSExchangeData::STRING, formats);
-  EXPECT_TRUE(format_types.empty());
-
-  // Drop "hello" after "d".
-  EXPECT_TRUE(textfield_->CanDrop(data));
-  gfx::PointF drop_point(GetCursorPositionX(11), cursor_y);
-  ui::DropTargetEvent drop_a(data, drop_point, drop_point, operations);
-  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  auto cb = textfield_->GetDropCallback(drop_a);
-  std::move(cb).Run(drop_a, output_drag_op);
-  EXPECT_EQ(ui::mojom::DragOperation::kMove, output_drag_op);
-  EXPECT_EQ(u" worldhello", textfield_->GetText());
 }
 
 TEST_F(TextfieldTest, DropCallbackCancelled) {
