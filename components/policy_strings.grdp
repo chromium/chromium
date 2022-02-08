@@ -755,5 +755,13 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_BUBBLE_MESSAGE" desc="Text for a bubble that informs the user that their copy and paste action has been blocked/warned with a link to a help center article about Data Leak Prevention.">
     <ph name="BUBBLE_MESSAGE">$1<ex>Pasting from corp.google.com to this location is blocked by administrator policy</ex></ph>. <ph name="LEARN_MORE_TEXT">$2<ex>Learn more</ex></ph>
   </message>
-
+  <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE" desc="The title for notification informing the user that the device will restart soon.">
+    Device will restart very soon
+  </message>
+  <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_MESSAGE" desc="The message for notification informing the user that the device will restart soon.">
+    Your administrator will restart your device at <ph name="TIME">$1<ex>3:20 PM</ex></ph> on <ph name="DATE">$2<ex>Nov 29, 2021</ex></ph>
+  </message>
+  <message name="IDS_POLICY_REBOOT_BUTTON" desc="Notification button label for restarting the device.">
+    Restart now
+  </message>
 </grit-part>
