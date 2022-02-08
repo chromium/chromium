@@ -5,45 +5,13 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-
     <!-- disabled -->
-    <item android:color="@color/chip_background_color_disabled"
-        android:state_enabled="false" />
-
-    <!-- hover -->
-    <item android:color="@color/chip_bg_color"
-        android:state_hovered="true"/>
-
-    <!-- focused -->
-    <item android:color="@color/chip_focused"
-        android:state_focused="true" />
-
-    <!-- hover & focused -->
-    <item android:color="@color/chip_hover_focused"
-        android:state_focused="true"
-        android:state_hovered="true" />
+    <item android:color="@android:color/transparent" android:state_enabled="false" />
 
     <!-- selected -->
-    <item android:color="@color/chip_selected"
+    <item android:color="@macro/chip_bg_selected_color"
         android:state_selected="true" />
 
-    <!-- selected & hover -->
-    <item
-        android:color="@color/chip_selected_hover"
-        android:state_hovered="true"
-        android:state_selected="true" />
-
-    <!-- selected & focused -->
-    <item
-        android:color="@color/chip_selected_focused"
-        android:state_selected="true"
-        android:state_focused="true" />
-
-    <!-- selected & hover & focused -->
-    <item
-        android:color="@color/chip_selected_hover_and_focused"
-        android:state_focused="true"
-        android:state_hovered="true"
-        android:state_selected="true" />
-    <item android:color="@color/default_bg_color" />
+    <!-- default state -->
+    <item android:color="@macro/chip_bg_color" />
 </selector>

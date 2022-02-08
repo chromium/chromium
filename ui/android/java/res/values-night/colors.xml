@@ -14,6 +14,7 @@
     <color name="default_text_color_error">@color/default_text_color_error_light</color>
     <color name="default_text_color_on_accent1_baseline">@color/default_text_color_on_accent1_dark</color>
     <color name="default_text_color_on_accent1_disabled_baseline">@color/default_text_color_disabled_light</color>
+    <color name="default_text_color_on_accent2_container_baseline">@color/baseline_secondary_100</color>
 
     <!-- Common icon colors for drawables. -->
     <color name="default_icon_color_baseline">@color/default_icon_color_light</color>

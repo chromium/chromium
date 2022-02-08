@@ -5,8 +5,18 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/hairline_stroke_color_baseline"
-        android:state_enabled="true"
-        android:state_selected="false" />
+    <!-- disabled -->
+    <item android:alpha="@dimen/chip_outline_disabled_alpha" android:color="@macro/chip_outline_color"
+        android:state_enabled="false"/>
+
+    <!-- unselected & focused -->
+    <item android:alpha="@dimen/chip_outline_focused_alpha" android:color="@macro/chip_outline_focused_color"
+        android:state_selected="false"
+        android:state_focused="true"/>
+
+    <!-- unselected -->
+    <item android:alpha="@dimen/chip_outline_alpha" android:color="@macro/chip_outline_color"
+        android:state_selected="false"/>
+
     <item android:color="@android:color/transparent" />
 </selector>

@@ -68,6 +68,7 @@
     <color name="baseline_secondary_300">#5AB3F0</color>
     <color name="baseline_secondary_300_with_neutral_100_alpha_8">#53A7E1</color>
     <color name="baseline_secondary_300_with_neutral_100_alpha_24">#448FC4</color>
+    <color name="baseline_secondary_700">#004A77</color>
     <color name="baseline_secondary_900">#001D35</color>
     <color name="baseline_tertiary_100">#C4EED0</color>
     <color name="baseline_tertiary_200">#6DD58C</color>

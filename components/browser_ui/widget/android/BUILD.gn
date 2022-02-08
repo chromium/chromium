@@ -149,6 +149,7 @@ android_resources("java_resources") {
     "java/res/anim/textbubble_out.xml",
     "java/res/color/chip_background_color.xml",
     "java/res/color/chip_ripple_color.xml",
+    "java/res/color/chip_state_layer_color.xml",
     "java/res/color/chip_stroke_color.xml",
     "java/res/color/chip_text_color.xml",
     "java/res/color/menu_chip_background.xml",

@@ -10,6 +10,8 @@
         <item name="colorOnPrimary">@color/baseline_primary_800</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="android:colorBackground">@color/baseline_neutral_900</item>
         <item name="colorOnBackground">@color/baseline_neutral_100</item>
         <item name="colorSurface">@color/baseline_neutral_900</item>

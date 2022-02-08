@@ -156,6 +156,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">horizontal</item>
         <item name="chipColor">@color/chip_background_color</item>
+        <item name="chipStateLayerColor">@color/chip_state_layer_color</item>
         <item name="primaryTextAppearance">@style/TextAppearance.ChipText</item>
         <item name="secondaryTextAppearance">@style/TextAppearance.ChipHint</item>
         <item name="rippleColor">@color/chip_ripple_color</item>

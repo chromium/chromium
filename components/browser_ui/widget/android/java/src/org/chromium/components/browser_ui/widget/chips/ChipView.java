@@ -113,6 +113,8 @@ public class ChipView extends LinearLayout {
                 solidColorChip ? R.dimen.chip_solid_border_width : R.dimen.chip_border_width;
         int chipColorId =
                 a.getResourceId(R.styleable.ChipView_chipColor, R.color.chip_background_color);
+        int chipStateLayerColorId = a.getResourceId(
+                R.styleable.ChipView_chipStateLayerColor, R.color.chip_state_layer_color);
         int rippleColorId =
                 a.getResourceId(R.styleable.ChipView_rippleColor, R.color.chip_ripple_color);
         int chipStrokeColorId =
@@ -196,8 +198,9 @@ public class ChipView extends LinearLayout {
         addView(mPrimaryText);
 
         // Reset icon and background:
-        mRippleBackgroundHelper = new RippleBackgroundHelper(this, chipColorId, rippleColorId,
-                mCornerRadius, chipStrokeColorId, chipBorderWidthId, verticalInset);
+        mRippleBackgroundHelper =
+                new RippleBackgroundHelper(this, chipColorId, chipStateLayerColorId, rippleColorId,
+                        mCornerRadius, chipStrokeColorId, chipBorderWidthId, verticalInset);
         setIcon(INVALID_ICON_ID, false);
     }
 
