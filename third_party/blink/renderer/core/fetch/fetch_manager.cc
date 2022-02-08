@@ -450,6 +450,8 @@ void FetchManager::Loader::DidReceiveResponse(
       NOTREACHED();
       break;
   }
+  // TODO(crbug.com/1288221): Remove this once the investigation is done.
+  CHECK(tainted_response);
 
   response_has_no_store_header_ = response.CacheControlContainsNoStore();
 
