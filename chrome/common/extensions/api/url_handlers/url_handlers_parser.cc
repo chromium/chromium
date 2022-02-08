@@ -117,7 +117,10 @@ bool ParseUrlHandler(const std::string& handler_id,
   UrlHandlerInfo handler;
   handler.id = handler_id;
 
-  if (!handler_info.GetString(mkeys::kUrlHandlerTitle, &handler.title)) {
+  if (const std::string* ptr =
+          handler_info.FindStringKey(mkeys::kUrlHandlerTitle)) {
+    handler.title = *ptr;
+  } else {
     *error = merrors::kInvalidURLHandlerTitle;
     return false;
   }

@@ -852,9 +852,9 @@ static const base::DictionaryValue* GetDictChecked(
 
 static std::string GetStringChecked(const base::DictionaryValue* dict,
                                     const std::string& key) {
-  std::string out;
-  CHECK(dict->GetString(key, &out)) << key;
-  return out;
+  const std::string* out = dict->FindStringKey(key);
+  CHECK(out) << key;
+  return *out;
 }
 
 TEST(ExtensionAPITest, TypesHaveNamespace) {
@@ -870,10 +870,11 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
       const base::DictionaryValue* dict = nullptr;
       if (!val.GetAsDictionary(&dict))
         continue;
-      std::string str;
-      if (dict->GetString(key, &str) && str == value) {
-        ret = dict;
-        break;
+      if (const std::string* str = dict->FindStringKey(key)) {
+        if (*str == value) {
+          ret = dict;
+          break;
+        }
       }
     }
     return ret;
