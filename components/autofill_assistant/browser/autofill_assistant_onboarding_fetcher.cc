@@ -7,7 +7,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -107,23 +106,22 @@ void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
 void AutofillAssistantOnboardingFetcher::OnFetchComplete(
     std::unique_ptr<std::string> response_body) {
   url_loader_.reset();
-  ResultStatus result_status = ParseResponse(std::move(response_body));
-  base::UmaHistogramEnumeration(
-      "AutofillAssistant.AutofillAssistantOnboardingFetcher.ResultStatus",
-      result_status);
+  Metrics::OnboardingFetcherResultStatus result_status =
+      ParseResponse(std::move(response_body));
+  Metrics::RecordOnboardingFetcherResult(result_status);
   for (auto& callback : pending_callbacks_) {
     std::move(callback).Run();
   }
   pending_callbacks_.clear();
 }
 
-AutofillAssistantOnboardingFetcher::ResultStatus
+Metrics::OnboardingFetcherResultStatus
 AutofillAssistantOnboardingFetcher::ParseResponse(
     std::unique_ptr<std::string> response_body) {
   onboarding_strings_.clear();
 
   if (!response_body) {
-    return ResultStatus::kNoBody;
+    return Metrics::OnboardingFetcherResultStatus::kNoBody;
   }
 
   base::JSONReader::ValueWithError data =
@@ -131,14 +129,14 @@ AutofillAssistantOnboardingFetcher::ParseResponse(
 
   if (data.value == absl::nullopt) {
     DVLOG(1) << "Parse error: " << data.error_message;
-    return ResultStatus::kInvalidJson;
+    return Metrics::OnboardingFetcherResultStatus::kInvalidJson;
   }
   if (!data.value->is_dict()) {
-    return ResultStatus::kInvalidData;
+    return Metrics::OnboardingFetcherResultStatus::kInvalidData;
   }
   return ExtractStrings(*data.value, onboarding_strings_)
-             ? ResultStatus::kOk
-             : ResultStatus::kInvalidData;
+             ? Metrics::OnboardingFetcherResultStatus::kOk
+             : Metrics::OnboardingFetcherResultStatus::kInvalidData;
 }
 
 void AutofillAssistantOnboardingFetcher::RunCallback(

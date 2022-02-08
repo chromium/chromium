@@ -43,6 +43,8 @@ const char kPaymentRequestFirstNameOnly[] =
     "Android.AutofillAssistant.PaymentRequest.FirstNameOnly";
 const char kDependenciesInvalidated[] =
     "Android.AutofillAssistant.DependenciesInvalidated";
+const char kOnboardingFetcherResultStatus[] =
+    "Android.AutofillAssistant.OnboardingFetcher.ResultStatus";
 static bool DROPOUT_RECORDED = false;
 
 std::string GetSuffixForIntent(const std::string& intent) {
@@ -442,6 +444,7 @@ void Metrics::RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
       .Record(ukm_recorder);
 }
 
+// static
 void Metrics::RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                                            ukm::SourceId source_id,
                                            bool success,
@@ -452,6 +455,13 @@ void Metrics::RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                   : Metrics::CollectUserDataResult::FAILURE))
       .SetTimeTakenMs(time_taken_ms)
       .Record(ukm_recorder);
+}
+
+// static
+void Metrics::RecordOnboardingFetcherResult(
+    OnboardingFetcherResultStatus status) {
+  DCHECK_LE(status, OnboardingFetcherResultStatus::kMaxValue);
+  base::UmaHistogramEnumeration(kOnboardingFetcherResultStatus, status);
 }
 
 }  // namespace autofill_assistant
