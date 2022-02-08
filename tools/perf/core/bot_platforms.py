@@ -272,10 +272,6 @@ def _dawn_perf_tests(estimated_runtime=270):
       estimated_runtime=estimated_runtime)
 
 
-def _gpu_perftests(estimated_runtime=60):
-  return ExecutableConfig('gpu_perftests', estimated_runtime=estimated_runtime)
-
-
 def _load_library_perf_tests(estimated_runtime=3):
   return ExecutableConfig('load_library_perf_tests',
                           estimated_runtime=estimated_runtime)
@@ -433,27 +429,6 @@ _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer'),
     _GetBenchmarkConfig('speedometer2')])
 _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS = _ANDROID_GO_BENCHMARK_CONFIGS
-# Note that Nexus 5 bot capacity is very low, so we must severely limit
-# the benchmarks that we run on it and abridge large benchmarks in order
-# to run them on it. See crbug.com/1030840 for details.
-_ANDROID_NEXUS_5_BENCHMARK_CONFIGS = PerfSuite([
-    'loading.mobile',
-    'startup.mobile',
-    'system_health.common_mobile',
-    'system_health.webview_startup',
-]).Abridge(['loading.mobile', 'startup.mobile', 'system_health.common_mobile'])
-_ANDROID_NEXUS_5_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(100),
-    _gpu_perftests(45),
-    _tracing_perftests(55),
-])
-_ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
-    OFFICIAL_BENCHMARK_CONFIGS).Remove([
-        'blink_perf.display_locking',
-        'jetstream2',
-        'system_health.weblayer_startup',
-        'v8.browsing_mobile-future',
-    ])
 _ANDROID_PIXEL2_BENCHMARK_CONFIGS = PerfSuite(
     _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(['system_health.weblayer_startup'])
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
@@ -602,9 +577,6 @@ WIN_10_AMD = PerfPlatform('win-10_amd-perf', 'Windows AMD chipset',
 WIN_10_AMD_LAPTOP = PerfPlatform('win-10_amd_laptop-perf',
                                  'Windows 10 Laptop with AMD chipset.',
                                  _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 2, 'win')
-WIN_7 = PerfPlatform('Win 7 Perf', 'N/A', _WIN_7_BENCHMARK_CONFIGS, 2, 'win')
-WIN_7_GPU = PerfPlatform('Win 7 Nvidia GPU Perf', 'N/A',
-                         _WIN_7_GPU_BENCHMARK_CONFIGS, 3, 'win')
 
 # Android
 ANDROID_GO = PerfPlatform(
@@ -614,15 +586,6 @@ ANDROID_GO_WEBVIEW = PerfPlatform('android-go_webview-perf',
                                   'Android OPM1.171019.021 (gobo)',
                                   _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 13,
                                   'android')
-ANDROID_NEXUS_5 = PerfPlatform('Android Nexus5 Perf',
-                               'Android KOT49H',
-                               _ANDROID_NEXUS_5_BENCHMARK_CONFIGS,
-                               10,
-                               'android',
-                               executables=_ANDROID_NEXUS_5_EXECUTABLE_CONFIGS)
-ANDROID_NEXUS_5X_WEBVIEW = PerfPlatform(
-    'Android Nexus5X WebView Perf', 'Android AOSP MOB30K',
-    _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS, 10, 'android')
 ANDROID_PIXEL2 = PerfPlatform('android-pixel2-perf',
                               'Android OPM1.171019.021',
                               _ANDROID_PIXEL2_BENCHMARK_CONFIGS,
@@ -661,12 +624,6 @@ WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(
     'win-10_laptop_low_end-perf_HP-Candidate', 'HP 15-BS121NR Laptop Candidate',
     _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS,
     1, 'win', is_fyi=True)
-ANDROID_NEXUS5X_PERF_FYI = PerfPlatform('android-nexus5x-perf-fyi',
-                                        'Android MMB29Q',
-                                        _ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS,
-                                        2,
-                                        'android',
-                                        is_fyi=True)
 ANDROID_PIXEL2_PERF_AAB_FYI = PerfPlatform(
     'android-pixel2-perf-aab-fyi',
     'Android OPM1.171019.021',

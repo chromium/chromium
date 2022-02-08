@@ -154,30 +154,10 @@ FYI_BUILDERS = {
             'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
         ],
-    },
-    'android-nexus5x-perf-fyi': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_chrome',
-            'extra_args': [
-                '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
-            ],
-        }],
-        'platform':
-        'android-chrome',
-        'dimension': {
-            'pool': 'chrome.tests.perf-fyi',
-            'os': 'Android',
-            'device_type': 'bullhead',
-            'device_os': 'MMB29Q',
-            'device_os_flavor': 'google',
-        },
     },
     'android-pixel2-perf-fyi': {
         'tests': [{
@@ -221,7 +201,6 @@ FYI_BUILDERS = {
             'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -368,7 +347,6 @@ BUILDERS = {
             'chrome_public_apk',
             'chromium_builder_perf',
             'dump_syms',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -448,7 +426,6 @@ BUILDERS = {
             'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -649,42 +626,6 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
-    'Android Nexus5 Perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite_android_chrome',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'android',
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Android',
-            'device_type': 'hammerhead',
-            'device_os': 'M4B30Z',
-            'device_os_flavor': 'google',
-        },
-    },
-    'Android Nexus5X WebView Perf': {
-        'tests': [{
-            'isolate': 'performance_webview_test_suite',
-            'extra_args': [
-                '--assert-gpu-compositing',
-            ],
-        }],
-        'platform':
-        'android-webview',
-        'dimension': {
-            'pool': 'chrome.tests.perf-webview',
-            'os': 'Android',
-            'device_type': 'bullhead',
-            'device_os': 'MOB30K',
-            'device_os_flavor': 'aosp',
-        },
-    },
     'android-pixel2_webview-perf': {
         'tests': [{
             'isolate': 'performance_webview_test_suite',
@@ -880,41 +821,6 @@ BUILDERS = {
             'os': 'Windows-10-19043.1052',
             'gpu': '1002:1638-30.0.13033.1000',
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
-        },
-    },
-    'Win 7 Perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-            },
-        ],
-        'platform': 'win',
-        'target_bits': 32,
-        'dimension': {
-            'gpu': '102b:0532-6.1.7600.16385',
-            'os': 'Windows-2008ServerR2-SP1',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R210 II (Dell Inc.)',
-        },
-    },
-    'Win 7 Nvidia GPU Perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'gpu': '10de:1cb3-23.21.13.8792',
-            'os': 'Windows-2008ServerR2-SP1',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R220 [01] (Dell Inc.)'
         },
     },
     'mac-laptop_low_end-perf': {
@@ -1192,10 +1098,6 @@ GTEST_BENCHMARKS = {
         'skyostil@chromium.org, gab@chromium.org', 'Internals>SequenceManager',
         ('https://chromium.googlesource.com/chromium/src/+/HEAD/base/' +
          'README.md#performance-testing')),
-    'gpu_perftests':
-    BenchmarkMetadata(
-        'reveman@chromium.org, chrome-gpu-perf-owners@chromium.org',
-        'Internals>GPU'),
     'tracing_perftests':
     BenchmarkMetadata('eseckler@chromium.org, oysteine@chromium.org',
                       'Speed>Tracing'),
