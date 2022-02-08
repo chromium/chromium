@@ -61,8 +61,8 @@ mojom::blink::CrosHID* CrosHID::GetCrosHIDOrNull() {
   return cros_hid_.get();
 }
 
-ScriptPromise CrosHID::requestDevice(ScriptState* script_state,
-                                     const HIDDeviceRequestOptions* options) {
+ScriptPromise CrosHID::accessDevice(ScriptState* script_state,
+                                    const HIDDeviceRequestOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto* cros_hid = GetCrosHIDOrNull();
 

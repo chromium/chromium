@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 interface CrosHID {
-  [CallWith=ScriptState] Promise<sequence<HIDDevice>> requestDevice(
+  [CallWith=ScriptState] Promise<sequence<HIDDevice>> accessDevice(
       HIDDeviceRequestOptions options);
 };

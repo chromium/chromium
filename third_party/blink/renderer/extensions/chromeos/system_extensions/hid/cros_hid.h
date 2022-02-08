@@ -24,8 +24,8 @@ class CrosHID : public ScriptWrappable, public ExecutionContextClient {
 
   void Trace(Visitor*) const override;
 
-  ScriptPromise requestDevice(ScriptState* script_state,
-                              const HIDDeviceRequestOptions*);
+  ScriptPromise accessDevice(ScriptState* script_state,
+                             const HIDDeviceRequestOptions*);
 
  private:
   // Returns the remote for communication with the browser's HID
