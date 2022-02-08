@@ -105,29 +105,29 @@ TEST_F(OverlayUserPrefStoreTest, GetAndSet) {
 
   // Value shines through:
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   EXPECT_TRUE(underlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   overlay_->SetValue(regular_key, std::make_unique<Value>(43),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
 
   EXPECT_TRUE(underlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   overlay_->RemoveValue(regular_key,
                         WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   // Value shines through:
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   EXPECT_TRUE(underlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 }
 
 // Check that GetMutableValue does not return the dictionary of the underlay.
@@ -173,7 +173,7 @@ TEST_F(OverlayUserPrefStoreTest, GlobalPref) {
 
   // Check that we get this value from the overlay
   EXPECT_TRUE(overlay_->GetValue(persistent_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
 
   // Check that overwriting change in overlay is reported.
   overlay_->SetValue(persistent_key, std::make_unique<Value>(44),
@@ -182,9 +182,9 @@ TEST_F(OverlayUserPrefStoreTest, GlobalPref) {
 
   // Check that we get this value from the overlay and the underlay.
   EXPECT_TRUE(overlay_->GetValue(persistent_key, &value));
-  EXPECT_TRUE(base::Value(44).Equals(value));
+  EXPECT_EQ(base::Value(44), *value);
   EXPECT_TRUE(underlay_->GetValue(persistent_key, &value));
-  EXPECT_TRUE(base::Value(44).Equals(value));
+  EXPECT_EQ(base::Value(44), *value);
 
   // Check that overlay remove is reported.
   overlay_->RemoveValue(persistent_key,
@@ -221,12 +221,12 @@ TEST_F(OverlayUserPrefStoreTest, ClearMutableValues) {
   const Value* value = nullptr;
   // Check that an overlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
   overlay_->ClearMutableValues();
 
   // Check that an underlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 }
 
 // Check that mutable values are removed correctly when using a silent set.
@@ -240,12 +240,12 @@ TEST_F(OverlayUserPrefStoreTest, ClearMutableValues_Silently) {
   const Value* value = nullptr;
   // Check that an overlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
   overlay_->ClearMutableValues();
 
   // Check that an underlay preference is returned.
   EXPECT_TRUE(overlay_->GetValue(regular_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 }
 
 TEST_F(OverlayUserPrefStoreTest, GetValues) {
@@ -264,15 +264,15 @@ TEST_F(OverlayUserPrefStoreTest, GetValues) {
   const Value* value = nullptr;
   // Check that an overlay preference is returned.
   ASSERT_TRUE(values->Get(persistent_key, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
 
   // Check that an underlay preference is returned.
   ASSERT_TRUE(values->Get(regular_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
 
   // Check that the overlay is preferred.
   ASSERT_TRUE(values->Get(shared_key, &value));
-  EXPECT_TRUE(base::Value(43).Equals(value));
+  EXPECT_EQ(base::Value(43), *value);
 }
 
 TEST_F(OverlayUserPrefStoreTest, CommitPendingWriteWithCallback) {
