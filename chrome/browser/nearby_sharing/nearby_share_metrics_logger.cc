@@ -302,12 +302,13 @@ std::string GetUpgradedMediumSubcategoryName(
   switch (*last_upgraded_medium) {
     case location::nearby::connections::mojom::Medium::kWebRtc:
       return ".WebRtcUpgrade";
+    case location::nearby::connections::mojom::Medium::kWifiLan:
+      return ".WifiLanUpgrade";
     case location::nearby::connections::mojom::Medium::kUnknown:
     case location::nearby::connections::mojom::Medium::kMdns:
     case location::nearby::connections::mojom::Medium::kBluetooth:
     case location::nearby::connections::mojom::Medium::kWifiHotspot:
     case location::nearby::connections::mojom::Medium::kBle:
-    case location::nearby::connections::mojom::Medium::kWifiLan:
     case location::nearby::connections::mojom::Medium::kWifiAware:
     case location::nearby::connections::mojom::Medium::kNfc:
     case location::nearby::connections::mojom::Medium::kWifiDirect:

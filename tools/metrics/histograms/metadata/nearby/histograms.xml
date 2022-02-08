@@ -887,6 +887,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".UnknownMediumUpgrade"
         summary="an unknown bandwidth-upgraded medium"/>
     <variant name=".WebRtcUpgrade" summary="an upgraded WebRTC medium"/>
+    <variant name=".WifiLanUpgrade" summary="an upgraded WifiLan medium"/>
   </token>
 </histogram>
 
@@ -964,6 +965,8 @@ chromium-metrics-reviews@google.com.
         summary="when using an unknown bandwidth-upgraded medium"/>
     <variant name=".WebRtcUpgrade"
         summary="when using an upgraded WebRTC medium"/>
+    <variant name=".WifiLanUpgrade"
+        summary="when using an upgraded WifiLan medium"/>
   </token>
 </histogram>
 
@@ -995,6 +998,8 @@ chromium-metrics-reviews@google.com.
         summary="when using an unknown bandwidth-upgraded medium"/>
     <variant name=".WebRtcUpgrade"
         summary="when using an upgraded WebRTC medium"/>
+    <variant name=".WifiLanUpgrade"
+        summary="when using an upgraded WifiLan medium"/>
   </token>
 </histogram>
 
