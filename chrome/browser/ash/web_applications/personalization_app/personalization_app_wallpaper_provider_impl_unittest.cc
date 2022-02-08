@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_wallpaper_provider_impl.h"
 
-#include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -81,9 +81,7 @@ constexpr char kGooglePhotosAlbumsFullResponse[] =
 constexpr char kGooglePhotosPhotosFullResponse[] =
     "{"
     "   \"item\": [ {"
-    "      \"creationTimestamp\": {"
-    "         \"seconds\": \"60\""
-    "      },"
+    "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
     "      \"itemId\": {"
     "         \"mediaKey\": \"photoId\""
     "      },"
@@ -548,11 +546,13 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Parse one-album responses where one of the album's fields has an invalid
   // value.
-  std::map<std::string, std::string> invalid_field_test_cases = {
+  std::vector<std::pair<std::string, std::string>> invalid_field_test_cases = {
+      {"numPhotos", ""},
       {"numPhotos", "NaN"},
       {"numPhotos", "-1"},
       {"numPhotos", "0"},
       {"coverItemId.mediaKey", "bogusCoverPhotoId"}};
+  EXPECT_CALL(*google_photos_albums_fetcher, ParseResponse).Times(5);
   for (const auto& kv : invalid_field_test_cases) {
     auto response = base::JSONReader::Read(kGooglePhotosAlbumsFullResponse);
     auto& album = GetAlbumFromGooglePhotosAlbumsResponse(response);
@@ -607,6 +607,11 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, ParseCount) {
 
   // Parse a response without a photo count.
   base::Value response(base::Value::Type::DICTIONARY);
+  EXPECT_EQ(-1, google_photos_count_fetcher->ParseResponse(
+                    absl::make_optional(response.Clone())));
+
+  // Parse a response with an empty photo count.
+  response.SetStringPath("user.numPhotos", "");
   EXPECT_EQ(-1, google_photos_count_fetcher->ParseResponse(
                     absl::make_optional(response.Clone())));
 
@@ -667,7 +672,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Parse one-photo responses where one of the photo's fields is missing.
   for (const auto* const path :
-       {"itemId.mediaKey", "creationTimestamp.seconds", "photo.servingUrl"}) {
+       {"itemId.mediaKey", "creationTimestamp", "photo.servingUrl"}) {
     auto response = base::JSONReader::Read(kGooglePhotosPhotosFullResponse);
     auto& photo = GetPhotoFromGooglePhotosPhotosResponse(response);
     photo.RemovePath(path);
@@ -678,9 +683,17 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Parse one-photo responses where one of the photo's fields has an invalid
   // value.
-  std::map<std::string, std::string> invalid_field_test_cases = {
-      {"creationTimestamp.seconds", "NaN"},
-      {"creationTimestamp.seconds", "-1"}};
+  std::vector<std::pair<std::string, std::string>> invalid_field_test_cases = {
+      {"creationTimestamp", ""},
+      {"creationTimestamp", "Bad timestamp"},
+      {"creationTimestamp", "2021T07:07:07.000Z"},
+      {"creationTimestamp", "31T07:07:07.000Z"},
+      {"creationTimestamp", "12T07:07:07.000Z"},
+      {"creationTimestamp", "12-31T07:07:07.000Z"},
+      {"creationTimestamp", "2021-31T07:07:07.000Z"},
+      {"creationTimestamp", "2021-12T07:07:07.000Z"},
+      {"creationTimestamp", "-2021-12-31T07:07:07.000Z"}};
+  EXPECT_CALL(*google_photos_photos_fetcher, ParseResponse).Times(9);
   for (const auto& kv : invalid_field_test_cases) {
     auto response = base::JSONReader::Read(kGooglePhotosPhotosFullResponse);
     auto& photo = GetPhotoFromGooglePhotosPhotosResponse(response);
@@ -706,12 +719,12 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Ensure that photo timestamps resolve to the same date on all testing
   // platforms.
-  icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone("GMT"));
+  icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone("UTC"));
 
   // Parse a response with a valid photo and a resume token.
   auto valid_photos_vector = std::vector<GooglePhotosPhotoPtr>();
   valid_photos_vector.push_back(
-      GooglePhotosPhoto::New("photoId", u"Thursday, January 1, 1970",
+      GooglePhotosPhoto::New("photoId", u"Friday, December 31, 2021",
                              GURL("https://www.google.com/")));
   EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
                 mojo::Clone(valid_photos_vector), kResumeToken),

@@ -737,19 +737,18 @@ GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
       std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr>();
   for (const auto& response_photo : response_photos->GetListDeprecated()) {
     const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
-    const std::string* timestamp_seconds_string =
-        response_photo.FindStringPath("creationTimestamp.seconds");
+    const std::string* timestamp_string =
+        response_photo.FindStringPath("creationTimestamp");
     const std::string* url = response_photo.FindStringPath("photo.servingUrl");
 
-    int64_t seconds_after_epoch;
-    if (!id || !timestamp_seconds_string ||
-        !base::StringToInt64(*timestamp_seconds_string, &seconds_after_epoch) ||
-        seconds_after_epoch < 0 || !url) {
+    base::Time timestamp;
+    if (!id || !timestamp_string ||
+        !base::Time::FromUTCString(timestamp_string->c_str(), &timestamp) ||
+        !url) {
       continue;
     }
 
-    std::u16string date = base::TimeFormatFriendlyDate(
-        base::Time::UnixEpoch() + base::Seconds(seconds_after_epoch));
+    std::u16string date = base::TimeFormatFriendlyDate(timestamp);
     parsed_response->photos->push_back(
         ash::personalization_app::mojom::GooglePhotosPhoto::New(*id, date,
                                                                 GURL(*url)));
