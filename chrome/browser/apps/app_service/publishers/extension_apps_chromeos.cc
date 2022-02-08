@@ -666,7 +666,7 @@ void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {
   SetShowInFields(mojom_app, extension);
   PublisherBase::Publish(std::move(mojom_app), subscribers());
 
-  std::unique_ptr<App> app = std::make_unique<App>(app_type(), app_id);
+  auto app = std::make_unique<App>(app_type(), app_id);
   SetShowInFields(extension, *app);
   AppPublisher::Publish(std::move(app));
 }
@@ -794,9 +794,8 @@ bool ExtensionAppsChromeOs::ShouldShownInLauncher(
   return app_list::ShouldShowInLauncher(extension, profile());
 }
 
-std::unique_ptr<App> ExtensionAppsChromeOs::CreateApp(
-    const extensions::Extension* extension,
-    Readiness readiness) {
+AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
+                                        Readiness readiness) {
   // If Lacros is publishing chrome apps, then by default ash chrome apps should
   // be disabled. There is a keep-list that serves as the exception.
   const bool disable_for_lacros =
@@ -806,7 +805,7 @@ std::unique_ptr<App> ExtensionAppsChromeOs::CreateApp(
   const bool is_app_disabled =
       base::Contains(disabled_apps_, extension->id()) || disable_for_lacros;
 
-  std::unique_ptr<App> app = CreateAppImpl(
+  auto app = CreateAppImpl(
       extension, is_app_disabled ? Readiness::kDisabledByPolicy : readiness);
   bool paused = paused_apps_.IsPaused(extension->id());
   app->icon_key = std::move(
@@ -931,7 +930,7 @@ void ExtensionAppsChromeOs::SetIconEffect(const std::string& app_id) {
       GetIconEffects(extension, paused_apps_.IsPaused(app_id)));
   PublisherBase::Publish(std::move(mojom_app), subscribers());
 
-  std::unique_ptr<App> app = std::make_unique<App>(app_type(), app_id);
+  auto app = std::make_unique<App>(app_type(), app_id);
   app->icon_key = std::move(*icon_key_factory().CreateIconKey(
       GetIconEffects(extension, paused_apps_.IsPaused(app_id))));
   AppPublisher::Publish(std::move(app));

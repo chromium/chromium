@@ -110,7 +110,7 @@ class CrostiniApps : public KeyedService,
   // once it can support hiding apps.
   void OnCrostiniEnabledChanged();
 
-  std::unique_ptr<App> CreateApp(
+  AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
 

@@ -479,8 +479,7 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
-    const WebApp* web_app) {
+apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   apps::Readiness readiness =
       web_app->is_locally_installed()
           ? (web_app->is_uninstalling() ? apps::Readiness::kUninstalledByUser
@@ -492,7 +491,7 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
     readiness = apps::Readiness::kDisabledByPolicy;
 #endif
 
-  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
+  auto app = apps::AppPublisher::MakeApp(
       apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id(),
       readiness, web_app->name(),
       apps::ConvertMojomInstallReasonToInstallReason(

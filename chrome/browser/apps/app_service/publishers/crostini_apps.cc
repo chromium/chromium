@@ -99,7 +99,7 @@ void CrostiniApps::Initialize() {
 
   RegisterPublisher(AppType::kCrostini);
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   for (const auto& pair :
        registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
                                         ApplicationList_VmType_TERMINA)) {
@@ -306,8 +306,7 @@ void CrostiniApps::OnRegistryUpdated(
     mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
     PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-    std::unique_ptr<App> app =
-        std::make_unique<App>(AppType::kCrostini, app_id);
+    auto app = std::make_unique<App>(AppType::kCrostini, app_id);
     app->readiness = Readiness::kUninstalledByUser;
     AppPublisher::Publish(std::move(app));
   }
@@ -341,8 +340,8 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
     mojom_app->handles_intents = show;
     PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-    std::unique_ptr<App> app = std::make_unique<App>(
-        AppType::kCrostini, crostini::kCrostiniTerminalSystemAppId);
+    auto app = std::make_unique<App>(AppType::kCrostini,
+                                     crostini::kCrostiniTerminalSystemAppId);
     app->show_in_launcher = crostini_enabled_;
     app->show_in_shelf = crostini_enabled_;
     app->show_in_search = true;
@@ -351,14 +350,14 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
   }
 }
 
-std::unique_ptr<App> CrostiniApps::CreateApp(
+AppPtr CrostiniApps::CreateApp(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool generate_new_icon_key) {
   DCHECK_EQ(
       registration.VmType(),
       guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
 
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
+  auto app = AppPublisher::MakeApp(
       AppType::kCrostini, registration.app_id(), Readiness::kReady,
       registration.Name(), InstallReason::kUser, InstallSource::kUnknown);
 

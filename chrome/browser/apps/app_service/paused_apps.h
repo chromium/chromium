@@ -29,9 +29,9 @@ class PausedApps {
       const std::string& app_id,
       bool paused);
 
-  std::unique_ptr<App> CreateAppWithPauseStatus(AppType app_type,
-                                                const std::string& app_id,
-                                                bool paused);
+  AppPtr CreateAppWithPauseStatus(AppType app_type,
+                                  const std::string& app_id,
+                                  bool paused);
 
   // Returns true if the app was added to the paused set, and false if it was
   // already there.

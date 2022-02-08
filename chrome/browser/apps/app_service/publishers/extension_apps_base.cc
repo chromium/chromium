@@ -178,7 +178,7 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   SetShowInFields(mojom_app, extension);
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(app_type(), extension->id());
+  auto app = std::make_unique<App>(app_type(), extension->id());
   app->readiness = reason == extensions::UNINSTALL_REASON_MIGRATED
                        ? Readiness::kUninstalledByMigration
                        : Readiness::kUninstalledByUser;
@@ -217,16 +217,15 @@ void ExtensionAppsBase::SetShowInFields(
   }
 }
 
-std::unique_ptr<App> ExtensionAppsBase::CreateAppImpl(
-    const extensions::Extension* extension,
-    Readiness readiness) {
+AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
+                                        Readiness readiness) {
   auto install_reason = ConvertMojomInstallReasonToInstallReason(
       GetInstallReason(profile_, extension));
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
-      app_type(), extension->id(), readiness, extension->name(), install_reason,
-      install_reason == InstallReason::kSystem
-          ? InstallSource::kSystem
-          : InstallSource::kChromeWebStore);
+  auto app = AppPublisher::MakeApp(app_type(), extension->id(), readiness,
+                                   extension->name(), install_reason,
+                                   install_reason == InstallReason::kSystem
+                                       ? InstallSource::kSystem
+                                       : InstallSource::kChromeWebStore);
   app->short_name = extension->short_name();
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
@@ -395,7 +394,7 @@ void ExtensionAppsBase::Initialize() {
 }
 
 void ExtensionAppsBase::OnExtensionsReady() {
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
   CreateAppVector(registry->enabled_extensions(), Readiness::kReady, &apps);
@@ -741,7 +740,7 @@ void ExtensionAppsBase::OnExtensionUnloaded(
   mojom_app->readiness = mojom_readiness;
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(app_type(), extension->id());
+  auto app = std::make_unique<App>(app_type(), extension->id());
   app->readiness = readiness;
   AppPublisher::Publish(std::move(app));
 }
@@ -820,7 +819,7 @@ void ExtensionAppsBase::PopulateIntentFilters(
 void ExtensionAppsBase::CreateAppVector(
     const extensions::ExtensionSet& extensions,
     Readiness readiness,
-    std::vector<std::unique_ptr<App>>* apps_out) {
+    std::vector<AppPtr>* apps_out) {
   for (const auto& extension : extensions) {
     if (Accepts(extension.get())) {
       apps_out->push_back(CreateApp(extension.get(), readiness));

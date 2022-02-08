@@ -50,7 +50,7 @@ class StandaloneBrowserApps : public apps::PublisherBase,
   friend class PublisherHost;
 
   // Returns the single lacros app.
-  std::unique_ptr<App> CreateStandaloneBrowserApp();
+  AppPtr CreateStandaloneBrowserApp();
 
   // Returns the single lacros app.
   apps::mojom::AppPtr GetStandaloneBrowserApp();

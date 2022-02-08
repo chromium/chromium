@@ -11,8 +11,8 @@ App::App(AppType app_type, const std::string& app_id)
 
 App::~App() = default;
 
-std::unique_ptr<App> App::Clone() const {
-  std::unique_ptr<App> app = std::make_unique<App>(app_type, app_id);
+AppPtr App::Clone() const {
+  auto app = std::make_unique<App>(app_type, app_id);
 
   app->readiness = readiness;
   app->name = name;
@@ -294,10 +294,9 @@ apps::mojom::OptionalBool GetMojomOptionalBool(
              : apps::mojom::OptionalBool::kUnknown;
 }
 
-std::unique_ptr<App> ConvertMojomAppToApp(
-    const apps::mojom::AppPtr& mojom_app) {
+AppPtr ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app) {
   DCHECK(mojom_app);
-  std::unique_ptr<App> app = std::make_unique<App>(
+  auto app = std::make_unique<App>(
       ConvertMojomAppTypToAppType(mojom_app->app_type), mojom_app->app_id);
 
   app->readiness = ConvertMojomReadinessToReadiness(mojom_app->readiness);

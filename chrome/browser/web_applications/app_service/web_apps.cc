@@ -242,7 +242,7 @@ void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) {
     return;
   }
 
-  std::vector<std::unique_ptr<apps::App>> apps;
+  std::vector<apps::AppPtr> apps;
   for (apps::mojom::AppPtr& app : mojom_apps) {
     apps.push_back(apps::ConvertMojomAppToApp(app));
   }
@@ -290,10 +290,10 @@ void WebApps::ModifyWebAppCapabilityAccess(
                          std::move(accessing_microphone));
 }
 
-std::vector<std::unique_ptr<apps::App>> WebApps::CreateWebApps() {
+std::vector<apps::AppPtr> WebApps::CreateWebApps() {
   DCHECK(provider_);
 
-  std::vector<std::unique_ptr<apps::App>> apps;
+  std::vector<apps::AppPtr> apps;
   for (const WebApp& web_app : provider_->registrar().GetApps()) {
     if (Accepts(web_app.app_id())) {
       apps.push_back(publisher_helper().CreateWebApp(&web_app));
@@ -318,7 +318,7 @@ void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
 void WebApps::InitWebApps() {
   RegisterPublisher(apps::ConvertMojomAppTypToAppType(app_type_));
 
-  std::vector<std::unique_ptr<apps::App>> apps = CreateWebApps();
+  std::vector<apps::AppPtr> apps = CreateWebApps();
   if (apps.empty()) {
     return;
   }

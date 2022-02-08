@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -81,8 +82,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
   virtual void SetShowInFields(apps::mojom::AppPtr& app,
                                const extensions::Extension* extension);
 
-  std::unique_ptr<App> CreateAppImpl(const extensions::Extension* extension,
-                                     Readiness readiness);
+  AppPtr CreateAppImpl(const extensions::Extension* extension,
+                       Readiness readiness);
 
   apps::mojom::AppPtr ConvertImpl(const extensions::Extension* extension,
                                   apps::mojom::Readiness readiness);
@@ -226,15 +227,15 @@ class ExtensionAppsBase : public apps::PublisherBase,
   void PopulateIntentFilters(const absl::optional<GURL>& app_scope,
                              std::vector<mojom::IntentFilterPtr>* target);
 
-  virtual std::unique_ptr<App> CreateApp(const extensions::Extension* extension,
-                                         Readiness readiness) = 0;
+  virtual AppPtr CreateApp(const extensions::Extension* extension,
+                           Readiness readiness) = 0;
 
   virtual apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                                       apps::mojom::Readiness readiness) = 0;
 
   void CreateAppVector(const extensions::ExtensionSet& extensions,
                        Readiness readiness,
-                       std::vector<std::unique_ptr<App>>* apps_out);
+                       std::vector<AppPtr>* apps_out);
 
   void ConvertVector(const extensions::ExtensionSet& extensions,
                      apps::mojom::Readiness readiness,

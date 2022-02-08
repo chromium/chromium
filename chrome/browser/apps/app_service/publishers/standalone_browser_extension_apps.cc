@@ -252,7 +252,7 @@ void StandaloneBrowserExtensionApps::OnApps(
     return;
   }
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   for (apps::mojom::AppPtr& delta : deltas) {
     apps.push_back(ConvertMojomAppToApp(delta));
     app_ptr_cache_[delta->app_id] = delta.Clone();

@@ -651,8 +651,8 @@ void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
   }
 }
 
-void AppServiceProxyBase::OnApps(std::vector<std::unique_ptr<apps::App>> deltas,
-                                 apps::AppType app_type,
+void AppServiceProxyBase::OnApps(std::vector<AppPtr> deltas,
+                                 AppType app_type,
                                  bool should_notify_initialized) {
   // TODO(crbug.com/1253250): add RemovePreferredApp related code.
   app_registry_cache_.OnApps(std::move(deltas), app_type,

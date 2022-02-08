@@ -15,13 +15,13 @@ AppPublisher::AppPublisher(AppServiceProxy* proxy) : proxy_(proxy) {
 AppPublisher::~AppPublisher() = default;
 
 // static
-std::unique_ptr<App> AppPublisher::MakeApp(AppType app_type,
-                                           const std::string& app_id,
-                                           Readiness readiness,
-                                           const std::string& name,
-                                           InstallReason install_reason,
-                                           InstallSource install_source) {
-  std::unique_ptr<App> app = std::make_unique<App>(app_type, app_id);
+AppPtr AppPublisher::MakeApp(AppType app_type,
+                             const std::string& app_id,
+                             Readiness readiness,
+                             const std::string& name,
+                             InstallReason install_reason,
+                             InstallSource install_source) {
+  auto app = std::make_unique<App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
   app->short_name = name;
@@ -41,19 +41,19 @@ void AppPublisher::RegisterPublisher(AppType app_type) {
   proxy_->RegisterPublisher(app_type, this);
 }
 
-void AppPublisher::Publish(std::unique_ptr<App> app) {
+void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {
     NOTREACHED();
     return;
   }
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   apps.push_back(std::move(app));
   proxy_->OnApps(std::move(apps), apps::AppType::kUnknown,
                  false /* should_notify_initialized */);
 }
 
-void AppPublisher::Publish(std::vector<std::unique_ptr<App>> apps) {
+void AppPublisher::Publish(std::vector<AppPtr> apps) {
   if (!proxy_) {
     NOTREACHED();
     return;

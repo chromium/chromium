@@ -14,11 +14,11 @@ namespace apps {
 
 class AppRegistryCacheTest : public testing::Test {
  public:
-  std::unique_ptr<App> MakeApp(const char* app_id,
-                               const char* name,
-                               Readiness readiness = Readiness::kUnknown,
-                               uint64_t timeline = 0) {
-    std::unique_ptr<App> app = std::make_unique<App>(AppType::kArc, app_id);
+  AppPtr MakeApp(const char* app_id,
+                 const char* name,
+                 Readiness readiness = Readiness::kUnknown,
+                 uint64_t timeline = 0) {
+    auto app = std::make_unique<App>(AppType::kArc, app_id);
     app->readiness = readiness;
     app->name = name;
     app->icon_key = IconKey(timeline, /*resource_id=*/0, /*icon_effects=*/0);
@@ -74,7 +74,7 @@ class AppRegistryCacheTest : public testing::Test {
 
 TEST_F(AppRegistryCacheTest, OnApps) {
   AppRegistryCache cache;
-  std::vector<std::unique_ptr<App>> deltas;
+  std::vector<AppPtr> deltas;
   deltas.push_back(MakeApp("a", "apple"));
   deltas.push_back(MakeApp("b", "banana", Readiness::kReady));
   deltas.push_back(MakeApp("c", "cherry", Readiness::kDisabledByPolicy,
@@ -121,7 +121,7 @@ TEST_F(AppRegistryCacheTest, OnApps) {
 TEST_F(AppRegistryCacheTest, Removed) {
   AppRegistryCache cache;
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   apps.push_back(MakeApp("app", "app", Readiness::kReady));
   cache.OnApps(std::move(apps), AppType::kUnknown,
                false /* should_notify_initialized */);

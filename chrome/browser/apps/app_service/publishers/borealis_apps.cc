@@ -81,9 +81,8 @@ void SetAppAllowed(bool allowed, apps::App& app) {
   app.handles_intents = allowed;
 }
 
-std::unique_ptr<apps::App> CreateBorealisLauncher(Profile* profile,
-                                                  bool allowed) {
-  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
+apps::AppPtr CreateBorealisLauncher(Profile* profile, bool allowed) {
+  auto app = apps::AppPublisher::MakeApp(
       apps::AppType::kBorealis, borealis::kInstallerAppId,
       allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
@@ -188,7 +187,7 @@ guest_os::GuestOsRegistryService* BorealisApps::Registry() {
   return registry;
 }
 
-std::unique_ptr<App> BorealisApps::CreateApp(
+AppPtr BorealisApps::CreateApp(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool generate_new_icon_key) {
   // We must only convert borealis apps.
@@ -199,7 +198,7 @@ std::unique_ptr<App> BorealisApps::CreateApp(
   // it can't be converted.
   DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
 
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
+  auto app = AppPublisher::MakeApp(
       AppType::kBorealis, registration.app_id(), Readiness::kReady,
       registration.Name(), InstallReason::kUser, InstallSource::kUnknown);
 
@@ -277,7 +276,7 @@ void BorealisApps::Initialize() {
 
   RegisterPublisher(AppType::kBorealis);
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   apps.push_back(
       CreateBorealisLauncher(profile_, IsBorealisLauncherAllowed(profile_)));
 
@@ -427,8 +426,7 @@ void BorealisApps::OnRegistryUpdated(
     mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
     PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-    std::unique_ptr<App> app =
-        std::make_unique<App>(AppType::kBorealis, app_id);
+    auto app = std::make_unique<App>(AppType::kBorealis, app_id);
     app->readiness = Readiness::kUninstalledByUser;
     AppPublisher::Publish(std::move(app));
 
@@ -458,8 +456,7 @@ void BorealisApps::OnRegistryUpdated(
       mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
       PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-      std::unique_ptr<App> app =
-          std::make_unique<App>(AppType::kBorealis, app_id);
+      auto app = std::make_unique<App>(AppType::kBorealis, app_id);
       app->readiness = Readiness::kUninstalledByUser;
       AppPublisher::Publish(std::move(app));
     }
@@ -484,7 +481,7 @@ void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
 
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
+  auto app = AppPublisher::MakeApp(
       AppType::kBorealis, shelf_app_id, Readiness::kReady, shelf_app_name,
       InstallReason::kUser, InstallSource::kUnknown);
 
@@ -511,8 +508,7 @@ void BorealisApps::OnAnonymousAppRemoved(const std::string& shelf_app_id) {
   }
 
   for (auto readiness : {Readiness::kUninstalledByUser, Readiness::kRemoved}) {
-    std::unique_ptr<App> app =
-        std::make_unique<App>(AppType::kBorealis, shelf_app_id);
+    auto app = std::make_unique<App>(AppType::kBorealis, shelf_app_id);
     app->readiness = readiness;
     AppPublisher::Publish(std::move(app));
   }

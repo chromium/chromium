@@ -94,7 +94,7 @@ class PluginVmApps : public apps::PublisherBase,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;
 
-  std::unique_ptr<App> CreateApp(
+  AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
 

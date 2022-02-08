@@ -75,7 +75,7 @@ class RemoteApps : public apps::PublisherBase, public AppPublisher {
  private:
   friend class ash::RemoteAppsManager;
 
-  std::unique_ptr<App> CreateApp(const ash::RemoteAppsModel::AppInfo& info);
+  AppPtr CreateApp(const ash::RemoteAppsModel::AppInfo& info);
 
   apps::mojom::AppPtr Convert(const ash::RemoteAppsModel::AppInfo& info);
 

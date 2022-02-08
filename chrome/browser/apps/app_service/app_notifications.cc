@@ -61,10 +61,10 @@ std::set<std::string> AppNotifications::GetAppIdsForNotification(
   return it->second;
 }
 
-std::unique_ptr<App> AppNotifications::CreateAppWithHasBadgeStatus(
+AppPtr AppNotifications::CreateAppWithHasBadgeStatus(
     AppType app_type,
     const std::string& app_id) {
-  std::unique_ptr<App> app = std::make_unique<App>(app_type, app_id);
+  auto app = std::make_unique<App>(app_type, app_id);
   app->has_badge = HasNotification(app_id);
   return app;
 }

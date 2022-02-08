@@ -1161,7 +1161,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     // TODO(crbug.com/1253250): Remove apps::mojom related code.
     apps_util::IncrementingIconKeyFactory icon_key_factory;
     std::vector<apps::mojom::AppPtr> mojom_apps;
-    std::vector<std::unique_ptr<apps::App>> apps;
+    std::vector<apps::AppPtr> apps;
     for (const auto& app_id : app_ids) {
       apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
       mojom_app->app_type = apps::mojom::AppType::kArc;

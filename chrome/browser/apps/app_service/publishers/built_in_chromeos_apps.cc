@@ -27,15 +27,14 @@
 
 namespace {
 
-std::unique_ptr<apps::App> CreateApp(
-    const app_list::InternalApp& internal_app) {
+apps::AppPtr CreateApp(const app_list::InternalApp& internal_app) {
   if ((internal_app.app_id == nullptr) ||
       (internal_app.name_string_resource_id == 0) ||
       (internal_app.icon_resource_id <= 0)) {
     return nullptr;
   }
 
-  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
+  auto app = apps::AppPublisher::MakeApp(
       apps::AppType::kBuiltIn, internal_app.app_id, apps::Readiness::kReady,
       l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
       apps::InstallReason::kSystem, apps::InstallSource::kSystem);
@@ -118,9 +117,9 @@ void BuiltInChromeOsApps::Initialize() {
 
   RegisterPublisher(AppType::kBuiltIn);
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   for (const auto& internal_app : app_list::GetInternalAppList(profile_)) {
-    std::unique_ptr<App> app = CreateApp(internal_app);
+    AppPtr app = CreateApp(internal_app);
     if (app) {
       apps.push_back(std::move(app));
     }

@@ -133,8 +133,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   apps::Permissions CreatePermissions(const WebApp* web_app);
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Creates an |std::unique_ptr<apps::App>| describing |web_app|.
-  std::unique_ptr<apps::App> CreateWebApp(const WebApp* web_app);
+  // Creates an |apps::AppPtr| describing |web_app|.
+  apps::AppPtr CreateWebApp(const WebApp* web_app);
 #endif
 
   // Creates an |apps::mojom::App| describing |web_app|.

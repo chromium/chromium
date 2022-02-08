@@ -114,8 +114,8 @@ apps::Permissions CreatePermissions(Profile* profile) {
   return permissions;
 }
 
-std::unique_ptr<apps::App> CreatePluginVmApp(Profile* profile, bool allowed) {
-  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
+apps::AppPtr CreatePluginVmApp(Profile* profile, bool allowed) {
+  auto app = apps::AppPublisher::MakeApp(
       apps::AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId,
       allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME),
@@ -236,7 +236,7 @@ void PluginVmApps::Initialize() {
 
   RegisterPublisher(AppType::kPluginVm);
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   apps.push_back(CreatePluginVmApp(profile_, is_allowed_));
   for (const auto& pair :
        registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
@@ -373,8 +373,7 @@ void PluginVmApps::OnRegistryUpdated(
     mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
     PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-    std::unique_ptr<App> app =
-        std::make_unique<App>(AppType::kPluginVm, app_id);
+    auto app = std::make_unique<App>(AppType::kPluginVm, app_id);
     app->readiness = apps::Readiness::kUninstalledByUser;
     AppPublisher::Publish(std::move(app));
   }
@@ -388,13 +387,13 @@ void PluginVmApps::OnRegistryUpdated(
   }
 }
 
-std::unique_ptr<App> PluginVmApps::CreateApp(
+AppPtr PluginVmApps::CreateApp(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool generate_new_icon_key) {
   DCHECK_EQ(registration.VmType(), guest_os::GuestOsRegistryService::VmType::
                                        ApplicationList_VmType_PLUGIN_VM);
 
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
+  auto app = AppPublisher::MakeApp(
       AppType::kPluginVm, registration.app_id(), Readiness::kReady,
       registration.Name(), InstallReason::kUser, apps::InstallSource::kUnknown);
 
@@ -455,7 +454,7 @@ void PluginVmApps::OnPluginVmAllowedChanged(bool is_allowed) {
   SetAppAllowed(mojom_app.get(), is_allowed);
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app =
+  auto app =
       std::make_unique<App>(AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId);
   SetAppAllowed(is_allowed, *app);
   AppPublisher::Publish(std::move(app));
@@ -471,7 +470,7 @@ void PluginVmApps::OnPluginVmConfiguredChanged() {
       plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile_));
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app =
+  auto app =
       std::make_unique<App>(AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId);
   app->show_in_management =
       plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile_);
@@ -485,7 +484,7 @@ void PluginVmApps::OnPermissionChanged() {
   PopulatePermissions(mojom_app.get(), profile_);
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app =
+  auto app =
       std::make_unique<App>(AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId);
   app->permissions = CreatePermissions(profile_);
   AppPublisher::Publish(std::move(app));

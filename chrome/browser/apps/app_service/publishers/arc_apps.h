@@ -203,10 +203,10 @@ class ArcApps : public KeyedService,
                          IconEffects icon_effects,
                          apps::LoadIconCallback callback);
 
-  std::unique_ptr<App> CreateApp(ArcAppListPrefs* prefs,
-                                 const std::string& app_id,
-                                 const ArcAppListPrefs::AppInfo& app_info,
-                                 bool update_icon = true);
+  AppPtr CreateApp(ArcAppListPrefs* prefs,
+                   const std::string& app_id,
+                   const ArcAppListPrefs::AppInfo& app_info,
+                   bool update_icon = true);
   apps::mojom::AppPtr Convert(ArcAppListPrefs* prefs,
                               const std::string& app_id,
                               const ArcAppListPrefs::AppInfo& app_info,

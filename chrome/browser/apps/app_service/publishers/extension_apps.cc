@@ -40,10 +40,9 @@ bool ExtensionApps::ShouldShownInLauncher(
   return true;
 }
 
-std::unique_ptr<App> ExtensionApps::CreateApp(
-    const extensions::Extension* extension,
-    Readiness readiness) {
-  std::unique_ptr<App> app = CreateAppImpl(extension, readiness);
+AppPtr ExtensionApps::CreateApp(const extensions::Extension* extension,
+                                Readiness readiness) {
+  auto app = CreateAppImpl(extension, readiness);
   app->icon_key =
       std::move(*icon_key_factory().CreateIconKey(GetIconEffects(extension)));
   app->has_badge = false;

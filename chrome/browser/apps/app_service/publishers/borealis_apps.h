@@ -57,7 +57,7 @@ class BorealisApps
   guest_os::GuestOsRegistryService* Registry();
 
   // Turns GuestOsRegistry's "app" into one the AppService can use.
-  std::unique_ptr<App> CreateApp(
+  AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
 

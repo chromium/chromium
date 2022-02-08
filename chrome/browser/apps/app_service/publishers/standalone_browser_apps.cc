@@ -41,7 +41,7 @@ std::unique_ptr<apps::IconKey> CreateIconKey(bool is_browser_load_success) {
     resource_id = IDR_PRODUCT_LOGO_256_CANARY;
 #endif
 
-  std::unique_ptr<apps::IconKey> icon_key = std::make_unique<apps::IconKey>(
+  auto icon_key = std::make_unique<apps::IconKey>(
       apps::IconKey::kDoesNotChangeOverTime, resource_id, icon_effects);
   return icon_key;
 }
@@ -59,8 +59,8 @@ StandaloneBrowserApps::StandaloneBrowserApps(AppServiceProxy* proxy)
 
 StandaloneBrowserApps::~StandaloneBrowserApps() = default;
 
-std::unique_ptr<App> StandaloneBrowserApps::CreateStandaloneBrowserApp() {
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
+AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
+  auto app = AppPublisher::MakeApp(
       AppType::kStandaloneBrowser, app_constants::kLacrosAppId,
       Readiness::kReady, "Lacros" /* TODO(crbug.com/1267752): Localized name.*/,
       InstallReason::kSystem, InstallSource::kSystem);
@@ -232,8 +232,8 @@ void StandaloneBrowserApps::OnLoadComplete(bool success) {
   mojom_app->icon_key = NewIconKey();
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(AppType::kStandaloneBrowser,
-                                                   app_constants::kLacrosAppId);
+  auto app = std::make_unique<App>(AppType::kStandaloneBrowser,
+                                   app_constants::kLacrosAppId);
   app->icon_key = std::move(*CreateIconKey(success));
   AppPublisher::Publish(std::move(app));
 }

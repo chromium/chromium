@@ -147,8 +147,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void SetShowInFields(apps::mojom::AppPtr& app,
                        const extensions::Extension* extension) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;
-  std::unique_ptr<App> CreateApp(const extensions::Extension* extension,
-                                 Readiness readiness) override;
+  AppPtr CreateApp(const extensions::Extension* extension,
+                   Readiness readiness) override;
   apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                               apps::mojom::Readiness readiness) override;
 

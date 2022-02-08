@@ -31,12 +31,12 @@ class AppPublisher {
   ~AppPublisher();
 
   // Returns an app object from the provided parameters
-  static std::unique_ptr<App> MakeApp(AppType app_type,
-                                      const std::string& app_id,
-                                      Readiness readiness,
-                                      const std::string& name,
-                                      InstallReason install_reason,
-                                      InstallSource install_source);
+  static AppPtr MakeApp(AppType app_type,
+                        const std::string& app_id,
+                        Readiness readiness,
+                        const std::string& name,
+                        InstallReason install_reason,
+                        InstallSource install_source);
 
   // Registers this AppPublisher to AppServiceProxy, allowing it to receive App
   // Service API calls. This function must be called after the object's
@@ -82,13 +82,13 @@ class AppPublisher {
   // represented by `app` undergoes some state change to inform AppServiceProxy
   // of the change. Ensure that RegisterPublisher() has been called before the
   // first call to this method.
-  void Publish(std::unique_ptr<App> app);
+  void Publish(AppPtr app);
 
   // Publish multiple `apps` to AppServiceProxy. Should be called whenever the
   // app represented by `app` undergoes some state change to inform
   // AppServiceProxy of the change. Ensure that RegisterPublisher() has been
   // called before the first call to this method.
-  void Publish(std::vector<std::unique_ptr<App>> apps);
+  void Publish(std::vector<AppPtr> apps);
 
   AppServiceProxy* proxy() { return proxy_; }
 

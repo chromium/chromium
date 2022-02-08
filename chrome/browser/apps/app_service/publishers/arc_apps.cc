@@ -609,7 +609,7 @@ void ArcApps::Initialize() {
 
   RegisterPublisher(AppType::kArc);
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info) {
@@ -1216,7 +1216,7 @@ void ArcApps::OnAppRemoved(const std::string& app_id) {
   mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(AppType::kArc, app_id);
+  auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->readiness = Readiness::kUninstalledByUser;
   AppPublisher::Publish(std::move(app));
 }
@@ -1234,7 +1234,7 @@ void ArcApps::OnAppNameUpdated(const std::string& app_id,
   mojom_app->name = name;
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(AppType::kArc, app_id);
+  auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->name = name;
   AppPublisher::Publish(std::move(app));
 }
@@ -1254,7 +1254,7 @@ void ArcApps::OnAppLastLaunchTimeUpdated(const std::string& app_id) {
   mojom_app->last_launch_time = app_info->last_launch_time;
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(AppType::kArc, app_id);
+  auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->last_launch_time = app_info->last_launch_time;
   AppPublisher::Publish(std::move(app));
 }
@@ -1541,14 +1541,13 @@ apps::mojom::InstallReason GetInstallReason(
   return apps::mojom::InstallReason::kUser;
 }
 
-std::unique_ptr<App> ArcApps::CreateApp(
-    ArcAppListPrefs* prefs,
-    const std::string& app_id,
-    const ArcAppListPrefs::AppInfo& app_info,
-    bool update_icon) {
+AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
+                          const std::string& app_id,
+                          const ArcAppListPrefs::AppInfo& app_info,
+                          bool update_icon) {
   auto install_reason = ConvertMojomInstallReasonToInstallReason(
       GetInstallReason(prefs, app_id, app_info));
-  std::unique_ptr<App> app = AppPublisher::MakeApp(
+  auto app = AppPublisher::MakeApp(
       AppType::kArc, app_id,
       app_info.suspended ? Readiness::kDisabledByPolicy : Readiness::kReady,
       app_info.name, install_reason,
@@ -1734,7 +1733,7 @@ void ArcApps::SetIconEffect(const std::string& app_id) {
       icon_key_factory_.MakeIconKey(GetIconEffects(app_id, *app_info));
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
-  std::unique_ptr<App> app = std::make_unique<App>(AppType::kArc, app_id);
+  auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->icon_key = std::move(
       *icon_key_factory_.CreateIconKey(GetIconEffects(app_id, *app_info)));
   AppPublisher::Publish(std::move(app));

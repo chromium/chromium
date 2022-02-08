@@ -364,7 +364,7 @@ void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!web_app::IsWebAppsCrosapiEnabled())
     return;
 
-  std::vector<std::unique_ptr<App>> apps;
+  std::vector<AppPtr> apps;
   for (apps::mojom::AppPtr& delta : deltas) {
     apps.push_back(ConvertMojomAppToApp(delta));
   }
