@@ -25,6 +25,7 @@ WebAuthenticationDelegate::WebAuthenticationDelegate() = default;
 
 WebAuthenticationDelegate::~WebAuthenticationDelegate() = default;
 
+#if !BUILDFLAG(IS_ANDROID)
 absl::optional<std::string>
 WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
@@ -55,6 +56,25 @@ bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
   return true;
 }
 
+absl::optional<bool> WebAuthenticationDelegate::
+    IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+        RenderFrameHost* render_frame_host) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  if (AuthenticatorEnvironmentImpl::GetInstance()
+          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
+    return AuthenticatorEnvironmentImpl::GetInstance()
+        ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
+  }
+  return absl::nullopt;
+}
+
+WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
+    BrowserContext* browser_context) {
+  return nullptr;
+}
+#endif  // !IS_ANDROID
+
 #if BUILDFLAG(IS_WIN)
 void WebAuthenticationDelegate::OperationSucceeded(
     BrowserContext* browser_context,
@@ -77,23 +97,18 @@ WebAuthenticationDelegate::GetGenerateRequestIdCallback(
 }
 #endif
 
-absl::optional<bool> WebAuthenticationDelegate::
-    IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-        RenderFrameHost* render_frame_host) {
-  FrameTreeNode* frame_tree_node =
-      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
-  if (AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
-    return AuthenticatorEnvironmentImpl::GetInstance()
-        ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
-  }
-  return absl::nullopt;
-}
-
-WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
-    BrowserContext* browser_context) {
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+WebAuthenticationDelegate::GetIntentSender(WebContents* web_contents) {
   return nullptr;
 }
+
+int WebAuthenticationDelegate::GetSupportLevel(WebContents* web_contents) {
+  return 2 /* browser-like support */;
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
 
 AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
     default;
@@ -183,5 +198,7 @@ void AuthenticatorRequestClientDelegate::FinishCollectToken() {}
 
 void AuthenticatorRequestClientDelegate::OnRetryUserVerification(int attempts) {
 }
+
+#endif  // !IS_ANDROID
 
 }  // namespace content

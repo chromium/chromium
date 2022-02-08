@@ -107,6 +107,8 @@ const char kWebAuthnTouchIdMetadataSecretPrefName[] =
 
 ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
+#if !BUILDFLAG(IS_ANDROID)
+
 absl::optional<std::string>
 ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
@@ -174,6 +176,46 @@ void ChromeWebAuthenticationDelegate::OperationSucceeded(
 }
 #endif
 
+absl::optional<bool> ChromeWebAuthenticationDelegate::
+    IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+        content::RenderFrameHost* render_frame_host) {
+  // If the testing API is active, its override takes precedence.
+  absl::optional<bool> testing_api_override =
+      content::WebAuthenticationDelegate::
+          IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+              render_frame_host);
+  if (testing_api_override) {
+    return *testing_api_override;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/908622): Enable platform authenticators in Incognito on
+  // Windows once the API allows triggering an adequate warning dialog.
+  if (render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
+    return false;
+  }
+#endif
+
+  // Chrome disables platform authenticators is Guest sessions. They may be
+  // available (behind an additional interstitial) in Incognito mode.
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  if (profile->IsGuestSession()) {
+    return false;
+  }
+
+  return absl::nullopt;
+}
+
+content::WebAuthenticationRequestProxy*
+ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
+    content::BrowserContext* browser_context) {
+  return extensions::WebAuthenticationProxyServiceFactory::GetForBrowserContext(
+      browser_context);
+}
+
+#endif  // !IS_ANDROID
+
 #if BUILDFLAG(IS_MAC)
 // static
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig
@@ -215,44 +257,6 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
   return ash::WebAuthnRequestRegistrar::Get()->GetRegisterCallback(window);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-absl::optional<bool> ChromeWebAuthenticationDelegate::
-    IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-        content::RenderFrameHost* render_frame_host) {
-  // If the testing API is active, its override takes precedence.
-  absl::optional<bool> testing_api_override =
-      content::WebAuthenticationDelegate::
-          IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-              render_frame_host);
-  if (testing_api_override) {
-    return *testing_api_override;
-  }
-
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/908622): Enable platform authenticators in Incognito on
-  // Windows once the API allows triggering an adequate warning dialog.
-  if (render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
-    return false;
-  }
-#endif
-
-  // Chrome disables platform authenticators is Guest sessions. They may be
-  // available (behind an additional interstitial) in Incognito mode.
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  if (profile->IsGuestSession()) {
-    return false;
-  }
-
-  return absl::nullopt;
-}
-
-content::WebAuthenticationRequestProxy*
-ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
-    content::BrowserContext* browser_context) {
-  return extensions::WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-      browser_context);
-}
 
 // ---------------------------------------------------------------------
 // ChromeAuthenticatorRequestDelegate

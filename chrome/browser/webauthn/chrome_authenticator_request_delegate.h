@@ -53,6 +53,7 @@ class ChromeWebAuthenticationDelegate
 
   ~ChromeWebAuthenticationDelegate() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // content::WebAuthenticationDelegate:
   absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
@@ -63,6 +64,11 @@ class ChromeWebAuthenticationDelegate
   bool SupportsResidentKeys(
       content::RenderFrameHost* render_frame_host) override;
   bool IsFocused(content::WebContents* web_contents) override;
+  absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      content::RenderFrameHost* render_frame_host) override;
+  content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
+      content::BrowserContext* browser_context) override;
+#endif
 #if BUILDFLAG(IS_WIN)
   void OperationSucceeded(content::BrowserContext* browser_context,
                           bool used_win_api) override;
@@ -75,10 +81,6 @@ class ChromeWebAuthenticationDelegate
   ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
       content::RenderFrameHost* render_frame_host) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      content::RenderFrameHost* render_frame_host) override;
-  content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
-      content::BrowserContext* browser_context) override;
 };
 
 class ChromeAuthenticatorRequestDelegate

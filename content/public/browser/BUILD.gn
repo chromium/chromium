@@ -33,6 +33,8 @@ source_set("browser_sources") {
     "audio_service_info.cc",
     "audio_service_info.h",
     "authenticator_environment.h",
+    "authenticator_request_client_delegate.cc",
+    "authenticator_request_client_delegate.h",
     "ax_event_notification_details.cc",
     "ax_event_notification_details.h",
     "ax_inspect_factory.cc",
@@ -582,8 +584,6 @@ source_set("browser_sources") {
     sources += [
       # Some Web Authentication related targets only apply to desktop because
       # Android provides its own native implementation of that API.
-      "authenticator_request_client_delegate.cc",
-      "authenticator_request_client_delegate.h",
       "web_authentication_request_proxy.h",
     ]
   }

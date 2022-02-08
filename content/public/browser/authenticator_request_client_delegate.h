@@ -19,6 +19,10 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
 #endif
@@ -50,6 +54,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   WebAuthenticationDelegate();
   virtual ~WebAuthenticationDelegate();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Permits the embedder to override normal relying party ID processing. Is
   // given the untrusted, claimed relying party ID from the WebAuthn call, as
   // well as the origin of the caller, and may return a relying party ID to
@@ -87,6 +92,19 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // that testing is possible.
   virtual bool IsFocused(WebContents* web_contents);
 
+  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
+  // API call originating from |render_frame_host| should be overridden with
+  // that value, or absl::nullopt otherwise.
+  virtual absl::optional<bool>
+  IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost* render_frame_host);
+
+  // Returns the WebAuthenticationRequestProxy for the |browser_context|, if
+  // any.
+  virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
+      BrowserContext* browser_context);
+#endif  // !IS_ANDROID
+
 #if BUILDFLAG(IS_WIN)
   // OperationSucceeded is called when a registration or assertion operation
   // succeeded. It communicates whether the Windows API was used or not. The
@@ -120,17 +138,26 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       RenderFrameHost* render_frame_host);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
-  // API call originating from |render_frame_host| should be overridden with
-  // that value, or absl::nullopt otherwise.
-  virtual absl::optional<bool>
-  IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      RenderFrameHost* render_frame_host);
+#if BUILDFLAG(IS_ANDROID)
+  // GetIntentSender returns a Java object that implements
+  // `WebAuthenticationDelegate.IntentSender` from
+  // WebAuthenticationDelegate.java. See the comments in that file for details.
+  virtual base::android::ScopedJavaLocalRef<jobject> GetIntentSender(
+      WebContents* web_contents);
 
-  // Returns the WebAuthenticationRequestProxy for the |browser_context|, if
-  // any.
-  virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
-      BrowserContext* browser_context);
+  // GetSupportLevel returns one of:
+  //   0 -> No WebAuthn support for this `WebContents`.
+  //   1 -> WebAuthn should be implemented like an app.
+  //   2 -> WebAuthn should be implemented like a browser.
+  //
+  // The difference between app and browser is meaningful on Android because
+  // there is a different, privileged interface for browsers.
+  //
+  // The return value is an `int` rather than an enum because it's bounced
+  // access JNI boundaries multiple times and so it's only converted to an
+  // enum at the very end.
+  virtual int GetSupportLevel(WebContents* web_contents);
+#endif
 };
 
 // AuthenticatorRequestClientDelegate is an interface that lets embedders

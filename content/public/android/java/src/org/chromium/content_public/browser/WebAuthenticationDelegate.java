@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,13 +25,11 @@ import java.lang.annotation.RetentionPolicy;
  * <code>ContentClient</code> has been set.
  */
 public class WebAuthenticationDelegate {
-    // TODO: actually wire this up to the C++ code.
-    //
-    // private final long mNativeDelegate;
-    //
-    // public WebAuthenticationDelegate() {
-    //    mNativeDelegate = WebAuthenticationDelegateJni.get().getNativeDelegate();
-    // }
+    private final long mNativeDelegate;
+
+    public WebAuthenticationDelegate() {
+        mNativeDelegate = WebAuthenticationDelegateJni.get().getNativeDelegate();
+    }
 
     /**
      * Abstracts the task of starting an intent and getting the result.
@@ -55,10 +54,7 @@ public class WebAuthenticationDelegate {
      */
     @Nullable
     public IntentSender getIntentSender(WebContents webContents) {
-        // TODO: actually wire this up to the C++ code.
-        //
-        // return WebAuthenticationDelegateJni.get().getIntentSender(mNativeDelegate, webContents);
-        return null;
+        return WebAuthenticationDelegateJni.get().getIntentSender(mNativeDelegate, webContents);
     }
 
     /**
@@ -87,26 +83,13 @@ public class WebAuthenticationDelegate {
      * @return the current WebAuthn support level for the given {@link WebContents}.
      */
     public @Support int getSupportLevel(WebContents webContents) {
-        // TODO: actually wire this up to the C++ code.
-        //
-        // switch (WebAuthenticationDelegateJni.get().getSupportLevel(mNativeDelegate,
-        // webContents)){
-        switch (2) {
-            case 1:
-                return Support.APP;
-            case 2:
-                return Support.BROWSER;
-            default:
-                return Support.NONE;
-        }
+        return WebAuthenticationDelegateJni.get().getSupportLevel(mNativeDelegate, webContents);
     }
 
-    // TODO: actually wire this up to the C++ code.
-    //
-    // @NativeMethods
-    // interface Natives {
-    //     long getNativeDelegate();
-    //     IntentSender getIntentSender(long delegatePtr, WebContents webContents);
-    //     int getSupportLevel(long delegatePtr, WebContents webContents);
-    // }
+    @NativeMethods
+    interface Natives {
+        long getNativeDelegate();
+        IntentSender getIntentSender(long delegatePtr, WebContents webContents);
+        int getSupportLevel(long delegatePtr, WebContents webContents);
+    }
 }
