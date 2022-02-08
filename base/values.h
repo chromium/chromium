@@ -795,14 +795,6 @@ class BASE_EXPORT ListValue : public Value {
   explicit ListValue(span<const Value> in_list);
   explicit ListValue(ListStorage&& in_list) noexcept;
 
-  // Gets the Value at the given index.  Modifies `out_value` (and returns true)
-  // only if the index falls within the current list range.
-  // Note that the list always owns the Value passed out via `out_value`.
-  // `out_value` is optional and will only be set if non-NULL.
-  // DEPRECATED, use `GetListDeprecated()::operator[] instead.
-  bool Get(size_t index, const Value** out_value) const;
-  bool Get(size_t index, Value** out_value);
-
   // Convenience forms of `Get()`.  Modifies `out_value` (and returns true)
   // only if the index is valid and the Value at that index can be returned
   // in the specified form.

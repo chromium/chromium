@@ -1338,29 +1338,17 @@ ListValue::ListValue(span<const Value> in_list) : Value(in_list) {}
 ListValue::ListValue(ListStorage&& in_list) noexcept
     : Value(std::move(in_list)) {}
 
-bool ListValue::Get(size_t index, const Value** out_value) const {
-  if (index >= list().size())
-    return false;
-
-  if (out_value)
-    *out_value = &list()[index];
-
-  return true;
-}
-
-bool ListValue::Get(size_t index, Value** out_value) {
-  return as_const(*this).Get(index, const_cast<const Value**>(out_value));
-}
-
 bool ListValue::GetDictionary(size_t index,
                               const DictionaryValue** out_value) const {
-  const Value* value;
-  bool result = Get(index, &value);
-  if (!result || !value->is_dict())
+  const auto& list = GetListDeprecated();
+  if (list.size() <= index)
+    return false;
+  const base::Value& value = list[index];
+  if (!value.is_dict())
     return false;
 
   if (out_value)
-    *out_value = static_cast<const DictionaryValue*>(value);
+    *out_value = static_cast<const DictionaryValue*>(&value);
 
   return true;
 }

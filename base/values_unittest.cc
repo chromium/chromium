@@ -1591,8 +1591,6 @@ TEST(ValuesTest, DeepCopy) {
   storage.emplace_back(0);
   storage.emplace_back(1);
   Value* list_weak = original_dict.SetKey("list", Value(std::move(storage)));
-  Value* list_element_0_weak = &list_weak->GetListDeprecated()[0];
-  Value* list_element_1_weak = &list_weak->GetListDeprecated()[1];
 
   Value* dict_weak = original_dict.SetKey(
       "dictionary", base::Value(base::Value::Type::DICTIONARY));
@@ -1660,20 +1658,6 @@ TEST(ValuesTest, DeepCopy) {
   ASSERT_TRUE(copy_value->GetAsList(&copy_list));
   ASSERT_TRUE(copy_list);
   ASSERT_EQ(2U, copy_list->GetListDeprecated().size());
-
-  Value* copy_list_element_0;
-  ASSERT_TRUE(copy_list->Get(0, &copy_list_element_0));
-  ASSERT_TRUE(copy_list_element_0);
-  ASSERT_NE(copy_list_element_0, list_element_0_weak);
-  ASSERT_TRUE(copy_list_element_0->is_int());
-  ASSERT_EQ(0, copy_list_element_0->GetInt());
-
-  Value* copy_list_element_1;
-  ASSERT_TRUE(copy_list->Get(1, &copy_list_element_1));
-  ASSERT_TRUE(copy_list_element_1);
-  ASSERT_NE(copy_list_element_1, list_element_1_weak);
-  ASSERT_TRUE(copy_list_element_1->is_int());
-  ASSERT_EQ(1, copy_list_element_1->GetInt());
 
   copy_value = nullptr;
   ASSERT_TRUE(copy_dict->Get("dictionary", &copy_value));
@@ -2252,15 +2236,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("dict", nullptr));
   EXPECT_TRUE(main_dict.GetListWithoutPathExpansion("list", nullptr));
   EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("DNE", nullptr));
-
-  EXPECT_TRUE(main_list.Get(0, nullptr));
-  EXPECT_TRUE(main_list.Get(1, nullptr));
-  EXPECT_TRUE(main_list.Get(2, nullptr));
-  EXPECT_TRUE(main_list.Get(3, nullptr));
-  EXPECT_TRUE(main_list.Get(4, nullptr));
-  EXPECT_TRUE(main_list.Get(5, nullptr));
-  EXPECT_TRUE(main_list.Get(6, nullptr));
-  EXPECT_FALSE(main_list.Get(7, nullptr));
 
   EXPECT_FALSE(main_list.GetDictionary(0, nullptr));
   EXPECT_FALSE(main_list.GetDictionary(1, nullptr));

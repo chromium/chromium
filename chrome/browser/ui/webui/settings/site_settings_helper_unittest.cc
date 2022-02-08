@@ -102,18 +102,17 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
                                              /*incognito=*/false, &exceptions);
 
   // |exceptions| size should be 2. One blocked and one embargoed origins.
-  ASSERT_EQ(2U, exceptions.GetListDeprecated().size());
-  base::Value* value = nullptr;
+  const auto& list = exceptions.GetListDeprecated();
+  ASSERT_EQ(2U, list.size());
+
   // Get last added origin.
-  exceptions.Get(0, &value);
-  base::Value* is_embargoed = value->FindKey(site_settings::kIsEmbargoed);
+  base::Value* is_embargoed = list[0].FindKey(site_settings::kIsEmbargoed);
   ASSERT_NE(nullptr, is_embargoed);
   // Last added origin is blocked, |embargo| key should be false.
   EXPECT_FALSE(is_embargoed->GetBool());
 
   // Get embargoed origin.
-  exceptions.Get(1, &value);
-  is_embargoed = value->FindKey(site_settings::kIsEmbargoed);
+  is_embargoed = list[1].FindKey(site_settings::kIsEmbargoed);
   ASSERT_NE(nullptr, is_embargoed);
   EXPECT_TRUE(is_embargoed->GetBool());
 }

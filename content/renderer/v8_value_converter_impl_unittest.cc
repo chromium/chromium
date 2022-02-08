@@ -176,12 +176,12 @@ class V8ValueConverterImplTest : public testing::Test {
   }
 
   bool IsNull(base::ListValue* value, uint32_t index) {
-    base::Value* child = nullptr;
-    if (!value->Get(static_cast<size_t>(index), &child)) {
+    const auto& list = value->GetListDeprecated();
+    if (list.size() <= index) {
       ADD_FAILURE();
       return false;
     }
-    return child->type() == base::Value::Type::NONE;
+    return list[index].type() == base::Value::Type::NONE;
   }
 
   bool IsNull(v8::Local<v8::Array> value, uint32_t index) {
