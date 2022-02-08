@@ -129,8 +129,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
     delete_expired_rate_limits_frequency_ = frequency;
   }
 
-  void set_report_time_ms(int report_time_ms) {
-    report_time_ms_ = report_time_ms;
+  void set_report_delay(base::TimeDelta report_delay) {
+    report_delay_ = report_delay;
   }
 
   void set_offline_report_delay_config(
@@ -160,7 +160,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   base::TimeDelta delete_expired_sources_frequency_;
   base::TimeDelta delete_expired_rate_limits_frequency_;
 
-  int report_time_ms_ = 0;
+  base::TimeDelta report_delay_;
 
   absl::optional<OfflineReportDelayConfig> offline_report_delay_config_;
 

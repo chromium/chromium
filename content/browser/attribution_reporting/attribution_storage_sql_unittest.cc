@@ -390,7 +390,7 @@ TEST_F(AttributionStorageSqlTest,
 
   // Force the impression to be deactivated by ensuring that the next report is
   // in a different window.
-  delegate()->set_report_time_ms(1);
+  delegate()->set_report_delay(base::Milliseconds(1));
   EXPECT_EQ(
       CreateReportStatus::kPriorityTooLow,
       MaybeCreateAndStoreReport(
@@ -451,7 +451,7 @@ TEST_F(AttributionStorageSqlTest,
 
   // Force the impression to be deactivated by ensuring that the next report is
   // in a different window.
-  delegate()->set_report_time_ms(1);
+  delegate()->set_report_delay(base::Milliseconds(1));
   EXPECT_EQ(
       CreateReportStatus::kPriorityTooLow,
       MaybeCreateAndStoreReport(
@@ -629,8 +629,8 @@ TEST_F(AttributionStorageSqlTest, TwoImpressionsOneExpired_OneDeleted) {
 TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   OpenDatabase();
 
-  const int kReportTime = 5;
-  delegate()->set_report_time_ms(kReportTime);
+  const base::TimeDelta kReportDelay = base::Milliseconds(5);
+  delegate()->set_report_delay(kReportDelay);
 
   storage()->StoreSource(
       SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());
@@ -639,7 +639,7 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
   // Advance past the default report time.
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   std::vector<AttributionReport> reports =
       storage()->GetAttributionsToReport(base::Time::Now());

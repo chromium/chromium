@@ -65,7 +65,7 @@ ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 base::Time ConfigurableStorageDelegate::GetReportTime(
     const CommonSourceInfo& source,
     base::Time trigger_time) const {
-  return source.impression_time() + base::Milliseconds(report_time_ms_);
+  return source.impression_time() + report_delay_;
 }
 
 int ConfigurableStorageDelegate::GetMaxAttributionsPerSource(

@@ -57,8 +57,8 @@ using ::testing::SizeIs;
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
 
-// Default delay in milliseconds for when a report should be sent for testing.
-const int kReportTime = 5;
+// Default delay for when a report should be sent for testing.
+constexpr base::TimeDelta kReportDelay = base::Milliseconds(5);
 
 base::RepeatingCallback<bool(const url::Origin&)> GetMatcher(
     const url::Origin& to_delete) {
@@ -74,7 +74,7 @@ class AttributionStorageTest : public testing::Test {
   AttributionStorageTest() {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
     auto delegate = std::make_unique<ConfigurableStorageDelegate>();
-    delegate->set_report_time_ms(kReportTime);
+    delegate->set_report_delay(kReportDelay);
     delegate->set_max_attributions_per_source(kMaxConversions);
     delegate_ = delegate.get();
     storage_ = std::make_unique<AttributionStorageSql>(dir_.GetPath(),
@@ -88,8 +88,7 @@ class AttributionStorageTest : public testing::Test {
     return ReportBuilder(source)
         .SetTriggerData(conversion.trigger_data())
         .SetTriggerTime(base::Time::Now())
-        .SetReportTime(source.common_info().impression_time() +
-                       base::Milliseconds(kReportTime))
+        .SetReportTime(source.common_info().impression_time() + kReportDelay)
         .SetPriority(conversion.priority())
         .Build();
   }
@@ -214,7 +213,7 @@ TEST_F(AttributionStorageTest, EventSourceImpressionsForConversion_Converts) {
             MaybeCreateAndStoreReport(
                 TriggerBuilder().SetEventSourceTriggerData(456).Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(456u))));
@@ -270,7 +269,7 @@ TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
   AttributionReport expected_report =
       GetExpectedReport(SourceBuilder().BuildStored(), conversion);
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(expected_report));
@@ -286,7 +285,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(CreateReportStatus::kNoMatchingImpressions,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
 }
@@ -301,7 +300,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(CreateReportStatus::kNoMatchingImpressions,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
 }
@@ -311,7 +310,7 @@ TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   std::vector<AttributionReport> reports =
       storage()->GetAttributionsToReport(base::Time::Now());
@@ -369,7 +368,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   // Delete the report.
   DeleteReports(storage()->GetAttributionsToReport(base::Time::Now()));
@@ -386,7 +385,7 @@ TEST_F(AttributionStorageTest,
   AttributionReport expected_report =
       GetExpectedReport(builder.BuildStored(), conversion);
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   // Verify it was the new impression that converted.
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
@@ -402,7 +401,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   // Delete the report.
   DeleteReports(storage()->GetAttributionsToReport(base::Time::Now()));
@@ -446,7 +445,7 @@ TEST_F(
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(conversion));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(third_expected_conversion));
@@ -469,7 +468,7 @@ TEST_F(AttributionStorageTest,
 
   // Advance to the first impression's report time and verify only its report is
   // available.
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime - 1));
+  task_environment_.FastForwardBy(kReportDelay - base::Milliseconds(1));
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -481,7 +480,7 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   std::vector<AttributionReport> first_call_reports =
       storage()->GetAttributionsToReport(base::Time::Now());
@@ -828,7 +827,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_ReportNotStored) {
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
 }
@@ -850,7 +849,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
       CreateReportStatus::kSuccess,
       MaybeCreateAndStoreReport(TriggerBuilder().SetTriggerData(7).Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(AllOf(ReportSourceIs(SourceEventIdIs(5u)),
@@ -885,7 +884,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
   const AttributionReport expected_report =
       GetExpectedReport(builder.BuildStored(), conversion);
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(expected_report));
@@ -908,7 +907,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
             MaybeCreateAndStoreReport(conversion));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
 }
@@ -1011,7 +1010,7 @@ TEST_F(AttributionStorageTest,
 
   // Force the impression to be deactivated by ensuring that the next report is
   // in a different window.
-  delegate()->set_report_time_ms(kReportTime + 1);
+  delegate()->set_report_delay(kReportDelay + base::Milliseconds(1));
   EXPECT_EQ(CreateReportStatus::kPriorityTooLow,
             MaybeCreateAndStoreReport(trigger));
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
@@ -1041,7 +1040,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
@@ -1064,7 +1063,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
@@ -1089,8 +1088,7 @@ TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
 TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   delegate()->set_max_attributions_per_source(1);
 
-  const base::Time fake_report_time =
-      base::Time::Now() + base::Milliseconds(kReportTime);
+  const base::Time fake_report_time = base::Time::Now() + kReportDelay;
 
   SourceBuilder builder;
   builder.SetSourceEventId(4)
@@ -1111,7 +1109,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           .SetReportTime(fake_report_time)
           .Build();
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(expected_report));
@@ -1190,7 +1188,7 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
       AllOf(CreateReportStatusIs(CreateReportStatus::kPriorityTooLow),
             DroppedReportIs(Optional(EventLevelDataIs(TriggerDataIs(23u))))));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(AllOf(ReportSourceIs(SourceEventIdIs(5u)),
@@ -1216,7 +1214,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
                   TriggerBuilder().SetPriority(i).SetTriggerData(i).Build()));
   }
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(9u))));
@@ -1273,7 +1271,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
   EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
 
   // Ensure that the next report is in a different window.
-  delegate()->set_report_time_ms(kReportTime + 1);
+  delegate()->set_report_delay(kReportDelay + base::Milliseconds(1));
 
   // This conversion should not be stored because all reports for the attributed
   // impression were in an earlier window.
@@ -1349,7 +1347,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
                     .SetTriggerData(75)
                     .Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(71u)),
                           EventLevelDataIs(TriggerDataIs(72u)),
@@ -1379,7 +1377,7 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
                     .SetTriggerData(3)
                     .Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   std::vector<AttributionReport> actual_reports =
       storage()->GetAttributionsToReport(base::Time::Now());
@@ -1401,7 +1399,7 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
                     .SetTriggerData(5)
                     .Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
 }
 
@@ -1411,7 +1409,7 @@ TEST_F(AttributionStorageTest, GetAttributionsToReport_SetsPriority) {
       CreateReportStatus::kSuccess,
       MaybeCreateAndStoreReport(TriggerBuilder().SetPriority(13).Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(EventLevelDataIs(TriggerPriorityIs(13))));
@@ -1462,7 +1460,7 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   std::vector<AttributionReport> actual_reports =
       storage()->GetAttributionsToReport(base::Time::Now());
@@ -1490,7 +1488,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
               IsEmpty());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   // Set a dedup key to ensure that the return deactivated source contains it.
   EXPECT_EQ(
@@ -1524,7 +1522,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
@@ -1560,7 +1558,7 @@ TEST_F(AttributionStorageTest,
               MaybeCreateAndStoreReport(DefaultTrigger()));
   }
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
   auto reports = storage()->GetAttributionsToReport(base::Time::Now());
   EXPECT_THAT(reports, SizeIs(3));
 
@@ -1584,7 +1582,7 @@ TEST_F(AttributionStorageTest, ReportID_RoundTrips) {
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   std::vector<AttributionReport> actual_reports =
       storage()->GetAttributionsToReport(base::Time::Now());
@@ -1604,13 +1602,12 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  const base::Time original_report_time =
-      base::Time::Now() + base::Milliseconds(kReportTime);
+  const base::Time original_report_time = base::Time::Now() + kReportDelay;
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
               ElementsAre(ReportTimeIs(original_report_time)));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
 
   EXPECT_EQ(storage()->AdjustOfflineReportTimes(), original_report_time);
 
@@ -1639,13 +1636,12 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  const base::Time original_report_time =
-      base::Time::Now() + base::Milliseconds(kReportTime);
+  const base::Time original_report_time = base::Time::Now() + kReportDelay;
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
               ElementsAre(ReportTimeIs(original_report_time)));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime + 1));
+  task_environment_.FastForwardBy(kReportDelay + base::Milliseconds(1));
 
   storage()->AdjustOfflineReportTimes();
 
@@ -1666,8 +1662,7 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
             MaybeCreateAndStoreReport(
                 TriggerBuilder().SetReportingOrigin(origin_a).Build()));
 
-  const base::Time report_time_a =
-      base::Time::Now() + base::Milliseconds(kReportTime);
+  const base::Time report_time_a = base::Time::Now() + kReportDelay;
 
   EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
   EXPECT_EQ(storage()->GetNextReportTime(report_time_a), absl::nullopt);
@@ -1678,8 +1673,7 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
             MaybeCreateAndStoreReport(
                 TriggerBuilder().SetReportingOrigin(origin_b).Build()));
 
-  const base::Time report_time_b =
-      base::Time::Now() + base::Milliseconds(kReportTime);
+  const base::Time report_time_b = base::Time::Now() + kReportDelay;
 
   EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
   EXPECT_EQ(storage()->GetNextReportTime(report_time_a), report_time_b);
@@ -1726,7 +1720,7 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
       CreateReportStatus::kSuccess,
       MaybeCreateAndStoreReport(TriggerBuilder().SetDebugKey(33).Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
+  task_environment_.FastForwardBy(kReportDelay);
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(22)),
                                 TriggerDebugKeyIs(33))));
