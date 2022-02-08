@@ -142,8 +142,12 @@ void RecommendAppsScreenHandler::LoadAppListInUI(const base::Value& app_list) {
   RecordUmaScreenState(RecommendAppsScreenState::SHOW);
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
+  // TODO(crbug.com/1261902): Clean-up old implementation once feature is
+  // launched.
   std::string app_list_webview = resource_bundle.LoadDataResourceString(
-      IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
+      features::IsOobeNewRecommendAppsEnabled()
+          ? IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML
+          : IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
   CallJS("login.RecommendAppsOldScreen.setWebview", app_list_webview);
   CallJS("login.RecommendAppsOldScreen.loadAppList", app_list);
 }
