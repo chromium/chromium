@@ -251,18 +251,11 @@ bool ExtensionContextMenuModel::IsCommandIdVisible(int command_id) const {
   const Extension* extension = GetExtension();
   if (!extension)
     return false;
-  if (ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
+
+  if (ContextMenuMatcher::IsExtensionsCustomCommandId(command_id))
     return extension_items_->IsCommandIdVisible(command_id);
-  }
 
-  // The command is hidden in app windows because they don't
-  // support showing extensions in the app window frame.
-  if (command_id == TOGGLE_VISIBILITY) {
-    return (source_ == ContextMenuSource::kToolbarAction) &&
-           can_show_icon_in_toolbar_;
-  }
-
-  // Standard menu items are visible.
+  // Items added by Chrome to the menu are always visible.
   return true;
 }
 
@@ -283,7 +276,10 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
       return ManifestURL::GetHomepageURL(extension).is_valid() &&
              !is_component_;
     case OPTIONS:
-      return OptionsPageInfo::HasOptionsPage(extension);
+      // Options is always enabled since it will only be visible if it has an
+      // options page.
+      DCHECK(OptionsPageInfo::HasOptionsPage(extension));
+      return true;
     case INSPECT_POPUP: {
       content::WebContents* web_contents = GetActiveWebContents();
       return web_contents && extension_action_ &&
@@ -411,7 +407,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
 
   CreatePageAccessSubmenu(extension);
 
-  if (!is_component_ || OptionsPageInfo::HasOptionsPage(extension))
+  if (OptionsPageInfo::HasOptionsPage(extension))
     AddItemWithStringId(OPTIONS, IDS_EXTENSIONS_OPTIONS_MENU_ITEM);
 
   if (!is_component_) {
@@ -429,17 +425,18 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     }
   }
 
-  // Add a toggle visibility (show/hide) if the extension icon is shown on the
-  // toolbar.
-  int visibility_string_id =
-      GetVisibilityStringId(profile_, extension, button_visibility);
-  DCHECK_NE(-1, visibility_string_id);
-  AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
-  if (IsExtensionForcePinned(*extension, profile_)) {
-    int toggle_visibility_index = GetIndexOfCommandId(TOGGLE_VISIBILITY);
-    SetIcon(toggle_visibility_index,
-            ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                           gfx::kChromeIconGrey, 16));
+  if ((source_ == ContextMenuSource::kToolbarAction) &&
+      can_show_icon_in_toolbar_) {
+    int visibility_string_id =
+        GetVisibilityStringId(profile_, extension, button_visibility);
+    DCHECK_NE(-1, visibility_string_id);
+    AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
+    if (IsExtensionForcePinned(*extension, profile_)) {
+      int toggle_visibility_index = GetIndexOfCommandId(TOGGLE_VISIBILITY);
+      SetIcon(toggle_visibility_index,
+              ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                             gfx::kChromeIconGrey, 16));
+    }
   }
 
   if (!is_component_) {

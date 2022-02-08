@@ -565,11 +565,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   EXPECT_NE(nullptr, extensions_container->GetPoppedOutAction());
 
-  // Verify the context menu option is to unpin the extension.
+  // Verify the context menu option, when opened from the toolbar action, is to
+  // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
       extensions_container->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
-                               ContextMenuSource::kMenuItem));
+                               ContextMenuSource::kToolbarAction));
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
@@ -596,11 +597,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ASSERT_EQ(1u, visible_icons.size());
   EXPECT_NE(nullptr, extensions_container->GetPoppedOutAction());
 
-  // Verify the context menu option is to unpin the extension.
+  // Verify the context menu option, when opened from the toolbar action, is to
+  // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
       extensions_container->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
-                               ContextMenuSource::kMenuItem));
+                               ContextMenuSource::kToolbarAction));
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
