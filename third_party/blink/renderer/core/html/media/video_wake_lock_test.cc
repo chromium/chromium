@@ -188,8 +188,7 @@ class VideoWakeLockTest : public testing::Test {
 
   void SimulateEnterPictureInPicture() {
     PictureInPictureController::From(GetDocument())
-        .EnterPictureInPicture(Video(), nullptr /* options */,
-                               nullptr /* promise */);
+        .EnterPictureInPicture(Video(), /*promise=*/nullptr);
 
     MakeGarbageCollected<WaitForEvent>(
         video_.Get(), event_type_names::kEnterpictureinpicture);

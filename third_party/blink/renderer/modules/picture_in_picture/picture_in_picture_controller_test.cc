@@ -269,8 +269,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */,
-                             nullptr /* promise */);
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
 
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kEnterpictureinpicture);
@@ -286,8 +285,7 @@ TEST_F(PictureInPictureControllerTest,
 
   // Entering PictureInPicture should disallow throttling.
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */,
-                             nullptr /* promise */);
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kEnterpictureinpicture);
   EXPECT_FALSE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
@@ -310,8 +308,7 @@ TEST_F(PictureInPictureControllerTest, ExitPictureInPictureFiresEvent) {
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */,
-                             nullptr /* promise */);
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
 
   EXPECT_CALL(Service().Session(), Stop(_));
 
@@ -338,8 +335,7 @@ TEST_F(PictureInPictureControllerTest, StartObserving) {
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */,
-                             nullptr /* promise */);
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
 
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kEnterpictureinpicture);
@@ -358,8 +354,7 @@ TEST_F(PictureInPictureControllerTest, StopObserving) {
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */,
-                             nullptr /* promise */);
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
 
   EXPECT_CALL(Service().Session(), Stop(_));
 
@@ -387,8 +382,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_InfiniteDuration) {
                            player->NaturalSize(), false, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */,
-                             nullptr /* promise */);
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
 
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kEnterpictureinpicture);
@@ -407,8 +401,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_MediaSource) {
                            player->NaturalSize(), false, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */,
-                             nullptr /* promise */);
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
 
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kEnterpictureinpicture);
@@ -446,7 +439,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   auto promise = resolver->Promise();
   PictureInPictureControllerImpl::From(GetDocument())
-      .EnterPictureInPicture(Video(), nullptr /* options */, resolver);
+      .EnterPictureInPicture(Video(), resolver);
 
   // Verify rejected with DOMExceptionCode::kInvalidStateError.
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());

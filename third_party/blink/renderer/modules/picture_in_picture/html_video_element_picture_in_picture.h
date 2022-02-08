@@ -29,6 +29,9 @@ class HTMLVideoElementPictureInPicture {
                                   const QualifiedName&,
                                   bool);
 
+  static void CheckIfPictureInPictureIsAllowed(HTMLVideoElement&,
+                                               ExceptionState&);
+
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(enterpictureinpicture,
                                          kEnterpictureinpicture)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(leavepictureinpicture,

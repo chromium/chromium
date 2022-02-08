@@ -370,8 +370,7 @@ void HTMLVideoElement::OnLoadFinished() {
 
 void HTMLVideoElement::RequestEnterPictureInPicture() {
   PictureInPictureController::From(GetDocument())
-      .EnterPictureInPicture(this, nullptr /* promise */,
-                             nullptr /* options */);
+      .EnterPictureInPicture(this, /*promise=*/nullptr);
 }
 
 void HTMLVideoElement::RequestExitPictureInPicture() {

@@ -723,8 +723,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_photo_settings.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_event_init.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.cc",

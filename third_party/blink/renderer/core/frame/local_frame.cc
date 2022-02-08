@@ -2888,8 +2888,7 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
       if (enable) {
         PictureInPictureController::From(node->GetDocument())
             .EnterPictureInPicture(To<HTMLVideoElement>(media_element),
-                                   nullptr /* promise */,
-                                   nullptr /* options */);
+                                   /*promise=*/nullptr);
       } else {
         PictureInPictureController::From(node->GetDocument())
             .ExitPictureInPicture(To<HTMLVideoElement>(media_element), nullptr);

@@ -88,8 +88,7 @@ void MediaControlPictureInPictureButtonElement::DefaultEventHandler(
             video_element)) {
       controller.ExitPictureInPicture(video_element, nullptr);
     } else {
-      controller.EnterPictureInPicture(video_element, nullptr /* options */,
-                                       nullptr /* promise */);
+      controller.EnterPictureInPicture(video_element, /*promise=*/nullptr);
     }
   }
 

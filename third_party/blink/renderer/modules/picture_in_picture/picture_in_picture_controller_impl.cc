@@ -16,7 +16,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -86,67 +85,34 @@ PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
 }
 
 PictureInPictureController::Status
-PictureInPictureControllerImpl::VerifyElementAndOptions(
-    const HTMLElement& element,
-    const PictureInPictureOptions* options) const {
-  if (!IsA<HTMLVideoElement>(element) && options) {
-    // If either the width or height is present then we should make sure they
-    // are both present and valid.
-    if (options->hasWidth() || options->hasHeight()) {
-      if (!options->hasWidth() || options->width() <= 0)
-        return Status::kInvalidWidthOrHeightOption;
-
-      if (!options->hasHeight() || options->height() <= 0)
-        return Status::kInvalidWidthOrHeightOption;
-    }
-  }
-
-  return IsElementAllowed(element, /*report_failure=*/true);
-}
-
-PictureInPictureController::Status
 PictureInPictureControllerImpl::IsElementAllowed(
-    const HTMLElement& element) const {
+    const HTMLVideoElement& element) const {
   return IsElementAllowed(element, /*report_failure=*/false);
 }
 
 PictureInPictureController::Status
-PictureInPictureControllerImpl::IsElementAllowed(const HTMLElement& element,
-                                                 bool report_failure) const {
+PictureInPictureControllerImpl::IsElementAllowed(
+    const HTMLVideoElement& video_element,
+    bool report_failure) const {
   PictureInPictureController::Status status = IsDocumentAllowed(report_failure);
   if (status != Status::kEnabled)
     return status;
 
-  const auto* video_element = DynamicTo<HTMLVideoElement>(element);
-  if (!video_element)
-    return Status::kEnabled;
-
-  if (video_element->getReadyState() == HTMLMediaElement::kHaveNothing)
+  if (video_element.getReadyState() == HTMLMediaElement::kHaveNothing)
     return Status::kMetadataNotLoaded;
 
-  if (!video_element->HasVideo())
+  if (!video_element.HasVideo())
     return Status::kVideoTrackNotAvailable;
 
-  if (video_element->FastHasAttribute(html_names::kDisablepictureinpictureAttr))
+  if (video_element.FastHasAttribute(html_names::kDisablepictureinpictureAttr))
     return Status::kDisabledByAttribute;
 
   return Status::kEnabled;
 }
 
 void PictureInPictureControllerImpl::EnterPictureInPicture(
-    HTMLElement* element,
-    PictureInPictureOptions* options,
+    HTMLVideoElement* video_element,
     ScriptPromiseResolver* resolver) {
-  auto* video_element = DynamicTo<HTMLVideoElement>(*element);
-  if (!video_element) {
-    DCHECK(RuntimeEnabledFeatures::PictureInPictureV2Enabled());
-    // TODO(https://crbug.com/953957): Support element level pip.
-    if (resolver)
-      resolver->Resolve();
-
-    return;
-  }
-
   if (!video_element->GetWebMediaPlayer()) {
     if (resolver) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -155,8 +121,6 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
 
     return;
   }
-
-  DCHECK(!options);
 
   if (picture_in_picture_element_ == video_element) {
     if (resolver)
@@ -179,7 +143,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>
       session_observer;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent);
+      video_element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent);
   session_observer_receiver_.Bind(
       session_observer.InitWithNewPipeAndPassReceiver(), task_runner);
 
@@ -441,8 +405,7 @@ void PictureInPictureControllerImpl::PageVisibilityChanged() {
   // If page becomes hidden and entering Auto Picture-in-Picture is allowed,
   // enter Picture-in-Picture.
   if (GetSupplementable()->hidden() && IsEnterAutoPictureInPictureAllowed()) {
-    EnterPictureInPicture(AutoPictureInPictureElement(), nullptr /* options */,
-                          nullptr /* promise */);
+    EnterPictureInPicture(AutoPictureInPictureElement(), /*promise=*/nullptr);
   }
 }
 

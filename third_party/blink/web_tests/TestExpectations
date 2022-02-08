@@ -7126,7 +7126,6 @@ crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/time-suggestion-p
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/stylesheet-and-script-load-order-http.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/blob/send-sliced-data-blob.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/formdata/send-form-data-with-empty-name.html [ Crash ]
-crbug.com/1249176 [ Mac11-arm64 ] media/picture-in-picture/v2/request-picture-in-picture.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/invalidation/selection/invalidation-rect-includes-newline-for-rtl.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] storage/indexeddb/intversion-revert-on-abort.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] svg/animations/animate-setcurrenttime.html [ Crash ]
@@ -7138,7 +7137,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/network/blocked-
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/network/xhr-post-replay-cors.js [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/cross-origin-shared-worker-allowed.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] media/autoplay/webaudio-audio-context-init.html [ Crash Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] media/picture-in-picture/v2/detached-iframe.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-005.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-yes-subdomain-child2-no-port.sub.https.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-same-2-yes-port.sub.https.html [ Crash Pass ]
@@ -7500,9 +7498,6 @@ crbug.com/1285438 fast/layers/clip-rects-transformed.html [ Failure Pass ]
 crbug.com/1285431 [ Mac ] virtual/backface-visibility-interop/compositing/overflow/transform-should-update-absolute-clip-rects.html [ Crash Failure Pass ]
 crbug.com/1285437 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax.js [ Crash Failure Pass Timeout ]
-
-# Sheriff 2022-01-11
-crbug.com/1286437 [ Mac ] media/picture-in-picture/v2/request-picture-in-picture-twice.html [ Failure Pass ]
 
 # Sheriff 2022-01-12
 crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]

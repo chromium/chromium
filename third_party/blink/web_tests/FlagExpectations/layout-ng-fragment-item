@@ -3,7 +3,4 @@
 # tags: [ Release Debug ]
 
 crbug.com/982194 external/wpt/webrtc/protocol/video-codecs.https.html [ Failure ]
-crbug.com/1061102 media/picture-in-picture/v2/detached-iframe.html [ Skip ]
-crbug.com/1061102 media/picture-in-picture/v2/request-picture-in-picture-twice.html [ Skip ]
-crbug.com/1061102 media/picture-in-picture/v2/request-picture-in-picture.html [ Skip ]
 crbug.com/982194 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/video-codecs.https.html [ Failure ]
