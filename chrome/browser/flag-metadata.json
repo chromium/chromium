@@ -473,7 +473,7 @@
   {
     "name": "autofill-keyboard-accessory-view",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 103
   },
   {
     "name": "autofill-parse-merchant-promo-code-fields",
@@ -1512,7 +1512,7 @@
   {
     "name": "enable-autofill-manual-fallback",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 103
   },
   {
     "name": "enable-autofill-refresh-style",
@@ -4913,8 +4913,8 @@
   },
   {
     "name": "recover-from-never-save-android",
-    "owners": [ "ioanap" ],
-    "expiry_milestone": 99
+    "owners": [ "ioanap", "fhorschig" ],
+    "expiry_milestone": 103
   },
   {
     "name": "reduce-display-notifications",
