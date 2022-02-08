@@ -378,6 +378,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1295396")
     public void testAbortFirstRun() throws Exception {
         launchViewIntent(TEST_URL);
         Activity chromeLauncherActivity = waitForActivity(ChromeLauncherActivity.class);
