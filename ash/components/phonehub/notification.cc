@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace ash {
 namespace phonehub {
@@ -68,7 +69,10 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
 
   const base::Value* visible_app_name_value = value.FindPath(kVisibleAppName);
   std::u16string visible_app_name_string_value;
-  visible_app_name_value->GetAsString(&visible_app_name_string_value);
+  if (visible_app_name_value->is_string()) {
+    visible_app_name_string_value =
+        base::UTF8ToUTF16(visible_app_name_value->GetString());
+  }
 
   std::string icon_str;
   base::Base64Decode(*(value.FindStringPath(kIcon)), &icon_str);
