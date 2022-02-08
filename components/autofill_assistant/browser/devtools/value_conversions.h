@@ -56,7 +56,7 @@ std::unique_ptr<base::Value> ToValueImpl(const std::string& value, T*) {
 
 template <typename T>
 std::unique_ptr<base::Value> ToValueImpl(const base::Value& value, T*) {
-  return value.CreateDeepCopy();
+  return std::make_unique<base::Value>(value.Clone());
 }
 
 template <typename T>
