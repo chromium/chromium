@@ -105,6 +105,8 @@
 #if BUILDFLAG(IS_WIN)
 #include <codecvt>
 #include "base/win/shortcut.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/chrome_switches.h"
 #endif
 
@@ -998,6 +1000,34 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(
   }
   run_loop.Run();
   AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::UninstallFromOS(
+    const std::string& site_mode) {
+#if BUILDFLAG(IS_WIN)
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+  auto app_id = app_state->id;
+  WebAppTestUninstallObserver observer(profile());
+  observer.BeginListening({app_id});
+
+  // Trigger app uninstall via command line.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kUninstallAppId, app_id);
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      command_line, {},
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
+
+  observer.Wait();
+  AfterStateChangeAction();
+#else
+  NOTREACHED() << "Not supported on non-Windows platforms";
+#endif
 }
 
 void WebAppIntegrationTestDriver::CheckAppListEmpty() {
