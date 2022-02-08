@@ -2138,12 +2138,13 @@ void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
   TabDragController* drag_controller = drag_context_->GetDragController();
   if (drag_controller) {
     dragging_tabs_current_group = drag_controller->group();
-    if (!dragging_tabs_current_group.has_value()) {
-      for (const Tab* tab : layout_helper_->GetTabs()) {
-        if (tab->dragging()) {
-          dragging_tabs_current_group = tab->group();
-          break;
-        }
+  }
+
+  if (!dragging_tabs_current_group.has_value()) {
+    for (const Tab* tab : layout_helper_->GetTabs()) {
+      if (tab->dragging()) {
+        dragging_tabs_current_group = tab->group();
+        break;
       }
     }
   }
