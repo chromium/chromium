@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UserPreview} from 'chrome://personalization/trusted/user_preview_element.js';
+import {UserPreview} from 'chrome://personalization/trusted/user/user_preview_element.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -46,13 +46,23 @@ export function UserPreviewTest() {
         userPreviewElement!.shadowRoot!.getElementById('name')!.innerText);
   });
 
-  test('displays user image', async () => {
+  test('displays clickable user image on main page', async () => {
+    personalizationStore.data.user.image = userProvider.image;
+    userPreviewElement = initElement(UserPreview, {'clickable': true});
+    await waitAfterNextRender(userPreviewElement!);
+
+    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+                            'avatar') as HTMLImageElement;
+    assertEquals(userProvider.image.url, avatarImage.src);
+  });
+
+  test('displays non-clickable user image on user subpage', async () => {
     personalizationStore.data.user.image = userProvider.image;
     userPreviewElement = initElement(UserPreview);
     await waitAfterNextRender(userPreviewElement!);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
-                            'avatar') as HTMLImageElement;
+                            'avatar2') as HTMLImageElement;
     assertEquals(userProvider.image.url, avatarImage.src);
   });
 }

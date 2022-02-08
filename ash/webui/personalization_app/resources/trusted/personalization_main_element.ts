@@ -22,7 +22,12 @@ export class PersonalizationMain extends WithPersonalizationStore {
   }
 
   static get properties() {
-    return {};
+    return {
+      clickable_: {
+        type: Boolean,
+        value: true,
+      },
+    };
   }
 
   private isDarkLightModeEnabled_(): boolean {

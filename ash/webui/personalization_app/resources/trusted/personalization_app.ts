@@ -20,8 +20,8 @@ import './personalization_toast_element.js';
 import './personalization_breadcrumb_element.js';
 import './personalization_main_element.js';
 import './personalization_theme_element.js';
-import './user_preview_element.js';
 import './user/avatar_list_element.js';
+import './user/user_preview_element.js';
 import './user/user_subpage_element.js';
 import './wallpaper/index.js';
 

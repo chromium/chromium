@@ -38,14 +38,16 @@
     border: none;
   }
 
-  iron-icon {
-    height: 20px;
-    width: 20px;
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--cros-button-label-color-primary);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    background-color: var(--cros-button-background-color-primary);
   }
 </style>
 <div id="container">
   <div id="leftspacer"></div>
-  <user-preview>
+  <user-preview clickable="[[clickable_]]">
     <cr-icon-button id="userSubpageLink" iron-icon="personalization:pencil"
         on-click="onClickUserSubpageLink_"></cr-icon-button>
   </user-preview>

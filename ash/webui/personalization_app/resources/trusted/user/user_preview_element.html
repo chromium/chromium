@@ -1,0 +1,96 @@
+<style include="trusted-style">
+  #container {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-areas:
+      '. .     . .'
+      '. image . text'
+      '. .     . .';
+    grid-template-columns: 8px 84px 16px minmax(0, 1fr);
+    grid-template-rows: 12px 84px 12px;
+    height: 100%;
+    margin: 0 8px;
+  }
+
+  #imageContainer {
+    grid-area: image;
+    position: relative;
+  }
+  #imageContainer img:hover {
+    background-color: var(--cros-highlight-color-focus);
+  }
+  #imageContainer img {
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    height: 80px;
+    width: 80px;
+  }
+  #infoContainer {
+    align-items: flex-start;
+    display: flex;
+    flex-flow: column nowrap;
+    grid-area: text;
+    justify-content: flex-end;
+    margin: 0;
+  }
+  #infoContainer > * {
+    margin: 0;
+  }
+  #infoContainer > p {
+    color: var(--cros-text-color-primary);
+    font: 500 20px/28px var(--cros-font-family-google-sans);
+  }
+  #emailContainer {
+    align-items: center;
+    display: flex;
+    flex-flow: row nowrap;
+  }
+  #emailContainer > p {
+    color: var(--cros-link-color);
+    font: var(--cros-body-2-font);
+  }
+  iron-icon[icon='cr:open-in-new'] {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    --iron-icon-fill-color: var(--cros-link-color);
+    margin-inline-start: 6px;
+  }
+  paper-ripple {
+    color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+  ::slotted(cr-icon-button) {
+    bottom: 0;
+    grid-area: image;
+    position: absolute;
+    right: 8px;
+  }
+  #avatar:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+</style>
+<div id="container">
+  <div id="imageContainer">
+    <template is="dom-if" if="[[image_]]">
+      <template is="dom-if" if="[[clickable]]">
+        <paper-ripple class="circle"></paper-ripple>
+        <img tabindex="0" id="avatar" src="[[image_.url]]"
+            on-click="onClickUserSubpageLink_"
+            on-keypress="onClickUserSubpageLink_">
+      </template>
+      <template is="dom-if" if="[[!clickable]]">
+        <img id="avatar2" src="[[image_.url]]">
+      </template>
+    </template>
+    <slot></slot>
+  </div>
+  <div id="infoContainer">
+    <template is="dom-if" if="[[info_]]">
+      <p id="name">[[info_.name]]</p>
+      <div id="emailContainer" on-click="onClickUserEmail_">
+        <p id="email">[[info_.email]]</p>
+        <iron-icon icon="cr:open-in-new"></iron-icon>
+      </div>
+    </template>
+  </div>
+</div>
