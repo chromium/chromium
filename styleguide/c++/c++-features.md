@@ -556,7 +556,7 @@ struct S {
   static constexpr int kZero = 0;  // constexpr implies inline here.
 };
 
-constexpr inline int kOne = 1;  // Explicit inline needed here.
+inline constexpr int kOne = 1;  // Explicit inline needed here.
 ```
 
 **Description:** The `inline` specifier can be applied to variables as well as
