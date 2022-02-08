@@ -373,7 +373,7 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithoutNameMsgAndEmptyDescription) {
   ASSERT_TRUE(manifest.GetString(keys::kName, &result));
   EXPECT_EQ("no __MSG", result);
 
-  EXPECT_FALSE(manifest.HasKey(keys::kDescription));
+  EXPECT_FALSE(manifest.FindKey(keys::kDescription));
 
   EXPECT_TRUE(error.empty());
 }
@@ -391,7 +391,7 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameMsgAndEmptyDescription) {
   ASSERT_TRUE(manifest.GetString(keys::kName, &result));
   EXPECT_EQ("name", result);
 
-  EXPECT_FALSE(manifest.HasKey(keys::kDescription));
+  EXPECT_FALSE(manifest.FindKey(keys::kDescription));
 
   EXPECT_TRUE(error.empty());
 }

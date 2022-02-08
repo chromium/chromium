@@ -159,7 +159,7 @@ bool MessageBundle::GetPlaceholders(const base::DictionaryValue& name_tree,
                                     const std::string& name_key,
                                     SubstitutionMap* placeholders,
                                     std::string* error) const {
-  if (!name_tree.HasKey(kPlaceholdersKey))
+  if (!name_tree.FindKey(kPlaceholdersKey))
     return true;
 
   const base::DictionaryValue* placeholders_tree;
