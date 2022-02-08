@@ -1240,6 +1240,24 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
                           &redirect_info.new_url, *factory_params_,
                           origin_access_list_);
 
+  // The target IP address space is no longer relevant, it only applied to the
+  // URL before the redirect. Consider the following scenario:
+  //
+  // 1. `https://public.example` fetches `http://localhost/foo`
+  // 2. `OnConnected()` notices that the remote endpoint's IP address space is
+  //    `kLocal`, fails the request with
+  //    `CorsError::UnexpectedPrivateNetworkAccess`.
+  // 3. A preflight request is sent with `target_ip_address_space_` set to
+  //    `kLocal`, succeeds.
+  // 4. `http://localhost/foo` redirects the GET request to
+  //    `https://public2.example/bar`.
+  //
+  // The target IP address space `kLocal` should not be applied to the new
+  // connection obtained to `https://public2.example`.
+  //
+  // See also: https://crbug.com/1293891
+  target_ip_address_space_ = mojom::IPAddressSpace::kUnknown;
+
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;
   url_loader_client_.Get()->OnReceiveRedirect(redirect_info,

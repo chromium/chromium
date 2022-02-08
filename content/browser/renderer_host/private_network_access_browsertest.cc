@@ -2984,11 +2984,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, Redirect) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
 
-  GURL target = SecureLocalURL("/server-redirect?" +
-                               SecurePrivateURL(kDefaultPath).spec());
+  GURL target =
+      SecureLocalURL("/server-redirect?" + SecurePrivateURL(kCorsPath).spec());
 
-  // TODO(https://crbug.com/1293891): Expect true here.
-  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
 }
 
 // =========================
