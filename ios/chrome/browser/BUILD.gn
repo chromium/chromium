@@ -94,7 +94,6 @@ source_set("browser") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/complex_tasks",
-    "//ios/chrome/browser/download",
     "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/itunes_urls",
     "//ios/chrome/browser/sync/glue",

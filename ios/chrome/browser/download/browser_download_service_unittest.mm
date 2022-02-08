@@ -97,6 +97,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
     StubTabHelper<PassKitTabHelper>::CreateForWebState(&web_state_);
     TestARQuickLookTabHelper::CreateForWebState(&web_state_);
     StubTabHelper<DownloadManagerTabHelper>::CreateForWebState(&web_state_);
+    web_state_.SetBrowserState(browser_state_.get());
   }
 
   web::DownloadController* download_controller() {
