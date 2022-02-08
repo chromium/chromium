@@ -509,6 +509,25 @@ TEST_F(MobileFriendlinessCheckerTest, NormalTextAndWideImage) {
   EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 50);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, SmallTextByWideTable) {
+  // Wide image forces Chrome to zoom out.
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body style="font-size: 12pt">
+    <table>
+      <tr>
+        <td width=100px>a</td>
+        <td width=100px>b</td>
+        <td width=100px>c</td>
+      </tr>
+    </table>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
+  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
 TEST_F(MobileFriendlinessCheckerTest,
        NormalTextAndWideImageWithDeviceWidthViewport) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(

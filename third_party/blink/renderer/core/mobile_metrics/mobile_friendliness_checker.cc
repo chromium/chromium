@@ -424,13 +424,16 @@ void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
   DCHECK(frame_view_->GetFrame().IsLocalRoot());
 
-  mobile_friendliness_.bad_tap_targets_ratio = ComputeBadTapTargetsRatio();
-  mobile_friendliness_.small_text_ratio = text_area_sizes_.SmallTextRatio();
-  mobile_friendliness_.text_content_outside_viewport_percentage =
-      ComputeContentOutsideViewport();
-
-  frame_view_->DidChangeMobileFriendliness(mobile_friendliness_);
   frame_view_->UnregisterFromLifecycleNotifications(this);
+  frame_view_->DidChangeMobileFriendliness(MobileFriendliness{
+      .viewport_device_width = viewport_device_width_,
+      .viewport_initial_scale_x10 = viewport_initial_scale_x10_,
+      .viewport_hardcoded_width = viewport_hardcoded_width_,
+      .allow_user_zoom = allow_user_zoom_,
+      .small_text_ratio = text_area_sizes_.SmallTextRatio(),
+      .text_content_outside_viewport_percentage =
+          ComputeContentOutsideViewport(),
+      .bad_tap_targets_ratio = ComputeBadTapTargetsRatio()});
   last_evaluated_ = base::TimeTicks::Now();
 }
 
@@ -443,29 +446,25 @@ void MobileFriendlinessChecker::NotifyViewportUpdated(
     return;
 
   const double zoom = viewport.zoom_is_explicit ? viewport.zoom : 1.0;
-  mobile_friendliness_.viewport_device_width =
-      viewport.max_width.IsDeviceWidth();
+  viewport_device_width_ = viewport.max_width.IsDeviceWidth();
   if (viewport.max_width.IsFixed()) {
-    mobile_friendliness_.viewport_hardcoded_width =
-        viewport.max_width.GetFloatValue();
+    viewport_hardcoded_width_ = viewport.max_width.GetFloatValue();
     // Convert value from Blink space to device-independent pixels.
     const double viewport_scalar =
         frame_view_->GetPage()->GetChromeClient().WindowToViewportScalar(
             &frame_view_->GetFrame(), 1);
     if (viewport_scalar != 0)
-      mobile_friendliness_.viewport_hardcoded_width /= viewport_scalar;
+      viewport_hardcoded_width_ /= viewport_scalar;
   }
 
-  if (viewport.zoom_is_explicit) {
-    mobile_friendliness_.viewport_initial_scale_x10 =
-        std::round(viewport.zoom * 10);
-  }
+  if (viewport.zoom_is_explicit)
+    viewport_initial_scale_x10_ = std::round(viewport.zoom * 10);
 
   if (viewport.user_zoom_is_explicit) {
-    mobile_friendliness_.allow_user_zoom = viewport.user_zoom;
+    allow_user_zoom_ = viewport.user_zoom;
     // If zooming is only allowed slightly.
     if (viewport.max_zoom / zoom < kMaximumScalePreventsZoomingThreshold)
-      mobile_friendliness_.allow_user_zoom = false;
+      allow_user_zoom_ = false;
   }
 }
 
