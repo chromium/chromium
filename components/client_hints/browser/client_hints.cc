@@ -22,6 +22,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 
 namespace client_hints {
 

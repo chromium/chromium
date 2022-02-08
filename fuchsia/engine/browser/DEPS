@@ -1,5 +1,6 @@
 include_rules = [
   # Do NOT add components/cast or other Cast-specific code to this file.
+  "+components/client_hints/browser",
   "+components/favicon/content",
   "+components/favicon/core",
   "+components/keyed_service/content",

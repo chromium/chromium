@@ -18,3 +18,17 @@ source_set("browser") {
     "//third_party/blink/public/common:headers",
   ]
 }
+
+source_set("in_memory") {
+  sources = [
+    "in_memory_client_hints_controller_delegate.cc",
+    "in_memory_client_hints_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}
