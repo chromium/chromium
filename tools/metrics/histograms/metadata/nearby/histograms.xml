@@ -100,17 +100,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records whether BLE scanning has been stopped successfully.</summary>
 </histogram>
 
-<histogram name="Nearby.Connections.Bluetooth.Socket.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>hansenmichael@google.com</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>Records whether {Operation} has succeeded.</summary>
-  <token key="Operation">
-    <variant name="Read" summary="reading from the input stream"/>
-    <variant name="Write" summary="writing to the output stream"/>
-  </token>
-</histogram>
-
 <histogram
     name="Nearby.Connections.InstantMessaging.ReceiveExpress.NumParsingAttempts"
     units="attempts" expires_after="2023-02-01">
@@ -240,6 +229,24 @@ chromium-metrics-reviews@google.com.
     Nearby.Connections.UtilityProcessShutdownReason which tracks disconnects on
     the utility process side.
   </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.{Medium}.Socket.{Operation}.Result"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records success or failure when {Operation} of a {Medium} socket. Emitted
+    during cross-device data transfers.
+  </summary>
+  <token key="Medium">
+    <variant name="Bluetooth" summary="Bluetooth"/>
+    <variant name="WifiLan" summary="WifiLan TCP"/>
+  </token>
+  <token key="Operation">
+    <variant name="Read" summary="reading from the input stream"/>
+    <variant name="Write" summary="writing to the output stream"/>
+  </token>
 </histogram>
 
 <histogram
