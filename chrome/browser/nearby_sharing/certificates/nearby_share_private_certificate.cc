@@ -294,6 +294,9 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
       std::string(metadata_encryption_key_tag->begin(),
                   metadata_encryption_key_tag->end()));
 
+  // Note: The |for_self_share| field is not set by clients but is set by the
+  // server for all downloaded public certificates.
+
   return public_certificate;
 }
 

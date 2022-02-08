@@ -25,6 +25,7 @@ const nearby_share::mojom::Visibility kTestPublicCertificateVisibility =
 TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt) {
   nearbyshare::proto::PublicCertificate proto_cert =
       GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
+  proto_cert.set_for_self_share(true);
 
   absl::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
@@ -39,6 +40,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt) {
             cert->id());
   EXPECT_EQ(GetNearbyShareTestMetadata().SerializeAsString(),
             cert->unencrypted_metadata().SerializeAsString());
+  EXPECT_EQ(proto_cert.for_self_share(), cert->for_self_share());
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt_IncorrectKeyFailure) {

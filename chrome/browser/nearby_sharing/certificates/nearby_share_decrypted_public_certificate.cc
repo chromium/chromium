@@ -161,7 +161,8 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
 
   return NearbyShareDecryptedPublicCertificate(
       not_before, not_after, std::move(secret_key), std::move(public_key),
-      std::move(id), std::move(unencrypted_metadata));
+      std::move(id), std::move(unencrypted_metadata),
+      public_certificate.for_self_share());
 }
 
 NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
@@ -170,13 +171,15 @@ NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     std::unique_ptr<crypto::SymmetricKey> secret_key,
     std::vector<uint8_t> public_key,
     std::vector<uint8_t> id,
-    nearbyshare::proto::EncryptedMetadata unencrypted_metadata)
+    nearbyshare::proto::EncryptedMetadata unencrypted_metadata,
+    bool for_self_share)
     : not_before_(not_before),
       not_after_(not_after),
       secret_key_(std::move(secret_key)),
       public_key_(std::move(public_key)),
       id_(std::move(id)),
-      unencrypted_metadata_(std::move(unencrypted_metadata)) {}
+      unencrypted_metadata_(std::move(unencrypted_metadata)),
+      for_self_share_(for_self_share) {}
 
 NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     const NearbyShareDecryptedPublicCertificate& other) {
