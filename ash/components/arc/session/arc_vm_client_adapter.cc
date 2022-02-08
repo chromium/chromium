@@ -473,6 +473,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
       if (vm_ram_mib > kVmRamMinMib) {
         request.set_memory_mib(vm_ram_mib);
+        VLOG(1) << "VmMemorySize is enabled. memory_mib=" << vm_ram_mib;
       } else {
         VLOG(1) << "VmMemorySize is enabled, but computed size is "
                 << "min(" << ram_mib << " + " << shift_mib << "," << max_mib
@@ -482,18 +483,25 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     } else {
       VLOG(1) << "VmMemorySize is enabled, but GetSystemMemoryInfo failed.";
     }
+  } else {
+    VLOG(1) << "VmMemorySize is disabled.";
   }
 
   // Specify balloon policy.
   if (base::FeatureList::IsEnabled(kVmBalloonPolicy)) {
     vm_tools::concierge::BalloonPolicyOptions* balloon_policy =
         request.mutable_balloon_policy();
-    balloon_policy->set_moderate_target_cache(
-        static_cast<int64_t>(kVmBalloonPolicyModerateKiB.Get()) * 1024);
-    balloon_policy->set_critical_target_cache(
-        static_cast<int64_t>(kVmBalloonPolicyCriticalKiB.Get()) * 1024);
-    balloon_policy->set_reclaim_target_cache(
-        static_cast<int64_t>(kVmBalloonPolicyReclaimKiB.Get()) * 1024);
+    const int64_t moderate_kib = kVmBalloonPolicyModerateKiB.Get();
+    const int64_t critical_kib = kVmBalloonPolicyCriticalKiB.Get();
+    const int64_t reclaim_kib = kVmBalloonPolicyReclaimKiB.Get();
+    balloon_policy->set_moderate_target_cache(moderate_kib * 1024);
+    balloon_policy->set_critical_target_cache(critical_kib * 1024);
+    balloon_policy->set_reclaim_target_cache(reclaim_kib * 1024);
+    VLOG(1) << "Use LimitCacheBalloonPolicy. ModerateKiB=" << moderate_kib
+            << ", CriticalKiB=" << critical_kib
+            << ", ReclaimKiB=" << reclaim_kib;
+  } else {
+    VLOG(1) << "Use BalanceAvailableBalloonPolicy";
   }
 
   return request;
