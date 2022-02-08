@@ -343,6 +343,9 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // See class documentation for Widget in widget.h for a note about type.
   Widget::InitParams::Type widget_type_;
 
+  // Set if the desktop window was created in headless mode.
+  bool headless_mode_ = false;
+
   // See DesktopWindowTreeHost::ShouldUseDesktopNativeCursorManager().
   bool use_desktop_native_cursor_manager_ = false;
 

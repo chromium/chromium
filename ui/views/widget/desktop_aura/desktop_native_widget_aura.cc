@@ -528,6 +528,7 @@ void DesktopNativeWidgetAura::UpdateWindowTransparency() {
 void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   ownership_ = params.ownership;
   widget_type_ = params.type;
+  headless_mode_ = params.headless_mode;
   name_ = params.name;
 
   content_window_->AcquireAllPropertiesFrom(
@@ -877,7 +878,10 @@ void DesktopNativeWidgetAura::Show(ui::WindowShowState show_state,
                                    const gfx::Rect& restore_bounds) {
   if (!content_window_)
     return;
-  desktop_window_tree_host_->Show(show_state, restore_bounds);
+  // Avoid changing desktop window visibility state when browser is running in
+  // headless mode, see https://crbug.com/1237546.
+  if (!headless_mode_)
+    desktop_window_tree_host_->Show(show_state, restore_bounds);
 }
 
 void DesktopNativeWidgetAura::Hide() {
