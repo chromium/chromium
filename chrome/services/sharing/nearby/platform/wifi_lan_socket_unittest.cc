@@ -18,12 +18,6 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-namespace {
-
-const net::IPEndPoint kRemoteAddress(net::IPAddress(192, 168, 86, 62), 33333);
-
-}  // namespace
-
 class WifiLanSocketTest : public ::testing::Test {
  public:
   WifiLanSocketTest() = default;
@@ -56,9 +50,10 @@ class WifiLanSocketTest : public ::testing::Test {
         tcp_connected_socket.InitWithNewPipeAndPassReceiver());
 
     wifi_lan_socket_ = std::make_unique<WifiLanSocket>(
-        kRemoteAddress, std::move(tcp_connected_socket),
-        std::move(receive_pipe_consumer_handle),
-        std::move(send_pipe_producer_handle));
+        WifiLanSocket::ConnectedSocketParameters(
+            std::move(tcp_connected_socket),
+            std::move(receive_pipe_consumer_handle),
+            std::move(send_pipe_producer_handle)));
   }
 
   void TearDown() override { wifi_lan_socket_.reset(); }

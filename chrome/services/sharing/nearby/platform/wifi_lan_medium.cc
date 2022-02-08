@@ -129,8 +129,6 @@ std::unique_ptr<api::WifiLanSocket> WifiLanMedium::ConnectToService(
     return nullptr;
   }
 
-  VLOG(1) << "WifiLanMedium::" << __func__ << ": Connection established with "
-          << connected_socket_parameters->remote_end_point.ToString();
   return std::make_unique<WifiLanSocket>(
       std::move(*connected_socket_parameters));
 }
@@ -187,7 +185,7 @@ void WifiLanMedium::OnConnect(
   VLOG(1) << "WifiLanMedium::" << __func__
           << ": Created TCP connected socket. local_addr="
           << local_addr->ToString() << ", peer_addr=" << peer_addr->ToString();
-  *connected_socket_parameters = {*peer_addr, std::move(tcp_connected_socket),
+  *connected_socket_parameters = {std::move(tcp_connected_socket),
                                   std::move(receive_stream),
                                   std::move(send_stream)};
 

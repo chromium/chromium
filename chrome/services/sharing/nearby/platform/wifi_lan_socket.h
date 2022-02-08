@@ -11,7 +11,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_lan.h"
 
@@ -31,7 +30,6 @@ class WifiLanSocket : public api::WifiLanSocket {
   // Parameters needed to construct a WifiLanSocket.
   struct ConnectedSocketParameters {
     ConnectedSocketParameters(
-        const net::IPEndPoint& remote_end_point,
         mojo::PendingRemote<network::mojom::TCPConnectedSocket>
             tcp_connected_socket,
         mojo::ScopedDataPipeConsumerHandle receive_stream,
@@ -40,18 +38,12 @@ class WifiLanSocket : public api::WifiLanSocket {
     ConnectedSocketParameters(ConnectedSocketParameters&&);
     ConnectedSocketParameters& operator=(ConnectedSocketParameters&&);
 
-    net::IPEndPoint remote_end_point;
     mojo::PendingRemote<network::mojom::TCPConnectedSocket>
         tcp_connected_socket;
     mojo::ScopedDataPipeConsumerHandle receive_stream;
     mojo::ScopedDataPipeProducerHandle send_stream;
   };
 
-  WifiLanSocket(const net::IPEndPoint& remote_end_point,
-                mojo::PendingRemote<network::mojom::TCPConnectedSocket>
-                    tcp_connected_socket,
-                mojo::ScopedDataPipeConsumerHandle receive_stream,
-                mojo::ScopedDataPipeProducerHandle send_stream);
   explicit WifiLanSocket(ConnectedSocketParameters connected_socket_parameters);
   WifiLanSocket(const WifiLanSocket&) = delete;
   WifiLanSocket& operator=(const WifiLanSocket&) = delete;

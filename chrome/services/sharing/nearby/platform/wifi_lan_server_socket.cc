@@ -131,7 +131,7 @@ void WifiLanServerSocket::OnAccepted(
     DCHECK(remote_addr);
     VLOG(1) << "WifiLanServerSocket::" << __func__
             << ": Connection accepted from " << remote_addr->ToString();
-    *connected_socket_parameters = {*remote_addr, std::move(connected_socket),
+    *connected_socket_parameters = {std::move(connected_socket),
                                     std::move(receive_stream),
                                     std::move(send_stream)};
   } else {
