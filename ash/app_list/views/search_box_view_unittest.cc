@@ -914,27 +914,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
     view()->ProcessAutocomplete(GetFirstResultView());
   }
 
-  // Expect the entire autocomplete suggestion if |should_autocomplete| is true,
-  // expect only typed characters otherwise.
-  void ExpectAutocompleteSuggestion(bool should_autocomplete) {
-    if (should_autocomplete) {
-      // Search box autocomplete suggestion is accepted, but it should not
-      // trigger another query, thus it is not reflected in Search Model.
-      EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
-      EXPECT_EQ(u"he", GetSearchModel()->search_box()->text());
-    } else {
-      // Search box autocomplete suggestion is removed and is reflected in
-      // SearchModel.
-      EXPECT_EQ(view()->search_box()->GetText(),
-                GetSearchModel()->search_box()->text());
-      EXPECT_EQ(u"he", view()->search_box()->GetText());
-      // ProcessAutocomplete should be a no-op.
-      ProcessAutocomplete();
-      // The autocomplete suggestion should still not be present.
-      EXPECT_EQ(u"he", view()->search_box()->GetText());
-    }
-  }
-
   // Sets up the test by creating a SearchResult and displaying an autocomplete
   // suggestion.
   void SetupAutocompleteBehaviorTest() {
@@ -947,74 +926,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
     KeyPress(ui::VKEY_H);
     KeyPress(ui::VKEY_E);
     ProcessAutocomplete();
-  }
-
-  // Clears all existing text from search_box() and all existing SearchResults
-  // from results().
-  void ResetAutocompleteBehaviorTest() {
-    view()->search_box()->SetText(std::u16string());
-    results()->RemoveAll();
-  }
-
-  // Test a GestureEvent's autocomplete behavior according to
-  // |should_autocomplete|. Expect the entire autocomplete suggestion if
-  // |should_autocomplete| is true, expect only typed characters otherwise.
-  void TestGestureEvent(const ui::GestureEvent& gesture_event,
-                        bool should_autocomplete) {
-    SetupAutocompleteBehaviorTest();
-    // Forward |gesture_event| to HandleGestureEvent() directly because we
-    // cannot test GestureEvents properly due to not having ash dependencies.
-    // Static cast to TextfieldController because HandleGestureEvent() is
-    // private in SearchBoxView. TODO(crbug.com/878984): Derive
-    // SearchBoxViewTest from AshTestBase in order to test events using
-    // EventGenerator instead.
-    static_cast<views::TextfieldController*>(view())->HandleGestureEvent(
-        view()->search_box(), gesture_event);
-    ExpectAutocompleteSuggestion(should_autocomplete);
-    // Reset search box text and SearchResults for next test.
-    ResetAutocompleteBehaviorTest();
-  }
-
-  // Test a KeyEvent's autocomplete behavior according to |should_autocomplete|.
-  // Expect the entire autocomplete suggestion if |should_autocomplete| is true,
-  // expect only typed characters otherwise.
-  void TestKeyEvent(const ui::KeyEvent& key_event, bool should_autocomplete) {
-    SetupAutocompleteBehaviorTest();
-    // TODO(crbug.com/878984): Change KeyPress() to use EventGenerator::PressKey
-    // instead.
-    if (key_event.key_code() == ui::VKEY_BACK) {
-      // Use KeyPress() to mimic backspace. HandleKeyEvent() will not delete the
-      // text.
-      KeyPress(key_event.key_code());
-    } else {
-      // Forward |key_event| to HandleKeyEvent(). We use HandleKeyEvent()
-      // because KeyPress() will replace the existing highlighted text. Static
-      // cast to TextfieldController because HandleGestureEvent() is private in
-      // SearchBoxView.
-      static_cast<views::TextfieldController*>(view())->HandleKeyEvent(
-          view()->search_box(), key_event);
-    }
-    ExpectAutocompleteSuggestion(should_autocomplete);
-    // Reset search box text and SearchResults for next test.
-    ResetAutocompleteBehaviorTest();
-  }
-
-  // Test a MouseEvent's autocomplete behavior according to
-  // |should_autocomplete|. Expect the entire autocomplete suggestion if
-  // |should_autocomplete| is true, expect only typed characters otherwise.
-  void TestMouseEvent(const ui::MouseEvent& mouse_event,
-                      bool should_autocomplete) {
-    SetupAutocompleteBehaviorTest();
-    // Forward |mouse_event| to HandleMouseEvent() directly because we cannot
-    // test MouseEvents properly due to not having ash dependencies. Static cast
-    // to TextfieldController because HandleGestureEvent() is a private method
-    // in SearchBoxView. TODO(crbug.com/878984): Derive SearchBoxViewTest from
-    // AshTestBase in order to test events using EventGenerator instead.
-    static_cast<views::TextfieldController*>(view())->HandleMouseEvent(
-        view()->search_box(), mouse_event);
-    ExpectAutocompleteSuggestion(should_autocomplete);
-    // Reset search box text and SearchResults for next test.
-    ResetAutocompleteBehaviorTest();
   }
 };
 
@@ -1160,14 +1071,41 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
 
 // Tests that autocomplete suggestion is accepted and displayed in SearchModel
 // after clicking or tapping on the search box.
-TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClickTap) {
-  TestMouseEvent(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                gfx::Point(), ui::EventTimeForNow(), 0, 0),
-                 true);
-  TestGestureEvent(
-      ui::GestureEvent(0, 0, 0, ui::EventTimeForNow(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP)),
-      true);
+TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClick) {
+  SetupAutocompleteBehaviorTest();
+
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  // Forward |mouse_event| to HandleMouseEvent() directly because we cannot
+  // test MouseEvents properly due to not having ash dependencies. Static cast
+  // to TextfieldController because HandleGestureEvent() is a private method
+  // in SearchBoxView. TODO(crbug.com/878984): Derive SearchBoxViewTest from
+  // AshTestBase in order to test events using EventGenerator instead.
+  static_cast<views::TextfieldController*>(view())->HandleMouseEvent(
+      view()->search_box(), mouse_event);
+  // Search box autocomplete suggestion is accepted, but it should not
+  // trigger another query, thus it is not reflected in Search Model.
+  EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
+  EXPECT_EQ(u"he", GetSearchModel()->search_box()->text());
+}
+
+TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
+  SetupAutocompleteBehaviorTest();
+
+  ui::GestureEvent gesture_event(0, 0, 0, ui::EventTimeForNow(),
+                                 ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  // Forward |gesture_event| to HandleGestureEvent() directly because we
+  // cannot test GestureEvents properly due to not having ash dependencies.
+  // Static cast to TextfieldController because HandleGestureEvent() is
+  // private in SearchBoxView. TODO(crbug.com/878984): Derive
+  // SearchBoxViewTest from AshTestBase in order to test events using
+  // EventGenerator instead.
+  static_cast<views::TextfieldController*>(view())->HandleGestureEvent(
+      view()->search_box(), gesture_event);
+  // Search box autocomplete suggestion is accepted, but it should not
+  // trigger another query, thus it is not reflected in Search Model.
+  EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
+  EXPECT_EQ(u"he", GetSearchModel()->search_box()->text());
 }
 
 // Tests that autocomplete is not handled if IME is using composition text.
