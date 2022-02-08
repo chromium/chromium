@@ -22,7 +22,8 @@ namespace blink {
 VideoFrameLayout::VideoFrameLayout() : format_(media::PIXEL_FORMAT_UNKNOWN) {}
 
 VideoFrameLayout::VideoFrameLayout(media::VideoPixelFormat format,
-                                   const gfx::Size& coded_size)
+                                   const gfx::Size& coded_size,
+                                   ExceptionState& exception_state)
     : format_(format), coded_size_(coded_size) {
   DCHECK_LE(coded_size_.width(), media::limits::kMaxDimension);
   DCHECK_LE(coded_size_.height(), media::limits::kMaxDimension);
@@ -35,8 +36,20 @@ VideoFrameLayout::VideoFrameLayout(media::VideoPixelFormat format,
     const uint32_t sample_bytes =
         media::VideoFrame::BytesPerElement(format_, i);
 
-    DCHECK_EQ(coded_size_.width() % sample_size.width(), 0);
-    DCHECK_EQ(coded_size_.height() % sample_size.height(), 0);
+    if (coded_size_.width() % sample_size.width()) {
+      exception_state.ThrowTypeError(
+          String::Format("Invalid layout. Expected codedWidth to be a multiple "
+                         "of %u (the sample width in plane %u), found %u.",
+                         sample_size.width(), i, coded_size_.width()));
+      return;
+    }
+    if (coded_size_.height() % sample_size.height()) {
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid layout. Expected codedHeight to be a multiple "
+          "of %u (the sample height in plane %u), found %u.",
+          sample_size.height(), i, coded_size_.height()));
+      return;
+    }
     const uint32_t width = coded_size_.width() / sample_size.width();
     const uint32_t height = coded_size_.height() / sample_size.height();
     const uint32_t stride = width * sample_bytes;
@@ -71,8 +84,20 @@ VideoFrameLayout::VideoFrameLayout(
     const uint32_t sample_bytes =
         media::VideoFrame::BytesPerElement(format_, i);
 
-    DCHECK_EQ(coded_size_.width() % sample_size.width(), 0);
-    DCHECK_EQ(coded_size_.height() % sample_size.height(), 0);
+    if (coded_size_.width() % sample_size.width()) {
+      exception_state.ThrowTypeError(
+          String::Format("Invalid layout. Expected codedWidth to be a multiple "
+                         "of %u (the sample width in plane %u), found %u.",
+                         sample_size.width(), i, coded_size_.width()));
+      return;
+    }
+    if (coded_size_.height() % sample_size.height()) {
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid layout. Expected codedHeight to be a multiple "
+          "of %u (the sample height in plane %u), found %u.",
+          sample_size.height(), i, coded_size_.height()));
+      return;
+    }
     const uint32_t width = coded_size_.width() / sample_size.width();
     const uint32_t height = coded_size_.height() / sample_size.height();
 

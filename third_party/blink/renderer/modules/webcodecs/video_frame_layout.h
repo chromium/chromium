@@ -23,7 +23,9 @@ class VideoFrameLayout {
  public:
   VideoFrameLayout();
 
-  VideoFrameLayout(media::VideoPixelFormat format, const gfx::Size& coded_size);
+  VideoFrameLayout(media::VideoPixelFormat format,
+                   const gfx::Size& coded_size,
+                   ExceptionState& exception_state);
 
   VideoFrameLayout(media::VideoPixelFormat format,
                    const gfx::Size& coded_size,

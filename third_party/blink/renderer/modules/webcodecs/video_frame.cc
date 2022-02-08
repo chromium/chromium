@@ -395,7 +395,10 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
   }
 
   gfx::Size dest_coded_size = src_rect.size();
-  VideoFrameLayout dest_layout(*copy_to_format, dest_coded_size);
+  VideoFrameLayout dest_layout(*copy_to_format, dest_coded_size,
+                               exception_state);
+  if (exception_state.HadException())
+    return false;
   if (options->hasLayout()) {
     dest_layout = VideoFrameLayout(*copy_to_format, dest_coded_size,
                                    options->layout(), exception_state);
@@ -729,7 +732,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   // Validate layout.
-  VideoFrameLayout src_layout(media_fmt, src_coded_size);
+  VideoFrameLayout src_layout(media_fmt, src_coded_size, exception_state);
+  if (exception_state.HadException())
+    return nullptr;
   if (init->hasLayout()) {
     src_layout = VideoFrameLayout(media_fmt, src_coded_size, init->layout(),
                                   exception_state);
