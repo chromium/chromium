@@ -6737,6 +6737,28 @@ others/histograms.xml -->
   <int value="40" label="Submitted with virtual card suggestion filled (once)"/>
   <int value="41" label="Suggestions shown and included a virtual card"/>
   <int value="42" label="Suggestions shown and included a virtual card (once)"/>
+  <int value="43"
+      label="CreditCardSeamlessFill :-D (name &amp; number &amp; exp. date
+             &amp; CVC = Full fill)"/>
+  <int value="44"
+      label="CreditCardSeamlessFill :-) (number &amp; exp. date &amp; CVC =
+             Optional name missing)"/>
+  <int value="45"
+      label="CreditCardSeamlessFill :-) (name &amp; number &amp; exp. date =
+             Optional CVC missing)"/>
+  <int value="46"
+      label="CreditCardSeamlessFill :-) (number &amp; exp. date = Optional
+             name and CVC missing)"/>
+  <int value="47"
+      label="CreditCardSeamlessFill :-| (name &amp; number &amp; CVC = Full
+             fill but exp. date missing)"/>
+  <int value="48"
+      label="CreditCardSeamlessFill :-( (all other scenarios = Partial fill)"/>
+  <int value="49"
+      label="Missing shared-autofill feature prevented a cross-origin
+             credit-card field from being filled. Shared-autofill is a
+             policy-controlled feature by which a frame can allow a
+             child-frame to be autofilled across origin."/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
