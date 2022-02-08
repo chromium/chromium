@@ -159,11 +159,6 @@ UIWindow* GetAnyKeyWindow();
 // Programmatically dismisses settings screen.
 - (void)dismissSettings;
 
-#pragma mark - Settings Utilities (EG2)
-
-// Sets value for content setting.
-- (void)setContentSettings:(ContentSetting)setting;
-
 #pragma mark - Sync Utilities (EG2)
 
 // Clears fake sync server data if the server is running.

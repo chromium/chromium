@@ -42,7 +42,6 @@
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #include "ios/chrome/test/app/navigation_test_util.h"
-#include "ios/chrome/test/app/settings_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -668,10 +667,6 @@ NSString* SerializedValue(const base::Value* value) {
   return nil;
 }
 
-+ (void)setContentSettings:(ContentSetting)setting {
-  chrome_test_util::SetContentSettingsBlockPopups(setting);
-}
-
 + (void)signOutAndClearIdentities {
   chrome_test_util::SignOutAndClearIdentities();
 }
@@ -1116,7 +1111,6 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (void)setPopupPrefValue:(ContentSetting)value {
-  DCHECK(value == CONTENT_SETTING_BLOCK || value == CONTENT_SETTING_ALLOW);
   ios::HostContentSettingsMapFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState())
       ->SetDefaultContentSetting(ContentSettingsType::POPUPS, value);

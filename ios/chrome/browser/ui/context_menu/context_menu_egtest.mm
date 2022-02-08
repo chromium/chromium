@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
+#include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -232,7 +233,10 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 }  // namespace
 
 // Context menu tests for Chrome.
-@interface ContextMenuTestCase : ChromeTestCase
+@interface ContextMenuTestCase : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
 @end
 
 @implementation ContextMenuTestCase
@@ -245,18 +249,10 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   return config;
 }
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];
-}
-
-+ (void)tearDown {
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
-  [super tearDown];
-}
-
 - (void)setUp {
   [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");

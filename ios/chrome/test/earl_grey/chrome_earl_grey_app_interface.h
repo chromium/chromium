@@ -297,9 +297,6 @@
 // timeout, or else an NSError indicating why the operation failed.
 + (NSError*)waitForWebStateZoomScale:(CGFloat)scale;
 
-// Sets value for content setting.
-+ (void)setContentSettings:(ContentSetting)setting;
-
 // Signs the user out from Chrome and then starts clearing the identities.
 //
 // Note: This method does not wait for identities to be cleared from the

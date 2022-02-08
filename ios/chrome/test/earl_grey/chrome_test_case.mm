@@ -459,7 +459,7 @@ void ResetAuthentication() {
     [[self class] removeAnyOpenMenusAndInfoBars];
     [self closeAllTabs];
   }
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
+  [ChromeEarlGrey setPopupPrefValue:CONTENT_SETTING_DEFAULT];
 
   // Enforce the assumption that the tests are runing in portrait.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];

@@ -719,12 +719,6 @@ UIWindow* GetAnyKeyWindow() {
       [ChromeEarlGreyAppInterface clearAllWebStateBrowsingData]);
 }
 
-#pragma mark - Settings Utilities (EG2)
-
-- (void)setContentSettings:(ContentSetting)setting {
-  [ChromeEarlGreyAppInterface setContentSettings:setting];
-}
-
 #pragma mark - Sync Utilities (EG2)
 
 - (void)clearSyncServerData {
