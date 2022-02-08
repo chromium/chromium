@@ -92,7 +92,10 @@ TEST_F(AssistantButtonTest, IconColorTypeDefaultLight) {
       std::move(params));
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip, gfx::kGoogleGrey900)
+      *gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip,
+                             ash::features::IsProductivityLauncherEnabled()
+                                 ? gfx::kGoogleGrey200
+                                 : gfx::kGoogleGrey900)
            .bitmap(),
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
@@ -161,7 +164,9 @@ TEST_F(AssistantButtonTest, FocusAndHoverColor) {
   button->OnPaint(&canvas);
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       CreateExpectedImageWithFocus(
-          /*icon_color=*/gfx::kGoogleGrey900,
+          /*icon_color=*/ash::features::IsProductivityLauncherEnabled()
+              ? gfx::kGoogleGrey200
+              : gfx::kGoogleGrey900,
           /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
               ColorProvider::ControlsLayerType::kFocusRingColor)),
       canvas.GetBitmap()));
