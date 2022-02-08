@@ -1,7 +1,7 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXSubrole=AXApplicationGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='Unnamed ARIA region: must fall back to the native role.'
-++AXGroup AXRoleDescription='region'
+++AXGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='Unnamed ARIA region on plain div uses generic container role.'
 ++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Named region' AXRoleDescription='region'
 ++++AXStaticText AXRoleDescription='text' AXValue='Named ARIA region#1 gets the region role.'

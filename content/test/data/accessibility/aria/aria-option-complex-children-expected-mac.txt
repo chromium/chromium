@@ -1,5 +1,5 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXList AXRoleDescription='list'
+++AXList AXRoleDescription='list box'
 ++++AXStaticText AXRoleDescription='text' AXValue='href-WAI-ARIA 1.1link-https://www.w3.org/TR/wai-aria-practices-1.1/Close'
 ++++++AXLink AXDescription='href-WAI-ARIA 1.1' AXHelp='title-WAI-ARIA 1.1' AXRoleDescription='link'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='href-WAI-ARIA 1.1'

@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXDateField AXRoleDescription='date field' AXValue='2008-09-01'
+++++AXDateField AXRoleDescription='date picker' AXValue='2008-09-01'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXIncrementor AXDescription='Month' AXRoleDescription='stepper' AXValue=9
@@ -9,7 +9,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
 ++++++++++AXIncrementor AXDescription='Year' AXRoleDescription='stepper' AXValue=2008
 ++++++AXPopUpButton AXDescription='Show date picker' AXRoleDescription='pop up button'
-++++AXDateField AXDescription='When' AXRoleDescription='date field' AXValue='2008-09-01'
+++++AXDateField AXDescription='When' AXRoleDescription='date picker' AXValue='2008-09-01'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXIncrementor AXDescription='Month When' AXRoleDescription='stepper' AXValue=9

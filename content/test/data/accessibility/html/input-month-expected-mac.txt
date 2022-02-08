@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXDateField AXRoleDescription='date field'
+++++AXDateField AXRoleDescription='month picker'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXIncrementor AXDescription='Month' AXRoleDescription='stepper' AXValue=0

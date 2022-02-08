@@ -317,6 +317,7 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kSubscript, @"AXSubscriptStyleGroup"},
       {ax::mojom::Role::kSuperscript, @"AXSuperscriptStyleGroup"},
       {ax::mojom::Role::kSwitch, @"AXSwitch"},
+      {ax::mojom::Role::kTab, @"AXTabButton"},
       {ax::mojom::Role::kTabPanel, @"AXTabPanel"},
       {ax::mojom::Role::kTerm, @"AXTerm"},
       {ax::mojom::Role::kTime, @"AXTimeGroup"},
@@ -1835,99 +1836,33 @@ bool IsAXSetter(SEL selector) {
   }
 
   NSString* role = [self accessibilityRole];
-
-  // The following descriptions are specific to webkit.
-  if ([role isEqualToString:NSAccessibilityWebAreaRole]) {
-    return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
-  }
-
-  if ([role isEqualToString:NSAccessibilityLinkRole]) {
-    return l10n_util::GetNSString(IDS_AX_ROLE_LINK);
-  }
-
-  if ([role isEqualToString:@"AXHeading"]) {
-    return l10n_util::GetNSString(IDS_AX_ROLE_HEADING);
-  }
-
-  if (([role isEqualToString:NSAccessibilityGroupRole] ||
-       [role isEqualToString:NSAccessibilityRadioButtonRole]) &&
-      !_node->GetDelegate()->IsWebAreaForPresentationalIframe()) {
-    std::string role_attribute;
-    if (_node->GetHtmlAttribute("role", &role_attribute)) {
-      ax::mojom::Role internalRole = _node->GetRole();
-      if ((internalRole != ax::mojom::Role::kBlockquote &&
-           internalRole != ax::mojom::Role::kCaption &&
-           internalRole != ax::mojom::Role::kGroup &&
-           internalRole != ax::mojom::Role::kListItem &&
-           internalRole != ax::mojom::Role::kMark &&
-           internalRole != ax::mojom::Role::kParagraph) ||
-          internalRole == ax::mojom::Role::kTab) {
-        // TODO(dtseng): This is not localized; see crbug/84814.
-        return base::SysUTF8ToNSString(role_attribute);
-      }
-    }
-  }
-
   switch (_node->GetRole()) {
-    case ax::mojom::Role::kArticle:
-      return l10n_util::GetNSString(IDS_AX_ROLE_ARTICLE);
-    case ax::mojom::Role::kBanner:
-      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
-    case ax::mojom::Role::kCheckBox:
-      return l10n_util::GetNSString(IDS_AX_ROLE_CHECK_BOX);
-    case ax::mojom::Role::kComment:
-      return l10n_util::GetNSString(IDS_AX_ROLE_COMMENT);
-    case ax::mojom::Role::kComplementary:
-      return l10n_util::GetNSString(IDS_AX_ROLE_COMPLEMENTARY);
-    case ax::mojom::Role::kContentInfo:
-      return l10n_util::GetNSString(IDS_AX_ROLE_CONTENT_INFO);
-    case ax::mojom::Role::kDescriptionList:
-      return l10n_util::GetNSString(IDS_AX_ROLE_DESCRIPTION_LIST);
-    case ax::mojom::Role::kDescriptionListDetail:
-      return l10n_util::GetNSString(IDS_AX_ROLE_DEFINITION);
-    case ax::mojom::Role::kDescriptionListTerm:
-      return l10n_util::GetNSString(IDS_AX_ROLE_DESCRIPTION_TERM);
-    case ax::mojom::Role::kDisclosureTriangle:
-      return l10n_util::GetNSString(IDS_AX_ROLE_DISCLOSURE_TRIANGLE);
-    case ax::mojom::Role::kFigure:
-      return l10n_util::GetNSString(IDS_AX_ROLE_FIGURE);
-    case ax::mojom::Role::kFooter:
-      return l10n_util::GetNSString(IDS_AX_ROLE_FOOTER);
-    case ax::mojom::Role::kForm:
-      return l10n_util::GetNSString(IDS_AX_ROLE_FORM);
-    case ax::mojom::Role::kHeader:
-      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
-    case ax::mojom::Role::kMain:
-      return l10n_util::GetNSString(IDS_AX_ROLE_MAIN_CONTENT);
-    case ax::mojom::Role::kMark:
-      return l10n_util::GetNSString(IDS_AX_ROLE_MARK);
-    case ax::mojom::Role::kMath:
-    case ax::mojom::Role::kMathMLMath:
-      return l10n_util::GetNSString(IDS_AX_ROLE_MATH);
-    case ax::mojom::Role::kNavigation:
-      return l10n_util::GetNSString(IDS_AX_ROLE_NAVIGATIONAL_LINK);
-    case ax::mojom::Role::kRegion:
-      return l10n_util::GetNSString(IDS_AX_ROLE_REGION);
-    case ax::mojom::Role::kSpinButton:
-      return l10n_util::GetNSString(IDS_AX_ROLE_SPIN_BUTTON);
-    case ax::mojom::Role::kStatus:
-      return l10n_util::GetNSString(IDS_AX_ROLE_STATUS);
-    case ax::mojom::Role::kSearchBox:
-      return l10n_util::GetNSString(IDS_AX_ROLE_SEARCH_BOX);
-    case ax::mojom::Role::kSuggestion:
-      return l10n_util::GetNSString(IDS_AX_ROLE_SUGGESTION);
-    case ax::mojom::Role::kSwitch:
-      return l10n_util::GetNSString(IDS_AX_ROLE_SWITCH);
-    case ax::mojom::Role::kTab:
-      // There is no NSAccessibilityTabRole or similar (AXRadioButton is used
-      // instead). Do the same as NSTabView and put "tab" in the description.
-      return l10n_util::GetNSString(IDS_AX_ROLE_TAB);
-    case ax::mojom::Role::kTerm:
-      return l10n_util::GetNSString(IDS_AX_ROLE_DESCRIPTION_TERM);
-    case ax::mojom::Role::kToggleButton:
-      return l10n_util::GetNSString(IDS_AX_ROLE_TOGGLE_BUTTON);
-    default:
+    case ax::mojom::Role::kColorWell:            // Use platform's "color well"
+    case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
+    case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
+    case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
+    case ax::mojom::Role::kInputTime:            // Use platform's "time field"
+    case ax::mojom::Role::kMeter:     // Use platform's "level indicator"
+    case ax::mojom::Role::kTabList:   // Use platform's "tab group"
+    case ax::mojom::Role::kTree:      // Use platform's "outline"
+    case ax::mojom::Role::kTreeItem:  // Use platform's "outline row"
       break;
+    case ax::mojom::Role::kHeader:  // Default: IDS_AX_ROLE_HEADER
+      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
+    case ax::mojom::Role::kRootWebArea: {
+      if ([role isEqualToString:NSAccessibilityWebAreaRole])
+        return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
+      // Preserve platform default of "group" in the case of the child
+      // of a presentational <iframe> which has the internal role of
+      // kRootWebArea.
+      break;
+    }
+    default: {
+      std::u16string result =
+          _node->GetDelegate()->GetLocalizedStringForRoleDescription();
+      if (!result.empty())
+        return base::SysUTF16ToNSString(result);
+    }
   }
 
   return NSAccessibilityRoleDescription(role, [self accessibilitySubrole]);
