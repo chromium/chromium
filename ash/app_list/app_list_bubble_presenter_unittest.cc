@@ -570,16 +570,7 @@ TEST_F(AppListBubblePresenterTest, BubbleOpensInTopRightForRightShelf) {
                      GetPrimaryDisplay().work_area().top_right()));
 }
 
-#if BUILDFLAG(IS_LINUX)
-// Flaky on multiple Linux builders: crbug.com/1293695.
-#define MAYBE_BubbleOpensInBottomRightForBottomShelfRTL \
-  DISABLED_BubbleOpensInBottomRightForBottomShelfRTL
-#else
-#define MAYBE_BubbleOpensInBottomRightForBottomShelfRTL \
-  BubbleOpensInBottomRightForBottomShelfRTL
-#endif
-TEST_F(AppListBubblePresenterTest,
-       MAYBE_BubbleOpensInBottomRightForBottomShelfRTL) {
+TEST_F(AppListBubblePresenterTest, BubbleOpensInBottomRightForBottomShelfRTL) {
   base::test::ScopedRestoreICUDefaultLocale locale("he");
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
