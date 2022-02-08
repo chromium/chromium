@@ -1178,7 +1178,15 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
                                        /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, Help) {
+// TODO(1266696): DictationCommandsExtensionTest.Help is flaky.
+// According to the flake occurrences tool, the OnDevice variant is the flaky
+// one; the Network variant passes consistently.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Help DISABLED_Help
+#else
+#define MAYBE_Help Help
+#endif
+IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MAYBE_Help) {
   SendFinalFakeSpeechResultAndWait("help");
   WaitForHelpUrlVisible();
   // Opening a new tab with the help center article toggles Dictation off.
