@@ -7,6 +7,7 @@
 #include "ui/base/interaction/element_identifier.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppMenuButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAvatarButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkStarViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kInstallPwaElementId);

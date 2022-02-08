@@ -109,6 +109,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 7, 360));
     return config;
   }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -717,30 +718,40 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHKeyboardAccessoryPaymentVirtualCardFeature.name == feature->name) {
-    // A config that allows the virtual card IPH to be shown when a user
-    // interacts with the payment form and triggers the credit card suggestion
-    // list.
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  if (kIPHAutofillVirtualCardSuggestionFeature.name == feature->name) {
+    // A config that allows the virtual card credit card suggestion IPH to be
+    // shown when:
+    // * it has been shown less than three times in last 90 days;
+    // * the virtual card suggestion has been selected less than twice in last
+    // 90 days.
+
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->trigger =
-        EventConfig("keyboard_accessory_payment_virtual_card_iph_trigger",
-                    Comparator(LESS_THAN, 3), 90, 360);
-    config->used = EventConfig("keyboard_accessory_payment_suggestion_accepted",
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("autofill_virtual_card_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 90, 360);
+    config->used = EventConfig("autofill_virtual_card_suggestion_accepted",
                                Comparator(LESS_THAN, 2), 90, 360);
 
+#if BUILDFLAG(IS_ANDROID)
     SessionRateImpact session_rate_impact;
     session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
     std::vector<std::string> affected_features;
     affected_features.push_back("IPH_KeyboardAccessoryBarSwiping");
     session_rate_impact.affected_features = affected_features;
     config->session_rate_impact = session_rate_impact;
+#endif  // BUILDFLAG(IS_ANDROID)
+
     return config;
   }
-
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_FUCHSIA)
 
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this

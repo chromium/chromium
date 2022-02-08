@@ -48,6 +48,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutoDarkUserEducationMessageOptIn"
       summary="message educating users about enabling auto dark web contents
                feature globally"/>
+  <variant name="IPH_AutofillVirtualCardSuggestion"
+      summary="message shown along with the virtual card suggestion option in
+               the Autofill dropdown to educate users virtual cards come with
+               better security"/>
   <variant name="IPH_BadgedReadingList" summary="badged reading list"/>
   <variant name="IPH_Bookmark" summary="bookmark"/>
   <variant name="IPH_BottomToolbarTip" summary="bottom toolbar"/>
@@ -184,8 +188,6 @@ chromium-metrics-reviews@google.com.
       summary="payments autofill suggestions"/>
   <variant name="IPH_KeyboardAccessoryPaymentOffer"
       summary="payments autofill suggestions that have an offer"/>
-  <variant name="IPH_KeyboardAccessoryPaymentVirtualCard"
-      summary="payment autofill suggestions that are virtual cards"/>
   <variant name="IPH_LiveCaption" summary="Live Caption"/>
   <variant name="IPH_LongPressToolbarTip" summary="LongPress toolbar"/>
   <variant name="IPH_MicToolbar" summary="the mic button in the toolbar"/>

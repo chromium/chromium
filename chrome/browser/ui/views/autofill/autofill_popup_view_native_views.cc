@@ -20,10 +20,14 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_utils.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -31,6 +35,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -1280,7 +1285,6 @@ AutofillPopupWarningView::CreateBackground() {
 }  // namespace
 
 /************** AutofillPopupRowView **************/
-
 void AutofillPopupRowView::SetSelected(bool selected) {
   if (selected == selected_)
     return;
@@ -1290,6 +1294,31 @@ void AutofillPopupRowView::SetSelected(bool selected) {
     popup_view_->NotifyAXSelection(this);
   RefreshStyle();
   OnPropertyChanged(&selected_, views::kPropertyEffectsNone);
+}
+
+void AutofillPopupRowView::MaybeShowIphPromo() {
+  std::string feature_name = popup_view()
+                                 ->controller()
+                                 ->GetSuggestionAt(GetLineNumber())
+                                 .feature_for_iph;
+  if (feature_name.empty())
+    return;
+
+  Browser* browser = popup_view()->browser();
+  DCHECK(browser);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  DCHECK(browser_view);
+  FeaturePromoControllerViews* promo_controller =
+      browser_view->feature_promo_controller();
+  if (!promo_controller)
+    return;
+
+  if (feature_name == "IPH_AutofillVirtualCardSuggestion") {
+    SetProperty(views::kElementIdentifierKey,
+                kAutofillCreditCardSuggestionEntryElementId);
+    promo_controller->MaybeShowPromo(
+        feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+  }
 }
 
 void AutofillPopupRowView::OnThemeChanged() {
@@ -1413,6 +1442,15 @@ void AutofillPopupViewNativeViews::OnSuggestionsChanged() {
 absl::optional<int32_t> AutofillPopupViewNativeViews::GetAxUniqueId() {
   return absl::optional<int32_t>(
       AutofillPopupBaseView::GetViewAccessibility().GetUniqueId());
+}
+
+void AutofillPopupViewNativeViews::OnWidgetVisibilityChanged(
+    views::Widget* widget,
+    bool visible) {
+  if (visible) {
+    for (auto* row_view : rows_)
+      row_view->MaybeShowIphPromo();
+  }
 }
 
 void AutofillPopupViewNativeViews::CreateChildViews() {

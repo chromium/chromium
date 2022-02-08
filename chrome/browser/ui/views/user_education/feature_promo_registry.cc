@@ -28,6 +28,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -93,6 +94,17 @@ void FeaturePromoRegistry::ReinitializeForTesting() {
 }
 
 void FeaturePromoRegistry::RegisterKnownFeatures() {
+  // kIPHAutofillVirtualCardSuggestionFeature:
+  RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
+          kAutofillCreditCardSuggestionEntryElementId,
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(
+              FeaturePromoSpecification::BubbleArrow::kLeftCenter)));
+
   // kIPHDesktopPwaInstallFeature:
   RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHDesktopPwaInstallFeature, kInstallPwaElementId,

@@ -39,6 +39,12 @@ class AutofillPopupRowView : public views::View {
   ~AutofillPopupRowView() override = default;
   void SetSelected(bool selected);
 
+  // Show the in-product-help promo anchored to this bubble if applicable. The
+  // in-product-help promo is a bubble anchored to this item to show educational
+  // messages. The promo bubble should only be shown once in one session and has
+  // a limit for how many times it can be shown at most in a period of time.
+  void MaybeShowIphPromo();
+
   // views::View:
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnThemeChanged() override;
@@ -102,6 +108,7 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   // TODO(crbug.com/831603): Remove these overrides and the corresponding
   // methods in AutofillPopupBaseView.
   void OnMouseMoved(const ui::MouseEvent& event) override {}
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 

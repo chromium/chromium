@@ -104,7 +104,6 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Regression test for crbug.com/391316
 IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
   gfx::RectF bounds(100, 150, 5, 5);
   EXPECT_CALL(mock_delegate_, element_bounds())

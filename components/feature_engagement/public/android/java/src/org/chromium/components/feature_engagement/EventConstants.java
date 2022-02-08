@@ -166,7 +166,7 @@ public final class EventConstants {
 
     /** The keyboard accessory was used to fill payment data into a form. */
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
-            "keyboard_accessory_payment_suggestion_accepted";
+            "autofill_virtual_card_suggestion_accepted";
 
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
