@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
@@ -25,8 +26,11 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace unzip {
-
 namespace {
+
+std::string Redact(const base::FilePath& path) {
+  return LOG_IS_ON(INFO) ? "'" + path.AsUTF8Unsafe() + "'" : "(redacted)";
+}
 
 class UnzipFilter : public unzip::mojom::UnzipFilter {
  public:
@@ -194,8 +198,8 @@ void DoDetectEncoding(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   base::File zip_file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!zip_file.IsValid()) {
-    LOG(ERROR) << "Cannot open ZIP archive '" << zip_path
-               << "': " << base::File::ErrorToString(zip_file.error_details());
+    LOG(ERROR) << "Cannot open ZIP archive " << Redact(zip_path) << ": "
+               << base::File::ErrorToString(zip_file.error_details());
     callback_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(result_callback), UNKNOWN_ENCODING));
