@@ -2384,6 +2384,60 @@ TEST_P(FrameProcessorTest,
   EXPECT_FALSE(ProcessFrames("0|MaxK", ""));
 }
 
+TEST_P(FrameProcessorTest, After_Sequence_OffsetUpdate_kNoTimestamp_Fails) {
+  if (!use_sequence_mode_) {
+    DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
+    return;
+  }
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // (-Infinity + 5)ms minus 10ms saturates to (-Infinity)ms.
+  SetTimestampOffset(kNoTimestamp + Milliseconds(5));
+  EXPECT_MEDIA_LOG(SequenceOffsetUpdateOutOfRange());
+  EXPECT_FALSE(ProcessFrames("10K", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       After_Sequence_OffsetUpdate_kInfiniteDuration_Fails) {
+  if (!use_sequence_mode_) {
+    DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
+    return;
+  }
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // (+Infinity - 5)ms minus -10ms saturates to (+Infinity)ms.
+  SetTimestampOffset(kInfiniteDuration - Milliseconds(5));
+  EXPECT_MEDIA_LOG(SequenceOffsetUpdateOutOfRange());
+  EXPECT_FALSE(ProcessFrames("-10K", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       Before_Sequence_OffsetUpdate_kInfiniteDuration_Fails) {
+  if (!use_sequence_mode_) {
+    DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
+    return;
+  }
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // Effectively sets group start timestamp to +Infinity.
+  SetTimestampOffset(kInfiniteDuration);
+  EXPECT_MEDIA_LOG(
+      SequenceOffsetUpdatePreventedByOutOfRangeGroupStartTimestamp());
+
+  // That infinite value fails precondition of finite value for group start
+  // timestamp when about to update timestampOffset based upon it.
+  EXPECT_FALSE(ProcessFrames("0K", ""));
+}
+
 INSTANTIATE_TEST_SUITE_P(SequenceMode, FrameProcessorTest, Values(true));
 INSTANTIATE_TEST_SUITE_P(SegmentsMode, FrameProcessorTest, Values(false));
 

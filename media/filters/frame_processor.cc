@@ -854,7 +854,23 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     if (sequence_mode_ && group_start_timestamp_ != kNoTimestamp) {
       // 3.1. Set timestampOffset equal to group start timestamp -
       //      presentation timestamp.
+      if (group_start_timestamp_.is_inf()) {
+        // +Infinity may be set when app sets timestampOffset. We emit error in
+        // such case upon next potential use of that offset here.
+        DCHECK(group_start_timestamp_ == kInfiniteDuration);
+        MEDIA_LOG(ERROR, media_log_)
+            << "Sequence mode timestampOffset update prevented by a group "
+               "start timestamp that exceeds range allowed by implementation";
+        return false;
+      }
+
       *timestamp_offset = group_start_timestamp_ - presentation_timestamp;
+      if (timestamp_offset->is_inf()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "Sequence mode timestampOffset update resulted in an offset "
+               "that exceeds range allowed by implementation";
+        return false;
+      }
 
       DVLOG(3) << __func__ << ": updated timestampOffset is now "
                << timestamp_offset->InMicroseconds() << "us";

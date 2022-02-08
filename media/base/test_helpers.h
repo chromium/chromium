@@ -534,6 +534,19 @@ MATCHER_P3(FrameTimeOutOfRange, when, pts_or_dts, frame_type, "") {
                " frame exceeds range allowed by implementation");
 }
 
+MATCHER(SequenceOffsetUpdateOutOfRange, "") {
+  return CONTAINS_STRING(arg,
+                         "Sequence mode timestampOffset update resulted in an "
+                         "offset that exceeds range allowed by implementation");
+}
+
+MATCHER(SequenceOffsetUpdatePreventedByOutOfRangeGroupStartTimestamp, "") {
+  return CONTAINS_STRING(
+      arg,
+      "Sequence mode timestampOffset update prevented by a group start "
+      "timestamp that exceeds range allowed by implementation");
+}
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_TEST_HELPERS_H_
