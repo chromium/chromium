@@ -82,6 +82,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_features.h"
@@ -101,6 +102,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
@@ -5262,6 +5264,80 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SimpleNavigations) {
   EXPECT_EQ("http://b.test/", subframe->GetSiteInstance()->GetSiteURL().spec());
   EXPECT_TRUE(subframe->GetSiteInstance()->RequiresDedicatedProcess());
   EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+}
+
+// Check that site-isolated guests can navigate to error pages.  Due to error
+// page isolation, error pages in guests should end up in a new error
+// SiteInstance, which should still be a guest SiteInstance in the guest's
+// StoragePartition.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageIsolation) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+      /*in_main_frame=*/true));
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+
+  scoped_refptr<content::SiteInstance> first_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(first_instance->IsGuest());
+
+  // Navigate <webview> to an error page.
+  const GURL error_url =
+      embedded_test_server()->GetURL("a.test", "/iframe.html");
+  auto interceptor = content::URLLoaderInterceptor::SetupRequestFailForURL(
+      error_url, net::ERR_NAME_NOT_RESOLVED);
+  content::TestNavigationObserver load_observer(guest);
+  EXPECT_TRUE(
+      ExecuteScript(guest, "location.href = '" + error_url.spec() + "';"));
+  load_observer.Wait();
+  EXPECT_FALSE(load_observer.last_navigation_succeeded());
+  EXPECT_TRUE(guest->GetMainFrame()->IsErrorDocument());
+
+  // The error page's SiteInstance should require a dedicated process due to
+  // error page isolation, but it should still be considered a guest and should
+  // stay in the guest's StoragePartition.
+  scoped_refptr<content::SiteInstance> error_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(error_instance->RequiresDedicatedProcess());
+  EXPECT_NE(error_instance, first_instance);
+  EXPECT_TRUE(error_instance->IsGuest());
+  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
+            error_instance->GetStoragePartitionConfig());
+
+  // Navigate to a normal page and then repeat the above with an
+  // embedder-initiated navigation to an error page.
+  EXPECT_TRUE(NavigateToURL(
+      guest, embedded_test_server()->GetURL("b.test", "/iframe.html")));
+  EXPECT_FALSE(guest->GetMainFrame()->IsErrorDocument());
+  EXPECT_NE(guest->GetMainFrame()->GetSiteInstance(), error_instance);
+
+  content::WebContents* embedder = GetEmbedderWebContents();
+  {
+    content::TestNavigationObserver load_observer(guest);
+    EXPECT_TRUE(ExecuteScript(
+        embedder,
+        "document.querySelector('webview').src = '" + error_url.spec() + "';"));
+    load_observer.Wait();
+    EXPECT_FALSE(load_observer.last_navigation_succeeded());
+    EXPECT_TRUE(guest->GetMainFrame()->IsErrorDocument());
+  }
+
+  scoped_refptr<content::SiteInstance> second_error_instance =
+      guest->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(second_error_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(second_error_instance->IsGuest());
+  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
+            second_error_instance->GetStoragePartitionConfig());
+
+  // Because we swapped BrowsingInstances above, this error page SiteInstance
+  // should be different from the first error page SiteInstance, but it should
+  // be in the same StoragePartition.
+  EXPECT_NE(error_instance, second_error_instance);
+  EXPECT_EQ(error_instance->GetStoragePartitionConfig(),
+            second_error_instance->GetStoragePartitionConfig());
 }
 
 // Checks that a main frame navigation in a <webview> can swap

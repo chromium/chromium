@@ -175,13 +175,14 @@ bool GetGuestPartitionConfigForSite(
 
 // static
 SiteInfo SiteInfo::CreateForErrorPage(
-    const StoragePartitionConfig storage_partition_config) {
-  return SiteInfo(
-      GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
-      false /* requires_origin_keyed_process */, storage_partition_config,
-      WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
-      false /* does_site_request_dedicated_process_for_coop */,
-      false /* is_jit_disabled */, false /* is_pdf */);
+    const StoragePartitionConfig storage_partition_config,
+    bool is_guest) {
+  return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
+                  false /* requires_origin_keyed_process */,
+                  storage_partition_config,
+                  WebExposedIsolationInfo::CreateNonIsolated(), is_guest,
+                  false /* does_site_request_dedicated_process_for_coop */,
+                  false /* is_jit_disabled */, false /* is_pdf */);
 }
 
 // static
@@ -288,7 +289,8 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   if (url_info.url.SchemeIs(kChromeErrorScheme)) {
     // Error pages should never be cross origin isolated.
     DCHECK(!url_info.IsIsolated());
-    return CreateForErrorPage(storage_partition_config.value());
+    return CreateForErrorPage(storage_partition_config.value(),
+                              /*is_guest=*/isolation_context.is_guest());
   }
   // We should only set |requires_origin_keyed_process| if we are actually
   // creating separate SiteInstances for OAC isolation. When we do same-process
@@ -704,7 +706,7 @@ void SiteInfo::WriteIntoTrace(perfetto::TracedValue context) const {
 }
 
 bool SiteInfo::is_error_page() const {
-  return !is_guest_ && site_url_ == GetErrorPageSiteAndLockURL();
+  return site_url_ == GetErrorPageSiteAndLockURL();
 }
 
 // static

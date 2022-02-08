@@ -701,7 +701,8 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
 
   // Error page URLs.
   auto error_site_info =
-      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting());
+      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
+                                   /*is_guest=*/false);
   test_url = GURL(kUnreachableWebDataURL);
   site_url = GetSiteForURL(test_url);
   EXPECT_EQ(error_site_info.site_url(), site_url);
@@ -1907,9 +1908,11 @@ TEST_F(SiteInstanceTest, ErrorPage) {
   // Verify that error SiteInfos are marked by is_error_page() set to true and
   // are not cross origin isolated.
   const auto error_site_info =
-      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting());
+      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
+                                   /*is_guest=*/false);
   EXPECT_TRUE(error_site_info.is_error_page());
   EXPECT_FALSE(error_site_info.web_exposed_isolation_info().is_isolated());
+  EXPECT_FALSE(error_site_info.is_guest());
 
   // Verify that non-error URLs don't generate error page SiteInfos.
   const auto instance =

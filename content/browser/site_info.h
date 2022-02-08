@@ -42,8 +42,17 @@ struct UrlInfo;
 // different SiteInfos and thus different processes.
 class CONTENT_EXPORT SiteInfo {
  public:
+  // Helper to create a SiteInfo that will be used for an error page.  This is
+  // used only when error page isolation is enabled.  Note that when site
+  // isolation for guests is enabled, an error page SiteInfo may also be
+  // associated with a guest.
   static SiteInfo CreateForErrorPage(
-      const StoragePartitionConfig storage_partition_config);
+      const StoragePartitionConfig storage_partition_config,
+      bool is_guest);
+
+  // Helper to create a SiteInfo for default SiteInstances.  Default
+  // SiteInstances are used for non-isolated sites on platforms without strict
+  // site isolation, such as on Android.
   static SiteInfo CreateForDefaultSiteInstance(
       BrowserContext* browser_context,
       const StoragePartitionConfig storage_partition_config,
