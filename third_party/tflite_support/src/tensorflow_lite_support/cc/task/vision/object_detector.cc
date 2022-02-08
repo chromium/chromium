@@ -57,7 +57,7 @@ using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
 using ::tflite::task::core::AssertAndReturnTypedTensor;
-using ::tflite::task::core::FindIndexByMetadataTensorName;
+using ::tflite::task::core::FindTensorIndexByMetadataName;
 using ::tflite::task::core::TaskAPIFactory;
 using ::tflite::task::core::TfLiteEngine;
 
@@ -182,10 +182,10 @@ std::vector<int> GetOutputIndices(
     const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
         tensor_metadatas) {
   std::vector<int> output_indices = {
-      FindIndexByMetadataTensorName(tensor_metadatas, kLocationTensorName),
-      FindIndexByMetadataTensorName(tensor_metadatas, kCategoryTensorName),
-      FindIndexByMetadataTensorName(tensor_metadatas, kScoreTensorName),
-      FindIndexByMetadataTensorName(tensor_metadatas,
+      FindTensorIndexByMetadataName(tensor_metadatas, kLocationTensorName),
+      FindTensorIndexByMetadataName(tensor_metadatas, kCategoryTensorName),
+      FindTensorIndexByMetadataName(tensor_metadatas, kScoreTensorName),
+      FindTensorIndexByMetadataName(tensor_metadatas,
                                     kNumberOfDetectionsTensorName)};
 
   for (int i = 0; i < 4; i++) {

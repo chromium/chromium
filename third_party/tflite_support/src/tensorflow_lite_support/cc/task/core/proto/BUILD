@@ -1,4 +1,4 @@
-load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_cc_proto_library")
+load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_cc_proto_library", "support_py_proto_library")
 
 package(
     default_visibility = [
@@ -17,6 +17,13 @@ cc_proto_library(
     deps = [
         ":external_file_proto",
     ],
+)
+
+support_py_proto_library(
+    name = "external_file_py_pb2",
+    srcs = ["external_file.proto"],
+    api_version = 2,
+    proto_deps = [":external_file_proto"],
 )
 
 cc_library(
@@ -38,6 +45,17 @@ support_cc_proto_library(
     name = "base_options_cc_proto",
     deps = [
         ":base_options_proto",
+    ],
+)
+
+support_py_proto_library(
+    name = "base_options_py_pb2",
+    srcs = ["base_options.proto"],
+    api_version = 2,
+    proto_deps = [":base_options_proto"],
+    py_proto_deps = [
+        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
+        "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
     ],
 )
 
@@ -76,4 +94,9 @@ cc_proto_library(
     deps = [
         ":class_proto",
     ],
+)
+
+java_lite_proto_library(
+    name = "base_options_java_proto_lite",
+    deps = [":base_options_proto"],
 )

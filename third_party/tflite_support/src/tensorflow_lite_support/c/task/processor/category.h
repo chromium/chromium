@@ -42,6 +42,9 @@ typedef struct TfLiteCategory {
   char* label;
 } TfLiteCategory;
 
+// Frees up the TfLiteCategory Structure.
+void TfLiteCategoryDelete(TfLiteCategory* category);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

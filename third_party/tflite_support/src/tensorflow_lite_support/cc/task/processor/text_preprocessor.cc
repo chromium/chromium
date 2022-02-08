@@ -29,7 +29,6 @@ namespace {
 using ::absl::StatusCode;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
-using ::tflite::support::TfLiteSupportStatus;
 
 }  // namespace
 
@@ -46,7 +45,7 @@ TextPreprocessor::Create(
       return CreateStatusWithPayload(
           StatusCode::kInvalidArgument,
           absl::StrFormat(
-              "TextPrerocessor accepts either 1 input tesnor (for Regex "
+              "TextPreprocessor accepts either 1 input tensor (for Regex "
               "tokenizer or String tensor) or 3 input tensors (for Bert "
               "tokenizer), but got %d tensors.",
               input_tensor_indices.size()));

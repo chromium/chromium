@@ -13,12 +13,12 @@
  limitations under the License.
  ==============================================================================*/
 #include "tensorflow_lite_support/c/task/core/base_options.h"
-#import "third_party/tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions.h"
+#import "tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLBaseOptions (Helpers)
-- (void)copyBaseOptionsToCBaseOptions:(TfLiteBaseOptions*)cBaseOptions;
+- (void)copyToCOptions:(TfLiteBaseOptions*)cBaseOptions;
 @end
 
 NS_ASSUME_NONNULL_END

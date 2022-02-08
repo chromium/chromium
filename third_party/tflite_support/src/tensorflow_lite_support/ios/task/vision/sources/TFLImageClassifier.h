@@ -14,10 +14,10 @@
  ==============================================================================*/
 #import <Foundation/Foundation.h>
 
-#import "third_party/tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions.h"
-#import "third_party/tensorflow_lite_support/ios/task/processor/sources/TFLClassificationOptions.h"
-#import "third_party/tensorflow_lite_support/ios/task/processor/sources/TFLClassificationResult.h"
-#import "third_party/tensorflow_lite_support/odml/ios/image/apis/GMLImage.h"
+#import "tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions.h"
+#import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationOptions.h"
+#import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationResult.h"
+#import "tensorflow_lite_support/odml/ios/image/apis/GMLImage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -29,9 +29,9 @@ limitations under the License.
 #include "tensorflow/lite/core/shims/cc/kernels/register.h"
 #include "tensorflow/lite/string_type.h"
 #include "tensorflow_lite_support/cc/task/core/category.h"
+#include "tensorflow_lite_support/cc/task/processor/bert_preprocessor.h"
 #include "tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 #include "tensorflow_lite_support/cc/task/text/proto/bert_nl_classifier_options_proto_inc.h"
-#include "tensorflow_lite_support/cc/text/tokenizers/tokenizer.h"
 
 namespace tflite {
 namespace task {
@@ -121,7 +121,8 @@ class BertNLClassifier : public tflite::task::text::nlclassifier::NLClassifier {
   // Initialize the API with the tokenizer and label files set in the metadata.
   absl::Status Initialize(std::unique_ptr<BertNLClassifierOptions> options);
 
-  std::unique_ptr<tflite::support::text::tokenizer::Tokenizer> tokenizer_;
+  std::unique_ptr<tflite::task::processor::BertPreprocessor> preprocessor_ =
+      nullptr;
 
   std::unique_ptr<BertNLClassifierOptions> options_;
 };

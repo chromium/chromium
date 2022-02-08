@@ -1,7 +1,7 @@
-From 7bd2e5f0e2bb560e55efc3dd86249ff42a10d08c Mon Sep 17 00:00:00 2001
+From 9a8667b3d3be2ef20a88dfe9d50a1345d136da3e Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Wed, 15 Dec 2021 15:08:59 -0800
-Subject: [PATCH 03/11] rm unused func
+Date: Mon, 7 Feb 2022 12:09:58 -0800
+Subject: [PATCH 03/12] rm unused func
 
 ---
  .../vision/utils/libyuv_frame_buffer_utils.cc | 201 +-----------------
@@ -220,5 +220,5 @@ index 0ece48636504e..6fd3ca81c984c 100644
  absl::Status LibyuvFrameBufferUtils::Crop(const FrameBuffer& buffer, int x0,
                                            int y0, int x1, int y1,
 -- 
-2.34.1.307.g9b7440fafd-goog
+2.35.0.263.gb82422642f-goog
 

@@ -72,8 +72,8 @@ struct InterpreterCreationResources {
 //   performant acceleration for the case where input size changes frequently.
 //
 // IMPORTANT: The only supported delegates are (as defined in [1]) NONE, GPU,
-// HEXAGON and NNAPI. Trying to use this class with EDGETPU or XNNPACK delegates
-// will cause an UnimplementedError to be thrown at initialization time.
+// HEXAGON, NNAPI, EDGETPU (Google internal), and EDGETPU_CORAL. Specifying
+// another delegate type may cause an UnimplementedError to be thrown.
 //
 // Like TfLiteInterpreter, this class is thread-compatible. Use from multiple
 // threads must be guarded by synchronization outside this class.
@@ -106,10 +106,6 @@ class TfLiteInterpreterWrapper {
   // This flag allows callers to rely on this function whether or not they
   // actually want fallback to happen; if they don't, it will ensure that the
   // configuration doesn't accidentally trigger fallback.
-  //
-  // IMPORTANT: Supported delegate type includes: NONE, NNAPI, GPU, HEXAGON,
-  // XNNPACK, EDGETPU (Google internal), and EDGETPU_CORAL. Specifying another
-  // delegate type may cause an UnimplementedError to be thrown.
   absl::Status InitializeWithFallback(
       std::function<absl::Status(const InterpreterCreationResources&,
                                  std::unique_ptr<tflite::Interpreter>*)>

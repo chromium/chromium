@@ -56,6 +56,16 @@ filegroup(
     data = [":universal_sentence_encoder_qa_with_metadata"],
 )
 
+tflite_model(name = "mobilebert_embedding_with_metadata")
+
+filegroup(
+    name = "regex_embedding_with_metadata",
+    srcs = [
+        "regex_one_embedding_with_metadata.tflite",
+        "regex_two_embeddings_with_metadata.tflite",
+    ],
+)
+
 tflite_model(name = "bert_nl_classifier")
 
 tflite_model(name = "albert")

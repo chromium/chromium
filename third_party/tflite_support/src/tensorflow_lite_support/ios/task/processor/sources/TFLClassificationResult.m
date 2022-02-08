@@ -14,13 +14,6 @@ limitations under the License.
 ==============================================================================*/
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationResult.h"
 
-@implementation TFLCategory
-@synthesize displayName;
-@synthesize label;
-@synthesize score;
-@synthesize classIndex;
-@end
-
 @implementation TFLClassifications
 @synthesize headIndex;
 @synthesize categories;

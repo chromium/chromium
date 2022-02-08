@@ -42,6 +42,12 @@ http_file(
 )
 
 http_file(
+    name = "mobilebert_embedding_with_metadata",
+    sha256 = "fa47142dcc6f446168bc672f2df9605b6da5d0c0d6264e9be62870282365b95c",
+    urls = ["https://storage.googleapis.com/download.tensorflow.org/models/tflite_support/bert_embedder/mobilebert_embedding_with_metadata.tflite"],
+)
+
+http_file(
     name = "bert_nl_classifier",
     sha256 = "1e5a550c09bff0a13e61858bcfac7654d7fcc6d42106b4f15e11117695069600",
     urls = ["https://storage.googleapis.com/download.tensorflow.org/models/tflite_support/bert_nl_classifier/bert_nl_classifier.tflite"],
@@ -75,28 +81,24 @@ http_archive(
 # https://github.com/bazelbuild/rules_apple/releases
 http_archive(
     name = "build_bazel_rules_apple",
-    sha256 = "ee9e6073aeb5a65c100cb9c44b0017c937706a4ae03176e14a7e78620a198079",
-    strip_prefix = "rules_apple-5131f3d46794bf227d296c82f30c2499c9de3c5b",
+    sha256 = "0052d452af7742c8f3a4e0929763388a66403de363775db7e90adecb2ba4944b",
     urls = [
-        "https://storage.googleapis.com/mirror.tensorflow.org/github.com/bazelbuild/rules_apple/archive/5131f3d46794bf227d296c82f30c2499c9de3c5b.tar.gz",
-        "https://github.com/bazelbuild/rules_apple/archive/5131f3d46794bf227d296c82f30c2499c9de3c5b.tar.gz",
+        "https://github.com/bazelbuild/rules_apple/releases/download/0.31.3/rules_apple.0.31.3.tar.gz",
     ],
 )
 
 # https://github.com/bazelbuild/rules_swift/releases
 http_archive(
     name = "build_bazel_rules_swift",
-    sha256 = "d0833bc6dad817a367936a5f902a0c11318160b5e80a20ece35fb85a5675c886",
-    strip_prefix = "rules_swift-3eeeb53cebda55b349d64c9fc144e18c5f7c0eb8",
+    sha256 = "8407fa0fd04a7ce1d6bb95e90b216404466f809eda459c23cb57b5fa1ef9d639",
     urls = [
-        "https://storage.googleapis.com/mirror.tensorflow.org/github.com/bazelbuild/rules_swift/archive/3eeeb53cebda55b349d64c9fc144e18c5f7c0eb8.tar.gz",
-        "https://github.com/bazelbuild/rules_swift/archive/3eeeb53cebda55b349d64c9fc144e18c5f7c0eb8.tar.gz",
+        "https://github.com/bazelbuild/rules_swift/releases/download/0.21.0/rules_swift.0.21.0.tar.gz",
     ],
 )
 
-# TF on 2021-11-09.
-TENSORFLOW_COMMIT = "6a144e7763914d3f6141a7cdc9cb116cc23425f9"
-TENSORFLOW_SHA256 = "cec9a514c09d2b171ad447f3413151b25a6c3d88d048148cced1e85db81f3617"
+# TF on 2022-01-28.
+TENSORFLOW_COMMIT = "f2c2144d767a64236261fb4e4dd45947bd5f5815"
+TENSORFLOW_SHA256 = "32ba2f6ea07572fd05cdae7520fe1bc38409f1a21bb4524076df27f1e23d09c1"
 http_archive(
     name = "org_tensorflow",
     sha256 = TENSORFLOW_SHA256,
@@ -123,12 +125,36 @@ gflags()
 third_party_http_archive(
     name = "pybind11",
     urls = [
-        "https://storage.googleapis.com/mirror.tensorflow.org/github.com/pybind/pybind11/archive/v2.6.0.tar.gz",
-        "https://github.com/pybind/pybind11/archive/v2.6.0.tar.gz",
+        "https://storage.googleapis.com/mirror.tensorflow.org/github.com/pybind/pybind11/archive/v2.7.1.tar.gz",
+        "https://github.com/pybind/pybind11/archive/v2.7.1.tar.gz",
     ],
-    sha256 = "90b705137b69ee3b5fc655eaca66d0dc9862ea1759226f7ccd3098425ae69571",
-    strip_prefix = "pybind11-2.6.0",
-    build_file = "//third_party:pybind11.BUILD",
+    sha256 = "616d1c42e4cf14fa27b2a4ff759d7d7b33006fdc5ad8fd603bb2c22622f27020",
+    strip_prefix = "pybind11-2.7.1",
+    build_file = "@pybind11_bazel//:pybind11.BUILD",
+)
+
+# TODO(b/211393391): Updates the commit number once the new change is ready.
+PP_COMMIT = "30f02dd9ccd2fc7046c36ed913ed510fd1aa7301"
+PP_SHA256 = "178bcd587956b0f449fff2f46e663dc10baa6d4951a0a7f48cddfeef57d593a8"
+http_archive(
+    name = "pybind11_protobuf",
+    sha256 = PP_SHA256,
+    strip_prefix = "pybind11_protobuf-{commit}".format(commit = PP_COMMIT),
+    urls = [
+        "https://github.com/pybind/pybind11_protobuf/archive/{commit}.tar.gz".format(commit = PP_COMMIT),
+    ],
+)
+
+http_archive(
+    name = "com_google_protobuf",
+    sha256 = "bb1ddd8172b745cbdc75f06841bd9e7c9de0b3956397723d883423abfab8e176",
+    strip_prefix = "protobuf-3.18.0",
+    # Patched to give visibility into private targets to pybind11_protobuf
+    patches = ["//third_party/pybind11_protobuf:com_google_protobuf_build.patch"],
+    urls = [
+        "https://github.com/protocolbuffers/protobuf/archive/v3.18.0.zip",
+    ],
+    repo_mapping = {"@six": "@six_archive"},
 )
 
 http_archive(
@@ -383,8 +409,8 @@ java_import_external(
 
 http_archive(
     name = "robolectric",
-    urls = ["https://github.com/robolectric/robolectric-bazel/archive/4.4.tar.gz"],
-    strip_prefix = "robolectric-bazel-4.4",
+    urls = ["https://github.com/robolectric/robolectric-bazel/archive/4.7.3.tar.gz"],
+    strip_prefix = "robolectric-bazel-4.7.3",
 )
 load("@robolectric//bazel:robolectric.bzl", "robolectric_repositories")
 robolectric_repositories()
@@ -393,13 +419,13 @@ load("//third_party/flatbuffers:workspace.bzl", flatbuffers = "repo")
 
 flatbuffers()
 
-RULES_JVM_EXTERNAL_TAG = "3.2"
+RULES_JVM_EXTERNAL_TAG = "4.2"
 
 http_archive(
     name = "rules_jvm_external",
     strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
-    sha256 = "82262ff4223c5fda6fb7ff8bd63db8131b51b413d26eb49e3131037e79e324af",
-    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = "cd1a77b7b02e8e008439ca76fd34f5b07aecb8c752961f9640dea15e9e5ba1ca",
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/refs/tags/%s.zip" % RULES_JVM_EXTERNAL_TAG,
 )
 
 load("@rules_jvm_external//:defs.bzl", "maven_install")
@@ -464,7 +490,7 @@ maven_install(
         "org.mockito:mockito-android:jar:3.0.0",
         "org.mockito:mockito-core:jar:3.0.0",
         "org.mockito:mockito-inline:jar:3.0.0",
-        "org.robolectric:robolectric:jar:4.4",
+        "org.robolectric:robolectric:jar:4.7.3",
         "junit:junit:jar:4.13",
     ],
     repositories = [

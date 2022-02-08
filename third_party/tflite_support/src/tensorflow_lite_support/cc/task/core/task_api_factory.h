@@ -143,10 +143,15 @@ class TaskAPIFactory {
     }
 
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
+    tflite::proto::ComputeSettings compute_settings(
+        base_options->compute_settings());
+    if (compute_settings.has_settings_to_test_locally()) {
+      RETURN_IF_ERROR(SetMiniBenchmarkFileNameFromBaseOptions(compute_settings,
+                                                              base_options));
+    }
     RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(
-        &base_options->model_file(), base_options->compute_settings()));
-    return CreateFromTfLiteEngine<T>(std::move(engine),
-                                     base_options->compute_settings());
+        &base_options->model_file(), compute_settings));
+    return CreateFromTfLiteEngine<T>(std::move(engine), compute_settings);
   }
 
  private:
@@ -172,6 +177,10 @@ class TaskAPIFactory {
     RETURN_IF_ERROR(engine->InitInterpreter(compute_settings));
     return absl::make_unique<T>(std::move(engine));
   }
+
+  static absl::Status SetMiniBenchmarkFileNameFromBaseOptions(
+      tflite::proto::ComputeSettings& compute_settings,
+      const BaseOptions* base_options);
 };
 
 }  // namespace core

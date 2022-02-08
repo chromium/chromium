@@ -4,7 +4,7 @@ load("@build_bazel_rules_apple//apple:ios.bzl", "ios_unit_test")
 load("@org_tensorflow//tensorflow/lite:special_rules.bzl", "tflite_ios_lab_runner")
 
 package(
-    default_visibility = ["//tensorflow_lite_support:__subpackages__"],
+    default_visibility = ["//visibility:private"],
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -19,6 +19,7 @@ swift_library(
     tags = TFL_DEFAULT_TAGS,
     deps = [
         "//tensorflow_lite_support/ios/task/vision:TFLImageClassifier",
+        "//tensorflow_lite_support/ios/test/task/vision/utils:GMLImageHelpers",
     ],
 )
 
@@ -43,6 +44,7 @@ objc_library(
     tags = TFL_DEFAULT_TAGS,
     deps = [
         "//tensorflow_lite_support/ios/task/vision:TFLImageClassifier",
+        "//tensorflow_lite_support/ios/test/task/vision/utils:GMLImageHelpers",
     ],
 )
 
@@ -53,5 +55,34 @@ ios_unit_test(
     tags = TFL_DEFAULT_TAGS + TFL_DISABLED_SANITIZER_TAGS,
     deps = [
         ":TFLImageClassifierObjcTestLibrary",
+    ],
+)
+
+objc_library(
+    name = "TFLImageClassifierCoreMLDelegateTestLibrary",
+    testonly = 1,
+    srcs = ["TFLImageClassifierCoreMLDelegateTest.mm"],
+    data = [
+        "//tensorflow_lite_support/cc/test/testdata/task/vision:test_images",
+        "//tensorflow_lite_support/cc/test/testdata/task/vision:test_models",
+    ],
+    tags = TFL_DEFAULT_TAGS,
+    deps = [
+        "//tensorflow_lite_support/c/task/vision/utils:frame_buffer_cpp_c_utils",
+        "//tensorflow_lite_support/cc/task/vision:image_classifier",
+        "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
+        "//tensorflow_lite_support/ios/test/task/vision/utils:GMLImageHelpers",
+        "//third_party/apple_frameworks:XCTest",
+        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:coreml_plugin",
+    ],
+)
+
+ios_unit_test(
+    name = "TFLImageClassifierCoreMLDelegateTest",
+    minimum_os_version = TFL_MINIMUM_OS_VERSION,
+    runner = tflite_ios_lab_runner("IOS_LATEST"),
+    tags = TFL_DEFAULT_TAGS + TFL_DISABLED_SANITIZER_TAGS,
+    deps = [
+        ":TFLImageClassifierCoreMLDelegateTestLibrary",
     ],
 )

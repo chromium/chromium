@@ -5,6 +5,7 @@ package(
 
 cc_library(
     name = "category",
+    srcs = ["category.cc"],
     hdrs = ["category.h"],
 )
 
@@ -39,4 +40,9 @@ cc_library(
         ":bounding_box",
         ":category",
     ],
+)
+
+cc_library(
+    name = "segmentation_result",
+    hdrs = ["segmentation_result.h"],
 )

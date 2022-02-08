@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLNLClassifier ()
 /** NLClassifier backed by C API */
-@property(nonatomic) TfLiteNLClassifier* nlClassifier;
+@property(nonatomic) TfLiteNLClassifier *nlClassifier;
 @end
 
 @implementation TFLNLClassifier
@@ -39,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
   TfLiteNLClassifierDelete(_nlClassifier);
 }
 
-+ (instancetype)nlClassifierWithModelPath:(NSString*)modelPath
-                                  options:(TFLNLClassifierOptions*)options {
++ (instancetype)nlClassifierWithModelPath:(NSString *)modelPath
+                                  options:(TFLNLClassifierOptions *)options {
   TfLiteNLClassifierOptions cOptions = {
       .input_tensor_index = options.inputTensorIndex,
       .output_score_tensor_index = options.outputScoreTensorIndex,
@@ -48,13 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
       .input_tensor_name = options.inputTensorName.UTF8String,
       .output_score_tensor_name = options.outputScoreTensorName.UTF8String,
       .output_label_tensor_name = options.outputLabelTensorName.UTF8String};
-  TfLiteNLClassifier* classifier =
+  TfLiteNLClassifier *classifier =
       TfLiteNLClassifierCreateFromOptions(modelPath.UTF8String, &cOptions);
   _GTMDevAssert(classifier, @"Failed to create NLClassifier");
   return [[TFLNLClassifier alloc] initWithNLClassifier:classifier];
 }
 
-- (instancetype)initWithNLClassifier:(TfLiteNLClassifier*)nlClassifier {
+- (instancetype)initWithNLClassifier:(TfLiteNLClassifier *)nlClassifier {
   self = [super init];
   if (self) {
     _nlClassifier = nlClassifier;
@@ -62,11 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (NSDictionary<NSString*, NSNumber*>*)classifyWithText:(NSString*)text {
-  Categories* cCategories =
-      TfLiteNLClassifierClassify(_nlClassifier, text.UTF8String);
-  NSMutableDictionary<NSString*, NSNumber*>* ret =
-      [NSMutableDictionary dictionary];
+- (NSDictionary<NSString *, NSNumber *> *)classifyWithText:(NSString *)text {
+  Categories *cCategories = TfLiteNLClassifierClassify(_nlClassifier, text.UTF8String);
+  NSMutableDictionary<NSString *, NSNumber *> *ret = [NSMutableDictionary dictionary];
   for (int i = 0; i < cCategories->size; i++) {
     Category cCategory = cCategories->categories[i];
     [ret setValue:[NSNumber numberWithDouble:cCategory.score]

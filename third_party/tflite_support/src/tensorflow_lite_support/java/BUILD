@@ -19,15 +19,14 @@ filegroup(
     srcs = glob(["src/java/org/tensorflow/lite/support/**/*.java"]),
 )
 
-# Android Library target for TFLite Support Library. It depends on TensorFlow
-# Lite runtime (tensorflow/lite/java:tensorflowlite). If you don't want to
-# introduce the native library into dependencies, use
-# "tensorflowlite_support_java" instead, which depends on
-# tensorflow/lite/java:tensorflowlite_java_stable.
+# Android Library target for TFLite Support Library. It depends on the
+# TensorFlow Lite Runtime (tensorflow/lite/java:tensorflowlite),
+# including its associated native code. If you don't want to introduce the native
+# library into dependencies, use "tensorflowlite_support_java" instead,
+# which depends on tensorflow/lite/java:tensorflowlite_api.
 android_library(
     name = "tensorflowlite_support",
     srcs = [],
-    javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",
     exports = [
         ":tensorflowlite_support_java",
@@ -38,10 +37,14 @@ android_library(
     ],
 )
 
+# Android Library target for TFLite Support Library, excluding native code,
+# and excluding dependencies on the TensorFlow Lite Runtime.
+# If you use this target, a TensorFlow Lite Runtime (and it's associated
+# native code) is nevertheless still required, and must be provided by a
+# separate dependency.
 android_library(
     name = "tensorflowlite_support_java",
     srcs = [":java_srcs"],
-    javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",
     # LINT.IfChange(dep)
     deps = [
@@ -49,7 +52,7 @@ android_library(
         "@maven//:androidx_annotation_annotation",
         "@maven//:com_google_android_odml_image",
         "@org_checkerframework_qual",
-        "@org_tensorflow//tensorflow/lite/java:tensorflowlite_java_stable",  # TODO(b/198734357): Use api when TF dep catches up.
+        "@org_tensorflow//tensorflow/lite/java:tensorflowlite_api",
     ],
     # LINT.ThenChange(<INTERNAL>/release/build_support_api_pom.sh:dep)
 )

@@ -47,6 +47,9 @@ py_library(
     name = "metadata_writer_for_task",
     srcs = ["metadata_writer_for_task.py"],
     srcs_version = "PY3",
+    visibility = [
+        "//tensorflow_lite_support:users",
+    ],
     deps = [
         ":metadata",
         "//tensorflow_lite_support/metadata:metadata_schema_py",

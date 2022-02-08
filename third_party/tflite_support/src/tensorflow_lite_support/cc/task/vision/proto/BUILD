@@ -1,3 +1,5 @@
+load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_py_proto_library")
+
 package(
     default_visibility = [
         "//visibility:public",
@@ -19,6 +21,13 @@ cc_proto_library(
     ],
 )
 
+support_py_proto_library(
+    name = "bounding_box_py_pb2",
+    srcs = ["bounding_box.proto"],
+    api_version = 2,
+    proto_deps = [":bounding_box_proto"],
+)
+
 cc_library(
     name = "bounding_box_proto_inc",
     hdrs = ["bounding_box_proto_inc.h"],
@@ -35,6 +44,13 @@ cc_proto_library(
     deps = [
         ":class_proto",
     ],
+)
+
+support_py_proto_library(
+    name = "class_py_pb2",
+    srcs = ["class.proto"],
+    api_version = 2,
+    proto_deps = [":class_proto"],
 )
 
 cc_library(
@@ -117,6 +133,17 @@ cc_proto_library(
     ],
 )
 
+support_py_proto_library(
+    name = "image_classifier_options_py_pb2",
+    srcs = ["image_classifier_options.proto"],
+    api_version = 2,
+    proto_deps = [":image_classifier_options_proto"],
+    py_proto_deps = [
+        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
+        "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
+    ],
+)
+
 cc_library(
     name = "image_classifier_options_proto_inc",
     hdrs = ["image_classifier_options_proto_inc.h"],
@@ -140,6 +167,13 @@ cc_proto_library(
     deps = [
         ":classifications_proto",
     ],
+)
+
+support_py_proto_library(
+    name = "classifications_py_pb2",
+    srcs = ["classifications.proto"],
+    api_version = 2,
+    proto_deps = [":classifications_proto"],
 )
 
 cc_library(
@@ -216,6 +250,17 @@ cc_proto_library(
     ],
 )
 
+support_py_proto_library(
+    name = "image_embedder_options_py_pb2",
+    srcs = ["image_embedder_options.proto"],
+    api_version = 2,
+    proto_deps = [":image_embedder_options_proto"],
+    py_proto_deps = [
+        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
+        "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
+    ],
+)
+
 cc_library(
     name = "image_embedder_options_proto_inc",
     hdrs = ["image_embedder_options_proto_inc.h"],
@@ -235,6 +280,13 @@ cc_proto_library(
     deps = [
         ":embeddings_proto",
     ],
+)
+
+support_py_proto_library(
+    name = "embeddings_py_pb2",
+    srcs = ["embeddings.proto"],
+    api_version = 2,
+    proto_deps = [":embeddings_proto"],
 )
 
 cc_library(

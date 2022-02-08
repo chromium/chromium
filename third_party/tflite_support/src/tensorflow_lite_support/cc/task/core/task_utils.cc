@@ -61,15 +61,15 @@ std::string LoadBinaryContent(const char* filename) {
   return buffer;
 }
 
-int FindIndexByMetadataTensorName(
+int FindTensorIndexByMetadataName(
     const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
         tensor_metadatas,
-    const std::string& name) {
+    absl::string_view name) {
   if (tensor_metadatas == nullptr) {
     return -1;
   }
   for (int i = 0; i < tensor_metadatas->size(); i++) {
-    if (strcmp(name.data(), tensor_metadatas->Get(i)->name()->c_str()) == 0) {
+    if (name == tensor_metadatas->Get(i)->name()->c_str()) {
       return i;
     }
   }

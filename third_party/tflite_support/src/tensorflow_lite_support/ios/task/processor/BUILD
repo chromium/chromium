@@ -15,6 +15,17 @@ objc_library(
 )
 
 objc_library(
+    name = "TFLCategory",
+    srcs = [
+        "sources/TFLCategory.m",
+    ],
+    hdrs = [
+        "sources/TFLCategory.h",
+    ],
+    module_name = "TFLCategory",
+)
+
+objc_library(
     name = "TFLClassificationResult",
     srcs = [
         "sources/TFLClassificationResult.m",
@@ -23,6 +34,23 @@ objc_library(
         "sources/TFLClassificationResult.h",
     ],
     module_name = "TFLClassificationResult",
+    deps = [
+        ":TFLCategory",
+    ],
+)
+
+objc_library(
+    name = "TFLDetectionResult",
+    srcs = [
+        "sources/TFLDetectionResult.m",
+    ],
+    hdrs = [
+        "sources/TFLDetectionResult.h",
+    ],
+    module_name = "TFLDetectionResult",
+    deps = [
+        ":TFLCategory",
+    ],
 )
 
 objc_library(
@@ -39,5 +67,52 @@ objc_library(
         "//tensorflow_lite_support/ios:TFLCommon",
         "//tensorflow_lite_support/ios:TFLCommonUtils",
         "//tensorflow_lite_support/ios/task/processor:TFLClassificationOptions",
+    ],
+)
+
+objc_library(
+    name = "TFLCategoryHelpers",
+    srcs = [
+        "sources/TFLCategory+Helpers.m",
+    ],
+    hdrs = [
+        "sources/TFLCategory+Helpers.h",
+    ],
+    module_name = "TFLCategoryHelpers",
+    deps = [
+        "//tensorflow_lite_support/c/task/processor:category",
+        "//tensorflow_lite_support/ios/task/processor:TFLCategory",
+    ],
+)
+
+objc_library(
+    name = "TFLClassificationResultHelpers",
+    srcs = [
+        "sources/TFLClassificationResult+Helpers.m",
+    ],
+    hdrs = [
+        "sources/TFLClassificationResult+Helpers.h",
+    ],
+    module_name = "TFLClassificationResultHelpers",
+    deps = [
+        ":TFLCategoryHelpers",
+        "//tensorflow_lite_support/c/task/processor:classification_result",
+        "//tensorflow_lite_support/ios/task/processor:TFLClassificationResult",
+    ],
+)
+
+objc_library(
+    name = "TFLDetectionResultHelpers",
+    srcs = [
+        "sources/TFLDetectionResult+Helpers.m",
+    ],
+    hdrs = [
+        "sources/TFLDetectionResult+Helpers.h",
+    ],
+    module_name = "TFLDetectionResultHelpers",
+    deps = [
+        ":TFLCategoryHelpers",
+        "//tensorflow_lite_support/c/task/processor:detection_result",
+        "//tensorflow_lite_support/ios/task/processor:TFLDetectionResult",
     ],
 )

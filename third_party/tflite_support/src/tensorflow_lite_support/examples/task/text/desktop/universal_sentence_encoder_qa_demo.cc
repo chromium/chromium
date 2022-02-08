@@ -19,10 +19,15 @@ limitations under the License.
 #include "absl/status/status.h"      // from @com_google_absl
 #include "absl/strings/str_split.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/task/text/universal_sentence_encoder_qa.h"
+#include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
+
+namespace {
+using tflite::task::text::CreateQACustomOpResolver;
 using tflite::task::text::RetrievalInput;
 using tflite::task::text::RetrievalOptions;
 using tflite::task::text::RetrievalOutput;
-using tflite::task::text::retrieval::UniversalSentenceEncoderQA;
+using tflite::task::text::UniversalSentenceEncoderQA;
+}  // namespace
 
 ABSL_FLAG(std::string,
           model_path,
@@ -57,7 +62,8 @@ int main(int argc, char** argv) {
   RetrievalOptions options;
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       absl::GetFlag(FLAGS_model_path));
-  auto status = UniversalSentenceEncoderQA::CreateFromOption(options);
+  auto status = UniversalSentenceEncoderQA::CreateFromOption(
+      options, CreateQACustomOpResolver());
   CHECK_OK(status);
   std::unique_ptr<UniversalSentenceEncoderQA> client =
       std::move(status.value());

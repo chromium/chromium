@@ -25,8 +25,8 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLCpuSettings* cpuSettings = [[TFLCpuSettings alloc] init];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLCpuSettings *cpuSettings = [[TFLCpuSettings alloc] init];
 
   [cpuSettings setNumThreads:self.numThreads];
 
@@ -46,8 +46,8 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLComputeSettings* computeSettings = [[TFLComputeSettings alloc] init];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLComputeSettings *computeSettings = [[TFLComputeSettings alloc] init];
 
   [computeSettings setCpuSettings:self.cpuSettings];
 
@@ -59,8 +59,8 @@
 @implementation TFLExternalFile
 @synthesize filePath;
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLExternalFile* externalFile = [[TFLExternalFile alloc] init];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLExternalFile *externalFile = [[TFLExternalFile alloc] init];
 
   [externalFile setFilePath:self.filePath];
 
@@ -82,8 +82,8 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLBaseOptions* baseOptions = [[TFLBaseOptions alloc] init];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLBaseOptions *baseOptions = [[TFLBaseOptions alloc] init];
 
   [baseOptions setModelFile:self.modelFile];
   [baseOptions setComputeSettings:self.computeSettings];

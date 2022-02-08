@@ -15,7 +15,9 @@ limitations under the License.
 
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_PROCESSOR_EMBEDDING_POSTPROCESSOR_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_PROCESSOR_EMBEDDING_POSTPROCESSOR_H_
+
 #include <initializer_list>
+#include <memory>
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -38,7 +40,8 @@ class EmbeddingPostprocessor : public Postprocessor {
   static tflite::support::StatusOr<std::unique_ptr<EmbeddingPostprocessor>>
   Create(core::TfLiteEngine* engine,
          const std::initializer_list<int> output_indices,
-         std::unique_ptr<EmbeddingOptions> options);
+         std::unique_ptr<EmbeddingOptions> options =
+             std::make_unique<EmbeddingOptions>());
 
   template <typename T>
   absl::Status Postprocess(T* embedding);

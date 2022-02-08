@@ -28,10 +28,7 @@ void TfLiteClassificationResultDelete(
     TfLiteClassifications classifications =
         classification_result->classifications[head];
     for (int rank = 0; rank < classifications.size; ++rank) {
-      // `strdup` obtains memory using `malloc` and the memory needs to be
-      // released using `free`.
-      free(classifications.categories[rank].display_name);
-      free(classifications.categories[rank].label);
+      TfLiteCategoryDelete(&(classifications.categories[rank]));
     }
 
     delete[] classifications.categories;

@@ -22,8 +22,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString* const kTestImageName = @"grace_hopper";
-static NSString* const kTestImageType = @"jpg";
+static NSString *const kTestImageName = @"grace_hopper";
+static NSString *const kTestImageType = @"jpg";
 static CGFloat kTestImageWidthInPixels = 517.0f;
 static CGFloat kTestImageHeightInPixels = 606.0f;
 
@@ -31,7 +31,7 @@ static CGFloat kTestImageHeightInPixels = 606.0f;
 @interface GMLImageTests : XCTestCase
 
 /** Test image. */
-@property(nonatomic, nullable) UIImage* image;
+@property(nonatomic, nullable) UIImage *image;
 
 @end
 
@@ -41,9 +41,8 @@ static CGFloat kTestImageHeightInPixels = 606.0f;
 
 - (void)setUp {
   [super setUp];
-  NSString* imageName =
-      [[NSBundle bundleForClass:[self class]] pathForResource:kTestImageName
-                                                       ofType:kTestImageType];
+  NSString *imageName = [[NSBundle bundleForClass:[self class]] pathForResource:kTestImageName
+                                                                         ofType:kTestImageType];
   self.image = [[UIImage alloc] initWithContentsOfFile:imageName];
 }
 
@@ -53,59 +52,53 @@ static CGFloat kTestImageHeightInPixels = 606.0f;
 }
 
 - (void)testInitWithImage {
-  GMLImage* mlImage = [[GMLImage alloc] initWithImage:self.image];
+  GMLImage *mlImage = [[GMLImage alloc] initWithImage:self.image];
   XCTAssertNotNil(mlImage);
   XCTAssertEqual(mlImage.imageSourceType, GMLImageSourceTypeImage);
   XCTAssertEqual(mlImage.orientation, self.image.imageOrientation);
   mlImage.orientation = UIImageOrientationDown;
   XCTAssertEqual(mlImage.orientation, UIImageOrientationDown);
-  XCTAssertEqualWithAccuracy(mlImage.width, kTestImageWidthInPixels,
-                             FLT_EPSILON);
-  XCTAssertEqualWithAccuracy(mlImage.height, kTestImageHeightInPixels,
-                             FLT_EPSILON);
+  XCTAssertEqualWithAccuracy(mlImage.width, kTestImageWidthInPixels, FLT_EPSILON);
+  XCTAssertEqualWithAccuracy(mlImage.height, kTestImageHeightInPixels, FLT_EPSILON);
 }
 
 - (void)testInitWithImage_nilImage {
-  GMLImage* mlImage = [[GMLImage alloc] initWithImage:nil];
+  GMLImage *mlImage = [[GMLImage alloc] initWithImage:nil];
   XCTAssertNil(mlImage);
 }
 
 - (void)testInitWithSampleBuffer {
   CMSampleBufferRef sampleBuffer = [self sampleBuffer];
-  GMLImage* mlImage = [[GMLImage alloc] initWithSampleBuffer:sampleBuffer];
+  GMLImage *mlImage = [[GMLImage alloc] initWithSampleBuffer:sampleBuffer];
   XCTAssertNotNil(mlImage);
   XCTAssertEqual(mlImage.imageSourceType, GMLImageSourceTypeSampleBuffer);
   XCTAssertEqual(mlImage.orientation, UIImageOrientationUp);
   mlImage.orientation = UIImageOrientationDown;
   XCTAssertEqual(mlImage.orientation, UIImageOrientationDown);
-  XCTAssertEqualWithAccuracy(mlImage.width, kTestImageWidthInPixels,
-                             FLT_EPSILON);
-  XCTAssertEqualWithAccuracy(mlImage.height, kTestImageHeightInPixels,
-                             FLT_EPSILON);
+  XCTAssertEqualWithAccuracy(mlImage.width, kTestImageWidthInPixels, FLT_EPSILON);
+  XCTAssertEqualWithAccuracy(mlImage.height, kTestImageHeightInPixels, FLT_EPSILON);
 }
 
 - (void)testInitWithSampleBuffer_nilImage {
-  GMLImage* mlImage = [[GMLImage alloc] initWithSampleBuffer:nil];
+  GMLImage *mlImage = [[GMLImage alloc] initWithSampleBuffer:nil];
   XCTAssertNil(mlImage);
 }
 
 - (void)testInitWithPixelBuffer {
   CMSampleBufferRef sampleBuffer = [self sampleBuffer];
   CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-  GMLImage* mlImage = [[GMLImage alloc] initWithPixelBuffer:pixelBuffer];
+  GMLImage *mlImage = [[GMLImage alloc] initWithPixelBuffer:pixelBuffer];
   XCTAssertNotNil(mlImage);
   XCTAssertEqual(mlImage.imageSourceType, GMLImageSourceTypePixelBuffer);
   XCTAssertEqual(mlImage.orientation, UIImageOrientationUp);
   mlImage.orientation = UIImageOrientationDown;
   XCTAssertEqual(mlImage.orientation, UIImageOrientationDown);
-  XCTAssertEqualWithAccuracy(mlImage.width, kTestImageWidthInPixels,
-                             FLT_EPSILON);
-  XCTAssertEqualWithAccuracy(mlImage.height, kTestImageHeightInPixels,
-                             FLT_EPSILON);
+  XCTAssertEqualWithAccuracy(mlImage.width, kTestImageWidthInPixels, FLT_EPSILON);
+  XCTAssertEqualWithAccuracy(mlImage.height, kTestImageHeightInPixels, FLT_EPSILON);
 }
 
 - (void)testInitWithPixelBuffer_nilImage {
-  GMLImage* mlImage = [[GMLImage alloc] initWithPixelBuffer:nil];
+  GMLImage *mlImage = [[GMLImage alloc] initWithPixelBuffer:nil];
   XCTAssertNil(mlImage);
 }
 
@@ -124,18 +117,17 @@ static CGFloat kTestImageHeightInPixels = 606.0f;
   size_t bpr = CGImageGetBytesPerRow(CGImage);
 
   CGDataProviderRef provider = CGImageGetDataProvider(CGImage);
-  NSData* imageRGBAData =
-      (id)CFBridgingRelease(CGDataProviderCopyData(provider));
+  NSData *imageRGBAData = (id)CFBridgingRelease(CGDataProviderCopyData(provider));
   const uint8_t order[4] = {2, 1, 0, 3};
 
-  NSData* imageBGRAData = nil;
-  unsigned char* bgraPixel = (unsigned char*)malloc([imageRGBAData length]);
+  NSData *imageBGRAData = nil;
+  unsigned char *bgraPixel = (unsigned char *)malloc([imageRGBAData length]);
   if (bgraPixel) {
     vImage_Buffer src;
     src.height = height;
     src.width = width;
     src.rowBytes = bpr;
-    src.data = (void*)[imageRGBAData bytes];
+    src.data = (void *)[imageRGBAData bytes];
 
     vImage_Buffer dest;
     dest.height = height;
@@ -144,13 +136,11 @@ static CGFloat kTestImageHeightInPixels = 606.0f;
     dest.data = bgraPixel;
 
     // Specify ordering changes in map.
-    vImage_Error error =
-        vImagePermuteChannels_ARGB8888(&src, &dest, order, kvImageNoFlags);
+    vImage_Error error = vImagePermuteChannels_ARGB8888(&src, &dest, order, kvImageNoFlags);
 
     // Package the result.
     if (error == kvImageNoError) {
-      imageBGRAData = [NSData dataWithBytes:bgraPixel
-                                     length:[imageRGBAData length]];
+      imageBGRAData = [NSData dataWithBytes:bgraPixel length:[imageRGBAData length]];
     }
 
     // Memory cleanup.
@@ -162,15 +152,14 @@ static CGFloat kTestImageHeightInPixels = 606.0f;
   }
 
   // Write data to `CMSampleBuffer`.
-  NSDictionary* options = @{
-    (__bridge NSString*)kCVPixelBufferCGImageCompatibilityKey : @(YES),
-    (__bridge NSString*)kCVPixelBufferCGBitmapContextCompatibilityKey : @(YES)
+  NSDictionary *options = @{
+    (__bridge NSString *)kCVPixelBufferCGImageCompatibilityKey : @(YES),
+    (__bridge NSString *)kCVPixelBufferCGBitmapContextCompatibilityKey : @(YES)
   };
   CVPixelBufferRef pixelBuffer;
   CVReturn status = CVPixelBufferCreateWithBytes(
-      kCFAllocatorDefault, width, height, kCVPixelFormatType_32BGRA,
-      (void*)[imageBGRAData bytes], bpr, NULL, nil,
-      (__bridge CFDictionaryRef)options, &pixelBuffer);
+      kCFAllocatorDefault, width, height, kCVPixelFormatType_32BGRA, (void *)[imageBGRAData bytes],
+      bpr, NULL, nil, (__bridge CFDictionaryRef)options, &pixelBuffer);
 
   if (status != kCVReturnSuccess) {
     XCTFail(@"Failed to create pixel buffer.");
@@ -178,12 +167,10 @@ static CGFloat kTestImageHeightInPixels = 606.0f;
 
   CVPixelBufferLockBaseAddress(pixelBuffer, 0);
   CMVideoFormatDescriptionRef videoInfo = NULL;
-  CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pixelBuffer,
-                                               &videoInfo);
+  CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pixelBuffer, &videoInfo);
 
   CMSampleBufferRef buffer;
-  CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault, pixelBuffer, true,
-                                     NULL, NULL, videoInfo,
+  CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault, pixelBuffer, true, NULL, NULL, videoInfo,
                                      &kCMTimingInfoInvalid, &buffer);
 
   CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);

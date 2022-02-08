@@ -423,6 +423,74 @@ TEST(ClassifyTest, SucceedsWithBaseOptions) {
           )pb"));
 }
 
+// Configure the ImageClassifier to use the mini-benchmark to decide if we
+// should use the XNNPack Delegate with the given number of threads.
+void ConfigureXnnPackMiniBenchmark(int num_threads,
+                                   ImageClassifierOptions& options) {
+  auto* mutable_mini_benchmark_settings =
+      options.mutable_base_options()
+          ->mutable_compute_settings()
+          ->mutable_settings_to_test_locally();
+  auto* setting_to_benchmark =
+      mutable_mini_benchmark_settings->add_settings_to_test();
+  setting_to_benchmark->set_delegate(tflite::proto::Delegate::XNNPACK);
+  setting_to_benchmark->mutable_xnnpack_settings()->set_num_threads(
+      num_threads);
+
+  // Configuring mini-benchmark storage paths
+  mutable_mini_benchmark_settings->mutable_storage_paths()
+      ->set_storage_file_path(
+          JoinPath(testing::TempDir(), "mini_benchmark_storage"));
+  mutable_mini_benchmark_settings->mutable_storage_paths()
+      ->set_data_directory_path(testing::TempDir());
+}
+
+TEST(ClassifyTest, SucceedsWithMiniBenchmark) {
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image, LoadImage("burger.jpg"));
+  std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
+      rgb_image.pixel_data,
+      FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
+
+  auto file_name = JoinPath("./" /*test src dir*/, kTestDataDirectory,
+                            kMobileNetFloatWithMetadata);
+
+  ImageClassifierOptions options;
+  options.set_max_results(3);
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      file_name);
+
+  ConfigureXnnPackMiniBenchmark(/*num_threads=*/2, options);
+
+  SUPPORT_ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<ImageClassifier> image_classifier,
+      ImageClassifier::CreateFromOptions(options));
+
+  StatusOr<ClassificationResult> result_or =
+      image_classifier->Classify(*frame_buffer);
+  ImageDataFree(&rgb_image);
+  SUPPORT_ASSERT_OK(result_or);
+
+  const ClassificationResult& result = result_or.value();
+  ExpectApproximatelyEqual(
+      result,
+      ParseTextProtoOrDie<ClassificationResult>(
+          R"pb(classifications {
+                 classes {
+                   index: 934
+                   score: 0.7399742
+                   class_name: "cheeseburger"
+                 }
+                 classes {
+                   index: 925
+                   score: 0.026928535
+                   class_name: "guacamole"
+                 }
+                 classes { index: 932 score: 0.025737215 class_name: "bagel" }
+                 head_index: 0
+               }
+          )pb"));
+}
+
 TEST(ClassifyTest, GetInputCountSucceeds) {
   ImageClassifierOptions options;
   options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(

@@ -13,26 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 #import <Foundation/Foundation.h>
+#import "tensorflow_lite_support/ios/task/processor/sources/TFLCategory.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-/** Encapsulates information about a class in the classification results. */
-@interface TFLCategory : NSObject
-
-/** Display name of the class. */
-@property(nonatomic, copy) NSString* displayName;
-
-/** Class name of the class . */
-@property(nonatomic, copy) NSString* label;
-
-/** Confidence score for this class . */
-@property(nonatomic, assign) float score;
-
-/** The index of the class in the corresponding label map, usually packed in the
- * TFLite Model Metadata. */
-@property(nonatomic, assign) NSInteger classIndex;
-
-@end
 
 /** Encapsulates list of predicted classes (aka labels) for a given image
  * classifier head. */

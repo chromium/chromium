@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Public
 
-- (nullable instancetype)initWithImage:(UIImage*)image {
+- (nullable instancetype)initWithImage:(UIImage *)image {
   if (image.CGImage == NULL) {
     return nil;
   }

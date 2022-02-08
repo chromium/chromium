@@ -113,6 +113,59 @@ class MetadataWriterForTaskTest(tf.test.TestCase):
 }
 """)
 
+  def test_general_model(self):
+    with mt.Writer(
+        test_utils.load_file(_AUDIO_CLASSIFICATION_MODEL),
+        model_name='my_model',
+        model_description='my_description') as writer:
+      writer.add_feature_input(
+          name='input_tesnor', description='a feature input tensor')
+      writer.add_feature_output(
+          name='output_tesnor', description='a feature output tensor')
+
+      out_dir = self.create_tempdir()
+      writer.populate(
+          os.path.join(out_dir, 'model.tflite'),
+          os.path.join(out_dir, 'metadata.tflite'))
+      self.assertEqual(
+          test_utils.load_file(os.path.join(out_dir, 'metadata.tflite'), 'r'),
+          """{
+  "name": "my_model",
+  "description": "my_description",
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "input_tesnor",
+          "description": "a feature input tensor",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "stats": {
+          }
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+          "name": "output_tesnor",
+          "description": "a feature output tensor",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "stats": {
+          }
+        }
+      ]
+    }
+  ],
+  "min_parser_version": "1.0.0"
+}
+""")
+
   def test_audio_classifier(self):
     with mt.Writer(
         test_utils.load_file(_AUDIO_CLASSIFICATION_MODEL),

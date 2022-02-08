@@ -12,8 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-#ifndef THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_UNIVERSAL_SENTENCE_ENCODER_QA_H_
-#define THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_UNIVERSAL_SENTENCE_ENCODER_QA_H_
+#ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_UNIVERSAL_SENTENCE_ENCODER_QA_H_
+#define TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_UNIVERSAL_SENTENCE_ENCODER_QA_H_
 
 #include <string>
 #include <utility>
@@ -32,7 +32,6 @@ limitations under the License.
 namespace tflite {
 namespace task {
 namespace text {
-namespace retrieval {
 
 // QAInput and QAOutput for UniversalSentenceEncoderQA internally.
 namespace internal {
@@ -40,12 +39,27 @@ struct QAInput;
 struct QAOutput;
 }  // namespace internal
 
-// Creates custom op resolver for USE QA task.
-std::unique_ptr<tflite_shims::ops::builtin::BuiltinOpResolver>
-CreateQACustomOpResolver();
-
 // Universal Sentence Encoder (USE) Question Answerer. The model uses USE as the
 // backbone and answers a question.
+//
+// The API expects an USE QA model with the following input and output tensor
+// names:
+//                    Metadata tensor name   |   Model tensor name
+// Inputs tensors:                           |
+//   - Query text         "inp_text"         | "ParseExample/ParseExampleV2:1"
+//   - Response text:     "res_text"         | "ParseExample/ParseExampleV2:2"
+//   - Response context   "res_context"      | "ParseExample/ParseExampleV2:3"
+// Output tensors:
+//   - Query encoding     "query_encoding"   | "Final/EncodeQuery/mul"
+//   - Response encoding  "response_encoding"| "Final/EncodeResult/mul"
+//
+// Tensors will be matched by first checking the metadata tesnor name and then
+// the Model tensor name. If no matching tensor name is found, the first three
+// input tensors will be used for query text, response text, response context,
+// respectively; the first two output tensors will be used for query_encoding
+// and response encoding, respectively. Other input or output tensors will be
+// ignored by `UniversalSentenceEncoderQA`.
+
 class UniversalSentenceEncoderQA
     : public core::BaseTaskApi<internal::QAOutput, const internal::QAInput&> {
  public:
@@ -56,9 +70,10 @@ class UniversalSentenceEncoderQA
   static constexpr int kFinalEmbeddingSize = 100;
 
   static tflite::support::StatusOr<std::unique_ptr<UniversalSentenceEncoderQA>>
-  CreateFromOption(const tflite::task::text::RetrievalOptions& options,
-                   std::unique_ptr<tflite::OpResolver> resolver =
-                       CreateQACustomOpResolver());
+  CreateFromOption(
+      const tflite::task::text::RetrievalOptions& options,
+      std::unique_ptr<tflite::OpResolver> resolver =
+          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
 
   // Retrieves output from the input by running TFLite engine.
   // Returns an error, if either query_text or responses is empty.
@@ -85,6 +100,8 @@ class UniversalSentenceEncoderQA
   static std::vector<size_t> Top(const RetrievalOutput& output, size_t k = 0);
 
  private:
+  absl::Status Init(std::unique_ptr<RetrievalOptions> options);
+
   absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                           const internal::QAInput& input) override;
 
@@ -96,12 +113,19 @@ class UniversalSentenceEncoderQA
                          absl::string_view response_text,
                          absl::string_view response_context);
 
-  std::unique_ptr<tflite::task::text::RetrievalOptions> proto_options_;
+  std::unique_ptr<tflite::task::text::RetrievalOptions> options_;
+
+  // The input tensor indices corresponding to the query text tensor, the
+  // response context tensor, and the response text tensor, respectively.
+  std::vector<int> input_indices_;
+
+  // The output tensor indices corresponding to the query encoding tensor and
+  // the response encoding tensor, respectively.
+  std::vector<int> output_indices_;
 };
 
-}  // namespace retrieval
 }  // namespace text
 }  // namespace task
 }  // namespace tflite
 
-#endif  // THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_UNIVERSAL_SENTENCE_ENCODER_QA_H_
+#endif  // TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_UNIVERSAL_SENTENCE_ENCODER_QA_H_

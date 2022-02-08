@@ -17,14 +17,14 @@
 #import "tensorflow_lite_support/ios/sources/TFLCommonUtils.h"
 #import "tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions+Helpers.h"
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationOptions+Helpers.h"
-#import "tensorflow_lite_support/ios/task/processor/utils/sources/TFLClassificationUtils.h"
+#import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationResult+Helpers.h"
 #import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImageUtils.h"
 
 #include "tensorflow_lite_support/c/task/vision/image_classifier.h"
 
 @interface TFLImageClassifier ()
 /** ImageClassifier backed by C API */
-@property(nonatomic) TfLiteImageClassifier* imageClassifier;
+@property(nonatomic) TfLiteImageClassifier *imageClassifier;
 @end
 
 @implementation TFLImageClassifierOptions
@@ -40,7 +40,7 @@
   return self;
 }
 
-- (nullable instancetype)initWithModelPath:(nonnull NSString*)modelPath {
+- (nullable instancetype)initWithModelPath:(nonnull NSString *)modelPath {
   self = [self init];
   if (self) {
     self.baseOptions.modelFile.filePath = modelPath;
@@ -55,8 +55,7 @@
   TfLiteImageClassifierDelete(_imageClassifier);
 }
 
-- (instancetype)initWithImageClassifier:
-    (TfLiteImageClassifier*)imageClassifier {
+- (instancetype)initWithImageClassifier:(TfLiteImageClassifier *)imageClassifier {
   self = [super init];
   if (self) {
     _imageClassifier = imageClassifier;
@@ -64,28 +63,27 @@
   return self;
 }
 
-+ (nullable instancetype)imageClassifierWithOptions:
-                             (nonnull TFLImageClassifierOptions*)options
-                                              error:(NSError**)error {
++ (nullable instancetype)imageClassifierWithOptions:(nonnull TFLImageClassifierOptions *)options
+                                              error:(NSError **)error {
   TfLiteImageClassifierOptions cOptions = TfLiteImageClassifierOptionsCreate();
   if (![options.classificationOptions
-          copyClassificationOptionsToCClassificationOptions:
-              &(cOptions.classification_options)
-                                                      error:error])
+          copyToCOptions:&(cOptions.classification_options)
+                                 error:error])
     return nil;
 
-  [options.baseOptions copyBaseOptionsToCBaseOptions:&(cOptions.base_options)];
+  [options.baseOptions copyToCOptions:&(cOptions.base_options)];
 
-  TfLiteSupportError* createClassifierError = nil;
-  TfLiteImageClassifier* imageClassifier =
+  TfLiteSupportError *createClassifierError = nil;
+  TfLiteImageClassifier *imageClassifier =
       TfLiteImageClassifierFromOptions(&cOptions, &createClassifierError);
 
-  [options.classificationOptions deleteCStringArraysOfClassificationOptions:
-                                     &(cOptions.classification_options)];
+  [options.classificationOptions
+      deleteCStringArraysOfClassificationOptions:&(cOptions.classification_options)];
 
   if (!imageClassifier) {
-    [TFLCommonUtils errorFromTfLiteSupportError:createClassifierError
-                                          error:error];
+    if (error) {
+      *error = [TFLCommonUtils errorWithCError:createClassifierError];
+    }
     TfLiteSupportErrorDelete(createClassifierError);
     return nil;
   }
@@ -93,20 +91,17 @@
   return [[TFLImageClassifier alloc] initWithImageClassifier:imageClassifier];
 }
 
-- (nullable TFLClassificationResult*)classifyWithGMLImage:(GMLImage*)image
-                                                    error:(NSError* _Nullable*)
-                                                              error {
+- (nullable TFLClassificationResult *)classifyWithGMLImage:(GMLImage *)image
+                                                     error:(NSError *_Nullable *)error {
   return [self classifyWithGMLImage:image
                    regionOfInterest:CGRectMake(0, 0, image.width, image.height)
                               error:error];
 }
 
-- (nullable TFLClassificationResult*)classifyWithGMLImage:(GMLImage*)image
-                                         regionOfInterest:(CGRect)roi
-                                                    error:(NSError* _Nullable*)
-                                                              error {
-  TfLiteFrameBuffer* cFrameBuffer =
-      [GMLImageUtils cFrameBufferFromGMLImage:image error:error];
+- (nullable TFLClassificationResult *)classifyWithGMLImage:(GMLImage *)image
+                                          regionOfInterest:(CGRect)roi
+                                                     error:(NSError *_Nullable *)error {
+  TfLiteFrameBuffer *cFrameBuffer = [GMLImageUtils cFrameBufferWithGMLImage:image error:error];
 
   if (!cFrameBuffer) {
     return nil;
@@ -117,10 +112,9 @@
                                    .width = roi.size.width,
                                    .height = roi.size.height};
 
-  TfLiteSupportError* classifyError = nil;
-  TfLiteClassificationResult* cClassificationResult =
-      TfLiteImageClassifierClassifyWithRoi(_imageClassifier, cFrameBuffer,
-                                           &boundingBox, &classifyError);
+  TfLiteSupportError *classifyError = nil;
+  TfLiteClassificationResult *cClassificationResult = TfLiteImageClassifierClassifyWithRoi(
+      _imageClassifier, cFrameBuffer, &boundingBox, &classifyError);
 
   free(cFrameBuffer->buffer);
   cFrameBuffer->buffer = nil;
@@ -129,13 +123,15 @@
   cFrameBuffer = nil;
 
   if (!cClassificationResult) {
-    [TFLCommonUtils errorFromTfLiteSupportError:classifyError error:error];
+    if (error) {
+      *error = [TFLCommonUtils errorWithCError:classifyError];
+    }
     TfLiteSupportErrorDelete(classifyError);
     return nil;
   }
 
-  TFLClassificationResult* classificationHeadsResults = [TFLClassificationUtils
-      classificationResultFromCClassificationResults:cClassificationResult];
+  TFLClassificationResult *classificationHeadsResults =
+      [TFLClassificationResult classificationResultWithCResult:cClassificationResult];
   TfLiteClassificationResultDelete(cClassificationResult);
 
   return classificationHeadsResults;

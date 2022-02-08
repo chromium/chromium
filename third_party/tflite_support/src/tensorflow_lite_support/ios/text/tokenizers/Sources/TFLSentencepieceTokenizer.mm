@@ -19,27 +19,25 @@ limitations under the License.
 #import "third_party/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN
-using SentencepieceTokenizerCPP =
-    ::tflite::support::text::tokenizer::SentencePieceTokenizer;
+using SentencepieceTokenizerCPP = ::tflite::support::text::tokenizer::SentencePieceTokenizer;
 
 @implementation TFLSentencepieceTokenizer {
   std::unique_ptr<SentencepieceTokenizerCPP> _spTokenizer;
 }
 
-- (instancetype)initWithModelPath:(NSString*)modelPath {
+- (instancetype)initWithModelPath:(NSString *)modelPath {
   self = [super init];
   if (self) {
-    _spTokenizer =
-        absl::make_unique<SentencepieceTokenizerCPP>(MakeString(modelPath));
+    _spTokenizer = absl::make_unique<SentencepieceTokenizerCPP>(MakeString(modelPath));
   }
   return self;
 }
 
-- (NSArray<NSString*>*)tokensFromInput:(NSString*)input {
+- (NSArray<NSString *> *)tokensFromInput:(NSString *)input {
   return Tokenize(_spTokenizer.get(), input);
 }
 
-- (NSArray<NSNumber*>*)idsFromTokens:(NSArray<NSString*>*)tokens {
+- (NSArray<NSNumber *> *)idsFromTokens:(NSArray<NSString *> *)tokens {
   return ConvertTokensToIds(_spTokenizer.get(), tokens);
 }
 

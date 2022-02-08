@@ -1,7 +1,7 @@
-From 5feffc2cdd8c970490fadd812401be4eb57174d5 Mon Sep 17 00:00:00 2001
+From 731c17145b6421250793e49c72d384edc49edce4 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Thu, 16 Dec 2021 13:43:57 -0800
-Subject: [PATCH 08/11] unused string include
+Date: Mon, 7 Feb 2022 12:13:50 -0800
+Subject: [PATCH 08/12] unused string include
 
 ---
  .../cc/text/tokenizers/tokenizer_jni_lib.h                      | 2 --
@@ -21,5 +21,5 @@ index fc7285c6807b0..33677d305a853 100644
  #include "tensorflow_lite_support/cc/utils/jni_utils.h"
  
 -- 
-2.34.1.307.g9b7440fafd-goog
+2.35.0.263.gb82422642f-goog
 

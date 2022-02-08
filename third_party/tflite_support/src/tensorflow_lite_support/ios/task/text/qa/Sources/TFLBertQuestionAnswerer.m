@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLBertQuestionAnswerer ()
 /** BertQuestionAnswerer backed by C API */
-@property(nonatomic) TfLiteBertQuestionAnswerer* bertQuestionAnswerer;
+@property(nonatomic) TfLiteBertQuestionAnswerer *bertQuestionAnswerer;
 @end
 
 @implementation TFLBertQuestionAnswerer
@@ -34,16 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
   TfLiteBertQuestionAnswererDelete(_bertQuestionAnswerer);
 }
 
-+ (instancetype)questionAnswererWithModelPath:(NSString*)modelPath {
-  TfLiteBertQuestionAnswerer* bert_qa =
-      TfLiteBertQuestionAnswererCreate(modelPath.UTF8String);
++ (instancetype)questionAnswererWithModelPath:(NSString *)modelPath {
+  TfLiteBertQuestionAnswerer *bert_qa = TfLiteBertQuestionAnswererCreate(modelPath.UTF8String);
 
   _GTMDevAssert(bert_qa, @"Failed to create BertQuestionAnswerer");
   return [[TFLBertQuestionAnswerer alloc] initWithBertQuestionAnswerer:bert_qa];
 }
 
-- (instancetype)initWithBertQuestionAnswerer:
-    (TfLiteBertQuestionAnswerer*)bertQuestionAnswerer {
+- (instancetype)initWithBertQuestionAnswerer:(TfLiteBertQuestionAnswerer *)bertQuestionAnswerer {
   self = [super init];
   if (self) {
     _bertQuestionAnswerer = bertQuestionAnswerer;
@@ -51,17 +49,14 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (NSArray<TFLQAAnswer*>*)answerWithContext:(NSString*)context
-                                   question:(NSString*)question {
-  TfLiteQaAnswers* cAnswers = TfLiteBertQuestionAnswererAnswer(
+- (NSArray<TFLQAAnswer *> *)answerWithContext:(NSString *)context question:(NSString *)question {
+  TfLiteQaAnswers *cAnswers = TfLiteBertQuestionAnswererAnswer(
       _bertQuestionAnswerer, context.UTF8String, question.UTF8String);
-  NSMutableArray<TFLQAAnswer*>* ret =
-      [NSMutableArray arrayWithCapacity:cAnswers->size];
+  NSMutableArray<TFLQAAnswer *> *ret = [NSMutableArray arrayWithCapacity:cAnswers->size];
   for (int i = 0; i < cAnswers->size; i++) {
     TfLiteQaAnswer cAnswer = cAnswers->answers[i];
-    TFLQAAnswer* answer = [[TFLQAAnswer alloc] init];
-    struct TFLPos pos = {
-        .start = cAnswer.start, .end = cAnswer.end, .logit = cAnswer.logit};
+    TFLQAAnswer *answer = [[TFLQAAnswer alloc] init];
+    struct TFLPos pos = {.start = cAnswer.start, .end = cAnswer.end, .logit = cAnswer.logit};
     [answer setPos:pos];
     [answer setText:[NSString stringWithUTF8String:cAnswer.text]];
     [ret addObject:answer];

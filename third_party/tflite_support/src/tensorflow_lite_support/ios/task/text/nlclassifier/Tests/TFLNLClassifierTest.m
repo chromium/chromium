@@ -19,8 +19,8 @@ limitations under the License.
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLNLClassifierTest : XCTestCase
-@property(nonatomic, nullable) NSString* modelPath;
-@property(nonatomic, nullable) TFLNLClassifierOptions* modelOptions;
+@property(nonatomic, nullable) NSString *modelPath;
+@property(nonatomic, nullable) TFLNLClassifierOptions *modelOptions;
 @end
 
 @implementation TFLNLClassifierTest
@@ -28,38 +28,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp {
   [super setUp];
-  NSBundle* bundle = [NSBundle bundleForClass:[self class]];
-  self.modelPath =
-      [bundle pathForResource:@"test_model_nl_classifier_with_regex_tokenizer"
-                       ofType:@"tflite"];
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  self.modelPath = [bundle pathForResource:@"test_model_nl_classifier_with_regex_tokenizer"
+                                    ofType:@"tflite"];
   self.modelOptions = [[TFLNLClassifierOptions alloc] init];
   [self.modelOptions setInputTensorName:@"input_text"];
   [self.modelOptions setOutputScoreTensorName:@"probability"];
 }
 
 - (void)testClassifyPositiveResult {
-  TFLNLClassifier* nlClassifier =
-      [TFLNLClassifier nlClassifierWithModelPath:self.modelPath
-                                         options:self.modelOptions];
+  TFLNLClassifier *nlClassifier = [TFLNLClassifier nlClassifierWithModelPath:self.modelPath
+                                                                     options:self.modelOptions];
 
   XCTAssertNotNil(nlClassifier);
 
-  NSDictionary<NSString*, NSNumber*>* categories =
-      [nlClassifier classifyWithText:@"This is the best movie I’ve seen in "
-                                     @"recent years. Strongly recommend it!"];
+  NSDictionary<NSString *, NSNumber *> *categories = [nlClassifier
+      classifyWithText:@"This is the best movie I’ve seen in recent years. Strongly recommend it!"];
 
   XCTAssertGreaterThan([categories[@"Positive"] doubleValue],
                        [categories[@"Negative"] doubleValue]);
 }
 
 - (void)testClassifyNegativeResult {
-  TFLNLClassifier* nlClassifier =
-      [TFLNLClassifier nlClassifierWithModelPath:self.modelPath
-                                         options:self.modelOptions];
+  TFLNLClassifier *nlClassifier = [TFLNLClassifier nlClassifierWithModelPath:self.modelPath
+                                                                     options:self.modelOptions];
 
   XCTAssertNotNil(nlClassifier);
 
-  NSDictionary<NSString*, NSNumber*>* categories =
+  NSDictionary<NSString *, NSNumber *> *categories =
       [nlClassifier classifyWithText:@"What a waste of my time."];
 
   XCTAssertGreaterThan([categories[@"Negative"] doubleValue],

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLBertNLClassifier ()
 /** BertNLClassifier backed by C API */
-@property(nonatomic) TfLiteBertNLClassifier* bertNLClassifier;
+@property(nonatomic) TfLiteBertNLClassifier *bertNLClassifier;
 @end
 
 @implementation TFLBertNLClassifier
@@ -34,28 +34,24 @@ NS_ASSUME_NONNULL_BEGIN
   TfLiteBertNLClassifierDelete(_bertNLClassifier);
 }
 
-+ (instancetype)bertNLClassifierWithModelPath:(NSString*)modelPath {
-  TfLiteBertNLClassifier* classifier =
-      TfLiteBertNLClassifierCreate(modelPath.UTF8String);
++ (instancetype)bertNLClassifierWithModelPath:(NSString *)modelPath {
+  TfLiteBertNLClassifier *classifier = TfLiteBertNLClassifierCreate(modelPath.UTF8String);
 
   _GTMDevAssert(classifier, @"Failed to create BertNLClassifier");
   return [[TFLBertNLClassifier alloc] initWithBertNLClassifier:classifier];
 }
 
-+ (instancetype)bertNLClassifierWithModelPath:(NSString*)modelPath
-                                      options:
-                                          (TFLBertNLClassifierOptions*)options {
-  // Note that maxSeqLen has been deprecated. Passing it to the C API is a
-  // no-op.
++ (instancetype)bertNLClassifierWithModelPath:(NSString *)modelPath
+                                  options:(TFLBertNLClassifierOptions *)options {
+  // Note that maxSeqLen has been deprecated. Passing it to the C API is a no-op.
   TfLiteBertNLClassifierOptions cOptions = {.max_seq_len = options.maxSeqLen};
-  TfLiteBertNLClassifier* classifier =
+  TfLiteBertNLClassifier *classifier =
       TfLiteBertNLClassifierCreateFromOptions(modelPath.UTF8String, &cOptions);
   _GTMDevAssert(classifier, @"Failed to create BertNLClassifier");
   return [[TFLBertNLClassifier alloc] initWithBertNLClassifier:classifier];
 }
 
-- (instancetype)initWithBertNLClassifier:
-    (TfLiteBertNLClassifier*)bertNLClassifier {
+- (instancetype)initWithBertNLClassifier:(TfLiteBertNLClassifier *)bertNLClassifier {
   self = [super init];
   if (self) {
     _bertNLClassifier = bertNLClassifier;
@@ -63,11 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (NSDictionary<NSString*, NSNumber*>*)classifyWithText:(NSString*)text {
-  Categories* cCategories =
-      TfLiteBertNLClassifierClassify(_bertNLClassifier, text.UTF8String);
-  NSMutableDictionary<NSString*, NSNumber*>* ret =
-      [NSMutableDictionary dictionary];
+- (NSDictionary<NSString *, NSNumber *> *)classifyWithText:(NSString *)text {
+  Categories *cCategories = TfLiteBertNLClassifierClassify(_bertNLClassifier, text.UTF8String);
+  NSMutableDictionary<NSString *, NSNumber *> *ret = [NSMutableDictionary dictionary];
   for (int i = 0; i < cCategories->size; i++) {
     Category cCategory = cCategories->categories[i];
     [ret setValue:[NSNumber numberWithDouble:cCategory.score]

@@ -1,8 +1,8 @@
 Name: TensorFlow Lite Support
 Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
-Version: v0.3.1
-Date: 2021/12/16
+Version: 27decd8a9f30004d01b1cd5f40f27e7b1be20fa5
+Date: 2022/02/07
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -30,13 +30,13 @@ is a no-op in chromium builds and upsets clang.
 06) [To Be Upstreamed] Remove unused variable in task_utils.h
 07) Do not use absl::any since it is not supported in chromium
 08) [To Be Upstreamed] Remove unused stl include in tokenizer_jni_lib.h
-09) Remove unbuilt files that triggered checkdeps warnings, and fix file perms.
-10) Remove memory mapped file support in external_file_handler.cc since it is
+09) Remove memory mapped file support in external_file_handler.cc since it is
 only available on POSIX systems.
-11) Run clang-format.
+10) Run clang-format.
+11) Remove unbuilt files that triggered checkdeps warnings, and fix file perms.
 12) Remove an unneeded static initializer.
 
-Update Process:
+Update Process (internal: http://shortn/_nwz8liqimy):
 1) Clone the tflite-support github repo at the desired commit into src/
 2) Apply each patch listed above residing in patches/ using `git apply patches/$PATCHFILE`
 3) Get the build working.

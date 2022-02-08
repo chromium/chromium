@@ -190,6 +190,14 @@ class Writer:
   _INPUT_AUDIO_NAME = 'audio'
   _INPUT_AUDIO_DESCRIPTION = 'Input audio clip to be processed.'
 
+  def add_feature_input(self,
+                        name: Optional[str] = None,
+                        description: Optional[str] = None) -> 'Writer':
+    """Marks the next input tensor as a basic feature input."""
+    input_md = metadata_info.TensorMd(name=name, description=description)
+    self._input_mds.append(input_md)
+    return self
+
   def add_audio_input(self,
                       sample_rate: int,
                       channels: int,
@@ -224,7 +232,7 @@ class Writer:
       color_space_type: Optional[
           _metadata_fb.ColorSpaceType] = _metadata_fb.ColorSpaceType.RGB,
       name: str = _INPUT_IMAGE_NAME,
-      description: str = _INPUT_IMAGE_DESCRIPTION):
+      description: str = _INPUT_IMAGE_DESCRIPTION) -> 'Writer':
     """Marks the next input tensor as an image input.
 
     Args:
@@ -260,6 +268,14 @@ class Writer:
 
   _OUTPUT_EMBEDDING_NAME = 'embedding'
   _OUTPUT_EMBEDDING_DESCRIPTION = 'Embedding vector of the input.'
+
+  def add_feature_output(self,
+                         name: Optional[str] = None,
+                         description: Optional[str] = None) -> 'Writer':
+    """Marks the next input tensor as a basic feature output."""
+    output_md = metadata_info.TensorMd(name=name, description=description)
+    self._output_mds.append(output_md)
+    return self
 
   def add_embedding_output(self,
                            name: str = _OUTPUT_EMBEDDING_NAME,
@@ -297,7 +313,7 @@ class Writer:
       labels: Labels,
       score_calibration: Optional[ScoreCalibration] = None,
       name=_OUTPUT_CLASSIFICATION_NAME,
-      description=_OUTPUT_CLASSIFICATION_DESCRIPTION):
+      description=_OUTPUT_CLASSIFICATION_DESCRIPTION) -> 'Writer':
     """Marks model's next output tensor as a classification head.
 
     Example usage:

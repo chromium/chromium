@@ -102,3 +102,17 @@ cc_library(
         "//tensorflow_lite_support/cc/task/vision/proto:embeddings_proto_inc",
     ],
 )
+
+proto_library(
+    name = "text_embedder_options_proto",
+    srcs = ["text_embedder_options.proto"],
+    deps = [
+        "//tensorflow_lite_support/cc/task/core/proto:base_options_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_proto",
+    ],
+)
+
+support_cc_proto_library(
+    name = "text_embedder_options_cc_proto",
+    deps = [":text_embedder_options_proto"],
+)

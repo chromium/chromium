@@ -1,3 +1,5 @@
+load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_py_proto_library")
+
 package(
     default_visibility = [
         "//visibility:public",
@@ -54,6 +56,13 @@ cc_proto_library(
     ],
 )
 
+support_py_proto_library(
+    name = "embedding_options_py_pb2",
+    srcs = ["embedding_options.proto"],
+    api_version = 2,
+    proto_deps = [":embedding_options_proto"],
+)
+
 proto_library(
     name = "classification_options_proto",
     srcs = ["classification_options.proto"],
@@ -64,4 +73,14 @@ cc_proto_library(
     deps = [
         ":classification_options_proto",
     ],
+)
+
+java_lite_proto_library(
+    name = "classification_options_java_proto_lite",
+    deps = [":classification_options_proto"],
+)
+
+java_lite_proto_library(
+    name = "embedding_options_java_proto_lite",
+    deps = [":embedding_options_proto"],
 )

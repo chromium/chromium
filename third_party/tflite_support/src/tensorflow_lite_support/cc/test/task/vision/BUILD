@@ -41,6 +41,7 @@ cc_test_with_tflite(
         "@com_google_absl//absl/strings:cord",
         "@org_tensorflow//tensorflow/lite:framework",
         "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/experimental/acceleration/mini_benchmark:mini_benchmark_implementation",  # Activating mini-benchmark
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
 )

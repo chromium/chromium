@@ -1,7 +1,7 @@
-From 4b7e971e2f2f6ef3fd394858d975b64479047872 Mon Sep 17 00:00:00 2001
+From b5c9f0bb86abe933cada611e9d43f73280c5b227 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Mon, 20 Dec 2021 08:50:35 -0800
-Subject: [PATCH 10/11] only support model file passed in from mem
+Date: Mon, 7 Feb 2022 12:14:41 -0800
+Subject: [PATCH 09/12] only support model file passed in from mem
 
 ---
  .../cc/task/core/external_file_handler.cc     | 143 ++----------------
@@ -261,5 +261,5 @@ index 9b44c6e5c022a..53dabdc4841d7 100644
  
  #include "absl/memory/memory.h"  // from @com_google_absl
 -- 
-2.34.1.307.g9b7440fafd-goog
+2.35.0.263.gb82422642f-goog
 

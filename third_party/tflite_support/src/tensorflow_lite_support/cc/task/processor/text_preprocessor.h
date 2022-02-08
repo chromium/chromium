@@ -43,7 +43,7 @@ class TextPreprocessor : public Preprocessor {
       tflite::task::core::TfLiteEngine* engine,
       const std::initializer_list<int> input_tensor_indices);
 
-  absl::Status Preprocess(const std::string& text);
+  virtual absl::Status Preprocess(const std::string& text) = 0;
 
  protected:
   using Preprocessor::Preprocessor;

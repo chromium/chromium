@@ -46,3 +46,22 @@ cc_test(
         "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
     ],
 )
+
+cc_test(
+    name = "text_embedder_test",
+    srcs = ["text_embedder_test.cc"],
+    data = [
+        "//tensorflow_lite_support/cc/test/testdata/task/text:mobilebert_embedding_with_metadata",
+        "//tensorflow_lite_support/cc/test/testdata/task/text:regex_embedding_with_metadata",
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc/port:gtest_main",
+        "//tensorflow_lite_support/cc/task/core/proto:base_options_proto_inc",
+        "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/text:text_embedder",
+        "//tensorflow_lite_support/cc/test:test_utils",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+    ],
+)

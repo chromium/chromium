@@ -15,7 +15,7 @@
 #import <Foundation/Foundation.h>
 
 #include "tensorflow_lite_support/c/task/vision/core/frame_buffer.h"
-#import "third_party/tensorflow_lite_support/odml/ios/image/apis/GMLImage.h"
+#import "tensorflow_lite_support/odml/ios/image/apis/GMLImage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The TfLiteFrameBuffer created from the gmlImage which can be used
  * with the TF Lite Task Vision C library.
  */
-+ (nullable TfLiteFrameBuffer*)cFrameBufferFromGMLImage:(GMLImage*)gmlImage
++ (nullable TfLiteFrameBuffer*)cFrameBufferWithGMLImage:(GMLImage*)gmlImage
                                                   error:(NSError* _Nullable*)
                                                             error;
 

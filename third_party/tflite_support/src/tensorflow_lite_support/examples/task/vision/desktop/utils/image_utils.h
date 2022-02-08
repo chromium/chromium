@@ -19,6 +19,7 @@ limitations under the License.
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
+#include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 
 namespace tflite {
 namespace task {
@@ -51,6 +52,9 @@ absl::Status EncodeImageToPngFile(const ImageData& image_data,
 // Releases image pixel data memory.
 void ImageDataFree(ImageData* image);
 
+// Creates the FrameBuffer object from the ImageData object.
+tflite::support::StatusOr<std::unique_ptr<FrameBuffer>>
+CreateFrameBufferFromImageData(const ImageData& image);
 }  // namespace vision
 }  // namespace task
 }  // namespace tflite

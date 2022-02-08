@@ -20,6 +20,7 @@ cc_library_with_tflite(
         "@org_tensorflow//tensorflow/lite/core/shims:builtin_ops",
         "//tensorflow_lite_support/cc/task/core:base_task_api",
         "//tensorflow_lite_support/cc/task/core:task_api_factory",
+        "//tensorflow_lite_support/cc/task/processor:regex_preprocessor",
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
@@ -28,10 +29,7 @@ cc_library_with_tflite(
         "//tensorflow_lite_support/cc/task/core:category",
         "//tensorflow_lite_support/cc/task/core:task_utils",
         "//tensorflow_lite_support/cc/task/text/proto:nl_classifier_options_proto_inc",
-        "//tensorflow_lite_support/cc/text/tokenizers:regex_tokenizer",
-        "//tensorflow_lite_support/cc/text/tokenizers:tokenizer",
         "//tensorflow_lite_support/cc/utils:common_utils",
-        "//tensorflow_lite_support/metadata/cc:metadata_extractor",
         "@com_google_absl//absl/algorithm:container",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/status",

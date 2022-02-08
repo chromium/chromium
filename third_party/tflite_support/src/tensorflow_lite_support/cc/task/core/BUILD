@@ -64,6 +64,7 @@ cc_library_with_tflite(
 
 cc_library_with_tflite(
     name = "task_api_factory",
+    srcs = ["task_api_factory.cc"],
     hdrs = ["task_api_factory.h"],
     tflite_deps = [
         ":base_task_api",

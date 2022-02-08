@@ -20,7 +20,7 @@ limitations under the License.
 #include "absl/memory/memory.h"        // from @com_google_absl
 #include "absl/strings/str_format.h"   // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+#include "flatbuffers/flatbuffers.h"   // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
@@ -124,7 +124,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
       ModelMetadataExtractor::FindFirstAssociatedFileName(
           tensor_metadata, tflite::AssociatedFileType_TENSOR_AXIS_LABELS,
           locale);
-  absl::string_view display_names_file = nullptr;
+  absl::string_view display_names_file = {};
   if (!display_names_filename.empty()) {
     ASSIGN_OR_RETURN(display_names_file, metadata_extractor.GetAssociatedFile(
                                              display_names_filename));

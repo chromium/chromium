@@ -30,9 +30,8 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLClassificationOptions* classificationOptions =
-      [[TFLClassificationOptions alloc] init];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLClassificationOptions *classificationOptions = [[TFLClassificationOptions alloc] init];
 
   [classificationOptions setScoreThreshold:self.scoreThreshold];
   [classificationOptions setMaxResults:self.maxResults];

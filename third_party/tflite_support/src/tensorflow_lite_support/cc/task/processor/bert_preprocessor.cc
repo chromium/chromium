@@ -32,7 +32,7 @@ using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
 using ::tflite::support::text::tokenizer::CreateTokenizerFromProcessUnit;
 using ::tflite::support::text::tokenizer::TokenizerResult;
-using ::tflite::task::core::FindIndexByMetadataTensorName;
+using ::tflite::task::core::FindTensorIndexByMetadataName;
 using ::tflite::task::core::PopulateTensor;
 
 constexpr int kTokenizerProcessUnitIndex = 0;
@@ -63,15 +63,15 @@ absl::Status BertPreprocessor::Init() {
   // Identify the tensor index for three Bert input tensors.
   auto tensors_metadata = GetMetadataExtractor()->GetInputTensorMetadata();
   int ids_tensor_index =
-      FindIndexByMetadataTensorName(tensors_metadata, kIdsTensorName);
+      FindTensorIndexByMetadataName(tensors_metadata, kIdsTensorName);
   ids_tensor_index_ =
       ids_tensor_index == -1 ? tensor_indices_[0] : ids_tensor_index;
   int mask_tensor_index =
-      FindIndexByMetadataTensorName(tensors_metadata, kMaskTensorName);
+      FindTensorIndexByMetadataName(tensors_metadata, kMaskTensorName);
   mask_tensor_index_ =
       mask_tensor_index == -1 ? tensor_indices_[1] : mask_tensor_index;
   int segment_ids_tensor_index =
-      FindIndexByMetadataTensorName(tensors_metadata, kSegmentIdsTensorName);
+      FindTensorIndexByMetadataName(tensors_metadata, kSegmentIdsTensorName);
   segment_ids_tensor_index_ = segment_ids_tensor_index == -1
                                   ? tensor_indices_[2]
                                   : segment_ids_tensor_index;
