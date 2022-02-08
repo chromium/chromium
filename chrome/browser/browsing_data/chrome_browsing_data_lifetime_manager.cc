@@ -43,6 +43,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#else
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
 namespace {
@@ -227,6 +231,14 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
     }
     for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
       result.insert(browser->tab_strip_model()->GetWebContentsAt(i)->GetURL());
+    }
+  }
+#else
+  for (const TabModel* model : TabModelList::models()) {
+    for (int index = 0; index < model->GetTabCount(); ++index) {
+      TabAndroid* tab = model->GetTabAt(index);
+      if (tab)
+        result.insert(tab->GetURL());
     }
   }
 #endif
