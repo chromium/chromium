@@ -5,12 +5,16 @@
 #include "components/autofill_assistant/content/renderer/autofill_assistant_agent.h"
 
 #include "base/time/time.h"
-#include "components/autofill_assistant/content/renderer/autofill_assistant_model_executor.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/autofill_assistant/node_signals.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/autofill_assistant/content/renderer/autofill_assistant_model_executor.h"
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace autofill_assistant {
 
@@ -87,6 +91,7 @@ void AutofillAssistantAgent::OnGetModelFile(base::Time start_time,
 
   std::vector<NodeData> nodes;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   AutofillAssistantModelExecutor model_executor;
   if (!model_executor.InitializeModelFromFile(std::move(model))) {
     std::move(callback).Run(false, nodes);
@@ -113,6 +118,7 @@ void AutofillAssistantAgent::OnGetModelFile(base::Time start_time,
       << " nodes): "
       << (on_node_signals_evaluated - on_executor_initialized).InMilliseconds()
       << "ms";
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   std::move(callback).Run(true, nodes);
 }

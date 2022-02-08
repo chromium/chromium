@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("model_metadata_proto") {
@@ -12,8 +13,6 @@ static_library("renderer") {
   sources = [
     "autofill_assistant_agent.cc",
     "autofill_assistant_agent.h",
-    "autofill_assistant_model_executor.cc",
-    "autofill_assistant_model_executor.h",
   ]
 
   deps = [
@@ -21,7 +20,7 @@ static_library("renderer") {
     "//base",
     "//components/autofill_assistant/content/common:common",
     "//components/autofill_assistant/content/common:mojo_interfaces",
-    "//components/optimization_guide/core:model_executor",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//content/public/common:common",
     "//content/public/renderer:renderer",
     "//mojo/public/cpp/bindings",
@@ -29,17 +28,29 @@ static_library("renderer") {
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
   ]
-  public_deps = [
-    "//third_party/tflite",
-    "//third_party/tflite:tflite_public_headers",
-    "//third_party/tflite_support",
-    "//third_party/tflite_support:tflite_support_proto",
-  ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "autofill_assistant_model_executor.cc",
+      "autofill_assistant_model_executor.h",
+    ]
+    deps += [ "//components/optimization_guide/core:model_executor" ]
+    public_deps = [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_assistant_model_executor_unittest.cc" ]
+  sources = []
+
+  if (build_with_tflite_lib) {
+    sources += [ "autofill_assistant_model_executor_unittest.cc" ]
+  }
 
   deps = [
     ":renderer",
@@ -51,7 +62,11 @@ source_set("unit_tests") {
 
 source_set("browser_tests") {
   testonly = true
-  sources = [ "autofill_assistant_agent_browsertest.cc" ]
+  sources = []
+
+  if (build_with_tflite_lib) {
+    sources += [ "autofill_assistant_agent_browsertest.cc" ]
+  }
 
   deps = [
     ":renderer",
