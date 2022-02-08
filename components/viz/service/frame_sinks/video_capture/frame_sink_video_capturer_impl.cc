@@ -806,19 +806,24 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   }
 
   // The oracle only keeps track of the source size, which should be the
-  // size of the capture region. If the capture region is empty, we shouldn't
-  // capture.
+  // size of the capture region. If the capture region is empty or if the
+  // capture region isn't a subset of the entire compositor frame region, we
+  // shouldn't capture.
+  const gfx::Rect compositor_frame_region =
+      resolved_target_->GetCopyOutputRequestRegion(VideoCaptureSubTarget{});
   const gfx::Rect capture_region =
       resolved_target_->GetCopyOutputRequestRegion(target_->sub_target);
-  if (capture_region.IsEmpty()) {
+
+  // This like means that the compositor frame is being resized but the surface
+  // hasn't been redrawn yet.
+  if (!compositor_frame_region.Contains(capture_region))
     return;
-  }
+
   DCHECK(capture_region.size() == source_size);
   CaptureRequestProperties request_properties(
       capture_frame_number, oracle_frame_number, content_version_, content_rect,
-      capture_region,
-      resolved_target_->GetCopyOutputRequestRegion(VideoCaptureSubTarget{}),
-      std::move(frame), base::TimeTicks::Now());
+      capture_region, compositor_frame_region, std::move(frame),
+      base::TimeTicks::Now());
 
   const bool use_nv12_with_textures =
       buffer_format_preference_ ==

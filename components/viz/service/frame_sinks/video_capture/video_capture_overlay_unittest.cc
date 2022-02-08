@@ -224,6 +224,21 @@ TEST_F(VideoCaptureOverlayTest, DoesNotRenderIfCompletelyOutOfBounds) {
           .format = kI420Format}));
 }
 
+TEST_F(VideoCaptureOverlayTest, DoesNotRenderIfEmptyBlitRect) {
+  constexpr gfx::Size kSize = gfx::Size(100, 200);
+  constexpr gfx::Rect kFrameRect = gfx::Rect(kSize);
+  EXPECT_CALL(*frame_source(), GetSourceSize()).WillRepeatedly(Return(kSize));
+  std::unique_ptr<VideoCaptureOverlay> overlay = CreateOverlay();
+
+  overlay->SetImageAndBounds(MakeTestBitmap(0), gfx::RectF(1, 1, 1, 1));
+  EXPECT_FALSE(
+      overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
+          .compositor_region = kFrameRect,
+          .sub_region = kFrameRect,
+          .content_region = gfx::Rect(0, 0, 50, 100),
+          .format = kI420Format}));
+}
+
 // Tests that that MakeCombinedRenderer() only makes a OnceRenderer when one or
 // more overlays are set to make visible changes to a video frame.
 TEST_F(VideoCaptureOverlayTest,

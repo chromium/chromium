@@ -193,6 +193,9 @@ VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
 
   gfx::Rect blit_rect = bounds_in_target;
   blit_rect.Intersect(properties.content_region);
+  if (blit_rect.IsEmpty())
+    return {};
+
   return base::BindOnce(&Sprite::Blit, sprite_, bounds_in_target.origin(),
                         blit_rect);
 }
@@ -201,9 +204,8 @@ VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
 VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeCombinedRenderer(
     const std::vector<VideoCaptureOverlay*>& overlays,
     const CapturedFrameProperties& properties) {
-  if (overlays.empty()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+  if (overlays.empty())
+    return {};
 
   std::vector<OnceRenderer> renderers;
   for (VideoCaptureOverlay* overlay : overlays) {
@@ -213,9 +215,8 @@ VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeCombinedRenderer(
     }
   }
 
-  if (renderers.empty()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+  if (renderers.empty())
+    return {};
 
   return base::BindOnce(
       [](std::vector<OnceRenderer> renderers, VideoFrame* frame) {
@@ -234,7 +235,7 @@ gfx::Rect VideoCaptureOverlay::ComputeSourceMutationRect() const {
     result.Intersect(gfx::Rect(source_size));
     return result;
   }
-  return gfx::Rect();
+  return {};
 }
 
 VideoCaptureOverlay::Sprite::Sprite(const SkBitmap& image,
