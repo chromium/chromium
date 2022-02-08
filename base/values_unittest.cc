@@ -1534,8 +1534,8 @@ TEST(ValuesTest, DictionaryWithoutPathExpansion) {
   dict.Set("this.is.expanded", std::make_unique<Value>());
   dict.SetKey("this.isnt.expanded", Value());
 
-  EXPECT_FALSE(dict.HasKey("this.is.expanded"));
-  EXPECT_TRUE(dict.HasKey("this"));
+  EXPECT_FALSE(dict.FindKey("this.is.expanded"));
+  EXPECT_TRUE(dict.FindKey("this"));
   Value* value1;
   EXPECT_TRUE(dict.Get("this", &value1));
   DictionaryValue* value2;
@@ -1543,7 +1543,7 @@ TEST(ValuesTest, DictionaryWithoutPathExpansion) {
   EXPECT_EQ(value1, value2);
   EXPECT_EQ(1U, value2->DictSize());
 
-  EXPECT_TRUE(dict.HasKey("this.isnt.expanded"));
+  EXPECT_TRUE(dict.FindKey("this.isnt.expanded"));
   Value* value3;
   EXPECT_FALSE(dict.Get("this.isnt.expanded", &value3));
   Value* value4 = dict.FindKey("this.isnt.expanded");
@@ -1558,8 +1558,8 @@ TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
   dict.Set("this.is.expanded", std::make_unique<Value>());
   dict.SetWithoutPathExpansion("this.isnt.expanded", std::make_unique<Value>());
 
-  EXPECT_FALSE(dict.HasKey("this.is.expanded"));
-  EXPECT_TRUE(dict.HasKey("this"));
+  EXPECT_FALSE(dict.FindKey("this.is.expanded"));
+  EXPECT_TRUE(dict.FindKey("this"));
   Value* value1;
   EXPECT_TRUE(dict.Get("this", &value1));
   DictionaryValue* value2;
@@ -1567,7 +1567,7 @@ TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
   EXPECT_EQ(value1, value2);
   EXPECT_EQ(1U, value2->DictSize());
 
-  EXPECT_TRUE(dict.HasKey("this.isnt.expanded"));
+  EXPECT_TRUE(dict.FindKey("this.isnt.expanded"));
   Value* value3;
   EXPECT_FALSE(dict.Get("this.isnt.expanded", &value3));
   Value* value4 = dict.FindKey("this.isnt.expanded");
@@ -1683,7 +1683,7 @@ TEST(ValuesTest, DeepCopy) {
   DictionaryValue* copy_nested_dictionary = nullptr;
   ASSERT_TRUE(copy_value->GetAsDictionary(&copy_nested_dictionary));
   ASSERT_TRUE(copy_nested_dictionary);
-  EXPECT_TRUE(copy_nested_dictionary->HasKey("key"));
+  EXPECT_TRUE(copy_nested_dictionary->FindKey("key"));
 }
 
 TEST(ValuesTest, Equals) {
