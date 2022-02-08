@@ -392,6 +392,8 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     // This is a workaround for https://crbug.com/622151.
     // In HTC's email app, InputConnection.setComposingText() will call WebView.evaluateJavaScript,
     // and thread assertion will occur. We turn off WebView thread assertion for this app.
+    // SuppressLint rationale: https://crrev.com/c/3439168/comments/d612ae09_b7bfca2b
+    @SuppressLint("SoonBlockedPrivateApi")
     private void disableThreadChecking() {
         try {
             Class<?> webViewClass = Class.forName("android.webkit.WebView");

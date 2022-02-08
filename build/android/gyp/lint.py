@@ -167,12 +167,6 @@ def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
     for node in extra_app_node:
       app_node.append(node)
 
-  if app_node.find(
-      '{%s}allowBackup' % manifest_utils.ANDROID_NAMESPACE) is None:
-    # Assume no backup is intended, appeases AllowBackup lint check and keeping
-    # it working for manifests that do define android:allowBackup.
-    app_node.set('{%s}allowBackup' % manifest_utils.ANDROID_NAMESPACE, 'false')
-
   uses_sdk = manifest.find('./uses-sdk')
   if uses_sdk is None:
     uses_sdk = ElementTree.Element('uses-sdk')
@@ -226,7 +220,10 @@ def _RunLint(create_cache,
 
   cmd = [
       lint_binary_path,
-      # Uncomment to update baseline files during lint upgrades.
+      # Uncomment to update baseline files during lint upgrades. Avoid using
+      # for now since it seems to downgrade baseline format from 6 to 5. Until
+      # that is fixed, remove the baseline and re-run lint instead (remember
+      # to remove the LintError entry before committing).
       #'--update-baseline',
       # Uncomment to easily remove fixed lint errors. This is not turned on by
       # default due to: https://crbug.com/1256477#c5
