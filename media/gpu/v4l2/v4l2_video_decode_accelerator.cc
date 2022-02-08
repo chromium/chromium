@@ -73,6 +73,16 @@
 
 namespace media {
 
+namespace {
+
+bool IsVp9KSVCStream(uint32_t input_format_fourcc,
+                     const DecoderBuffer& decoder_buffer) {
+  return input_format_fourcc == V4L2_PIX_FMT_VP9 &&
+         decoder_buffer.side_data_size() > 0;
+}
+
+}  // namespace
+
 // static
 const uint32_t V4L2VideoDecodeAccelerator::supported_input_fourccs_[] = {
     V4L2_PIX_FMT_H264, V4L2_PIX_FMT_VP8, V4L2_PIX_FMT_VP9,
@@ -856,6 +866,12 @@ void V4L2VideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
 
   if (IsDestroyPending())
     return;
+
+  if (IsVp9KSVCStream(input_format_fourcc_, *buffer)) {
+    LOG(ERROR) << "VDA does not support decoding VP9 k-SVC stream";
+    NOTIFY_ERROR(PLATFORM_FAILURE);
+    return;
+  }
 
   std::unique_ptr<BitstreamBufferRef> bitstream_record(new BitstreamBufferRef(
       decode_client_, decode_task_runner_, std::move(buffer), bitstream_id));

@@ -11,10 +11,12 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/macros.h"
@@ -25,6 +27,20 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
+
+namespace {
+
+bool IsVp9KSVCStream(VideoCodecProfile profile,
+                     const DecoderBuffer& decoder_buffer) {
+  return VideoCodecProfileToVideoCodec(profile) == VideoCodec::kVP9 &&
+         decoder_buffer.side_data_size() > 0;
+}
+
+bool IsVp9KSVCSupportedDriver(const std::string& driver_name) {
+  const std::string kVP9KSVCSupportedDrivers[] = {"qcom-venus"};
+  return base::Contains(kVP9KSVCSupportedDrivers, driver_name);
+}
+}  // namespace
 
 V4L2StatefulVideoDecoderBackend::DecodeRequest::DecodeRequest(
     scoped_refptr<DecoderBuffer> buf,
@@ -51,6 +67,7 @@ V4L2StatefulVideoDecoderBackend::V4L2StatefulVideoDecoderBackend(
     const VideoColorSpace& color_space,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : V4L2VideoDecoderBackend(client, std::move(device)),
+      driver_name_(device_->GetDriverName()),
       profile_(profile),
       color_space_(color_space),
       task_runner_(task_runner) {
@@ -157,9 +174,23 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
     current_decode_request_ = std::move(decode_request);
     DCHECK_EQ(current_decode_request_->bytes_used, 0u);
 
-    if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kVP9 &&
-        !AppendVP9SuperFrameIndexIfNeeded(current_decode_request_->buffer)) {
-      VLOGF(1) << "Failed to append superframe index for VP9 k-SVC frame";
+    if (IsVp9KSVCStream(profile_, *current_decode_request_->buffer)) {
+      if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
+        DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
+        client_->OnBackendError();
+        return;
+      }
+      if (!IsVp9KSVCSupportedDriver(driver_name_)) {
+        DLOG(ERROR) << driver_name_ << " doesn't support VP9 k-SVC decoding";
+        client_->OnBackendError();
+        return;
+      }
+
+      if (!AppendVP9SuperFrameIndex(current_decode_request_->buffer)) {
+        LOG(ERROR) << "Failed to append superframe index for VP9 k-SVC frame";
+        client_->OnBackendError();
+        return;
+      }
     }
   }
 

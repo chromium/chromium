@@ -1524,6 +1524,18 @@ scoped_refptr<V4L2Device> V4L2Device::Create() {
   return nullptr;
 }
 
+std::string V4L2Device::GetDriverName() {
+  struct v4l2_capability caps;
+  memset(&caps, 0, sizeof(caps));
+  if (Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
+    VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP"
+              << ", caps check failed: 0x" << std::hex << caps.capabilities;
+    return "";
+  }
+
+  return std::string(reinterpret_cast<const char*>(caps.driver));
+}
+
 // static
 uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
                                                    bool slice_based) {

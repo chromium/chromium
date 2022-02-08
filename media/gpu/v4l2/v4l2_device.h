@@ -644,6 +644,9 @@ class MEDIA_GPU_EXPORT V4L2Device
   // The device will be closed in the destructor.
   virtual bool Open(Type type, uint32_t v4l2_pixfmt) = 0;
 
+  // Returns the driver name.
+  std::string GetDriverName();
+
   // Returns the V4L2Queue corresponding to the requested |type|, or nullptr
   // if the requested queue type is not supported.
   scoped_refptr<V4L2Queue> GetQueue(enum v4l2_buf_type type);

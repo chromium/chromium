@@ -63,7 +63,7 @@ TEST(V4L2StatefulWorkaroundTest, CheckSuperFrameIndexSize) {
         DecoderBuffer::CopyFrom(tmp_buffer.data(), tmp_buffer.size());
     AppendSideData(*decoder_buffer, frame_sizes);
 
-    AppendVP9SuperFrameIndexIfNeeded(decoder_buffer);
+    AppendVP9SuperFrameIndex(decoder_buffer);
     if (frame_sizes.size() == 1) {
       EXPECT_EQ(decoder_buffer->data_size(), buffer_size);
       continue;
@@ -110,7 +110,7 @@ TEST(V4L2StatefulWorkaroundTest, ParseAppendedSuperFrameIndex) {
         DecoderBuffer::CopyFrom(merged_buffer.data(), merged_buffer.size());
     AppendSideData(*decoder_buffer, frame_sizes);
 
-    AppendVP9SuperFrameIndexIfNeeded(decoder_buffer);
+    AppendVP9SuperFrameIndex(decoder_buffer);
 
     Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
     vp9_parser.SetStream(decoder_buffer->data(), decoder_buffer->data_size(),
