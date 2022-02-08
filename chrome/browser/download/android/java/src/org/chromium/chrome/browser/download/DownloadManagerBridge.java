@@ -37,7 +37,6 @@ import java.util.concurrent.RejectedExecutionException;
 public class DownloadManagerBridge {
     private static final String TAG = "DownloadDelegate";
     private static final String DOWNLOAD_DIRECTORY = "Download";
-    private static final long INVALID_SYSTEM_DOWNLOAD_ID = -1;
     private static final String DOWNLOAD_ID_MAPPINGS_FILE_NAME = "download_id_mappings";
     private static final Object sLock = new Object();
 
@@ -78,7 +77,7 @@ public class DownloadManagerBridge {
 
     /** Contains the results from the call to {@link DownloadManagerBridge.enqueueNewDownload}. */
     public static class DownloadEnqueueResponse {
-        public long downloadId = INVALID_SYSTEM_DOWNLOAD_ID;
+        public long downloadId = DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID;
         public boolean result;
         public int failureReason;
         public long startTime;
@@ -96,11 +95,13 @@ public class DownloadManagerBridge {
         assert VERSION.SDK_INT < VERSION_CODES.Q
             : "addCompletedDownload is deprecated in Q, may cause crash.";
         long downloadId = getDownloadIdForDownloadGuid(downloadGuid);
-        if (downloadId != DownloadConstants.INVALID_DOWNLOAD_ID) return downloadId;
+        if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID) return downloadId;
 
         downloadId = DownloadUtils.addCompletedDownload(
                 fileName, description, mimeType, filePath, fileSizeBytes, originalUrl, referer);
-        addDownloadIdMapping(downloadId, downloadGuid);
+        if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID) {
+            addDownloadIdMapping(downloadId, downloadGuid);
+        }
         return downloadId;
     }
 
@@ -116,7 +117,7 @@ public class DownloadManagerBridge {
 
             // Let Android DownloadManager to remove download only if the user removed the file in
             // Chrome. If the user renamed or moved the file, Chrome should keep it intact.
-            if (downloadId != INVALID_SYSTEM_DOWNLOAD_ID && !externallyRemoved) {
+            if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID && !externallyRemoved) {
                 DownloadManager manager =
                         (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
                 manager.remove(downloadId);
@@ -210,7 +211,8 @@ public class DownloadManagerBridge {
     /** @return The android DownloadManager's download ID for the given download. */
     public static long getDownloadIdForDownloadGuid(String downloadGuid) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return getSharedPreferences().getLong(downloadGuid, INVALID_SYSTEM_DOWNLOAD_ID);
+            return getSharedPreferences().getLong(
+                    downloadGuid, DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID);
         }
     }
 
@@ -235,11 +237,12 @@ public class DownloadManagerBridge {
      *         INVALID_SYSTEM_DOWNLOAD_ID if it is not found.
      */
     private static long removeDownloadIdMapping(String downloadGuid) {
-        long downloadId = INVALID_SYSTEM_DOWNLOAD_ID;
+        long downloadId = DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID;
         synchronized (sLock) {
             SharedPreferences sharedPrefs = getSharedPreferences();
-            downloadId = sharedPrefs.getLong(downloadGuid, INVALID_SYSTEM_DOWNLOAD_ID);
-            if (downloadId != INVALID_SYSTEM_DOWNLOAD_ID) {
+            downloadId =
+                    sharedPrefs.getLong(downloadGuid, DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID);
+            if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID) {
                 SharedPreferences.Editor editor = sharedPrefs.edit();
                 editor.remove(downloadGuid);
                 editor.apply();
