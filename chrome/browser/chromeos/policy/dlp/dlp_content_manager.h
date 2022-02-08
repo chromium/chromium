@@ -23,7 +23,6 @@
 
 namespace content {
 struct DesktopMediaID;
-struct WebContentsMediaCaptureId;
 class WebContents;
 }  // namespace content
 
@@ -122,6 +121,7 @@ class DlpContentManager : public DlpContentObserver {
     const std::string& GetLabel() const;
     const std::u16string& GetApplicationTitle() const;
     bool IsRunning() const;
+    base::WeakPtr<content::WebContents> GetWebContents() const;
 
     // Pauses a running screen share.
     // No-op if the screen share is already paused.
@@ -169,6 +169,9 @@ class DlpContentManager : public DlpContentObserver {
     NotificationState notification_state_ =
         NotificationState::kNotShowingNotification;
 
+    // Set only for tab shares.
+    base::WeakPtr<content::WebContents> web_contents_;
+
     base::WeakPtrFactory<ScreenShareInfo> weak_factory_{this};
   };
 
@@ -197,6 +200,11 @@ class DlpContentManager : public DlpContentObserver {
       DlpReportingManager* reporting_manager,
       bool should_proceed);
 
+  // Retrieves WebContents from |media_id| for tab shares. Otherwise returns
+  // nullptr.
+  static content::WebContents* GetWebContentsFromMediaId(
+      const content::DesktopMediaID& media_id);
+
   // Initializing to be called separately to make testing possible.
   virtual void Init();
 
@@ -214,10 +222,9 @@ class DlpContentManager : public DlpContentObserver {
   RestrictionLevelAndUrl GetPrintingRestrictionInfo(
       content::WebContents* web_contents) const;
 
-  // Returns confidential info for screen share of a single WebContents with
-  // |web_contents_id|.
+  // Returns confidential info for screen share of a single |web_contents|.
   ConfidentialContentsInfo GetScreenShareConfidentialContentsInfoForWebContents(
-      const content::WebContentsMediaCaptureId& web_contents_id) const;
+      content::WebContents* web_contents) const;
 
   // Applies retrieved restrictions in |info| to screens share attempt from
   // app |application_title| and calls the |callback| with a result.
@@ -227,9 +234,10 @@ class DlpContentManager : public DlpContentObserver {
 
   // Returns which level, url, and information about visible confidential
   // contents of screen share restriction that is currently enforced for
-  // |media_id|.
+  // |media_id|. |web_contents| is not null for tab shares.
   virtual ConfidentialContentsInfo GetScreenShareConfidentialContentsInfo(
-      const content::DesktopMediaID& media_id) const = 0;
+      const content::DesktopMediaID& media_id,
+      content::WebContents* web_contents) const = 0;
 
   // Adds screen share to be tracked in |running_screen_shares_|.
   void AddScreenShare(

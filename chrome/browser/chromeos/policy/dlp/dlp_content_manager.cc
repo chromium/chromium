@@ -173,7 +173,10 @@ DlpContentManager::ScreenShareInfo::ScreenShareInfo(
       media_id_(media_id),
       application_title_(application_title),
       stop_callback_(std::move(stop_callback)),
-      state_change_callback_(std::move(state_change_callback)) {}
+      state_change_callback_(std::move(state_change_callback)) {
+  auto* web_contents = GetWebContentsFromMediaId(media_id);
+  web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
+}
 
 DlpContentManager::ScreenShareInfo::~ScreenShareInfo() {
   // Hide notifications if necessary.
@@ -208,6 +211,11 @@ const std::u16string& DlpContentManager::ScreenShareInfo::GetApplicationTitle()
 
 bool DlpContentManager::ScreenShareInfo::IsRunning() const {
   return state_ == State::kRunning;
+}
+
+base::WeakPtr<content::WebContents>
+DlpContentManager::ScreenShareInfo::GetWebContents() const {
+  return web_contents_;
 }
 
 void DlpContentManager::ScreenShareInfo::Pause() {
@@ -320,6 +328,17 @@ bool DlpContentManager::MaybeReportWarningProceededEvent(
   return should_proceed;
 }
 
+// static
+content::WebContents* DlpContentManager::GetWebContentsFromMediaId(
+    const content::DesktopMediaID& media_id) {
+  if (media_id.type != content::DesktopMediaID::Type::TYPE_WEB_CONTENTS)
+    return nullptr;
+  return content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(
+          media_id.web_contents_id.render_process_id,
+          media_id.web_contents_id.main_render_frame_id));
+}
+
 void DlpContentManager::Init() {
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -370,12 +389,7 @@ RestrictionLevelAndUrl DlpContentManager::GetPrintingRestrictionInfo(
 
 DlpContentManager::ConfidentialContentsInfo
 DlpContentManager::GetScreenShareConfidentialContentsInfoForWebContents(
-    const content::WebContentsMediaCaptureId& web_contents_id) const {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(
-              web_contents_id.render_process_id,
-              web_contents_id.main_render_frame_id));
+    content::WebContents* web_contents) const {
   ConfidentialContentsInfo info;
   if (web_contents && !web_contents->IsBeingDestroyed()) {
     info.restriction_info =
@@ -462,8 +476,8 @@ void DlpContentManager::RemoveScreenShare(
 
 void DlpContentManager::CheckRunningScreenShares() {
   for (auto& screen_share : running_screen_shares_) {
-    ConfidentialContentsInfo info =
-        GetScreenShareConfidentialContentsInfo(screen_share->GetMediaId());
+    ConfidentialContentsInfo info = GetScreenShareConfidentialContentsInfo(
+        screen_share->GetMediaId(), screen_share->GetWebContents().get());
     if (IsBlocked(info.restriction_info)) {
       if (screen_share->IsRunning()) {
         screen_share->Pause();

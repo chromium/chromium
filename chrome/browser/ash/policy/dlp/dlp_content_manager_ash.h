@@ -141,7 +141,8 @@ class DlpContentManagerAsh : public DlpContentManager,
   void OnVisibilityChanged(content::WebContents* web_contents) override;
   void RemoveFromConfidential(content::WebContents* web_contents) override;
   ConfidentialContentsInfo GetScreenShareConfidentialContentsInfo(
-      const content::DesktopMediaID& media_id) const override;
+      const content::DesktopMediaID& media_id,
+      content::WebContents* web_contents) const override;
 
   // Updates |on_screen_restrictions_| and calls
   // OnScreenRestrictionsChanged() if needed.

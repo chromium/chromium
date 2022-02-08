@@ -91,7 +91,7 @@ void DlpContentManagerLacros::CheckScreenShareRestriction(
     ProcessScreenShareRestriction(
         application_title,
         GetScreenShareConfidentialContentsInfoForWebContents(
-            media_id.web_contents_id),
+            GetWebContentsFromMediaId(media_id)),
         std::move(callback));
     return;
   }
@@ -295,10 +295,10 @@ void DlpContentManagerLacros::UpdateRestrictions(aura::Window* window) {
 
 DlpContentManager::ConfidentialContentsInfo
 DlpContentManagerLacros::GetScreenShareConfidentialContentsInfo(
-    const content::DesktopMediaID& media_id) const {
+    const content::DesktopMediaID& media_id,
+    content::WebContents* web_contents) const {
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
-    return GetScreenShareConfidentialContentsInfoForWebContents(
-        media_id.web_contents_id);
+    return GetScreenShareConfidentialContentsInfoForWebContents(web_contents);
   }
   NOTREACHED();
   return ConfidentialContentsInfo();

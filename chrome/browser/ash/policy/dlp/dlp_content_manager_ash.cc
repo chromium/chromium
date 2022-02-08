@@ -111,8 +111,8 @@ void DlpContentManagerAsh::CheckScreenShareRestriction(
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
     OnDlpRestrictionCheckedCallback callback) {
-  ConfidentialContentsInfo info =
-      GetScreenShareConfidentialContentsInfo(media_id);
+  ConfidentialContentsInfo info = GetScreenShareConfidentialContentsInfo(
+      media_id, GetWebContentsFromMediaId(media_id));
   ProcessScreenShareRestriction(application_title, info, std::move(callback));
 }
 
@@ -537,13 +537,13 @@ DlpContentManagerAsh::GetAreaConfidentialContentsInfo(
 
 DlpContentManager::ConfidentialContentsInfo
 DlpContentManagerAsh::GetScreenShareConfidentialContentsInfo(
-    const content::DesktopMediaID& media_id) const {
+    const content::DesktopMediaID& media_id,
+    content::WebContents* web_contents) const {
   if (media_id.type == content::DesktopMediaID::Type::TYPE_SCREEN) {
     return GetConfidentialContentsOnScreen(DlpContentRestriction::kScreenShare);
   }
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
-    return GetScreenShareConfidentialContentsInfoForWebContents(
-        media_id.web_contents_id);
+    return GetScreenShareConfidentialContentsInfoForWebContents(web_contents);
   }
   DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
   ConfidentialContentsInfo info;

@@ -107,7 +107,8 @@ class DlpContentManagerLacros : public DlpContentManager,
 
   // DlpContentManager override:
   ConfidentialContentsInfo GetScreenShareConfidentialContentsInfo(
-      const content::DesktopMediaID& media_id) const override;
+      const content::DesktopMediaID& media_id,
+      content::WebContents* web_contents) const override;
 
   // Tracks set of known confidential WebContents* for each Window*.
   base::flat_map<aura::Window*, base::flat_set<content::WebContents*>>
