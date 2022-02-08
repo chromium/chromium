@@ -230,6 +230,79 @@ void CompleteHandleRequestHelper(
   std::move(callback).Run(did_succeed, &args);
 }
 
+// Helper function to add a success and failure callback to the arguments passed
+// to handle request hooks that require an asynchronous response and add a
+// pending request to handle resolving it. Updates |arguments| to replace the
+// trailing callback with a custom handler function to resolve the request on a
+// success and adds another handler function to the end of |arguments| for
+// resolving in the case of a failure. Also adds the associated promise to the
+// return on |result| if this is for a promise based request.
+void AddSuccessAndFailureCallbacks(v8::Local<v8::Context> context,
+                                   binding::AsyncResponseType async_type,
+                                   APIRequestHandler& request_handler,
+                                   base::WeakPtr<APIBindingHooks> weak_ptr,
+                                   std::vector<v8::Local<v8::Value>>* arguments,
+                                   APIBindingHooks::RequestResult& result) {
+  DCHECK(!arguments->empty());
+
+  // Since ParseArgumentsToV8 fills missing optional arguments with null, the
+  // final argument should either be a function if the API was called with a
+  // callback or null if it was left off.
+  // Note: the response callback here can actually remain empty in the case
+  // of an optional callback being left off in a context that doesn't support
+  // promises.
+  v8::Local<v8::Function> response_callback;
+  if (async_type == binding::AsyncResponseType::kCallback) {
+    DCHECK(arguments->back()->IsFunction());
+    response_callback = arguments->back().As<v8::Function>();
+  } else if (async_type == binding::AsyncResponseType::kPromise) {
+    DCHECK(arguments->back()->IsNull());
+  }
+
+  APIRequestHandler::RequestDetails request_details =
+      request_handler.AddPendingRequest(context, async_type, response_callback);
+  DCHECK_EQ(async_type == binding::AsyncResponseType::kPromise,
+            !request_details.promise.IsEmpty());
+  result.return_value = request_details.promise;
+
+  // We store the callbacks to complete the requests in a map on the
+  // APIHooksPerContextData associated with the request id.
+  v8::Local<v8::Value> v8_request_id =
+      v8::Integer::New(context->GetIsolate(), request_details.request_id);
+  gin::PerContextData* per_context_data = gin::PerContextData::From(context);
+  DCHECK(per_context_data);
+  APIHooksPerContextData* data = static_cast<APIHooksPerContextData*>(
+      per_context_data->GetUserData(kExtensionAPIHooksPerContextKey));
+  DCHECK(data) << "APIHooks PerContextData should always exist if we have an "
+                  "active request";
+  data->active_requests.emplace(
+      request_details.request_id,
+      base::BindOnce(&APIBindingHooks::CompleteHandleRequest,
+                     std::move(weak_ptr), request_details.request_id));
+
+  v8::Local<v8::Function> success_callback =
+      v8::Function::New(
+          context,
+          [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+            CompleteHandleRequestHelper(info, true);
+          },
+          v8_request_id)
+          .ToLocalChecked();
+  v8::Local<v8::Function> failure_callback =
+      v8::Function::New(
+          context,
+          [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+            CompleteHandleRequestHelper(info, false);
+          },
+          v8_request_id)
+          .ToLocalChecked();
+  // The success callback replaces any existing callback that may have
+  // been at the end of the arguments and the failure callback is appended
+  // to the end.
+  arguments->back() = success_callback;
+  arguments->push_back(failure_callback);
+}
+
 }  // namespace
 
 APIBindingHooks::RequestResult::RequestResult(ResultCode code) : code(code) {}
@@ -346,73 +419,10 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
 
   RequestResult result(RequestResult::HANDLED, custom_callback);
 
-  // If the API can have an asynchronous response, we add a success and
-  // failure callback to the arguments we pass to the handle_request hook and
-  // add a pending request into the request handler to handle resolving it when
-  // we hear back. This is to allow us to handle both promise and callback based
-  // calls without the hooks needing to have any knowledge of how a request
-  // needs to be resolved.
   if (signature->has_async_return()) {
-    DCHECK(!arguments->empty());
-
-    // Since ParseArgumentsToV8 fills missing optional arguments with null, the
-    // final argument should either be a function if the API was called with a
-    // callback or null if it was left off.
-    // Note: the response callback here can actually remain empty in the case
-    // of an optional callback being left off in a context that doesn't support
-    // promises.
-    v8::Local<v8::Function> response_callback;
-    if (parse_result.async_type == binding::AsyncResponseType::kCallback) {
-      DCHECK(arguments->back()->IsFunction());
-      response_callback = arguments->back().As<v8::Function>();
-    } else if (parse_result.async_type ==
-               binding::AsyncResponseType::kPromise) {
-      DCHECK(arguments->back()->IsNull());
-    }
-
-    APIRequestHandler::RequestDetails request_details =
-        request_handler_->AddPendingRequest(context, parse_result.async_type,
-                                            response_callback);
-    DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
-              !request_details.promise.IsEmpty());
-    result.return_value = request_details.promise;
-
-    // We store the callbacks to complete the requests in a map on the
-    // APIHooksPerContextData associated with the request id.
-    v8::Local<v8::Value> v8_request_id =
-        v8::Integer::New(isolate, request_details.request_id);
-    gin::PerContextData* per_context_data = gin::PerContextData::From(context);
-    DCHECK(per_context_data);
-    APIHooksPerContextData* data = static_cast<APIHooksPerContextData*>(
-        per_context_data->GetUserData(kExtensionAPIHooksPerContextKey));
-    DCHECK(data) << "APIHooks PerContextData should always exist if we have an "
-                    "active request";
-    data->active_requests.emplace(
-        request_details.request_id,
-        base::BindOnce(&APIBindingHooks::CompleteHandleRequest,
-                       weak_factory_.GetWeakPtr(), request_details.request_id));
-
-    v8::Local<v8::Function> success_callback =
-        v8::Function::New(
-            context,
-            [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-              CompleteHandleRequestHelper(info, true);
-            },
-            v8_request_id)
-            .ToLocalChecked();
-    v8::Local<v8::Function> failure_callback =
-        v8::Function::New(
-            context,
-            [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-              CompleteHandleRequestHelper(info, false);
-            },
-            v8_request_id)
-            .ToLocalChecked();
-    // The success callback replaces any existing callback that may have
-    // been at the end of the arguments and the failure callback is appended
-    // to the end.
-    arguments->back() = success_callback;
-    arguments->push_back(failure_callback);
+    AddSuccessAndFailureCallbacks(context, parse_result.async_type,
+                                  *request_handler_, weak_factory_.GetWeakPtr(),
+                                  arguments, result);
   }
 
   // Safe to use synchronous JS since it's in direct response to JS calling
