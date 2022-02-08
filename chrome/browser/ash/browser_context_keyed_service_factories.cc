@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
@@ -58,6 +59,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AuthPolicyCredentialsManagerFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
+  bruschetta::BruschettaServiceFactory::GetInstance();
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
 #if defined(USE_CUPS)
