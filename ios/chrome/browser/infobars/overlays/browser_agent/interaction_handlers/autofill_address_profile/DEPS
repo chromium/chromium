@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^save_address_profile_infobar_modal_interaction_handler.mm": [
+    "+ios/chrome/browser/ui/autofill/autofill_ui_type_util.h",
+  ],
+}
+

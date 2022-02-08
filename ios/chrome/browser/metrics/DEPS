@@ -8,4 +8,19 @@ specific_include_rules = {
   "metrics_app_interface\.mm": [
     "+third_party/zlib/google/compression_utils.h",
   ],
+
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^incognito_usage_app_state_agent.mm": [
+    "+ios/chrome/browser/ui/main/scene_state.h",
+  ],
+  "^ios_chrome_default_browser_metrics_provider.mm": [
+    "+ios/chrome/browser/ui/default_promo/default_browser_utils.h",
+  ],
+  "^ios_chrome_metrics_service_client.mm": [
+    "+ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h",
+  ],
+  "^user_interface_style_recorder.mm": [
+    "+ios/chrome/browser/ui/util/ui_util.h",
+  ],
+
 }

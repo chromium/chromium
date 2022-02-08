@@ -1,10 +1,7 @@
-include_rules = [
-  "+components/commerce/core/proto",
-]
-
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
-  "^price_alert_util.mm": [
+  "^tab_helper_util.mm": [
+    "+ios/chrome/browser/ui/download/features.h",
     "+ios/chrome/browser/ui/ui_feature_flags.h",
   ],
 }

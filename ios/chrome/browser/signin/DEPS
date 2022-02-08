@@ -1,0 +1,16 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^account_consistency_browser_agent.mm": [
+    "+ios/chrome/browser/ui/commands/application_commands.h",
+    "+ios/chrome/browser/ui/commands/open_new_tab_command.h",
+    "+ios/chrome/browser/ui/commands/show_signin_command.h",
+  ],
+  "^authentication_service.mm": [
+    "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
+  ],
+  "^chrome_account_manager_service.mm": [
+    "+ios/chrome/browser/ui/util/ui_util.h",
+    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+  ],
+}
+

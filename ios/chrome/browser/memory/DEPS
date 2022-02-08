@@ -1,0 +1,8 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^memory_debugger.mm": [
+    "+ios/chrome/browser/ui/util",
+    "+ios/chrome/common/ui/util/device_util.h",
+  ],
+}
+
