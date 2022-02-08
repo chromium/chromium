@@ -12,6 +12,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/utility/cropping_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -242,6 +243,8 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
 
   const absl::optional<gfx::Size>& size() const { return size_; }
 
+  const std::string& asset_id() const { return asset_id_; }
+
  private:
   static constexpr float kAnimationTimestampInvalid = -1.f;
 
@@ -316,8 +319,20 @@ void AmbientAnimationPhotoProvider::RefreshDynamicImageAssets() {
   DVLOG(4) << __func__;
   DynamicImageProvider image_provider(backend_model_->all_decoded_topics());
   for (const auto& dynamic_asset : dynamic_assets_) {
-    dynamic_asset->AssignNewImage(
-        image_provider.GetImageForAssetSize(dynamic_asset->size()));
+    gfx::ImageSkia assigned_image =
+        image_provider.GetImageForAssetSize(dynamic_asset->size());
+    if (dynamic_asset->size()) {
+      DCHECK(assigned_image.bitmap());
+      // Crop the image such that it exactly matches the aspect ratio of the
+      // asset that it's assigned to. Skottie will handle rescaling the image to
+      // the desired ultimate dimensions farther down the pipeline.
+      assigned_image = gfx::ImageSkia::CreateFrom1xBitmap(
+          CenterCropImage(*assigned_image.bitmap(), *dynamic_asset->size()));
+    } else {
+      DLOG(ERROR) << "Dynamic asset " << dynamic_asset->asset_id()
+                  << " missing dimensions in lottie file";
+    }
+    dynamic_asset->AssignNewImage(std::move(assigned_image));
   }
 }
 

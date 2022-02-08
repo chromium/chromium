@@ -25,8 +25,10 @@
 
 namespace ash {
 
+using ::testing::AnyOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::IsSubsetOf;
 using ::testing::NotNull;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -269,35 +271,43 @@ TEST_F(AmbientAnimationPhotoProviderTest, MatchesDynamicAssetOrientation) {
 
   // 3 landscape 1 portrait
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/20));
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/30));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/60, /*height=*/30));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/80, /*height=*/40));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/100, /*height=*/50));
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  // Portrait asset expectations:
   EXPECT_THAT(frame_data[1], HasImageDimensions(10, 20));
-  EXPECT_THAT(std::vector<cc::SkottieFrameData>(
-                  {frame_data[0], frame_data[2], frame_data[3]}),
-              UnorderedElementsAre(HasImageDimensions(20, 10),
-                                   HasImageDimensions(30, 20),
-                                   HasImageDimensions(40, 30)));
+  EXPECT_THAT(frame_data[3],
+              AnyOf(HasImageDimensions(15, 30), HasImageDimensions(20, 40),
+                    HasImageDimensions(25, 50)));
+  // Landscape asset expectations:
+  EXPECT_THAT(
+      std::vector<cc::SkottieFrameData>({frame_data[0], frame_data[2]}),
+      IsSubsetOf({HasImageDimensions(60, 30), HasImageDimensions(80, 40),
+                  HasImageDimensions(100, 50)}));
   GetFrameDataForAssets(all_assets, /*timestamp=*/1);
 
-  // 1 landscape 3 portrait
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
+  // // 1 landscape 3 portrait
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/60));
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/40));
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/50));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/80));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/50, /*height=*/100));
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  // Landscape asset expectations:
   EXPECT_THAT(frame_data[0], HasImageDimensions(20, 10));
-  EXPECT_THAT(std::vector<cc::SkottieFrameData>(
-                  {frame_data[1], frame_data[2], frame_data[3]}),
-              UnorderedElementsAre(HasImageDimensions(10, 20),
-                                   HasImageDimensions(20, 40),
-                                   HasImageDimensions(30, 50)));
+  EXPECT_THAT(frame_data[2],
+              AnyOf(HasImageDimensions(30, 15), HasImageDimensions(40, 20),
+                    HasImageDimensions(50, 25)));
+  // Portrait asset expectations:
+  EXPECT_THAT(
+      std::vector<cc::SkottieFrameData>({frame_data[1], frame_data[3]}),
+      IsSubsetOf({HasImageDimensions(30, 60), HasImageDimensions(40, 80),
+                  HasImageDimensions(50, 100)}));
 }
 
 TEST_F(AmbientAnimationPhotoProviderTest, HandlesOnlyPortraitAvailable) {
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/30));
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/40));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/60));
 
   std::vector<scoped_refptr<ImageAsset>> all_assets =
       LoadAllDynamicAssets({gfx::Size(100, 50), gfx::Size(50, 100),
@@ -305,15 +315,21 @@ TEST_F(AmbientAnimationPhotoProviderTest, HandlesOnlyPortraitAvailable) {
 
   std::vector<cc::SkottieFrameData> frame_data =
       GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(10, 30),
-                                               HasImageDimensions(20, 40),
-                                               HasImageDimensions(10, 30),
-                                               HasImageDimensions(20, 40)));
+  EXPECT_THAT(
+      std::vector<cc::SkottieFrameData>({frame_data[0], frame_data[1]}),
+      AnyOf(
+          ElementsAre(HasImageDimensions(10, 5), HasImageDimensions(30, 60)),
+          ElementsAre(HasImageDimensions(30, 15), HasImageDimensions(10, 20))));
+  EXPECT_THAT(
+      std::vector<cc::SkottieFrameData>({frame_data[2], frame_data[3]}),
+      AnyOf(
+          ElementsAre(HasImageDimensions(10, 5), HasImageDimensions(30, 60)),
+          ElementsAre(HasImageDimensions(30, 15), HasImageDimensions(10, 20))));
 }
 
 TEST_F(AmbientAnimationPhotoProviderTest, HandlesOnlyLandscapeAvailable) {
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/10));
-  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/60, /*height=*/30));
 
   std::vector<scoped_refptr<ImageAsset>> all_assets =
       LoadAllDynamicAssets({gfx::Size(100, 50), gfx::Size(50, 100),
@@ -321,10 +337,16 @@ TEST_F(AmbientAnimationPhotoProviderTest, HandlesOnlyLandscapeAvailable) {
 
   std::vector<cc::SkottieFrameData> frame_data =
       GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(30, 10),
-                                               HasImageDimensions(40, 20),
-                                               HasImageDimensions(30, 10),
-                                               HasImageDimensions(40, 20)));
+  EXPECT_THAT(
+      std::vector<cc::SkottieFrameData>({frame_data[0], frame_data[1]}),
+      AnyOf(
+          ElementsAre(HasImageDimensions(20, 10), HasImageDimensions(15, 30)),
+          ElementsAre(HasImageDimensions(60, 30), HasImageDimensions(5, 10))));
+  EXPECT_THAT(
+      std::vector<cc::SkottieFrameData>({frame_data[2], frame_data[3]}),
+      AnyOf(
+          ElementsAre(HasImageDimensions(20, 10), HasImageDimensions(15, 30)),
+          ElementsAre(HasImageDimensions(60, 30), HasImageDimensions(5, 10))));
 }
 
 }  // namespace ash
