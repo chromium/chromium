@@ -15,6 +15,9 @@ import {KeyboardKeyState} from './keyboard_key.js';
 const HEIGHT_TO_WIDTH_RATIO = 663 / 1760;
 const EXTENDED_HEIGHT_TO_WIDTH_RATIO = 9 / 31;
 
+/** The minimum diagram height at which key glyphs are legible. */
+const MINIMUM_HEIGHT_PX = 250;
+
 /**
  * Enum of mechanical layouts supported by the component.
  * @enum {string}
@@ -161,7 +164,8 @@ export class KeyboardDiagramElement extends PolymerElement {
     const widthToHeightRatio = this.showNumberPad ?
         EXTENDED_HEIGHT_TO_WIDTH_RATIO :
         HEIGHT_TO_WIDTH_RATIO;
-    this.$.keyboard.style.height = `${width * widthToHeightRatio}px`;
+    const height = Math.max(width * widthToHeightRatio, MINIMUM_HEIGHT_PX);
+    this.$.keyboard.style.height = `${height}px`;
   }
 
   /** @private */

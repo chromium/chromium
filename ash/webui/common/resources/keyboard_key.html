@@ -20,16 +20,18 @@
   }
 
   #foreground {
-    align-items: center;
     background-color: var(--background-color-unpressed);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     border-top-width: var(--keyboard-key-border-top-width, 1px);
     bottom: var(--travel);
     color: var(--foreground-color-unpressed);
-    display: flex;
+    display: grid;
     font-family: sans-serif;
-    justify-content: center;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, 1fr);
     left: 0;
     position: absolute;
     right: 0;
@@ -37,18 +39,11 @@
     transition: all 150ms ease-in-out;
   }
 
-  :host(.left) #foreground {
-    justify-content: left;
-  }
-
-  :host(.right) #foreground {
-    justify-content: right;
-  }
-
   iron-icon {
     --iron-icon-fill-color: var(--foreground-color-unpressed);
     --iron-icon-height: var(--icon-size);
     --iron-icon-width: var(--icon-size);
+    grid-row: span 2;
   }
 
   :host(.left) iron-icon,
@@ -57,14 +52,39 @@
     padding: 0 5px;
   }
 
-  #text {
+  :host(.left) iron-icon {
+    justify-self: left;
+  }
+
+  :host(.right) iron-icon {
+    justify-self: right;
+  }
+
+  #mainGlyph {
+    left: 0;
     overflow: hidden;
+    position: absolute;
+    right: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  #text:not(:empty) {
+  #mainGlyph:not(:empty) {
     padding: 0 5px;
+  }
+
+  /* Key labels won't change sides in RTL locales, so disable lint warning. */
+  :host(.left) #mainGlyph {
+    text-align: left;  /* csschecker-disable-line left-right */
+  }
+
+  :host(.right) #mainGlyph {
+    text-align: right;  /* csschecker-disable-line left-right */
+  }
+
+  span {
+    align-self: center;
+    text-align: center;
   }
 
   /*
@@ -133,6 +153,14 @@
     <iron-icon icon="[[icon]]"></iron-icon>
   </template>
   <template is="dom-if" if="[[mainGlyph]]">
-    <span id="text">[[mainGlyph]]</span>
+    <span id="mainGlyph">[[mainGlyph]]</span>
+  </template>
+  <template is="dom-if" if="[[showCornerGlyphs_]]">
+    <span>[[topLeftGlyph]]</span>
+    <span>[[bottomLeftGlyph]]</span>
+    <template is="dom-if" if="[[showSecondColumn_]]">
+      <span>[[topRightGlyph]]</span>
+      <span>[[bottomRightGlyph]]</span>
+    </template>
   </template>
 </div>
