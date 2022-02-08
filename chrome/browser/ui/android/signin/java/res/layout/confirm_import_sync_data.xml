@@ -25,16 +25,15 @@
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-            android:id="@+id/sync_confirm_import_choice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:primaryText="@string/sync_import_existing_data" />
-
-        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/sync_keep_separate_choice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:primaryText="@string/sync_keep_existing_data_separate" />
 
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/sync_confirm_import_choice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="@string/sync_import_existing_data" />
     </LinearLayout>
 </ScrollView>
