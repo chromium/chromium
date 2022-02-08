@@ -136,9 +136,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSNumber* focused;
 @property(nonatomic, readonly) id header;
 @property(nonatomic, readonly) NSString* help;
-// isIgnored returns whether or not the accessibility object
-// should be ignored by the accessibility hierarchy.
-@property(nonatomic, readonly, getter=isIgnored) BOOL ignored;
 // Index of a row, column, or tree item.
 @property(nonatomic, readonly) NSNumber* index;
 @property(nonatomic, readonly) NSNumber* treeItemRowIndex;

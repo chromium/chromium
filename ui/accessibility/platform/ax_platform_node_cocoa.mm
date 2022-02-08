@@ -444,6 +444,14 @@ bool IsAXSetter(SEL selector) {
   return _node != nullptr;
 }
 
+- (BOOL)isIncludedInPlatformTree {
+  // TODO(accessibility): Do we really need to have invisible objects in
+  // the platform tree?
+  return [self instanceActive] &&
+         ![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
+         !_node->IsInvisibleOrIgnored();
+}
+
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
   static const base::NoDestructor<RoleMap> role_map(BuildRoleMap());
   RoleMap::const_iterator it = role_map->find(role);
@@ -573,7 +581,9 @@ bool IsAXSetter(SEL selector) {
       });
 }
 
-// NSAccessibility informal protocol implementation.
+//
+// NSAccessibility legacy informal protocol implementation (deprecated).
+//
 
 - (BOOL)accessibilityIsIgnored {
   return ![self isAccessibilityElement];
@@ -1494,7 +1504,7 @@ bool IsAXSetter(SEL selector) {
 //
 
 - (BOOL)isAccessibilityElement {
-  if (!_node)
+  if (![self instanceActive])
     return NO;
 
   // Do not return false for invisible elements, otherwise no events for menus

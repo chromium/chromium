@@ -35,6 +35,9 @@ AX_EXPORT
 // Determines if this object is alive, i.e. it hasn't been detached.
 - (BOOL)instanceActive;
 
+// Returns true if this accessible element should be included into the ax tree.
+- (BOOL)isIncludedInPlatformTree;
+
 // Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
 // found.
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;

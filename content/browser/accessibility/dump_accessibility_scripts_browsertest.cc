@@ -354,6 +354,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacMethods>("accessibility-column-header-ui-elements.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIsIgnored) {
+  RunTypedTest<kMacMethods>("accessibility-is-ignored.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityPlaceholderValue) {
   RunTypedTest<kMacMethods>("accessibility-placeholder-value.html");

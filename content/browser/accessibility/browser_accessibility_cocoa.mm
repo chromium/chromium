@@ -727,10 +727,10 @@ bool content::IsNSRange(id value) {
     for (auto it = _owner->PlatformChildrenBegin();
          it != _owner->PlatformChildrenEnd(); ++it) {
       BrowserAccessibilityCocoa* child = it->GetNativeViewAccessible();
-      if ([child isIgnored])
-        [_children addObjectsFromArray:[child children]];
-      else
+      if ([child isIncludedInPlatformTree])
         [_children addObject:child];
+      else
+        [_children addObjectsFromArray:[child children]];
     }
 
     // Also, add indirect children (if any).
@@ -757,7 +757,7 @@ bool content::IsNSRange(id value) {
   if (![self instanceActive] || _gettingChildren)
     return;
   _needsToUpdateChildren = true;
-  if ([self isIgnored]) {
+  if (![self isIncludedInPlatformTree]) {
     BrowserAccessibility* parent = _owner->PlatformGetParent();
     if (parent)
       [parent->GetNativeViewAccessible() childrenChanged];
@@ -1092,16 +1092,6 @@ bool content::IsNSRange(id value) {
       std::lower_bound(lineStarts.begin(), lineStarts.end(),
                        caretPosition->AsTextPosition()->text_offset());
   return @(std::distance(lineStarts.begin(), iterator));
-}
-
-// Returns whether or not this node should be ignored in the
-// accessibility tree.
-- (BOOL)isIgnored {
-  if (![self instanceActive])
-    return YES;
-
-  return [[self role] isEqualToString:NSAccessibilityUnknownRole] ||
-         _owner->IsInvisibleOrIgnored();
 }
 
 - (NSString*)language {
@@ -2954,15 +2944,6 @@ bool content::IsNSRange(id value) {
     return YES;
 
   return NO;
-}
-
-// Returns whether or not this object should be ignored in the accessibility
-// tree.
-- (BOOL)accessibilityIsIgnored {
-  TRACE_EVENT1("accessibility",
-               "BrowserAccessibilityCocoa::accessibilityIsIgnored",
-               "role=", ui::ToString([self internalRole]));
-  return [self isIgnored];
 }
 
 - (BOOL)isAccessibilityEnabled {
