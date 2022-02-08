@@ -25,6 +25,10 @@ std::string GetStringNameForOptimizationTarget(
 // is empty.
 absl::optional<base::FilePath> StringToFilePath(const std::string& str_path);
 
+// Returns a string representation of the given |file_path|, handling platform
+// differences in the conversion.
+std::string FilePathToString(const base::FilePath& file_path);
+
 // Returns the base file name to use for storing all prediction models.
 base::FilePath GetBaseFileNameForModels();
 

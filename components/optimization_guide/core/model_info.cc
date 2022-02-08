@@ -12,23 +12,6 @@
 
 namespace optimization_guide {
 
-namespace {
-
-// Returns a string representation of the given |file_path|, handling platform
-// differences in the conversion.
-//
-// TODO(crbug.com/1283494): Remove this duplicate implementation when
-// model_util.cc is stablized and this function can be moved there.
-std::string FilePathToString(const base::FilePath& file_path) {
-#if BUILDFLAG(IS_WIN)
-  return base::WideToUTF8(file_path.value());
-#else
-  return file_path.value();
-#endif
-}
-
-}  // namespace
-
 ModelInfo::ModelInfo(const base::FilePath& model_file_path,
                      const base::flat_set<base::FilePath>& additional_files,
                      const int64_t version,

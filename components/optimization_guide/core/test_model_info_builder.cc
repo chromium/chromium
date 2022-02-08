@@ -6,7 +6,6 @@
 
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
 

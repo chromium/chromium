@@ -64,14 +64,6 @@ GetActiveFieldTrialsAllowedForFetch() {
   return filtered_active_field_trials;
 }
 
-std::string FilePathToString(const base::FilePath& file_path) {
-#if BUILDFLAG(IS_WIN)
-  return base::WideToUTF8(file_path.value());
-#else
-  return file_path.value();
-#endif
-}
-
 std::string GetStringForOptimizationGuideDecision(
     OptimizationGuideDecision decision) {
   switch (decision) {

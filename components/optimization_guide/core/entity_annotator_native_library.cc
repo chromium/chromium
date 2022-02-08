@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/page_entities_model_metadata.pb.h"
 

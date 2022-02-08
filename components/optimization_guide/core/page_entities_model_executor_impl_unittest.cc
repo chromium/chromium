@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
