@@ -93,9 +93,18 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
   was_merged = true;
   main_thread_response = MainThreadResponse::kIncluded;
 
-  // The |scroll_thread| information cannot change once the frame starts. So
-  // it should not need to be updated during merge.
-  DCHECK_EQ(scroll_thread, other.scroll_thread);
+  // The |scroll_thread| information cannot change once the frame starts.
+  // However, if a frame did not have any scroll-events, or the scroll-events
+  // for the frame did not cause any visual updates, then |scroll_thread| is
+  // reset. Therefore, either |scroll_thread| should be the same for |this| and
+  // |other|, or one of them must be |kUnknown|.
+  if (scroll_thread != other.scroll_thread) {
+    if (scroll_thread == SmoothEffectDrivingThread::kUnknown) {
+      scroll_thread = other.scroll_thread;
+    } else {
+      DCHECK_EQ(other.scroll_thread, SmoothEffectDrivingThread::kUnknown);
+    }
+  }
 
   if (other.has_missing_content)
     has_missing_content = true;

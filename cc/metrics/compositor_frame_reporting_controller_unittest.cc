@@ -27,6 +27,7 @@ namespace {
 using ::testing::Each;
 using ::testing::IsEmpty;
 using ::testing::NotNull;
+using SmoothEffectDrivingThread = FrameInfo::SmoothEffectDrivingThread;
 
 class TestCompositorFrameReportingController
     : public CompositorFrameReportingController {
@@ -1687,8 +1688,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        SkippedFramesFromDisplayCompositorHaveSmoothThread) {
-  auto thread_type_compositor =
-      FrameInfo::SmoothEffectDrivingThread::kCompositor;
+  auto thread_type_compositor = SmoothEffectDrivingThread::kCompositor;
   reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
                                                    true);
   dropped_counter_.OnFcpReceived();
@@ -1828,7 +1828,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        NewMainThreadUpdateNotReportedAsDropped) {
-  auto thread_type_main = FrameInfo::SmoothEffectDrivingThread::kMain;
+  auto thread_type_main = SmoothEffectDrivingThread::kMain;
   reporting_controller_.SetThreadAffectsSmoothness(thread_type_main,
                                                    /*affects_smoothness=*/true);
   dropped_counter_.OnFcpReceived();
@@ -1869,6 +1869,44 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Which one is accompanied with new main thread update so only one affects
   // smoothness
   EXPECT_EQ(1u, dropped_counter_.total_smoothness_dropped());
+}
+
+TEST_F(CompositorFrameReportingControllerTest,
+       NoUpdateCompositorWithJankyMain) {
+  reporting_controller_.SetThreadAffectsSmoothness(
+      SmoothEffectDrivingThread::kCompositor, /*affects_smoothness=*/true);
+  reporting_controller_.SetThreadAffectsSmoothness(
+      SmoothEffectDrivingThread::kMain, /*affects_smoothness=*/false);
+
+  dropped_counter_.OnFcpReceived();
+  dropped_counter_.SetTimeFcpReceivedForTesting(args_.frame_time);
+
+  // Start a new frame and take it all the way to start the frame on the main
+  // thread (i.e. 'begin main frame').
+  SimulateBeginMainFrame();
+  EXPECT_EQ(1, reporting_controller_.ActiveReporters());
+  EXPECT_EQ(0u, dropped_counter_.total_frames());
+
+  // Terminate the frame without submitting a frame.
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.DidNotProduceFrame(current_id_,
+                                           FrameSkippedReason::kWaitingOnMain);
+  EXPECT_EQ(0u, dropped_counter_.total_frames());
+
+  // Main thread responds.
+  SimulateActivate();
+  EXPECT_EQ(1, reporting_controller_.ActiveReporters());
+  EXPECT_EQ(0u, dropped_counter_.total_frames());
+
+  // Start and submit a second frame.
+  SimulateBeginImplFrame();
+  EXPECT_EQ(2, reporting_controller_.ActiveReporters());
+  EXPECT_EQ(0u, dropped_counter_.total_frames());
+
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(0u, dropped_counter_.total_smoothness_dropped());
+  EXPECT_EQ(3u, dropped_counter_.total_frames());
 }
 
 }  // namespace
