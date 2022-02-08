@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -148,6 +149,18 @@ IntentFilterPtr ConvertMojomIntentFilterToIntentFilter(
 COMPONENT_EXPORT(APP_TYPES)
 apps::mojom::IntentFilterPtr ConvertIntentFilterToMojomIntentFilter(
     const IntentFilterPtr& intent_filter);
+
+COMPONENT_EXPORT(APP_TYPES)
+base::flat_map<std::string, std::vector<apps::mojom::IntentFilterPtr>>
+ConvertIntentFiltersToMojomIntentFilters(
+    const base::flat_map<std::string, apps::IntentFilters>& intent_filter);
+
+COMPONENT_EXPORT(APP_TYPES)
+base::flat_map<std::string, apps::IntentFilters>
+ConvertMojomIntentFiltersToIntentFilters(
+    const base::flat_map<std::string,
+                         std::vector<apps::mojom::IntentFilterPtr>>&
+        mojom_intent_filter);
 
 }  // namespace apps
 

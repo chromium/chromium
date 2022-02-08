@@ -281,4 +281,38 @@ apps::mojom::IntentFilterPtr ConvertIntentFilterToMojomIntentFilter(
   return mojom_intent_filter;
 }
 
+base::flat_map<std::string, std::vector<apps::mojom::IntentFilterPtr>>
+ConvertIntentFiltersToMojomIntentFilters(
+    const base::flat_map<std::string, apps::IntentFilters>& intent_filter) {
+  base::flat_map<std::string, std::vector<apps::mojom::IntentFilterPtr>> ret;
+  for (const auto& it : intent_filter) {
+    std::vector<apps::mojom::IntentFilterPtr> mojom_filters;
+    for (const auto& filter_it : it.second) {
+      if (filter_it) {
+        mojom_filters.push_back(
+            ConvertIntentFilterToMojomIntentFilter(filter_it));
+      }
+    }
+    ret[it.first] = std::move(mojom_filters);
+  }
+  return ret;
+}
+
+base::flat_map<std::string, apps::IntentFilters>
+ConvertMojomIntentFiltersToIntentFilters(
+    const base::flat_map<std::string,
+                         std::vector<apps::mojom::IntentFilterPtr>>&
+        mojom_intent_filter) {
+  base::flat_map<std::string, apps::IntentFilters> ret;
+  for (const auto& it : mojom_intent_filter) {
+    apps::IntentFilters filters;
+    for (const auto& filter_it : it.second) {
+      if (filter_it)
+        filters.push_back(ConvertMojomIntentFilterToIntentFilter(filter_it));
+    }
+    ret[it.first] = std::move(filters);
+  }
+  return ret;
+}
+
 }  // namespace apps

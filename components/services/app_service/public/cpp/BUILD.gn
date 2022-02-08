@@ -205,6 +205,7 @@ source_set("intents") {
   ]
 
   deps = [
+    ":app_types",
     "//base",
     "//components/services/app_service/public/mojom",
     "//third_party/blink/public/common",

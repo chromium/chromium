@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "url/gurl.h"
 
@@ -47,6 +48,12 @@ apps::mojom::ConditionPtr MakeCondition(
 
 // Creates condition that only contain one value and add the condition to
 // the intent filter.
+void AddSingleValueCondition(apps::ConditionType condition_type,
+                             const std::string& value,
+                             apps::PatternMatchType pattern_match_type,
+                             apps::IntentFilterPtr& intent_filter);
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
                              const std::string& value,
                              apps::mojom::PatternMatchType pattern_match_type,
