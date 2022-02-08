@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
+#import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/deprecated/crw_web_controller_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -73,6 +75,9 @@
   DCHECK(webState->IsRealized());
 
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+  }
 
   web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
   SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
@@ -90,6 +95,9 @@
   // Remove delegates for tab helpers which may otherwise do bad things during
   // shutdown.
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
+  }
   web_deprecated::SetSwipeRecognizerProvider(webState, nil);
 }
 
