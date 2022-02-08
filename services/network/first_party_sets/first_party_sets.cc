@@ -21,6 +21,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
@@ -158,7 +159,7 @@ bool FirstPartySets::IsContextSamePartyWithSite(
     const std::set<net::SchemefulSite>& party_context,
     bool infer_singleton_sets) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const absl::optional<net::SchemefulSite> site_owner =
+  const FirstPartySets::OwnerResult site_owner =
       FindOwner(site, infer_singleton_sets);
   if (!site_owner.has_value())
     return false;
@@ -166,7 +167,7 @@ bool FirstPartySets::IsContextSamePartyWithSite(
   const auto is_owned_by_site_owner =
       [this, &site_owner,
        infer_singleton_sets](const net::SchemefulSite& context_site) -> bool {
-    const absl::optional<net::SchemefulSite> context_owner =
+    const FirstPartySets::OwnerResult context_owner =
         FindOwner(context_site, infer_singleton_sets);
     return context_owner.has_value() && *context_owner == *site_owner;
   };
@@ -177,7 +178,7 @@ bool FirstPartySets::IsContextSamePartyWithSite(
   return base::ranges::all_of(party_context, is_owned_by_site_owner);
 }
 
-void FirstPartySets::ComputeMetadata(
+absl::optional<net::FirstPartySetMetadata> FirstPartySets::ComputeMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
@@ -187,13 +188,13 @@ void FirstPartySets::ComputeMetadata(
 
   net::SamePartyContext::Type context_type = ContextTypeFromBool(
       IsContextSamePartyWithSite(site, top_frame_site, party_context,
-                                 false /* infer_singleton_sets */));
+                                 /*infer_singleton_sets=*/false));
   net::SamePartyContext::Type ancestors = ContextTypeFromBool(
       IsContextSamePartyWithSite(site, top_frame_site, party_context,
-                                 true /* infer_singleton_sets */));
+                                 /*infer_singleton_sets=*/true));
   net::SamePartyContext::Type top_resource =
       ContextTypeFromBool(IsContextSamePartyWithSite(
-          site, top_frame_site, {}, true /* infer_singleton_sets */));
+          site, top_frame_site, {}, /*infer_singleton_sets=*/true));
 
   net::SamePartyContext context(context_type, ancestors, top_resource);
 
@@ -204,12 +205,15 @@ void FirstPartySets::ComputeMetadata(
   net::FirstPartySetsContextType first_party_sets_context_type =
       ComputeContextType(site, top_frame_site, party_context);
 
-  absl::optional<net::SchemefulSite> top_frame_owner =
-      top_frame_site ? FindOwner(*top_frame_site) : absl::nullopt;
+  FirstPartySets::OwnerResult top_frame_owner =
+      top_frame_site
+          ? FindOwner(*top_frame_site, /*infer_singleton_sets=*/false)
+          : absl::nullopt;
 
-  std::move(callback).Run(net::FirstPartySetMetadata(
-      context, base::OptionalOrNullptr(FindOwner(site)),
-      base::OptionalOrNullptr(top_frame_owner), first_party_sets_context_type));
+  return net::FirstPartySetMetadata(
+      context,
+      base::OptionalOrNullptr(FindOwner(site, /*infer_singleton_sets=*/false)),
+      base::OptionalOrNullptr(top_frame_owner), first_party_sets_context_type);
 }
 
 net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
@@ -218,7 +222,7 @@ net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
     const std::set<net::SchemefulSite>& party_context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   constexpr bool infer_singleton_sets = true;
-  const absl::optional<net::SchemefulSite> site_owner =
+  const FirstPartySets::OwnerResult site_owner =
       FindOwner(site, infer_singleton_sets);
   // Note: the `party_context` consists of the intermediate frames (for frame
   // requests) or intermediate frames and current frame for subresource
@@ -240,7 +244,7 @@ net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
              : net::FirstPartySetsContextType::kTopResourceMatchMixed;
 }
 
-const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
+const FirstPartySets::OwnerResult FirstPartySets::FindOwner(
     const net::SchemefulSite& site,
     bool infer_singleton_sets) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -249,7 +253,7 @@ const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
   net::SchemefulSite normalized_site = site;
   normalized_site.ConvertWebSocketToHttp();
 
-  absl::optional<net::SchemefulSite> owner;
+  FirstPartySets::OwnerResult owner;
   const auto it = sets_.find(normalized_site);
   if (it != sets_.end()) {
     owner = it->second;
@@ -263,32 +267,31 @@ const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
   return owner;
 }
 
-const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
-    const net::SchemefulSite& site) const {
+absl::optional<FirstPartySets::OwnerResult> FirstPartySets::FindOwner(
+    const net::SchemefulSite& site,
+    base::OnceCallback<void(FirstPartySets::OwnerResult)> callback) const {
   return FindOwner(site, /*infer_singleton_sets=*/false);
 }
 
-base::flat_map<net::SchemefulSite, net::SchemefulSite>
-FirstPartySets::FindOwners(
-    const base::flat_set<net::SchemefulSite>& sites) const {
+absl::optional<FirstPartySets::OwnersResult> FirstPartySets::FindOwners(
+    const base::flat_set<net::SchemefulSite>& sites,
+    base::OnceCallback<void(FirstPartySets::OwnersResult)> callback) const {
   std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>>
       sites_to_owners;
   for (const net::SchemefulSite& site : sites) {
-    const absl::optional<net::SchemefulSite> owner = FindOwner(site);
+    const FirstPartySets::OwnerResult owner =
+        FindOwner(site, /*infer_singleton_sets=*/false);
     if (owner.has_value()) {
       sites_to_owners.emplace_back(site, owner.value());
     }
   }
-
   return sites_to_owners;
 }
 
-void FirstPartySets::Sets(
-    base::OnceCallback<
-        void(base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
-        callback) const {
+absl::optional<FirstPartySets::SetsByOwner> FirstPartySets::Sets(
+    base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> sets;
+  FirstPartySets::SetsByOwner sets;
 
   for (const auto& pair : sets_) {
     const net::SchemefulSite& member = pair.first;
@@ -301,7 +304,7 @@ void FirstPartySets::Sets(
     }
   }
 
-  std::move(callback).Run(sets);
+  return sets;
 }
 
 void FirstPartySets::ApplyManuallySpecifiedSet() {
@@ -364,8 +367,7 @@ void FirstPartySets::SetEnabledForTesting(bool enabled) {
 }
 
 base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets)
-    const {
+    const FirstPartySets::FlattenedSets& old_sets) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (old_sets.empty())
     return {};
@@ -374,8 +376,8 @@ base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(
   for (const auto& old_pair : old_sets) {
     const net::SchemefulSite& old_member = old_pair.first;
     const net::SchemefulSite& old_owner = old_pair.second;
-    const absl::optional<net::SchemefulSite> current_owner =
-        FindOwner(old_member, false);
+    const FirstPartySets::OwnerResult current_owner =
+        FindOwner(old_member, /*infer_singleton_sets=*/false);
     // Look for the removed sites and the ones have owner changed.
     if (!current_owner || *current_owner != old_owner) {
       result.emplace(old_member);

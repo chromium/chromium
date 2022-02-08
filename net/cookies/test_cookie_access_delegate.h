@@ -41,20 +41,24 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
-  void ComputeFirstPartySetMetadataMaybeAsync(
+  absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
-  void FindFirstPartySetOwner(
+  absl::optional<absl::optional<net::SchemefulSite>> FindFirstPartySetOwner(
       const net::SchemefulSite& site,
       base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
       const override;
-  void FindFirstPartySetOwners(
+  absl::optional<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
+  FindFirstPartySetOwners(
       const base::flat_set<SchemefulSite>& sites,
-      base::OnceCallback<void(base::flat_map<SchemefulSite, SchemefulSite>)>
-          callback) const override;
-  void RetrieveFirstPartySets(
+      base::OnceCallback<void(
+          base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
+      const override;
+  absl::optional<
+      base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>>
+  RetrieveFirstPartySets(
       base::OnceCallback<void(
           base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
           callback) const override;
@@ -91,10 +95,11 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   // Discard any leading dot in the domain string.
   std::string GetKeyForDomainValue(const std::string& domain) const;
 
-  // Invokes the given `callback` synchronously or asynchronously, depending on
-  // the configuration of this instance.
+  // Invokes the given `callback` asynchronously or returns the result
+  // synchronously, depending on the configuration of this instance.
   template <class T>
-  void RunMaybeAsync(T result, base::OnceCallback<void(T)> callback) const;
+  absl::optional<T> RunMaybeAsync(T result,
+                                  base::OnceCallback<void(T)> callback) const;
 
   std::map<std::string, CookieAccessSemantics> expectations_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;

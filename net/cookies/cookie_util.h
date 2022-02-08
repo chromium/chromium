@@ -245,8 +245,12 @@ NET_EXPORT bool IsSchemefulSameSiteEnabled();
 // will be assumed to be same-party with `request_site`, regardless of what it
 // is.
 //
-// `callback` may be invoked either synchronously or asynchronously.
-NET_EXPORT void ComputeFirstPartySetMetadataMaybeAsync(
+// The result may be returned synchronously, or `callback` may be invoked
+// asynchronously with the result. The callback will be invoked iff the return
+// value is nullopt; i.e. a result will be provided via return value or
+// callback, but not both, and not neither.
+[[nodiscard]] NET_EXPORT absl::optional<FirstPartySetMetadata>
+ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,

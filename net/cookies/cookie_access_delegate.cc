@@ -15,6 +15,18 @@
 
 namespace net {
 
+namespace {
+CookiePartitionKey CreateCookiePartitionKeyFromFirstPartySetOwner(
+    const CookiePartitionKey& cookie_partition_key,
+    absl::optional<SchemefulSite> first_party_set_owner) {
+  if (!first_party_set_owner) {
+    return cookie_partition_key;
+  }
+  return CookiePartitionKey::FromWire(first_party_set_owner.value(),
+                                      cookie_partition_key.nonce());
+}
+}  // namespace
+
 CookieAccessDelegate::CookieAccessDelegate() = default;
 
 CookieAccessDelegate::~CookieAccessDelegate() = default;
@@ -24,32 +36,29 @@ bool CookieAccessDelegate::ShouldTreatUrlAsTrustworthy(const GURL& url) const {
 }
 
 // static
-void CookieAccessDelegate::FirstPartySetifyPartitionKey(
+absl::optional<CookiePartitionKey>
+CookieAccessDelegate::FirstPartySetifyPartitionKey(
     const CookieAccessDelegate* delegate,
     const CookiePartitionKey& cookie_partition_key,
-    base::OnceCallback<void(absl::optional<CookiePartitionKey>)> callback) {
+    base::OnceCallback<void(CookiePartitionKey)> callback) {
   // FirstPartySetify doesn't need to transform partition keys with a nonce,
   // since those partitions are only available to a single fenced/anonymous
   // iframe.
   if (!delegate || cookie_partition_key.nonce()) {
-    std::move(callback).Run(cookie_partition_key);
-    return;
+    return cookie_partition_key;
   }
-  delegate->FindFirstPartySetOwner(
-      cookie_partition_key.site(),
-      base::BindOnce(
-          [](const CookiePartitionKey& cookie_partition_key,
-             base::OnceCallback<void(absl::optional<CookiePartitionKey>)>
-                 callback,
-             absl::optional<SchemefulSite> first_party_set_owner) {
-            if (!first_party_set_owner) {
-              std::move(callback).Run(cookie_partition_key);
-              return;
-            }
-            std::move(callback).Run(CookiePartitionKey::FromWire(
-                first_party_set_owner.value(), cookie_partition_key.nonce()));
-          },
-          cookie_partition_key, std::move(callback)));
+
+  absl::optional<absl::optional<SchemefulSite>> maybe_owner =
+      delegate->FindFirstPartySetOwner(
+          cookie_partition_key.site(),
+          base::BindOnce(&CreateCookiePartitionKeyFromFirstPartySetOwner,
+                         cookie_partition_key)
+              .Then(std::move(callback)));
+  if (maybe_owner.has_value())
+    return CreateCookiePartitionKeyFromFirstPartySetOwner(cookie_partition_key,
+                                                          maybe_owner.value());
+
+  return absl::nullopt;
 }
 
 }  // namespace net

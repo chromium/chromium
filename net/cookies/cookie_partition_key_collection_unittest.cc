@@ -23,12 +23,15 @@ CookiePartitionKeyCollection FirstPartySetifyAndWait(
     const CookieAccessDelegate* cookie_access_delegate) {
   base::RunLoop run_loop;
   CookiePartitionKeyCollection canonicalized_collection;
-  collection.FirstPartySetify(
-      cookie_access_delegate,
-      base::BindLambdaForTesting([&](CookiePartitionKeyCollection result) {
-        canonicalized_collection = result;
-        run_loop.Quit();
-      }));
+  absl::optional<CookiePartitionKeyCollection> maybe_collection =
+      collection.FirstPartySetify(
+          cookie_access_delegate,
+          base::BindLambdaForTesting([&](CookiePartitionKeyCollection result) {
+            canonicalized_collection = result;
+            run_loop.Quit();
+          }));
+  if (maybe_collection.has_value())
+    return maybe_collection.value();
   run_loop.Run();
   return canonicalized_collection;
 }

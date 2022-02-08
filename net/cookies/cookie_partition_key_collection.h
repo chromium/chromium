@@ -54,8 +54,11 @@ class NET_EXPORT CookiePartitionKeyCollection {
   // any CookiePartitionKeys whose sites which are members of a set with a new
   // partition key containing the set's owner site.
   //
-  // `callback` may be invoked either synchronously or asynchronously.
-  void FirstPartySetify(
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<CookiePartitionKeyCollection> FirstPartySetify(
       const CookieAccessDelegate* cookie_access_delegate,
       base::OnceCallback<void(CookiePartitionKeyCollection)> callback) const;
 

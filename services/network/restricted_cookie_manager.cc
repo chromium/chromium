@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"  // for [[fallthrough]];
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -137,10 +138,16 @@ void RestrictedCookieManager::ComputeFirstPartySetMetadata(
     const net::CookieStore* cookie_store,
     const net::IsolationInfo& isolation_info,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
-  net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
-      /*request_site=*/net::SchemefulSite(origin), isolation_info,
-      cookie_store->cookie_access_delegate(), kForceIgnoreTopFrameParty,
-      std::move(callback));
+  std::pair<base::OnceCallback<void(net::FirstPartySetMetadata)>,
+            base::OnceCallback<void(net::FirstPartySetMetadata)>>
+      callbacks = base::SplitOnceCallback(std::move(callback));
+  absl::optional<net::FirstPartySetMetadata> metadata =
+      net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+          /*request_site=*/net::SchemefulSite(origin), isolation_info,
+          cookie_store->cookie_access_delegate(), kForceIgnoreTopFrameParty,
+          std::move(callbacks.first));
+  if (metadata.has_value())
+    std::move(callbacks.second).Run(std::move(metadata.value()));
 }
 
 bool CookieWithAccessResultComparer::operator()(

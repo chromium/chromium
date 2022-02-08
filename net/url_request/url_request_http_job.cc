@@ -285,12 +285,16 @@ void URLRequestHttpJob::Start() {
     OnGotFirstPartySetMetadata(FirstPartySetMetadata());
     return;
   }
-  cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
-      SchemefulSite(request()->url()), request()->isolation_info(),
-      request()->context()->cookie_store()->cookie_access_delegate(),
-      request()->force_ignore_top_frame_party_for_cookies(),
-      base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
-                     weak_factory_.GetWeakPtr()));
+  absl::optional<FirstPartySetMetadata> metadata =
+      cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+          SchemefulSite(request()->url()), request()->isolation_info(),
+          request()->context()->cookie_store()->cookie_access_delegate(),
+          request()->force_ignore_top_frame_party_for_cookies(),
+          base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
+                         weak_factory_.GetWeakPtr()));
+
+  if (metadata.has_value())
+    OnGotFirstPartySetMetadata(std::move(metadata.value()));
 }
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(

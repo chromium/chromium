@@ -48,7 +48,8 @@ bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
   return true;
 }
 
-void TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
+absl::optional<FirstPartySetMetadata>
+TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
@@ -56,12 +57,13 @@ void TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
   absl::optional<SchemefulSite> top_frame_owner =
       top_frame_site ? FindFirstPartySetOwnerSync(*top_frame_site)
                      : absl::nullopt;
-  RunMaybeAsync(net::FirstPartySetMetadata(
-                    net::SamePartyContext(),
-                    base::OptionalOrNullptr(FindFirstPartySetOwnerSync(site)),
-                    base::OptionalOrNullptr(top_frame_owner),
-                    FirstPartySetsContextType::kUnknown),
-                std::move(callback));
+  return RunMaybeAsync(
+      net::FirstPartySetMetadata(
+          net::SamePartyContext(),
+          base::OptionalOrNullptr(FindFirstPartySetOwnerSync(site)),
+          base::OptionalOrNullptr(top_frame_owner),
+          FirstPartySetsContextType::kUnknown),
+      std::move(callback));
 }
 
 absl::optional<net::SchemefulSite>
@@ -77,17 +79,20 @@ TestCookieAccessDelegate::FindFirstPartySetOwnerSync(
              : absl::nullopt;
 }
 
-void TestCookieAccessDelegate::FindFirstPartySetOwner(
+absl::optional<absl::optional<net::SchemefulSite>>
+TestCookieAccessDelegate::FindFirstPartySetOwner(
     const net::SchemefulSite& site,
     base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
     const {
-  RunMaybeAsync(FindFirstPartySetOwnerSync(site), std::move(callback));
+  return RunMaybeAsync(FindFirstPartySetOwnerSync(site), std::move(callback));
 }
 
-void TestCookieAccessDelegate::FindFirstPartySetOwners(
+absl::optional<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
+TestCookieAccessDelegate::FindFirstPartySetOwners(
     const base::flat_set<SchemefulSite>& sites,
-    base::OnceCallback<void(base::flat_map<SchemefulSite, SchemefulSite>)>
-        callback) const {
+    base::OnceCallback<
+        void(base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
+    const {
   std::vector<std::pair<SchemefulSite, SchemefulSite>> mapping;
   for (const SchemefulSite& site : sites) {
     absl::optional<SchemefulSite> owner = FindFirstPartySetOwnerSync(site);
@@ -95,27 +100,28 @@ void TestCookieAccessDelegate::FindFirstPartySetOwners(
       mapping.emplace_back(site, *owner);
   }
 
-  RunMaybeAsync<base::flat_map<SchemefulSite, SchemefulSite>>(
+  return RunMaybeAsync<base::flat_map<SchemefulSite, SchemefulSite>>(
       mapping, std::move(callback));
 }
 
-void TestCookieAccessDelegate::RetrieveFirstPartySets(
+absl::optional<base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>>
+TestCookieAccessDelegate::RetrieveFirstPartySets(
     base::OnceCallback<
         void(base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
         callback) const {
-  RunMaybeAsync(first_party_sets_, std::move(callback));
+  return RunMaybeAsync(first_party_sets_, std::move(callback));
 }
 
 template <class T>
-void TestCookieAccessDelegate::RunMaybeAsync(
+absl::optional<T> TestCookieAccessDelegate::RunMaybeAsync(
     T result,
     base::OnceCallback<void(T)> callback) const {
   if (invoke_callbacks_asynchronously_) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-    return;
+    return absl::nullopt;
   }
-  std::move(callback).Run(std::move(result));
+  return result;
 }
 
 void TestCookieAccessDelegate::SetExpectationForCookieDomain(

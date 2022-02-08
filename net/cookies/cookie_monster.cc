@@ -2245,9 +2245,12 @@ bool CookieMonster::DoRecordPeriodicStats() {
   base::UmaHistogramCounts100000("Cookie.Count2", cookies_.size());
 
   if (cookie_access_delegate()) {
-    cookie_access_delegate()->RetrieveFirstPartySets(
-        base::BindOnce(&CookieMonster::RecordPeriodicFirstPartySetsStats,
-                       weak_ptr_factory_.GetWeakPtr()));
+    absl::optional<base::flat_map<SchemefulSite, std::set<SchemefulSite>>>
+        maybe_sets = cookie_access_delegate()->RetrieveFirstPartySets(
+            base::BindOnce(&CookieMonster::RecordPeriodicFirstPartySetsStats,
+                           weak_ptr_factory_.GetWeakPtr()));
+    if (maybe_sets.has_value())
+      RecordPeriodicFirstPartySetsStats(maybe_sets.value());
   }
 
   // Can be up to kMaxDomainPurgedKeys.

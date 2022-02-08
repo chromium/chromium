@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 //-----------------------------------------------------------------------------
 // completion callback helper
@@ -64,6 +65,13 @@ class TestCompletionCallbackBaseInternal {
 template <typename R>
 struct NetErrorIsPendingHelper {
   bool operator()(R status) const { return status == ERR_IO_PENDING; }
+};
+
+template <typename T>
+struct OptionalResultIsIncompleteHelper {
+  bool operator()(const absl::optional<T>& result) const {
+    return !result.has_value();
+  }
 };
 
 template <typename R, typename IsPendingHelper = NetErrorIsPendingHelper<R>>
@@ -148,6 +156,30 @@ class TestInt64CompletionCallback : public TestInt64CompletionCallbackBase {
   Int64CompletionOnceCallback callback() {
     return base::BindOnce(&TestInt64CompletionCallback::SetResult,
                           base::Unretained(this));
+  }
+};
+
+template <typename T>
+class TestOptionalCompletionCallback
+    : public internal::TestCompletionCallbackTemplate<
+          absl::optional<T>,
+          internal::OptionalResultIsIncompleteHelper<T>> {
+ public:
+  TestOptionalCompletionCallback() = default;
+  TestOptionalCompletionCallback(const TestOptionalCompletionCallback&) =
+      delete;
+  TestOptionalCompletionCallback& operator=(
+      const TestOptionalCompletionCallback&) = delete;
+  ~TestOptionalCompletionCallback() override = default;
+
+  base::OnceCallback<void(T)> callback() {
+    return base::BindOnce(&TestOptionalCompletionCallback::SetUnwrappedResult,
+                          base::Unretained(this));
+  }
+
+ protected:
+  void SetUnwrappedResult(T result) {
+    TestOptionalCompletionCallback::SetResult(std::move(result));
   }
 };
 

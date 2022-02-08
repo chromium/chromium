@@ -28,6 +28,12 @@ namespace network {
 // updated by the component updater via |ParseAndSet|.
 class FirstPartySets {
  public:
+  using SetsByOwner =
+      base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>;
+  using OwnerResult = absl::optional<net::SchemefulSite>;
+  using OwnersResult = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+
   explicit FirstPartySets(bool enabled);
   ~FirstPartySets();
 
@@ -66,8 +72,11 @@ class FirstPartySets {
 
   // Computes the First-Party Set metadata related to the given context.
   //
-  // `callback` may be invoked either synchronously or asynchronously.
-  void ComputeMetadata(
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<net::FirstPartySetMetadata> ComputeMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
@@ -81,11 +90,12 @@ class FirstPartySets {
   // Computes a mapping from owner to set members. For convenience of iteration,
   // the members of the set includes the owner.
   //
-  // `callback` may be called synchronously or asynchronously.
-  void Sets(
-      base::OnceCallback<void(
-          base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
-          callback) const;
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<SetsByOwner> Sets(
+      base::OnceCallback<void(SetsByOwner)> callback) const;
 
   // Sets the `raw_persisted_sets_`, which is a JSON-encoded
   // string representation of a map of site -> site.
@@ -101,8 +111,14 @@ class FirstPartySets {
   // a nontrivial set.
   // If FPS is enabled and the input site is in a nontrivial set, then this
   // returns the owner site of that set.
-  const absl::optional<net::SchemefulSite> FindOwner(
-      const net::SchemefulSite& site) const;
+  //
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<OwnerResult> FindOwner(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(OwnerResult)> callback) const;
 
   // Batched version of `FindOwner`. Returns the mapping of sites to owners for
   // the given input sites (if an owner exists).
@@ -111,8 +127,14 @@ class FirstPartySets {
   // When FPS is enabled, this maps each input site to its owner (if one
   // exists), and returns the resulting mapping. If a site isn't in a
   // non-trivial First-Party Set, it is not added to the output map.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> FindOwners(
-      const base::flat_set<net::SchemefulSite>& sites) const;
+  //
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<OwnersResult> FindOwners(
+      const base::flat_set<net::SchemefulSite>& sites,
+      base::OnceCallback<void(OwnersResult)> callback) const;
 
  private:
   // Returns whether the `site` is same-party with the `party_context`, and
@@ -163,8 +185,7 @@ class FirstPartySets {
   // 1) were in `old_sets` but are no longer in `sets_`, i.e. leave the FPSs;
   // or, 2) mapped to a different owner site.
   base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets)
-      const;
+      const FlattenedSets& old_sets) const;
 
   // Checks the required inputs have been received, and if so, computes the diff
   // between the `sets_` and the parsed `raw_persisted_sets_`, and clears the
@@ -176,8 +197,7 @@ class FirstPartySets {
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members
   // of the set.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> sets_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  FlattenedSets sets_ GUARDED_BY_CONTEXT(sequence_checker_);
   absl::optional<
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
       manually_specified_set_ GUARDED_BY_CONTEXT(sequence_checker_);

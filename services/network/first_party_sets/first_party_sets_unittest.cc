@@ -7,7 +7,7 @@
 #include <set>
 #include <string>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/test_completion_callback.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
@@ -65,34 +66,34 @@ class FirstPartySetsTest : public ::testing::Test {
     env_.RunUntilIdle();
   }
 
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> SetsAndWait()
-      const {
-    base::RunLoop run_loop;
-    base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> sets;
-    sets_.Sets(base::BindLambdaForTesting(
-        [&](base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-                result) {
-          sets = result;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return sets;
+  FirstPartySets::SetsByOwner SetsAndWait() const {
+    net::TestOptionalCompletionCallback<FirstPartySets::SetsByOwner> callback;
+    return callback.GetResult(sets_.Sets(callback.callback())).value();
   }
 
   net::FirstPartySetMetadata ComputeMetadataAndWait(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const {
-    base::RunLoop run_loop;
-    net::FirstPartySetMetadata metadata;
-    sets_.ComputeMetadata(
-        site, top_frame_site, party_context,
-        base::BindLambdaForTesting([&](net::FirstPartySetMetadata result) {
-          metadata = std::move(result);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return metadata;
+    net::TestOptionalCompletionCallback<net::FirstPartySetMetadata> callback;
+    return callback
+        .GetResult(sets_.ComputeMetadata(site, top_frame_site, party_context,
+                                         callback.callback()))
+        .value();
+  }
+
+  FirstPartySets::OwnerResult FindOwnerAndWait(
+      const net::SchemefulSite& site) const {
+    net::TestOptionalCompletionCallback<FirstPartySets::OwnerResult> callback;
+    return callback.GetResult(sets_.FindOwner(site, callback.callback()))
+        .value();
+  }
+
+  FirstPartySets::OwnersResult FindOwnersAndWait(
+      const base::flat_set<net::SchemefulSite>& site) const {
+    net::TestOptionalCompletionCallback<FirstPartySets::OwnersResult> callback;
+    return callback.GetResult(sets_.FindOwners(site, callback.callback()))
+        .value();
   }
 
   FirstPartySets& sets() { return sets_; }
@@ -178,9 +179,9 @@ TEST_F(FirstPartySetsDisabledTest, ComputeMetadata_InfersSingletons) {
 TEST_F(FirstPartySetsDisabledTest, FindOwner) {
   sets().SetManuallySpecifiedSet("https://example.test,https://member.test");
   EXPECT_FALSE(
-      sets().FindOwner(net::SchemefulSite(GURL("https://example.test"))));
+      FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))));
   EXPECT_FALSE(
-      sets().FindOwner(net::SchemefulSite(GURL("https://member.test"))));
+      FindOwnerAndWait(net::SchemefulSite(GURL("https://member.test"))));
 }
 
 class FirstPartySetsEnabledTest : public FirstPartySetsTest {
@@ -666,7 +667,7 @@ TEST_F(FirstPartySetsEnabledTest,
 }
 
 TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesJoined) {
-  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+  auto old_sets = FirstPartySets::FlattenedSets{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
       {net::SchemefulSite(GURL("https://member1.test")),
@@ -704,7 +705,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesJoined) {
 }
 
 TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesLeft) {
-  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+  auto old_sets = FirstPartySets::FlattenedSets{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
       {net::SchemefulSite(GURL("https://member1.test")),
@@ -748,7 +749,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesLeft) {
 }
 
 TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerChanged) {
-  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+  auto old_sets = FirstPartySets::FlattenedSets{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
       {net::SchemefulSite(GURL("https://member1.test")),
@@ -793,7 +794,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerChanged) {
 }
 
 TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerLeft) {
-  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+  auto old_sets = FirstPartySets::FlattenedSets{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
       {net::SchemefulSite(GURL("https://foo.test")),
@@ -832,7 +833,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerLeft) {
 }
 
 TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerMemberRotate) {
-  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+  auto old_sets = FirstPartySets::FlattenedSets{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
       {net::SchemefulSite(GURL("https://foo.test")),
@@ -878,7 +879,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
   EXPECT_THAT(sets().ComputeSetsDiff({}), IsEmpty());
 
   // Empty current sets.
-  auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
+  auto old_sets = FirstPartySets::FlattenedSets{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
       {net::SchemefulSite(GURL("https://member1.test")),
@@ -1540,8 +1541,56 @@ TEST_F(PopulatedFirstPartySetsTest, FindOwner) {
 
   for (const auto& test_case : test_cases) {
     EXPECT_EQ(test_case.expected,
-              sets().FindOwner(net::SchemefulSite(GURL(test_case.url))));
+              FindOwnerAndWait(net::SchemefulSite(GURL(test_case.url))));
   }
+}
+
+TEST_F(PopulatedFirstPartySetsTest, FindOwners) {
+  net::SchemefulSite kExample =
+      net::SchemefulSite(GURL("https://example.test"));
+  net::SchemefulSite kFoo = net::SchemefulSite(GURL("https://foo.test"));
+  net::SchemefulSite kMember1 =
+      net::SchemefulSite(GURL("https://member1.test"));
+  net::SchemefulSite kMember2 =
+      net::SchemefulSite(GURL("https://member2.test"));
+  net::SchemefulSite kNonmember =
+      net::SchemefulSite(GURL("https://nonmember.test"));
+
+  EXPECT_THAT(FindOwnersAndWait({kExample}),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test"))));
+  EXPECT_THAT(FindOwnersAndWait({kMember1}),
+              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test"))));
+  EXPECT_THAT(FindOwnersAndWait({kNonmember}), IsEmpty());
+
+  EXPECT_THAT(FindOwnersAndWait({kExample, kNonmember}),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test"))));
+  EXPECT_THAT(FindOwnersAndWait({kMember1, kNonmember}),
+              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test"))));
+
+  EXPECT_THAT(FindOwnersAndWait({kExample, kFoo}),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test"))));
+  EXPECT_THAT(FindOwnersAndWait({kMember1, kFoo}),
+              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test"))));
+  EXPECT_THAT(FindOwnersAndWait({kExample, kMember2}),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test"))));
+  EXPECT_THAT(FindOwnersAndWait({kMember1, kMember2}),
+              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test"))));
 }
 
 TEST_F(PopulatedFirstPartySetsTest, Sets_NonEmpty) {
