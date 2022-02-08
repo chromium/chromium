@@ -23,6 +23,7 @@ namespace web_app {
 class OsIntegrationManager;
 class WebAppIconManager;
 class WebAppInstallManager;
+class WebAppInstallFinalizer;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 
@@ -48,6 +49,7 @@ class WebAppUninstallJob {
                      WebAppIconManager* icon_manager,
                      WebAppRegistrar* registrar,
                      WebAppInstallManager* install_manager,
+                     WebAppInstallFinalizer* install_finalizer,
                      PrefService* profile_prefs);
   ~WebAppUninstallJob();
 
@@ -73,6 +75,7 @@ class WebAppUninstallJob {
   void StopAppRegistryModification();
 
  private:
+  void OnSubAppUninstalled(bool success);
   void OnOsHooksUninstalled(OsHooksErrors errors);
   void OnIconDataDeleted(bool success);
   void MaybeFinishUninstall();
@@ -88,12 +91,14 @@ class WebAppUninstallJob {
   raw_ptr<WebAppIconManager> icon_manager_;
   raw_ptr<WebAppRegistrar> registrar_;
   raw_ptr<WebAppInstallManager> install_manager_;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   raw_ptr<PrefService> profile_prefs_;
 
   AppId app_id_;
   webapps::WebappUninstallSource source_;
   ModifyAppRegistry delete_option_;
   UninstallCallback callback_;
+  size_t num_pending_sub_app_uninstalls_;
 
   bool app_data_deleted_ = false;
   bool hooks_uninstalled_ = false;

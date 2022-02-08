@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/prefs/testing_pref_service.h"
@@ -62,8 +63,13 @@ class WebAppUninstallJobTest : public WebAppTest {
 
   WebAppInstallManager& install_manager() const { return *install_manager_; }
 
+  WebAppInstallFinalizer& install_finalizer() const {
+    return *install_finalizer_;
+  }
+
   testing::StrictMock<MockOsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
+  std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
@@ -80,7 +86,8 @@ TEST_F(WebAppUninstallJobTest, SimpleUninstall) {
 
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
-                          &install_manager(), profile()->GetPrefs());
+                          &install_manager(), &install_finalizer(),
+                          profile()->GetPrefs());
 
   OsHooksErrors result;
   EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(id, testing::_))
@@ -115,7 +122,8 @@ TEST_F(WebAppUninstallJobTest, FailedDataDelete) {
 
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
-                          &install_manager(), profile()->GetPrefs());
+                          &install_manager(), &install_finalizer(),
+                          profile()->GetPrefs());
 
   OsHooksErrors result;
   EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(id, testing::_))
@@ -150,7 +158,8 @@ TEST_F(WebAppUninstallJobTest, FailedOsHooks) {
 
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
-                          &install_manager(), profile()->GetPrefs());
+                          &install_manager(), &install_finalizer(),
+                          profile()->GetPrefs());
 
   OsHooksErrors result;
   result.set(true);

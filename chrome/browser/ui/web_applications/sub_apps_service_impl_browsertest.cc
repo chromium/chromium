@@ -38,6 +38,7 @@ constexpr const char kSubAppPath[] = "/web_apps/site_a/basic.html";
 constexpr const char kSubAppPathMinimalUi[] =
     "/web_apps/site_a/basic.html?manifest=manifest_minimal_ui.json";
 constexpr const char kSubAppPath2[] = "/web_apps/site_b/basic.html";
+constexpr const char kSubAppPath3[] = "/web_apps/site_d/basic.html";
 constexpr const char kSubAppPathInvalid[] = "/invalid/sub/app/path.html";
 
 }  // namespace
@@ -70,6 +71,8 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GetURL(kParentAppPath)));
   }
+
+  void UninstallParentApp() { UninstallWebApp(parent_app_id_); }
 
   std::vector<AppId> GetAllSubAppIds(const AppId& parent_app_id) {
     return provider().registrar().GetAllSubAppIds(parent_app_id);
@@ -241,6 +244,38 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddInvalid) {
 
   EXPECT_EQ(SubAppsServiceResult::kFailure, CallAdd(kSubAppPathInvalid));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
+// Verify that uninstalling an app with sub-apps causes sub-apps to be
+// uninstalled as well.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       UninstallingParentAppUninstallsSubApps) {
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath2));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath3));
+
+  // Verify that subapps are installed.
+  AppId sub_app_id_1 =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
+  AppId sub_app_id_2 =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
+  AppId sub_app_id_3 =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath3));
+
+  EXPECT_TRUE(provider().registrar().IsInstalled(sub_app_id_1));
+  EXPECT_TRUE(provider().registrar().IsInstalled(sub_app_id_2));
+  EXPECT_TRUE(provider().registrar().IsInstalled(sub_app_id_3));
+
+  UninstallParentApp();
+  // Verify that both parent app and sub apps are no longer installed.
+  EXPECT_FALSE(provider().registrar().IsInstalled(parent_app_id_));
+  EXPECT_FALSE(provider().registrar().IsInstalled(sub_app_id_1));
+  EXPECT_FALSE(provider().registrar().IsInstalled(sub_app_id_2));
+  EXPECT_FALSE(provider().registrar().IsInstalled(sub_app_id_3));
 }
 
 }  // namespace web_app

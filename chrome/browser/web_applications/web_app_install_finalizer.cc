@@ -310,7 +310,8 @@ void WebAppInstallFinalizer::UninstallWebApp(
           webapps::WebappUninstallSource::kAppManagement ||
       webapp_uninstall_source == webapps::WebappUninstallSource::kMigration ||
       webapp_uninstall_source == webapps::WebappUninstallSource::kAppList ||
-      webapp_uninstall_source == webapps::WebappUninstallSource::kShelf);
+      webapp_uninstall_source == webapps::WebappUninstallSource::kShelf ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kSubApp);
 
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
   DCHECK(app);
@@ -343,7 +344,7 @@ void WebAppInstallFinalizer::UninstallWithoutRegistryUpdateFromSync(
     }
     auto uninstall_task = std::make_unique<WebAppUninstallJob>(
         os_integration_manager_, sync_bridge_, icon_manager_, registrar_,
-        install_manager_, profile_->GetPrefs());
+        install_manager_, this, profile_->GetPrefs());
     uninstall_task->Start(
         app_id,
         url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
@@ -364,7 +365,7 @@ void WebAppInstallFinalizer::RetryIncompleteUninstalls(
       continue;
     auto uninstall_task = std::make_unique<WebAppUninstallJob>(
         os_integration_manager_, sync_bridge_, icon_manager_, registrar_,
-        install_manager_, profile_->GetPrefs());
+        install_manager_, this, profile_->GetPrefs());
     uninstall_task->Start(
         app_id,
         url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
@@ -474,7 +475,7 @@ void WebAppInstallFinalizer::UninstallWebAppInternal(
   }
   auto uninstall_task = std::make_unique<WebAppUninstallJob>(
       os_integration_manager_, sync_bridge_, icon_manager_, registrar_,
-      install_manager_, profile_->GetPrefs());
+      install_manager_, this, profile_->GetPrefs());
   uninstall_task->Start(
       app_id, url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
       uninstall_source, WebAppUninstallJob::ModifyAppRegistry::kYes,

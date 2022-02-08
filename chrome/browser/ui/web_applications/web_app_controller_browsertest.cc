@@ -74,6 +74,10 @@ AppId WebAppControllerBrowserTest::InstallWebApp(
   return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
+void WebAppControllerBrowserTest::UninstallWebApp(const AppId& app_id) {
+  web_app::test::UninstallWebApp(profile(), app_id);
+}
+
 Browser* WebAppControllerBrowserTest::LaunchWebAppBrowser(const AppId& app_id) {
   return web_app::LaunchWebAppBrowser(profile(), app_id);
 }

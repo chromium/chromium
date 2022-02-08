@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -24,12 +25,14 @@ WebAppUninstallJob::WebAppUninstallJob(
     WebAppIconManager* icon_manager,
     WebAppRegistrar* registrar,
     WebAppInstallManager* install_manager,
+    WebAppInstallFinalizer* install_finalizer,
     PrefService* profile_prefs)
     : os_integration_manager_(os_integration_manager),
       sync_bridge_(sync_bridge),
       icon_manager_(icon_manager),
       registrar_(registrar),
       install_manager_(install_manager),
+      install_finalizer_(install_finalizer),
       profile_prefs_(profile_prefs) {}
 
 WebAppUninstallJob::~WebAppUninstallJob() = default;
@@ -65,6 +68,18 @@ void WebAppUninstallJob::Start(const AppId& app_id,
 
   RemoveAppIsolationState(profile_prefs_, app_origin);
 
+  // Uninstall any sub-apps the app has.
+  std::vector<AppId> sub_app_ids = registrar_->GetAllSubAppIds(app_id_);
+  num_pending_sub_app_uninstalls_ = sub_app_ids.size();
+  for (AppId sub_app_id : sub_app_ids) {
+    if (registrar_->GetAppById(sub_app_id) == nullptr)
+      continue;
+    install_finalizer_->UninstallWebApp(
+        sub_app_id, webapps::WebappUninstallSource::kSubApp,
+        base::BindOnce(&WebAppUninstallJob::OnSubAppUninstalled,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   os_integration_manager_->UninstallAllOsHooks(
       app_id_, base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,
                               weak_ptr_factory_.GetWeakPtr()));
@@ -75,6 +90,13 @@ void WebAppUninstallJob::Start(const AppId& app_id,
 
 void WebAppUninstallJob::StopAppRegistryModification() {
   delete_option_ = ModifyAppRegistry::kNo;
+}
+
+void WebAppUninstallJob::OnSubAppUninstalled(bool success) {
+  errors_ = errors_ || !success;
+  num_pending_sub_app_uninstalls_--;
+  DCHECK_GE(num_pending_sub_app_uninstalls_, 0u);
+  MaybeFinishUninstall();
 }
 
 void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
@@ -100,8 +122,11 @@ void WebAppUninstallJob::OnIconDataDeleted(bool success) {
 
 void WebAppUninstallJob::MaybeFinishUninstall() {
   DCHECK(state_ == State::kPendingDataDeletion);
-  if (!hooks_uninstalled_ || !app_data_deleted_)
+  if (!hooks_uninstalled_ || !app_data_deleted_ ||
+      num_pending_sub_app_uninstalls_ > 0) {
     return;
+  }
+  DCHECK_EQ(num_pending_sub_app_uninstalls_, 0u);
   state_ = State::kDone;
 
   base::UmaHistogramBoolean("WebApp.Uninstall.Result", !errors_);

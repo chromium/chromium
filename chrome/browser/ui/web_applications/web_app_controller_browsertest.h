@@ -45,6 +45,8 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   AppId InstallWebApp(std::unique_ptr<WebAppInstallInfo> web_app_info);
 
+  void UninstallWebApp(const AppId& app_id);
+
   // Launches the app as a window and returns the browser.
   Browser* LaunchWebAppBrowser(const AppId&);
 
