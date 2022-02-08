@@ -560,6 +560,23 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SetDefaultSuggestion) {
          })";
   constexpr char kBackground[] =
       R"(chrome.test.runTests([
+           function testSetDefaultSuggestionThrowsWithContentField() {
+             // Note: This test is mostly for historical benefit. Previously,
+             // we had manual coverage to ensure developers did not pass an
+             // object with `content`; now, this is handled by the bindings
+             // system. There's no special handling in this API, but given the
+             // historical behavior, we add extra coverage here.
+             const invalidSuggestion = {
+                 description: 'description',
+                 content: 'content',
+             };
+             const expectedError = /Unexpected property: 'content'./;
+             chrome.test.assertThrows(
+                 chrome.omnibox.setDefaultSuggestion,
+                 [invalidSuggestion],
+                 expectedError);
+             chrome.test.succeed();
+           },
            function setDefaultSuggestion() {
              chrome.omnibox.setDefaultSuggestion(
                  {description: 'hello <match>match</match> world'},

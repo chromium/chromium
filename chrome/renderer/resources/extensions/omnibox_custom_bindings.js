@@ -79,15 +79,6 @@ function parseOmniboxDescription(input) {
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setUpdateArgumentsPreValidate(
-      'setDefaultSuggestion', function(suggestResult, callback) {
-        if (suggestResult.content != null) {
-          throw new Error(
-              'setDefaultSuggestion cannot contain the "content" field');
-        }
-        return [suggestResult, callback];
-      });
-
   apiFunctions.setHandleRequest('setDefaultSuggestion',
                                 function(details, callback) {
     var parseResult = parseOmniboxDescription(details.description);
