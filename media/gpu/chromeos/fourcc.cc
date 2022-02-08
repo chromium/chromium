@@ -18,10 +18,6 @@
 
 namespace media {
 
-Fourcc::Fourcc(Fourcc::Value fourcc) : value_(fourcc) {}
-Fourcc::~Fourcc() = default;
-Fourcc& Fourcc::operator=(const Fourcc& other) = default;
-
 // static
 absl::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
   switch (fourcc) {

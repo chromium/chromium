@@ -119,9 +119,7 @@ class MEDIA_GPU_EXPORT Fourcc {
     P010 = ComposeFourcc('P', '0', '1', '0'),
   };
 
-  explicit Fourcc(Fourcc::Value fourcc);
-  Fourcc& operator=(const Fourcc& fourcc);
-  ~Fourcc();
+  explicit constexpr Fourcc(Fourcc::Value fourcc) : value_(fourcc) {}
 
   bool operator==(const Fourcc& rhs) const { return value_ == rhs.value_; }
 

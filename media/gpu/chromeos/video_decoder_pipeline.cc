@@ -47,9 +47,9 @@ constexpr size_t kNumFramesForImageProcessor = limits::kMaxVideoFrames + 1;
 
 // Preferred output formats in order of preference.
 // TODO(mcasas): query the platform for its preferred formats and modifiers.
-constexpr Fourcc::Value kPreferredRenderableFourccs[] = {
-    Fourcc::NV12,
-    Fourcc::P010,
+constexpr Fourcc kPreferredRenderableFourccs[] = {
+    Fourcc(Fourcc::NV12),
+    Fourcc(Fourcc::P010),
 };
 
 // Picks the preferred compositor renderable format from |candidates|, if any.
@@ -60,15 +60,13 @@ constexpr Fourcc::Value kPreferredRenderableFourccs[] = {
 absl::optional<Fourcc> PickRenderableFourcc(
     const std::vector<Fourcc>& candidates,
     absl::optional<Fourcc> preferred_fourcc) {
-  if (preferred_fourcc && base::Contains(candidates, *preferred_fourcc)) {
-    for (const auto value : kPreferredRenderableFourccs) {
-      if (Fourcc(value) == *preferred_fourcc)
-        return preferred_fourcc;
-    }
+  if (preferred_fourcc && base::Contains(candidates, *preferred_fourcc) &&
+      base::Contains(kPreferredRenderableFourccs, *preferred_fourcc)) {
+    return preferred_fourcc;
   }
-  for (const auto value : kPreferredRenderableFourccs) {
-    if (base::Contains(candidates, Fourcc(value)))
-      return Fourcc(value);
+  for (const auto& value : kPreferredRenderableFourccs) {
+    if (base::Contains(candidates, value))
+      return value;
   }
   return absl::nullopt;
 }
@@ -634,9 +632,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // don't need an image processor.
   absl::optional<PixelLayoutCandidate> viable_candidate;
   if (!output_size || *output_size == decoder_visible_rect.size()) {
-    for (const auto preferred_fourcc : kPreferredRenderableFourccs) {
+    for (const auto& preferred_fourcc : kPreferredRenderableFourccs) {
       for (const auto& candidate : candidates) {
-        if (candidate.fourcc == Fourcc(preferred_fourcc)) {
+        if (candidate.fourcc == preferred_fourcc) {
           viable_candidate = candidate;
           break;
         }
