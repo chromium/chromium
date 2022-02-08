@@ -15,10 +15,25 @@
 #include "components/exo/buffer.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
+#include "ui/display/screen.h"
 #include "ui/views/window/caption_button_types.h"
 
 namespace {
 constexpr int kDiameter = 24;
+
+bool IsMaximizedState(
+    const absl::optional<chromeos::WindowStateType>& window_state) {
+  return window_state.has_value() &&
+         (window_state.value() == chromeos::WindowStateType::kMaximized ||
+          window_state.value() == chromeos::WindowStateType::kFullscreen);
+}
+
+bool IsMinimizedState(
+    const absl::optional<chromeos::WindowStateType>& window_state) {
+  return window_state.has_value() &&
+         window_state.value() == chromeos::WindowStateType::kMinimized;
+}
+
 }  // namespace
 
 namespace ash {
@@ -64,11 +79,26 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     const gfx::Rect& bounds,
     app_restore::AppRestoreData* restore_data,
     base::RepeatingClosure close_callback) {
+  // ArcGhostWindowShellSurface need a valid display id, or it cannot be
+  // created.
   int64_t display_id_value =
       restore_data->display_id.value_or(display::kInvalidDisplayId);
   absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id_value);
   if (!scale_factor.has_value())
     return nullptr;
+
+  const auto& window_state = restore_data->window_state_type;
+  gfx::Rect local_bounds = bounds;
+  // If the window is maximize / minimized, the initial bounds will be
+  // unnecessary. Here set it as display size to ensure the content render is
+  // correct.
+  if (local_bounds.IsEmpty()) {
+    DCHECK(IsMaximizedState(window_state) || IsMinimizedState(window_state));
+    display::Display disp;
+    display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_value,
+                                                          &disp);
+    local_bounds = disp.work_area();
+  }
 
   // TODO(sstan): Fallback to system default color or other topic color, if
   // the task hasn't valid theme color.
@@ -90,11 +120,11 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
       shell_surface.get(), window_handler, window_id, display_id_value,
-      bounds));
+      local_bounds));
   shell_surface->set_close_callback(std::move(close_callback));
 
   shell_surface->SetAppId(app_id);
-  shell_surface->SetBounds(display_id_value, bounds);
+  shell_surface->SetBounds(display_id_value, local_bounds);
 
   if (restore_data->maximum_size.has_value())
     shell_surface->SetMaximumSize(restore_data->maximum_size.value());
@@ -121,19 +151,20 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   // Relayout overlay.
   shell_surface->GetWidget()->LayoutRootViewIfNecessary();
 
-  // Change the minimized at the last operation, since we need create the window
-  // entity first and hide it on ash shelf.
-  if (restore_data->window_state_type.has_value() &&
-      restore_data->window_state_type.value() ==
-          chromeos::WindowStateType::kMinimized) {
+  // Change the window state at the last operation, since we need create the
+  // window entity first.
+  if (IsMaximizedState(window_state)) {
+    shell_surface->SetMaximized();
+    shell_surface->controller_surface()->Commit();
+  } else if (IsMinimizedState(window_state)) {
     shell_surface->SetMinimized();
     shell_surface->controller_surface()->Commit();
+  } else {
+    // Reset the same bounds, to make sure white background can be located in
+    // correct place. Without this operation, the white background will not
+    // at the same location with window bounds.
+    shell_surface->SetBounds(display_id_value, local_bounds);
   }
-
-  // Reset the same bounds, to make sure white background can be located in
-  // correct place. Without this operation, the white background will not
-  // at the same location with window bounds.
-  shell_surface->SetBounds(display_id_value, bounds);
 
   return shell_surface;
 }
