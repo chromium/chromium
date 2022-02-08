@@ -146,11 +146,11 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   HKEY key =
       scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
 
-  updater::UnregisterWakeTask(scope);
-
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
+
+  updater::UnregisterWakeTask(scope);
 
   if (uninstall_all) {
     std::unique_ptr<WorkItemList> uninstall_list(
