@@ -1,4 +1,7 @@
 {
+  "program": {
+    "binary": "ozone_demo"
+  },
   "sandbox": {
     "features": [
       "deprecated-ambient-replace-as-executable",
