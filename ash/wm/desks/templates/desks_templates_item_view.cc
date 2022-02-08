@@ -191,6 +191,8 @@ DesksTemplatesItemView::DesksTemplatesItemView(
                           weak_ptr_factory_.GetWeakPtr()),
       CloseButton::Type::kMedium));
   delete_button_->SetVectorIcon(kDeleteIcon);
+  delete_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON));
 
   name_view_->set_controller(this);
   name_view_observation_.Observe(name_view_);
