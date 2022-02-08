@@ -42,6 +42,8 @@ namespace desks_storage {
 using BrowserAppTab =
     sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow_BrowserAppTab;
 using BrowserAppWindow = sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow;
+using ArcApp = sync_pb::WorkspaceDeskSpecifics_ArcApp;
+using ArcAppWindowSize = sync_pb::WorkspaceDeskSpecifics_ArcApp_WindowSize;
 using ash::DeskTemplate;
 using ash::DeskTemplateSource;
 using WindowState = sync_pb::WorkspaceDeskSpecifics_WindowState;
@@ -133,6 +135,8 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
       return app.app().chrome_app().app_id();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kProgressWebApp:
       return app.app().progress_web_app().app_id();
+    case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp:
+      return app.app().arc_app().app_id();
       // Leave out the default case to let compiler to ensure we have
       // exhaustively handled all cases.
   }
@@ -175,6 +179,9 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kProgressWebApp:
       // |app_id| is enough to identify a Progressive Web app.
+      break;
+    case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp:
+      // |app_id| is enough to identify an Arc app.
       break;
       // Leave out the default case to let compiler to ensure we have
       // exhaustively handled all cases.
@@ -302,6 +309,9 @@ void FillBrowserAppWindow(BrowserAppWindow* out_browser_app_window,
 }
 
 // Fill |out_window_bound| with information from |bound|.
+//
+// TOOD(crbug/1295051): here and elsewhere move out_* args to end of parameter
+// lists.
 void FillWindowBound(WindowBound* out_window_bound, const gfx::Rect& bound) {
   out_window_bound->set_left(bound.x());
   out_window_bound->set_top(bound.y());
@@ -339,6 +349,36 @@ void FillAppWithDisplayId(WorkspaceDeskSpecifics_App* out_app,
                           const app_restore::AppRestoreData* app_restore_data) {
   if (app_restore_data->display_id.has_value())
     out_app->set_display_id(app_restore_data->display_id.value());
+}
+
+void FillArcAppSize(ArcAppWindowSize* out_window_size, const gfx::Size& size) {
+  out_window_size->set_width(size.width());
+  out_window_size->set_height(size.height());
+}
+
+void FillArcBoundsInRoot(WindowBound* out_rect, const gfx::Rect& data_rect) {
+  out_rect->set_left(data_rect.x());
+  out_rect->set_top(data_rect.y());
+  out_rect->set_width(data_rect.width());
+  out_rect->set_height(data_rect.height());
+}
+
+void FillArcApp(ArcApp* out_app,
+                const app_restore::AppRestoreData* app_restore_data) {
+  if (app_restore_data->minimum_size.has_value()) {
+    FillArcAppSize(out_app->mutable_minimum_size(),
+                   app_restore_data->minimum_size.value());
+  }
+  if (app_restore_data->maximum_size.has_value()) {
+    FillArcAppSize(out_app->mutable_maximum_size(),
+                   app_restore_data->maximum_size.value());
+  }
+  if (app_restore_data->title.has_value())
+    out_app->set_title(base::UTF16ToUTF8(app_restore_data->title.value()));
+  if (app_restore_data->bounds_in_root.has_value()) {
+    FillArcBoundsInRoot(out_app->mutable_bounds_in_root(),
+                        app_restore_data->bounds_in_root.value());
+  }
 }
 
 // Fill |out_app| with |app_restore_data|.
@@ -389,10 +429,38 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
       }
       break;
     }
+    case apps::mojom::AppType::kArc: {
+      ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
+      arc_app->set_app_id(app_id);
+      FillArcApp(arc_app, app_restore_data);
+      break;
+    }
     default: {
       // Unhandled app type.
       break;
     }
+  }
+}
+
+void FillArcExtraInfoFromProto(app_restore::WindowInfo* out_window_info,
+                               const ArcApp& app) {
+  out_window_info->arc_extra_info.emplace();
+  app_restore::WindowInfo::ArcExtraInfo& arc_info =
+      out_window_info->arc_extra_info.value();
+  if (app.has_minimum_size()) {
+    arc_info.minimum_size.emplace(app.minimum_size().width(),
+                                  app.minimum_size().height());
+  }
+  if (app.has_maximum_size()) {
+    arc_info.maximum_size.emplace(app.maximum_size().width(),
+                                  app.maximum_size().height());
+  }
+  if (app.has_title())
+    arc_info.title.emplace(base::UTF8ToUTF16(app.title()));
+  if (app.has_bounds_in_root()) {
+    arc_info.bounds_in_root.emplace(
+        app.bounds_in_root().left(), app.bounds_in_root().top(),
+        app.bounds_in_root().width(), app.bounds_in_root().height());
   }
 }
 
@@ -421,6 +489,11 @@ void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
       sync_pb::WorkspaceDeskSpecifics_WindowState_IsValid(app.window_state())) {
     out_window_info->pre_minimized_show_state_type.emplace(
         ToUiWindowState(app.pre_minimized_window_state()));
+  }
+
+  if (app.app().app_case() ==
+      sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp) {
+    FillArcExtraInfoFromProto(out_window_info, app.app().arc_app());
   }
 }
 

@@ -1245,6 +1245,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::AppOneOf& proto) {
   VISIT(browser_app_window);
   VISIT(chrome_app);
   VISIT(progress_web_app);
+  VISIT(arc_app);
 }
 
 VISIT_PROTO_FIELDS(
@@ -1276,6 +1277,20 @@ VISIT_PROTO_FIELDS(
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::WindowBound& proto) {
   VISIT(top);
   VISIT(left);
+  VISIT(width);
+  VISIT(height);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::ArcApp& proto) {
+  VISIT(app_id);
+  VISIT(minimum_size);
+  VISIT(maximum_size);
+  VISIT(title);
+  VISIT(bounds_in_root);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::WorkspaceDeskSpecifics::ArcApp::WindowSize& proto) {
   VISIT(width);
   VISIT(height);
 }
