@@ -179,6 +179,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         onView(withText(R.string.privacy_sandbox_remove_interest_title))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(doesNotExist());
+
         clickImageButtonNextToText("Foo");
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), not(hasItem("Foo")));
         assertThat(PrivacySandboxBridge.getBlockedTopics(), hasItem("Foo"));
@@ -187,6 +188,10 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         assertThat(mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.AdPersonalization.Opened",
                         "Settings.PrivacySandbox.AdPersonalization.TopicRemoved"));
+        onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(doesNotExist());
+
+        clickImageButtonNextToText("Bar");
+        onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -208,6 +213,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
+
         clickImageButtonNextToText("BlockedFoo");
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), hasItem("BlockedFoo"));
         assertThat(PrivacySandboxBridge.getBlockedTopics(), not(hasItem("BlockedFoo")));
@@ -216,6 +222,11 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         assertThat(mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.RemovedInterests.Opened",
                         "Settings.PrivacySandbox.RemovedInterests.TopicAdded"));
+        onView(withText(R.string.privacy_sandbox_removed_topics_empty_state)).check(doesNotExist());
+
+        clickImageButtonNextToText("BlockedBar");
+        onView(withText(R.string.privacy_sandbox_removed_topics_empty_state))
+                .check(matches(isDisplayed()));
     }
 
     @Test

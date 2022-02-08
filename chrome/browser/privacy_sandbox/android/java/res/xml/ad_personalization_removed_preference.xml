@@ -15,4 +15,10 @@
         android:key="topic_interests"
         android:title="@string/privacy_sandbox_topic_interests_category" />
 
+    <Preference
+        android:key="empty_topics"
+        android:summary="@string/privacy_sandbox_removed_topics_empty_state"
+        app:allowDividerBelow="false"
+        android:selectable="false"/>
+
 </PreferenceScreen>

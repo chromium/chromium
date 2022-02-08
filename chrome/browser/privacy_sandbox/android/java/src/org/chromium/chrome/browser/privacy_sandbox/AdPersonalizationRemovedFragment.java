@@ -27,9 +27,11 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class AdPersonalizationRemovedFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
+    private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
 
     private PreferenceCategory mTopicsCategory;
     private SnackbarManager mSnackbarManager;
+    private Preference mEmptyTopicsPreference;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
@@ -45,6 +47,8 @@ public class AdPersonalizationRemovedFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_removed_preference);
         mTopicsCategory = findPreference(TOPICS_CATEGORY_PREFERENCE);
         assert mTopicsCategory != null;
+        mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
+        assert mEmptyTopicsPreference != null;
 
         for (String interest : PrivacySandboxBridge.getBlockedTopics()) {
             ImageButtonPreference interestPreference = new ImageButtonPreference(getContext());
@@ -55,6 +59,7 @@ public class AdPersonalizationRemovedFragment
             interestPreference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(interestPreference);
         }
+        updateEmptyState();
     }
 
     @NonNull
@@ -76,11 +81,16 @@ public class AdPersonalizationRemovedFragment
             assert preference.getParent() == mTopicsCategory;
             allowTopic(preference.getTitle().toString());
             mTopicsCategory.removePreference(preference);
+            updateEmptyState();
             mSnackbarManager.showSnackbar(Snackbar.make(
                     getResources().getString(R.string.privacy_sandbox_add_interest_snackbar), null,
                     Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST));
             RecordUserAction.record("Settings.PrivacySandbox.RemovedInterests.TopicAdded");
         }
         return true;
+    }
+
+    private void updateEmptyState() {
+        mEmptyTopicsPreference.setVisible(mTopicsCategory.getPreferenceCount() == 0);
     }
 }

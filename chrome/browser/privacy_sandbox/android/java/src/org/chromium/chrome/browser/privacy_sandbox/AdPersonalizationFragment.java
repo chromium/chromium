@@ -86,9 +86,8 @@ public class AdPersonalizationFragment
             interestPreference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(interestPreference);
         }
-        boolean hasAnyTopics = !currentTopics.isEmpty() || !blockedTopics.isEmpty();
-        mRemoveTopicsPreference.setVisible(hasAnyTopics);
-        mEmptyTopicsPreference.setVisible(!hasAnyTopics);
+        updateEmptyState();
+        mRemoveTopicsPreference.setVisible(!currentTopics.isEmpty() || !blockedTopics.isEmpty());
     }
 
     private void blockTopic(String topic) {
@@ -101,11 +100,16 @@ public class AdPersonalizationFragment
             assert preference.getParent() == mTopicsCategory;
             blockTopic(preference.getTitle().toString());
             mTopicsCategory.removePreference(preference);
+            updateEmptyState();
             mSnackbarManager.showSnackbar(Snackbar.make(
                     getResources().getString(R.string.privacy_sandbox_remove_interest_snackbar),
                     null, Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
             RecordUserAction.record("Settings.PrivacySandbox.AdPersonalization.TopicRemoved");
         }
         return true;
+    }
+
+    private void updateEmptyState() {
+        mEmptyTopicsPreference.setVisible(mTopicsCategory.getPreferenceCount() == 0);
     }
 }
