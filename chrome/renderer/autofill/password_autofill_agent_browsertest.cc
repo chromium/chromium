@@ -100,11 +100,6 @@ const char16_t kCarolUsername16[] = u"Carol";
 const char kCarolPassword[] = "test";
 const char16_t kCarolPassword16[] = u"test";
 const char16_t kCarolAlternateUsername16[] = u"RealCarolUsername";
-const char16_t kEmptyUsername16[] = u"";
-#if !BUILDFLAG(IS_ANDROID)
-const char kEmptyUsernamePassword[] = "empty";
-#endif
-const char16_t kEmptyUsernamePassword16[] = u"empty";
 
 const char kFormHTML[] =
     "<FORM id='LoginTestForm' action='http://www.bidule.com'>"
@@ -374,8 +369,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     username3_ = kCarolUsername16;
     password3_ = kCarolPassword16;
     alternate_username3_ = kCarolAlternateUsername16;
-    username4_ = kEmptyUsername16;
-    password4_ = kEmptyUsernamePassword16;
 
     FormFieldData username_field;
     username_field.name = kUsernameName16;
@@ -396,10 +389,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     password3.password = password3_;
     password3.username = username3_;
     fill_data_.additional_logins.push_back(std::move(password3));
-    PasswordAndMetadata password4;
-    password3.password = password4_;
-    password4.username = username4_;
-    fill_data_.additional_logins.push_back(std::move(password4));
 
     // We need to set the origin so it matches the frame URL and the action so
     // it matches the form action, otherwise we won't autocomplete.
@@ -804,12 +793,10 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   std::u16string username1_;
   std::u16string username2_;
   std::u16string username3_;
-  std::u16string username4_;
   std::u16string password1_;
   std::u16string password2_;
   std::u16string password3_;
   std::u16string alternate_username3_;
-  std::u16string password4_;
   PasswordFormFillData fill_data_;
 
   WebInputElement username_element_;
@@ -4028,6 +4015,15 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
 // Fill on account select for credentials with empty usernames:
 // Do not refill usernames if non-empty username is already selected.
 TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
+  const char kPasswordForEmptyUsernameCredential[] = "empty";
+  const char16_t kPasswordForEmptyUsernameCredential16[] = u"empty";
+
+  // Add a credential with an empty username.
+  PasswordAndMetadata empty_username_credential;
+  empty_username_credential.password = kPasswordForEmptyUsernameCredential16;
+  empty_username_credential.username = u"";
+  fill_data_.additional_logins.push_back(std::move(empty_username_credential));
+
   SimulateOnFillPasswordForm(fill_data_);
   ClearUsernameAndPasswordFields();
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
@@ -4038,9 +4034,10 @@ TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
 
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
   SimulateSuggestionChoiceOfUsernameAndPassword(
-      password_element_, kEmptyUsername16, kEmptyUsernamePassword16);
+      password_element_, u"", kPasswordForEmptyUsernameCredential16);
 
-  CheckTextFieldsDOMState(kAliceUsername, true, kEmptyUsernamePassword, true);
+  CheckTextFieldsDOMState(kAliceUsername, true,
+                          kPasswordForEmptyUsernameCredential, true);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
