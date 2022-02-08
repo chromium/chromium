@@ -260,9 +260,10 @@ class CONTENT_EXPORT AuctionRunner {
   // winning seller worklets and ReportWin() in the winning bidder worklet.
   class Auction {
    public:
-    // Callback that's invoked once interest groups have been loaded. Always
+    // Callback that's called when a phase of the Auction completes. Always
     // invoked asynchronously.
-    using LoadInterestGroupsCallback = base::OnceCallback<void(bool success)>;
+    using AuctionPhaseCompletionCallback =
+        base::OnceCallback<void(bool success)>;
 
     // All passed in raw pointers must remain valid until the Auction is
     // destroyed. `config` is typically owned by the AuctionRunner's
@@ -280,14 +281,27 @@ class CONTENT_EXPORT AuctionRunner {
     // `is_interest_group_api_allowed`, and any any not allowed to use the API
     // are excluded from participating in the auction.
     //
-    // Invokes `load_interest_groups_callback` asynchronously on completion.
-    // Passes it false if there are no interest groups that may participate in
-    // the auction (possibly because sellers aren't allowed to participate in
-    // the auction)
-    void LoadInterestGroups(
+    // Invokes `load_interest_groups_phase_callback` asynchronously on
+    // completion. Passes it false if there are no interest groups that may
+    // participate in the auction (possibly because sellers aren't allowed to
+    // participate in the auction)
+    void StartLoadInterestGroupsPhase(
         IsInterestGroupApiAllowedCallback
             is_interest_group_api_allowed_callback,
-        LoadInterestGroupsCallback load_interest_groups_callback);
+        AuctionPhaseCompletionCallback load_interest_groups_phase_callback);
+
+    // Starts bidding and scoring phase of the auction. Callback is invoked when
+    // either the auction has failed to produce a winner, or the auction has a
+    // winner. `success` is only when there is a winner.
+    void StartBiddingAndScoringPhase(
+        AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
+
+    // Starts the reporting phase of the auction. Callback is invoked when
+    // either the auction has encountered a fatal error, or until all reporting
+    // URLs (if any) have been retrieved from the applicable worklets. `success`
+    // is true if the fainl status of the auction is `kSuccess`.
+    void StartReportingPhase(
+        AuctionPhaseCompletionCallback reporting_phase_callback);
 
     // Close all Mojo pipes and release all weak pointers. Called when an
     // auction fails and on auction complete.
@@ -301,9 +315,8 @@ class CONTENT_EXPORT AuctionRunner {
     // TODO(mmenke): Consider calling this after the reporting phase.
     InterestGroupSet GetInterestGroupsThatBid() const;
 
-    // Retrieves any debug reporting URLs. May only be called after an auction
-    // has completed. May only be called once, since it takes ownership of
-    // stored reporting URLs.
+    // Retrieves any debug reporting URLs. May only be called once, since it
+    // takes ownership of stored reporting URLs.
     void TakeDebugReportUrls(std::vector<GURL>& debug_win_report_urls,
                              std::vector<GURL>& debug_loss_report_urls);
 
@@ -311,17 +324,145 @@ class CONTENT_EXPORT AuctionRunner {
     // TODO(mmenke): Remove this once Auction fully manages its own state.
     friend class AuctionRunner;
 
+    // ---------------------------------
+    // Load interest group phase methods
+    // ---------------------------------
+
     // Adds `interest_groups` to `bid_states_`. If all bidders have been loaded,
-    // calls OnLoadInterestGroupsComplete().
+    // calls OnStartLoadInterestGroupsPhaseComplete().
     void OnInterestGroupRead(std::vector<StorageInterestGroup> interest_groups);
 
     // Invoked once the interest group load phase has completed. Never called
-    // synchronously from LoadInterestGroups(), to avoid reentrancy.
+    // synchronously from StartLoadInterestGroupsPhase(), to avoid reentrancy.
     // `auction_result` is the result of trying to load the interest groups that
     // can participate in the auction. It's AuctionResult::kSuccess if there are
     // interest groups that can take part in the auction, and a failure value
     // otherwise.
-    void OnLoadInterestGroupsComplete(AuctionResult auction_result);
+    void OnStartLoadInterestGroupsPhaseComplete(AuctionResult auction_result);
+
+    // -------------------------------------
+    // Generate and score bids phase methods
+    // -------------------------------------
+
+    // Requests a seller worklet from the AuctionWorkletManager.
+    void RequestSellerWorklet();
+
+    // Called when RequestSellerWorklet() returns. Starts scoring bids, if there
+    // are any.
+    void OnSellerWorkletReceived();
+
+    // Requests bidder worklets from the AuctionWorkletManager for all bidders.
+    void RequestBidderWorklets();
+
+    // Invoked by the AuctionWorkletManager on fatal errors, at any point after
+    // a SellerWorklet has been provided. Results in auction immediately
+    // failing. Unlike most other methods, may be invoked during either the
+    // generate bid phase or the reporting phase, since the seller worklet is
+    // not unloaded between the two phases.
+    void OnSellerWorkletFatalError(
+        AuctionWorkletManager::FatalErrorType fatal_error_type,
+        const std::vector<std::string>& errors);
+
+    // Invoked whenever the AuctionWorkletManager has provided a BidderWorket
+    // for the bidder identified by `bid_state`. Starts generating a bid.
+    void OnBidderWorkletReceived(BidState* bid_state);
+
+    // Calls SendPendingSignalsRequests() for the BidderWorklet of `bid_state`,
+    // if it hasn't been destroyed. This is done asynchronously, so that
+    // BidStates that share a BidderWorklet all call GenerateBid() before this
+    // is invoked for all of them.
+    //
+    // This does result in invoking SendPendingSignalsRequests() multiple times
+    // for BidStates that share BidderWorklets, though that should be fairly low
+    // overhead.
+    void SendPendingSignalsRequestsForBidder(BidState* bid_state);
+
+    // Called when the `bid_state` BidderWorklet crashes or fails to load.
+    // Invokes OnGenerateBidComplete() for the worklet with a failure.
+    void OnBidderWorkletGenerateBidFatalError(
+        BidState* bid_state,
+        AuctionWorkletManager::FatalErrorType fatal_error_type,
+        const std::vector<std::string>& errors);
+
+    // Called once a bid has been generated, or has failed to be generated.
+    // Releases the BidderWorklet handle and instructs the SellerWorklet to
+    // start scoring the bid, if there is one.
+    void OnGenerateBidComplete(
+        BidState* state,
+        auction_worklet::mojom::BidderWorkletBidPtr bid,
+        const absl::optional<GURL>& debug_loss_report_url,
+        const absl::optional<GURL>& debug_win_report_url,
+        const std::vector<std::string>& errors);
+
+    // True if all bid results and the seller script load are complete.
+    bool AllBidsScored() const { return outstanding_bids_ == 0; }
+
+    // Calls into the seller asynchronously to score the passed in bid.
+    void ScoreBid(std::unique_ptr<Bid> bid);
+
+    // Callback from ScoreBid().
+    void OnBidScored(std::unique_ptr<Bid> bid,
+                     double score,
+                     uint32_t data_version,
+                     bool has_data_version,
+                     const absl::optional<GURL>& debug_loss_report_url,
+                     const absl::optional<GURL>& debug_win_report_url,
+                     const std::vector<std::string>& errors);
+
+    absl::optional<std::string> PerBuyerSignals(const BidState* state);
+
+    // If there are no `outstanding_bids_`, completes the bidding and scoring
+    // phase.
+    void MaybeCompleteBiddingAndScoringPhase();
+
+    // Invoked when the bidding and scoring phase of an auction completes.
+    // `auction_result` is AuctionResult::kSuccess if the auction has a winner,
+    // and some other value otherwise. Appends `errors` to `errors_`.
+    void OnBiddingAndScoringComplete(
+        AuctionResult auction_result,
+        const std::vector<std::string>& errors = {});
+
+    // -----------------------
+    // Reporting phase methods
+    // -----------------------
+
+    // Sequence of asynchronous methods to call into the bidder/seller results
+    // to report a a win. Will ultimately invoke ReportSuccess(), which will
+    // delete the auction.
+    void OnReportSellerResultComplete(
+        const absl::optional<std::string>& signals_for_winner,
+        const absl::optional<GURL>& seller_report_url,
+        const std::vector<std::string>& error_msgs);
+    void LoadBidderWorkletToReportBidWin(
+        const absl::optional<std::string>& signals_for_winner);
+    void ReportBidWin(const absl::optional<std::string>& signals_for_winner);
+    void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
+                                const std::vector<std::string>& error_msgs);
+
+    // Called when the BidderWorklet that won an auction has an out-of-band
+    // fatal error during the ReportWin() call.
+    void OnWinningBidderWorkletFatalError(
+        AuctionWorkletManager::FatalErrorType fatal_error_type,
+        const std::vector<std::string>& errors);
+
+    // Called when the final phase of the auction completes. Unconditionally
+    // sets `final_auction_result`, even if `auction_result` is
+    // AuctionResult::kSuccess, unlike other phase completion methods. Appends
+    // `errors` to `errors_`.
+    void OnReportingPhaseComplete(AuctionResult auction_result,
+                                  const std::vector<std::string>& errors = {});
+
+    // -----------------------------------
+    // Methods not associtaed with a phase
+    // -----------------------------------
+
+    // Requests a WorkletHandle for the interest group identified by
+    // `bid_state`, using the provided callbacks. Returns true if a worklet was
+    // received synchronously.
+    [[nodiscard]] bool RequestBidderWorklet(
+        BidState& bid_state,
+        base::OnceClosure worklet_available_callback,
+        AuctionWorkletManager::FatalErrorCallback fatal_error_callback);
 
     const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
     const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
@@ -332,11 +473,16 @@ class CONTENT_EXPORT AuctionRunner {
     // Final result of the auction, once completed. Null before completion.
     absl::optional<AuctionResult> final_auction_result_;
 
+    // Each phases uses its own callback, to make sure that the right callback
+    // is invoked when the phase completes.
+    AuctionPhaseCompletionCallback load_interest_groups_phase_callback_;
+    AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback_;
+    AuctionPhaseCompletionCallback reporting_phase_callback_;
+
     // The number of buyers with pending interest group loads from storage.
     // Decremented each time OnInterestGroupRead() is invoked.
-    // `load_interest_groups_callback` is invoked once this hits 0.
+    // `load_interest_groups_phase_callback` is invoked once this hits 0.
     size_t num_pending_buyers_ = 0;
-    LoadInterestGroupsCallback load_interest_groups_callback_;
 
     // True once a seller worklet has been received from the
     // AuctionWorkletManager.
@@ -408,123 +554,26 @@ class CONTENT_EXPORT AuctionRunner {
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url);
 
-  // Tells `auction_` to start loading interest groups.
+  // Tells `auction_` to start the loading interest groups phase.
   void StartAuction(
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback);
 
   // Invoked asynchronously by `auction_` once all interest groups have loaded.
-  // Fails the auction if `success` is false. Otherwise, starts loading
-  // worklets.
-  void OnInterestGroupsLoaded(bool success);
+  // Fails the auction if `success` is false. Otherwise, starts the bidding and
+  // scoring phase.
+  void OnLoadInterestGroupsComplete(bool success);
 
-  // Requests a seller worklet from the AuctionWorkletManager.
-  void RequestSellerWorklet();
+  // Invoked asynchronously by `auction_` once the bidding and scoring phase is
+  // complete. Records which bidders bid, if necessary, and either fails the
+  // auction or starts the reporting phase, depending on the value of `success`.
+  void OnBidsGeneratedAndScored(bool success);
 
-  // Called when RequestSellerWorklet() returns. Starts scoring bids, if there
-  // are any.
-  void OnSellerWorkletReceived();
+  // Invoked asynchronously by `auction_` once the reporting phase has
+  // completed. If `success` is false, fails the auction. Otherwise, records
+  // which interest group won the auction and collects parameters needed to
+  // invoke the auction callback.
+  void OnReportingPhaseComplete(bool success);
 
-  // Requests bidder worklets from the AuctionWorkletManager for all bidders.
-  void RequestBidderWorklets();
-
-  // Invoked by the SellerWorkletManager on fatal errors, at any point after a
-  // SellerWorklet has been provided. Results in auction immediately failing.
-  void OnSellerWorkletFatalError(
-      AuctionWorkletManager::FatalErrorType fatal_error_type,
-      const std::vector<std::string>& errors);
-
-  // Invoked whenever the AuctionWorkletManager has provided a BidderWorket for
-  // the bidder identified by `bid_state`. Starts generating a bid.
-  void OnBidderWorkletReceived(BidState* bid_state);
-
-  // Calls SendPendingSignalsRequests() for the BidderWorklet of `bid_state`, if
-  // it hasn't been destroyed. This is done asynchronously, so that BidStates
-  // that share a BidderWorklet all call GenerateBid() before this is invoked
-  // for all of them.
-  //
-  // This does result in invoking SendPendingSignalsRequests() multiple times
-  // for BidStates that share BidderWorklets, though that should be fairly low
-  // overhead.
-  void SendPendingSignalsRequestsForBidder(BidState* bid_state);
-
-  // Called when the `bid_state` BidderWorklet crashes or fails to load, and
-  // `bid_state` is in state kGeneratingBid. Fails the GenerateBid() call and
-  // releases the worklet handle, as the callback passed to the GenerateBid Mojo
-  // call will not be invoked after this method is.
-  void OnBidderWorkletGenerateBidFatalError(
-      BidState* bid_state,
-      AuctionWorkletManager::FatalErrorType fatal_error_type,
-      const std::vector<std::string>& errors);
-
-  // Called once a bid has been generated, or has failed to be generated.
-  // Releases the BidderWorklet handle and instructs the SellerWorklet to start
-  // scoring the bid, if there is one.
-  void OnGenerateBidComplete(BidState* state,
-                             auction_worklet::mojom::BidderWorkletBidPtr bid,
-                             const absl::optional<GURL>& debug_loss_report_url,
-                             const absl::optional<GURL>& debug_win_report_url,
-                             const std::vector<std::string>& errors);
-
-  // True if all bid results and the seller script load are complete.
-  bool AllBidsScored() const { return auction_.outstanding_bids_ == 0; }
-
-  // Calls into the seller asynchronously to score the passed in bid.
-  void ScoreBid(std::unique_ptr<Bid> bid);
-
-  // Callback from ScoreBid().
-  void OnBidScored(std::unique_ptr<Bid> bid,
-                   double score,
-                   uint32_t data_version,
-                   bool has_data_version,
-                   const absl::optional<GURL>& debug_loss_report_url,
-                   const absl::optional<GURL>& debug_win_report_url,
-                   const std::vector<std::string>& errors);
-
-  absl::optional<std::string> PerBuyerSignals(const BidState* state);
-
-  // If there are no `outstanding_bids_`, starts starts completing the auction,
-  // either invoking `callback_` or calling reporting methods on worklets.
-  // Consumer must be able to safely delete `this` when the callback is invoked.
-  void MaybeCompleteAuction();
-
-  // Sequence of asynchronous methods to call into the bidder/seller results to
-  // report a a win. Will ultimately invoke ReportSuccess(), which will delete
-  // the auction.
-  void ReportSellerResult();
-  void OnReportSellerResultComplete(
-      const absl::optional<std::string>& signals_for_winner,
-      const absl::optional<GURL>& seller_report_url,
-      const std::vector<std::string>& error_msgs);
-  void LoadBidderWorkletToReportBidWin(
-      const absl::optional<std::string>& signals_for_winner);
-  void ReportBidWin(const absl::optional<std::string>& signals_for_winner);
-  void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
-                              const std::vector<std::string>& error_msgs);
-
-  // Called when the BidderWorklet that won an auction has an out-of-band fatal
-  // error during the ReportWin() call.
-  void OnWinningBidderWorkletFatalError(
-      AuctionWorkletManager::FatalErrorType fatal_error_type,
-      const std::vector<std::string>& errors);
-
-  // Completes the auction, invoking `callback_` and preventing any future
-  // calls into `this` by closing mojo pipes and disposing of weak pointers. The
-  // owner must be able to safely delete `this` when the callback is invoked.
-  void ReportSuccess();
-
-  // Closes all open pipes, to avoid receiving any Mojo callbacks after
-  // completion.
-  void ClosePipes();
-
-  // Requests a WorkletHandle for the interest group identified by `bid_state`,
-  // using the provided callbacks. Returns true if a worklet was received
-  // synchronously.
-  [[nodiscard]] bool RequestBidderWorklet(
-      BidState& bid_state,
-      base::OnceClosure worklet_available_callback,
-      AuctionWorkletManager::FatalErrorCallback fatal_error_callback);
-
-  const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   // Configuration.
@@ -532,8 +581,6 @@ class CONTENT_EXPORT AuctionRunner {
   RunAuctionCallback callback_;
 
   Auction auction_;
-
-  base::WeakPtrFactory<AuctionRunner> weak_ptr_factory_{this};
 };
 
 }  // namespace content
