@@ -5,14 +5,24 @@
 package org.chromium.chrome.browser.app.omnibox;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -29,8 +39,9 @@ import org.chromium.ui.base.PageTransition;
  * Handle the clicks on the {@link OmniboxPedal}.
  */
 public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
-    private Activity mActivity;
-    public OmniboxPedalDelegateImpl(Activity activity) {
+    private final @NonNull Activity mActivity;
+
+    public OmniboxPedalDelegateImpl(@NonNull Activity activity) {
         mActivity = activity;
     }
 
@@ -51,10 +62,14 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                         mActivity, AutofillPaymentMethodsFragment.class);
                 break;
             case OmniboxPedalType.LAUNCH_INCOGNITO:
-                if (mActivity instanceof ChromeActivity) {
+                if (isChromeActivity()) {
                     ((ChromeActivity) mActivity)
                             .onMenuOrKeyboardAction(
                                     R.id.new_incognito_tab_menu_id, /*fromMenu*/ false);
+                } else {
+                    Intent intent = IntentHandler.createTrustedOpenNewTabIntent(
+                            mActivity.getApplicationContext(), /*incognito=*/true);
+                    startActivity(intent);
                 }
                 break;
             case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
@@ -68,24 +83,65 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 settingsLauncher.launchSettingsActivity(mActivity);
                 break;
             case OmniboxPedalType.VIEW_CHROME_HISTORY:
-                if (mActivity instanceof ChromeActivity) {
+                if (isChromeActivity()) {
                     ((ChromeActivity) mActivity)
                             .onMenuOrKeyboardAction(R.id.open_history_menu_id, /*fromMenu*/ false);
+                } else {
+                    Intent intent = new Intent();
+                    intent.setClass(mActivity.getApplicationContext(), HistoryActivity.class);
+                    intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, false);
+                    startActivity(intent);
                 }
                 break;
             case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
                 settingsLauncher.launchSettingsActivity(mActivity, AccessibilitySettings.class);
                 break;
             case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
-                if (mActivity instanceof ChromeActivity) {
+                if (isChromeActivity()) {
                     ((ChromeActivity) mActivity)
                             .getActivityTab()
                             .loadUrl(new LoadUrlParams(
                                     UrlConstants.CHROME_DINO_URL, PageTransition.GENERATED));
+                } else {
+                    Context context = mActivity.getApplicationContext();
+                    Intent dinoIntent = createDinoIntent(context);
+                    startActivity(dinoIntent);
                 }
                 break;
         }
         return;
+    }
+
+    /**
+     * Creates an intent to launch a new tab with chrome://dino/ URL.
+     *
+     * @param context The context from which the intent is being created.
+     * @return An intent to launch a tab with a new tab with chrome://dino/ URL.
+     */
+    private @NonNull Intent createDinoIntent(final @NonNull Context context) {
+        // We concatenate the forward slash to the URL since if a Dino tab already exists, we would
+        // like to reuse it. In order to determine if there is an existing Dino tab,
+        // ChromeTabbedActivity will check by comparing URLs of existing tabs to the URL of our
+        // intent. If there is an existing Dino tab, it would have a forward slash appended to the
+        // end of its URL, so our URL must have a forward slash to match.
+        String chromeDinoUrl = UrlConstants.CHROME_DINO_URL + "/";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(chromeDinoUrl));
+        intent.setComponent(new ComponentName(context, ChromeLauncherActivity.class));
+        intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+
+        return intent;
+    }
+
+    /**
+     * Start the actrivty by mActivity.
+     *
+     * @param intent The intent to launch the activity.
+     */
+    private void startActivity(@NonNull Intent intent) {
+        IntentUtils.addTrustedIntentExtras(intent);
+        mActivity.startActivity(intent);
     }
 
     @Override
@@ -111,5 +167,13 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 break;
         }
         return R.drawable.fre_product_logo;
+    }
+
+    /**
+     * Returns true, if the current activity type is regular Chrome activity.
+     * Other activity types (SearchActivity etc) return false.
+     */
+    private boolean isChromeActivity() {
+        return mActivity instanceof ChromeActivity;
     }
 }
