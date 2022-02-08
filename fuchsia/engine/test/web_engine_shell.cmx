@@ -1,4 +1,7 @@
 {
+  "program": {
+    "binary": "web_engine_shell_exec"
+  },
   "sandbox": {
     "features": [
       "deprecated-ambient-replace-as-executable",

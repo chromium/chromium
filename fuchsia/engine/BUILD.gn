@@ -619,11 +619,17 @@ test("web_engine_integration_tests") {
   ]
 }
 
-cr_fuchsia_package("web_engine_shell_pkg") {
+fuchsia_component("web_engine_shell_component") {
   testonly = true
   manifest = "test/web_engine_shell.cmx"
-  binary = ":web_engine_shell_exec"
+  data_deps = [ ":web_engine_shell_exec" ]
+  visibility = [ ":*" ]
+}
+
+fuchsia_package("web_engine_shell_pkg") {
+  testonly = true
   package_name = "web_engine_shell"
+  deps = [ ":web_engine_shell_component" ]
 }
 
 fuchsia_package_installer("web_engine_shell") {
