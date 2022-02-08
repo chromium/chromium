@@ -86,6 +86,7 @@ AX_EXPORT constexpr NSString* const NSAccessibilityMathPostscriptsAttribute =
     @"AXMathPostscripts";
 AX_EXPORT constexpr NSString* const NSAccessibilityMathPrescriptsAttribute =
     @"AXMathPrescripts";
+AX_EXPORT constexpr NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
 AX_EXPORT constexpr NSString* const NSAccessibilityPopupValueAttribute =
     @"AXPopupValue";
 

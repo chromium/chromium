@@ -294,6 +294,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathUnder) {
   RunTypedTest<kMacAttributes>("ax-math-under.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXOwns) {
+  RunTypedTest<kMacAttributes>("ax-owns.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPopupValue) {
   RunTypedTest<kMacAttributes>("ax-popup-value.html");
 }

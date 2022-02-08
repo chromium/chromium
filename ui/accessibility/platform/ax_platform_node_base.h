@@ -112,6 +112,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   AXPlatformNodeBase* GetLastChild() const;
   bool IsDescendant(AXPlatformNodeBase* descendant);
 
+  AXPlatformNodeBase* GetActiveDescendant() const;
   AXPlatformNodeBase* GetPlatformTextFieldAncestor() const;
 
   using AXPlatformNodeChildIterator =

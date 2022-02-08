@@ -712,6 +712,8 @@ bool IsAXSetter(SEL selector) {
   switch (role) {
     case ax::mojom::Role::kTextField:
     case ax::mojom::Role::kTextFieldWithComboBox:
+      [axAttributes addObject:NSAccessibilityOwnsAttribute];
+      break;
     case ax::mojom::Role::kStaticText:
       [axAttributes addObject:kTextAttributes];
       if (!_node->HasState(ax::mojom::State::kProtected))
@@ -1187,6 +1189,23 @@ bool IsAXSetter(SEL selector) {
   if (![self instanceActive])
     return nil;
   return @(_node->HasState(ax::mojom::State::kMultiselectable));
+}
+
+- (id)AXOwns {
+  if (![self instanceActive])
+    return nil;
+
+  ui::AXPlatformNodeBase* activeDescendant = _node->GetActiveDescendant();
+  if (!activeDescendant)
+    return nil;
+
+  ui::AXPlatformNodeBase* container = activeDescendant->GetSelectionContainer();
+  if (!container)
+    return nil;
+
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+  [ret addObject:container->GetNativeViewAccessible()];
+  return ret;
 }
 
 - (NSString*)AXPopupValue {

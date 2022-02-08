@@ -69,7 +69,6 @@ namespace {
 
 // Private WebKit accessibility attributes.
 NSString* const NSAccessibilityLoadingProgressAttribute = @"AXLoadingProgress";
-NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
 NSString* const
     NSAccessibilityUIElementCountForSearchPredicateParameterizedAttribute =
         @"AXUIElementCountForSearchPredicate";
@@ -640,7 +639,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityMinValueAttribute, @"minValue"},
       {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
       {NSAccessibilityOrientationAttribute, @"orientation"},
-      {NSAccessibilityOwnsAttribute, @"owns"},
       {NSAccessibilityParentAttribute, @"parent"},
       {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRoleAttribute, @"role"},
@@ -1193,28 +1191,6 @@ bool content::IsNSRange(id value) {
     return NSAccessibilityHorizontalOrientationValue;
 
   return @"";
-}
-
-- (id)owns {
-  if (![self instanceActive])
-    return nil;
-
-  BrowserAccessibility* activeDescendant =
-      _owner->manager()->GetActiveDescendant(_owner);
-  if (!activeDescendant)
-    return nil;
-
-  BrowserAccessibility* container = activeDescendant->PlatformGetParent();
-  while (container &&
-         !ui::IsContainerWithSelectableChildren(container->GetRole())) {
-    container = container->PlatformGetParent();
-  }
-  if (!container)
-    return nil;
-
-  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
-  [ret addObject:container->GetNativeViewAccessible()];
-  return ret;
 }
 
 - (NSNumber*)AXNumberOfCharacters {
@@ -2871,9 +2847,6 @@ bool content::IsNSRange(id value) {
   // For now we expose the language attribute if we have any language set.
   if (_owner->node() && !_owner->node()->GetLanguage().empty())
     [ret addObject:NSAccessibilityLanguageAttribute];
-
-  if ([self internalRole] == ax::mojom::Role::kTextFieldWithComboBox)
-    [ret addObject:NSAccessibilityOwnsAttribute];
 
   // Title UI Element.
   if (_owner->HasIntListAttribute(
