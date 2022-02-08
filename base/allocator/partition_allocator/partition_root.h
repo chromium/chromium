@@ -833,6 +833,8 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
 // BackupRefPtr's ref-count. The caller is responsible for ensuring that the
 // ref-count is in place for this allocation.
 ALWAYS_INLINE uintptr_t PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
+  address = ::partition_alloc::internal::UnmaskPtr(address);
+
   // Adjust to support pointers right past the end of an allocation, which in
   // some cases appear to point outside the designated allocation slot.
   //
