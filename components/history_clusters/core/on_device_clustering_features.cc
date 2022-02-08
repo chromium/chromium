@@ -17,6 +17,9 @@ namespace features {
 const base::Feature kOnDeviceClustering{"HistoryClustersOnDeviceClustering",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kUseEngagementScoreCache{"JourneysUseEngagementScoreCache",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 base::TimeDelta ClusterNavigationTimeCutoff() {
   return base::Minutes(GetFieldTrialParamByFeatureAsInt(
       kOnDeviceClustering, "navigation_time_cutoff_minutes", 60));

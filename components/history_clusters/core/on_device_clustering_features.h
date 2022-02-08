@@ -17,6 +17,9 @@ namespace features {
 // Enables configuring the on-device clustering backend.
 extern const base::Feature kOnDeviceClustering;
 
+// Uses an in-memory cache that stores engagement score.
+extern const base::Feature kUseEngagementScoreCache;
+
 // Returns the maximum duration between navigations that
 // a visit can be considered for the same cluster.
 base::TimeDelta ClusterNavigationTimeCutoff();

@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
@@ -78,7 +79,12 @@ OnDeviceClusteringBackend::OnDeviceClusteringBackend(
       entity_metadata_provider_(entity_metadata_provider),
       engagement_score_provider_(engagement_score_provider),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+      engagement_score_cache_last_refresh_timestamp_(base::TimeTicks::Now()),
+      engagement_score_cache_(
+          GetFieldTrialParamByFeatureAsInt(features::kUseEngagementScoreCache,
+                                           "engagement_score_cache_size",
+                                           100)) {}
 
 OnDeviceClusteringBackend::~OnDeviceClusteringBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -148,6 +154,16 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
         entity_metadata_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache) &&
+      base::TimeTicks::Now() >
+          engagement_score_cache_last_refresh_timestamp_ +
+              base::Minutes(GetFieldTrialParamByFeatureAsInt(
+                  features::kUseEngagementScoreCache,
+                  "engagement_score_cache_refresh_duration_minutes", 120))) {
+    engagement_score_cache_.Clear();
+    engagement_score_cache_last_refresh_timestamp_ = base::TimeTicks::Now();
+  }
+
   if (entity_metadata_start) {
     base::UmaHistogramTimes("History.Clusters.Backend.BatchEntityLookupLatency",
                             *entity_metadata_start - base::TimeTicks::Now());
@@ -158,6 +174,8 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
   for (const auto& visit : annotated_visits) {
     history::ClusterVisit cluster_visit;
     cluster_visit.annotated_visit = visit;
+    const std::string& visit_host = visit.url_row.url().host();
+
     absl::optional<GURL> maybe_normalized_url =
         GetNormalizedURLForSearchVisit(visit, template_url_service_);
     cluster_visit.is_search_visit = maybe_normalized_url.has_value();
@@ -165,8 +183,20 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
         maybe_normalized_url.value_or(visit.url_row.url());
 
     if (engagement_score_provider_) {
-      cluster_visit.engagement_score =
-          engagement_score_provider_->GetScore(visit.url_row.url());
+      if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache)) {
+        auto it = engagement_score_cache_.Peek(visit_host);
+        if (it != engagement_score_cache_.end()) {
+          cluster_visit.engagement_score = it->second;
+        } else {
+          float score =
+              engagement_score_provider_->GetScore(visit.url_row.url());
+          engagement_score_cache_.Put(visit_host, score);
+          cluster_visit.engagement_score = score;
+        }
+      } else {
+        cluster_visit.engagement_score =
+            engagement_score_provider_->GetScore(visit.url_row.url());
+      }
     }
 
     // Rewrite the entities for the visit, but only if it is possible that we
