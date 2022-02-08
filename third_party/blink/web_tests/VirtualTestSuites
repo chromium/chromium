@@ -116,6 +116,7 @@
               "http/tests/navigation",
               "http/tests/sendbeacon",
               "http/tests/serviceworker/webexposed",
+              "http/tests/worklet/webexposed",
               "inspector-protocol/dom-snapshot",
               "media/stable",
               "webexposed",
