@@ -128,6 +128,8 @@ int GetAddESimTooltipMessageId() {
       return IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL;
     case chromeos::network_config::mojom::InhibitReason::kResettingEuiccMemory:
       return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RESETTING_ESIM;
+    case chromeos::network_config::mojom::InhibitReason::kDisablingProfile:
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_DISABLING_PROFILE;
   }
 }
 

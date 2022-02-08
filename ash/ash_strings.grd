@@ -2580,6 +2580,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RESETTING_ESIM" desc="Tooltip message for disabled add cellular button, indicating cellular eSIM is being reset.">
         Your administrator is resetting your eSIM. Wait a few minutes.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_DISABLING_PROFILE" desc="Tooltip message for disabled add cellular button, indicating cellular network profile is being disabled.">
+       Disabling profile. Wait a few minutes.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR" desc="Message for the status area when initializing the cellular device.">
         Initializing...
       </message>

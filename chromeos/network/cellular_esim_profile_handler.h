@@ -96,6 +96,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
     return network_state_handler_;
   }
 
+  CellularInhibitor* cellular_inhibitor() const { return cellular_inhibitor_; }
+
   virtual void InitInternal() {}
 
  private:

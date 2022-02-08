@@ -59,6 +59,7 @@ namespace chromeos {
 namespace {
 
 constexpr char kAddNetwork[] = "addNetwork";
+constexpr char kDisableESimProfile[] = "disableActiveESimProfile";
 constexpr char kGetNetworkProperties[] = "getShillNetworkProperties";
 constexpr char kGetDeviceProperties[] = "getShillDeviceProperties";
 constexpr char kGetEthernetEAP[] = "getShillEthernetEAP";
@@ -168,6 +169,11 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
         kResetESimCache,
         base::BindRepeating(&NetworkConfigMessageHandler::ResetESimCache,
                             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kDisableESimProfile,
+        base::BindRepeating(
+            &NetworkConfigMessageHandler::DisableActiveESimProfile,
+            base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
@@ -299,6 +305,17 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     CellularESimProfileHandlerImpl* handler_impl =
         static_cast<CellularESimProfileHandlerImpl*>(handler);
     handler_impl->ResetESimProfileCache();
+  }
+
+  void DisableActiveESimProfile(base::Value::ConstListView arg_list) {
+    CellularESimProfileHandler* handler =
+        NetworkHandler::Get()->cellular_esim_profile_handler();
+    if (!handler)
+      return;
+
+    CellularESimProfileHandlerImpl* handler_impl =
+        static_cast<CellularESimProfileHandlerImpl*>(handler);
+    handler_impl->DisableActiveESimProfile();
   }
 
   void ShowNetworkDetails(base::Value::ConstListView arg_list) {
@@ -479,6 +496,14 @@ void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
       "resetESimCacheButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
+
+  localized_strings->SetString(
+      "disableESimProfilesLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_DISABLE_ESIM_PROFILES_LABEL));
+  localized_strings->SetString(
+      "disableActiveESimProfileButtonText",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_DISABLE_ACTIVE_ESIM_PROFILE_BUTTON_TEXT));
 
   localized_strings->SetString(
       "addNewWifiLabel",

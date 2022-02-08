@@ -80,6 +80,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
   // Used by chrome://network debug page; not meant to be called during normal
   // usage.
   void ResetESimProfileCache();
+  // Disabled the current active eSIM profile.
+  void DisableActiveESimProfile();
+
+  void PerformDisableProfile(
+      const dbus::ObjectPath& profile_path,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnProfileDisabled(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status);
 
   // Initialized to null and set once SetDevicePrefs() is called.
   PrefService* device_prefs_ = nullptr;

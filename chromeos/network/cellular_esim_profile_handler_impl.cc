@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/network/cellular_utils.h"
+#include "chromeos/network/hermes_metrics_util.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -307,6 +308,43 @@ void CellularESimProfileHandlerImpl::ResetESimProfileCache() {
 
   NET_LOG(EVENT) << "Resetting eSIM profile cache";
   OnHermesPropertiesUpdated();
+}
+
+void CellularESimProfileHandlerImpl::DisableActiveESimProfile() {
+  std::vector<CellularESimProfile> esim_profiles = GetESimProfiles();
+  const auto iter = base::ranges::find_if(
+      esim_profiles, [&](const auto& esim_profile) -> bool {
+        return esim_profile.state() == CellularESimProfile::State::kActive;
+      });
+  if (iter == esim_profiles.end()) {
+    NET_LOG(EVENT) << "No active eSIM profile is found.";
+    return;
+  }
+
+  NET_LOG(EVENT) << "Start disabling eSIM profile on path: "
+                 << iter->path().value();
+  cellular_inhibitor()->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kDisablingProfile,
+      base::BindOnce(&CellularESimProfileHandlerImpl::PerformDisableProfile,
+                     weak_ptr_factory_.GetWeakPtr(), iter->path()));
+}
+
+void CellularESimProfileHandlerImpl::PerformDisableProfile(
+    const dbus::ObjectPath& profile_path,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  HermesProfileClient::Get()->DisableCarrierProfile(
+      profile_path,
+      base::BindOnce(&CellularESimProfileHandlerImpl::OnProfileDisabled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(inhibit_lock)));
+}
+
+void CellularESimProfileHandlerImpl::OnProfileDisabled(
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    HermesResponseStatus status) {
+  if (status != HermesResponseStatus::kSuccess) {
+    NET_LOG(ERROR) << "ESimProfile disable error.";
+  }
+  hermes_metrics::LogDisableProfileResult(status);
 }
 
 }  // namespace chromeos
