@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
+#include "components/app_constants/constants.h"
 #include "components/cloud_devices/common/cloud_devices_urls.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/common/constants.h"
@@ -180,7 +181,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
   }
 
   // For the Chrome component app, override launch url to new tab.
-  if (extension->id() == extension_misc::kChromeAppId) {
+  if (extension->id() == app_constants::kChromeAppId) {
     launch_web_url_ = GURL(chrome::kChromeUINewTabURL);
     return true;
   }

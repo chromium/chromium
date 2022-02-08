@@ -797,6 +797,7 @@ static_library("extensions") {
     "//chrome/common/safe_browsing:proto",
     "//chrome/services/file_util/public/mojom:mojom",
     "//chrome/services/removable_storage_writer/public/mojom",
+    "//components/app_constants",
     "//components/autofill/content/browser",
     "//components/back_forward_cache",
     "//components/bookmarks/browser",
