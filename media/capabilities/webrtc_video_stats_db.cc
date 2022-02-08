@@ -6,11 +6,22 @@
 
 #include "base/check_op.h"
 #include "base/format_macros.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
 namespace {
+// Default value for maximum number of days until a stats entry is considered
+// expired.
+constexpr int kMaxDaysToKeepStatsDefault = 30;
+// Default value for maximum number of stats entries per config.
+constexpr int kMaxEntriesPerConfigDefault = 10;
+// Field trial parameter names.
+constexpr char kMaxDaysToKeepStatsParamName[] = "db_days_to_keep_stats";
+constexpr char kMaxEntriesPerConfigParamName[] = "db_max_entries_per_cpnfig";
+
 // Validates the codec profile enum in case it's been compromised. Returns
 // VIDEO_CODEC_PROFILE_UNKNOWN if `codec_profile` is outside the valid range.
 VideoCodecProfile ValidateVideoCodecProfile(VideoCodecProfile codec_profile) {
@@ -28,34 +39,24 @@ constexpr size_t array_size(T (&)[N]) {
 
 int GetPixelsBucket(int pixels) {
   constexpr int kPixelsBuckets[] = {1280 * 720, 1920 * 1080, 3840 * 2160};
-  // The boundaries are calculated as follows:
-  // The first boundary is at 80% of the fist pixel bucket and the last boundary
-  // is at 120% of the last pixels bucket. The boundaries between buckets are
-  // calculated as the point between the two buckets. Anything below the first
-  // boundary or above the last boundary is outside of the valid range.
+  // The boundaries between buckets are calculated as the point between the two
+  // buckets.
   constexpr int kPixelsBoundaries[] = {
-      static_cast<int>(0.8 * kPixelsBuckets[0]),
       (kPixelsBuckets[0] + kPixelsBuckets[1]) / 2,
-      (kPixelsBuckets[1] + kPixelsBuckets[2]) / 2,
-      static_cast<int>(1.2 * kPixelsBuckets[2])};
-  static_assert(array_size(kPixelsBoundaries) ==
-                array_size(kPixelsBuckets) + 1);
+      (kPixelsBuckets[1] + kPixelsBuckets[2]) / 2};
+  // Static assert to make sure that `kPixelBoundaries[]` is updated if new
+  // pixel sizes are added to kPixelsBuckets[]`.
+  static_assert(array_size(kPixelsBoundaries) + 1 ==
+                array_size(kPixelsBuckets));
 
   const int* pixels_bucket_it = std::lower_bound(
       std::begin(kPixelsBoundaries), std::end(kPixelsBoundaries), pixels);
-  // If `pixels_bucket` points to the first element or the end element it means
-  // that we're outside of the boundaries and should not use this pixel size.
-  // Return 0 in that case.
-  if (pixels_bucket_it != std::begin(kPixelsBoundaries) &&
-      pixels_bucket_it != std::end(kPixelsBoundaries)) {
-    int pixels_bucket_index =
-        (pixels_bucket_it - std::begin(kPixelsBoundaries)) - 1;
-    DCHECK_GE(pixels_bucket_index, 0);
-    DCHECK_LT(pixels_bucket_index,
-              static_cast<int>(array_size(kPixelsBuckets)));
-    return kPixelsBuckets[pixels_bucket_index];
-  }
-  return 0;
+  // The output from std::lower_bound is in the range [begin, end], hence the
+  // subtraction below is well defined.
+  int pixels_bucket_index = (pixels_bucket_it - std::begin(kPixelsBoundaries));
+  DCHECK_GE(pixels_bucket_index, 0);
+  DCHECK_LT(pixels_bucket_index, static_cast<int>(array_size(kPixelsBuckets)));
+  return kPixelsBuckets[pixels_bucket_index];
 }
 
 }  // namespace
@@ -149,6 +150,20 @@ bool operator==(const WebrtcVideoStatsDB::VideoStats& x,
 bool operator!=(const WebrtcVideoStatsDB::VideoStats& x,
                 const WebrtcVideoStatsDB::VideoStats& y) {
   return !(x == y);
+}
+
+// static
+int WebrtcVideoStatsDB::GetMaxDaysToKeepStats() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kWebrtcMediaCapabilitiesParameters, kMaxDaysToKeepStatsParamName,
+      kMaxDaysToKeepStatsDefault);
+}
+
+// static
+int WebrtcVideoStatsDB::GetMaxEntriesPerConfig() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kWebrtcMediaCapabilitiesParameters, kMaxEntriesPerConfigParamName,
+      kMaxEntriesPerConfigDefault);
 }
 
 }  // namespace media

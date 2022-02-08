@@ -71,6 +71,21 @@ TEST(WebrtcVideoStatsDBTest, PixelSizeBucketting) {
                             /*hardware_accelerated=*/true,
                             1280 * 720 + pixel_size_delta));
   }
+
+  // Even 0 and negative number of pixels are quantized to the first bucket.
+  EXPECT_EQ(keyA, MakeKey(/*is_decode_stats=*/true, VP9PROFILE_PROFILE0,
+                          /*hardware_accelerated=*/true,
+                          /*pixels=*/0));
+  EXPECT_EQ(keyA, MakeKey(/*is_decode_stats=*/true, VP9PROFILE_PROFILE0,
+                          /*hardware_accelerated=*/true,
+                          /*pixels=*/-10));
+
+  // A high number of pixels is quantized to the last bucket.
+  auto keyB = MakeKey(/*is_decode_stats=*/true, VP9PROFILE_PROFILE0,
+                      /*hardware_accelerated=*/true, 3840 * 2160);
+  EXPECT_EQ(keyB, MakeKey(/*is_decode_stats=*/true, VP9PROFILE_PROFILE0,
+                          /*hardware_accelerated=*/true,
+                          /*pixels=*/1e9));
 }
 
 }  // namespace media

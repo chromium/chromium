@@ -37,22 +37,6 @@ namespace {
 // NOTE: Used by UmaHistogramOpTime. Change the name if you change the time.
 static constexpr base::TimeDelta kPendingOpTimeout = base::Seconds(30);
 
-// The minimum number of frames processed that a stats entry is based on. The
-// 99th percentile is not useful for anything less than 100 samples.
-constexpr uint32_t kFramesProcessedMinValue = 100;
-// The maximum number of frames processed that a stats entry is based on.
-// Expected max number is around 30000.
-constexpr uint32_t kFramesProcessedMaxValue = 60000;
-// Minimum valid processing time.
-constexpr float kProcessingTimeMinValueMs = 0.0;
-// Maximum valid processing time.
-constexpr float kProcessingTimeMaxValueMs = 10000.0;
-// Default value for maximum number of days until a stats entry is considered
-// expired.
-constexpr int kMaxDaysToKeepStatsDefault = 30;
-// Default value for maximum number of stats entries per config.
-constexpr int kMaxEntriesPerConfigDefault = 10;
-
 void UmaHistogramOpTime(const std::string& op_name, base::TimeDelta duration) {
   base::UmaHistogramCustomMicrosecondsTimes(
       "Media.WebrtcVideoStatsDB.OpTiming." + op_name, duration,
@@ -60,12 +44,6 @@ void UmaHistogramOpTime(const std::string& op_name, base::TimeDelta duration) {
 }
 
 }  // namespace
-
-const char WebrtcVideoStatsDBImpl::kMaxDaysToKeepStatsParamName[] =
-    "db_days_to_keep_stats";
-
-const char WebrtcVideoStatsDBImpl::kMaxEntriesPerConfigParamName[] =
-    "db_max_entries_per_cpnfig";
 
 WebrtcVideoStatsDBImpl::PendingOperation::PendingOperation(
     std::string uma_str,
@@ -100,20 +78,6 @@ void WebrtcVideoStatsDBImpl::PendingOperation::OnTimeout() {
   // Cancel the closure to ensure we don't double report the task as completed
   // in ~PendingOperation().
   timeout_closure_->Cancel();
-}
-
-// static
-int WebrtcVideoStatsDBImpl::GetMaxDaysToKeepStats() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kWebrtcMediaCapabilitiesParameters, kMaxDaysToKeepStatsParamName,
-      kMaxDaysToKeepStatsDefault);
-}
-
-// static
-int WebrtcVideoStatsDBImpl::GetMaxEntriesPerConfig() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kWebrtcMediaCapabilitiesParameters, kMaxEntriesPerConfigParamName,
-      kMaxEntriesPerConfigDefault);
 }
 
 // static
@@ -263,8 +227,8 @@ bool WebrtcVideoStatsDBImpl::AreStatsValid(
     are_stats_valid &=
         stats_entry.frames_processed() >= stats_entry.key_frames_processed();
     are_stats_valid &=
-        stats_entry.p99_processing_time_ms() >= kProcessingTimeMinValueMs &&
-        stats_entry.p99_processing_time_ms() <= kProcessingTimeMaxValueMs;
+        stats_entry.p99_processing_time_ms() >= kP99ProcessingTimeMinValueMs &&
+        stats_entry.p99_processing_time_ms() <= kP99ProcessingTimeMaxValueMs;
     previous_timestamp = stats_entry.timestamp();
   }
 

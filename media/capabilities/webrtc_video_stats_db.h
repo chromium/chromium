@@ -75,6 +75,41 @@ class MEDIA_EXPORT WebrtcVideoStatsDB {
 
   virtual ~WebrtcVideoStatsDB() = default;
 
+  // The maximum number of pixels that a stats key can have without being
+  // considered out of range. This is used in sanity checks and is higher than
+  // the maximum pixels value that can be saved to the database. For example, a
+  // user may query the API for 8K resolution even though no data will be stored
+  // for anything higher than 4K resolution.
+  static constexpr int kPixelsAbsoluteMaxValue = 10 * 3840 * 2160;
+  // The minimum number of pixels that a stats key can have to be considered to
+  // be saved to the database. Set to 80% of the minimum pixels bucket.
+  static constexpr int kPixelsMinValueToSave = 0.8 * 1280 * 720;
+  // The maximum number of pixels that a stats key can have to be considered to
+  // be saved to the database. Set to 120% of the largest pixels bucket.
+  static constexpr int kPixelsMaxValueToSave = 1.2 * 3840 * 2160;
+  // The minimum number of frames processed that a stats entry is based on. The
+  // 99th percentile is not useful for anything less than 100 samples.
+  static constexpr uint32_t kFramesProcessedMinValue = 100;
+  // The maximum number of frames processed that a stats entry is based on.
+  // Expected max number is around 30000.
+  static constexpr uint32_t kFramesProcessedMaxValue = 60000;
+  // Minimum valid 99th percentile of the processing time, which is either the
+  // time needed for encoding or decoding.
+  static constexpr float kP99ProcessingTimeMinValueMs = 0.0;
+  // Maximum valid 99th percentile of the processing time, which is either the
+  // time needed for encoding or decoding.
+  static constexpr float kP99ProcessingTimeMaxValueMs = 10000.0;
+
+  // Number of stats entries that are stored per configuration. The oldest
+  // stats entry will be discarded when new stats are added if the list is
+  // already full.
+  static int GetMaxEntriesPerConfig();
+
+  // Number of days after which a stats entry will be discarded. This
+  // avoids users getting stuck with a bad capability prediction that may have
+  // been due to one-off circumstances.
+  static int GetMaxDaysToKeepStats();
+
   // Run asynchronous initialization of database. Initialization must complete
   // before calling other APIs. |init_cb| must not be
   // a null callback.

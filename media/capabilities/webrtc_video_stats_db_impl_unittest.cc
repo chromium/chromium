@@ -308,7 +308,7 @@ TEST_F(WebrtcVideoStatsDBImplTest, ConfigureExpireDays) {
 
   // Override field trial.
   base::FieldTrialParams params;
-  params[WebrtcVideoStatsDBImpl::kMaxDaysToKeepStatsParamName] =
+  params["db_days_to_keep_stats"] =
       base::NumberToString(kNewMaxDaysToKeepStats);
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       media::kWebrtcMediaCapabilitiesParameters, params);
@@ -382,7 +382,7 @@ TEST_F(WebrtcVideoStatsDBImplTest, ConfigureMaxEntriesPerConfig) {
 
   // Override field trial.
   base::FieldTrialParams params;
-  params[WebrtcVideoStatsDBImpl::kMaxEntriesPerConfigParamName] =
+  params["db_max_entries_per_cpnfig"] =
       base::NumberToString(kNewMaxEntriesPerConfig);
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       media::kWebrtcMediaCapabilitiesParameters, params);

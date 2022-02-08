@@ -36,9 +36,6 @@ class WebrtcVideoStatsEntryProto;
 // construction. API callbacks will also occur on this sequence.
 class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
  public:
-  static const char kMaxDaysToKeepStatsParamName[];
-  static const char kMaxEntriesPerConfigParamName[];
-
   // Create an instance! `db_dir` specifies where to store LevelDB files to
   // disk. LevelDB generates a handful of files, so its recommended to provide a
   // dedicated directory to keep them isolated.
@@ -69,15 +66,6 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
   explicit WebrtcVideoStatsDBImpl(
       std::unique_ptr<leveldb_proto::ProtoDatabase<WebrtcVideoStatsEntryProto>>
           db);
-
-  // Number of days after which a stats entry will be discarded. This
-  // avoids users getting stuck with a bad capability prediction that may have
-  // been due to one-off circumstances.
-  static int GetMaxDaysToKeepStats();
-  // Number of stats entries that are stored per configuration. The oldest
-  // stats entry will be discarded when new stats are added if the list is
-  // already full.
-  static int GetMaxEntriesPerConfig();
 
   // Creates a PendingOperation using `uma_str` and adds it to `pending_ops_`
   // map. Returns PendingOpId for newly started operation. Callers must later
