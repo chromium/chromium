@@ -971,7 +971,7 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SigninAllowed" units="BooleanEnabled"
+<histogram name="Signin.SigninAllowed" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: used to monitor the health of the signin feature.  -->
 
