@@ -147,7 +147,7 @@ def _bootstrap_properties(ctx):
                     if p in builder_properties:
                         non_bootstrapped_properties[p] = builder_properties[p]
 
-                properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
+                properties_file = "builders/{}/{}/properties.json".format(bucket_name, builder_name)
                 non_bootstrapped_properties["$bootstrap/properties"] = {
                     "top_level_project": {
                         "repo": {
@@ -159,6 +159,10 @@ def _bootstrap_properties(ctx):
                     "properties_file": "infra/config/generated/{}".format(properties_file),
                 }
                 ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
+
+                # TODO(gbeaty) Once buildbucket picks up the property changes and is reading the JSON files, remove this
+                textpb_properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
+                ctx.output[textpb_properties_file] = ctx.output[properties_file]
 
             if bootstrap_node.props.bootstrap:
                 non_bootstrapped_properties.update({
