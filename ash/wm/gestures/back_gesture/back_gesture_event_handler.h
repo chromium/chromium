@@ -42,6 +42,9 @@ class BackGestureEventHandler : public display::DisplayObserver,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
+
   // ui::GestureProviderAuraClient:
   void OnGestureEvent(GestureConsumer* consumer,
                       ui::GestureEvent* event) override;

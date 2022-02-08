@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_GESTURES_GESTURE_TYPES_H_
 #define UI_EVENTS_GESTURES_GESTURE_TYPES_H_
 
+#include <string>
+
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -36,6 +38,8 @@ class EVENTS_EXPORT GestureConsumer {
   // Returns true if the consumer wants to receive double tap gesture events.
   // Defaults to false.
   virtual bool RequiresDoubleTapGestureEvents() const;
+
+  virtual const std::string& GetName() const;
 };
 
 // GestureEventHelper creates implementation-specific gesture events and

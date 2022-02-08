@@ -859,6 +859,11 @@ void TouchExplorationController::DispatchEvent(
 void TouchExplorationController::OnGestureEvent(ui::GestureConsumer* consumer,
                                                 ui::GestureEvent* gesture) {}
 
+const std::string& TouchExplorationController::GetName() const {
+  static const std::string name("TouchExplorationController");
+  return name;
+}
+
 void TouchExplorationController::ProcessGestureEvents() {
   std::vector<std::unique_ptr<ui::GestureEvent>> gestures =
       gesture_provider_->GetAndResetPendingGestures();

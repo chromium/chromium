@@ -179,7 +179,8 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   int GetId() const;
   void SetId(int id);
 
-  const std::string& GetName() const;
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
   void SetName(const std::string& name);
 
   const std::u16string& GetTitle() const;
