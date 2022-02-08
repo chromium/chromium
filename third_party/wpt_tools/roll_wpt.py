@@ -22,7 +22,7 @@ def main():
     print("Roll wpt on branch: %s" % current_branch)
     print("Are there outstanding bugs at %s (Y/n)?" % BUG_QUERY_URLS[0],
           end='', flush=True)
-    yesno = sys.stdin.read(1)
+    yesno = sys.stdin.readline().strip()
     if yesno not in ['N', 'n']:
         return 1
 
@@ -85,7 +85,7 @@ def main():
     print("\n\nNow roll wpt javascript")
     print("Are there outstanding bugs at %s (Y/n)?" % BUG_QUERY_URLS[1],
           end='', flush=True)
-    yesno = sys.stdin.read(1)
+    yesno = sys.stdin.readline().strip()
     if yesno not in ['N', 'n']:
         return 1
     javascript_branch = "%s-%d" % (current_branch, int(time.time()))
