@@ -247,7 +247,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
   // Create a copy with a timestamp that is older than the copied notification.
   // We need to set an older timestamp so that this notification will become
   // the parent notification for it's notifier_id.
-  auto child_copy = std::make_unique<Notification>(
+  auto copy = std::make_unique<Notification>(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       parent_notification.id() +
           message_center::kIdSuffixForGroupContainerNotification,
@@ -255,14 +255,12 @@ NotificationGroupingController::CreateCopyForParentNotification(
       std::u16string(), parent_notification.origin_url(),
       parent_notification.notifier_id(), message_center::RichNotificationData(),
       /*delegate=*/nullptr);
-  child_copy->set_timestamp(parent_notification.timestamp() -
-                            base::Milliseconds(1));
-  child_copy->set_settings_button_handler(
+  copy->set_timestamp(parent_notification.timestamp() - base::Milliseconds(1));
+  copy->set_settings_button_handler(
       parent_notification.rich_notification_data().settings_button_handler);
-  child_copy->set_delegate(parent_notification.delegate());
-  child_copy->SetGroupChild();
+  copy->set_delegate(parent_notification.delegate());
 
-  return child_copy;
+  return copy;
 }
 
 void NotificationGroupingController::RemoveGroupedChild(
