@@ -879,7 +879,8 @@
   {
     "name": "contextual-search-debug",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 99
+    // This is used to enable debugging of server and backend code.
+    "expiry_milestone": 110
   },
   {
     "name": "contextual-search-delayed-intelligence",
@@ -889,7 +890,7 @@
   {
     "name": "contextual-search-force-caption",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "contextual-search-literal-search-tap",
@@ -909,7 +910,7 @@
   {
     "name": "contextual-search-new-settings",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 102
   },
   {
     "name": "contextual-search-ranker-query",
@@ -919,7 +920,7 @@
   {
     "name": "contextual-search-translations",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 102
   },
   {
     "name": "contextual-search-twv-impl",
@@ -4939,27 +4940,27 @@
   {
     "name": "related-searches",
     "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "related-searches-alternate-ux",
     "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "related-searches-in-bar",
     "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "related-searches-simplified-ux",
     "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "related-searches-ui",
     "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "release-notes-notification-all-channels",
