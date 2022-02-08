@@ -97,25 +97,27 @@ class TestDecoderState : public mojom::InputMethod {
 ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
   g_test_decoder_state = state;
 
-  ImeDecoder::EntryPoints entry_points;
-  entry_points.init_once = [](ImeCrosPlatform* platform) {};
-  entry_points.supports = [](const char* ime_spec) {
-    return strcmp(kInvalidImeSpec, ime_spec) != 0;
+  ImeDecoder::EntryPoints entry_points = {
+      .init_once = [](ImeCrosPlatform* platform) {},
+      .close = []() {},
+      .supports =
+          [](const char* ime_spec) {
+            return strcmp(kInvalidImeSpec, ime_spec) != 0;
+          },
+      .activate_ime = [](const char* ime_spec,
+                         ImeClientDelegate* delegate) { return true; },
+      .process = [](const uint8_t* data, size_t size) {},
+      .connect_to_input_method =
+          [](const char* ime_spec, uint32_t receiver_pipe_handle,
+             uint32_t host_pipe_handle, uint32_t host_pipe_version) {
+            return g_test_decoder_state->ConnectToInputMethod(
+                ime_spec, receiver_pipe_handle, host_pipe_handle,
+                host_pipe_version);
+          },
+      .is_input_method_connected =
+          []() { return g_test_decoder_state->IsInputMethodConnected(); },
   };
-  entry_points.activate_ime = [](const char* ime_spec,
-                                 ImeClientDelegate* delegate) { return true; };
-  entry_points.process = [](const uint8_t* data, size_t size) {};
-  entry_points.connect_to_input_method = [](const char* ime_spec,
-                                            uint32_t receiver_pipe_handle,
-                                            uint32_t host_pipe_handle,
-                                            uint32_t host_pipe_version) {
-    return g_test_decoder_state->ConnectToInputMethod(
-        ime_spec, receiver_pipe_handle, host_pipe_handle, host_pipe_version);
-  };
-  entry_points.is_input_method_connected = []() {
-    return g_test_decoder_state->IsInputMethodConnected();
-  };
-  entry_points.close = []() {};
+
   return entry_points;
 }
 

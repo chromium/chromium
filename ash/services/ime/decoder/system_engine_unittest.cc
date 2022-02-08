@@ -79,16 +79,23 @@ class TestDecoderState {
 ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
   g_test_decoder_state = state;
 
-  ImeDecoder::EntryPoints entry_points;
-  entry_points.init_once = [](ImeCrosPlatform* platform) {};
-  entry_points.connect_to_input_method = [](const char* ime_spec,
-                                            uint32_t receiver_pipe_handle,
-                                            uint32_t host_pipe_handle,
-                                            uint32_t host_pipe_version) {
-    return g_test_decoder_state->ConnectToInputMethod(
-        ime_spec, receiver_pipe_handle, host_pipe_handle, host_pipe_version);
+  ImeDecoder::EntryPoints entry_points = {
+      .init_once = [](ImeCrosPlatform* platform) {},
+      .close = []() {},
+      .supports = [](const char* ime_spec) { return true; },
+      .activate_ime = [](const char* ime_spec,
+                         ImeClientDelegate* delegate) { return true; },
+      .process = [](const uint8_t* data, size_t size) {},
+      .connect_to_input_method =
+          [](const char* ime_spec, uint32_t receiver_pipe_handle,
+             uint32_t host_pipe_handle, uint32_t host_pipe_version) {
+            return g_test_decoder_state->ConnectToInputMethod(
+                ime_spec, receiver_pipe_handle, host_pipe_handle,
+                host_pipe_version);
+          },
+      .is_input_method_connected = []() { return false; },
   };
-  entry_points.is_input_method_connected = []() { return false; };
+
   return entry_points;
 }
 

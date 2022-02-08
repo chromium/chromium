@@ -69,26 +69,25 @@ ImeDecoder::ImeDecoder() {
     return;
   }
 
-  EntryPoints entry_points;
-  entry_points.init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
-      library.GetFunctionPointer(kImeDecoderInitOnceFnName));
-  entry_points.supports = reinterpret_cast<ImeDecoderSupportsFn>(
-      library.GetFunctionPointer(kImeDecoderSupportsFnName));
-  entry_points.activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
-      library.GetFunctionPointer(kImeDecoderActivateImeFnName));
-  entry_points.process = reinterpret_cast<ImeDecoderProcessFn>(
-      library.GetFunctionPointer(kImeDecoderProcessFnName));
-  entry_points.close = reinterpret_cast<ImeDecoderCloseFn>(
-      library.GetFunctionPointer(kImeDecoderCloseFnName));
-  entry_points.connect_to_input_method =
-      reinterpret_cast<ConnectToInputMethodFn>(
-          library.GetFunctionPointer(kConnectToInputMethodFnName));
-  entry_points.initialize_connection_factory =
-      reinterpret_cast<InitializeConnectionFactoryFn>(
-          library.GetFunctionPointer(kInitializeConnectionFactoryFnName));
-  entry_points.is_input_method_connected =
-      reinterpret_cast<IsInputMethodConnectedFn>(
-          library.GetFunctionPointer(kIsInputMethodConnectedFnName));
+  EntryPoints entry_points = {
+      .init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
+          library.GetFunctionPointer(kImeDecoderInitOnceFnName)),
+      .close = reinterpret_cast<ImeDecoderCloseFn>(
+          library.GetFunctionPointer(kImeDecoderCloseFnName)),
+      .supports = reinterpret_cast<ImeDecoderSupportsFn>(
+          library.GetFunctionPointer(kImeDecoderSupportsFnName)),
+      .activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
+          library.GetFunctionPointer(kImeDecoderActivateImeFnName)),
+      .process = reinterpret_cast<ImeDecoderProcessFn>(
+          library.GetFunctionPointer(kImeDecoderProcessFnName)),
+      .connect_to_input_method = reinterpret_cast<ConnectToInputMethodFn>(
+          library.GetFunctionPointer(kConnectToInputMethodFnName)),
+      .initialize_connection_factory =
+          reinterpret_cast<InitializeConnectionFactoryFn>(
+              library.GetFunctionPointer(kInitializeConnectionFactoryFnName)),
+      .is_input_method_connected = reinterpret_cast<IsInputMethodConnectedFn>(
+          library.GetFunctionPointer(kIsInputMethodConnectedFnName)),
+  };
 
   // Checking if entry_points_ are loaded.
   if (!entry_points.init_once || !entry_points.supports ||
