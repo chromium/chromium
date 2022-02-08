@@ -75,9 +75,9 @@ class Json5FileTest(unittest.TestCase):
             path2 = os.path.join(tmp, 'file2.h')
 
             with open(path1, 'wb') as f:
-                f.write('File1')
+                f.write(b'File1')
             with open(path2, 'wb') as f:
-                f.write('File2')
+                f.write(b'File2')
 
             self.assertTrue(os.path.exists(path1))
             self.assertTrue(os.path.exists(path2))
@@ -91,9 +91,9 @@ class Json5FileTest(unittest.TestCase):
             path2 = os.path.join(tmp, 'file2.h')
 
             with open(path1, 'wb') as f:
-                f.write('File1')
+                f.write(b'File1')
             with open(path2, 'wb') as f:
-                f.write('File2')
+                f.write(b'File2')
 
             self.assertTrue(os.path.exists(path1))
             self.assertTrue(os.path.exists(path2))
@@ -105,7 +105,7 @@ class Json5FileTest(unittest.TestCase):
         with tmp_dir() as tmp:
             path1 = os.path.join(tmp, 'file1.h')
             with open(path1, 'wb') as f:
-                f.write('File1')
+                f.write(b'File1')
             self.assertTrue(os.path.exists(path1))
             # Don't throw when trying to clean up something that doesn't exist.
             CleanupWriter(tmp, set(['file1.h', 'file2.h'])).cleanup_files(tmp)
