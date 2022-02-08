@@ -11,12 +11,13 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {ACMatchClassification, AutocompleteMatch, PageHandlerRemote} from '../realbox.mojom-webui.js';
+import {ACMatchClassification, AutocompleteMatch, PageHandlerInterface} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoTimeTicks} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-
+import {RealboxIconElement} from './realbox_icon.js';
 // clang-format off
+
 /**
  * Bitmap used to decode the value of ACMatchClassification style
  * field.
@@ -30,8 +31,19 @@ enum ACMatchClassificationStyle {
 }
 // clang-format on
 
+export interface RealboxMatchElement {
+  $: {
+    icon: RealboxIconElement,
+    contents: HTMLElement,
+    description: HTMLElement,
+    remove: HTMLElement,
+    separator: HTMLElement,
+    'focus-indicator': HTMLElement,
+  };
+}
+
 // Displays an autocomplete match similar to those in the Omnibox.
-class RealboxMatchElement extends PolymerElement {
+export class RealboxMatchElement extends PolymerElement {
   static get is() {
     return 'ntp-realbox-match';
   }
@@ -129,7 +141,7 @@ class RealboxMatchElement extends PolymerElement {
   private separatorText_: string;
   private tailSuggestPrefix_: string;
 
-  private pageHandler_: PageHandlerRemote;
+  private pageHandler_: PageHandlerInterface;
 
   constructor() {
     super();
@@ -350,6 +362,12 @@ class RealboxMatchElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-realbox-match': RealboxMatchElement;
   }
 }
 

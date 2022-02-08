@@ -11,9 +11,17 @@ const DOCUMENT_MATCH_TYPE: string = 'document';
 export type AutocompleteMatchWithImageData =
     AutocompleteMatch&{faviconDataUrl?: string, imageDataUrl?: string};
 
+export interface RealboxIconElement {
+  $: {
+    container: HTMLElement,
+    icon: HTMLElement,
+    image: HTMLImageElement,
+  };
+}
+
 // The LHS icon. Used on autocomplete matches as well as the realbox input to
 // render icons, favicons, and entity images.
-class RealboxIconElement extends PolymerElement {
+export class RealboxIconElement extends PolymerElement {
   static get is() {
     return 'ntp-realbox-icon';
   }

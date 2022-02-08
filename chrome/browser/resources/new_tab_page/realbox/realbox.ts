@@ -12,12 +12,12 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../i18n_setup.js';
-import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerRemote, SearchBoxTheme} from '../realbox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, SearchBoxTheme} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxDropdownElement} from './realbox_dropdown.js';
-import {AutocompleteMatchWithImageData} from './realbox_icon.js';
+import {AutocompleteMatchWithImageData, RealboxIconElement} from './realbox_icon.js';
 
 type Input = {
   text: string,
@@ -30,16 +30,18 @@ type InputUpdate = {
   moveCursorToEnd?: boolean,
 };
 
-interface RealboxElement {
+export interface RealboxElement {
   $: {
     input: HTMLInputElement,
     inputWrapper: HTMLElement,
     matches: RealboxDropdownElement,
+    icon: RealboxIconElement,
+    voiceSearchButton: HTMLElement,
   };
 }
 
 /** A real search box that behaves just like the Omnibox. */
-class RealboxElement extends I18nMixin
+export class RealboxElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-realbox';
@@ -183,7 +185,7 @@ class RealboxElement extends I18nMixin
   private selectedMatchIndex_: number;
   private inputAriaLive_: string;
 
-  private pageHandler_: PageHandlerRemote;
+  private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
   private autocompleteMatchImageAvailableListenerId_: number|null = null;
@@ -720,6 +722,12 @@ class RealboxElement extends I18nMixin
 
   static get template() {
     return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-realbox': RealboxElement;
   }
 }
 

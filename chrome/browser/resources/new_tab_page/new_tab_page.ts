@@ -37,7 +37,10 @@ export {recipeTasksDescriptor as recipeTasksV2Descriptor} from './modules/recipe
 export {recipeTasksDescriptor, shoppingTasksDescriptor} from './modules/task_module/module.js';
 export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_proxy.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
+export {RealboxElement} from './realbox/realbox.js';
 export {RealboxBrowserProxy} from './realbox/realbox_browser_proxy.js';
+export {RealboxIconElement} from './realbox/realbox_icon.js';
+export {RealboxMatchElement} from './realbox/realbox_match.js';
 export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';
 export {Action as VoiceAction, Error as VoiceError} from './voice_search_overlay.js';
 export {WindowProxy} from './window_proxy.js';

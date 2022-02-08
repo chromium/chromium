@@ -11,16 +11,17 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerRemote, SearchBoxTheme} from '../realbox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, SearchBoxTheme} from '../realbox.mojom-webui.js';
 import {decodeString16} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 
 export interface RealboxDropdownElement {
   $: {
+    groups: DomRepeat,
     selector: IronSelectorElement,
   };
 }
@@ -94,7 +95,7 @@ export class RealboxDropdownElement extends PolymerElement {
   private selectableMatchElements_: Element[];
 
   private callbackRouter_: PageCallbackRouter;
-  private pageHandler_: PageHandlerRemote;
+  private pageHandler_: PageHandlerInterface;
   private autocompleteMatchImageAvailableListenerId_: number|null = null;
 
   constructor() {

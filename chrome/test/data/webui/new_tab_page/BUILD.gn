@@ -41,7 +41,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   path_mappings = [
-    "chrome://new_tab_page/*|" +
+    "chrome://new-tab-page/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
                     target_gen_dir),
     "chrome://webui-test/*|" +
