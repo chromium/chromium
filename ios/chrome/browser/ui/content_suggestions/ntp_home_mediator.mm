@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
@@ -210,6 +211,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   }
   _webState = webState;
   self.NTPMetrics.webState = webState;
+  if (IsSingleNtpEnabled()) {
+    [self.logoVendor setWebState:webState];
+  }
   if (_webState && _webStateObserver) {
     if (IsSingleNtpEnabled()) {
       [self setContentOffsetForWebState:webState];
