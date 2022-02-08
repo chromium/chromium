@@ -376,7 +376,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    } ],
    "handle_links": "kAuto",
    "install_time": "1970-01-10 21:57:36.131 UTC",
-   "install_source_for_metrics": "not set",
+   "install_source_for_metrics": 13,
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": true,
    "is_locally_installed": false,

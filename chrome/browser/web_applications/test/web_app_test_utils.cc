@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -471,6 +472,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   if (random.next_bool())
     app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));
+
+  uint32_t install_source =
+      random.next_uint(static_cast<int>(webapps::WebappInstallSource::COUNT));
+  app->SetInstallSourceForMetrics(
+      static_cast<webapps::WebappInstallSource>(install_source));
 
   // `random` should not be used after the chromeos block if the result
   // is expected to be deterministic across cros and non-cros builds.
