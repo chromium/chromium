@@ -272,7 +272,7 @@ config("compiler") {
     configs += [ "//build/config/android:compiler" ]
   } else if (is_linux || is_chromeos) {
     configs += [ "//build/config/linux:compiler" ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       configs += [ "//build/config/chromeos:compiler" ]
     }
   } else if (is_nacl) {
@@ -1383,6 +1383,9 @@ config("runtime_library") {
     configs += [ "//build/config/win:runtime_library" ]
   } else if (is_linux || is_chromeos) {
     configs += [ "//build/config/linux:runtime_library" ]
+    if (is_chromeos) {
+      configs += [ "//build/config/chromeos:runtime_library" ]
+    }
   } else if (is_ios) {
     configs += [ "//build/config/ios:runtime_library" ]
   } else if (is_mac) {
