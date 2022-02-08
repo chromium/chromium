@@ -366,7 +366,10 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
             throw new IllegalStateException("Attempting to destroy WebContents on non-UI thread");
         }
 
-        assert mObserverProxy == null || !mObserverProxy.isHandlingObserverCall();
+        if (mObserverProxy != null && mObserverProxy.isHandlingObserverCall()) {
+            throw new RuntimeException(
+                    "Attempting to destroy WebContents while handling observer calls");
+        }
 
         if (mNativeWebContentsAndroid != 0) {
             WebContentsImplJni.get().destroyWebContents(mNativeWebContentsAndroid);
