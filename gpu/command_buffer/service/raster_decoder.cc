@@ -2737,6 +2737,11 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   // Try a direct texture upload without using SkSurface.
   if (gfx::Size(src_width, src_height) == dest_shared_image->size() &&
       x_offset == 0 && y_offset == 0 &&
+      (src_info.alphaType() == dest_shared_image->alpha_type() ||
+       src_info.alphaType() == kUnknown_SkAlphaType) &&
+      SkColorSpace::Equals(
+          src_info.colorSpace(),
+          dest_shared_image->color_space().ToSkColorSpace().get()) &&
       DoWritePixelsINTERNALDirectTextureUpload(
           dest_shared_image.get(), src_info, pixel_data, row_bytes)) {
     return;
