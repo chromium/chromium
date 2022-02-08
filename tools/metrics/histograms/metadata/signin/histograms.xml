@@ -1120,7 +1120,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncError{PromptUI}{SyncErrorReason}"
-    enum="SyncErrorPromptUIAction" expires_after="2022-03-12">
+    enum="SyncErrorPromptUIAction" expires_after="2022-09-12">
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
