@@ -232,6 +232,10 @@
           'shards': 30,
         },
       },
+      # TODO (crbug.com/1294574) Re-enable once fixed
+      'Mac Builder Next': {
+        'experiment_percentage': 0,
+      },
       'Mac10.12 Tests': {
         'swarming': {
           'shards': 25,

@@ -3068,6 +3068,7 @@
         "args": [
           "--num-retries=3"
         ],
+        "experiment_percentage": 0,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
