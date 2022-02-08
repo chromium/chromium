@@ -86,7 +86,11 @@ bool EventMatcher::HasURLFilters() const {
 
 std::string EventMatcher::GetServiceTypeFilter() const {
   std::string service_type_filter;
-  filter_->GetStringASCII(kEventFilterServiceTypeKey, &service_type_filter);
+  if (const std::string* ptr =
+          filter_->FindStringKey(kEventFilterServiceTypeKey)) {
+    if (base::IsStringASCII(*ptr))
+      service_type_filter = *ptr;
+  }
   return service_type_filter;
 }
 
