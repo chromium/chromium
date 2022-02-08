@@ -23,8 +23,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -45,9 +43,7 @@ class AccountSelectionMediator {
     private final AccountSelectionComponent.Delegate mDelegate;
     private final ModelList mSheetItems;
     private final ImageFetcher mImageFetcher;
-    private final LargeIconBridge mLargeIconBridge;
     private final @Px int mDesiredAvatarSize;
-    private final @Px int mDesiredIconSize;
 
     private final BottomSheetController mBottomSheetController;
     private final AccountSelectionBottomSheetContent mBottomSheetContent;
@@ -71,15 +67,13 @@ class AccountSelectionMediator {
     AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, ModelList sheetItems,
             BottomSheetController bottomSheetController,
             AccountSelectionBottomSheetContent bottomSheetContent, ImageFetcher imageFetcher,
-            @Px int desiredAvatarSize, LargeIconBridge largeIconBridge, @Px int desiredIconSize) {
+            @Px int desiredAvatarSize) {
         assert delegate != null;
         mVisible = false;
         mDelegate = delegate;
         mSheetItems = sheetItems;
         mImageFetcher = imageFetcher;
         mDesiredAvatarSize = desiredAvatarSize;
-        mLargeIconBridge = largeIconBridge;
-        mDesiredIconSize = desiredIconSize;
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
 
@@ -110,20 +104,9 @@ class AccountSelectionMediator {
     }
 
     // This method should not be used when the VERIFY header is needed.
-    private void addHeader(GURL rpUrl, GURL idpUrl, List<Account> accounts) {
-        boolean useSignInHeader = false;
-        for (Account account : accounts) {
-            if (!account.isSignIn()) continue;
-            useSignInHeader = true;
-            break;
-        }
-        HeaderType headerType;
-        if (useSignInHeader) {
-            headerType = HeaderType.SIGN_IN;
-        } else {
-            headerType =
-                    accounts.size() == 1 ? HeaderType.SINGLE_ACCOUNT : HeaderType.MULTIPLE_ACCOUNT;
-        }
+    private void addHeader(
+            GURL rpUrl, GURL idpUrl, IdentityProviderMetadata idpMetadata, boolean isAutoSignIn) {
+        HeaderType headerType = isAutoSignIn ? HeaderType.AUTO_SIGN_IN : HeaderType.SIGN_IN;
         String formattedRpUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(rpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         String formattedIdpUrl =
@@ -137,6 +120,7 @@ class AccountSelectionMediator {
         // allowed with WebID.
         mSheetItems.add(new ListItem(ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.IDP_BRAND_ICON, idpMetadata.getBrandIcon())
                         .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                         .with(HeaderProperties.FORMATTED_IDP_URL, formattedIdpUrl)
                         .with(HeaderProperties.FORMATTED_RP_URL, formattedRpUrl)
@@ -148,7 +132,6 @@ class AccountSelectionMediator {
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account, areAccountsClickable);
             mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
-            requestIconOrFallbackImage(model, idpUrl);
             requestAvatarImage(model);
         }
     }
@@ -180,6 +163,7 @@ class AccountSelectionMediator {
         mSheetItems.add(new ListItem(ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
+                        .with(HeaderProperties.IDP_BRAND_ICON, mIdpMetadata.getBrandIcon())
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY)
                         .build()));
 
@@ -215,7 +199,7 @@ class AccountSelectionMediator {
             accounts = Arrays.asList(selectedAccount);
         }
 
-        addHeader(rpUrl, idpUrl, accounts);
+        addHeader(rpUrl, idpUrl, idpMetadata, isAutoSignIn);
         addAccounts(idpUrl, accounts, /*areAccountsClickable=*/mSelectedAccount == null);
 
         if (isAutoSignIn) {
@@ -274,16 +258,6 @@ class AccountSelectionMediator {
             accountModel.set(AccountProperties.AVATAR,
                     new AccountProperties.Avatar(name, null, mDesiredAvatarSize));
         }
-    }
-
-    private void requestIconOrFallbackImage(PropertyModel accountModel, GURL idpUrl) {
-        Account account = accountModel.get(AccountProperties.ACCOUNT);
-        final LargeIconCallback setIcon = (icon, fallbackColor, hasDefaultColor, type) -> {
-            accountModel.set(AccountProperties.FAVICON_OR_FALLBACK,
-                    new AccountProperties.FaviconOrFallback(
-                            idpUrl, icon, fallbackColor, mDesiredIconSize));
-        };
-        mLargeIconBridge.getLargeIconForUrl(idpUrl, mDesiredIconSize, setIcon);
     }
 
     boolean isVisible() {

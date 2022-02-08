@@ -8,12 +8,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -39,7 +34,6 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.D
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -74,16 +68,29 @@ class AccountSelectionViewBinder {
      */
     static void bindAccountView(PropertyModel model, View view, PropertyKey key) {
         Account account = model.get(AccountProperties.ACCOUNT);
-        if (key == AccountProperties.AVATAR || key == AccountProperties.FAVICON_OR_FALLBACK) {
+        if (key == AccountProperties.AVATAR) {
             AccountProperties.Avatar avatarData = model.get(AccountProperties.AVATAR);
-            AccountProperties.FaviconOrFallback faviconData =
-                    model.get(AccountProperties.FAVICON_OR_FALLBACK);
-            // Wait for both avatar and favicon to be available before drawing them to avoid
-            // unnecessary flashing.
-            if (avatarData == null || faviconData == null) return;
-            Drawable badgedAvatar = overlayIdpFaviconOnAvatar(view, avatarData, faviconData);
+            int avatarSize = avatarData.mAvatarSize;
+            Bitmap avatar = avatarData.mAvatar;
+
+            Resources resources = view.getContext().getResources();
+
+            // Prepare avatar or its fallback monogram.
+            if (avatar == null) {
+                int avatarMonogramTextSize = view.getResources().getDimensionPixelSize(
+                        R.dimen.account_selection_account_avatar_monogram_text_size);
+                // TODO(crbug.com/1295017): Consult UI team to determine the background color we
+                // need to use here.
+                RoundedIconGenerator roundedIconGenerator =
+                        new RoundedIconGenerator(resources, avatarSize /* iconWidthDp */,
+                                avatarSize /* iconHeightDp */, avatarSize / 2 /* cornerRadiusDp */,
+                                Color.GRAY /* backgroundColor */, avatarMonogramTextSize);
+                avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
+            }
+            Drawable croppedAvatar = AvatarGenerator.makeRoundAvatar(resources, avatar, avatarSize);
+
             ImageView avatarView = view.findViewById(R.id.start_icon);
-            avatarView.setImageDrawable(badgedAvatar);
+            avatarView.setImageDrawable(croppedAvatar);
         } else if (key == AccountProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(clickedView -> {
                 model.get(AccountProperties.ON_CLICK_LISTENER).onResult(account);
@@ -96,78 +103,6 @@ class AccountSelectionViewBinder {
         } else {
             assert false : "Unhandled update to property:" + key;
         }
-    }
-
-    /**
-     * Creates a drawable that is a combination of the User's avatar and the Identity Provider's
-     * (IdP) favicon. The final drawable is a square with avatarData.mAvatarSize dimension that
-     * contains two rounded images overlayed on top of each other like so:
-     * +------------+
-     * |            |
-     * |   Avatar   |
-     * |       +----+
-     * |       |Favi|
-     * |       |con |
-     * +-------+----+
-     *
-     * @param view The view to be bound.
-     * @param avatarData The data for the avatar. If the bitmap is null then we generate a
-     *                   placeholder monogram avatar using the name.
-     * @param faviconData The data for the favicon including its bitmap and size.
-     */
-    static Drawable overlayIdpFaviconOnAvatar(View view, AccountProperties.Avatar avatarData,
-            AccountProperties.FaviconOrFallback faviconData) {
-        int avatarSize = avatarData.mAvatarSize;
-        int badgeSize = faviconData.mIconSize;
-        int frameSize = avatarSize;
-        // Avatar touches the top/left sides of frame, badge touches bottom/right sides of the
-        // frame.
-        int avatarX = 0;
-        int avatarY = 0;
-        int badgeX = frameSize - badgeSize;
-        int badgeY = frameSize - badgeSize;
-
-        RoundedIconGenerator roundedIconGenerator =
-                FaviconUtils.createCircularIconGenerator(view.getResources());
-
-        // Prepare avatar or its fallback monogram.
-        Bitmap avatar = avatarData.mAvatar;
-        if (avatar == null) {
-            // TODO(majidvp): Consult UI team to determine the background color we need to use here.
-            roundedIconGenerator.setBackgroundColor(Color.GRAY);
-            avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
-        }
-        Drawable croppedAvatar =
-                AvatarGenerator.makeRoundAvatar(view.getResources(), avatar, avatarSize);
-        Bitmap badgedAvatar = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(badgedAvatar);
-
-        // Draw the avatar.
-        croppedAvatar.setBounds(avatarX, avatarY, avatarSize, avatarSize);
-        croppedAvatar.draw(canvas);
-
-        // Cut a transparent hole through the avatar image. This will serve as a border to the badge
-        // being overlaid.
-        int badgeRadius = badgeSize / 2;
-        int badgeCenterX = badgeX + badgeRadius;
-        int badgeCenterY = badgeY + badgeRadius;
-        int badgeBorderSize = view.getResources().getDimensionPixelSize(
-                R.dimen.account_selection_favicon_border_size);
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawCircle(badgeCenterX, badgeCenterY, badgeRadius + badgeBorderSize, paint);
-
-        // Prepare the IDP favicon as the badge.
-        Drawable favicon = FaviconUtils.getIconDrawableWithoutFilter(faviconData.mIcon,
-                faviconData.mUrl, faviconData.mFallbackColor, roundedIconGenerator,
-                view.getResources(), badgeSize);
-
-        // Draw the badge.
-        favicon.setBounds(badgeX, badgeY, badgeX + badgeSize, badgeY + badgeSize);
-        favicon.draw(canvas);
-        return new BitmapDrawable(view.getResources(), badgedAvatar);
     }
 
     static void openTab(String url) {
@@ -313,34 +248,25 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.FORMATTED_RP_URL || key == HeaderProperties.TYPE) {
+        if (key == HeaderProperties.FORMATTED_RP_URL || key == HeaderProperties.FORMATTED_IDP_URL
+                || key == HeaderProperties.TYPE) {
             TextView headerTitleText = view.findViewById(R.id.header_title);
-            @StringRes
-            int titleStringId = R.string.account_selection_sheet_title_single;
-            switch (model.get(HeaderProperties.TYPE)) {
-                case SINGLE_ACCOUNT:
-                    titleStringId = R.string.account_selection_sheet_title_single;
-                    break;
-                case MULTIPLE_ACCOUNT:
-                    titleStringId = R.string.account_selection_sheet_title;
-                    break;
-                case SIGN_IN:
-                    titleStringId = R.string.sign_in_sheet_title;
-                    break;
-                case VERIFY:
-                    titleStringId = R.string.verify_sheet_title;
-                    break;
-            }
-
-            String title = String.format(view.getContext().getString(titleStringId),
-                    model.get(HeaderProperties.FORMATTED_RP_URL));
-            headerTitleText.setText(title);
-        } else if (key == HeaderProperties.FORMATTED_IDP_URL) {
-            String subheadingText = String.format(
-                    view.getContext().getString(R.string.account_selection_sheet_idp_subheader),
+            String title = computeHeaderTitle(view.getResources(), model.get(HeaderProperties.TYPE),
+                    model.get(HeaderProperties.FORMATTED_RP_URL),
                     model.get(HeaderProperties.FORMATTED_IDP_URL));
-            TextView headerIdpUrlText = view.findViewById(R.id.header_idp_url);
-            headerIdpUrlText.setText(subheadingText);
+            headerTitleText.setText(title);
+        } else if (key == HeaderProperties.IDP_BRAND_ICON) {
+            Bitmap brandIcon = model.get(HeaderProperties.IDP_BRAND_ICON);
+            if (brandIcon != null) {
+                Resources resources = view.getResources();
+                int iconSize = resources.getDimensionPixelSize(
+                        R.dimen.account_selection_continue_icon_size);
+                Drawable croppedBrandIcon =
+                        AvatarGenerator.makeRoundAvatar(resources, brandIcon, iconSize);
+                ImageView headerIconView = (ImageView) view.findViewById(R.id.header_idp_icon);
+                headerIconView.setImageDrawable(croppedBrandIcon);
+                headerIconView.setVisibility(View.VISIBLE);
+            }
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
             final Runnable closeOnClickRunnable =
                     (Runnable) model.get(HeaderProperties.CLOSE_ON_CLICK_LISTENER);
@@ -350,6 +276,18 @@ class AccountSelectionViewBinder {
         } else {
             assert false : "Unhandled update to property:" + key;
         }
+    }
+
+    private static String computeHeaderTitle(
+            Resources resources, HeaderProperties.HeaderType type, String rpUrl, String idpUrl) {
+        if (type == HeaderProperties.HeaderType.VERIFY) {
+            return resources.getString(R.string.verify_sheet_title);
+        }
+        @StringRes
+        int titleStringId = (type == HeaderProperties.HeaderType.AUTO_SIGN_IN)
+                ? R.string.account_selection_sheet_title_auto
+                : R.string.account_selection_sheet_title_explicit;
+        return String.format(resources.getString(titleStringId), rpUrl, idpUrl);
     }
 
     private AccountSelectionViewBinder() {}

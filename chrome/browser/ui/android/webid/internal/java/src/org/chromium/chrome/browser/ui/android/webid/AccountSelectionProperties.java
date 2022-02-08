@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -41,32 +40,14 @@ class AccountSelectionProperties {
             }
         }
 
-        static class FaviconOrFallback {
-            final GURL mUrl;
-            final @Nullable Bitmap mIcon;
-            final int mFallbackColor;
-            final int mIconSize;
-
-            FaviconOrFallback(
-                    GURL originUrl, @Nullable Bitmap icon, int fallbackColor, int iconSize) {
-                mUrl = originUrl;
-                mIcon = icon;
-                mFallbackColor = fallbackColor;
-                mIconSize = iconSize;
-            }
-        }
-
         static final WritableObjectPropertyKey<Avatar> AVATAR =
                 new WritableObjectPropertyKey<>("avatar");
-        static final WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
-                new WritableObjectPropertyKey<>("favicon");
         static final ReadableObjectPropertyKey<Account> ACCOUNT =
                 new ReadableObjectPropertyKey<>("account");
         static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("on_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {
-                AVATAR, FAVICON_OR_FALLBACK, ACCOUNT, ON_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = {AVATAR, ACCOUNT, ON_CLICK_LISTENER};
 
         private AccountProperties() {}
     }
@@ -76,18 +57,20 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN, VERIFY }
+        public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY }
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> FORMATTED_IDP_URL =
                 new ReadableObjectPropertyKey<>("formatted_idp_url");
         static final ReadableObjectPropertyKey<String> FORMATTED_RP_URL =
                 new ReadableObjectPropertyKey<>("formatted_rp_url");
+        static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
+                new ReadableObjectPropertyKey<>("brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
 
         static final PropertyKey[] ALL_KEYS = {
-                CLOSE_ON_CLICK_LISTENER, FORMATTED_IDP_URL, FORMATTED_RP_URL, TYPE};
+                CLOSE_ON_CLICK_LISTENER, FORMATTED_IDP_URL, FORMATTED_RP_URL, IDP_BRAND_ICON, TYPE};
 
         private HeaderProperties() {}
     }

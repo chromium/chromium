@@ -19,7 +19,7 @@
         android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
         android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/account_selection_sheet_item_padding_bottom"
+        android:paddingBottom="8dp"
         android:divider="@null"
         tools:listitem="@layout/account_selection_account_item"/>
 </LinearLayout>

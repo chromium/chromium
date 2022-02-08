@@ -5388,14 +5388,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- WebID Account Selection strings -->
-      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_SINGLE" desc="Header for Account Selection sheet where the user only has a single account to sign up with." translateable="false">
-        Sign in to <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
+      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_AUTO" desc="Header for sign in sheet. Sheet is shown to inform user of sign in. Sign in occurs automatically. (User can cancel)." translateable="false">
+        Signing in to <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_URL">%2$s<ex>idp.com</ex></ph>
       </message>
-      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE" desc="Header for Account Selection sheet where the user can pick an account to sign up with." translateable="false">
-        Choose an account for <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
-      </message>
-      <message name="IDS_ACCOUNT_SELECTION_SHEET_IDP_SUBHEADER" desc="Sub-heading for Account Selection sheet where user can pick an account to sign up with." translateable="false">
-        with <ph name="IDENTITY_PROVIDER_URL">%1$s<ex>idp.com</ex></ph>
+      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT" desc="Header for sign in sheet. Sheet is shown to prompt user for sign in consent." translateable="false">
+        Sign in to <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_URL">%2$s<ex>idp.com</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_LINKS" desc="The consent text shown to the user before sign up." translateable="false">
           To continue, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with this site.
@@ -5418,9 +5415,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_CLOSED" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is closed." translateable="false">
         List of accounts to be selected is closed.
-      </message>
-      <message name="IDS_SIGN_IN_SHEET_TITLE" desc="Header for sign in sheet." translateable="false">
-        Sign in to <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
       </message>
       <message name="IDS_VERIFY_SHEET_TITLE" desc="Header for verify sheet." translateable="false">
         Verifying…
