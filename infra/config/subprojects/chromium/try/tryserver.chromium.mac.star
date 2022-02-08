@@ -53,6 +53,12 @@ try_.orchestrator_builder(
     tryjob = try_.job(),
 )
 
+try_.builder(
+    name = "mac-clang-tidy-rel",
+    executable = "recipe:tricium_clang_tidy_wrapper",
+    goma_jobs = goma.jobs.J150,
+)
+
 try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
@@ -155,6 +161,12 @@ ios_builder(
 
 ios_builder(
     name = "ios-device",
+)
+
+ios_builder(
+    name = "ios-clang-tidy-rel",
+    executable = "recipe:tricium_clang_tidy_wrapper",
+    goma_jobs = goma.jobs.J150,
 )
 
 ios_builder(

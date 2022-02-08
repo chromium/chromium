@@ -39,6 +39,12 @@ try_.builder(
 )
 
 try_.builder(
+    name = "win10-clang-tidy-rel",
+    executable = "recipe:tricium_clang_tidy_wrapper",
+    goma_jobs = goma.jobs.J150,
+)
+
+try_.builder(
     name = "win-celab-try-rel",
     executable = "recipe:celab",
     properties = {

@@ -64,6 +64,12 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-clang-tidy-rel",
+    executable = "recipe:tricium_clang_tidy_wrapper",
+    goma_jobs = goma.jobs.J150,
+)
+
+try_.builder(
     name = "android-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,

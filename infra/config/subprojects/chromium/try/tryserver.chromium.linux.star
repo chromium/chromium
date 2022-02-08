@@ -87,6 +87,12 @@ try_.builder(
 )
 
 try_.builder(
+    name = "fuchsia-clang-tidy-rel",
+    executable = "recipe:tricium_clang_tidy_wrapper",
+    goma_jobs = goma.jobs.J150,
+)
+
+try_.builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     main_list_view = "try",
