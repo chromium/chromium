@@ -571,6 +571,9 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordScriptsFetching) &&
       GetPasswordFeatureManager()->IsGenerationEnabled()) {
+    // The prewarm is triggered so that script availability is prefetched in
+    // case the user lands on the Password Check UI (after tapping the "Check
+    // Passwords" button).
     PasswordScriptsFetcherFactory::GetInstance()
         ->GetForBrowserContext(web_contents()->GetBrowserContext())
         ->PrewarmCache();
