@@ -42,26 +42,24 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
   absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
-      const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
+      const SchemefulSite& site,
+      const SchemefulSite* top_frame_site,
+      const std::set<SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
-  absl::optional<absl::optional<net::SchemefulSite>> FindFirstPartySetOwner(
-      const net::SchemefulSite& site,
-      base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
+  absl::optional<absl::optional<SchemefulSite>> FindFirstPartySetOwner(
+      const SchemefulSite& site,
+      base::OnceCallback<void(absl::optional<SchemefulSite>)> callback)
       const override;
-  absl::optional<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
+  absl::optional<base::flat_map<SchemefulSite, SchemefulSite>>
   FindFirstPartySetOwners(
       const base::flat_set<SchemefulSite>& sites,
-      base::OnceCallback<void(
-          base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
-      const override;
-  absl::optional<
-      base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>>
+      base::OnceCallback<void(base::flat_map<SchemefulSite, SchemefulSite>)>
+          callback) const override;
+  absl::optional<base::flat_map<SchemefulSite, std::set<SchemefulSite>>>
   RetrieveFirstPartySets(
       base::OnceCallback<void(
-          base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
-          callback) const override;
+          base::flat_map<SchemefulSite, std::set<SchemefulSite>>)> callback)
+      const override;
 
   // Sets the expected return value for any cookie whose Domain
   // matches |cookie_domain|. Pass the value of |cookie.Domain()| and any
@@ -80,8 +78,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   // owner site. The owner site should still be included in the std::set stored
   // in the map.
   void SetFirstPartySets(
-      const base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>&
-          sets);
+      const base::flat_map<SchemefulSite, std::set<SchemefulSite>>& sets);
 
   void set_invoke_callbacks_asynchronously(bool async) {
     invoke_callbacks_asynchronously_ = async;
@@ -89,8 +86,8 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
 
  private:
   // Synchronous version of FindFirstPartySetOwner, for convenience.
-  absl::optional<net::SchemefulSite> FindFirstPartySetOwnerSync(
-      const net::SchemefulSite& site) const;
+  absl::optional<SchemefulSite> FindFirstPartySetOwnerSync(
+      const SchemefulSite& site) const;
 
   // Discard any leading dot in the domain string.
   std::string GetKeyForDomainValue(const std::string& domain) const;
@@ -103,8 +100,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
 
   std::map<std::string, CookieAccessSemantics> expectations_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-      first_party_sets_;
+  base::flat_map<SchemefulSite, std::set<SchemefulSite>> first_party_sets_;
   bool invoke_callbacks_asynchronously_ = false;
 };
 
