@@ -28,7 +28,14 @@ const base::Feature kColorProviderRedirectionForThemeProvider = {
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
 const base::Feature kDestroyProfileOnBrowserClose{
-    "DestroyProfileOnBrowserClose", base::FEATURE_DISABLED_BY_DEFAULT};
+  "DestroyProfileOnBrowserClose",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+};
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+};
+#endif
 
 // DestroyProfileOnBrowserClose only covers deleting regular (non-System)
 // Profiles. This flags lets us destroy the System Profile, as well.

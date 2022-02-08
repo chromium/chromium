@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -74,9 +75,18 @@ void ExtensionsToolbarUnitTest::ReloadExtension(
 
 void ExtensionsToolbarUnitTest::UninstallExtension(
     const extensions::ExtensionId& extension_id) {
+  // In some cases, exiting the test too early could cause it to fail,
+  // because a worker thread is holding a lock to files it's trying to delete.
+  // This prevents the test's temp dir from cleaning up properly.
+  //
+  // This is also a known bug for Ephemeral Profiles. NukeProfileFromDisk() can
+  // race with a bunch of things, and extension uninstall is just one of them.
+  // See crbug.com/1191455.
+  base::RunLoop run_loop;
   extension_service()->UninstallExtension(
       extension_id, extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING,
-      nullptr);
+      nullptr, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 void ExtensionsToolbarUnitTest::EnableExtension(
