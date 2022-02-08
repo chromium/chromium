@@ -47,6 +47,21 @@
             ]
         }
     ],
+    "AndroidCloseAllTabsModalDialog": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220204",
+                    "enable_features": [
+                        "CloseAllTabsModalDialog"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidContextualSearchM95": [
         {
             "platforms": [
