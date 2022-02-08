@@ -165,7 +165,7 @@ TEST_F('PrintPreviewPdfToolbarManagerTest', 'TouchInteraction', function() {
 var PrintPreviewPdfViewerTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/pdf_viewer_test.js';
+    return 'chrome://print/test_loader.html?module=print_preview/pdf_viewer_test.js&host=webui-test';
   }
 
   /** @override */

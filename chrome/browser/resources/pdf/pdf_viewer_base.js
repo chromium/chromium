@@ -38,10 +38,6 @@ export class PDFViewerBaseElement extends PolymerElement {
     return 'pdf-viewer-base';
   }
 
-  static get template() {
-    return null;
-  }
-
   static get properties() {
     return {
       /** @protected */

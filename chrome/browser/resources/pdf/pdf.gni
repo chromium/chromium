@@ -59,7 +59,7 @@ print_preview_webcomponents_files = [
   "elements/viewer-page-indicator.ts",
   "elements/viewer-zoom-button.ts",
   "elements/viewer-zoom-toolbar.ts",
-  "pdf_viewer_pp.js",
+  "pdf_viewer_pp.ts",
 ]
 
 # Files to pass directly to preprocess_if_expr() that are shared by PDF Viewer

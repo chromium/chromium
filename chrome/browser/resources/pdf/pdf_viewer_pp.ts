@@ -8,7 +8,7 @@ import './elements/shared-vars.js';
 import './elements/viewer-zoom-toolbar.js';
 import './pdf_viewer_shared_style.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -23,7 +23,24 @@ import {PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, MessageObject, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
-class PDFViewerPPElement extends PDFViewerBaseElement {
+
+type KeyEventData = MessageData&{keyEvent: Object};
+
+type ExtendedKeyEvent = KeyboardEvent&{
+  fromScriptingAPI?: boolean,
+  fromPlugin?: boolean,
+};
+
+export interface PDFViewerPPElement {
+  $: {
+    content: HTMLDivElement,
+    pageIndicator: ViewerPageIndicatorElement,
+    sizer: HTMLDivElement,
+    zoomToolbar: ViewerZoomToolbarElement,
+  };
+}
+
+export class PDFViewerPPElement extends PDFViewerBaseElement {
   static get is() {
     return 'pdf-viewer-pp';
   }
@@ -32,78 +49,43 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     return html`{__html_template__}`;
   }
 
-  constructor() {
-    super();
+  private isPrintPreviewLoadingFinished_: boolean = false;
+  private inPrintPreviewMode_: boolean = false;
+  private dark_: boolean = false;
+  private pluginController_: PluginController|undefined = undefined;
+  private toolbarManager_: ToolbarManager|null = null;
 
-    /** @private {boolean} */
-    this.isPrintPreviewLoadingFinished_ = false;
-
-    /** @private {boolean} */
-    this.inPrintPreviewMode_ = false;
-
-    /** @private {boolean} */
-    this.dark_ = false;
-
-    /** @private {?ToolbarManager} */
-    this.toolbarManager_ = null;
-  }
-
-  /** @override */
   ready() {
     super.ready();
     window.addEventListener('scroll', () => {
-      this.pluginController_.updateScroll(window.scrollX, window.scrollY);
+      this.pluginController_!.updateScroll(window.scrollX, window.scrollY);
     });
   }
 
-  /** @override */
   isNewUiEnabled() {
     return false;
   }
 
-  /** @override */
   getBackgroundColor() {
     return PRINT_PREVIEW_BACKGROUND_COLOR;
   }
 
-  /**
-   * @return {!ViewerPageIndicatorElement}
-   * @private
-   */
-  getPageIndicator_() {
-    return /** @type {!ViewerPageIndicatorElement} */ (
-        this.$$('#page-indicator'));
-  }
-
-  /**
-   * @return {!ViewerZoomToolbarElement}
-   * @private
-   */
-  getZoomToolbar_() {
-    return /** @type {!ViewerZoomToolbarElement} */ (this.$$('#zoom-toolbar'));
-  }
-
-  /** @param {!BrowserApi} browserApi */
-  init(browserApi) {
+  init(browserApi: BrowserApi) {
     super.init(
-        browserApi, document.documentElement,
-        /** @type {!HTMLDivElement} */ (this.$$('#sizer')),
-        /** @type {!HTMLDivElement} */ (this.$$('#content')));
+        browserApi, document.documentElement, this.$.sizer, this.$.content);
 
-    /** @private {?PluginController} */
     this.pluginController_ = PluginController.getInstance();
 
-    this.getPageIndicator_().setViewport(this.viewport);
-    this.toolbarManager_ = new ToolbarManager(window, this.getZoomToolbar_());
+    this.$.pageIndicator.setViewport(this.viewport);
+    this.toolbarManager_ = new ToolbarManager(window, this.$.zoomToolbar);
   }
 
-  /** @override */
-  handleKeyEvent(e) {
+  handleKeyEvent(e: ExtendedKeyEvent) {
     if (shouldIgnoreKeyEvents() || e.defaultPrevented) {
       return;
     }
 
-    this.toolbarManager_.hideToolbarAfterTimeout();
+    this.toolbarManager_!.hideToolbarAfterTimeout();
     // Let the viewport handle directional key events.
     if (this.viewport.handleDirectionalKeyEvent(e, false)) {
       return;
@@ -111,20 +93,20 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
     switch (e.key) {
       case 'Tab':
-        this.toolbarManager_.showToolbarForKeyboardNavigation();
+        this.toolbarManager_!.showToolbarForKeyboardNavigation();
         return;
       case 'Escape':
         break;  // Ensure escape falls through to the print-preview handler.
       case 'a':
         if (hasCtrlModifier(e)) {
-          this.pluginController_.selectAll();
+          this.pluginController_!.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
         }
         return;
       case '\\':
         if (e.ctrlKey) {
-          this.getZoomToolbar_().fitToggleFromHotKey();
+          this.$.zoomToolbar.fitToggleFromHotKey();
         }
         return;
     }
@@ -136,19 +118,17 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     } else {
       // Show toolbar as a fallback.
       if (!(e.shiftKey || e.ctrlKey || e.altKey)) {
-        this.getZoomToolbar_().show();
+        this.$.zoomToolbar.show();
       }
     }
   }
 
-  /** @private */
-  setBackgroundColorForPrintPreview_() {
-    this.pluginController_.setBackgroundColor(
+  private setBackgroundColorForPrintPreview_() {
+    this.pluginController_!.setBackgroundColor(
         this.dark_ ? PRINT_PREVIEW_DARK_BACKGROUND_COLOR :
                      PRINT_PREVIEW_BACKGROUND_COLOR);
   }
 
-  /** @override */
   updateUIForViewportChange() {
     // Offset the toolbar position so that it doesn't move if scrollbars appear.
     const hasScrollbars = this.viewport.documentHasScrollbars();
@@ -164,7 +144,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     // than the spec. In LTR layout, the zoom toolbar is on the left
     // left side, but the scrollbar is still on the right, so this is not
     // necessary.
-    const zoomToolbar = this.getZoomToolbar_();
+    const zoomToolbar = this.$.zoomToolbar;
     if (isRTL()) {
       zoomToolbar.style.right =
           -verticalScrollbarWidth + (scrollbarWidth / 2) + 'px';
@@ -177,21 +157,20 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
     // Update the page indicator.
     const visiblePage = this.viewport.getMostVisiblePage();
-    const pageIndicator = this.getPageIndicator_();
+    const pageIndicator = this.$.pageIndicator;
     const lastIndex = pageIndicator.index;
     pageIndicator.index = visiblePage;
-    if (this.documentDimensions.pageDimensions.length > 1 &&
+    if (this.documentDimensions!.pageDimensions.length > 1 &&
         hasScrollbars.vertical && lastIndex !== undefined) {
       pageIndicator.style.visibility = 'visible';
     } else {
       pageIndicator.style.visibility = 'hidden';
     }
 
-    this.pluginController_.viewportChanged();
+    this.pluginController_!.viewportChanged();
   }
 
-  /** @override */
-  handleScriptingMessage(message) {
+  handleScriptingMessage(message: MessageObject) {
     if (super.handleScriptingMessage(message)) {
       return true;
     }
@@ -206,11 +185,11 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
     switch (message.data.type.toString()) {
       case 'getSelectedText':
-        this.pluginController_.getSelectedText().then(
+        this.pluginController_!.getSelectedText().then(
             this.sendScriptingMessage.bind(this));
         break;
       case 'selectAll':
-        this.pluginController_.selectAll();
+        this.pluginController_!.selectAll();
         break;
       default:
         return false;
@@ -220,21 +199,20 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
   /**
    * Handle scripting messages specific to print preview.
-   * @param {!MessageObject} message the message to handle.
-   * @return {boolean} true if the message was handled, false otherwise.
-   * @private
+   * @param message the message to handle.
+   * @return true if the message was handled, false otherwise.
    */
-  handlePrintPreviewScriptingMessage_(message) {
-    let messageData = message.data;
+  private handlePrintPreviewScriptingMessage_(message: MessageObject): boolean {
+    const messageData = message.data;
     switch (messageData.type.toString()) {
       case 'loadPreviewPage':
-        messageData =
-            /** @type {{ url:  string, index: number }} */ (messageData);
-        this.pluginController_.loadPreviewPage(
-            messageData.url, messageData.index);
+        const loadData =
+            messageData as MessageData & {url: string, index: number};
+        this.pluginController_!.loadPreviewPage(loadData.url, loadData.index);
         return true;
       case 'resetPrintPreviewMode':
-        messageData = /** @type {!PrintPreviewParams} */ (messageData);
+        const printPreviewData =
+            messageData as (MessageData & PrintPreviewParams);
         this.setLoadState(LoadState.LOADING);
         if (!this.inPrintPreviewMode_) {
           this.inPrintPreviewMode_ = true;
@@ -247,28 +225,31 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         // Stash the scroll location so that it can be restored when the new
         // document is loaded.
         this.lastViewportPosition = this.viewport.position;
-        this.getPageIndicator_().pageLabels = messageData.pageNumbers;
+        this.$.pageIndicator.pageLabels = printPreviewData.pageNumbers;
 
-        this.pluginController_.resetPrintPreviewMode(messageData);
+        this.pluginController_!.resetPrintPreviewMode(printPreviewData);
         return true;
       case 'sendKeyEvent':
-        const keyEvent = DeserializeKeyEvent(
-            /** @type {{ keyEvent: Object }} */ (message.data).keyEvent);
-        keyEvent.fromScriptingAPI = true;
-        this.handleKeyEvent(keyEvent);
+        const keyEvent =
+            DeserializeKeyEvent((message.data as KeyEventData).keyEvent);
+        const extendedKeyEvent = keyEvent as ExtendedKeyEvent;
+        extendedKeyEvent.fromScriptingAPI = true;
+        this.handleKeyEvent(extendedKeyEvent);
         return true;
       case 'hideToolbar':
-        this.toolbarManager_.resetKeyboardNavigationAndHideToolbar();
+        this.toolbarManager_!.resetKeyboardNavigationAndHideToolbar();
         return true;
       case 'darkModeChanged':
-        this.dark_ = /** @type {{darkMode: boolean}} */ (message.data).darkMode;
+        this.dark_ =
+            (message.data as (MessageData & {darkMode: boolean})).darkMode;
         this.setBackgroundColorForPrintPreview_();
         return true;
       case 'scrollPosition':
         const position = this.viewport.position;
-        messageData = /** @type {{ x: number, y: number }} */ (message.data);
-        position.y += messageData.y;
-        position.x += messageData.x;
+        const positionData =
+            message.data as (MessageData & {x: number, y: number});
+        position.y += positionData.y;
+        position.x += positionData.x;
         this.viewport.setPosition(position);
         return true;
     }
@@ -276,28 +257,24 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     return false;
   }
 
-  /** @override */
-  setLoadState(loadState) {
+  setLoadState(loadState: LoadState) {
     super.setLoadState(loadState);
     if (loadState === LoadState.FAILED) {
       this.isPrintPreviewLoadingFinished_ = true;
     }
   }
 
-  /** @override */
-  handlePluginMessage(e) {
+  handlePluginMessage(e: CustomEvent) {
     const data = e.detail;
     switch (data.type.toString()) {
       case 'documentDimensions':
-        this.setDocumentDimensions(
-            /** @type {!DocumentDimensionsMessageData} */ (data));
+        this.setDocumentDimensions(data as DocumentDimensionsMessageData);
         return;
       case 'loadProgress':
-        this.updateProgress(
-            /** @type {{ progress: number }} */ (data).progress);
+        this.updateProgress((data as {progress: number}).progress);
         return;
       case 'navigateToDestination':
-        const destinationData = /** @type {!DestinationMessageData} */ (data);
+        const destinationData = data as DestinationMessageData;
         this.viewport.handleNavigateToDestination(
             destinationData.page, destinationData.x, destinationData.y,
             destinationData.zoom);
@@ -306,8 +283,8 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         this.handlePrintPreviewLoaded_();
         return;
       case 'setIsSelecting':
-        this.viewportScroller.setEnableScrolling(
-            /** @type {{ isSelecting: boolean }} */ (data).isSelecting);
+        this.viewportScroller!.setEnableScrolling(
+            (data as (MessageData & {isSelecting: boolean})).isSelecting);
         return;
       case 'touchSelectionOccurred':
         this.sendScriptingMessage({
@@ -318,8 +295,8 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         // TODO(crbug.com/1069370): Draw a focus rect around plugin.
         return;
       case 'sendKeyEvent':
-        const keyEvent = DeserializeKeyEvent(
-            /** @type {{ keyEvent: Object }} */ (data).keyEvent);
+        const keyEvent = DeserializeKeyEvent((data as KeyEventData).keyEvent) as
+            ExtendedKeyEvent;
         keyEvent.fromPlugin = true;
         this.handleKeyEvent(keyEvent);
         return;
@@ -338,25 +315,21 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
   /**
    * Handles a notification that print preview has loaded from the
    * current controller.
-   * @private
    */
-  handlePrintPreviewLoaded_() {
+  private handlePrintPreviewLoaded_() {
     this.isPrintPreviewLoadingFinished_ = true;
     this.sendDocumentLoadedMessage();
   }
 
-  /** @override */
   readyToSendLoadMessage() {
     return this.isPrintPreviewLoadingFinished_;
   }
 
-  /** @override */
-  forceFit(view) {
-    this.getZoomToolbar_().forceFit(view);
+  forceFit(view: FittingType) {
+    this.$.zoomToolbar.forceFit(view);
   }
 
-  /** @override */
-  handleStrings(strings) {
+  handleStrings(strings: {[key: string]: string}) {
     super.handleStrings(strings);
     if (!strings) {
       return;
@@ -364,11 +337,10 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     this.setBackgroundColorForPrintPreview_();
   }
 
-  /** @override */
-  updateProgress(progress) {
+  updateProgress(progress: number) {
     super.updateProgress(progress);
     if (progress === 100) {
-      this.toolbarManager_.hideToolbarAfterTimeout();
+      this.toolbarManager_!.hideToolbarAfterTimeout();
     }
   }
 }
@@ -376,15 +348,19 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 /**
  * The background color used for print preview (--google-grey-300). Keep
  * in sync with `ChromePdfStreamDelegate::MapToOriginalUrl()`.
- * @type {number}
  */
-const PRINT_PREVIEW_BACKGROUND_COLOR = 0xffdadce0;
+const PRINT_PREVIEW_BACKGROUND_COLOR: number = 0xffdadce0;
 
 /**
  * The background color used for print preview when dark mode is enabled
  * (--google-grey-700).
- * @type {number}
  */
-const PRINT_PREVIEW_DARK_BACKGROUND_COLOR = 0xff5f6368;
+const PRINT_PREVIEW_DARK_BACKGROUND_COLOR: number = 0xff5f6368;
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'pdf-viewer-pp': PDFViewerPPElement;
+  }
+}
 
 customElements.define(PDFViewerPPElement.is, PDFViewerPPElement);

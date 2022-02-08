@@ -57,8 +57,7 @@ non_preprocessed_tests = [
   "pages_per_sheet_settings_test.ts",
   "pages_settings_test.ts",
   "pdf_toolbar_manager_test.ts",
-
-  # "pdf_viewer_test.js",
+  "pdf_viewer_test.ts",
   "pdf_zoom_toolbar_test.ts",
   "preview_area_test.ts",
   "scaling_settings_interactive_test.ts",
@@ -122,6 +121,10 @@ ts_library("build_ts") {
     "chrome://print/pdf/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
                     target_gen_dir),
+    "chrome://print/pdf/pdf_viewer_wrapper.js|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/pdf/tsc/pdf_viewer_pp.js",
+            target_gen_dir),
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),

@@ -87,5 +87,11 @@ export class ViewerPageIndicatorElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-page-indicator': ViewerPageIndicatorElement;
+  }
+}
+
 customElements.define(
     ViewerPageIndicatorElement.is, ViewerPageIndicatorElement);
