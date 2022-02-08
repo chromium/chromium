@@ -150,8 +150,6 @@ void IOSChromeLocalSessionEventRouter::OnWebStateChange(
     web::WebState* web_state) {
   if (batch_in_progress_)
     return;
-  if (!web_state->IsRealized())
-    return;
   sync_sessions::SyncedTabDelegate* tab =
       GetSyncedTabDelegateFromWebState(web_state);
   if (!tab)
