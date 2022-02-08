@@ -334,6 +334,38 @@ void ExtensionDownloader::SetBackoffPolicyForTesting(
   manifests_queue_.set_backoff_policy(backoff_policy);
 }
 
+void ExtensionDownloader::UpdateURLStats(const GURL& update_url,
+                                         Manifest::Type extension_type) {
+  if (update_url.DomainIs(kGoogleDotCom)) {
+    url_stats_.google_url_count++;
+  } else if (update_url.is_empty()) {
+    url_stats_.no_url_count++;
+  } else {
+    url_stats_.other_url_count++;
+  }
+
+  switch (extension_type) {
+    case Manifest::TYPE_THEME:
+      ++url_stats_.theme_count;
+      break;
+    case Manifest::TYPE_EXTENSION:
+    case Manifest::TYPE_USER_SCRIPT:
+      ++url_stats_.extension_count;
+      break;
+    case Manifest::TYPE_HOSTED_APP:
+    case Manifest::TYPE_LEGACY_PACKAGED_APP:
+      ++url_stats_.app_count;
+      break;
+    case Manifest::TYPE_PLATFORM_APP:
+      ++url_stats_.platform_app_count;
+      break;
+    case Manifest::TYPE_UNKNOWN:
+    default:
+      ++url_stats_.pending_count;
+      break;
+  }
+}
+
 bool ExtensionDownloader::AddExtensionData(
     const std::string& id,
     const base::Version& version,
@@ -366,35 +398,10 @@ bool ExtensionDownloader::AddExtensionData(
     return false;
   }
 
-  if (update_url.DomainIs(kGoogleDotCom)) {
-    url_stats_.google_url_count++;
-  } else if (update_url.is_empty()) {
-    url_stats_.no_url_count++;
+  UpdateURLStats(update_url, extension_type);
+  if (update_url.is_empty()) {
     // Fill in default update URL.
     update_url = extension_urls::GetWebstoreUpdateUrl();
-  } else {
-    url_stats_.other_url_count++;
-  }
-
-  switch (extension_type) {
-    case Manifest::TYPE_THEME:
-      ++url_stats_.theme_count;
-      break;
-    case Manifest::TYPE_EXTENSION:
-    case Manifest::TYPE_USER_SCRIPT:
-      ++url_stats_.extension_count;
-      break;
-    case Manifest::TYPE_HOSTED_APP:
-    case Manifest::TYPE_LEGACY_PACKAGED_APP:
-      ++url_stats_.app_count;
-      break;
-    case Manifest::TYPE_PLATFORM_APP:
-      ++url_stats_.platform_app_count;
-      break;
-    case Manifest::TYPE_UNKNOWN:
-    default:
-      ++url_stats_.pending_count;
-      break;
   }
 
   DCHECK(!update_url.is_empty());

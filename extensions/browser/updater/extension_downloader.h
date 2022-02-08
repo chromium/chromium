@@ -261,6 +261,9 @@ class ExtensionDownloader {
     kBadUpdateSpecification,
   };
 
+  // Updates |url_stats_| for a single extension download requests.
+  void UpdateURLStats(const GURL& update_url, Manifest::Type extension_type);
+
   // Helper for AddExtension() and AddPendingExtension().
   bool AddExtensionData(const std::string& id,
                         const base::Version& version,
