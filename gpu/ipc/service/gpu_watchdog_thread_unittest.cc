@@ -105,20 +105,17 @@ class GpuWatchdogPowerTest : public GpuWatchdogTest {
 void GpuWatchdogTest::SetUp() {
   ASSERT_TRUE(base::ThreadTaskRunnerHandle::IsSet());
   ASSERT_TRUE(base::CurrentThread::IsSet());
+  bool use_slow_timeout = false;
 
 #if BUILDFLAG(IS_WIN)
   // Win7
   if (base::win::GetVersion() < base::win::Version::WIN10) {
-    timeout_ = kGpuWatchdogTimeoutForTestingSlow;
-    extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
+    use_slow_timeout = true;
   }
-
-  full_thread_time_on_windows_ = timeout_ * kMaxCountOfMoreGpuThreadTimeAllowed;
 
 #elif BUILDFLAG(IS_MAC)
   // Use slow timeout for Mac versions < 11.00 and for MacBookPro model <
   // MacBookPro14,1
-  bool use_slow_timeout = false;
   int os_version = base::mac::internal::MacOSVersion();
 
   if (os_version <= 1100) {
@@ -140,11 +137,6 @@ void GpuWatchdogTest::SetUp() {
     }
   }
 
-  if (use_slow_timeout) {
-    timeout_ = kGpuWatchdogTimeoutForTestingSlow;
-    extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
-  }
-
 #elif BUILDFLAG(IS_ANDROID)
   int32_t major_version = 0;
   int32_t minor_version = 0;
@@ -154,9 +146,20 @@ void GpuWatchdogTest::SetUp() {
 
   // For Android version < Android Pie (Version 9)
   if (major_version < 9) {
+    use_slow_timeout = true;
+  }
+
+#elif BUILDFLAG(IS_FUCHSIA)
+  use_slow_timeout = true;
+#endif
+
+  if (use_slow_timeout) {
     timeout_ = kGpuWatchdogTimeoutForTestingSlow;
     extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
   }
+
+#if BUILDFLAG(IS_WIN)
+  full_thread_time_on_windows_ = timeout_ * kMaxCountOfMoreGpuThreadTimeAllowed;
 #endif
 
   watchdog_thread_ = gpu::GpuWatchdogThread::Create(
