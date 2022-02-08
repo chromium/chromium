@@ -85,7 +85,7 @@ class SyncScreenMediatorTest : public PlatformTest {
     // Identity services.
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    authentication_service->SignIn(identity_, nil);
+    authentication_service->SignIn(identity_);
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForBrowserState(browser_state_.get());
     consent_auditor::ConsentAuditor* consent_auditor =

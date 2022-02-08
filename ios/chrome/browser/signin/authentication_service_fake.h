@@ -27,6 +27,8 @@ class AuthenticationServiceFake : public AuthenticationService {
 
   ~AuthenticationServiceFake() override;
 
+  void SignIn(ChromeIdentity* identity) override;
+
   void GrantSyncConsent(ChromeIdentity* identity) override;
 
   void SignOut(signin_metrics::ProfileSignout signout_source,
@@ -46,9 +48,6 @@ class AuthenticationServiceFake : public AuthenticationService {
       ChromeAccountManagerService* account_manager_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
-
-  // Internal method signing the user in.
-  void SignInInternal(ChromeIdentity* identity) override;
 
   // Internal method effectively signing out the user.
   void SignOutInternal(ProceduralBlock completion);

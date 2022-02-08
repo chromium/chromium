@@ -141,7 +141,7 @@
               if (authenticationService && identity &&
                   accountManagerService->IsValidIdentity(identity)) {
                 // Sign back in with a valid identity.
-                authenticationService->SignIn(identity, nil);
+                authenticationService->SignIn(identity);
               }
               [weakSelf onSigninStateRestorationCompleted];
             });

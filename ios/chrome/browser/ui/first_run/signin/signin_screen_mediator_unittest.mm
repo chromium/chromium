@@ -286,7 +286,7 @@ TEST_F(SigninScreenMediatorTest, TestSignIn) {
                           withHostedDomain:nil
                             toBrowserState:browser_state_.get()])
       .andDo(^(NSInvocation*) {
-        auth_service->SignIn(identity_, nil);
+        auth_service->SignIn(identity_);
       });
   OCMExpect([performer_mock
                 shouldHandleMergeCaseForIdentity:identity_
