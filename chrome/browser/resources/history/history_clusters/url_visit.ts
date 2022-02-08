@@ -225,13 +225,16 @@ class VisitRowElement extends PolymerElement {
   }
 
   /**
-   * Returns the domain name without the leading 'www.', if applicable.
+   * Returns the visible url stripped of the scheme, common prefixes, username,
+   * password, port, queries, and hashes for simpler more descriptive urls.
+   * TODO(crbug.com/1294350): Move this logic to a cross-platform location to
+   * be shared by various surfaces.
    */
-  private getHostname_(_visit: URLVisit): string {
+  private getVisibleUrl_(_visit: URLVisit): string {
     try {
-      return new URL(this.visit.normalizedUrl.url)
-          .hostname.replace(/^(www\.)/, '')
-          .trim();
+      const url = new URL(this.visit.normalizedUrl.url);
+      return url.hostname.replace(/^(www\.|m\.|mobile\.|touch\.)/, '').trim() +
+          url.pathname.trim();
     } catch (err) {
       return '';
     }

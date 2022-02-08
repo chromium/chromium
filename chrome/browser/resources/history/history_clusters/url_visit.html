@@ -71,18 +71,18 @@
   }
 
   #title,
-  #hostname {
+  #url {
     font-size: .875rem;  /* 14px */
   }
 
   :host([is-top-visit]) #title,
-  :host([is-top-visit]) #hostname {
+  :host([is-top-visit]) #url {
     font-size: 1.125rem;  /* 18px */
     font-weight: 500;
   }
 
-  #hostname {
-    color: var(--url-hostname-color);
+  #url {
+    color: var(--url-color);
     line-height: 1.5;  /* 21px */
   }
 
@@ -135,9 +135,9 @@
           <span class="annotation">[[item]]</span>
         </template>
       </div>
-      <span id="hostname" class="truncate" hidden="[[isSearchResultsPage_]]">
-        [[getHostname_(visit)]]
-        <!-- Print the debug next to the hostname to keep layout the same. -->
+      <span id="url" class="truncate">
+        [[getVisibleUrl_(visit)]]
+        <!-- Print the debug next to the url to keep layout the same. -->
         <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
       </span>
     </div>
