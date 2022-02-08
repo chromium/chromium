@@ -84,18 +84,18 @@ class CertificatesHandler : public content::WebUIMessageHandler,
 
  private:
   // View certificate.
-  void HandleViewCertificate(const base::ListValue* args);
+  void HandleViewCertificate(base::Value::ConstListView args);
 
   // Edit certificate authority trust values.  The sequence goes like:
   //  1. user clicks edit button -> Edit dialog is shown ->
   //  HandleGetCATrust -> Edit dialog is populated.
   //  2. User checks/unchecks boxes, and clicks ok -> HandleEditCATrust ->
   //  edit dialog is dismissed upon success.
-  void HandleGetCATrust(const base::ListValue* args);
-  void HandleEditCATrust(const base::ListValue* args);
+  void HandleGetCATrust(base::Value::ConstListView args);
+  void HandleEditCATrust(base::Value::ConstListView args);
 
   // Cleanup state stored during import or export process.
-  void HandleCancelImportExportProcess(const base::ListValue* args);
+  void HandleCancelImportExportProcess(base::Value::ConstListView args);
   void ImportExportCleanup();
 
   // Export to PKCS #12 file.  The sequence goes like:
@@ -108,9 +108,9 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   //  4. slots unlocked -> ExportPersonalSlotsUnlocked -> exports to memory
   //  buffer -> starts async write operation
   //  5. write finishes (or fails) -> ExportPersonalFileWritten
-  void HandleExportPersonal(const base::ListValue* args);
+  void HandleExportPersonal(base::Value::ConstListView args);
   void ExportPersonalFileSelected(const base::FilePath& path);
-  void HandleExportPersonalPasswordSelected(const base::ListValue* args);
+  void HandleExportPersonalPasswordSelected(base::Value::ConstListView args);
   void ExportPersonalSlotsUnlocked();
   void ExportPersonalFileWritten(const int* write_errno,
                                  const int* bytes_written);
@@ -130,10 +130,10 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   //  6a. if import succeeds -> ImportExportCleanup
   //  6b. if import fails -> show error, ImportExportCleanup
   //  TODO(mattm): allow retrying with different password
-  void HandleImportPersonal(const base::ListValue* args);
+  void HandleImportPersonal(base::Value::ConstListView args);
   void ImportPersonalFileSelected(const base::FilePath& path);
   void ImportPersonalFileRead(const int* read_errno, const std::string* data);
-  void HandleImportPersonalPasswordSelected(const base::ListValue* args);
+  void HandleImportPersonalPasswordSelected(base::Value::ConstListView args);
   void ImportPersonalSlotUnlocked();
 
   // Import Server certificates from file.  Sequence goes like:
@@ -143,7 +143,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   //  3. read completes -> ImportServerFileRead -> parse certs -> attempt import
   //  4a. if import succeeds -> ImportExportCleanup
   //  4b. if import fails -> show error, ImportExportCleanup
-  void HandleImportServer(const base::ListValue* args);
+  void HandleImportServer(base::Value::ConstListView args);
   void ImportServerFileSelected(const base::FilePath& path);
   void ImportServerFileRead(const int* read_errno, const std::string* data);
 
@@ -156,16 +156,16 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   //  4. user clicks ok -> HandleImportCATrustSelected -> attempt import
   //  5a. if import succeeds -> ImportExportCleanup
   //  5b. if import fails -> show error, ImportExportCleanup
-  void HandleImportCA(const base::ListValue* args);
+  void HandleImportCA(base::Value::ConstListView args);
   void ImportCAFileSelected(const base::FilePath& path);
   void ImportCAFileRead(const int* read_errno, const std::string* data);
-  void HandleImportCATrustSelected(const base::ListValue* args);
+  void HandleImportCATrustSelected(base::Value::ConstListView args);
 
   // Export a certificate.
-  void HandleExportCertificate(const base::ListValue* args);
+  void HandleExportCertificate(base::Value::ConstListView args);
 
   // Delete certificate and private key (if any).
-  void HandleDeleteCertificate(const base::ListValue* args);
+  void HandleDeleteCertificate(base::Value::ConstListView args);
 
   // Model initialization methods.
   void OnCertificateManagerModelCreated(
@@ -173,7 +173,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   void CertificateManagerModelReady();
 
   // Populate the trees in all the tabs.
-  void HandleRefreshCertificates(const base::ListValue* args);
+  void HandleRefreshCertificates(base::Value::ConstListView args);
 
   // Populate the given tab's tree.
   void PopulateTree(const std::string& tab_name, net::CertType type);
@@ -192,7 +192,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
 
   // Assigns a new |webui_callback_id_|. Ensures that previous in-flight request
   // has been fulfilled.
-  void AssignWebUICallbackId(const base::ListValue* args);
+  void AssignWebUICallbackId(base::Value::ConstListView args);
 
   gfx::NativeWindow GetParentWindow();
 
@@ -200,7 +200,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   // |cert_info_id_map_| and looks up the corresponding CertInfo. If there is
   // an error parsing the list, returns nullptr.
   CertificateManagerModel::CertInfo* GetCertInfoFromCallbackArgs(
-      const base::Value& args,
+      base::Value::ConstListView args,
       size_t arg_index);
 
   // Returns true if it is allowed to display the list of client certificates
