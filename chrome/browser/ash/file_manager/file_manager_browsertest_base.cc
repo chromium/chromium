@@ -2120,7 +2120,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     if (type)
       arg_value.SetStringKey("type", *type);
     std::string search;
-    if (arg_value.HasKey("currentDirectoryURL") || arg_value.HasKey("type")) {
+    if (arg_value.FindKey("currentDirectoryURL") || arg_value.FindKey("type")) {
       std::string json_args;
       base::JSONWriter::Write(arg_value, &json_args);
       search = base::StrCat(
