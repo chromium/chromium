@@ -5418,10 +5418,6 @@ const char kDownloadShelfWebUIDescription[] =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
-const char kWebUIBrandingUpdateName[] = "WebUI Branding Update";
-const char kWebUIBrandingUpdateDescription[] =
-    "Changes various UI components in WebUI pages to have a more modern look.";
-
 const char kWebuiFeedbackName[] = "WebUI Feedback";
 const char kWebuiFeedbackDescription[] =
     "If enabled, Chrome will show the Feedback WebUI, as opposed to Chrome "

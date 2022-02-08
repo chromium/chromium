@@ -265,11 +265,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         std::make_unique<IncompatibleApplicationsHandler>());
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  html_source->AddString(
-      "enableBrandingUpdateAttribute",
-      base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
-          ? "enable-branding-update"
-          : "");
+  // TODO(crbug.com/1286649): Remove after CSS has been updated to no longer
+  // need this attribute.
+  html_source->AddString("enableBrandingUpdateAttribute",
+                         "enable-branding-update");
 
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(

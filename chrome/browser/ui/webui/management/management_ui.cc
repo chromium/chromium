@@ -157,10 +157,9 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
                         IDS_MANAGEMENT_REPORT_DLP_EVENTS, dlp_events_count));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  source->AddString("enableBrandingUpdateAttribute",
-                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
-                        ? "enable-branding-update"
-                        : "");
+  // TODO(crbug.com/1286649): Remove after CSS has been updated to no longer
+  // need this attribute.
+  source->AddString("enableBrandingUpdateAttribute", "enable-branding-update");
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kManagementResources, kManagementResourcesSize),

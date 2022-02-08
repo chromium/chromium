@@ -5933,11 +5933,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "webui-branding-update",
-    "owners": [ "dpapad@chromium.org", "johntlee@chromium.org" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "webui-dark-mode",
     "owners": [ "khorimoto@chromium.org", "jessejames@chromium.org" ],
     "expiry_milestone": 99

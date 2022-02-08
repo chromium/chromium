@@ -7014,12 +7014,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxTriggerForPrerender2Description, kOsAll,
      FEATURE_VALUE_TYPE(features::kOmniboxTriggerForPrerender2)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"webui-branding-update", flag_descriptions::kWebUIBrandingUpdateName,
-     flag_descriptions::kWebUIBrandingUpdateDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebUIBrandingUpdate)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"continuous-search", flag_descriptions::kContinuousSearchName,
      flag_descriptions::kContinuousSearchDescription, kOsAndroid,

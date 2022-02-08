@@ -223,11 +223,6 @@ const base::Feature kUnifiedSidePanel{"UnifiedSidePanel",
 const base::Feature kWebUIBubblePerProfilePersistence{
     "WebUIBubblePerProfilePersistence", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if !defined(ANDROID)
-const base::Feature kWebUIBrandingUpdate{"WebUIBrandingUpdate",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // Enables the WebUI Download Shelf instead of the Views framework Download
 // Shelf. See https://crbug.com/1180372.
 const base::Feature kWebUIDownloadShelf{"WebUIDownloadShelf",

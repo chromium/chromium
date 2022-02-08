@@ -179,10 +179,6 @@ extern const base::Feature kUnifiedSidePanel;
 
 extern const base::Feature kWebUIBubblePerProfilePersistence;
 
-#if !defined(ANDROID)
-extern const base::Feature kWebUIBrandingUpdate;
-#endif
-
 extern const base::Feature kWebUIDownloadShelf;
 
 extern const base::Feature kWebUITabStrip;
