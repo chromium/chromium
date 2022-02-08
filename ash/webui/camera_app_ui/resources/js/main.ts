@@ -18,7 +18,6 @@ import * as filesystem from './models/file_system.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-import {notifyCameraResourceReady} from './mojo/device_operator.js';
 import * as nav from './nav.js';
 import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
@@ -238,7 +237,6 @@ export class App {
       } else {
         // CCA must get camera usage for completing its initialization when
         // first launched.
-        notifyCameraResourceReady();
         await this.cameraManager.initialize(this.cameraView);
         await this.cameraView.initialize();
         cameraResourceInitialized.signal();

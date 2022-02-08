@@ -15,7 +15,7 @@ import {
   ResolutionList,
   VideoConfig,
 } from '../type.js';
-import {CancelableEvent, WaitableEvent} from '../waitable_event.js';
+import {CancelableEvent} from '../waitable_event.js';
 
 import {
   AndroidInfoSupportedHardwareLevel,
@@ -114,21 +114,9 @@ function getMetadataData(
 let instance: DeviceOperator|null = null;
 
 /**
- * A ready event which should be signaled once the camera resource is ready.
- */
-const readyEvent = new WaitableEvent();
-
-/**
  * Job queue to sequentialize devices operations.
  */
 const operationQueue = new AsyncJobQueue();
-
-/**
- * Notified when the camera resource is ready.
- */
-export function notifyCameraResourceReady(): void {
-  readyEvent.signal();
-}
 
 /**
  * Operates video capture device through CrOS Camera App Mojo interface.
@@ -687,7 +675,6 @@ export class DeviceOperator {
    * @return The singleton instance.
    */
   static async getInstance(): Promise<DeviceOperator|null> {
-    await readyEvent.wait();
     if (instance === null) {
       instance = new DeviceOperator();
     }
