@@ -61,16 +61,15 @@ extern const char kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE[];
 // |policy_service| is used as the source for mandatory or recommended
 // policies.
 // |pref_registry| keeps the list of registered prefs and their default values.
-// If |async| is true, asynchronous version is used.
 // Notifies using PREF_INITIALIZATION_COMPLETED in the end. Details is set to
 // the created PrefService or NULL if creation has failed. Note, it is
 // guaranteed that in asynchronous version initialization happens after this
 // function returned.
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
+    scoped_refptr<PersistentPrefStore> pref_store,
     policy::PolicyService* policy_service,
     scoped_refptr<PrefRegistry> pref_registry,
-    bool async,
     policy::BrowserPolicyConnector* policy_connector);
 
 std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(

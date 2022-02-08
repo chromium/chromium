@@ -66,6 +66,7 @@
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_util.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
@@ -141,6 +142,7 @@
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -845,6 +847,12 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
   *failed_to_load_resource_bundle = false;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir_))
     return chrome::RESULT_CODE_MISSING_DATA;
+
+  auto* platform_management_service =
+      policy::ManagementServiceFactory::GetForPlatform();
+  platform_management_service->UsePrefServiceAsCache(
+      browser_process_->local_state());
+  platform_management_service->RefreshCache(base::NullCallback());
 
 #if BUILDFLAG(IS_WIN)
   if (first_run::IsChromeFirstRun()) {

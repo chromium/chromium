@@ -375,17 +375,16 @@ const char kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE[] =
 
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
+    scoped_refptr<PersistentPrefStore> pref_store,
     policy::PolicyService* policy_service,
     scoped_refptr<PrefRegistry> pref_registry,
-    bool async,
     policy::BrowserPolicyConnector* policy_connector) {
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, pref_filename, policy_service,
                  nullptr,  // supervised_user_settings
-                 base::MakeRefCounted<JsonPrefStore>(
-                     pref_filename, std::unique_ptr<PrefFilter>()),
+                 pref_store,
                  nullptr,  // extension_prefs
-                 async, policy_connector);
+                 /*async=*/false, policy_connector);
 
   return factory.Create(std::move(pref_registry));
 }

@@ -48,6 +48,9 @@ POLICY_EXPORT extern const base::Feature
 POLICY_EXPORT extern const base::Feature
     kActivateMetricsReportingEnabledPolicyAndroid;
 
+// Enable caching the value of the ManagementStatus.
+POLICY_EXPORT extern const base::Feature kEnableCachedManagementStatus;
+
 }  // namespace features
 }  // namespace policy
 

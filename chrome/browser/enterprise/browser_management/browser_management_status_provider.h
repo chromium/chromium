@@ -27,8 +27,9 @@ class BrowserCloudManagementStatusProvider final
   BrowserCloudManagementStatusProvider();
   ~BrowserCloudManagementStatusProvider() final;
 
+ protected:
   // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() final;
+  EnterpriseManagementAuthority FetchAuthority() final;
 };
 
 class LocalBrowserManagementStatusProvider final
@@ -37,8 +38,9 @@ class LocalBrowserManagementStatusProvider final
   LocalBrowserManagementStatusProvider();
   ~LocalBrowserManagementStatusProvider() final;
 
+ protected:
   // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() final;
+  EnterpriseManagementAuthority FetchAuthority() final;
 };
 
 class ProfileCloudManagementStatusProvider final
@@ -47,8 +49,9 @@ class ProfileCloudManagementStatusProvider final
   explicit ProfileCloudManagementStatusProvider(Profile* profile);
   ~ProfileCloudManagementStatusProvider() final;
 
+ protected:
   // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() final;
+  EnterpriseManagementAuthority FetchAuthority() final;
 
  private:
   raw_ptr<Profile> profile_;
@@ -62,8 +65,9 @@ class DeviceManagementStatusProvider final
       policy::BrowserPolicyConnectorAsh* browser_policy_connector);
   ~DeviceManagementStatusProvider() final;
 
+ protected:
   // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() final;
+  EnterpriseManagementAuthority FetchAuthority() final;
 
  private:
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_;

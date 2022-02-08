@@ -40,6 +40,8 @@ const base::Feature kActivateMetricsReportingEnabledPolicyAndroid{
     "ActivateMetricsReportingEnabledPolicyAndroid",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+POLICY_EXPORT extern const base::Feature kEnableCachedManagementStatus{
+    "EnableCachedManagementStatus", base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 
 }  // namespace policy

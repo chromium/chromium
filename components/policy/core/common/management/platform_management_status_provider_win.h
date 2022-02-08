@@ -14,24 +14,26 @@ class POLICY_EXPORT DomainEnrollmentStatusProvider final
     : public ManagementStatusProvider {
  public:
   DomainEnrollmentStatusProvider();
-  ~DomainEnrollmentStatusProvider() override;
-
-  // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() override;
+  ~DomainEnrollmentStatusProvider() final;
 
   static bool IsEnrolledToDomain();
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() final;
 };
 
 class POLICY_EXPORT EnterpriseMDMManagementStatusProvider final
     : public ManagementStatusProvider {
  public:
   EnterpriseMDMManagementStatusProvider();
-  ~EnterpriseMDMManagementStatusProvider() override;
-
-  // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() override;
+  ~EnterpriseMDMManagementStatusProvider() final;
 
   static bool IsEnrolledToDomain();
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() final;
 };
 
 }  // namespace policy

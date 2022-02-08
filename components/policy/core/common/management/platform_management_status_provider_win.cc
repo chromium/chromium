@@ -13,7 +13,7 @@ DomainEnrollmentStatusProvider::DomainEnrollmentStatusProvider() = default;
 
 DomainEnrollmentStatusProvider::~DomainEnrollmentStatusProvider() = default;
 
-EnterpriseManagementAuthority DomainEnrollmentStatusProvider::GetAuthority() {
+EnterpriseManagementAuthority DomainEnrollmentStatusProvider::FetchAuthority() {
   return DomainEnrollmentStatusProvider::IsEnrolledToDomain()
              ? EnterpriseManagementAuthority::DOMAIN_LOCAL
              : EnterpriseManagementAuthority::NONE;
@@ -30,7 +30,7 @@ EnterpriseMDMManagementStatusProvider::
     ~EnterpriseMDMManagementStatusProvider() = default;
 
 EnterpriseManagementAuthority
-EnterpriseMDMManagementStatusProvider::GetAuthority() {
+EnterpriseMDMManagementStatusProvider::FetchAuthority() {
   return base::win::OSInfo::GetInstance()->version_type() !=
                      base::win::SUITE_HOME &&
                  base::win::IsDeviceRegisteredWithManagement()

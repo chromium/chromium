@@ -35,7 +35,7 @@ BrowserCloudManagementStatusProvider::~BrowserCloudManagementStatusProvider() =
     default;
 
 EnterpriseManagementAuthority
-BrowserCloudManagementStatusProvider::GetAuthority() {
+BrowserCloudManagementStatusProvider::FetchAuthority() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return EnterpriseManagementAuthority::NONE;
 #else
@@ -56,7 +56,7 @@ LocalBrowserManagementStatusProvider::~LocalBrowserManagementStatusProvider() =
     default;
 
 EnterpriseManagementAuthority
-LocalBrowserManagementStatusProvider::GetAuthority() {
+LocalBrowserManagementStatusProvider::FetchAuthority() {
   auto result = EnterpriseManagementAuthority::NONE;
 // BrowserPolicyConnector::HasMachineLevelPolicies is not supported on Chrome
 // OS.
@@ -83,7 +83,7 @@ ProfileCloudManagementStatusProvider::~ProfileCloudManagementStatusProvider() =
     default;
 
 EnterpriseManagementAuthority
-ProfileCloudManagementStatusProvider::GetAuthority() {
+ProfileCloudManagementStatusProvider::FetchAuthority() {
   if (IsProfileManaged(profile_))
     return EnterpriseManagementAuthority::CLOUD;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -106,7 +106,7 @@ DeviceManagementStatusProvider::DeviceManagementStatusProvider(
 
 DeviceManagementStatusProvider::~DeviceManagementStatusProvider() = default;
 
-EnterpriseManagementAuthority DeviceManagementStatusProvider::GetAuthority() {
+EnterpriseManagementAuthority DeviceManagementStatusProvider::FetchAuthority() {
   return browser_policy_connector_ &&
                  browser_policy_connector_->IsDeviceEnterpriseManaged()
              ? EnterpriseManagementAuthority::CLOUD_DOMAIN
