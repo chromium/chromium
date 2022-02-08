@@ -40,9 +40,8 @@ class ExtensionActionPlatformDelegateViews
   // ExtensionActionPlatformDelegate:
   void RegisterCommand() override;
   void UnregisterCommand() override;
-  void ShowPopup(
-      std::unique_ptr<extensions::ExtensionViewHost> host,
-      ExtensionActionViewController::PopupShowAction show_action) override;
+  void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                 PopupShowAction show_action) override;
 
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const std::string& extension_id,

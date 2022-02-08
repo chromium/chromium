@@ -22,6 +22,7 @@ class Browser;
 class ExtensionActionPlatformDelegate;
 class IconWithBadgeImageSource;
 class ExtensionsContainer;
+enum class PopupShowAction;
 
 namespace extensions {
 class Command;
@@ -43,9 +44,6 @@ class ExtensionActionViewController
       public extensions::ExtensionContextMenuModel::PopupDelegate,
       public extensions::ExtensionHostObserver {
  public:
-  // The different options for showing a popup.
-  enum PopupShowAction { SHOW_POPUP, SHOW_POPUP_AND_INSPECT };
-
   static std::unique_ptr<ExtensionActionViewController> Create(
       const extensions::ExtensionId& extension_id,
       Browser* browser,

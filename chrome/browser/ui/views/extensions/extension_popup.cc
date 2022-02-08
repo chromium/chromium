@@ -36,7 +36,7 @@ void ExtensionPopup::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
-    ShowAction show_action) {
+    PopupShowAction show_action) {
   auto* popup =
       new ExtensionPopup(std::move(host), anchor_view, arrow, show_action);
   views::BubbleDialogDelegateView::CreateBubble(popup);
@@ -187,7 +187,7 @@ void ExtensionPopup::OnTabStripModelChanged(
 void ExtensionPopup::DevToolsAgentHostAttached(
     content::DevToolsAgentHost* agent_host) {
   if (host_->host_contents() == agent_host->GetWebContents())
-    show_action_ = SHOW_AND_INSPECT;
+    show_action_ = PopupShowAction::kShowAndInspect;
 }
 
 void ExtensionPopup::DevToolsAgentHostDetached(
@@ -199,7 +199,7 @@ void ExtensionPopup::DevToolsAgentHostDetached(
   if (!host_)
     return;
   if (host_->host_contents() == agent_host->GetWebContents())
-    show_action_ = SHOW;
+    show_action_ = PopupShowAction::kShow;
 }
 
 void ExtensionPopup::OnExtensionHostShouldClose(
@@ -212,7 +212,7 @@ ExtensionPopup::ExtensionPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
-    ShowAction show_action)
+    PopupShowAction show_action)
     : BubbleDialogDelegateView(anchor_view,
                                arrow,
                                views::BubbleBorder::STANDARD_SHADOW),
@@ -261,14 +261,14 @@ void ExtensionPopup::ShowBubble() {
   // Focus on the host contents when the bubble is first shown.
   host_->host_contents()->Focus();
 
-  if (show_action_ == SHOW_AND_INSPECT) {
+  if (show_action_ == PopupShowAction::kShowAndInspect) {
     DevToolsWindow::OpenDevToolsWindow(
         host_->host_contents(), DevToolsToggleAction::ShowConsolePanel());
   }
 }
 
 void ExtensionPopup::CloseUnlessUnderInspection() {
-  if (show_action_ != SHOW_AND_INSPECT)
+  if (show_action_ != PopupShowAction::kShowAndInspect)
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 

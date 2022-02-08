@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_
 
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include <memory>
+
+class ExtensionActionViewController;
+enum class PopupShowAction;
 
 namespace extensions {
 class ExtensionViewHost;
@@ -26,9 +29,8 @@ class ExtensionActionPlatformDelegate {
   virtual void UnregisterCommand() = 0;
 
   // Shows the given |host| in an extension popup.
-  virtual void ShowPopup(
-      std::unique_ptr<extensions::ExtensionViewHost> host,
-      ExtensionActionViewController::PopupShowAction show_action) = 0;
+  virtual void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                         PopupShowAction show_action) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_

@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
@@ -275,7 +276,8 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
   if (action_runner->RunAction(extension(), kGrantTabPermissions) ==
       extensions::ExtensionAction::ACTION_SHOW_POPUP) {
     constexpr bool kByUser = true;
-    GetPreferredPopupViewController()->TriggerPopup(SHOW_POPUP, kByUser);
+    GetPreferredPopupViewController()->TriggerPopup(PopupShowAction::kShow,
+                                                    kByUser);
   }
 }
 
@@ -284,7 +286,7 @@ void ExtensionActionViewController::TriggerPopupForAPI() {
   // This method is called programmatically by an API; it should never be
   // considered a user action.
   constexpr bool kByUser = false;
-  TriggerPopup(SHOW_POPUP, kByUser);
+  TriggerPopup(PopupShowAction::kShow, kByUser);
 }
 
 void ExtensionActionViewController::UpdateState() {
@@ -309,8 +311,8 @@ void ExtensionActionViewController::InspectPopup() {
   // This method is only triggered through user action (clicking on the context
   // menu entry).
   constexpr bool kByUser = true;
-  GetPreferredPopupViewController()->TriggerPopup(SHOW_POPUP_AND_INSPECT,
-                                                  kByUser);
+  GetPreferredPopupViewController()->TriggerPopup(
+      PopupShowAction::kShowAndInspect, kByUser);
 }
 
 void ExtensionActionViewController::OnIconUpdated() {
@@ -420,7 +422,7 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
   popup_host_observation_.Observe(popup_host_.get());
   extensions_container_->SetPopupOwner(this);
 
-  const bool is_sticky = show_action == SHOW_POPUP_AND_INSPECT;
+  const bool is_sticky = show_action == PopupShowAction::kShowAndInspect;
   extensions_container_->PopOutAction(
       this, is_sticky,
       base::BindOnce(&ExtensionActionViewController::ShowPopup,
