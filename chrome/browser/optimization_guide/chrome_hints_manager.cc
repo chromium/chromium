@@ -57,7 +57,8 @@ ChromeHintsManager::ChromeHintsManager(
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<optimization_guide::PushNotificationManager>
-        push_notification_manager)
+        push_notification_manager,
+    OptimizationGuideLogger* optimization_guide_logger)
     : HintsManager(profile->IsOffTheRecord(),
                    g_browser_process->GetApplicationLocale(),
                    pref_service,
@@ -65,7 +66,8 @@ ChromeHintsManager::ChromeHintsManager(
                    top_host_provider,
                    tab_url_provider,
                    url_loader_factory,
-                   std::move(push_notification_manager)),
+                   std::move(push_notification_manager),
+                   optimization_guide_logger),
       profile_(profile) {
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile);

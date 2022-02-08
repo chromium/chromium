@@ -229,6 +229,7 @@ include_rules = [
   "+components/open_from_clipboard",
   "+components/optimization_guide/content",
   "+components/optimization_guide",
+  "+components/optimization_guide/optimization_guide_internals",
   "+components/os_crypt",
   "+components/ownership",
   "+components/page_info",

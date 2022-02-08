@@ -395,7 +395,8 @@ class TestPredictionManager : public PredictionManager {
       : PredictionManager(model_and_features_store,
                           url_loader_factory,
                           pref_service,
-                          profile) {}
+                          profile,
+                          /*optimization_guide_logger=*/nullptr) {}
 
   ~TestPredictionManager() override = default;
 

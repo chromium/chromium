@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -33,6 +34,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -192,10 +194,12 @@ PredictionManager::PredictionManager(
     base::WeakPtr<OptimizationGuideStore> model_and_features_store,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
-    Profile* profile)
+    Profile* profile,
+    OptimizationGuideLogger* optimization_guide_logger)
     : prediction_model_download_manager_(nullptr),
       model_and_features_store_(model_and_features_store),
       url_loader_factory_(url_loader_factory),
+      optimization_guide_logger_(optimization_guide_logger),
       pref_service_(pref_service),
       profile_(profile),
       clock_(base::DefaultClock::GetInstance()) {
@@ -239,8 +243,11 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   registered_observers_for_optimization_targets_[optimization_target]
       .AddObserver(observer);
   if (switches::IsDebugLogsEnabled()) {
-    DVLOG(0) << "OptimizationGuide: Observer added for OptimizationTarget: "
-             << proto::OptimizationTarget_Name(optimization_target);
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_logger_,
+        base::StrCat(
+            {"OptimizationGuide: Observer added for OptimizationTarget: ",
+             proto::OptimizationTarget_Name(optimization_target)}));
   }
 
   // Notify observer of existing model file path.
@@ -255,7 +262,7 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
       debug_msg += (*model_it->second).GetModelFilePath().AsUTF8Unsafe();
       debug_msg += "\nHas metadata: ";
       debug_msg += (model_metadata ? "True" : "False");
-      DVLOG(0) << debug_msg;
+      OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_, debug_msg);
     }
   }
 
@@ -267,8 +274,10 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   registered_optimization_targets_and_metadata_.emplace(optimization_target,
                                                         model_metadata);
   if (switches::IsDebugLogsEnabled()) {
-    DVLOG(0) << "OptimizationGuide: Registered new OptimizationTarget: "
-             << proto::OptimizationTarget_Name(optimization_target);
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_logger_,
+        base::StrCat({"OptimizationGuide: Registered new OptimizationTarget: ",
+                      proto::OptimizationTarget_Name(optimization_target)}));
   }
 
   // Before loading/fetching models and features, the store must be ready.
@@ -424,8 +433,11 @@ void PredictionManager::FetchModels() {
     }
   }
   if (switches::IsDebugLogsEnabled() && !debug_msg.empty()) {
-    DVLOG(0) << "OptimizationGuide: Fetching models for Optimization Targets: "
-             << debug_msg;
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_logger_,
+        base::StrCat(
+            {"OptimizationGuide: Fetching models for Optimization Targets: ",
+             debug_msg}));
   }
 
   bool fetch_initiated =
@@ -530,8 +542,11 @@ void PredictionManager::UpdatePredictionModels(
 
   if (has_models_to_update) {
     if (switches::IsDebugLogsEnabled() && !debug_msg.empty()) {
-      DVLOG(0) << "OptimizationGuide: Models Fetched for Optimzation Targets: "
-               << debug_msg;
+      OPTIMIZATION_GUIDE_LOG(
+          optimization_guide_logger_,
+          base::StrCat(
+              {"OptimizationGuide: Models Fetched for Optimzation Targets: ",
+               debug_msg}));
     }
     model_and_features_store_->UpdatePredictionModels(
         std::move(prediction_model_update_data),
@@ -558,7 +573,7 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
                      model.model_info().optimization_target());
     debug_msg +=
         "\nNew Version: " + base::NumberToString(model.model_info().version());
-    DVLOG(0) << debug_msg;
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_, debug_msg);
   }
 
   // Store the received model in the store.
@@ -595,7 +610,7 @@ void PredictionManager::NotifyObserversOfNewModel(
       debug_msg += model_info.GetModelFilePath().AsUTF8Unsafe();
       debug_msg += "\nHas metadata: ";
       debug_msg += (model_info.GetModelMetadata() ? "True" : "False");
-      DVLOG(0) << debug_msg;
+      OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_, debug_msg);
     }
   }
 }

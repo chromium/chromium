@@ -105,7 +105,8 @@ class ChromeHintsManagerFetchingTest
         /*top_host_provider=*/nullptr, tab_url_provider_.get(),
         url_loader_factory_,
         OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
-            &testing_profile_));
+            &testing_profile_),
+        /*optimization_guide_logger=*/nullptr);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the ChromeHintsManager is ready

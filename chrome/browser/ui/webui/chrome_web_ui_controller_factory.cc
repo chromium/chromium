@@ -22,6 +22,8 @@
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/media_engagement_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -60,6 +62,7 @@
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 #include "chrome/browser/ui/webui/user_actions/user_actions_ui.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
@@ -73,6 +76,8 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_ui.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
@@ -380,6 +385,17 @@ using ui::WebDialogUI;
 
 namespace {
 
+// TODO(crbug.com/1295080): Allow a way to disable CSP in tests.
+void SetUpWebUIDataSource(WebUI* web_ui,
+                          const char* web_ui_host,
+                          base::span<const webui::ResourcePath> resources,
+                          int default_resource) {
+  auto source = base::WrapUnique(content::WebUIDataSource::Create(web_ui_host));
+  webui::SetupWebUIDataSource(source.get(), resources, default_resource);
+  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
+                                source.release());
+}
+
 // A function for creating a new WebUI. The caller owns the return value, which
 // may be nullptr (for example, if the URL refers to an non-existent extension).
 typedef WebUIController* (*WebUIFactoryFunction)(WebUI* web_ui,
@@ -411,6 +427,20 @@ WebUIController* NewWebUI<PageNotAvailableForGuestUI>(WebUI* web_ui,
 template <>
 WebUIController* NewWebUI<AboutUI>(WebUI* web_ui, const GURL& url) {
   return new AboutUI(web_ui, url.host());
+}
+
+template <>
+WebUIController* NewWebUI<OptimizationGuideInternalsUI>(WebUI* web_ui,
+                                                        const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!service)
+    return nullptr;
+  return new OptimizationGuideInternalsUI(
+      web_ui, service->GetOptimizationGuideLogger(),
+      base::BindOnce(&SetUpWebUIDataSource, web_ui,
+                     optimization_guide_internals::
+                         kChromeUIOptimizationGuideInternalsHost));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -714,6 +744,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<NTPTilesInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIOmniboxHost)
     return &NewWebUI<OmniboxUI>;
+  if (url.host_piece() ==
+      optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
+    return &NewWebUI<OptimizationGuideInternalsUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIPasswordManagerInternalsHost)
     return &NewWebUI<PasswordManagerInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIPredictorsHost)

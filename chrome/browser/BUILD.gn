@@ -2124,6 +2124,7 @@ static_library("browser") {
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:bloomfilter",
+    "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/os_crypt",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser/observers/ad_metrics",

@@ -123,6 +123,8 @@ static_library("core") {
     "optimization_guide_enums.h",
     "optimization_guide_features.cc",
     "optimization_guide_features.h",
+    "optimization_guide_logger.cc",
+    "optimization_guide_logger.h",
     "optimization_guide_model_provider.h",
     "optimization_guide_navigation_data.cc",
     "optimization_guide_navigation_data.h",

@@ -329,6 +329,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2320],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/optimization_guide/optimization_guide_internals/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2330],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/gaia_auth_host/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2340],

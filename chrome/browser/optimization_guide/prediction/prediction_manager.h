@@ -28,6 +28,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+class OptimizationGuideLogger;
 class PrefService;
 class Profile;
 
@@ -53,7 +54,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
       base::WeakPtr<OptimizationGuideStore> model_and_features_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
-      Profile* profile);
+      Profile* profile,
+      OptimizationGuideLogger* optimization_guide_logger);
 
   PredictionManager(const PredictionManager&) = delete;
   PredictionManager& operator=(const PredictionManager&) = delete;
@@ -268,6 +270,11 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // The URL loader factory used for fetching model and host feature updates
   // from the remote Optimization Guide Service.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // The logger that plumbs the debug logs to the optimization guide
+  // internals page. Not owned. Guaranteed to outlive |this|, since the logger
+  // and |this| are owned by the optimization guide keyed service.
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;

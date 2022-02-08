@@ -47,7 +47,8 @@ class MockOptimizationGuideHintsManager
             /*top_host_provider=*/nullptr,
             /*tab_url_provider=*/nullptr,
             /*url_loader_factory=*/nullptr,
-            /*push_notification_manager=*/nullptr) {}
+            /*push_notification_manager=*/nullptr,
+            /*optimization_guide_logger=*/nullptr) {}
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD3(CanApplyOptimizationAsync,
                void(const GURL&,

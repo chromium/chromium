@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -200,21 +201,23 @@ void OptimizationGuideKeyedService::Initialize() {
         prediction_model_and_features_store_->AsWeakPtr();
   }
 
+  optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
   hints_manager_ = std::make_unique<optimization_guide::ChromeHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       tab_url_provider_.get(), url_loader_factory,
-      MaybeCreatePushNotificationManager(profile));
+      MaybeCreatePushNotificationManager(profile),
+      optimization_guide_logger_.get());
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, url_loader_factory,
-      profile->GetPrefs(), profile);
+      profile->GetPrefs(), profile, optimization_guide_logger_.get());
 
   // The previous store paths were written in incorrect locations. Delete the
   // old paths. Remove this code in 04/2022 since it should be assumed that all
   // clients that had the previous path have had their previous stores deleted.
   DeleteOldStorePaths(profile_path);
-  if (optimization_guide::switches::IsDebugLogsEnabled()) {
-    DVLOG(0) << "OptimizationGuide: KeyedService is initalized";
-  }
+
+  OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
+                         "OptimizationGuide: KeyedService is initalized");
 }
 
 optimization_guide::ChromeHintsManager*

@@ -28,6 +28,7 @@ IOSChromeHintsManager::IOSChromeHintsManager(
                    top_host_provider,
                    tab_url_provider,
                    url_loader_factory,
-                   /*push_notification_manager=*/nullptr) {}
+                   /*push_notification_manager=*/nullptr,
+                   /*optimization_guide_logger=*/nullptr) {}
 
 }  // namespace optimization_guide

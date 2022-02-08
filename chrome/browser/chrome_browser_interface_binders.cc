@@ -54,6 +54,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_ui.h"
 #include "components/payments/content/payment_credential_factory.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -701,6 +702,10 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<::mojom::UsbInternalsPageHandler,
                                          UsbInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      optimization_guide_internals::mojom::PageHandlerFactory,
+      OptimizationGuideInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       segmentation_internals::mojom::PageHandlerFactory,

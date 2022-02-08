@@ -323,7 +323,8 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
         /*is_off_the_record=*/false, /*application_locale=*/"en-US",
         pref_service(), hint_store_->AsWeakPtr(), top_host_provider,
         tab_url_provider_.get(), url_loader_factory_,
-        /*push_notification_manager=*/nullptr);
+        /*push_notification_manager=*/nullptr,
+        /*optimization_guide_logger=*/nullptr);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the HintsManager is ready to

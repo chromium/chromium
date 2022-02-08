@@ -1,0 +1,71 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+tsc_folder = "tsc"
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/optimization_guide_internals_resources.h",
+    "grit/optimization_guide_internals_resources_map.cc",
+    "grit/optimization_guide_internals_resources_map.h",
+    "optimization_guide_internals_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/components"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "optimization_guide_internals"
+  out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  input_files = [ "optimization_guide_internals.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+html_to_js("web_components") {
+  js_files = [ "optimization_guide_internals.ts" ]
+}
+
+copy("copy_proxy") {
+  sources = [ "optimization_guide_internals_browser_proxy.ts" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo") {
+  deps = [ "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings_webui_js" ]
+  mojom_folder = "$root_gen_dir/mojom-webui/components/optimization_guide/optimization_guide_internals/webui/"
+  sources = [ "$mojom_folder/optimization_guide_internals.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir"
+  out_dir = "$target_gen_dir/$tsc_folder"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "optimization_guide_internals.ts",
+    "optimization_guide_internals_browser_proxy.ts",
+    "optimization_guide_internals.mojom-webui.js",
+  ]
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/js/browser_command:build_ts",
+  ]
+  extra_deps = [
+    ":copy_mojo",
+    ":copy_proxy",
+    ":web_components",
+  ]
+}
