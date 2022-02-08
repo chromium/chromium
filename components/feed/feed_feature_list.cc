@@ -86,6 +86,10 @@ const base::Feature kEnableOpenInNewTabFromStartSurfaceFeed{
     "EnableOpenInNewTabFromStartSurfaceFeed",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebUiFeed{"FeedWebUi", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string> kWebUiScriptFetchUrl{
+    &kWebUiFeed, "scripturl", "chrome-untrusted://feed/feed.js"};
+
 std::string GetFeedReferrerUrl() {
   const base::Feature* feature = base::FeatureList::IsEnabled(kInterestFeedV2)
                                      ? &kInterestFeedV2

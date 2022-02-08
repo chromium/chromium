@@ -31,6 +31,7 @@ group("resources") {
       "commander:resources",
       "download_shelf:resources",
       "downloads:resources",
+      "feed:resources",
       "feedback_webui:resources",
       "gaia_auth_host:resources",
       "history:resources",

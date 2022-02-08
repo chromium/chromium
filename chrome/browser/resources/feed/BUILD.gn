@@ -1,0 +1,39 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+grit("resources") {
+  # This argument is needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/feed_resources.h",
+    "grit/feed_resources_map.cc",
+    "grit/feed_resources_map.h",
+    "feed_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "feed"
+  out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":build_ts" ]
+  input_files = [ "feed.html" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [ "feed.ts" ]
+}

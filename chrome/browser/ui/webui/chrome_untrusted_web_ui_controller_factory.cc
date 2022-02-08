@@ -23,6 +23,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/video_tutorials/video_player_ui.h"
+#else
+#include "chrome/browser/ui/webui/feed/feed_ui_config.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,6 +71,8 @@ WebUIConfigList CreateConfigs() {
 
 #if BUILDFLAG(IS_ANDROID)
   register_config(std::make_unique<video_tutorials::VideoPlayerUIConfig>());
+#else
+  register_config(std::make_unique<feed::FeedUIConfig>());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -96,7 +100,6 @@ WebUIConfigList CreateConfigs() {
   register_config(std::make_unique<ash::UntrustedSampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   return config_list;
 }
 

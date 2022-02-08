@@ -92,6 +92,10 @@ extern const base::Feature kWebFeedSort;
 // on Start Surface.
 extern const base::Feature kEnableOpenInNewTabFromStartSurfaceFeed;
 
+// Feature that causes the WebUI version of the Feed to be enabled.
+extern const base::Feature kWebUiFeed;
+extern const base::FeatureParam<std::string> kWebUiScriptFetchUrl;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed
