@@ -8,6 +8,12 @@
     background-color: lightskyblue;
   }
 
+  /* TODO(gavinwill): update colors to CrOS */
+  :host([disabled]) #componentButton {
+    background-color: lightskyblue;
+    opacity: 0.5;
+  }
+
   #componentButton {
     border-radius: 4px;
     box-shadow: var(--cr-card-shadow);
@@ -53,6 +59,6 @@
     <div>[[componentId]]</div>
   </div>
   <iron-icon id="checkIcon" icon="shimless-icon24:check-circle"
-      hidden="[[!checked]]">
+      hidden="[[!shouldShowCheckIcon_(checked, disabled)]]">
   </iron-icon>
 </cr-button>

@@ -104,6 +104,9 @@ export class ReimagingCalibrationFailedPage extends
           name: this.i18n(ComponentTypeToId[item.component]),
           checked: false,
           failed: item.status === CalibrationStatus.kCalibrationFailed,
+          // Disable components that did not fail calibration so they can't be
+          // selected for calibration again.
+          disabled: item.status !== CalibrationStatus.kCalibrationFailed,
         };
       });
     });
@@ -157,6 +160,15 @@ export class ReimagingCalibrationFailedPage extends
           })
         },
         ));
+  }
+
+  /**
+   * @param {boolean} componentDisabled
+   * @return {boolean}
+   * @private
+   */
+  isComponentDisabled_(componentDisabled) {
+    return componentDisabled || this.allButtonsDisabled;
   }
 }
 

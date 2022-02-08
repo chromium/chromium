@@ -60,6 +60,16 @@ export class CalibrationComponentChipElement extends PolymerElement {
   click() {
     this.onComponentButtonClicked_();
   }
+
+  /**
+   * Show the checked icon for disabled calibration components because if it's
+   * disabled, that means it alerady passed calibration.
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowCheckIcon_() {
+    return this.checked || this.disabled;
+  }
 }
 
 customElements.define(

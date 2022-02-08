@@ -112,19 +112,24 @@ export function reimagingCalibrationFailedPageTest() {
     assertEquals('Camera', cameraComponent.componentName);
     assertFalse(cameraComponent.checked);
     assertFalse(cameraComponent.failed);
+    assertTrue(cameraComponent.disabled);
     assertEquals('Battery', batteryComponent.componentName);
     assertFalse(batteryComponent.checked);
     assertFalse(batteryComponent.failed);
+    assertTrue(batteryComponent.disabled);
     assertEquals(
         'Base Accelerometer', baseAccelerometerComponent.componentName);
     assertFalse(baseAccelerometerComponent.checked);
     assertFalse(baseAccelerometerComponent.failed);
+    assertTrue(baseAccelerometerComponent.disabled);
     assertEquals('Lid Accelerometer', lidAccelerometerComponent.componentName);
     assertFalse(lidAccelerometerComponent.checked);
     assertTrue(lidAccelerometerComponent.failed);
+    assertFalse(lidAccelerometerComponent.disabled);
     assertEquals('Touchpad', touchpadComponent.componentName);
     assertFalse(touchpadComponent.checked);
     assertFalse(touchpadComponent.failed);
+    assertTrue(touchpadComponent.disabled);
   });
 
   test('ToggleComponent', async () => {
@@ -197,33 +202,18 @@ export function reimagingCalibrationFailedPageTest() {
     assertEquals(1, startCalibrationCalls);
   });
 
-  test('ComponentChipsDisabled', async () => {
+  test('ComponentChipAllButtonsDisabled', async () => {
     await initializeCalibrationPage(fakeCalibrationComponents);
 
-    const cameraComponent =
-        component.shadowRoot.querySelector('#componentCamera');
-    const batteryComponent =
-        component.shadowRoot.querySelector('#componentBattery');
-    const baseAccelerometerComponent =
-        component.shadowRoot.querySelector('#componentBaseAccelerometer');
+    // Lid Accelerometer is a failed component so it starts off not disabled.
     const lidAccelerometerComponent =
         component.shadowRoot.querySelector('#componentLidAccelerometer');
-    const touchpadComponent =
-        component.shadowRoot.querySelector('#componentTouchpad');
-    assertFalse(cameraComponent.disabled);
-    assertFalse(batteryComponent.disabled);
-    assertFalse(baseAccelerometerComponent.disabled);
     assertFalse(lidAccelerometerComponent.disabled);
-    assertFalse(touchpadComponent.disabled);
     component.allButtonsDisabled = true;
-    assertTrue(cameraComponent.disabled);
-    assertTrue(batteryComponent.disabled);
-    assertTrue(baseAccelerometerComponent.disabled);
     assertTrue(lidAccelerometerComponent.disabled);
-    assertTrue(touchpadComponent.disabled);
   });
 
-  test('RetryCalibrationButtonDisabled', async () => {
+  test('RetryCalibrationAllButtonsDisabled', async () => {
     await initializeCalibrationPage(fakeCalibrationComponents);
 
     const retryButton =

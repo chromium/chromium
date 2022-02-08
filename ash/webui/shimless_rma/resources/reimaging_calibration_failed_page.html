@@ -22,7 +22,8 @@
           checked="{{component.checked}}"
           failed="[[component.failed]]"
           component-name="[[component.name]]"
-          disabled="[[allButtonsDisabled]]">
+          disabled$="[[isComponentDisabled_(component.disabled,
+              allButtonsDisabled)]]">
         </calibration-component-chip>
       </template>
     </div>
