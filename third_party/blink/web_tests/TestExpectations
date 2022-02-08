@@ -3863,8 +3863,6 @@ crbug.com/626703 [ Mac10.13 ] wpt_internal/modal-close-watcher/basic.html [ Cras
 crbug.com/626703 external/wpt/uievents/keyboard/modifier-keys-combinations.html [ Timeout ]
 crbug.com/626703 external/wpt/uievents/keyboard/modifier-keys.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
-crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
-crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webmessaging/with-ports/011.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webmessaging/without-ports/011.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Skip Timeout ]

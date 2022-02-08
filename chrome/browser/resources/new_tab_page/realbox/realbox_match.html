@@ -45,7 +45,7 @@
     width: 6px;
   }
 
-  :host(:-webkit-any(:focus, .selected:not(:focus-within))) #focus-indicator {
+  :host(:is(:focus-visible, .selected:not(:focus-within))) #focus-indicator {
     display: block;
   }
 

@@ -1160,16 +1160,6 @@ void ContainerNode::SetFocused(bool received,
       OwnerShadowHost()->SetFocused(received, focus_type);
   }
 
-  // If this is an author shadow host and indirectly focused (has focused
-  // element within its shadow root), update focus.
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && GetDocument().FocusedElement() &&
-      GetDocument().FocusedElement() != this) {
-    if (this_element->AuthorShadowRoot()) {
-      received = received && this_element->AuthorShadowRoot()->delegatesFocus();
-    }
-  }
-
   if (IsFocused() == received)
     return;
 
@@ -1180,6 +1170,7 @@ void ContainerNode::SetFocused(bool received,
   if (GetLayoutObject() || received)
     return;
 
+  auto* this_element = DynamicTo<Element>(this);
   // If :focus sets display: none, we lose focus but still need to recalc our
   // style.
   if (!this_element || !this_element->ChildrenOrSiblingsAffectedByFocus()) {

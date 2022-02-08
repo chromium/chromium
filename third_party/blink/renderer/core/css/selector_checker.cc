@@ -1563,6 +1563,11 @@ bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {
     return false;
 
   const Document& document = element.GetDocument();
+  // Exclude shadow hosts with non-UA ShadowRoot.
+  if (document.FocusedElement() != element && element.GetShadowRoot() &&
+      !element.GetShadowRoot()->IsUserAgent())
+    return false;
+
   const Settings* settings = document.GetSettings();
   bool always_show_focus = settings->GetAccessibilityAlwaysShowFocus();
   bool is_text_input = element.MayTriggerVirtualKeyboard();
