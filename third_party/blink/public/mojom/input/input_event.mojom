@@ -93,6 +93,9 @@ enum EventType {
   // Sent when a GestureTapDown didn't turn into any variation of GestureTap
   // (likely it turned into a scroll instead).
   kGestureTapCancel,
+  // Sent at short-press timeout (which occurs a bit before the long-press
+  // timeout), while the finger is still down.
+  kGestureShortPress,
   // Sent as soon as the long-press timeout fires, while the finger is still
   // down.
   kGestureLongPress,

@@ -67,7 +67,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       float height;
     } show_press;
 
-    // This is used for both GestureLongPress and GestureLongTap.
+    // This is used for GestureShortPress , GestureLongPress and GestureLongTap.
     struct {
       float width;
       float height;
