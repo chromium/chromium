@@ -3228,13 +3228,13 @@ DocumentParser* Document::ImplicitOpen(
 
   SetCompatibilityMode(kNoQuirksMode);
 
-  if (ForceSynchronousParsingForTesting()) {
+  bool force_sync_policy = false;
+  // Give inspector a chance to force sync parsing when virtual time is on.
+  probe::WillCreateDocumentParser(this, force_sync_policy);
+  // Prefetch must be synchronous.
+  force_sync_policy |= ForceSynchronousParsingForTesting() || IsPrefetchOnly();
+  if (force_sync_policy)
     parser_sync_policy = kForceSynchronousParsing;
-  } else if (IsPrefetchOnly()) {
-    // Prefetch must be synchronous.
-    parser_sync_policy = kForceSynchronousParsing;
-  }
-
   DetachParser();
   parser_sync_policy_ = parser_sync_policy;
   parser_ = CreateParser();

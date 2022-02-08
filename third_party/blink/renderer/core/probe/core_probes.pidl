@@ -119,6 +119,7 @@ interface CoreProbes {
   void DidNavigateWithinDocument([Keep] LocalFrame*);
   void DidRestoreFromBackForwardCache([Keep] LocalFrame*);
   void DidOpenDocument([Keep] LocalFrame*, DocumentLoader*);
+  void WillCreateDocumentParser(Document*, bool& force_sync_parsing);
   void FrameDocumentUpdated([Keep] LocalFrame*);
   void FrameOwnerContentUpdated([Keep] LocalFrame*, HTMLFrameOwnerElement*);
   void FrameStartedLoading([Keep] LocalFrame*);

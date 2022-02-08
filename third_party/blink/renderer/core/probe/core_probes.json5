@@ -115,6 +115,7 @@
         "PrepareRequest",
         "GetDisabledImageTypes",
         "WillCommitLoad",
+        "WillCreateDocumentParser",
       ]
     },
     InspectorLayerTreeAgent: {

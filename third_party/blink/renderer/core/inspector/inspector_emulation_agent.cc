@@ -741,6 +741,13 @@ void InspectorEmulationAgent::WillCommitLoad(LocalFrame*,
   pending_document_loaders_.push_back(loader);
 }
 
+void InspectorEmulationAgent::WillCreateDocumentParser(
+    bool& force_sync_parsing) {
+  if (virtual_time_policy_.Get().IsNull())
+    return;
+  force_sync_parsing = true;
+}
+
 void InspectorEmulationAgent::ApplyAcceptLanguageOverride(String* accept_lang) {
   if (!accept_language_override_.Get().IsEmpty())
     *accept_lang = accept_language_override_.Get();

@@ -9,6 +9,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/emulation.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -102,6 +103,7 @@ class CORE_EXPORT InspectorEmulationAgent final
                       ResourceType);
   void GetDisabledImageTypes(HashSet<String>* result);
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
+  void WillCreateDocumentParser(bool& force_sync_parsing);
 
   // InspectorBaseAgent overrides.
   protocol::Response disable() override;
