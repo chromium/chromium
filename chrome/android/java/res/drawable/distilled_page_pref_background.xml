@@ -7,6 +7,5 @@
 -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/distilled_page_prefs_unselected" />
-    <corners android:radius="2dp" />
+    <solid android:color="@color/distilled_page_prefs_unselected_baseline" />
 </shape>

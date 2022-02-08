@@ -14,6 +14,6 @@
         </shape>
     </item>
     <item
-        android:drawable="@color/distilled_page_prefs_unselected"
+        android:drawable="@android:color/transparent"
         android:state_checked="false" />
 </selector>

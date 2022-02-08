@@ -122,7 +122,7 @@ public class SemanticColorUtils {
     /** Returns the surface color value of the conceptual dialog_bg_color. */
     public static @ColorInt int getDialogBgColor(Context context) {
         return resolveSurfaceColorElev(
-                R.dimen.dialog_bg_color_elev, R.color.dialog_bg_color, context);
+                R.dimen.dialog_bg_color_elev, R.color.dialog_bg_color_baseline, context);
     }
 
     /** Returns the surface color value of the conceptual sheet_bg_color. */

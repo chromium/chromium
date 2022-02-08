@@ -50,7 +50,7 @@
     <color name="sheet_bg_color">@color/default_bg_color_dark_elev_4_baseline</color>
 
     <!-- Dialog colors -->
-    <color name="dialog_bg_color">@color/dialog_bg_color_dark_baseline</color>
+    <color name="dialog_bg_color_baseline">@color/dialog_bg_color_dark_baseline</color>
 
     <!-- Snackbar colors -->
     <color name="snackbar_background_color_baseline">@color/default_bg_color_dark_elev_4_baseline</color>

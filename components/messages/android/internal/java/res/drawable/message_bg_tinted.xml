@@ -9,7 +9,7 @@
     <item>
         <shape>
             <corners android:radius="@dimen/message_banner_radius"/>
-            <solid android:color="@color/dialog_bg_color"/>
+            <solid android:color="@color/dialog_bg_color_baseline"/>
         </shape>
     </item>
 </layer-list>

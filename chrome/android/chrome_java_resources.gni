@@ -187,6 +187,7 @@ chrome_java_resources = [
   "java/res/drawable-v21/tile_view_highlight.xml",
   "java/res/drawable-v21/web_notification_button_background.xml",
   "java/res/drawable-v21/web_notification_small_icon_background.xml",
+  "java/res/drawable-v24/distilled_page_pref_background.xml",
   "java/res/drawable-xhdpi/bg_tabstrip_background_tab_outline.9.png",
   "java/res/drawable-xhdpi/bg_tabstrip_tab.9.png",
   "java/res/drawable-xhdpi/bookmark_check_gray.png",

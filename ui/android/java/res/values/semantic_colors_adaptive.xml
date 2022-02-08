@@ -52,7 +52,7 @@
     <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_light_elev_4</color>
 
     <!-- Dialog colors -->
-    <color name="dialog_bg_color">@color/dialog_bg_color_light_baseline</color>
+    <color name="dialog_bg_color_baseline">@color/dialog_bg_color_light_baseline</color>
     <color name="dialog_bg_color_light_baseline">@color/default_bg_color_baseline</color>
     <color name="dialog_bg_color_dark_baseline">@color/default_bg_color_dark_elev_3_baseline</color>
 
