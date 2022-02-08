@@ -975,7 +975,8 @@ void PasswordManager::OnLoginSuccessful() {
   if (!HasMutedCredentials(
           submitted_manager->GetInsecureCredentials(),
           submitted_manager->GetSubmittedForm()->username_value)) {
-    leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials());
+    leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials(),
+                                  submitted_form->IsLikelySignupForm());
   }
 
   auto submission_event =

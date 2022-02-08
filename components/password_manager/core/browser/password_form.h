@@ -377,6 +377,10 @@ struct PasswordForm {
   // to its metadata (e.g. time it was discovered, whether alerts are muted).
   base::flat_map<InsecureType, InsecurityMetadata> password_issues;
 
+  // Return true if we consider this form to be a signup form. It's based on
+  // local heuristics and may be inaccurate.
+  bool IsLikelySignupForm() const;
+
   // Return true if we consider this form to be a change password form and not
   // a signup form. It's based on local heuristics and may be inaccurate.
   bool IsLikelyChangePasswordForm() const;
