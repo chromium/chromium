@@ -337,10 +337,13 @@ void LocalSessionEventHandlerImpl::OnLocalTabModified(
     return;
   }
 
-  sessions::SerializedNavigationEntry current;
-  modified_tab->GetSerializedNavigationAtIndex(
-      modified_tab->GetCurrentEntryIndex(), &current);
-  delegate_->TrackLocalNavigationId(current.timestamp(), current.unique_id());
+  // Don't track empty tabs.
+  if (modified_tab->GetEntryCount() != 0) {
+    sessions::SerializedNavigationEntry current;
+    modified_tab->GetSerializedNavigationAtIndex(
+        modified_tab->GetCurrentEntryIndex(), &current);
+    delegate_->TrackLocalNavigationId(current.timestamp(), current.unique_id());
+  }
 
   std::unique_ptr<WriteBatch> batch = delegate_->CreateLocalSessionWriteBatch();
   AssociateTab(modified_tab, batch.get());
