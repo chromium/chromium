@@ -20,6 +20,10 @@ VaapiH265Picture* H265Picture::AsVaapiH265Picture() {
   return nullptr;
 }
 
+D3D11H265Picture* H265Picture::AsD3D11H265Picture() {
+  return nullptr;
+}
+
 void H265DPB::set_max_num_pics(size_t max_num_pics) {
   DCHECK_LE(max_num_pics, static_cast<size_t>(kMaxDpbSize));
   max_num_pics_ = max_num_pics;

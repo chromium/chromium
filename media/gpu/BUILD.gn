@@ -216,6 +216,12 @@ component("gpu") {
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
     ]
+    if (enable_platform_hevc_decoding) {
+      sources += [
+        "windows/d3d11_h265_accelerator.cc",
+        "windows/d3d11_h265_accelerator.h",
+      ]
+    }
     configs += [ "//third_party/khronos:khronos_headers" ]
     public_deps += [ "//media/base/win:media_foundation_util" ]
     deps += [
