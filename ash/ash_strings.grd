@@ -2060,8 +2060,8 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_VPN" desc="The label used in the VPN detailed view header. [CHAR_LIMIT=18]">
         Private network
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER" desc="The name of the built-in VPN provider that supports OpenVPN and L2TP over IPsec.">
-        OpenVPN / L2TP
+      <message name="IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER" desc="The name of the built-in VPN provider.">
+        Built-in VPN
       </message>
       <message name="IDS_ASH_STATUS_TRAY_VPN_DISCONNECT" desc="Message on button that disconnects from the current VPN.">
         Disconnect
