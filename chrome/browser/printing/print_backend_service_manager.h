@@ -80,6 +80,9 @@ class PrintBackendServiceManager {
       base::ReadOnlySharedMemoryRegion serialized_page_data,
       mojom::PrintBackendService::RenderPrintedPageCallback callback);
 #endif
+  void DocumentDone(const std::string& printer_name,
+                    int document_cookie,
+                    mojom::PrintBackendService::DocumentDoneCallback callback);
 
   // Query if printer driver has been found to require elevated privilege in
   // order to have print queries/commands succeed.
@@ -147,6 +150,8 @@ class PrintBackendServiceManager {
   using RemoteSavedRenderPrintedPageCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
 #endif
+  using RemoteSavedDocumentDoneCallbacks =
+      RemoteSavedCallbacks<mojom::ResultCode>;
 
   using RemotesMap =
       base::flat_map<std::string, mojo::Remote<mojom::PrintBackendService>>;
@@ -213,6 +218,8 @@ class PrintBackendServiceManager {
   RemoteSavedRenderPrintedPageCallbacks&
   GetRemoteSavedRenderPrintedPageCallbacks(bool sandboxed);
 #endif
+  RemoteSavedDocumentDoneCallbacks& GetRemoteSavedDocumentDoneCallbacks(
+      bool sandboxed);
 
   // Helper function to get the service and initialize a `context` for a given
   // `printer_name`.
@@ -254,6 +261,8 @@ class PrintBackendServiceManager {
   void OnDidRenderPrintedPage(const CallbackContext& context,
                               mojom::ResultCode result);
 #endif
+  void OnDidDocumentDone(const CallbackContext& context,
+                         mojom::ResultCode result);
 
   // Helper functions to run outstanding callbacks when a remote has become
   // disconnected.
@@ -310,6 +319,8 @@ class PrintBackendServiceManager {
   RemoteSavedRenderPrintedPageCallbacks
       unsandboxed_saved_render_printed_page_callbacks_;
 #endif
+  RemoteSavedDocumentDoneCallbacks sandboxed_saved_document_done_callbacks_;
+  RemoteSavedDocumentDoneCallbacks unsandboxed_saved_document_done_callbacks_;
 
   // Set of printer drivers which require elevated permissions to operate.
   // It is expected that most print drivers will succeed with the preconfigured

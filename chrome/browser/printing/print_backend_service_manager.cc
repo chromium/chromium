@@ -310,6 +310,26 @@ void PrintBackendServiceManager::RenderPrintedPage(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+void PrintBackendServiceManager::DocumentDone(
+    const std::string& printer_name,
+    int document_cookie,
+    mojom::PrintBackendService::DocumentDoneCallback callback) {
+  CallbackContext context;
+  auto& service = GetServiceAndCallbackContext(printer_name, context);
+
+  SaveCallback(GetRemoteSavedDocumentDoneCallbacks(context.is_sandboxed),
+               context.remote_id, context.saved_callback_id,
+               std::move(callback));
+
+  SetCrashKeys(printer_name);
+
+  LogCallToRemote("DocumentDone", context);
+  service->DocumentDone(
+      document_cookie,
+      base::BindOnce(&PrintBackendServiceManager::OnDidDocumentDone,
+                     base::Unretained(this), context));
+}
+
 bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
     const std::string& printer_name) const {
   return drivers_requiring_elevated_privilege_.contains(printer_name);
@@ -537,6 +557,8 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
   RunSavedCallbacksResult(GetRemoteSavedRenderPrintedPageCallbacks(sandboxed),
                           remote_id, mojom::ResultCode::kFailed);
 #endif
+  RunSavedCallbacksResult(GetRemoteSavedDocumentDoneCallbacks(sandboxed),
+                          remote_id, mojom::ResultCode::kFailed);
 }
 
 PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
@@ -592,6 +614,13 @@ PrintBackendServiceManager::GetRemoteSavedRenderPrintedPageCallbacks(
                    : unsandboxed_saved_render_printed_page_callbacks_;
 }
 #endif
+
+PrintBackendServiceManager::RemoteSavedDocumentDoneCallbacks&
+PrintBackendServiceManager::GetRemoteSavedDocumentDoneCallbacks(
+    bool sandboxed) {
+  return sandboxed ? sandboxed_saved_document_done_callbacks_
+                   : unsandboxed_saved_document_done_callbacks_;
+}
 
 const mojo::Remote<mojom::PrintBackendService>&
 PrintBackendServiceManager::GetServiceAndCallbackContext(
@@ -697,6 +726,14 @@ void PrintBackendServiceManager::OnDidRenderPrintedPage(
       context.remote_id, context.saved_callback_id, result);
 }
 #endif
+
+void PrintBackendServiceManager::OnDidDocumentDone(
+    const CallbackContext& context,
+    mojom::ResultCode result) {
+  LogCallbackFromRemote("DocumentDone", context);
+  ServiceCallbackDone(GetRemoteSavedDocumentDoneCallbacks(context.is_sandboxed),
+                      context.remote_id, context.saved_callback_id, result);
+}
 
 template <class T>
 void PrintBackendServiceManager::RunSavedCallbacksStructResult(
