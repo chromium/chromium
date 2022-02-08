@@ -788,6 +788,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.TimeDatabaseMigrationToV17" units="ms"
+    expires_after="2022-06-01">
+  <owner>dylancutler@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v16 cookie database to v17. Migration
+    occurs upon first startup of a browser version with v16 database code.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeDatabaseMigrationToV9" units="ms"
     expires_after="2018-08-30">
   <owner>erikchen@chromium.org</owner>

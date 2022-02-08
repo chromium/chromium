@@ -121,6 +121,7 @@ namespace {
 
 // Version number of the database.
 //
+// Version 17 - 2022/01/25 - https://crrev.com/c/3416230
 // Version 16 - 2021/09/10 - https://crrev.com/c/3152897
 // Version 15 - 2021/07/01 - https://crrev.com/c/3001822
 // Version 14 - 2021/02/23 - https://crrev.com/c/2036899
@@ -137,6 +138,8 @@ namespace {
 // Version 5  - 2011/12/05 - https://codereview.chromium.org/8533013
 // Version 4  - 2009/09/01 - https://codereview.chromium.org/183021
 //
+//
+// Version 17 fixes crbug.com/1290841: Bug in V16 migration.
 //
 // Version 16 changes the unique constraint's order of columns to have
 // top_frame_site_key be after host_key. This allows us to use the internal
@@ -214,8 +217,8 @@ namespace {
 // Version 3 updated the database to include the last access time, so we can
 // expire them in decreasing order of use when we've reached the maximum
 // number of cookies.
-const int kCurrentVersionNumber = 16;
-const int kCompatibleVersionNumber = 16;
+const int kCurrentVersionNumber = 17;
+const int kCompatibleVersionNumber = 17;
 
 }  // namespace
 
@@ -688,6 +691,12 @@ bool CreateV16Schema(sql::Database* db) {
   return true;
 }
 
+// Initializes the cookies table, returning true on success.
+// The table/index cannot exist when calling this function.
+bool CreateV17Schema(sql::Database* db) {
+  return CreateV16Schema(db);
+}
+
 }  // namespace
 
 void SQLitePersistentCookieStore::Backend::Load(
@@ -836,7 +845,7 @@ bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
   if (db()->DoesTableExist("cookies"))
     return true;
 
-  return CreateV16Schema(db());
+  return CreateV17Schema(db());
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
@@ -1315,7 +1324,46 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     meta_table()->SetCompatibleVersionNumber(
         std::min(cur_version, kCompatibleVersionNumber));
     transaction.Commit();
+  }
+
+  if (cur_version == 16) {
+    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV17");
+
+    sql::Transaction transaction(db());
+    if (!transaction.Begin())
+      return absl::nullopt;
+
+    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old"))
+      return absl::nullopt;
+    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
+      return absl::nullopt;
+    if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index"))
+      return absl::nullopt;
+
+    if (!CreateV17Schema(db()))
+      return absl::nullopt;
+    static constexpr char insert_cookies_sql[] =
+        "INSERT OR REPLACE INTO cookies "
+        "(creation_utc, host_key, top_frame_site_key, name, value, "
+        "encrypted_value, path, expires_utc, is_secure, is_httponly, "
+        "last_access_utc, has_expires, is_persistent, priority, samesite, "
+        "source_scheme, source_port, is_same_party) "
+        "SELECT creation_utc, host_key, top_frame_site_key, name, value,"
+        "       encrypted_value, path, expires_utc, is_secure, is_httponly,"
+        "       last_access_utc, has_expires, is_persistent, priority, "
+        "samesite,"
+        "       source_scheme, source_port, is_same_party "
+        "FROM cookies_old ORDER BY creation_utc ASC";
+    if (!db()->Execute(insert_cookies_sql))
+      return absl::nullopt;
+    if (!db()->Execute("DROP TABLE cookies_old"))
+      return absl::nullopt;
+
     ++cur_version;
+    meta_table()->SetVersionNumber(cur_version);
+    meta_table()->SetCompatibleVersionNumber(
+        std::min(cur_version, kCompatibleVersionNumber));
+    transaction.Commit();
   }
 
   // Put future migration cases here.

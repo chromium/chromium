@@ -1887,6 +1887,93 @@ bool CreateV15Schema(sql::Database* db) {
   return true;
 }
 
+// crbug.com/1290841
+bool CreateFaultyV16Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(db, /* version = */ 16,
+                       /* earliest compatible version = */ 16)) {
+    return false;
+  }
+
+  // Version 15 schema
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE cookies("
+      "creation_utc INTEGER NOT NULL,"
+      "top_frame_site_key TEXT NOT NULL,"
+      "host_key TEXT NOT NULL,"
+      "name TEXT NOT NULL,"
+      "value TEXT NOT NULL,"
+      "path TEXT NOT NULL,"
+      "expires_utc INTEGER NOT NULL,"
+      "is_secure INTEGER NOT NULL,"
+      "is_httponly INTEGER NOT NULL,"
+      "last_access_utc INTEGER NOT NULL,"
+      "has_expires INTEGER NOT NULL DEFAULT 1,"
+      "is_persistent INTEGER NOT NULL DEFAULT 1,"
+      "priority INTEGER NOT NULL DEFAULT 1,"  // COOKIE_PRIORITY_DEFAULT
+      "encrypted_value BLOB DEFAULT '',"
+      "samesite INTEGER NOT NULL DEFAULT -1,"      // UNSPECIFIED
+      "source_scheme INTEGER NOT NULL DEFAULT 0,"  // CookieSourceScheme::kUnset
+      "source_port INTEGER NOT NULL DEFAULT -1,"   // UNKNOWN
+      "is_same_party INTEGER NOT NULL DEFAULT 0,"
+      "UNIQUE (top_frame_site_key, host_key, name, path))";
+  if (!db->Execute(kCreateSql))
+    return false;
+
+  return true;
+}
+
+bool CreateV16Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(db, /* version = */ 16,
+                       /* earliest compatible version = */ 16)) {
+    return false;
+  }
+
+  // Version 16 schema
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE cookies("
+      "creation_utc INTEGER NOT NULL,"
+      "host_key TEXT NOT NULL,"
+      "top_frame_site_key TEXT NOT NULL,"
+      "name TEXT NOT NULL,"
+      "value TEXT NOT NULL,"
+      "encrypted_value BLOB NOT NULL,"
+      "path TEXT NOT NULL,"
+      "expires_utc INTEGER NOT NULL,"
+      "is_secure INTEGER NOT NULL,"
+      "is_httponly INTEGER NOT NULL,"
+      "last_access_utc INTEGER NOT NULL,"
+      "has_expires INTEGER NOT NULL,"
+      "is_persistent INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "samesite INTEGER NOT NULL,"
+      "source_scheme INTEGER NOT NULL,"
+      "source_port INTEGER NOT NULL,"
+      "is_same_party INTEGER NOT NULL,"
+      "UNIQUE (host_key, top_frame_site_key, name, path))";
+
+  static constexpr char kCreateIndexSql[] =
+      "CREATE UNIQUE INDEX cookies_unique_index "
+      "ON cookies(host_key, top_frame_site_key, name, path)";
+
+  if (!db->Execute(kCreateSql))
+    return false;
+
+  if (!db->Execute(kCreateIndexSql))
+    return false;
+
+  return true;
+}
+
+int GetDBCurrentVersionNumber(sql::Database* db) {
+  static constexpr char kGetDBCurrentVersionQuery[] =
+      "SELECT value FROM meta WHERE key='version'";
+  sql::Statement statement(db->GetUniqueStatement(kGetDBCurrentVersionQuery));
+  statement.Step();
+  return statement.ColumnInt(0);
+}
+
 std::vector<CanonicalCookie> CookiesForMigrationTest() {
   static base::Time now = base::Time::Now();
 
@@ -2123,6 +2210,11 @@ bool AddV15CookiesToDB(sql::Database* db) {
   return true;
 }
 
+bool AddV16CookiesToDB(sql::Database* db) {
+  // The difference between schemas is mainly the index.
+  return AddV15CookiesToDB(db);
+}
+
 // Confirm the cookie list passed in has the above cookies in it.
 void ConfirmCookiesAfterMigrationTest(
     std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies,
@@ -2234,6 +2326,38 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion16) {
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(false, false, &read_in_cookies);
   ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies), true);
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion17) {
+  // Open db
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
+  ASSERT_TRUE(CreateV16Schema(&connection));
+  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 16);
+  ASSERT_TRUE(AddV16CookiesToDB(&connection));
+
+  std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
+  CreateAndLoad(false, false, &read_in_cookies);
+  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies), true);
+  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 17);
+  connection.Close();
+}
+
+// Testing bug: 1290841
+TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion17FromFaultyV16) {
+  // Open db
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
+  ASSERT_TRUE(CreateFaultyV16Schema(&connection));
+  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 16);
+  ASSERT_TRUE(
+      AddV15CookiesToDB(&connection));  // Intentional, this is part of the bug
+
+  std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
+  CreateAndLoad(false, false, &read_in_cookies);
+  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies), true);
+  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 17);
+  connection.Close();
 }
 
 class PartitionedCookiesSQLitePersistentCookieStoreTest
