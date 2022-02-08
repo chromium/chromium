@@ -111,6 +111,15 @@ class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
   }
 
   TileManager* tile_manager() { return host_impl()->tile_manager(); }
+
+  class StubGpuBacking : public ResourcePool::GpuBacking {
+   public:
+    void OnMemoryDump(
+        base::trace_event::ProcessMemoryDump* pmd,
+        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+        uint64_t tracing_process_id,
+        int importance) const override {}
+  };
 };
 
 TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
@@ -1419,6 +1428,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   ResourcePool::InUsePoolResource resource =
       host_impl()->resource_pool()->AcquireResource(
           gfx::Size(256, 256), viz::RGBA_8888, gfx::ColorSpace());
+  resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
 
   host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
   EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());

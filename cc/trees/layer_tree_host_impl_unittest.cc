@@ -881,6 +881,15 @@ class ScrollUnifiedLayerTreeHostImplTest
     }
   }
 
+  class StubGpuBacking : public ResourcePool::GpuBacking {
+   public:
+    void OnMemoryDump(
+        base::trace_event::ProcessMemoryDump* pmd,
+        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+        uint64_t tracing_process_id,
+        int importance) const override {}
+  };
+
  private:
   base::test::ScopedFeatureList scoped_feature_list;
 };
@@ -12896,9 +12905,15 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, OnMemoryPressure) {
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   ResourcePool::InUsePoolResource resource =
       host_impl_->resource_pool()->AcquireResource(size, format, color_space);
+  size_t current_memory_usage =
+      host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
+  EXPECT_EQ(current_memory_usage, 0u);
+
+  resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
+
   host_impl_->resource_pool()->ReleaseResource(std::move(resource));
 
-  size_t current_memory_usage =
+  current_memory_usage =
       host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
 
   base::MemoryPressureListener::SimulatePressureNotification(
