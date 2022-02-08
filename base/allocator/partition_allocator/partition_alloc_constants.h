@@ -217,6 +217,12 @@ constexpr size_t kNumPools = 3;
 // to keep for now only because nothing uses PartitionAlloc on iOS yet.
 #if BUILDFLAG(IS_IOS)
 constexpr size_t kPoolMaxSize = kGiB / 4;
+#elif BUILDFLAG(IS_MAC)
+// Special-case macOS. Contrary to other platforms, there is no sandbox limit
+// there, meaning that a single renderer could "happily" consume >8GiB. So the
+// 8GiB pool size is a regression. Make the limit higher on this platform only
+// to be consistent with previous behavior. See crbug.com/1232567 for details.
+constexpr size_t kPoolMaxSize = 16 * kGiB;
 #else
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #endif
