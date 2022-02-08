@@ -3147,7 +3147,7 @@
   {
     "name": "feed-loading-placeholder",
     "owners": [ "//chrome/android/feed/OWNERS", "dewittj@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 101
   },
   {
     "name": "feed-share",
