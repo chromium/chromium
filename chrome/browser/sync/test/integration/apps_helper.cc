@@ -252,7 +252,8 @@ web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info) {
 
 }  // namespace apps_helper
 
-AppsMatchChecker::AppsMatchChecker() : profiles_(test()->GetAllProfiles()) {
+AppsStatusChangeChecker::AppsStatusChangeChecker()
+    : profiles_(test()->GetAllProfiles()) {
   DCHECK_GE(profiles_.size(), 2U);
 
   for (Profile* profile : profiles_) {
@@ -278,7 +279,7 @@ AppsMatchChecker::AppsMatchChecker() : profiles_(test()->GetAllProfiles()) {
   }
 }
 
-AppsMatchChecker::~AppsMatchChecker() {
+AppsStatusChangeChecker::~AppsStatusChangeChecker() {
   for (Profile* profile : profiles_) {
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);
@@ -288,6 +289,70 @@ AppsMatchChecker::~AppsMatchChecker() {
     prefs->RemoveObserver(this);
   }
 }
+
+void AppsStatusChangeChecker::OnExtensionLoaded(
+    content::BrowserContext* context,
+    const extensions::Extension* extension) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionUnloaded(
+    content::BrowserContext* context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionInstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    bool is_update) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UninstallReason reason) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionDisableReasonsChanged(
+    const std::string& extension_id,
+    int disabled_reasons) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionRegistered(
+    const std::string& extension_id,
+    const base::Time& install_time,
+    bool is_enabled) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionPrefsLoaded(
+    const std::string& extension_id,
+    const extensions::ExtensionPrefs* prefs) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionPrefsDeleted(
+    const std::string& extension_id) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnExtensionStateChanged(
+    const std::string& extension_id,
+    bool state) {
+  CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::OnAppsReordered(
+    const absl::optional<std::string>& extension_id) {
+  CheckExitCondition();
+}
+
+AppsMatchChecker::AppsMatchChecker() = default;
 
 bool AppsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for apps to match";
@@ -301,64 +366,4 @@ bool AppsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
     }
   }
   return true;
-}
-
-void AppsMatchChecker::OnExtensionLoaded(
-    content::BrowserContext* context,
-    const extensions::Extension* extension) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionUnloaded(
-    content::BrowserContext* context,
-    const extensions::Extension* extension,
-    extensions::UnloadedExtensionReason reason) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionInstalled(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    bool is_update) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionUninstalled(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    extensions::UninstallReason reason) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionDisableReasonsChanged(
-    const std::string& extension_id,
-    int disabled_reasons) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionRegistered(const std::string& extension_id,
-                                             const base::Time& install_time,
-                                             bool is_enabled) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionPrefsLoaded(
-    const std::string& extension_id,
-    const extensions::ExtensionPrefs* prefs) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionPrefsDeleted(
-    const std::string& extension_id) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnExtensionStateChanged(const std::string& extension_id,
-                                               bool state) {
-  CheckExitCondition();
-}
-
-void AppsMatchChecker::OnAppsReordered(
-    const absl::optional<std::string>& extension_id) {
-  CheckExitCondition();
 }

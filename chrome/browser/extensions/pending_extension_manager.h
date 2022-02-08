@@ -140,6 +140,10 @@ class PendingExtensionManager {
       bool mark_acknowledged,
       bool remote_install);
 
+  // Caches the set of Chrome app IDs undergoing migration to web apps because
+  // it is expensive to generate every time (multiple SkBitmap copies).
+  void EnsureMigratedDefaultChromeAppIdsCachePopulated();
+
   // Add a pending extension record directly.  Used for unit tests that need
   // to set an inital state. Use friendship to allow the tests to call this
   // method.
@@ -149,6 +153,9 @@ class PendingExtensionManager {
   raw_ptr<content::BrowserContext> context_;
 
   PendingExtensionList pending_extension_list_;
+
+  absl::optional<base::flat_set<std::string>>
+      migrating_default_chrome_app_ids_cache_;
 
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            UpdatePendingExtensionAlreadyInstalled);

@@ -3129,6 +3129,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.SyncBlockedByDefaultWebAppMigration"
+    units="Boolean" expires_after="2022-06-30">
+  <owner>alancutter@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records true whenever an extension sync install attempt was blocked because
+    it was a default Chrome app that has been migrated over to a web app. Never
+    records false.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.SyncGetMessageBundle" units="ms"
     expires_after="2022-06-30">
   <owner>rdevlin.cronin@chromium.org</owner>
