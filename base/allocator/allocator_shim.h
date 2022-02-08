@@ -177,8 +177,6 @@ using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
 using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
 using UseDedicatedAlignedPartition =
     base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
-using AlternateBucketDistribution =
-    base::StrongAlias<class AlternateBucketDistributionTag, bool>;
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
@@ -186,8 +184,7 @@ using AlternateBucketDistribution =
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
     SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    AlternateBucketDistribution use_alternate_bucket_distribution);
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition);
 
 #if defined(PA_ALLOW_PCSCAN)
 BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);

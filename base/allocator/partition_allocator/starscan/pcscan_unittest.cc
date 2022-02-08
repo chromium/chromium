@@ -74,7 +74,6 @@ class PartitionAllocPCScanTestBase : public testing::Test {
         PartitionOptions::UseConfigurablePool::kNo,
     });
     allocator_.root()->UncapEmptySlotSpanMemoryForTesting();
-    allocator_.root()->SwitchToDenserBucketDistribution();
 
     PCScan::RegisterScannableRoot(allocator_.root());
   }
@@ -143,8 +142,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   CHECK_EQ(0u, root.get_total_size_of_committed_pages());
 
   const size_t raw_size = root.AdjustSizeForExtrasAdd(object_size);
-  const size_t bucket_index =
-      root.SizeToBucketIndex(raw_size, root.with_denser_bucket_distribution);
+  const size_t bucket_index = root.SizeToBucketIndex(raw_size);
   ThreadSafePartitionRoot::Bucket& bucket = root.buckets[bucket_index];
   const size_t num_slots = (bucket.get_bytes_per_span()) / bucket.slot_size;
 
