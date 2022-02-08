@@ -40,16 +40,21 @@ void TestNewWindowDelegate::OpenPersonalizationHub() {}
 
 TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
     std::unique_ptr<TestNewWindowDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : ash_(std::move(delegate)) {}
+
+TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
+    std::unique_ptr<TestNewWindowDelegate> ash,
+    std::unique_ptr<TestNewWindowDelegate> lacros)
+    : ash_(std::move(ash)), lacros_(std::move(lacros)) {}
 
 TestNewWindowDelegateProvider::~TestNewWindowDelegateProvider() = default;
 
 NewWindowDelegate* TestNewWindowDelegateProvider::GetInstance() {
-  return delegate_.get();
+  return ash_.get();
 }
 
 NewWindowDelegate* TestNewWindowDelegateProvider::GetPrimary() {
-  return delegate_.get();
+  return lacros_ ? lacros_.get() : ash_.get();
 }
 
 }  // namespace ash

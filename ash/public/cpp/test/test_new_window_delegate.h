@@ -46,8 +46,16 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
 class ASH_PUBLIC_EXPORT TestNewWindowDelegateProvider
     : public NewWindowDelegateProvider {
  public:
+  // This provider's GetInstance() and GetPrimary() will both return |delegate|.
   explicit TestNewWindowDelegateProvider(
       std::unique_ptr<TestNewWindowDelegate> delegate);
+
+  // This provider's GetInstance() will return |ash|, its GetPrimary() will
+  // return |lacros|.
+  explicit TestNewWindowDelegateProvider(
+      std::unique_ptr<TestNewWindowDelegate> ash,
+      std::unique_ptr<TestNewWindowDelegate> lacros);
+
   TestNewWindowDelegateProvider(const TestNewWindowDelegateProvider&) = delete;
   TestNewWindowDelegateProvider& operator=(
       const TestNewWindowDelegateProvider&) = delete;
@@ -58,7 +66,8 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegateProvider
   NewWindowDelegate* GetPrimary() override;
 
  private:
-  std::unique_ptr<TestNewWindowDelegate> delegate_;
+  std::unique_ptr<TestNewWindowDelegate> ash_;
+  std::unique_ptr<TestNewWindowDelegate> lacros_;
 };
 
 }  // namespace ash
