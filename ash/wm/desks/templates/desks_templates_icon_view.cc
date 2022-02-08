@@ -63,7 +63,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
                 AshColorProvider::ControlsLayerType::
                     kControlBackgroundColorInactive))
             .SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorSecondary))
+                AshColorProvider::ContentLayerType::kTextColorPrimary))
             .Build());
   }
 

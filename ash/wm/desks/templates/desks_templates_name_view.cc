@@ -42,7 +42,7 @@ bool IsDesksTemplatesGridWidget(const views::Widget* widget) {
 
 DesksTemplatesNameView::DesksTemplatesNameView() {
   SetFontList(GetFontList().Derive(kNameFontSizeDeltaDp, gfx::Font::NORMAL,
-                                   gfx::Font::Weight::BOLD));
+                                   gfx::Font::Weight::MEDIUM));
 }
 
 DesksTemplatesNameView::~DesksTemplatesNameView() = default;

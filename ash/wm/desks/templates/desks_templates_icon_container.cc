@@ -229,14 +229,16 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
     return;
 
   for (size_t i = 0; i < kMaxIcons && i < identifiers_and_counts.size(); ++i) {
-    DesksTemplatesIconView* icon_view =
-        AddChildView(views::Builder<DesksTemplatesIconView>()
-                         .SetBackground(views::CreateRoundedRectBackground(
-                             AshColorProvider::Get()->GetControlsLayerColor(
-                                 AshColorProvider::ControlsLayerType::
-                                     kControlBackgroundColorInactive),
-                             DesksTemplatesIconView::kIconSize / 2))
-                         .Build());
+    DesksTemplatesIconView* icon_view = AddChildView(
+        views::Builder<DesksTemplatesIconView>()
+            .SetBackground(views::CreateRoundedRectBackground(
+                identifiers_and_counts[i].second == 1
+                    ? SK_ColorTRANSPARENT
+                    : AshColorProvider::Get()->GetControlsLayerColor(
+                          AshColorProvider::ControlsLayerType::
+                              kControlBackgroundColorInactive),
+                DesksTemplatesIconView::kIconSize / 2))
+            .Build());
     icon_view->SetIconIdentifierAndCount(identifiers_and_counts[i].first,
                                          identifiers_and_counts[i].second);
   }
