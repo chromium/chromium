@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_row_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_section_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_fraction_element.h"
@@ -1638,6 +1639,22 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
   }
   if (ratio.GetType() == EAspectRatioType::kAutoAndRatio)
     return Style().LogicalAspectRatio();
+  return LogicalSize();
+}
+
+LogicalSize NGBlockNode::GetReplacedSizeOverrideIfAny(
+    const NGConstraintSpace& space) const {
+  DCHECK(IsReplaced());
+  if (!box_->IsSVGRoot())
+    return LogicalSize();
+  const LayoutSVGRoot& svg_root = To<LayoutSVGRoot>(*box_);
+  LayoutSize size_override = svg_root.GetContainerSize();
+  if (!size_override.IsEmpty()) {
+    return PhysicalSize(size_override)
+        .ConvertToLogical(Style().GetWritingMode());
+  }
+  if (svg_root.IsEmbeddedThroughFrameContainingSVGDocument())
+    return space.AvailableSize();
   return LogicalSize();
 }
 

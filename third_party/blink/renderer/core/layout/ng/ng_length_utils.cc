@@ -866,6 +866,13 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   if (node.IsFrame())
     return LogicalSize();
 
+  LogicalSize size_override = node.GetReplacedSizeOverrideIfAny(space);
+  if (!size_override.IsEmpty()) {
+    DCHECK_GE(size_override.block_size, border_padding.BlockSum());
+    DCHECK_GE(size_override.inline_size, border_padding.InlineSum());
+    return size_override;
+  }
+
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
   const Length& block_length = style.LogicalHeight();
