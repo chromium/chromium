@@ -93,7 +93,8 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
 };
 
 // Test the Tab's a11y information compared to a Cocoa NSTabViewItem.
-TEST_F(TabbedPaneAccessibilityMacTest, AttributesMatchAppKit) {
+// TODO(crbug.com/1295415): Reenable test with fix.
+TEST_F(TabbedPaneAccessibilityMacTest, DISABLED_AttributesMatchAppKit) {
   // Create a Cocoa NSTabView to test against and select the first tab.
   base::scoped_nsobject<NSTabView> cocoa_tab_group(
       [[NSTabView alloc] initWithFrame:NSMakeRect(50, 50, 100, 100)]);
