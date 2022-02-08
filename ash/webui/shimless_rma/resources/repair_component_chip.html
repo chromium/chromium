@@ -9,14 +9,17 @@
   }
 
   #componentButton {
-    border-radius: 4px;
+    --vertical-padding: 24px;
+    border-radius: 8px;
     box-shadow: var(--cr-card-shadow);
     color: var(--shimless-component-text-color);
     font-family: var(--shimless-component-font-family);
     font-size: var(--shimless-component-font-size);
     font-weight: var(--shimless-medium-font-weight);
-    height: 70px;
+    height: calc((2 * var(--vertical-padding)) + 
+        (2 * var(--shimless-component-line-height)));
     line-height: var(--shimless-component-line-height);
+    padding: 0;
     width: 100%;
   }
 
@@ -24,9 +27,7 @@
     color: grey;
     flex-basis: 155px;
     inset-inline-start: 0;
-    margin-bottom: auto;
-    margin-top: auto;
-    padding-inline-start: 20px;
+    padding-inline-start: 24px;
     position: absolute;
   }
 
@@ -36,6 +37,13 @@
 
   iron-icon {
     margin-top: 6px;
+  }
+
+  #checkIcon {
+    height: 20px;
+    inset-inline-end: 16px;
+    position: absolute;
+    width: 20px;
   }
 </style>
 
