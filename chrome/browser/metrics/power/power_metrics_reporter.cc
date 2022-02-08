@@ -269,19 +269,6 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
 
   auto battery_discharge =
       GetBatteryDischargeDuringInterval(battery_state, interval_duration);
-  ReportUKMsAndHistograms(aggregated_process_metrics, interval_duration,
-                          battery_discharge);
-
-  if (on_battery_sampled_for_testing_)
-    std::move(on_battery_sampled_for_testing_).Run();
-}
-
-void PowerMetricsReporter::ReportUKMsAndHistograms(
-    const ProcessMonitor::Metrics& aggregated_process_metrics,
-    base::TimeDelta interval_duration,
-    BatteryDischarge battery_discharge) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(data_store_.MaybeValid());
 
   UsageScenarioDataStore::IntervalData interval_data =
       data_store_->ResetIntervalData();
@@ -316,6 +303,9 @@ void PowerMetricsReporter::ReportUKMsAndHistograms(
                    aggregated_process_metrics.coalition_data
 #endif  // BUILDFLAG(IS_MAC)
   );
+
+  if (on_battery_sampled_for_testing_)
+    std::move(on_battery_sampled_for_testing_).Run();
 }
 
 // static

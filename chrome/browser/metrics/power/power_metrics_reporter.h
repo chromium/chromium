@@ -87,7 +87,7 @@ class PowerMetricsReporter
   };
 
   // Report metrics to generic histograms and histograms with a scenario suffix
-  // derived from |interval_data|
+  // derived from |interval_data|.
   static void ReportHistograms(
       const UsageScenarioDataStore::IntervalData& interval_data,
       const ProcessMonitor::Metrics& aggregated_process_metrics,
@@ -135,11 +135,6 @@ class PowerMetricsReporter
                   base::TimeDelta interval_duration,
                   BatteryDischarge battery_discharge,
                   absl::optional<int64_t> main_screen_brightness) const;
-
-  void ReportUKMsAndHistograms(
-      const ProcessMonitor::Metrics& aggregated_process_metrics,
-      base::TimeDelta interval_duration,
-      BatteryDischarge battery_discharge) const;
 
   // Computes and returns the battery discharge mode and rate during the
   // interval, and reset |battery_state_| to the current state. If the discharge
