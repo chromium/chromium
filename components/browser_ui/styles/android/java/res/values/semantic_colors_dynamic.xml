@@ -3,8 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <resources>
-    <!-- Full dynamic colors ?attr version. Use for development. -->
-    <!--
+    <!-- Full dynamic colors ?attr version. -->
     <macro name="default_bg_color">?attr/colorSurface</macro>
     <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
 
@@ -36,9 +35,10 @@
     <macro name="chip_outline_focused_color">?attr/colorOnSurface</macro>
     <macro name="chip_state_layer_color">?attr/colorOnSurfaceVariant</macro>
     <macro name="chip_state_layer_selected_color">?attr/colorOnSecondaryContainer</macro>
-    -->
 
-    <!-- Temporarily holdback @color version. Use for checkin. -->
+    <!-- Temporarily holdback @color version. Keep until we're certain we won't
+         need to disable. -->
+    <!--
     <macro name="default_bg_color">@color/default_bg_color_baseline</macro>
     <macro name="default_bg_color_elev_0">@color/default_bg_color_elev_0_baseline</macro>
 
@@ -70,6 +70,7 @@
     <macro name="chip_outline_focused_color">@color/chip_outline_focused_color_baseline</macro>
     <macro name="chip_state_layer_color">@color/chip_state_layer_color_baseline</macro>
     <macro name="chip_state_layer_selected_color">@color/chip_state_layer_selected_color_baseline</macro>
+    -->
 
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>

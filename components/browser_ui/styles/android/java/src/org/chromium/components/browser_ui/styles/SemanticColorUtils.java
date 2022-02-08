@@ -21,7 +21,7 @@ public class SemanticColorUtils {
     private static final String TAG = "SemanticColorUtils";
     // Temporarily disabled flag because cached features cannot easily be read from components. For
     // testing changes this can be flipped to true. See https://crrev.com/c/3255853 for context.
-    private static final boolean IS_FULL_DYNAMIC_COLORS = false;
+    private static final boolean IS_FULL_DYNAMIC_COLORS = true;
 
     private static @ColorInt int resolve(
             @AttrRes int attrRes, @ColorRes int colorRes, Context context) {
