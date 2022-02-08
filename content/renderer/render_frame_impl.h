@@ -636,7 +636,10 @@ class CONTENT_EXPORT RenderFrameImpl
       const base::UnguessableToken& session_id,
       const media::AudioParameters& params,
       bool automatic_gain_control,
-      uint32_t shared_memory_count) override;
+      uint32_t shared_memory_count,
+      blink::CrossVariantMojoReceiver<
+          media::mojom::AudioProcessorControlsInterfaceBase> controls_receiver,
+      const media::AudioProcessingSettings& settings) override;
   void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id) override;

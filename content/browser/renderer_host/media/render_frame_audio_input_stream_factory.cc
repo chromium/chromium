@@ -123,7 +123,8 @@ class RenderFrameAudioInputStreamFactory::Core final
       const base::UnguessableToken& session_id,
       const media::AudioParameters& audio_params,
       bool automatic_gain_control,
-      uint32_t shared_memory_count) final;
+      uint32_t shared_memory_count,
+      media::mojom::AudioProcessingConfigPtr processing_config) final;
 
   void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,
@@ -228,7 +229,8 @@ void RenderFrameAudioInputStreamFactory::Core::CreateStream(
     const base::UnguessableToken& session_id,
     const media::AudioParameters& audio_params,
     bool automatic_gain_control,
-    uint32_t shared_memory_count) {
+    uint32_t shared_memory_count,
+    media::mojom::AudioProcessingConfigPtr processing_config) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT1("audio", "RenderFrameAudioInputStreamFactory::CreateStream",
                "session id", session_id.ToString());
@@ -271,7 +273,8 @@ void RenderFrameAudioInputStreamFactory::Core::CreateStream(
   } else {
     forwarding_factory_->CreateInputStream(
         process_id_, frame_id_, device->id, audio_params, shared_memory_count,
-        automatic_gain_control, std::move(client));
+        automatic_gain_control, std::move(processing_config),
+        std::move(client));
 
     // Only count for captures from desktop media picker dialog and system loop
     // back audio.

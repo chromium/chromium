@@ -169,17 +169,18 @@ struct TestEnvironment {
             kShMemCount,
             nullptr /*user_input_monitor*/,
             kEnableAgc,
+            media::mojom::AudioProcessingConfig::New(
+                remote_controls_.BindNewPipeAndPassReceiver(),
+                media::AudioProcessingSettings()),
             deleter.Get(),
-            renderer_factory_client.MakeRemote())) {
-    // TODO(crbug.com/1284652) : Pass in a AudioProcessingConfig to |this|, and
-    // make sure it is forwarded to the stream factory during creation.
-  }
+            renderer_factory_client.MakeRemote())) {}
 
   void RunUntilIdle() { task_environment.RunUntilIdle(); }
 
   BrowserTaskEnvironment task_environment;
   MockDeleterCallback deleter;
   StrictMock<MockRendererAudioInputStreamFactoryClient> renderer_factory_client;
+  mojo::Remote<media::mojom::AudioProcessorControls> remote_controls_;
   std::unique_ptr<AudioInputStreamBroker> broker;
   MockStreamFactory stream_factory;
   mojo::Remote<media::mojom::AudioStreamFactory> factory_ptr{
@@ -205,8 +206,8 @@ TEST(AudioInputStreamBrokerTest, StoresProcessAndFrameId) {
 
   AudioInputStreamBroker broker(
       kRenderProcessId, kRenderFrameId, kDeviceId, TestParams(), kShMemCount,
-      nullptr /*user_input_monitor*/, kEnableAgc, deleter.Get(),
-      renderer_factory_client.MakeRemote());
+      nullptr /*user_input_monitor*/, kEnableAgc, nullptr /*processing_config*/,
+      deleter.Get(), renderer_factory_client.MakeRemote());
 
   EXPECT_EQ(kRenderProcessId, broker.render_process_id());
   EXPECT_EQ(kRenderFrameId, broker.render_frame_id());
@@ -222,6 +223,8 @@ TEST(AudioInputStreamBrokerTest, StreamCreationSuccess_Propagates) {
   env.RunUntilIdle();
 
   EXPECT_TRUE(stream_request_data.requested);
+  EXPECT_TRUE(stream_request_data.processing_config);
+  EXPECT_TRUE(stream_request_data.processing_config->controls_receiver);
 
   // Set up test IPC primitives.
   const size_t shmem_size = 456;

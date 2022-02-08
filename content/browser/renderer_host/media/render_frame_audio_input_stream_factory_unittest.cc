@@ -221,7 +221,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       client;
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -249,7 +249,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       client;
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -278,7 +278,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       client;
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -297,7 +297,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       client;
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount);
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 

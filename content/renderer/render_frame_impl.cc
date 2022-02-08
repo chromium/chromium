@@ -108,6 +108,7 @@
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 #include "crypto/sha2.h"
 #include "ipc/ipc_message.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -5653,10 +5654,19 @@ void RenderFrameImpl::CreateAudioInputStream(
     const base::UnguessableToken& session_id,
     const media::AudioParameters& params,
     bool automatic_gain_control,
-    uint32_t shared_memory_count) {
-  GetAudioInputStreamFactory()->CreateStream(std::move(client), session_id,
-                                             params, automatic_gain_control,
-                                             shared_memory_count);
+    uint32_t shared_memory_count,
+    blink::CrossVariantMojoReceiver<
+        media::mojom::AudioProcessorControlsInterfaceBase> controls_receiver,
+    const media::AudioProcessingSettings& settings) {
+  media::mojom::AudioProcessingConfigPtr processing_config;
+  if (controls_receiver) {
+    processing_config = media::mojom::AudioProcessingConfig::New(
+        std::move(controls_receiver), settings);
+  }
+
+  GetAudioInputStreamFactory()->CreateStream(
+      std::move(client), session_id, params, automatic_gain_control,
+      shared_memory_count, std::move(processing_config));
 }
 
 void RenderFrameImpl::AssociateInputAndOutputForAec(

@@ -31,6 +31,8 @@ void CreateMojoAudioInputStreamOnMainThread(
     const media::AudioSourceParameters& source_params,
     mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
         client,
+    mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+        controls_receiver,
     const media::AudioParameters& params,
     bool automatic_gain_control,
     uint32_t total_segments) {
@@ -38,7 +40,9 @@ void CreateMojoAudioInputStreamOnMainThread(
           blink::WebFrame::FromFrameToken(frame_token))) {
     web_frame->Client()->CreateAudioInputStream(
         std::move(client), source_params.session_id, params,
-        automatic_gain_control, total_segments);
+        automatic_gain_control, total_segments, std::move(controls_receiver),
+        source_params.processing ? source_params.processing->settings
+                                 : media::AudioProcessingSettings());
   }
 }
 
@@ -48,14 +52,16 @@ void CreateMojoAudioInputStream(
     const media::AudioSourceParameters& source_params,
     mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
         client,
+    mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+        controls_receiver,
     const media::AudioParameters& params,
     bool automatic_gain_control,
     uint32_t total_segments) {
   main_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CreateMojoAudioInputStreamOnMainThread, frame_token,
-                     source_params, std::move(client), params,
-                     automatic_gain_control, total_segments));
+      FROM_HERE, base::BindOnce(&CreateMojoAudioInputStreamOnMainThread,
+                                frame_token, source_params, std::move(client),
+                                std::move(controls_receiver), params,
+                                automatic_gain_control, total_segments));
 }
 
 void AssociateInputAndOutputForAec(

@@ -42,6 +42,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
       uint32_t shared_memory_count,
       media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client);
@@ -78,6 +79,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
 
   DeleterCallback deleter_;
 
+  media::mojom::AudioProcessingConfigPtr processing_config_;
   mojo::Remote<blink::mojom::RendererAudioInputStreamFactoryClient>
       renderer_factory_client_;
   mojo::Receiver<AudioInputStreamObserver> observer_receiver_{this};

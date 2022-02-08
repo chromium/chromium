@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -77,6 +78,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         bool enable_agc,
+        media::mojom::AudioProcessingConfigPtr processing_config,
         mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
             renderer_factory_client);
 

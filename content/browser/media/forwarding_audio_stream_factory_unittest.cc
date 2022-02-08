@@ -19,6 +19,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,15 +29,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
-using ::testing::Test;
+using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::NotNull;
 using ::testing::StrictMock;
-using ::testing::InSequence;
+using ::testing::Test;
 
 namespace content {
 
 namespace {
+
+using AudioProcessingConfigPtr = media::mojom::AudioProcessingConfigPtr;
 
 class MockStreamFactory final : public audio::FakeStreamFactory,
                                 public media::mojom::LocalMuter {
@@ -80,6 +83,7 @@ class MockBroker : public AudioStreamBroker {
   base::WeakPtr<MockBroker> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   DeleterCallback deleter;
+  media::mojom::AudioProcessingConfigPtr config_ptr;
 
  private:
   base::WeakPtrFactory<MockBroker> weak_factory_{this};
@@ -119,6 +123,7 @@ class MockBrokerFactory final : public AudioStreamBrokerFactory {
       uint32_t shared_memory_count,
       media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client) override {
@@ -129,6 +134,7 @@ class MockBrokerFactory final : public AudioStreamBrokerFactory {
     EXPECT_EQ(render_process_id, prepared_broker->render_process_id());
     EXPECT_EQ(render_frame_id, prepared_broker->render_frame_id());
     prepared_broker->deleter = std::move(deleter);
+    prepared_broker->config_ptr = std::move(processing_config);
     return std::move(prepared_broker);
   }
 
@@ -276,12 +282,17 @@ TEST_F(ForwardingAudioStreamFactoryTest, CreateInputStream_CreatesInputStream) {
                                        nullptr /*user_input_monitor*/,
                                        std::move(broker_factory_));
 
+  auto config_ptr = media::mojom::AudioProcessingConfig::New(
+      mojo::NullReceiver(), media::AudioProcessingSettings());
+
   EXPECT_CALL(*broker, CreateStream(NotNull()));
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory.core()->CreateInputStream(main_rfh()->GetProcess()->GetID(),
                                     main_rfh()->GetRoutingID(), kInputDeviceId,
                                     kParams, kSharedMemoryCount, kEnableAgc,
-                                    std::move(client));
+                                    std::move(config_ptr), std::move(client));
+
+  EXPECT_TRUE(broker->config_ptr);
 }
 
 TEST_F(ForwardingAudioStreamFactoryTest,
@@ -343,7 +354,7 @@ TEST_F(ForwardingAudioStreamFactoryTest,
     factory.core()->CreateInputStream(
         main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
         kInputDeviceId, kParams, kSharedMemoryCount, kEnableAgc,
-        std::move(client));
+        AudioProcessingConfigPtr(), std::move(client));
     testing::Mock::VerifyAndClear(&*main_rfh_broker);
   }
   {
@@ -354,7 +365,7 @@ TEST_F(ForwardingAudioStreamFactoryTest,
     factory.core()->CreateInputStream(
         other_rfh()->GetProcess()->GetID(), other_rfh()->GetRoutingID(),
         kInputDeviceId, kParams, kSharedMemoryCount, kEnableAgc,
-        std::move(client));
+        AudioProcessingConfigPtr(), std::move(client));
     testing::Mock::VerifyAndClear(&*other_rfh_broker);
   }
 
@@ -479,7 +490,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyFrame_DestroysRelatedStreams) {
     factory.core()->CreateInputStream(
         main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
         kInputDeviceId, kParams, kSharedMemoryCount, kEnableAgc,
-        std::move(input_client));
+        AudioProcessingConfigPtr(), std::move(input_client));
     testing::Mock::VerifyAndClear(&*main_rfh_input_broker);
   }
   {
@@ -490,7 +501,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyFrame_DestroysRelatedStreams) {
     factory.core()->CreateInputStream(
         other_rfh()->GetProcess()->GetID(), other_rfh()->GetRoutingID(),
         kInputDeviceId, kParams, kSharedMemoryCount, kEnableAgc,
-        std::move(input_client));
+        AudioProcessingConfigPtr(), std::move(input_client));
     testing::Mock::VerifyAndClear(&*other_rfh_input_broker);
   }
 
@@ -569,10 +580,10 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyWebContents_DestroysStreams) {
 
   EXPECT_CALL(*input_broker, CreateStream(NotNull()));
   std::ignore = input_client.InitWithNewPipeAndPassReceiver();
-  factory.core()->CreateInputStream(main_rfh()->GetProcess()->GetID(),
-                                    main_rfh()->GetRoutingID(), kInputDeviceId,
-                                    kParams, kSharedMemoryCount, kEnableAgc,
-                                    std::move(input_client));
+  factory.core()->CreateInputStream(
+      main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
+      kInputDeviceId, kParams, kSharedMemoryCount, kEnableAgc,
+      AudioProcessingConfigPtr(), std::move(input_client));
 
   EXPECT_CALL(*output_broker, CreateStream(NotNull()));
   std::ignore = output_client.InitWithNewPipeAndPassReceiver();
@@ -612,7 +623,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, LastStreamDeleted_ClearsFactoryPtr) {
     factory.core()->CreateInputStream(
         main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
         kInputDeviceId, kParams, kSharedMemoryCount, kEnableAgc,
-        std::move(input_client));
+        AudioProcessingConfigPtr(), std::move(input_client));
     testing::Mock::VerifyAndClear(&*main_rfh_input_broker);
   }
   {
@@ -623,7 +634,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, LastStreamDeleted_ClearsFactoryPtr) {
     factory.core()->CreateInputStream(
         other_rfh()->GetProcess()->GetID(), other_rfh()->GetRoutingID(),
         kInputDeviceId, kParams, kSharedMemoryCount, kEnableAgc,
-        std::move(input_client));
+        AudioProcessingConfigPtr(), std::move(input_client));
     testing::Mock::VerifyAndClear(&*other_rfh_input_broker);
   }
 
