@@ -57,12 +57,6 @@ $ export PATH="$PATH:/path/to/depot_tools"
 
 ## Get the code
 
-Ensure that unicode filenames aren't mangled by HFS:
-
-```shell
-$ git config --global core.precomposeUnicode true
-```
-
 In System Preferences, check that "Energy Saver" -> "Power Adapter" ->
 "Prevent computer from sleeping automatically when the display is off" is
 checked so that your laptop doesn't go to sleep and interrupt the long network
