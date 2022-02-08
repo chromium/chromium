@@ -137,6 +137,7 @@
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
+#include "chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/universal_web_contents_observers.h"
@@ -4839,8 +4840,10 @@ bool IsSystemFeatureDisabled(policy::SystemFeature system_feature) {
 }
 
 bool IsSystemFeatureURLDisabled(const GURL& url) {
-  if (!url.SchemeIs(content::kChromeUIScheme))
+  if (!url.SchemeIs(content::kChromeUIScheme) &&
+      !url.SchemeIs(content::kChromeUIUntrustedScheme)) {
     return false;
+  }
 
   // chrome://os-settings/pwa.html shouldn't be replaced to let the settings app
   // installation complete successfully.
@@ -4854,6 +4857,10 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (url.DomainIs(chrome::kChromeUIUntrustedCroshHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kCrosh);
+  }
+
   if (url.DomainIs(ash::kChromeUIScanningAppHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kScanning);
   }
@@ -5615,6 +5622,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 #endif  // BUILDFLAG(IS_WIN)
 
   if (!ChromeWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+          browser_context, *url) &&
+      !ChromeUntrustedWebUIControllerFactory::GetInstance()->UseWebUIForURL(
           browser_context, *url)) {
     return false;
   }
@@ -5635,7 +5644,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsSystemFeatureURLDisabled(*url)) {
-    *url = ReplaceURLHostAndPath(*url, chrome::kChromeUIAppDisabledHost, "");
+    *url = GURL(chrome::kChromeUIAppDisabledURL);
     return true;
   }
 #endif

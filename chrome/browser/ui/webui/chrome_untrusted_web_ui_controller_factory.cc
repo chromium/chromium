@@ -108,9 +108,15 @@ WebUIConfigList CreateConfigs() {
 }  // namespace
 
 // static
-void ChromeUntrustedWebUIControllerFactory::RegisterInstance() {
+ChromeUntrustedWebUIControllerFactory*
+ChromeUntrustedWebUIControllerFactory::GetInstance() {
   static base::NoDestructor<ChromeUntrustedWebUIControllerFactory> instance;
-  content::WebUIControllerFactory::RegisterFactory(instance.get());
+  return instance.get();
+}
+
+// static
+void ChromeUntrustedWebUIControllerFactory::RegisterInstance() {
+  content::WebUIControllerFactory::RegisterFactory(GetInstance());
 }
 
 ChromeUntrustedWebUIControllerFactory::ChromeUntrustedWebUIControllerFactory()

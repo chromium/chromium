@@ -12,6 +12,7 @@ class ChromeUntrustedWebUIControllerFactory
  public:
   // Register the singleton instance of this class.
   static void RegisterInstance();
+  static ChromeUntrustedWebUIControllerFactory* GetInstance();
 
   ChromeUntrustedWebUIControllerFactory();
   ChromeUntrustedWebUIControllerFactory(

@@ -425,7 +425,6 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
-  PolicyMap policies;
   base::Value system_features(base::Value::Type::LIST);
   system_features.Append(kBrowserSettingsFeature);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
@@ -437,6 +436,20 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS),
             GetWebUITitle(settings_url, false));
+}
+
+IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectCroshURL) {
+  base::Value system_features(base::Value::Type::LIST);
+  system_features.Append(kCroshFeature);
+  UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
+
+  GURL crosh_url = GURL(chrome::kChromeUIUntrustedCroshURL);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER),
+            GetWebUITitle(crosh_url, false));
+
+  UpdateSystemFeaturesDisableList(base::Value(), nullptr);
+  // Title is empty for untrusted URLs.
+  EXPECT_EQ(std::u16string(), GetWebUITitle(crosh_url, false));
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisablePWAs) {
