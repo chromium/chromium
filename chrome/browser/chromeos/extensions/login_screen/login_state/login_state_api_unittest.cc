@@ -99,6 +99,7 @@ TEST_F(LoginStateApiAshUnittest, GetSessionState) {
       {session_manager::SessionState::LOGIN_SECONDARY, "IN_LOGIN_SCREEN"},
       {session_manager::SessionState::ACTIVE, "IN_SESSION"},
       {session_manager::SessionState::LOCKED, "IN_LOCK_SCREEN"},
+      {session_manager::SessionState::RMA, "IN_RMA_SCREEN"},
   };
 
   for (const auto& test : kTestCases) {

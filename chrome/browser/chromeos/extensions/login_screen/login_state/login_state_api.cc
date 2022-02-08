@@ -62,6 +62,8 @@ api::login_state::SessionState ToApiEnum(crosapi::mojom::SessionState state) {
       return api::login_state::SessionState::SESSION_STATE_IN_SESSION;
     case crosapi::mojom::SessionState::kInLockScreen:
       return api::login_state::SessionState::SESSION_STATE_IN_LOCK_SCREEN;
+    case crosapi::mojom::SessionState::kInRmaScreen:
+      return api::login_state::SessionState::SESSION_STATE_IN_RMA_SCREEN;
   }
   NOTREACHED();
   return api::login_state::SessionState::SESSION_STATE_UNKNOWN;

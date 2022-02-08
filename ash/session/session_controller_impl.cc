@@ -525,6 +525,7 @@ LoginStatus SessionControllerImpl::CalculateLoginStatus() const {
     case SessionState::OOBE:
     case SessionState::LOGIN_PRIMARY:
     case SessionState::LOGGED_IN_NOT_ACTIVE:
+    case SessionState::RMA:
       return LoginStatus::NOT_LOGGED_IN;
 
     case SessionState::ACTIVE:

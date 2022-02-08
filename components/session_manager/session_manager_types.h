@@ -37,6 +37,9 @@ enum class SessionState {
   // Same as LOGIN_PRIMARY but for multi-profiles sign in i.e. when there's at
   // least one user already active in the session.
   LOGIN_SECONDARY,
+
+  // Device is being repaired and the RMA app is active.
+  RMA,
 };
 
 // A type for session id.

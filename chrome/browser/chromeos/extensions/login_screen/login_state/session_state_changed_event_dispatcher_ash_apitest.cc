@@ -33,6 +33,7 @@ IN_PROC_BROWSER_TEST_F(SessionStateChangedEventDispatcherApitest,
       {session_manager::SessionState::LOGGED_IN_NOT_ACTIVE, "IN_LOGIN_SCREEN"},
       {session_manager::SessionState::ACTIVE, "IN_SESSION"},
       {session_manager::SessionState::LOGIN_SECONDARY, "IN_LOGIN_SCREEN"},
+      {session_manager::SessionState::RMA, "IN_RMA_SCREEN"},
       {session_manager::SessionState::UNKNOWN, "UNKNOWN"},
   };
 
