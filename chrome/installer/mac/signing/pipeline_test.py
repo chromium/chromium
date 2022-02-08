@@ -926,8 +926,9 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         # Filtering a brand code not being built should throw.
         with self.assertRaises(ValueError) as cm:
             pipeline._filter_distributions(distributions, ['MOOG'], [])
-        self.assertEqual(cm.exception.args[0],
-                         "Brand codes do not match any distribution: {'MOOG'}")
+        self.assertEqual(
+            cm.exception.args[0],
+            "Brand codes do not match any distribution: %r" % {'MOOG'})
 
         # Filtering one or more brand codes explicitly should remove them.
         self.assertEqual([dist1, dist2, dist3],
@@ -958,8 +959,9 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         # Filtering for a channel not being built should throw.
         with self.assertRaises(ValueError) as cm:
             pipeline._filter_distributions(distributions, [], ['hyper'])
-        self.assertEqual(cm.exception.args[0],
-                         "Channels do not match any distribution: {'hyper'}")
+        self.assertEqual(
+            cm.exception.args[0],
+            "Channels do not match any distribution: %r" % {'hyper'})
 
         # Filtering for 'stable' should result in the distribution with None
         # as a channel.
@@ -990,8 +992,8 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
             pipeline._filter_distributions(distributions, ['MOO'], ['beta'])
         self.assertEqual(
             cm.exception.args[0],
-            "All distributions for channels were filtered out by brand: "
-            "{'beta'}")
+            "All distributions for channels were filtered out by brand: %r" %
+            {'beta'})
 
 
 @mock.patch.multiple(
