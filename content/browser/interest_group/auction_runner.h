@@ -153,6 +153,12 @@ class CONTENT_EXPORT AuctionRunner {
   ~AuctionRunner();
 
  private:
+  // A set of interest groups, identified by owner and name. Used to log which
+  // interest groups bid in an auction. A sets is used to avoid double-counting
+  // interest groups that bid in multiple components auctions in a component
+  // auction.
+  using InterestGroupSet = std::set<std::pair<url::Origin, std::string>>;
+
   struct BidState {
     BidState();
     BidState(BidState&&);
@@ -282,6 +288,24 @@ class CONTENT_EXPORT AuctionRunner {
         IsInterestGroupApiAllowedCallback
             is_interest_group_api_allowed_callback,
         LoadInterestGroupsCallback load_interest_groups_callback);
+
+    // Close all Mojo pipes and release all weak pointers. Called when an
+    // auction fails and on auction complete.
+    void ClosePipes();
+
+    // Returns all interest groups that bid in an auction. Expected to be called
+    // after the bidding and scoring phase completes, but before the reporting
+    // phase. Returns an empty set if the auction failed for any reason other
+    // than the seller rejecting all bids.
+    //
+    // TODO(mmenke): Consider calling this after the reporting phase.
+    InterestGroupSet GetInterestGroupsThatBid() const;
+
+    // Retrieves any debug reporting URLs. May only be called after an auction
+    // has completed. May only be called once, since it takes ownership of
+    // stored reporting URLs.
+    void TakeDebugReportUrls(std::vector<GURL>& debug_win_report_urls,
+                             std::vector<GURL>& debug_loss_report_urls);
 
    private:
     // TODO(mmenke): Remove this once Auction fully manages its own state.
@@ -456,7 +480,6 @@ class CONTENT_EXPORT AuctionRunner {
                    const absl::optional<GURL>& debug_win_report_url,
                    const std::vector<std::string>& errors);
 
-  std::string AdRenderFingerprint(const BidState* state);
   absl::optional<std::string> PerBuyerSignals(const BidState* state);
 
   // If there are no `outstanding_bids_`, starts starts completing the auction,
@@ -494,7 +517,7 @@ class CONTENT_EXPORT AuctionRunner {
   void ClosePipes();
 
   // Logs the result of the auction to UMA.
-  void RecordResult(AuctionResult result) const;
+  void RecordResult(AuctionResult result);
 
   // Requests a WorkletHandle for the interest group identified by `bid_state`,
   // using the provided callbacks. Returns true if a worklet was received
@@ -512,11 +535,6 @@ class CONTENT_EXPORT AuctionRunner {
   RunAuctionCallback callback_;
 
   Auction auction_;
-
-  // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
-  // forDebuggingOnly.reportAdAuctionWin(url).
-  std::vector<GURL> debug_loss_report_urls_;
-  std::vector<GURL> debug_win_report_urls_;
 
   base::WeakPtrFactory<AuctionRunner> weak_ptr_factory_{this};
 };

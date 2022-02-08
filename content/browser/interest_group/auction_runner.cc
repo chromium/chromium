@@ -156,6 +156,69 @@ void AuctionRunner::Auction::LoadInterestGroups(
   }
 }
 
+void AuctionRunner::Auction::ClosePipes() {
+  // This is needed in addition to closing worklet pipes since the callbacks
+  // passed to Mojo aren't currently cancellable.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  for (BidState& bid_state : bid_states_) {
+    bid_state.worklet_handle.reset();
+  }
+  seller_worklet_handle_.reset();
+}
+
+AuctionRunner::InterestGroupSet
+AuctionRunner::Auction::GetInterestGroupsThatBid() const {
+  InterestGroupSet out;
+  for (const BidState& bid_state : bid_states_) {
+    if (bid_state.made_bid) {
+      out.emplace(std::pair(bid_state.bidder.interest_group.owner,
+                            bid_state.bidder.interest_group.name));
+    }
+  }
+
+  return out;
+}
+
+void AuctionRunner::Auction::TakeDebugReportUrls(
+    std::vector<GURL>& debug_win_report_urls,
+    std::vector<GURL>& debug_loss_report_urls) {
+  DCHECK(final_auction_result_);
+
+  // Should only send loss report if the auction succeeded, or the seller
+  // rejected all bids.
+  if (*final_auction_result_ != AuctionResult::kSuccess &&
+      *final_auction_result_ != AuctionResult::kAllBidsRejected) {
+    return;
+  }
+
+  BidState* top_bidder = nullptr;
+  if (top_bid_) {
+    top_bidder = top_bid_->bid->bid_state;
+    if (top_bidder->bidder_debug_win_report_url.has_value()) {
+      debug_win_report_urls.emplace_back(
+          std::move(top_bidder->bidder_debug_win_report_url).value());
+    }
+    if (top_bidder->seller_debug_win_report_url.has_value()) {
+      debug_win_report_urls.emplace_back(
+          std::move(top_bidder->seller_debug_win_report_url).value());
+    }
+  }
+
+  for (BidState& bid_state : bid_states_) {
+    if (&bid_state == top_bidder)
+      continue;
+    if (bid_state.bidder_debug_loss_report_url.has_value()) {
+      debug_loss_report_urls.emplace_back(
+          std::move(bid_state.bidder_debug_loss_report_url).value());
+    }
+    if (bid_state.seller_debug_loss_report_url.has_value()) {
+      debug_loss_report_urls.emplace_back(
+          std::move(bid_state.seller_debug_loss_report_url).value());
+    }
+  }
+}
+
 void AuctionRunner::Auction::OnInterestGroupRead(
     std::vector<StorageInterestGroup> interest_groups) {
   DCHECK_GT(num_pending_buyers_, 0u);
@@ -314,18 +377,19 @@ void AuctionRunner::FailAuction(AuctionResult result,
 
   ClosePipes();
 
-  // No win report when the auction fails.
-  debug_win_report_urls_.clear();
-  // If the auction failed not due to all bids got rejected, no debug report
-  // should be sent.
-  if (result != AuctionResult::kAllBidsRejected)
-    debug_loss_report_urls_.clear();
+  // Can have loss URLs if the auction failed because the seller rejected all
+  // bids.
+  std::vector<GURL> debug_win_report_urls;
+  std::vector<GURL> debug_loss_report_urls;
+  auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
+  // Shouldn't have any win report URLs if nothing won the auction.
+  DCHECK(debug_win_report_urls.empty());
 
   std::move(callback_).Run(
       this, /*render_url=*/absl::nullopt,
       /*ad_component_urls=*/absl::nullopt,
-      /*report_urls=*/{}, std::move(debug_loss_report_urls_),
-      std::move(debug_win_report_urls_), std::move(auction_.errors_));
+      /*report_urls=*/{}, std::move(debug_loss_report_urls),
+      std::move(debug_win_report_urls), std::move(auction_.errors_));
 }
 
 void AuctionRunner::StartAuction(
@@ -629,45 +693,24 @@ void AuctionRunner::MaybeCompleteAuction() {
   //
   // TODO(mmenke): Maybe this should be recorded at bid time, and the interest
   // group thrown away if it's not the top bid?
-  bool some_bidder_bid = false;
-  for (BidState& bid_state : auction_.bid_states_) {
-    if (bid_state.made_bid) {
-      some_bidder_bid = true;
-      interest_group_manager_->RecordInterestGroupBid(
-          bid_state.bidder.interest_group.owner,
-          bid_state.bidder.interest_group.name);
-    }
-  }
-
-  BidState* top_bidder = nullptr;
-  if (auction_.top_bid_) {
-    top_bidder = auction_.top_bid_->bid->bid_state;
-    if (top_bidder && top_bidder->bidder_debug_win_report_url.has_value()) {
-      debug_win_report_urls_.push_back(
-          top_bidder->bidder_debug_win_report_url.value());
-    }
-    if (top_bidder && top_bidder->seller_debug_win_report_url.has_value()) {
-      debug_win_report_urls_.push_back(
-          top_bidder->seller_debug_win_report_url.value());
-    }
-  }
-
-  for (BidState& bid_state : auction_.bid_states_) {
-    if (&bid_state == top_bidder)
-      continue;
-    if (bid_state.bidder_debug_loss_report_url.has_value()) {
-      debug_loss_report_urls_.push_back(
-          bid_state.bidder_debug_loss_report_url.value());
-    }
-    if (bid_state.seller_debug_loss_report_url.has_value()) {
-      debug_loss_report_urls_.push_back(
-          bid_state.seller_debug_loss_report_url.value());
-    }
+  InterestGroupSet interest_groups_that_bid =
+      auction_.GetInterestGroupsThatBid();
+  for (const auto& interest_group : interest_groups_that_bid) {
+    interest_group_manager_->RecordInterestGroupBid(
+        /*owner=*/interest_group.first,
+        /*name=*/interest_group.second);
   }
 
   if (!auction_.top_bid_) {
-    FailAuction(some_bidder_bid ? AuctionResult::kAllBidsRejected
-                                : AuctionResult::kNoBids);
+    // If there are no bids, fail with either kAllBidsRejected or kNoBids,
+    // depending on whether any bidders bid.
+    for (BidState& bid_state : auction_.bid_states_) {
+      if (bid_state.made_bid) {
+        FailAuction(AuctionResult::kAllBidsRejected);
+        return;
+      }
+    }
+    FailAuction(AuctionResult::kNoBids);
     return;
   }
 
@@ -821,25 +864,29 @@ void AuctionRunner::ReportSuccess() {
       auction_.top_bid_->bid->interest_group->owner,
       auction_.top_bid_->bid->interest_group->name, ad_metadata);
 
+  std::vector<GURL> debug_win_report_urls;
+  std::vector<GURL> debug_loss_report_urls;
+  auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
+
   std::move(callback_).Run(
       this, auction_.top_bid_->bid->render_url,
       auction_.top_bid_->bid->ad_components, std::move(auction_.report_urls_),
-      std::move(debug_loss_report_urls_), std::move(debug_win_report_urls_),
+      std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
       std::move(auction_.errors_));
 }
 
 void AuctionRunner::ClosePipes() {
-  // This is needed in addition to closing worklet pipes in order to ignore
-  // worklet creation callbacks.
+  // This is needed in addition to closing worklet pipes since the callbacks
+  // passed to Mojo aren't currently cancellable.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  for (BidState& bid_state : auction_.bid_states_) {
-    bid_state.worklet_handle.reset();
-  }
-  auction_.seller_worklet_handle_.reset();
+  auction_.ClosePipes();
 }
 
-void AuctionRunner::RecordResult(AuctionResult result) const {
+void AuctionRunner::RecordResult(AuctionResult result) {
+  // TODO(mmenke): Remove this, once Auction always sets this on completion.
+  auction_.final_auction_result_ = result;
+
   UMA_HISTOGRAM_ENUMERATION("Ads.InterestGroup.Auction.Result", result);
 
   // Only record time of full auctions and aborts.
