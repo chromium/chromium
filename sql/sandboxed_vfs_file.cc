@@ -319,7 +319,7 @@ bool IsExclusiveLockMode(int sqlite_lock_mode) {
 }  // namespace
 
 int SandboxedVfsFile::Lock(int mode) {
-  DCHECK_GE(mode, sqlite_lock_mode_)
+  DCHECK_GT(mode, sqlite_lock_mode_)
       << "SQLite asked the VFS to lock the file up to mode " << mode
       << " but the file is already locked at mode " << sqlite_lock_mode_;
 
@@ -346,18 +346,20 @@ int SandboxedVfsFile::Lock(int mode) {
       break;
 
     case SQLITE_LOCK_PENDING:
-      // A SHARED lock is required before a PENDING lock is acquired. The caller
-      // may have a RESERVED lock.
-      if (sqlite_lock_mode_ == SQLITE_LOCK_RESERVED) {
-        sqlite_lock_mode_ = mode;
-        return SQLITE_OK;
-      }
+      NOTREACHED() << "SQLite never directly asks for PENDING locks";
 
-      DCHECK_EQ(sqlite_lock_mode_, SQLITE_LOCK_SHARED);
-      file_lock_mode = base::File::LockMode::kExclusive;
-      break;
+      // Should we ever receive PENDING lock requests, the handler for
+      // EXCLUSIVE lock requests below happens to work perfectly.
+      [[fallthrough]];
 
     case SQLITE_LOCK_EXCLUSIVE:
+      // A SHARED lock is required before an EXCLUSIVE lock is acquired.
+      //
+      // No higher level is required. In fact, SQLite upgrades the lock directly
+      // from SHARED to EXCLUSIVE when rolling back a transaction, to avoid
+      // having other readers queue up in the RESERVED state.
+      DCHECK_GE(sqlite_lock_mode_, SQLITE_LOCK_SHARED);
+
       if (IsExclusiveLockMode(sqlite_lock_mode_)) {
         sqlite_lock_mode_ = mode;
         return SQLITE_OK;
@@ -397,7 +399,11 @@ int SandboxedVfsFile::Lock(int mode) {
 }
 
 int SandboxedVfsFile::Unlock(int mode) {
-  DCHECK_LE(mode, sqlite_lock_mode_)
+  // The 2nd term in the DCHECK predicate is there because SQLite occasionally
+  // attempts to unlock (to SQLITE_LOCK_NONE) a file that was already unlocked.
+  // We're not aware of any other case of no-op VFS unlock calls.
+  DCHECK(mode < sqlite_lock_mode_ ||
+         (mode == sqlite_lock_mode_ && mode == SQLITE_LOCK_NONE))
       << "SQLite asked the VFS to unlock the file down to mode " << mode
       << " but the file is already at mode " << sqlite_lock_mode_;
 
