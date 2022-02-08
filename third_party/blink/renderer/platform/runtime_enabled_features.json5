@@ -24,7 +24,7 @@
     // Example of the dictionary value use:
     // {
     //   name: "ExampleFeature",
-    //   status: {"Android": "stable", "ChromeOS": "experimental"},
+    //   status: {"Android": "stable", "Win": "experimental"},
     // }
     // "ExampleFeature" will be stable on Android, experimental on ChromeOS
     // and not enabled on any other platform
@@ -33,7 +33,7 @@
     // shipped stable can have its runtime flag removed soon after.
     status: {
       valid_values: ["stable", "experimental", "test"],
-      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Lacros", "Linux"]
+      valid_keys: ["Android", "Win", "ChromeOS_Ash", "ChromeOS_Lacros", "Mac", "Linux"]
     },
 
     // "implied_by" or "depends_on" specifies relationship to other features:
@@ -274,8 +274,8 @@
         // Built-in barcode detection APIs are only available from some
         // platforms. See //services/shape_detection.
         "Android": "stable",
-        "ChromeOS": "stable",
-        "Lacros": "stable",
+        "ChromeOS_Ash": "stable",
+        "ChromeOS_Lacros": "stable",
         "Mac": "stable",
         "default": "test",
       },
@@ -885,7 +885,8 @@
       origin_trial_os: ["android", "chromeos"],
       status: {
         "Android": "stable",
-        "ChromeOS": "stable",
+        "ChromeOS_Ash": "stable",
+        "ChromeOS_Lacros": "stable",
         // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
         // so enable the API on all platforms for testing.
         "default": "test"
@@ -1170,7 +1171,7 @@
     },
     {
       name: "ForceTallerSelectPopup",
-      status: {"ChromeOS": "stable", "Lacros": "stable"},
+      status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
     },
     {
       name: "FractionalLineHeight",
@@ -1205,7 +1206,11 @@
     },
     {
       name: "HandwritingRecognition",
-      status: {"ChromeOS": "stable", "Lacros": "stable", "default": "experimental"},
+      status: {
+        "ChromeOS_Ash": "stable",
+        "ChromeOS_Lacros": "stable",
+        "default": "experimental",
+      },
     },
     {
       name: "HidDeviceForget",
@@ -1561,7 +1566,12 @@
     {
       name: "NetInfoDownlinkMax",
       // Only Android, ChromeOS support NetInfo downlinkMax, type and ontypechange now
-      status: {"Android": "stable", "ChromeOS": "stable", "default": "experimental"},
+      status: {
+        "Android": "stable",
+        "ChromeOS_Ash": "stable",
+        "ChromeOS_Lacros": "stable",
+        "default": "experimental",
+      },
     },
     {
       name: "NeverSlowMode",
@@ -2521,7 +2531,7 @@
       name: "WebBluetooth",
       status: {
         "Android": "stable",
-        "ChromeOS": "stable",
+        "ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable",
         "Mac": "stable",
         "default": "experimental",
       },

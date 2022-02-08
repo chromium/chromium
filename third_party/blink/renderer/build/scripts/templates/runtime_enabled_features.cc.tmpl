@@ -1,4 +1,4 @@
-{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_define %}
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_buildflag %}
 {{license()}}
 
 {{source_files_for_generated_file(template_file, input_files)}}
@@ -33,7 +33,7 @@ void RuntimeEnabledFeaturesBase::Set{{feature_set|capitalize}}FeaturesEnabled(bo
 
   // Platform-dependent features
   {% for platform in platforms %}
-#if {{platform_define(platform)}}
+#if {{platform_buildflag(platform)}}
   {% for feature in features if feature.status_type == 'dict' and feature.status[platform] == feature_set %}
   Set{{feature.name}}Enabled(enable);
   {% endfor %}
@@ -44,7 +44,7 @@ void RuntimeEnabledFeaturesBase::Set{{feature_set|capitalize}}FeaturesEnabled(bo
 #if
   {%- for platform in platforms %}
   {%- if not loop.first %} &&{% endif %}
- !{{platform_define(platform)}}
+ !{{platform_buildflag(platform)}}
   {%- endfor %}
 
   {% for feature in features if feature.status_type == 'dict' and feature.status['default'] == feature_set %}
@@ -112,7 +112,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{'true' if feat
 
 // Platform-dependent features
 {% for platform in platforms %}
-#if {{platform_define(platform)}}
+#if {{platform_buildflag(platform)}}
 {% for feature in features %}
 {% if feature.status_type == 'dict' %}
 bool RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{'true' if feature.status[platform] == 'stable' else 'false'}};
@@ -125,7 +125,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{'true' if feat
 #if
 {%- for platform in platforms %}
 {%- if not loop.first %} &&{% endif %}
- !{{platform_define(platform)}}
+ !{{platform_buildflag(platform)}}
 {%- endfor %}
 
 {% for feature in features %}
