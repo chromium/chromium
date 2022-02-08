@@ -39,7 +39,7 @@
 <translation id="4450893287417543264">Não mostrar novamente</translation>
 <translation id="4648718555153979859">Suas guias são agrupadas aqui</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avaliação)}one{(<ph name="REVIEWS_COUNT_MANY" /> avaliação)}other{(<ph name="REVIEWS_COUNT_MANY" /> avaliações)}}</translation>
-<translation id="4850886885716139402">Visualizar</translation>
+<translation id="4850886885716139402">Ver</translation>
 <translation id="492284538114688557">Redução no preço encontrada</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5073204694187207510">Ocultar grade de tela cheia</translation>
@@ -76,7 +76,7 @@
 <translation id="7885132941432959125">Mover guia para a direita</translation>
 <translation id="7966321538264951561">Dispensar as sugestões.</translation>
 <translation id="8029301326595421733">As informações sobre a loja estão abertas no tamanho máximo</translation>
-<translation id="814503310257431685">Visualizar todos</translation>
+<translation id="814503310257431685">Ver todos</translation>
 <translation id="8205266828577616993">Mover guia para cima</translation>
 <translation id="8304833501377495048">Deixar de mostrar a barra de guias?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Fechar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Fechar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
