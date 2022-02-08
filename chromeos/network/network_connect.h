@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace chromeos {
@@ -95,22 +95,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   // Configures a network with a dictionary of Shill properties, then sends a
   // connect request. The profile is set according to 'shared' if allowed.
   // TODO(stevenjb): Use ONC properties instead of shill.
-  virtual void ConfigureNetworkIdAndConnect(
-      const std::string& network_id,
-      const base::DictionaryValue& shill_properties,
-      bool shared) = 0;
+  virtual void ConfigureNetworkIdAndConnect(const std::string& network_id,
+                                            const base::Value& shill_properties,
+                                            bool shared) = 0;
 
   // Requests a new network configuration to be created from a dictionary of
   // Shill properties and sends a connect request if the configuration succeeds.
   // The profile used is determined by |shared|.
   // TODO(stevenjb): Use ONC properties instead of shill.
-  virtual void CreateConfigurationAndConnect(
-      base::DictionaryValue* shill_properties,
-      bool shared) = 0;
+  virtual void CreateConfigurationAndConnect(base::Value* shill_properties,
+                                             bool shared) = 0;
 
   // Requests a new network configuration to be created from a dictionary of
   // Shill properties. The profile used is determined by |shared|.
-  virtual void CreateConfiguration(base::DictionaryValue* shill_properties,
+  virtual void CreateConfiguration(base::Value* shill_properties,
                                    bool shared) = 0;
 
  protected:
