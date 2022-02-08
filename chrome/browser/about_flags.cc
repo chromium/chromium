@@ -5423,13 +5423,6 @@ const FeatureEntry kFeatureEntries[] = {
          network::switches::kUnsafelyTreatInsecureOriginAsSecure,
          "")},
 
-    {"detect-target-embedding-lookalikes",
-     flag_descriptions::kDetectTargetEmbeddingLookalikesName,
-     flag_descriptions::kDetectTargetEmbeddingLookalikesDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         lookalikes::features::kDetectTargetEmbeddingLookalikes)},
-
     {"disable-process-reuse", flag_descriptions::kDisableProcessReuse,
      flag_descriptions::kDisableProcessReuseDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDisableProcessReuse)},

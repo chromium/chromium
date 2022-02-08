@@ -1151,11 +1151,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "detect-target-embedding-lookalikes",
-    "owners": [ "jdeblasio", "meacer" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "detected-source-language-option",
     "owners": [ "cuianthony", "chrome-language@google.com" ],
     "expiry_milestone": 97

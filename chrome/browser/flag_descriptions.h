@@ -360,9 +360,6 @@ extern const char kCompositingBasedThrottlingDescription[];
 extern const char kDarkLightTestName[];
 extern const char kDarkLightTestDescription[];
 
-extern const char kDetectTargetEmbeddingLookalikesName[];
-extern const char kDetectTargetEmbeddingLookalikesDescription[];
-
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 

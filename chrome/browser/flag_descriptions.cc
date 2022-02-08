@@ -690,12 +690,6 @@ const char kDebugShortcutsName[] = "Debugging keyboard shortcuts";
 const char kDebugShortcutsDescription[] =
     "Enables additional keyboard shortcuts that are useful for debugging Ash.";
 
-const char kDetectTargetEmbeddingLookalikesName[] =
-    "Detect target embedding domains as lookalikes.";
-const char kDetectTargetEmbeddingLookalikesDescription[] =
-    "Shows a lookalike interstitial when navigating to target embedding domains"
-    "(e.g. google.com.example.com).";
-
 const char kDisableProcessReuse[] = "Disable subframe process reuse";
 const char kDisableProcessReuseDescription[] =
     "Prevents out-of-process iframes from reusing compatible processes from "
