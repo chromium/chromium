@@ -104,8 +104,15 @@ size_t CalculateRequiredCountsBytes(size_t bucket_count) {
 
 }  // namespace
 
-const Feature kPersistentHistogramsFeature{"PersistentHistograms",
-                                           FEATURE_ENABLED_BY_DEFAULT};
+const Feature kPersistentHistogramsFeature{
+    "PersistentHistograms",
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1295119): Enable once writable mmap() is supported.
+    FEATURE_DISABLED_BY_DEFAULT
+#else
+    FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_FUCHSIA)
+};
 
 PersistentSparseHistogramDataManager::PersistentSparseHistogramDataManager(
     PersistentMemoryAllocator* allocator)
