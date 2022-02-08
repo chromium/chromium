@@ -664,6 +664,7 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
 #else
   scoped_refptr<base::RefCountedMemory> bytes =
       GetContentClient()->GetDataResourceBytes(kCcompressedProtocolJSON);
+  CHECK(bytes) << "Could not load protocol";
   std::string json_protocol(reinterpret_cast<const char*>(bytes->front()),
                             bytes->size());
 
