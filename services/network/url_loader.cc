@@ -428,7 +428,7 @@ mojom::URLLoaderClient* URLLoader::MaybeSyncURLLoaderClient::Get() {
 }
 
 URLLoader::URLLoader(
-    const URLLoaderContext& context,
+    URLLoaderContext& context,
     DeleteCallback delete_callback,
     mojo::PendingReceiver<mojom::URLLoader> url_loader_receiver,
     int32_t options,
@@ -468,6 +468,7 @@ URLLoader::URLLoader(
       peer_closed_handle_watcher_(FROM_HERE,
                                   mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                   base::SequencedTaskRunnerHandle::Get()),
+      per_factory_corb_state_(context.GetMutableCorbState()),
       devtools_request_id_(request.devtools_request_id),
       request_mode_(request.mode),
       request_credentials_mode_(request.credentials_mode),
@@ -1500,7 +1501,7 @@ void URLLoader::ContinueOnResponseStarted() {
       url_request_->url(), url_request_->initiator(), request_mode_,
       request_destination_, *response_);
   if (factory_params_.is_corb_enabled) {
-    corb_analyzer_ = corb::ResponseAnalyzer::Create();
+    corb_analyzer_ = corb::ResponseAnalyzer::Create(per_factory_corb_state_);
     auto decision =
         corb_analyzer_->Init(url_request_->url(), url_request_->initiator(),
                              request_mode_, *response_);

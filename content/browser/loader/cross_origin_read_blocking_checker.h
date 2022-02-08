@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
@@ -16,9 +17,6 @@ class IOBufferWithSize;
 
 namespace network {
 struct ResourceRequest;
-namespace corb {
-class ResponseAnalyzer;
-}  // namespace corb
 }  // namespace network
 
 namespace storage {
@@ -41,6 +39,7 @@ class CrossOriginReadBlockingChecker {
       const network::ResourceRequest& request,
       const network::mojom::URLResponseHead& response,
       const storage::BlobDataHandle& blob_data_handle,
+      network::corb::PerFactoryState& corb_state,
       base::OnceCallback<void(Result)> callback);
 
   CrossOriginReadBlockingChecker(const CrossOriginReadBlockingChecker&) =

@@ -9,6 +9,8 @@
 
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
+#include "services/network/public/cpp/corb/orb_impl.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
@@ -35,10 +37,11 @@ void RemoveAllHttpResponseHeaders(
 ResponseAnalyzer::~ResponseAnalyzer() = default;
 
 // static
-std::unique_ptr<ResponseAnalyzer> ResponseAnalyzer::Create() {
-  // TODO(https://crbug.com/1178928): Instead of always returning a CORB-based
-  // implementation, consult base::FeatureList and return an ORB-based
-  // implementation if needed.
+std::unique_ptr<ResponseAnalyzer> ResponseAnalyzer::Create(
+    PerFactoryState& state) {
+  if (base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV01))
+    return std::make_unique<OpaqueResponseBlockingAnalyzer>(state);
+
   return std::make_unique<CrossOriginReadBlocking::CorbResponseAnalyzer>();
 }
 

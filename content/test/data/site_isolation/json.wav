@@ -1,0 +1,5 @@
+{"non-empty JSON object" : "..."}
+
+We expect CORB (but not ORB) to block this JSON file (even though it is
+mislabeled as audio/x-wav).  For some prior discussion see
+https://chromium-review.googlesource.com/c/chromium/src/+/3203018/comment/ce77f016_94a92aa8/

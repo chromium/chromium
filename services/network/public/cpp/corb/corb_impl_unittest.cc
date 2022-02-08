@@ -22,6 +22,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
+#include "services/network/public/cpp/corb/orb_impl.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1020,7 +1021,7 @@ const TestScenario kScenarios[] = {
         "http://c.com/",               // initiator_origin
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",  // response_headers
-        "audio/x-wav",                      // response_content_type
+        "application/octet-stream",         // response_content_type
         MimeType::kOthers,                  // canonical_mime_type
         MimeTypeBucket::kPublic,            // mime_type_bucket
         {")]", "}'\n[true, true, false, \"user@chromium.org\"]"},  // packets
@@ -1891,9 +1892,10 @@ class ResponseAnalyzerTest : public testing::Test,
   // Take and run ResponseAnalyzer on the current scenario. Allow the analyzer
   // to sniff the response body if needed and confirm it correctly decides to
   // block or allow.
-  void RunAnalyzerOnScenario(const mojom::URLResponseHead& response,
-                             std::unique_ptr<ResponseAnalyzer> analyzer) {
-    TestScenario scenario = GetParam();
+  void RunAnalyzerOnScenario(const TestScenario& scenario,
+                             const mojom::URLResponseHead& response,
+                             std::unique_ptr<ResponseAnalyzer> analyzer,
+                             bool verify_when_decision_is_made = true) {
     // Initialize |request| from the parameters.
     std::unique_ptr<net::URLRequest> request = context_->CreateRequest(
         GURL(scenario.target_url), net::DEFAULT_PRIORITY, &delegate_,
@@ -1927,17 +1929,19 @@ class ResponseAnalyzerTest : public testing::Test,
 
     // Verify that the ResponseAnalyzer asks for sniffing if this is what the
     // testcase expects.
-    bool expected_to_sniff =
-        scenario.verdict_packet != kVerdictPacketForHeadersBasedVerdict;
-    if (expected_to_sniff) {
-      EXPECT_EQ(decision, ResponseAnalyzer::Decision::kSniffMore);
-    } else {
-      // If we don't expect to sniff then ResponseAnalyzer should have already
-      // made a blockng decision based on the headers.
-      if (scenario.verdict == Verdict::kBlock) {
-        EXPECT_EQ(decision, ResponseAnalyzer::Decision::kBlock);
+    if (verify_when_decision_is_made) {
+      bool expected_to_sniff =
+          scenario.verdict_packet != kVerdictPacketForHeadersBasedVerdict;
+      if (expected_to_sniff) {
+        EXPECT_EQ(decision, ResponseAnalyzer::Decision::kSniffMore);
       } else {
-        EXPECT_EQ(decision, ResponseAnalyzer::Decision::kAllow);
+        // If we don't expect to sniff then ResponseAnalyzer should have already
+        // made a blockng decision based on the headers.
+        if (scenario.verdict == Verdict::kBlock) {
+          EXPECT_EQ(decision, ResponseAnalyzer::Decision::kBlock);
+        } else {
+          EXPECT_EQ(decision, ResponseAnalyzer::Decision::kAllow);
+        }
       }
     }
 
@@ -1990,13 +1994,15 @@ class ResponseAnalyzerTest : public testing::Test,
     } else {
       EXPECT_EQ(decision, ResponseAnalyzer::Decision::kAllow);
 
-      // In this case either the |analyzer| has decided to allow the response,
-      // or run out of data and so the response will be allowed by default.
-      if (scenario.verdict == Verdict::kAllow) {
-        EXPECT_FALSE(run_out_of_data_to_sniff);
-      } else {
-        EXPECT_EQ(Verdict::kAllowBecauseOutOfData, scenario.verdict);
-        EXPECT_TRUE(run_out_of_data_to_sniff);
+      if (verify_when_decision_is_made) {
+        // In this case either the |analyzer| has decided to allow the response,
+        // or run out of data and so the response will be allowed by default.
+        if (scenario.verdict == Verdict::kAllow) {
+          EXPECT_FALSE(run_out_of_data_to_sniff);
+        } else {
+          EXPECT_EQ(Verdict::kAllowBecauseOutOfData, scenario.verdict);
+          EXPECT_TRUE(run_out_of_data_to_sniff);
+        }
       }
     }
   }
@@ -2027,7 +2033,8 @@ TEST_P(ResponseAnalyzerTest, ResponseBlocking) {
                      scenario.initiator_origin);
 
   // Run the analyzer and confirm it allows/blocks correctly.
-  RunAnalyzerOnScenario(*response, std::make_unique<CorbResponseAnalyzer>());
+  RunAnalyzerOnScenario(scenario, *response,
+                        std::make_unique<CorbResponseAnalyzer>());
 
   // Verify that histograms are correctly incremented.
   base::HistogramTester::CountsMap expected_counts;
@@ -2113,7 +2120,8 @@ TEST_P(ResponseAnalyzerTest, CORBProtectionLogging) {
   const bool expect_nosniff = CorbResponseAnalyzer::HasNoSniff(*response);
 
   // Run the analyzer and confirm it allows/blocks correctly.
-  RunAnalyzerOnScenario(*response, std::make_unique<CorbResponseAnalyzer>());
+  RunAnalyzerOnScenario(scenario, *response,
+                        std::make_unique<CorbResponseAnalyzer>());
 
   base::HistogramTester::CountsMap expected_counts;
   expected_counts["SiteIsolation.CORBProtection.SensitiveResource"] = 1;
@@ -2222,6 +2230,45 @@ TEST_P(ResponseAnalyzerTest, CORBProtectionLogging) {
                     "SiteIsolation.CORBProtection.SensitiveResource"),
                 testing::ElementsAre(base::Bucket(false, 1)));
   }
+}
+
+TEST_P(ResponseAnalyzerTest, OpaqueResponseBlocking) {
+  TestScenario scenario = GetParam();
+  SCOPED_TRACE(testing::Message()
+               << "\nScenario at " << __FILE__ << ":" << scenario.source_line);
+
+  // Unlike CORB, ORB blocks all 206 responses, unless there was an earlier
+  // request to the same URL and that earlier request was classified (based on
+  // the MIME type or sniffing) as an audio-or-video response.
+  base::StringPiece description = scenario.description;
+  if (description == "Allowed: text/plain 206 media" ||
+      description == "Allowed: Javascript 206") {
+    scenario.verdict = Verdict::kBlock;
+    scenario.verdict_packet = kVerdictPacketForHeadersBasedVerdict;
+  }
+
+  // Initialize |response| from the parameters and record if it looks sensitive
+  // or supports range requests. These values are saved because the analyzer
+  // will clear the response headers in the event it decides to block.
+  auto response =
+      CreateResponse(scenario.response_content_type, scenario.response_headers,
+                     scenario.initiator_origin);
+
+  // ORB may make the final decision at a different time than CORB.  This
+  // makes no difference from functional/observable behavior perspective
+  // and skipping this verification makes it easier to share testcases
+  // across ORB and CORB.
+  //
+  // TODO(lukasza): Eventually `verify_when_decision_is_made` for ORB (once
+  // CORB is removed at the latest, but possibly earlier than that).
+  constexpr bool kVerifyWhenDecisionIsMade = false;
+
+  PerFactoryState per_factory_state;
+  auto analyzer =
+      std::make_unique<OpaqueResponseBlockingAnalyzer>(per_factory_state);
+
+  RunAnalyzerOnScenario(scenario, *response, std::move(analyzer),
+                        kVerifyWhenDecisionIsMade);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -148,7 +148,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // |dev_tools_observer|, |cookie_access_observer| or
   // |url_loader_network_observer| are not provided.
   URLLoader(
-      const URLLoaderContext& context,
+      URLLoaderContext& context,
       DeleteCallback delete_callback,
       mojo::PendingReceiver<mojom::URLLoader> url_loader_receiver,
       int32_t options,
@@ -497,10 +497,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojom::URLResponseHeadPtr response_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 
-  // Sniffing state.
+  // Sniffing state and CORB state.
   std::unique_ptr<corb::ResponseAnalyzer> corb_analyzer_;
   bool is_more_corb_sniffing_needed_ = false;
   bool is_more_mime_sniffing_needed_ = false;
+  corb::PerFactoryState& per_factory_corb_state_;
 
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       resource_scheduler_request_handle_;

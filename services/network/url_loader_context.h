@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 
 namespace net {
 class URLRequestContext;
@@ -54,6 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   // TODO(https://crbug.com/1276591): Remove GetFactoryId once
   // kOptimizeUpdateLoadInfo is enabled.
   virtual uintptr_t GetFactoryId() const = 0;
+  virtual corb::PerFactoryState& GetMutableCorbState() = 0;
 
  protected:
   // `protected` destructor = can only destruct via concrete implementations

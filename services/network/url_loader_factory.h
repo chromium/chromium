@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -82,6 +83,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
   uintptr_t GetFactoryId() const override;
+  corb::PerFactoryState& GetMutableCorbState() override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.
@@ -121,6 +123,16 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
 
   // |cors_url_loader_factory_| owns this.
   raw_ptr<cors::CorsURLLoaderFactory> cors_url_loader_factory_;
+
+  // To allow subsequent range requests, ORB stores URLs of non-range-request
+  // responses that sniffed as an audio or video resource.  The lifetime of that
+  // storage should cover the lifetime of media elements that are responsible
+  // for the initial request and subsequent range requests.  The lifetime of
+  // `corb_per_factory_state_` is slightly bigger (URLLoaderFactory is typically
+  // associated with a single HTML document and covers all media documents
+  // within) but this approach seems easiest to implement.
+  // TODO(https://crbug.com/1178928): Add UMA tracking the size of CORB state.
+  corb::PerFactoryState corb_state_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>

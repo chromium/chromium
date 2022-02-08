@@ -70,4 +70,8 @@ uintptr_t URLLoaderContextForTests::GetFactoryId() const {
   return 0;
 }
 
+corb::PerFactoryState& URLLoaderContextForTests::GetMutableCorbState() {
+  return corb_state_;
+}
+
 }  // namespace network

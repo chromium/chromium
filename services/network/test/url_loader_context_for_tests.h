@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_TEST_URL_LOADER_CONTEXT_FOR_TESTS_H_
 #define SERVICES_NETWORK_TEST_URL_LOADER_CONTEXT_FOR_TESTS_H_
 
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
@@ -55,10 +56,12 @@ class URLLoaderContextForTests : public URLLoaderContext {
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
   uintptr_t GetFactoryId() const override;
+  corb::PerFactoryState& GetMutableCorbState() override;
 
  private:
   mojom::URLLoaderFactoryParams factory_params_;
   cors::OriginAccessList origin_access_list_;
+  corb::PerFactoryState corb_state_;
 
   mojom::NetworkContextClient* network_context_client_ = nullptr;
   mojom::OriginPolicyManager* origin_policy_manager_ = nullptr;

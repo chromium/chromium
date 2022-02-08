@@ -170,6 +170,10 @@ uintptr_t URLLoaderFactory::GetFactoryId() const {
   return reinterpret_cast<uintptr_t>(reinterpret_cast<const void*>(this));
 }
 
+corb::PerFactoryState& URLLoaderFactory::GetMutableCorbState() {
+  return corb_state_;
+}
+
 void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     int32_t request_id,
