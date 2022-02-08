@@ -596,8 +596,8 @@
   'CROS_ATLAS_DEV': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '99.0.4844.14',
-      'cros_img': 'atlas-release/R99-14469.8.0',
+      'cros_chrome_version': '100.0.4863.0',
+      'cros_img': 'atlas-release/R100-14496.0.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_DEV',
@@ -614,8 +614,8 @@
   'CROS_ATLAS_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '97.0.4692.102',
-      'cros_img': 'atlas-release/R97-14324.80.0',
+      'cros_chrome_version': '98.0.4758.91',
+      'cros_img': 'atlas-release/R98-14388.52.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_STABLE',
@@ -632,8 +632,8 @@
   'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '99.0.4844.14',
-      'cros_img': 'eve-release/R99-14469.8.0',
+      'cros_chrome_version': '100.0.4863.0',
+      'cros_img': 'eve-release/R100-14496.0.0',
     },
     'enabled': True,
     'identifier': 'EVE_DEV',
@@ -650,8 +650,8 @@
   'CROS_EVE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '97.0.4692.102',
-      'cros_img': 'eve-release/R97-14324.80.0',
+      'cros_chrome_version': '98.0.4758.91',
+      'cros_img': 'eve-release/R98-14388.52.0',
     },
     'enabled': True,
     'identifier': 'EVE_STABLE',
@@ -686,8 +686,8 @@
   'CROS_OCTOPUS_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '99.0.4844.14',
-      'cros_img': 'octopus-release/R99-14469.8.0',
+      'cros_chrome_version': '100.0.4863.0',
+      'cros_img': 'octopus-release/R100-14496.0.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_DEV',
@@ -704,8 +704,8 @@
   'CROS_OCTOPUS_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '97.0.4692.102',
-      'cros_img': 'octopus-release/R97-14324.80.0',
+      'cros_chrome_version': '98.0.4758.91',
+      'cros_img': 'octopus-release/R98-14388.52.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_STABLE',
