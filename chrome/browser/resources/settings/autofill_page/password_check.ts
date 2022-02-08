@@ -86,6 +86,11 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
         computed: 'computeTitle_(status, canUsePasswordCheckup_)',
       },
 
+      mutedLeakedCredentialsTitle_: {
+        type: String,
+        computed: 'computeMutedLeakedCredentialsTitle_(mutedPasswords)',
+      },
+
       isSignedOut_: {
         type: Boolean,
         computed: 'computeIsSignedOut_(syncStatus_, storedAccounts_)',
@@ -107,6 +112,16 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
             'computeIsButtonHidden_(status, isSignedOut_, isInitialStatus)',
       },
 
+      isMutePasswordButtonEnabled_: {
+        type: Boolean,
+        computed: 'computeIsMutePasswordButtonEnabled_(activePassword_)',
+      },
+
+      isUnmutePasswordButtonEnabled_: {
+        type: Boolean,
+        computed: 'computeIsUnmutePasswordButtonEnabled_(activePassword_)',
+      },
+
       syncPrefs_: Object,
       syncStatus_: Object,
       showPasswordEditDialog_: Boolean,
@@ -121,7 +136,12 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
       showCompromisedCredentialsBody_: {
         type: Boolean,
         computed: 'computeShowCompromisedCredentialsBody_(' +
-            'isSignedOut_, leakedPasswords)',
+            'isSignedOut_, leakedPasswords, mutedPasswords)',
+      },
+
+      showMutedPasswordsSection_: {
+        type: Boolean,
+        computed: 'computeShowMutedLeakedCredentials_(mutedPasswords)'
       },
 
       showNoCompromisedPasswordsLabel_: {
@@ -159,10 +179,13 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
 
   private storedAccounts_: Array<StoredAccount>;
   private title_: string;
+  private mutedPasswordsTitle_: string;
   private isSignedOut_: boolean;
   private isSyncingPasswords_: boolean;
   private canUsePasswordCheckup_: boolean;
   private isButtonHidden_: boolean;
+  private isMutePasswordButtonEnabled_: boolean;
+  private isUnmutePasswordButtonEnabled_: boolean;
   private syncPrefs_: SyncPrefs;
   private syncStatus_: SyncStatus;
   private showPasswordEditDialog_: boolean;
@@ -170,6 +193,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   private showPasswordEditDisclaimer_: boolean;
   private activePassword_: chrome.passwordsPrivate.InsecureCredential|null;
   private showCompromisedCredentialsBody_: boolean;
+  private showMutedPasswordsSection_: boolean;
   private showNoCompromisedPasswordsLabel_: boolean;
   private showHideMenuTitle_: string;
   private iconHaloClass_: string;
@@ -336,6 +360,13 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   /**
+   * @return true if there are any compromised credentials that are dismissed.
+   */
+  private computeShowMutedLeakedCredentials_(): boolean {
+    return this.isMutedPasswordsEnabled && !!this.mutedPasswords.length;
+  }
+
+  /**
    * @return true if there are any weak credentials.
    */
   private hasWeakCredentials_(): boolean {
@@ -403,6 +434,16 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   private onMenuRemovePasswordClick_() {
     this.$.moreActionsMenu.close();
     this.showPasswordRemoveDialog_ = true;
+  }
+
+  private onMenuMuteCompromisedPasswordClick_() {
+    this.$.moreActionsMenu.close();
+    this.passwordManager!.muteInsecureCredential(
+        assert(this.activeListItem_!.item));
+  }
+
+  private onMenuUnmuteMutedCompromisedPasswordClick_() {
+    // TODO(https://crbug.com/1287170): implement this after API is implemented.
   }
 
   private onPasswordRemoveDialogClosed_() {
@@ -506,10 +547,44 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   /**
+   * @return the muted / dismissed passwords section title which includes the
+   * number of muted passwords.
+   */
+  private computeMutedLeakedCredentialsTitle_(): string {
+    return this.i18n('mutedPasswords', this.mutedPasswords.length);
+  }
+
+  /**
    * @return true iff a check is running right according to the given |status|.
    */
   private isCheckInProgress_(): boolean {
     return this.status.state === CheckState.RUNNING;
+  }
+
+  /**
+   * @return true if a password is compromised. A weak password may not be
+   * compromised.
+   */
+  private isPasswordCompromised_(): boolean {
+    return !!this.activePassword_ && !!this.activePassword_!.compromisedInfo;
+  }
+
+  /**
+   * @return true if muting is enabled
+   * and the password is compromised and is dismissable/mutable.
+   */
+  private computeIsMutePasswordButtonEnabled_(): boolean {
+    return this.isMutedPasswordsEnabled && this.isPasswordCompromised_() &&
+        !this.activePassword_!.compromisedInfo!.isMuted;
+  }
+
+  /**
+   * @return true if unmuting is enabled
+   * and the password is compromised and is dismissed/muted.
+   */
+  private computeIsUnmutePasswordButtonEnabled_(): boolean {
+    return this.isMutedPasswordsEnabled && this.isPasswordCompromised_() &&
+        !!this.activePassword_!.compromisedInfo!.isMuted;
   }
 
   /**
@@ -712,8 +787,9 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   private computeShowCompromisedCredentialsBody_(): boolean {
-    // Always shows compromised credetnials section if user is signed out.
-    return this.isSignedOut_ || this.hasLeakedCredentials_();
+    // Always shows compromised credentials section if user is signed out.
+    return this.isSignedOut_ || this.hasLeakedCredentials_() ||
+        this.computeShowMutedLeakedCredentials_();
   }
 
   private computeShowNoCompromisedPasswordsLabel_(): boolean {

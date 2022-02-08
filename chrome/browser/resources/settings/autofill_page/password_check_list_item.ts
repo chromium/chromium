@@ -72,6 +72,14 @@ export class PasswordCheckListItemElement extends PolymerElement {
         type: String,
         computed: 'computeIconClass_(item.compromisedInfo)',
       },
+
+      mutingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'showDismissCompromisedPasswordOption');
+        }
+      }
     };
   }
 
@@ -85,6 +93,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
   clickedChangePassword: boolean;
   private buttonClass_: string;
   private iconClass_: string;
+  private mutingEnabled_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -93,6 +102,16 @@ export class PasswordCheckListItemElement extends PolymerElement {
    */
   private isCompromisedItem_(): boolean {
     return !!this.item.compromisedInfo;
+  }
+
+  /**
+   * @return Whether |item| is compromised credential but not muted. When muting
+   * is not enabled all compromised items are non muted.
+   */
+  private isNonMutedCompromisedItem_(): boolean {
+    return this.isCompromisedItem_() &&
+        (!this.mutingEnabled_ ||
+         (this.mutingEnabled_ && !this.item.compromisedInfo!.isMuted));
   }
 
   private getCompromiseType_(): string {
@@ -139,7 +158,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
   }
 
   private computeButtonClass_(): string {
-    if (this.item.compromisedInfo) {
+    if (this.isNonMutedCompromisedItem_()) {
       // Strong CTA.
       return 'action-button';
     }
@@ -148,7 +167,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
   }
 
   private computeIconClass_(): string {
-    if (this.item.compromisedInfo) {
+    if (this.isNonMutedCompromisedItem_()) {
       // Strong CTA, white icon.
       return '';
     }

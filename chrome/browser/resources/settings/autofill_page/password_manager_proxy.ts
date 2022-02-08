@@ -244,6 +244,12 @@ export interface PasswordManagerProxy {
       insecureCredential: chrome.passwordsPrivate.InsecureCredential): void;
 
   /**
+   * Dismisses / mutes the |insecureCredential| in the passwords store.
+   */
+  muteInsecureCredential(insecureCredential:
+                             chrome.passwordsPrivate.InsecureCredential): void;
+
+  /**
    * Add an observer to the compromised passwords change.
    */
   addCompromisedCredentialsListener(listener: CredentialsChangedListener): void;
@@ -540,6 +546,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   removeInsecureCredential(insecureCredential:
                                chrome.passwordsPrivate.InsecureCredential) {
     chrome.passwordsPrivate.removeInsecureCredential(insecureCredential);
+  }
+
+  muteInsecureCredential(insecureCredential:
+                             chrome.passwordsPrivate.InsecureCredential) {
+    chrome.passwordsPrivate.muteInsecureCredential(insecureCredential);
   }
 
   addCompromisedCredentialsListener(listener: CredentialsChangedListener) {

@@ -279,15 +279,15 @@ export function makeInsecureCredential(
  */
 export function makeCompromisedCredential(
     url: string, username: string, type: chrome.passwordsPrivate.CompromiseType,
-    id?: number, elapsedMinSinceCompromise?: number):
-    chrome.passwordsPrivate.InsecureCredential {
+    id?: number, elapsedMinSinceCompromise?: number,
+    isMuted?: boolean): chrome.passwordsPrivate.InsecureCredential {
   const credential = makeInsecureCredential(url, username, id);
   elapsedMinSinceCompromise = elapsedMinSinceCompromise || 0;
   credential.compromisedInfo = {
     compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
     elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
     compromiseType: type,
-    isMuted: false,
+    isMuted: isMuted ?? false,
   };
   return credential;
 }

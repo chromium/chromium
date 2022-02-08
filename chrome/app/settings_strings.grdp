@@ -454,6 +454,9 @@
   <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_ADVICE" desc="Description of what user should do after compromised passwords are found.">
     Change these passwords immediately to keep your account safe:
   </message>
+  <message name="IDS_SETTINGS_MUTED_PASSWORDS" desc="Text for a label showing how many passwords were discarded / muted from compromised strings warnings.">
+    Dismissed warnings (<ph name="MUTED_PASSWORDS">$1<ex>2</ex></ph>)
+  </message>
   <message name="IDS_SETTINGS_WEAK_PASSWORDS" desc="Title for list of weak credentials after passwords bulk check.">
     Weak passwords
   </message>
@@ -483,6 +486,12 @@
   </message>
   <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_REMOVE" desc="Action menu item for a row which displays a compromised password. It will open a confirmation dialog for deleting the password.">
     Remove password
+  </message>
+  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_MUTE" desc="Action menu item for a row which displays a compromised password. It will mute/dismiss the compromised password warning.">
+    Dismiss warning
+  </message>
+  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_UNMUTE" desc="Action menu item for a row which displays a muted/dismissed compromised password. It will unmute/restore the compromised password and reenable the warning.">
+    Restore warning
   </message>
   <message name="IDS_SETTINGS_REMOVE_COMPROMISED_PASSWORD_CONFIRMATION_TITLE" desc="Compromised password remove dialog conformation title.">
     Remove password?
