@@ -92,10 +92,7 @@ class CONTENT_EXPORT AggregatableReport {
     // `origin`'s public keys. For the kTwoParty processing type, the plaintext
     // of the encrypted payload is a serialized CBOR map structured as follows:
     // {
-    //   "version": "<API version>",
     //   "operation": "<chosen operation as string>",
-    //   "privacy_budget_key": "<field for server to do privacy budgeting>",
-    //   "scheduled_report_time": <timestamp in msec>,
     //   "reporting_origin": "https://reporter.example",
     //   "dpf_key": <binary serialization of the DPF key>,
     // }
