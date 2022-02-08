@@ -190,7 +190,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     if (this.castButtonDisabled(this.accessCode, this.canCast)) {
       return;
     }
-    if (this.$.codeInput.getFocusedIndex() === -1) {
+    if (!this.$.codeInput.focused) {
       return;
     }
     if (this.state !== PageState.CODE_INPUT) {

@@ -1,15 +1,129 @@
-<style>
-  cr-input {
-    display: inline-block;
-    font-size: 20px;
-    margin-inline-end: 4px;
-    margin-inline-start: 4px;
+<style include="cr-shared-style">
+  :host {
+    --c2c-code-input-background-color: var(--google-grey-100);
+    --c2c-code-input-color: var(--cr-primary-text-color);
+    --c2c-code-input-focus-color: var(--google-blue-600);
+    --c2c-code-input-selected-color: var(--google-blue-100);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --c2c-code-input-background-color: rgba(0, 0, 0, .3);
+      --c2c-code-input-focus-color: var(--google-blue-300);
+    }
+  }
+
+  @keyframes blink {
+    from {
+      background-color: var(--google-blue-600);
+    }
+    to {
+      background-color: var(--google-blue-600);
+    }
+    50% {
+      background-color: transparent;
+    }
+  }
+
+  #container {
+    height: 48px;
+    position: relative;
+  }
+
+  .box {
+    background-color: var(--c2c-code-input-background-color);
+    border-bottom: solid transparent 1px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 24px;
+    height: 40px;
+    line-height: 40px;
+    margin: 4px;
+    position: relative;
     text-align: center;
+    transition: border-bottom-color 120ms ease-out, border-bottom-width 0s
+        linear 180ms;
+    vertical-align: middle;
     width: 40px;
   }
+
+  .boxes {
+    display: flex;
+    margin-inline-start: 14px;
+    position: absolute;
+  }
+
+  .cursor::after {
+    animation: 1s blink step-end infinite;
+    background-color: var(--c2c-code-input-focus-color);
+    content: '';
+    height: 28px;
+    position: absolute;
+    right: -5px;
+    top: 7px;
+    width: 2px;
+  }
+
+  .cursor-start::before {
+    animation: 1s blink step-end infinite;
+    background-color: var(--c2c-code-input-focus-color);
+    content: '';
+    height: 28px;
+    left: -5px;
+    position: absolute;
+    top: 7px;
+    width: 2px;
+  }
+
+  .disabled {
+    opacity: var(--cr-disabled-opacity);
+  }
+
+  .focused {
+    border-bottom: solid var(--c2c-code-input-focus-color) 2px;
+    transition: border-bottom-color 120ms ease-in, border-bottom-width 180ms
+        ease-out;
+  }
+
+  .hidden-input {
+    font-family: monospace;
+    font-size: 20px;
+    letter-spacing: 36px;
+    opacity: 0;
+    padding: 11px;
+    position: absolute;
+    z-index: 100;
+  }
+
+  .selected {
+    background-color: var(--google-blue-100);
+  }
+
+  p {
+    color: var(--c2c-code-input-color);
+    margin: auto;
+  }
 </style>
-<template is="dom-repeat" items="[[inputs]]" as="inputIndex">
-  <cr-input minlength="1" maxlength="1" id="input-[[index]]"
-            disabled="[[disabled]]">
-  </cr-input>
-</template>
+<div id='container'>
+  <input
+      autocomplete="off"
+      class="hidden-input"
+      disabled="[[disabled]]"
+      id="inputElement"
+      on-blur="hideFocus"
+      on-click="showSelection"
+      on-focus="showFocus"
+      on-input="selectAndRender"
+      on-keyup="showSelection"
+      on-select="showSelection"
+      spellcheck="false"
+      type="text"
+  >
+  <div class="boxes" aria-hidden="true">
+    <template is="dom-repeat" items="[[charDisplayBoxes]]" as="charBox">
+      <div class="box" id="box-[[index]]"">
+        <p id="char-[[index]]"></p>
+      </div>
+    </template>
+  </div>
+</div>

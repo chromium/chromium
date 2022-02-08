@@ -12,12 +12,13 @@
   }
 
   .center-content {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     width: 100%;
   }
 
   .space {
-    height: 32px;
+    height: 28px;
   }
 
   .text-button:not(:focus) {
@@ -27,6 +28,10 @@
 
   .text-button:hover {
     background-color: transparent;
+  }
+
+  #codeInput {
+    margin-bottom: 6px;
   }
 
   cr-dialog::part(dialog) {
