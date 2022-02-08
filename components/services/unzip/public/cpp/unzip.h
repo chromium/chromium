@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/ced/src/util/encodings/encodings.h"
 
 namespace base {
 class FilePath;
@@ -31,6 +32,11 @@ void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
                      const base::FilePath& output_dir,
                      UnzipFilterCallback filter_callback,
                      UnzipCallback result_callback);
+
+using DetectEncodingCallback = base::OnceCallback<void(Encoding)>;
+void DetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                    const base::FilePath& zip_file,
+                    DetectEncodingCallback result_callback);
 
 }  // namespace unzip
 

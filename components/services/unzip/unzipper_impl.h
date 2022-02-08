@@ -40,6 +40,9 @@ class UnzipperImpl : public mojom::Unzipper {
       mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
       UnzipWithFilterCallback callback) override;
 
+  void DetectEncoding(base::File zip_file,
+                      DetectEncodingCallback callback) override;
+
   mojo::Receiver<mojom::Unzipper> receiver_{this};
 };
 

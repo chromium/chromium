@@ -4,33 +4,33 @@
 
 #include "components/services/unzip/public/cpp/unzip.h"
 
+#include <utility>
+
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/services/unzip/unzipper_impl.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unzip {
-
 namespace {
 
-// Note: this method has to return void for the ASSERTION_* to compile.
-void GetArchivePath(const base::FilePath::StringPieceType& archive_name,
-                    base::FilePath* path) {
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, path));
-  *path = path->Append(FILE_PATH_LITERAL("components"))
-              .Append(FILE_PATH_LITERAL("test"))
-              .Append(FILE_PATH_LITERAL("data"))
-              .Append(FILE_PATH_LITERAL("unzip_service"))
-              .Append(archive_name);
-  ASSERT_TRUE(base::PathExists(*path));
+base::FilePath GetArchivePath(
+    const base::FilePath::StringPieceType archive_name) {
+  base::FilePath path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  return path.Append(FILE_PATH_LITERAL("components"))
+      .Append(FILE_PATH_LITERAL("test"))
+      .Append(FILE_PATH_LITERAL("data"))
+      .Append(FILE_PATH_LITERAL("unzip_service"))
+      .Append(archive_name);
 }
 
 // Sets the number of files under |dir| in |file_count| and if
@@ -63,29 +63,22 @@ class UnzipTest : public testing::Test {
   ~UnzipTest() override = default;
 
   // Unzips |zip_file| into |output_dir| and returns true if the unzip was
-  // successful.
+  // successful. Only extract files for which |filter_callback| returns true, if
+  // it is provided.
   bool DoUnzip(const base::FilePath& zip_file,
-               const base::FilePath& output_dir) {
-    return DoUnzipWithFilter(zip_file, output_dir, UnzipFilterCallback());
-  }
-
-  // Same as DoUnzip() but only extract files for which |filter_callback|
-  // returns true.
-  bool DoUnzipWithFilter(const base::FilePath& zip_file,
-                         const base::FilePath& output_dir,
-                         UnzipFilterCallback filter_callback) {
+               const base::FilePath& output_dir,
+               UnzipFilterCallback filter_callback = {}) {
     mojo::PendingRemote<mojom::Unzipper> unzipper;
     receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
     bool result = false;
 
-    UnzipCallback result_callback = base::BindOnce(
-        [](base::OnceClosure quit_closure, bool* out_result, bool result) {
-          *out_result = result;
-          std::move(quit_closure).Run();
-        },
-        run_loop.QuitClosure(), &result);
+    UnzipCallback result_callback =
+        base::BindLambdaForTesting([&](const bool success) {
+          result = success;
+          run_loop.QuitClosure().Run();
+        });
 
     if (filter_callback) {
       UnzipWithFilter(std::move(unzipper), zip_file, output_dir,
@@ -94,6 +87,24 @@ class UnzipTest : public testing::Test {
       Unzip(std::move(unzipper), zip_file, output_dir,
             std::move(result_callback));
     }
+    run_loop.Run();
+    return result;
+  }
+
+  Encoding DoDetectEncoding(const base::FilePath& zip_file) {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    Encoding result = UNKNOWN_ENCODING;
+
+    DetectEncodingCallback result_callback =
+        base::BindLambdaForTesting([&](const Encoding encoding) {
+          result = encoding;
+          run_loop.QuitClosure().Run();
+        });
+
+    DetectEncoding(std::move(unzipper), zip_file, std::move(result_callback));
     run_loop.Run();
     return result;
   }
@@ -114,9 +125,8 @@ class UnzipTest : public testing::Test {
 };
 
 TEST_F(UnzipTest, UnzipBadArchive) {
-  base::FilePath bad_archive;
-  GetArchivePath(FILE_PATH_LITERAL("bad_archive.zip"), &bad_archive);
-  EXPECT_FALSE(DoUnzip(bad_archive, unzip_dir_));
+  EXPECT_FALSE(DoUnzip(GetArchivePath(FILE_PATH_LITERAL("bad_archive.zip")),
+                       unzip_dir_));
 
   // No files should have been extracted.
   int64_t file_count = -1;
@@ -125,9 +135,8 @@ TEST_F(UnzipTest, UnzipBadArchive) {
 }
 
 TEST_F(UnzipTest, UnzipGoodArchive) {
-  base::FilePath archive;
-  GetArchivePath(FILE_PATH_LITERAL("good_archive.zip"), &archive);
-  EXPECT_TRUE(DoUnzip(archive, unzip_dir_));
+  EXPECT_TRUE(DoUnzip(GetArchivePath(FILE_PATH_LITERAL("good_archive.zip")),
+                      unzip_dir_));
 
   // Sanity check that the right number of files have been extracted and that
   // they are not empty.
@@ -139,13 +148,11 @@ TEST_F(UnzipTest, UnzipGoodArchive) {
 }
 
 TEST_F(UnzipTest, UnzipWithFilter) {
-  base::FilePath archive;
-  GetArchivePath(FILE_PATH_LITERAL("good_archive.zip"), &archive);
-  EXPECT_TRUE(DoUnzipWithFilter(
-      archive, unzip_dir_,
-      base::BindRepeating([](const base::FilePath& path) -> bool {
-        return path.MatchesExtension(FILE_PATH_LITERAL(".txt"));
-      })));
+  EXPECT_TRUE(DoUnzip(GetArchivePath(FILE_PATH_LITERAL("good_archive.zip")),
+                      unzip_dir_,
+                      base::BindRepeating([](const base::FilePath& path) {
+                        return path.MatchesExtension(FILE_PATH_LITERAL(".txt"));
+                      })));
 
   // It should only have kept the 2 text files from the archive.
   int64_t file_count = -1;
@@ -153,6 +160,52 @@ TEST_F(UnzipTest, UnzipWithFilter) {
   CountFiles(unzip_dir_, &file_count, /*some_files_empty=*/&some_files_empty);
   EXPECT_EQ(2, file_count);
   EXPECT_FALSE(some_files_empty);
+}
+
+TEST_F(UnzipTest, DetectEncodingAbsentArchive) {
+  EXPECT_EQ(UNKNOWN_ENCODING, DoDetectEncoding(GetArchivePath(
+                                  FILE_PATH_LITERAL("absent_archive.zip"))));
+}
+
+TEST_F(UnzipTest, DetectEncodingBadArchive) {
+  EXPECT_EQ(
+      UNKNOWN_ENCODING,
+      DoDetectEncoding(GetArchivePath(FILE_PATH_LITERAL("bad_archive.zip"))));
+}
+
+TEST_F(UnzipTest, DetectEncodingAscii) {
+  EXPECT_EQ(
+      Encoding::ASCII_7BIT,
+      DoDetectEncoding(GetArchivePath(FILE_PATH_LITERAL("good_archive.zip"))));
+}
+
+// See https://crbug.com/903664
+TEST_F(UnzipTest, DetectEncodingUtf8) {
+  EXPECT_EQ(Encoding::UTF8, DoDetectEncoding(GetArchivePath(
+                                FILE_PATH_LITERAL("UTF8 (Bug 903664).zip"))));
+}
+
+// See https://crbug.com/1287893
+TEST_F(UnzipTest, DetectEncodingSjis) {
+  for (const base::FilePath::StringPieceType name : {
+           FILE_PATH_LITERAL("SJIS 00.zip"),
+           FILE_PATH_LITERAL("SJIS 01.zip"),
+           FILE_PATH_LITERAL("SJIS 02.zip"),
+           FILE_PATH_LITERAL("SJIS 03.zip"),
+           FILE_PATH_LITERAL("SJIS 04.zip"),
+           FILE_PATH_LITERAL("SJIS 05.zip"),
+           FILE_PATH_LITERAL("SJIS 06.zip"),
+           FILE_PATH_LITERAL("SJIS 07.zip"),
+           FILE_PATH_LITERAL("SJIS 08.zip"),
+           FILE_PATH_LITERAL("SJIS 09.zip"),
+           FILE_PATH_LITERAL("SJIS 10.zip"),
+           FILE_PATH_LITERAL("SJIS 11.zip"),
+           FILE_PATH_LITERAL("SJIS 12.zip"),
+           FILE_PATH_LITERAL("SJIS 13.zip"),
+       }) {
+    EXPECT_EQ(Encoding::JAPANESE_SHIFT_JIS,
+              DoDetectEncoding(GetArchivePath(name)));
+  }
 }
 
 }  // namespace

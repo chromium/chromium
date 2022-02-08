@@ -30,4 +30,10 @@ interface Unzipper {
       mojo_base.mojom.ReadOnlyFile zip_file,
       pending_remote<filesystem.mojom.Directory> output_dir,
       pending_remote<UnzipFilter> filter) => (bool result);
+
+  // Detects the encoding of filenames stored in the ZIP archive.
+  // Returns an Encoding as defined in
+  // third_party/ced/src/util/encodings/encodings.pb.h
+  // or UNKNOWN_ENCODING in case of error.
+  DetectEncoding(mojo_base.mojom.ReadOnlyFile zip_file) => (int32 encoding);
 };
