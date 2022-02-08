@@ -141,6 +141,10 @@ PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
   if (state_ != State::USER_LOG_STORE_HANDLED)
     return absl::nullopt;
 
+  // Owner should not use per-user. Owner should use the device local pref.
+  if (user_manager_->IsCurrentUserOwner())
+    return absl::nullopt;
+
   // Guest sessions with no device owner should use the guest's metrics
   // consent set during guest OOBE flow with no device owner.
   bool is_guest_with_no_owner =
@@ -186,6 +190,10 @@ void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
   if (user_prefs->GetBoolean(prefs::kMetricsUserConsent) == metrics_consent)
     return;
 
+  // Update pref first as calling ForceClientIdReset() requires metrics
+  // reporting to be enabled first.
+  user_prefs->SetBoolean(prefs::kMetricsUserConsent, metrics_consent);
+
   // |new_user_id| = "" for on->off.
   std::string new_user_id;
 
@@ -213,9 +221,7 @@ void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
     }
   }
 
-  // Notify metrics service of the consent change.
   UpdateCurrentUserId(new_user_id);
-  user_prefs->SetBoolean(prefs::kMetricsUserConsent, metrics_consent);
   SetReportingState(metrics_consent);
 }
 

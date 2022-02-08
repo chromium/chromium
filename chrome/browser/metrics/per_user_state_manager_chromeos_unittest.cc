@@ -324,4 +324,26 @@ TEST_F(PerUserStateManagerChromeOSTest,
   EXPECT_FALSE(GetPerUserStateManager()->is_log_store_set());
 }
 
+TEST_F(PerUserStateManagerChromeOSTest, OwnerCannotUsePerUser) {
+  // Create device owner.
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("test@example.com", "1");
+  auto* test_user = RegisterUser(account_id);
+  test_user_manager_->SetOwnerId(account_id);
+
+  // Simulate user login.
+  LoginRegularUser(test_user);
+
+  // User log store is created async. Ensure that the log store loading
+  // finishes.
+  RunUntilIdle();
+
+  // Owner should not have a consent.
+  EXPECT_FALSE(
+      GetPerUserStateManager()->GetCurrentUserReportingConsentIfApplicable());
+
+  // User logs should still be persisted in the owner's cryptohome.
+  EXPECT_TRUE(GetPerUserStateManager()->is_log_store_set());
+}
+
 }  // namespace metrics

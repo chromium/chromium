@@ -99,7 +99,7 @@ class PerUserStateManagerChromeOS
   //
   // The cases in which this occurs are:
   //
-  //    1) Regular users on non-managed devices.
+  //    1) Regular non-owner users on non-managed devices.
   //    2) Guest users on non-owned devices.
   //
   // If no user is logged in, returns absl::nullopt. True means that the user
