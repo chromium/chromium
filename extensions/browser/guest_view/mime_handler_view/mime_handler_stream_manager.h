@@ -19,7 +19,7 @@ namespace content {
 class BrowserContext;
 }
 
-FORWARD_DECLARE_TEST(MimeHandlerViewTest, Basic);
+FORWARD_DECLARE_TEST(ChromeMimeHandlerViewTest, Basic);
 
 namespace extensions {
 class Extension;
@@ -60,7 +60,7 @@ class MimeHandlerStreamManager : public KeyedService,
                            UnloadedExtensionReason reason) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(::MimeHandlerViewTest, Basic);
+  FRIEND_TEST_ALL_PREFIXES(::ChromeMimeHandlerViewTest, Basic);
 
   class EmbedderObserver;
 

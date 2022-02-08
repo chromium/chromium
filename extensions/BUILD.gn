@@ -322,7 +322,6 @@ source_set("chrome_extensions_browsertests") {
     "browser/api/serial/serial_apitest.cc",
     "browser/api/usb/usb_manual_apitest.cc",
     "browser/app_window/app_window_browsertest.cc",
-    "browser/guest_view/mime_handler_view/mime_handler_view_browsertest.cc",
     "renderer/script_context_browsertest.cc",
   ]
 
