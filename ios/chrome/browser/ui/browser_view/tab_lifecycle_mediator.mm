@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
@@ -37,6 +38,8 @@
   __weak SideSwipeController* _sideSwipeController;
   __weak SadTabCoordinator* _sadTabCoordinator;
   __weak DownloadManagerCoordinator* _downloadManagerCoordinator;
+  __weak UIViewController* _baseViewController;
+  __weak CommandDispatcher* _commandDispatcher;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -47,6 +50,8 @@
     _sideSwipeController = dependencies.sideSwipeController;
     _sadTabCoordinator = dependencies.sadTabCoordinator;
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
+    _baseViewController = dependencies.baseViewController;
+    _commandDispatcher = dependencies.commandDispatcher;
 
     // Set the delegate before any of the dependency observers, because they
     // will do delegate installation on creation.
@@ -75,6 +80,14 @@
   DCHECK(webState->IsRealized());
 
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+
+  if (PasswordTabHelper* passwordTabHelper =
+          PasswordTabHelper::FromWebState(webState)) {
+    passwordTabHelper->SetBaseViewController(_baseViewController);
+    passwordTabHelper->SetPasswordControllerDelegate(_delegate);
+    passwordTabHelper->SetDispatcher(_commandDispatcher);
+  }
+
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
   }
@@ -95,9 +108,18 @@
   // Remove delegates for tab helpers which may otherwise do bad things during
   // shutdown.
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+
+  if (PasswordTabHelper* passwordTabHelper =
+          PasswordTabHelper::FromWebState(webState)) {
+    passwordTabHelper->SetBaseViewController(nil);
+    passwordTabHelper->SetPasswordControllerDelegate(nil);
+    passwordTabHelper->SetDispatcher(nil);
+  }
+
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
   }
+
   web_deprecated::SetSwipeRecognizerProvider(webState, nil);
 }
 

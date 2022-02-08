@@ -20,6 +20,8 @@ typedef struct {
   SadTabCoordinator* sadTabCoordinator;
   DownloadManagerCoordinator* downloadManagerCoordinator;
   PrerenderService* prerenderService;
+  UIViewController* baseViewController;
+  CommandDispatcher* commandDispatcher;
 } TabLifecycleDependencies;
 
 // Mediator that handles the setup of tab helpers that require UI-layer

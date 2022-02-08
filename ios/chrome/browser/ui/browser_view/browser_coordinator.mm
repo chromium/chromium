@@ -595,6 +595,8 @@
   dependencies.sadTabCoordinator = browserViewController.sadTabCoordinator;
   dependencies.downloadManagerCoordinator =
       browserViewController.downloadManagerCoordinator;
+  dependencies.baseViewController = browserViewController;
+  dependencies.commandDispatcher = self.browser->GetCommandDispatcher();
 
   self.tabLifecycleMediator = [[TabLifecycleMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()

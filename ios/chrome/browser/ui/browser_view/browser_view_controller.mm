@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
-#include "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -2622,13 +2621,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(!prerenderService ||
          !prerenderService->IsWebStatePrerendered(webState));
 
-  if (PasswordTabHelper* passwordTabHelper =
-          PasswordTabHelper::FromWebState(webState)) {
-    passwordTabHelper->SetBaseViewController(self);
-    passwordTabHelper->SetPasswordControllerDelegate(self);
-    passwordTabHelper->SetDispatcher(self.browser->GetCommandDispatcher());
-  }
-
   NetExportTabHelper::CreateForWebState(webState, self);
   CaptivePortalTabHelper::CreateForWebState(webState, self);
 
@@ -2643,13 +2635,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // and thus don't need to be uninstalled.
   if (!webState->IsRealized())
     return;
-
-  if (PasswordTabHelper* passwordTabHelper =
-          PasswordTabHelper::FromWebState(webState)) {
-    passwordTabHelper->SetBaseViewController(nil);
-    passwordTabHelper->SetPasswordControllerDelegate(nil);
-    passwordTabHelper->SetDispatcher(nil);
-  }
 
   // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
   // No need to stop _ntpCoordinator with Single NTP enabled since shutdown will
