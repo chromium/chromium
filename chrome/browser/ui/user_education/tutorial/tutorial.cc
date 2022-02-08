@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/user_education/help_bubble.h"
 #include "chrome/browser/ui/user_education/help_bubble_factory.h"
 #include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,12 +28,11 @@ Tutorial::StepBuilder::BuildFromDescriptionStep(
     const TutorialDescription::Step& step,
     absl::optional<std::pair<int, int>> progress,
     bool is_last_step,
-    TutorialService* tutorial_service,
-    HelpBubbleFactoryRegistry* bubble_factory_registry) {
+    TutorialService* tutorial_service) {
   Tutorial::StepBuilder step_builder(step);
   step_builder.SetProgress(progress).SetIsLastStep(is_last_step);
 
-  return step_builder.Build(tutorial_service, bubble_factory_registry);
+  return step_builder.Build(tutorial_service);
 }
 
 Tutorial::StepBuilder& Tutorial::StepBuilder::SetAnchorElementID(
@@ -112,8 +112,7 @@ Tutorial::StepBuilder& Tutorial::StepBuilder::SetNameElementsCallback(
 }
 
 std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
-    TutorialService* tutorial_service,
-    HelpBubbleFactoryRegistry* bubble_factory_registry) {
+    TutorialService* tutorial_service) {
   std::unique_ptr<ui::InteractionSequence::StepBuilder>
       interaction_sequence_step_builder =
           std::make_unique<ui::InteractionSequence::StepBuilder>();
@@ -134,7 +133,7 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
       step_.transition_only_on_event);
 
   interaction_sequence_step_builder->SetStartCallback(
-      BuildStartCallback(tutorial_service, bubble_factory_registry));
+      BuildStartCallback(tutorial_service));
   interaction_sequence_step_builder->SetEndCallback(
       BuildHideBubbleCallback(tutorial_service));
 
@@ -142,12 +141,10 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
 }
 
 ui::InteractionSequence::StepStartCallback
-Tutorial::StepBuilder::BuildStartCallback(
-    TutorialService* tutorial_service,
-    HelpBubbleFactoryRegistry* bubble_factory_registry) {
+Tutorial::StepBuilder::BuildStartCallback(TutorialService* tutorial_service) {
   // get show bubble callback
   ui::InteractionSequence::StepStartCallback maybe_show_bubble_callback =
-      BuildMaybeShowBubbleCallback(tutorial_service, bubble_factory_registry);
+      BuildMaybeShowBubbleCallback(tutorial_service);
 
   return base::BindOnce(
       [](TutorialDescription::NameElementsCallback name_elements_callback,
@@ -163,20 +160,17 @@ Tutorial::StepBuilder::BuildStartCallback(
 
 ui::InteractionSequence::StepStartCallback
 Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
-    TutorialService* tutorial_service,
-    HelpBubbleFactoryRegistry* bubble_factory_registry) {
+    TutorialService* tutorial_service) {
   if (!step_.ShouldShowBubble())
     return ui::InteractionSequence::StepStartCallback();
 
   return base::BindOnce(
       [](TutorialService* tutorial_service,
-         HelpBubbleFactoryRegistry* bubble_factory_registry,
          absl::optional<std::u16string> title_text_, std::u16string body_text_,
          HelpBubbleArrow arrow_, absl::optional<std::pair<int, int>> progress_,
          bool is_last_step_, ui::InteractionSequence* sequence,
          ui::TrackedElement* element) {
         DCHECK(tutorial_service);
-        DCHECK(bubble_factory_registry);
 
         tutorial_service->HideCurrentBubbleIfShowing();
 
@@ -196,13 +190,12 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
           params.timeout = base::TimeDelta();
 
         std::unique_ptr<HelpBubble> bubble =
-            bubble_factory_registry->CreateHelpBubble(element,
-                                                      std::move(params));
+            tutorial_service->bubble_factory_registry()->CreateHelpBubble(
+                element, std::move(params));
         tutorial_service->SetCurrentBubble(std::move(bubble));
       },
-      base::Unretained(tutorial_service),
-      base::Unretained(bubble_factory_registry), step_.title_text,
-      step_.body_text, step_.arrow, progress, is_last_step);
+      base::Unretained(tutorial_service), step_.title_text, step_.body_text,
+      step_.arrow, progress, is_last_step);
 }
 
 ui::InteractionSequence::StepEndCallback
@@ -221,7 +214,6 @@ Tutorial::Builder::~Builder() = default;
 std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
     const TutorialDescription& description,
     TutorialService* tutorial_service,
-    HelpBubbleFactoryRegistry* bubble_factory_registry,
     ui::ElementContext context) {
   Tutorial::Builder builder;
   builder.SetContext(context);
@@ -237,8 +229,7 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
   for (const auto& step : description.steps) {
     builder.AddStep(Tutorial::StepBuilder::BuildFromDescriptionStep(
         step, std::pair<int, int>(current_step, visible_step_count - 1),
-        &step == &description.steps.back(), tutorial_service,
-        bubble_factory_registry));
+        &step == &description.steps.back(), tutorial_service));
     if (step.ShouldShowBubble())
       current_step++;
   }

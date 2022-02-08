@@ -32,11 +32,9 @@ class TutorialRegistry {
   // If no TutorialIdentifier can be found that matches the ID, a nullptr
   // is returned. The TutorialService is passed in order to allow Tutorials
   // to be constructed with access to the BubbleOwnerRegistry.
-  std::unique_ptr<Tutorial> CreateTutorial(
-      TutorialIdentifier id,
-      TutorialService* tutorial_service,
-      HelpBubbleFactoryRegistry* bubble_factory_registry,
-      ui::ElementContext context);
+  std::unique_ptr<Tutorial> CreateTutorial(TutorialIdentifier id,
+                                           TutorialService* tutorial_service,
+                                           ui::ElementContext context);
 
   // Adds a TutorialID, TutorialDescription pair to the registry. This should
   // be used by the RegisterTutorials method to Add Tutorials.

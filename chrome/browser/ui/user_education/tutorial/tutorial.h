@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_H_
 
 #include "chrome/browser/ui/user_education/help_bubble_factory.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -60,12 +59,10 @@ class Tutorial {
     // TutorialDescriptionStep. This method is used by
     // Tutorial::Builder::BuildFromDescription to create tutorials.
     static std::unique_ptr<ui::InteractionSequence::Step>
-    BuildFromDescriptionStep(
-        const TutorialDescription::Step& step,
-        absl::optional<std::pair<int, int>> progress,
-        bool is_last_step,
-        TutorialService* tutorial_service,
-        HelpBubbleFactoryRegistry* bubble_factory_registry);
+    BuildFromDescriptionStep(const TutorialDescription::Step& step,
+                             absl::optional<std::pair<int, int>> progress,
+                             bool is_last_step,
+                             TutorialService* tutorial_service);
 
     StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
     StepBuilder& SetAnchorElementName(std::string anchor_element_name);
@@ -84,20 +81,17 @@ class Tutorial {
         TutorialDescription::NameElementsCallback name_elements_callback_);
 
     std::unique_ptr<ui::InteractionSequence::Step> Build(
-        TutorialService* tutorial_service,
-        HelpBubbleFactoryRegistry* bubble_factory_registry);
+        TutorialService* tutorial_service);
 
    private:
     absl::optional<std::pair<int, int>> progress;
     bool is_last_step = false;
 
     ui::InteractionSequence::StepStartCallback BuildStartCallback(
-        TutorialService* tutorial_service,
-        HelpBubbleFactoryRegistry* bubble_factory_registry);
+        TutorialService* tutorial_service);
 
     ui::InteractionSequence::StepStartCallback BuildMaybeShowBubbleCallback(
-        TutorialService* tutorial_service,
-        HelpBubbleFactoryRegistry* bubble_factory_registry);
+        TutorialService* tutorial_service);
 
     ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
         TutorialService* tutorial_service);
@@ -112,7 +106,6 @@ class Tutorial {
     static std::unique_ptr<Tutorial> BuildFromDescription(
         const TutorialDescription& description,
         TutorialService* tutorial_service,
-        HelpBubbleFactoryRegistry* bubble_factory_registry,
         ui::ElementContext context);
 
     Builder(const Builder& other) = delete;

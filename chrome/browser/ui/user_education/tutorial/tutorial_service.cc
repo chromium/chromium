@@ -22,8 +22,8 @@ TutorialService::~TutorialService() = default;
 
 bool TutorialService::StartTutorial(TutorialIdentifier id,
                                     ui::ElementContext context) {
-  return StartTutorialImpl(tutorial_registry_->CreateTutorial(
-      id, this, help_bubble_factory_registry_, context));
+  return StartTutorialImpl(
+      tutorial_registry_->CreateTutorial(id, this, context));
 }
 
 bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {

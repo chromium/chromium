@@ -22,14 +22,13 @@ bool TutorialRegistry::IsTutorialRegistered(TutorialIdentifier id) const {
 std::unique_ptr<Tutorial> TutorialRegistry::CreateTutorial(
     TutorialIdentifier id,
     TutorialService* tutorial_service,
-    HelpBubbleFactoryRegistry* bubble_factory_registry,
     ui::ElementContext context) {
   DCHECK(tutorial_registry_.size() > 0);
   auto pair = tutorial_registry_.find(id);
   if (pair == tutorial_registry_.end())
     return nullptr;
-  return Tutorial::Builder::BuildFromDescription(
-      pair->second, tutorial_service, bubble_factory_registry, context);
+  return Tutorial::Builder::BuildFromDescription(pair->second, tutorial_service,
+                                                 context);
 }
 
 const std::vector<TutorialIdentifier>

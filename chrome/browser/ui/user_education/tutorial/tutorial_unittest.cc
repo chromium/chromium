@@ -51,7 +51,7 @@ TEST(TutorialTest, TutorialBuilder) {
   std::unique_ptr<ui::InteractionSequence::Step> step1 =
       Tutorial::StepBuilder()
           .SetAnchorElementID(kTestIdentifier1)
-          .Build(&service, bubble_factory_registry.get());
+          .Build(&service);
 
   // build a step that names an element
   std::unique_ptr<ui::InteractionSequence::Step> step2 =
@@ -63,20 +63,20 @@ TEST(TutorialTest, TutorialBuilder) {
                 sequence->NameElement(element, "TEST ELEMENT");
                 return true;
               }))
-          .Build(&service, bubble_factory_registry.get());
+          .Build(&service);
 
   // build a step with a named element
   std::unique_ptr<ui::InteractionSequence::Step> step3 =
       Tutorial::StepBuilder()
           .SetAnchorElementName(std::string(kTestElementName1))
-          .Build(&service, bubble_factory_registry.get());
+          .Build(&service);
 
   // transition event
   std::unique_ptr<ui::InteractionSequence::Step> step4 =
       Tutorial::StepBuilder()
           .SetAnchorElementID(kTestIdentifier1)
           .SetTransitionOnlyOnEvent(true)
-          .Build(&service, bubble_factory_registry.get());
+          .Build(&service);
 
   builder.SetContext(kTestContext1)
       .AddStep(std::move(step1))
@@ -137,6 +137,7 @@ TEST(TutorialTest, TutorialWithCustomEvent) {
       CreateTestTutorialBubbleFactoryRegistry();
   TutorialRegistry registry;
   TutorialService service(&registry, bubble_factory_registry.get());
+
   service.SetOnCompleteTutorialForTesting(completed.Get());
 
   // build elements and keep them for triggering show/hide
@@ -156,4 +157,49 @@ TEST(TutorialTest, TutorialWithCustomEvent) {
       completed, Run,
       ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
           &element_1, kCustomEventType1));
+}
+
+TEST(TutorialTest, BuildAndRunTutorial) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  static constexpr char kElementName[] = "Element Name";
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::TestElement element(kTestIdentifier1, kTestContext1);
+  element.Show();
+
+  Tutorial::Builder builder;
+  builder.SetCompletedCallback(completed.Get());
+  builder.SetAbortedCallback(aborted.Get());
+  builder.SetContext(element.context());
+  builder.AddStep(Tutorial::StepBuilder()
+                      .SetStepType(ui::InteractionSequence::StepType::kShown)
+                      .SetAnchorElementID(element.identifier())
+                      .SetNameElementsCallback(base::BindLambdaForTesting(
+                          [](ui::InteractionSequence* sequence,
+                             ui::TrackedElement* element) {
+                            sequence->NameElement(element, kElementName);
+                            return true;
+                          }))
+                      .SetArrow(HelpBubbleArrow::kTopCenter)
+                      .SetBodyText(u"Bubble 1")
+                      .SetProgress(std::make_pair(0, 2))
+                      .Build(&service));
+  builder.AddStep(
+      Tutorial::StepBuilder()
+          .SetStepType(ui::InteractionSequence::StepType::kActivated)
+          .SetAnchorElementName(kElementName)
+          .SetArrow(HelpBubbleArrow::kLeftCenter)
+          .SetProgress(std::make_pair(1, 2))
+          .Build(&service));
+
+  auto tutorial = builder.Build();
+
+  tutorial->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element.Activate());
 }

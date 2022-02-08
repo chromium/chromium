@@ -45,6 +45,9 @@ class TutorialService : public KeyedService {
   void SetOnAbortTutorialForTesting(AbortedCallback callback);
 
   TutorialRegistry* tutorial_registry() { return tutorial_registry_; }
+  HelpBubbleFactoryRegistry* bubble_factory_registry() {
+    return help_bubble_factory_registry_;
+  }
 
  private:
   friend class Tutorial;
