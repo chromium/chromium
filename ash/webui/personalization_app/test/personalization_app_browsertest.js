@@ -86,15 +86,22 @@ function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
 this[PersonalizationAppBrowserTest.name] = PersonalizationAppBrowserTest;
 
 // Tests that chrome://personalization loads the page without javascript errors
-// or a 404 or crash. Should display some text.
+// or a 404 or crash. Displays user preview, wallpaper preview, and ambient
+// preview
 TEST_F('PersonalizationAppBrowserTest', 'HasRootPageUrl', () => {
   assertEquals(document.location.href, ROOT_PAGE);
-  assertEquals(
-      'Personalization',
-      document.querySelector('personalization-router')
-          .shadowRoot.querySelector('personalization-main')
-          .shadowRoot.querySelector('h1')
-          .innerText);
+  const userPreview = document.querySelector('personalization-router')
+                          .shadowRoot.querySelector('personalization-main')
+                          .shadowRoot.querySelector('user-preview');
+  const wallpaperPreview = document.querySelector('personalization-router')
+                               .shadowRoot.querySelector('personalization-main')
+                               .shadowRoot.querySelector('wallpaper-preview');
+  const ambientPreview = document.querySelector('personalization-router')
+                             .shadowRoot.querySelector('personalization-main')
+                             .shadowRoot.querySelector('ambient-preview');
+  assertTrue(!!userPreview);
+  assertTrue(!!wallpaperPreview);
+  assertTrue(!!ambientPreview);
   testDone();
 });
 
@@ -159,7 +166,7 @@ this[WallpaperSubpageBrowserTest.name] = WallpaperSubpageBrowserTest;
 // somewhere instead of 404ing or crashing.
 TEST_F('WallpaperSubpageBrowserTest', 'HasWallpaperSubpageUrl', () => {
   assertEquals(document.location.href, WALLPAPER_SUBPAGE);
-  
+
   const title = document.querySelector('head > title');
   assertEquals('Wallpaper', title.innerText);
   testDone();

@@ -1,4 +1,4 @@
-<style>
+<style include="common-style">
   #wallpaperLabel {
     background: none;
     border: none;
@@ -9,15 +9,18 @@
     width: 20px;
   }
 </style>
-<cr-button id="wallpaperLabel" on-click="onClickWallpaper_">
-  <div class="text">[[i18n('wallpaperLabel')]]</div>
-  <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
-</cr-button>
-<template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
-  <div id="imagePlaceholder"></div>
-</template>
-<template is="dom-if" if="[[showImage_]]">
-    <div id="imageContainer">
-      <img src="[[getImageSrc_(image_)]]" aria-hidden="true">
-    </div>
-</template>
+<div class="preview-container" id="container">
+  <cr-button id="wallpaperLabel" on-click="onClickWallpaper_">
+    <div class="text">[[i18n('wallpaperLabel')]]</div>
+    <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+  </cr-button>
+  <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
+    <div id="imagePlaceholder"></div>
+  </template>
+  <template is="dom-if" if="[[showImage_]]">
+      <div id="imageContainer">
+        <img src="[[getImageSrc_(image_)]]" aria-hidden="true">
+      </div>
+  </template>
+  <slot></slot>
+</div>

@@ -18,13 +18,6 @@ export function PersonalizationMainTest() {
     personalizationMainElement = null;
   });
 
-  test('displays content', async () => {
-    personalizationMainElement = initElement(PersonalizationMain);
-    assertEquals(
-        'Personalization',
-        personalizationMainElement.shadowRoot!.querySelector('h1')!.innerText);
-  });
-
   test('links to user subpage', async () => {
     personalizationMainElement = initElement(PersonalizationMain);
     const original = PersonalizationRouter.instance;
