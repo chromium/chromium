@@ -200,12 +200,6 @@ Polymer({
     }
   },
 
-  /** @protected */
-  onTroubleConnectingClicked_() {
-    // TODO(michaelcheco): Add correct URL.
-    window.open('https://support.google.com/chromebook?p=diagnostics_');
-  },
-
   /**
    * @protected
    * @return {string}
