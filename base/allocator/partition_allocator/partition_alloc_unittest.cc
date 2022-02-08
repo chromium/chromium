@@ -223,7 +223,7 @@ class ScopedPageAllocation {
   char* ptr_;
 };
 
-class PartitionAllocTest : public testing::Test {
+class PartitionAllocTest : public testing::TestWithParam<bool> {
  protected:
   PartitionAllocTest() = default;
 
@@ -262,10 +262,16 @@ class PartitionAllocTest : public testing::Test {
 
     allocator.root()->UncapEmptySlotSpanMemoryForTesting();
     aligned_allocator.root()->UncapEmptySlotSpanMemoryForTesting();
+
+    if (!GetParam())
+      allocator.root()->SwitchToDenserBucketDistribution();
+    else
+      allocator.root()->ResetBucketDistributionForTesting();
   }
 
   size_t SizeToIndex(size_t size) {
-    return PartitionRoot<base::internal::ThreadSafe>::SizeToBucketIndex(size);
+    return PartitionRoot<base::internal::ThreadSafe>::SizeToBucketIndex(
+        size, GetParam());
   }
 
   void TearDown() override {
@@ -513,8 +519,12 @@ class MockPartitionStatsDumper : public PartitionStatsDumper {
 
 }  // namespace
 
+INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
+                         PartitionAllocTest,
+                         testing::Values(false, true));
+
 // Check that the most basic of allocate / free pairs work.
-TEST_F(PartitionAllocTest, Basic) {
+TEST_P(PartitionAllocTest, Basic) {
   PartitionRoot<ThreadSafe>::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
   auto* seed_slot_span = SlotSpan::get_sentinel_slot_span();
@@ -540,7 +550,7 @@ TEST_F(PartitionAllocTest, Basic) {
 }
 
 // Test multiple allocations, and freelist handling.
-TEST_F(PartitionAllocTest, MultiAlloc) {
+TEST_P(PartitionAllocTest, MultiAlloc) {
   char* ptr1 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   char* ptr2 = reinterpret_cast<char*>(
@@ -581,7 +591,7 @@ TEST_F(PartitionAllocTest, MultiAlloc) {
 }
 
 // Test a bucket with multiple slot spans.
-TEST_F(PartitionAllocTest, MultiSlotSpans) {
+TEST_P(PartitionAllocTest, MultiSlotSpans) {
   PartitionRoot<ThreadSafe>::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
 
@@ -622,7 +632,7 @@ TEST_F(PartitionAllocTest, MultiSlotSpans) {
 }
 
 // Test some finer aspects of internal slot span transitions.
-TEST_F(PartitionAllocTest, SlotSpanTransitions) {
+TEST_P(PartitionAllocTest, SlotSpanTransitions) {
   PartitionRoot<ThreadSafe>::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
 
@@ -683,7 +693,7 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
 
 // Test some corner cases relating to slot span transitions in the internal
 // free slot span list metadata bucket.
-TEST_F(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
+TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
   PartitionRoot<ThreadSafe>::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
 
@@ -728,7 +738,7 @@ TEST_F(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
 
 // Test a large series of allocations that cross more than one underlying
 // super page.
-TEST_F(PartitionAllocTest, MultiPageAllocs) {
+TEST_P(PartitionAllocTest, MultiPageAllocs) {
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
   // 1 super page has 2 guard partition pages.
   size_t num_slot_spans_needed =
@@ -761,7 +771,7 @@ TEST_F(PartitionAllocTest, MultiPageAllocs) {
 
 // Test the generic allocation functions that can handle arbitrary sizes and
 // reallocing etc.
-TEST_F(PartitionAllocTest, Alloc) {
+TEST_P(PartitionAllocTest, Alloc) {
   void* ptr = allocator.root()->Alloc(1, type_name);
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
@@ -855,7 +865,7 @@ TEST_F(PartitionAllocTest, Alloc) {
 
 // Test the generic allocation functions can handle some specific sizes of
 // interest.
-TEST_F(PartitionAllocTest, AllocSizes) {
+TEST_P(PartitionAllocTest, AllocSizes) {
   {
     void* ptr = allocator.root()->Alloc(0, type_name);
     EXPECT_TRUE(ptr);
@@ -957,7 +967,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 }
 
 // Test that we can fetch the real allocated size after an allocation.
-TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
+TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   void* ptr;
   size_t requested_size, actual_capacity, predicted_capacity;
 
@@ -1071,7 +1081,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
 }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-TEST_F(PartitionAllocTest, IsValidPtrDelta) {
+TEST_P(PartitionAllocTest, IsValidPtrDelta) {
   const size_t kMinReasonableTestSize =
       base::bits::AlignUp(kExtraAllocSize + 1, base::kAlignment);
   ASSERT_GT(kMinReasonableTestSize, kExtraAllocSize);
@@ -1150,7 +1160,7 @@ TEST_F(PartitionAllocTest, IsValidPtrDelta) {
   }
 }
 
-TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
+TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
   const size_t real_size = 80;
   const size_t requested_size = real_size - kExtraAllocSize;
   // Double check we don't end up with 0 or negative size.
@@ -1180,7 +1190,7 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Test the realloc() contract.
-TEST_F(PartitionAllocTest, Realloc) {
+TEST_P(PartitionAllocTest, Realloc) {
   // realloc(0, size) should be equivalent to malloc().
   void* ptr = allocator.root()->Realloc(nullptr, kTestAllocSize, type_name);
   memset(ptr, 'A', kTestAllocSize);
@@ -1296,7 +1306,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   allocator.root()->Free(ptr3);
 }
 
-TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
+TEST_P(PartitionAllocTest, ReallocDirectMapAligned) {
   size_t alignments[] = {
       PartitionPageSize(),
       2 * PartitionPageSize(),
@@ -1347,7 +1357,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
   }
 }
 
-TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
+TEST_P(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // Pick size such that the alignment will put it cross the super page
   // boundary.
   size_t size = 2 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
@@ -1373,7 +1383,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
 }
 
 // Tests the handing out of freelists for partial slot spans.
-TEST_F(PartitionAllocTest, PartialPageFreelists) {
+TEST_P(PartitionAllocTest, PartialPageFreelists) {
   size_t big_size = SystemPageSize() - kExtraAllocSize;
   size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
   PartitionRoot<ThreadSafe>::Bucket* bucket =
@@ -1586,7 +1596,7 @@ TEST_F(PartitionAllocTest, PartialPageFreelists) {
 }
 
 // Test some of the fragmentation-resistant properties of the allocator.
-TEST_F(PartitionAllocTest, SlotSpanRefilling) {
+TEST_P(PartitionAllocTest, SlotSpanRefilling) {
   PartitionRoot<ThreadSafe>::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
 
@@ -1620,7 +1630,7 @@ TEST_F(PartitionAllocTest, SlotSpanRefilling) {
 }
 
 // Basic tests to ensure that allocations work for partial page buckets.
-TEST_F(PartitionAllocTest, PartialPages) {
+TEST_P(PartitionAllocTest, PartialPages) {
   // Find a size that is backed by a partial partition page.
   size_t size = sizeof(void*);
   size_t bucket_index;
@@ -1643,7 +1653,7 @@ TEST_F(PartitionAllocTest, PartialPages) {
 }
 
 // Test correct handling if our mapping collides with another.
-TEST_F(PartitionAllocTest, MappingCollision) {
+TEST_P(PartitionAllocTest, MappingCollision) {
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
   // The -2 is because the first and last partition pages in a super page are
   // guard pages.
@@ -1733,7 +1743,7 @@ TEST_F(PartitionAllocTest, MappingCollision) {
 
 // Tests that slot spans in the free slot span cache do get freed as
 // appropriate.
-TEST_F(PartitionAllocTest, FreeCache) {
+TEST_P(PartitionAllocTest, FreeCache) {
   EXPECT_EQ(0U, allocator.root()->get_total_size_of_committed_pages());
 
   size_t big_size = 1000 - kExtraAllocSize;
@@ -1791,7 +1801,7 @@ TEST_F(PartitionAllocTest, FreeCache) {
 }
 
 // Tests for a bug we had with losing references to free slot spans.
-TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
+TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
   size_t size = PartitionPageSize() - kExtraAllocSize;
 
   void* ptr = allocator.root()->Alloc(size, type_name);
@@ -1870,6 +1880,10 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 // Death tests misbehave on Android, http://crbug.com/643760.
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
+INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
+                         PartitionAllocDeathTest,
+                         testing::Values(false, true));
+
 // Unit tests that check if an allocation fails in "return null" mode,
 // repeating it doesn't crash, and still returns null. The tests need to
 // stress memory subsystem limits to do so, hence they try to allocate
@@ -1900,7 +1914,7 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 // These tests are *very* slow when DCHECK_IS_ON(), because they memset() many
 // GiB of data (see crbug.com/1168168).
 // TODO(lizeb): make these tests faster.
-TEST_F(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
+TEST_P(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
@@ -1909,7 +1923,7 @@ TEST_F(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
 }
 
 // Repeating above test with Realloc
-TEST_F(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
+TEST_P(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionReallocFlags),
@@ -1917,7 +1931,7 @@ TEST_F(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
 }
 
 // Repeating above test with TryRealloc
-TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
+TEST_P(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionRootTryRealloc),
@@ -1926,7 +1940,7 @@ TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
 
 // See crbug.com/1187404 to re-enable the tests below.
 // Test "return null" with a 512 kB block size.
-TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
+TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   // A single-slot but non-direct-mapped allocation size.
   size_t single_slot_size = 512 * 1024;
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
@@ -1936,7 +1950,7 @@ TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
 }
 
 // Repeating above test with Realloc.
-TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
+TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
   size_t single_slot_size = 512 * 1024;
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
   ASSERT_LE(single_slot_size, kMaxBucketed);
@@ -1945,7 +1959,7 @@ TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
 }
 
 // Repeating above test with TryRealloc.
-TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
+TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
   size_t single_slot_size = 512 * 1024;
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
   ASSERT_LE(single_slot_size, kMaxBucketed);
@@ -1959,7 +1973,7 @@ TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to
 // malloc(0), which is not good.
-TEST_F(PartitionAllocDeathTest, LargeAllocs) {
+TEST_P(PartitionAllocDeathTest, LargeAllocs) {
   // Largest alloc.
   EXPECT_DEATH(allocator.root()->Alloc(static_cast<size_t>(-1), type_name), "");
   // And the smallest allocation we expect to die.
@@ -1980,7 +1994,7 @@ TEST_F(PartitionAllocDeathTest, LargeAllocs) {
     (defined(PA_HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that our immediate double-free detection works.
-TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree) {
+TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
@@ -1988,7 +2002,7 @@ TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree) {
 }
 
 // As above, but when this isn't the only slot in the span.
-TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
+TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
   void* ptr0 = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr0);
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -2004,7 +2018,7 @@ TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
 // Unlike in ImmediateDoubleFree test, we can't have a 2ndSlot version, as this
 // protection wouldn't work when there is another slot present in the span. It
 // will prevent |num_allocated_slots| from going below 0.
-TEST_F(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
+TEST_P(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   void* ptr2 = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -2021,7 +2035,7 @@ TEST_F(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
         // (defined(PA_HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that guard pages are present where expected.
-TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
+TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
   const size_t kSizes[] = {
       kMaxBucketed + kExtraAllocSize + 1, kMaxBucketed + SystemPageSize(),
       kMaxBucketed + PartitionPageSize(),
@@ -2045,7 +2059,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
 }
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)) && defined(ARCH_CPU_ARM64)
-TEST_F(PartitionAllocTest, MTEProtectsFreedPtr) {
+TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // This test checks that Arm's memory tagging extension is correctly
   // protecting freed pointers. Writes to a freed pointer should cause a crash.
   CPU cpu;
@@ -2081,7 +2095,7 @@ TEST_F(PartitionAllocTest, MTEProtectsFreedPtr) {
 // These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
-TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
+TEST_P(PartitionAllocDeathTest, UseAfterFreeDetection) {
   CPU cpu;
   void* data = allocator.root()->Alloc(100, "");
   allocator.root()->Free(data);
@@ -2092,7 +2106,7 @@ TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
   EXPECT_DEATH(allocator.root()->Alloc(100, ""), "");
 }
 
-TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
+TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
   CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** fake_freelist_entry =
@@ -2116,7 +2130,7 @@ TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
 
 // With DCHECK_IS_ON(), cookie already handles off-by-one detection.
 #if !DCHECK_IS_ON()
-TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
+TEST_P(PartitionAllocDeathTest, OffByOneDetection) {
   CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   char* array = static_cast<char*>(allocator.root()->Alloc(alloc_size, ""));
@@ -2139,7 +2153,7 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
   }
 }
 
-TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
+TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
   CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** array = static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
@@ -2166,7 +2180,7 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
 
 // Tests that |PartitionDumpStats| and |PartitionDumpStats| run without
 // crashing and return non-zero values when memory is allocated.
-TEST_F(PartitionAllocTest, DumpMemoryStats) {
+TEST_P(PartitionAllocTest, DumpMemoryStats) {
   {
     void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
     MockPartitionStatsDumper mock_stats_dumper;
@@ -2427,7 +2441,7 @@ TEST_F(PartitionAllocTest, DumpMemoryStats) {
 }
 
 // Tests the API to purge freeable memory.
-TEST_F(PartitionAllocTest, Purge) {
+TEST_P(PartitionAllocTest, Purge) {
   char* ptr = reinterpret_cast<char*>(
       allocator.root()->Alloc(2048 - kExtraAllocSize, type_name));
   allocator.root()->Free(ptr);
@@ -2476,7 +2490,7 @@ TEST_F(PartitionAllocTest, Purge) {
 // Tests that we prefer to allocate into a non-empty partition page over an
 // empty one. This is an important aspect of minimizing memory usage for some
 // allocation sizes, particularly larger ones.
-TEST_F(PartitionAllocTest, PreferActiveOverEmpty) {
+TEST_P(PartitionAllocTest, PreferActiveOverEmpty) {
   size_t size = (SystemPageSize() * 2) - kExtraAllocSize;
   // Allocate 3 full slot spans worth of 8192-byte allocations.
   // Each slot span for this size is 16384 bytes, or 1 partition page and 2
@@ -2528,7 +2542,7 @@ TEST_F(PartitionAllocTest, PreferActiveOverEmpty) {
 }
 
 // Tests the API to purge discardable memory.
-TEST_F(PartitionAllocTest, PurgeDiscardableSecondPage) {
+TEST_P(PartitionAllocTest, PurgeDiscardableSecondPage) {
   // Free the second of two 4096 byte allocations and then purge.
   void* ptr1 =
       allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
@@ -2562,7 +2576,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableSecondPage) {
   allocator.root()->Free(ptr1);
 }
 
-TEST_F(PartitionAllocTest, PurgeDiscardableFirstPage) {
+TEST_P(PartitionAllocTest, PurgeDiscardableFirstPage) {
   // Free the first of two 4096 byte allocations and then purge.
   char* ptr1 = reinterpret_cast<char*>(
       allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
@@ -2595,7 +2609,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableFirstPage) {
   allocator.root()->Free(ptr2);
 }
 
-TEST_F(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
+TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
   const size_t requested_size = 2.5 * SystemPageSize();
   char* ptr1 = reinterpret_cast<char*>(
       allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name));
@@ -2640,7 +2654,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
   allocator.root()->Free(ptr4);
 }
 
-TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
+TEST_P(PartitionAllocTest, PurgeDiscardableManyPages) {
   // On systems with large pages, use less pages because:
   // 1) There must be a bucket for kFirstAllocPages * SystemPageSize(), and
   // 2) On low-end systems, using too many large pages can OOM during the test
@@ -2685,7 +2699,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
     CHECK_PAGE_IN_CORE(p.PageAtIndex(i), false);
 }
 
-TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
+TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   // This sub-test tests truncation of the provisioned slots in a trickier
   // case where the freelist is rewritten.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
@@ -2753,7 +2767,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   allocator.root()->Free(ptr3);
 }
 
-TEST_F(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
+TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   // This sub-test is similar, but tests a double-truncation.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
   char* ptr1 = reinterpret_cast<char*>(
@@ -2807,7 +2821,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   allocator.root()->Free(ptr2);
 }
 
-TEST_F(PartitionAllocTest, ReallocMovesCookie) {
+TEST_P(PartitionAllocTest, ReallocMovesCookie) {
   // Resize so as to be sure to hit a "resize in place" case, and ensure that
   // use of the entire result is compatible with the debug mode's cookie, even
   // when the bucket size is large enough to span more than one partition page
@@ -2824,7 +2838,7 @@ TEST_F(PartitionAllocTest, ReallocMovesCookie) {
   allocator.root()->Free(ptr);
 }
 
-TEST_F(PartitionAllocTest, SmallReallocDoesNotMoveTrailingCookie) {
+TEST_P(PartitionAllocTest, SmallReallocDoesNotMoveTrailingCookie) {
   // For crbug.com/781473
   static constexpr size_t kSize = 264;
   void* ptr = allocator.root()->Alloc(kSize, type_name);
@@ -2836,7 +2850,7 @@ TEST_F(PartitionAllocTest, SmallReallocDoesNotMoveTrailingCookie) {
   allocator.root()->Free(ptr);
 }
 
-TEST_F(PartitionAllocTest, ZeroFill) {
+TEST_P(PartitionAllocTest, ZeroFill) {
   constexpr static size_t kAllZerosSentinel =
       std::numeric_limits<size_t>::max();
   for (size_t size : kTestSizes) {
@@ -2860,7 +2874,7 @@ TEST_F(PartitionAllocTest, ZeroFill) {
   }
 }
 
-TEST_F(PartitionAllocTest, Bug_897585) {
+TEST_P(PartitionAllocTest, Bug_897585) {
   // Need sizes big enough to be direct mapped and a delta small enough to
   // allow re-use of the slot span when cookied. These numbers fall out of the
   // test case in the indicated bug.
@@ -2878,7 +2892,7 @@ TEST_F(PartitionAllocTest, Bug_897585) {
   allocator.root()->Free(ptr);
 }
 
-TEST_F(PartitionAllocTest, OverrideHooks) {
+TEST_P(PartitionAllocTest, OverrideHooks) {
   constexpr size_t kOverriddenSize = 1234;
   constexpr const char* kOverriddenType = "Overridden type";
   constexpr unsigned char kOverriddenChar = 'A';
@@ -2886,7 +2900,8 @@ TEST_F(PartitionAllocTest, OverrideHooks) {
   // Marked static so that we can use them in non-capturing lambdas below.
   // (Non-capturing lambdas convert directly to function pointers.)
   static volatile bool free_called = false;
-  static void* overridden_allocation = malloc(kOverriddenSize);
+  static void* overridden_allocation = nullptr;
+  overridden_allocation = malloc(kOverriddenSize);
   memset(overridden_allocation, kOverriddenChar, kOverriddenSize);
 
   PartitionAllocHooks::SetOverrideHooks(
@@ -2934,7 +2949,7 @@ TEST_F(PartitionAllocTest, OverrideHooks) {
   free(overridden_allocation);
 }
 
-TEST_F(PartitionAllocTest, Alignment) {
+TEST_P(PartitionAllocTest, Alignment) {
   std::vector<void*> allocated_ptrs;
 
   for (size_t size = 1; size <= base::PartitionPageSize(); size <<= 1) {
@@ -2963,7 +2978,7 @@ TEST_F(PartitionAllocTest, Alignment) {
     allocator.root()->Free(ptr);
 }
 
-TEST_F(PartitionAllocTest, FundamentalAlignment) {
+TEST_P(PartitionAllocTest, FundamentalAlignment) {
   // See the test above for details. Essentially, checking the bucket size is
   // sufficient to ensure that alignment will always be respected, as long as
   // the fundamental alignment is <= 16 bytes.
@@ -3020,7 +3035,7 @@ void VerifyAlignment(PartitionRoot<ThreadSafe>* root,
     PartitionRoot<ThreadSafe>::Free(ptr);
 }
 
-TEST_F(PartitionAllocTest, AlignedAllocations) {
+TEST_P(PartitionAllocTest, AlignedAllocations) {
   size_t alloc_sizes[] = {1,
                           10,
                           100,
@@ -3051,7 +3066,7 @@ TEST_F(PartitionAllocTest, AlignedAllocations) {
 
 // Test that the optimized `GetSlotNumber` implementation produces valid
 // results.
-TEST_F(PartitionAllocTest, OptimizedGetSlotNumber) {
+TEST_P(PartitionAllocTest, OptimizedGetSlotNumber) {
   for (size_t i = 0; i < kNumBuckets; ++i) {
     auto& bucket = allocator.root()->buckets[i];
     if (SizeToIndex(bucket.slot_size) != i)
@@ -3065,11 +3080,11 @@ TEST_F(PartitionAllocTest, OptimizedGetSlotNumber) {
   }
 }
 
-TEST_F(PartitionAllocTest, GetUsableSizeNull) {
+TEST_P(PartitionAllocTest, GetUsableSizeNull) {
   EXPECT_EQ(0ULL, PartitionRoot<ThreadSafe>::GetUsableSize(nullptr));
 }
 
-TEST_F(PartitionAllocTest, GetUsableSize) {
+TEST_P(PartitionAllocTest, GetUsableSize) {
   size_t delta = SystemPageSize() + 1;
   for (size_t size = 1; size <= kMinDirectMappedDownsize; size += delta) {
     void* ptr = allocator.root()->Alloc(size, "");
@@ -3082,7 +3097,7 @@ TEST_F(PartitionAllocTest, GetUsableSize) {
   }
 }
 
-TEST_F(PartitionAllocTest, Bookkeeping) {
+TEST_P(PartitionAllocTest, Bookkeeping) {
   auto& root = *allocator.root();
 
   EXPECT_EQ(0U, root.total_size_of_committed_pages);
@@ -3327,7 +3342,7 @@ TEST_F(PartitionAllocTest, Bookkeeping) {
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
-TEST_F(PartitionAllocTest, RefCountBasic) {
+TEST_P(PartitionAllocTest, RefCountBasic) {
   constexpr uint64_t kCookie = 0x1234567890ABCDEF;
   constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
 
@@ -3421,7 +3436,7 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
   allocator.root()->Free(ptr2);
 }
 
-TEST_F(PartitionAllocTest, RefCountRealloc) {
+TEST_P(PartitionAllocTest, RefCountRealloc) {
   size_t alloc_sizes[] = {500, 5000, 50000, 400000};
 
   for (size_t alloc_size : alloc_sizes) {
@@ -3435,7 +3450,7 @@ TEST_F(PartitionAllocTest, RefCountRealloc) {
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-TEST_F(PartitionAllocTest, ReservationOffset) {
+TEST_P(PartitionAllocTest, ReservationOffset) {
   // For normal buckets, offset should be kOffsetTagNormalBuckets.
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
@@ -3481,7 +3496,7 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
             *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize * 5));
 }
 
-TEST_F(PartitionAllocTest, GetReservationStart) {
+TEST_P(PartitionAllocTest, GetReservationStart) {
   size_t large_size = kSuperPageSize * 3 + PartitionPageSize() * .5f;
   ASSERT_GT(large_size, kMaxBucketed);
   void* ptr = allocator.root()->Alloc(large_size, type_name);
@@ -3502,7 +3517,7 @@ TEST_F(PartitionAllocTest, GetReservationStart) {
   allocator.root()->Free(ptr);
 }
 
-TEST_F(PartitionAllocTest, CheckReservationType) {
+TEST_P(PartitionAllocTest, CheckReservationType) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
@@ -3567,7 +3582,7 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
 }
 
 // Test for crash http://crbug.com/1169003.
-TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
+TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span
   size_t test_size = MaxRegularSlotSpanSize() - kExtraAllocSize;
   void* ptr = allocator.root()->AllocFlags(PartitionAllocReturnNull, test_size,
@@ -3593,7 +3608,7 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
   PA_EXPECT_PTR_NE(ptr, ptr2);
 }
 
-TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
+TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
   size_t allocation_size = 64;
   // The very first allocation is never a fast path one, since it needs a new
   // super page and a new partition page.
@@ -3632,7 +3647,7 @@ TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 #if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
-TEST_F(PartitionAllocDeathTest, CheckTriggered) {
+TEST_P(PartitionAllocDeathTest, CheckTriggered) {
   using ::testing::ContainsRegex;
 #if DCHECK_IS_ON()
   EXPECT_DEATH(PA_CHECK(5 == 7), ContainsRegex("Check failed.*5 == 7"));
@@ -3670,7 +3685,7 @@ NOINLINE void FreeForTest(void* data) {
 // Disabled because executing it causes Gtest to show a warning in the output,
 // which confuses the runner on some platforms, making the test report an
 // "UNKNOWN" status even though it succeeded.
-TEST_F(PartitionAllocTest, DISABLED_PreforkHandler) {
+TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
   std::atomic<bool> please_stop;
   std::atomic<int> started_threads{0};
 
@@ -3719,7 +3734,7 @@ TEST_F(PartitionAllocTest, DISABLED_PreforkHandler) {
         // !BUILDFLAG(IS_CHROMECAST)
 
 // Checks the bucket index logic.
-TEST_F(PartitionAllocTest, GetIndex) {
+TEST_P(PartitionAllocTest, GetIndex) {
   BucketIndexLookup lookup{};
 
   for (size_t size = 0; size < kMaxBucketed; size++) {
@@ -3737,7 +3752,7 @@ TEST_F(PartitionAllocTest, GetIndex) {
 
 // Used to check alignment. If the compiler understands the annotations, the
 // zeroing in the constructor uses aligned SIMD instructions.
-TEST_F(PartitionAllocTest, MallocFunctionAnnotations) {
+TEST_P(PartitionAllocTest, MallocFunctionAnnotations) {
   struct TestStruct {
     uint64_t a = 0;
     uint64_t b = 0;
@@ -3752,7 +3767,7 @@ TEST_F(PartitionAllocTest, MallocFunctionAnnotations) {
 }
 
 // Test that the ConfigurablePool works properly.
-TEST_F(PartitionAllocTest, ConfigurablePool) {
+TEST_P(PartitionAllocTest, ConfigurablePool) {
   EXPECT_FALSE(IsConfigurablePoolAvailable());
 
   // The rest is only applicable to 64-bit mode
@@ -3801,7 +3816,7 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
 #endif  // defined(ARCH_CPU_64_BITS)
 }
 
-TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
+TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Use another root, since the ones from the test harness disable the empty
   // slot span size cap.
   PartitionRoot<ThreadSafe> root;
@@ -3860,7 +3875,7 @@ TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
     root.Free(ptr);
 }
 
-TEST_F(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
+TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   PartitionRoot<ThreadSafe> root({
       PartitionOptions::AlignedAlloc::kDisallowed,
       PartitionOptions::ThreadCache::kDisabled,
@@ -3930,14 +3945,14 @@ extern "C" {
 void* __real_malloc(size_t);
 }  // extern "C"
 
-TEST_F(PartitionAllocTest, HandleMixedAllocations) {
+TEST_P(PartitionAllocTest, HandleMixedAllocations) {
   void* ptr = __real_malloc(12);
   // Should not crash, no test assertion.
   free(ptr);
 }
 #endif
 
-TEST_F(PartitionAllocTest, SortFreelist) {
+TEST_P(PartitionAllocTest, SortFreelist) {
   const size_t count = 100;
   const size_t allocation_size = 1;
   void* first_ptr = allocator.root()->Alloc(allocation_size, "");
@@ -3995,7 +4010,7 @@ TEST_F(PartitionAllocTest, SortFreelist) {
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_LINUX) && \
     defined(ARCH_CPU_64_BITS)
-TEST_F(PartitionAllocTest, CrashOnUnknownPointer) {
+TEST_P(PartitionAllocTest, CrashOnUnknownPointer) {
   int not_a_heap_object = 42;
   EXPECT_DEATH(
       allocator.root()->Free(reinterpret_cast<void*>(&not_a_heap_object)), "");
@@ -4089,7 +4104,7 @@ class ScopedOpenCLNoOpKernel {
 // On macOS 10.11, allocations are made with PartitionAlloc, but the pointer
 // is incorrectly passed by CoreFoundation to the previous default zone,
 // causing crashes. This is intended to detect these issues coming back.
-TEST_F(PartitionAllocTest, OpenCL) {
+TEST_P(PartitionAllocTest, OpenCL) {
   // Skip on 10.11, as it fails there.
   // TODO(crbug.com/1268776): Make it pass on macOS 10.11.
   if (base::mac::IsOS10_11())
