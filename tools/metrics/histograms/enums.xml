@@ -64573,6 +64573,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="NTP containing Discover feed wrapper fixed"/>
   <int value="4"
       label="Content suggestions view controller not cleaned up on restart"/>
+  <int value="5" label="ELM collection view containing feed header fixed"/>
 </enum>
 
 <enum name="NTPCustomizeAction">

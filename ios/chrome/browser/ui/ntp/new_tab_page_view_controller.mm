@@ -859,6 +859,9 @@
         recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
                                      kContentSuggestionsParent];
   }
+  [self ensureView:self.feedHeaderViewController.view
+             isSubviewOf:self.collectionView
+      withRelationshipID:BrokenNTPHierarchyRelationship::kFeedHeaderParent];
   [self ensureView:self.collectionView
              isSubviewOf:self.discoverFeedWrapperViewController.discoverFeed
                              .view
