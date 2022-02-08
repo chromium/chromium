@@ -95,12 +95,11 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   EXPECT_FALSE(value->GetBool());
 #endif
 
-  std::string download_directory;
   EXPECT_TRUE(store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsString(&download_directory));
+  ASSERT_TRUE(value->is_string());
   EXPECT_EQ(download_dir_util::kDriveNamePolicyVariableName,
-            download_directory);
+            value->GetString());
 
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -122,10 +121,10 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   EXPECT_TRUE(
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsString(&download_directory));
+  ASSERT_TRUE(value->is_string());
   EXPECT_EQ(std::string(download_dir_util::kDriveNamePolicyVariableName) +
                 kRelativeToDriveRoot,
-            download_directory);
+            value->GetString());
 
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_RECOMMENDED,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -138,7 +137,7 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   EXPECT_TRUE(
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsString(&download_directory));
-  EXPECT_EQ(kUserIDHash, download_directory);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(kUserIDHash, value->GetString());
 }
 #endif
