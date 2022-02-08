@@ -39,6 +39,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/input/scroll_utils.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -1633,6 +1634,11 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
   // //chrome/browser/resources/pdf/viewport.js.
   static constexpr int kScrollIncrement = 40;
 
+  // Scrolling by a fraction of the viewport height may introduce slight
+  // position differences on various platforms due to rounding. Tolerate this
+  // difference.
+  static constexpr float kScrollPositionEpsilon = 2.0f;
+
   static int GetViewportHeight(WebContents* guest_contents) {
     int viewport_height = 0;
     EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
@@ -1661,9 +1667,6 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
   }
 };
 
-// static
-constexpr int PDFExtensionScrollTest::kScrollIncrement;
-
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -1674,6 +1677,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
   const int viewport_height = GetViewportHeight(guest_contents);
   ASSERT_GT(viewport_height, 0);
 
+  // For web content, page down / page up scrolling only scrolls by a fraction
+  // of the viewport height. The PDF Viewer should match that behavior.
+  const float scroll_height =
+      viewport_height * cc::kMinFractionToStepWhenPaging;
+
   // Press Space to scroll down.
   ScrollEventWaiter scroll_waiter(guest_contents);
   content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
@@ -1681,7 +1689,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
                             /*control=*/false, /*shift=*/false, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_contents),
+              kScrollPositionEpsilon);
 
   // Press Space to scroll down again.
   scroll_waiter.Reset();
@@ -1690,7 +1699,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
                             /*control=*/false, /*shift=*/false, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(viewport_height * 2, GetViewportScrollPositionY(guest_contents));
+  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(guest_contents),
+              kScrollPositionEpsilon);
 
   // Press Shift+Space to scroll up.
   scroll_waiter.Reset();
@@ -1699,7 +1709,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
                             /*control=*/false, /*shift=*/true, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_contents),
+              kScrollPositionEpsilon);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
@@ -1712,6 +1723,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
   const int viewport_height = GetViewportHeight(guest_contents);
   ASSERT_GT(viewport_height, 0);
 
+  // For web content, page down / page up scrolling only scrolls by a fraction
+  // of the viewport height. The PDF Viewer should match that behavior.
+  const float scroll_height =
+      viewport_height * cc::kMinFractionToStepWhenPaging;
+
   // Press PageDown to scroll down.
   ScrollEventWaiter scroll_waiter(guest_contents);
   content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::PAGE_DOWN,
@@ -1720,7 +1736,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_contents),
+              kScrollPositionEpsilon);
 
   // Press PageDown to scroll down again.
   scroll_waiter.Reset();
@@ -1730,7 +1747,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(viewport_height * 2, GetViewportScrollPositionY(guest_contents));
+  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(guest_contents),
+              kScrollPositionEpsilon);
 
   // Press PageUp to scroll up.
   scroll_waiter.Reset();
@@ -1739,7 +1757,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
       /*control=*/false, /*shift=*/false, /*alt=*/false,
       /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_contents),
+              kScrollPositionEpsilon);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
