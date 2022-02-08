@@ -1745,10 +1745,7 @@ TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', function() {
         .call(this.press(KeyCode.RIGHT, {ctrl: true}))
         .expectSpeech('Suggest', 'Username', 'Insert', 'was', 'Insert end')
         .call(this.press(KeyCode.RIGHT, {ctrl: true}))
-
-        // TODO(https://crbug.com/1260221):
-        // this should describe just one word "am".
-        .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end', ' typing')
+        .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end')
         // Move backward through line.
         .call(this.press(KeyCode.LEFT, {ctrl: true}))
         .expectSpeech('Delete', 'am', 'Delete end', 'Suggest end')

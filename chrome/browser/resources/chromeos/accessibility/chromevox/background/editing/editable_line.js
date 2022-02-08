@@ -710,7 +710,7 @@ editing.EditableLine = class {
         Unit.WORD,
         shouldMoveToPreviousWord ? Movement.DIRECTIONAL : Movement.BOUND,
         Dir.BACKWARD);
-    const end = pos.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
+    const end = start.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
     return new Range(start, end);
   }
 };
