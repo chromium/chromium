@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -14,25 +13,28 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
-#include "ui/base/ui_base_switches.h"
-#include "ui/native_theme/native_theme.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
 
 namespace web_app {
 
-enum class PageFlagParam {
-  kWithDefaultPageFlag = 0,
-  kWithoutDefaultPageFlag = 1,
-  kMaxValue = kWithoutDefaultPageFlag
+enum class FlagParam {
+  kWithFlag = 0,
+  kWithoutFlag = 1,
+  kMaxValue = kWithoutFlag
 };
 
-class WebAppOfflineTest : public InProcessBrowserTest {
+class WebAppOfflinePageTest : public InProcessBrowserTest,
+                              public ::testing::WithParamInterface<FlagParam> {
  public:
+  WebAppOfflinePageTest() {
+    if (GetParam() == FlagParam::kWithFlag) {
+      feature_list_.InitAndEnableFeature(
+          features::kDesktopPWAsDefaultOfflinePage);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kDesktopPWAsDefaultOfflinePage);
+    }
+  }
+
   // Start a web app without a service worker and disconnect.
   void StartWebAppAndDisconnect(content::WebContents* web_contents,
                                 std::string html) {
@@ -67,21 +69,6 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
     observer.Wait();
   }
-};
-
-class WebAppOfflinePageTest
-    : public WebAppOfflineTest,
-      public ::testing::WithParamInterface<PageFlagParam> {
- public:
-  WebAppOfflinePageTest() {
-    if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-      feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsDefaultOfflinePage);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsDefaultOfflinePage);
-    }
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -97,7 +84,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
       browser()->tab_strip_model()->GetActiveWebContents();
   StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
+  if (GetParam() == FlagParam::kWithFlag) {
     // Expect that the default offline page is showing.
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -121,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   StartPwaAndDisconnect(web_contents, "/banners/background-color.html");
 
-  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
+  if (GetParam() == FlagParam::kWithFlag) {
     // Expect that the default offline page is showing.
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -150,133 +137,9 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
                   .ExtractBool());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppOfflinePageTest,
-    ::testing::Values(PageFlagParam::kWithDefaultPageFlag,
-                      PageFlagParam::kWithoutDefaultPageFlag));
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAppOfflinePageTest,
+                         ::testing::Values(FlagParam::kWithFlag,
+                                           FlagParam::kWithoutFlag));
 
-class WebAppOfflineDarkModeTest
-    : public WebAppOfflineTest,
-      public testing::WithParamInterface<blink::mojom::PreferredColorScheme> {
- public:
-  WebAppOfflineDarkModeTest() {
-    feature_list_.InitWithFeatures({features::kDesktopPWAsDefaultOfflinePage,
-                                    blink::features::kWebAppEnableDarkMode},
-                                   {});
-  }
-
-  void SetUp() override {
-#if BUILDFLAG(IS_WIN)
-    if (base::win::GetVersion() < base::win::Version::WIN10) {
-      GTEST_SKIP();
-    }
-#endif
-    InProcessBrowserTest::SetUp();
-  }
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // ShellContentBrowserClient::OverrideWebkitPrefs() overrides the
-    // prefers-color-scheme according to switches::kForceDarkMode
-    // command line.
-    if (GetParam() == blink::mojom::PreferredColorScheme::kDark)
-      command_line->AppendSwitch(switches::kForceDarkMode);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Testing offline page in dark mode for a web app with a manifest and no
-// service worker.
-IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       WebAppOfflineDarkModeNoServiceWorker) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  StartWebAppAndDisconnect(
-      web_contents, "/web_apps/get_manifest.html?color_scheme_dark.json");
-
-  // Expect that the default offline page is showing with dark mode colors.
-
-  EXPECT_TRUE(
-      EvalJs(web_contents,
-             "window.matchMedia('(prefers-color-scheme: dark)').matches")
-          .ExtractBool());
-  EXPECT_EQ(
-      EvalJs(web_contents,
-             "window.getComputedStyle(document.querySelector('h2')).color")
-          .ExtractString(),
-      "rgb(255, 0, 0)");
-  EXPECT_EQ(EvalJs(web_contents,
-                   "window.getComputedStyle(document.querySelector('body'))."
-                   "backgroundColor")
-                .ExtractString(),
-            "rgb(255, 0, 0)");
-}
-
-// Testing offline page in dark mode for a web app with a manifest and service
-// worker that does not handle offline error.
-IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       WebAppOfflineDarkModeEmptyServiceWorker) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  StartWebAppAndDisconnect(web_contents,
-                           "/banners/manifest_test_page.html?manifest=../"
-                           "web_apps/color_scheme_dark.json");
-
-  // Expect that the default offline page is showing with dark mode colors.
-  EXPECT_TRUE(
-      EvalJs(web_contents,
-             "window.matchMedia('(prefers-color-scheme: dark)').matches")
-          .ExtractBool());
-  EXPECT_EQ(
-      EvalJs(web_contents,
-             "window.getComputedStyle(document.querySelector('h2')).color")
-          .ExtractString(),
-      "rgb(255, 0, 0)");
-  EXPECT_EQ(EvalJs(web_contents,
-                   "window.getComputedStyle(document.querySelector('body'))."
-                   "backgroundColor")
-                .ExtractString(),
-            "rgb(255, 0, 0)");
-}
-
-// Testing offline page in dark mode for a web app with a manifest that has not
-// provided dark mode colors.
-IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       WebAppOfflineNoDarkModeColorsProvided) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
-
-  // Expect that the default offline page is showing with dark mode colors.
-  EXPECT_TRUE(
-      EvalJs(web_contents,
-             "window.matchMedia('(prefers-color-scheme: dark)').matches")
-          .ExtractBool());
-  EXPECT_EQ(
-      EvalJs(web_contents,
-             "window.getComputedStyle(document.querySelector('h2')).color")
-          .ExtractString(),
-      "rgb(0, 255, 0)");
-  EXPECT_EQ(EvalJs(web_contents,
-                   "window.getComputedStyle(document.querySelector('body'))."
-                   "backgroundColor")
-                .ExtractString(),
-            "rgb(255, 255, 0)");
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    WebAppOfflineDarkModeTest,
-    ::testing::Values(blink::mojom::PreferredColorScheme::kDark));
 }  // namespace web_app

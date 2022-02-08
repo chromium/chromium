@@ -141,38 +141,20 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
       content::mojom::AlternativeErrorPageOverrideInfo::New();
   // TODO(crbug.com/1285128): Ensure sufficient contrast.
   base::Value dict(base::Value::Type::DICTIONARY);
-  SkColor theme_color =
-      web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK);
-  SkColor background_color =
-      web_app_registrar.GetAppBackgroundColor(*app_id).value_or(SK_ColorWHITE);
-  dict.SetStringKey(default_offline::kThemeColor,
-                    skia::SkColorToHexString(theme_color));
-  dict.SetStringKey(default_offline::kBackgroundColor,
-                    skia::SkColorToHexString(background_color));
+  dict.SetStringKey(
+      default_offline::kThemeColor,
+      skia::SkColorToHexString(
+          web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK)));
+  dict.SetStringKey(
+      default_offline::kBackgroundColor,
+      skia::SkColorToHexString(
+          web_app_registrar.GetAppBackgroundColor(*app_id).value_or(
+              SK_ColorWHITE)));
   dict.SetStringKey(default_offline::kAppShortName,
                     web_app_registrar.GetAppShortName(*app_id));
   dict.SetStringKey(
       default_offline::kMessage,
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
-  absl::optional<SkColor> dark_mode_theme_color =
-      web_app_registrar.GetAppDarkModeThemeColor(*app_id);
-  if (dark_mode_theme_color) {
-    dict.SetStringKey(default_offline::kDarkModeThemeColor,
-                      skia::SkColorToHexString(dark_mode_theme_color.value()));
-  } else {
-    dict.SetStringKey(default_offline::kDarkModeThemeColor,
-                      skia::SkColorToHexString(theme_color));
-  }
-  absl::optional<SkColor> dark_mode_background_color =
-      web_app_registrar.GetAppDarkModeThemeColor(*app_id);
-  if (dark_mode_background_color) {
-    dict.SetStringKey(
-        default_offline::kDarkModeBackgroundColor,
-        skia::SkColorToHexString(dark_mode_background_color.value()));
-  } else {
-    dict.SetStringKey(default_offline::kDarkModeBackgroundColor,
-                      skia::SkColorToHexString(background_color));
-  }
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
   return alternative_error_page_info;
