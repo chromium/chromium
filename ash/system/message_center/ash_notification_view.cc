@@ -418,24 +418,22 @@ AshNotificationView::AshNotificationView(
                    .CopyAddressTo(&collapsed_summary_view_)
                    .Build());
 
-  if (!notification.group_child()) {
-    AddChildView(
-        views::Builder<views::ScrollView>()
-            .CopyAddressTo(&grouped_notifications_scroll_view_)
-            .SetBackgroundColor(absl::nullopt)
-            .SetDrawOverflowIndicator(false)
-            .ClipHeightTo(0, std::numeric_limits<int>::max())
-            .SetContents(
-                views::Builder<GroupedNotificationsContainer>()
-                    .CopyAddressTo(&grouped_notifications_container_)
-                    .SetParentNotificationView(this)
-                    .SetOrientation(Orientation::kVertical)
-                    .SetInsideBorderInsets(kGroupedNotificationContainerInsets)
-                    .SetBetweenChildSpacing(
-                        IsExpanded() ? kGroupedNotificationsExpandedSpacing
-                                     : kGroupedNotificationsCollapsedSpacing))
-            .Build());
-  }
+  AddChildView(
+      views::Builder<views::ScrollView>()
+          .CopyAddressTo(&grouped_notifications_scroll_view_)
+          .SetBackgroundColor(absl::nullopt)
+          .SetDrawOverflowIndicator(false)
+          .ClipHeightTo(0, std::numeric_limits<int>::max())
+          .SetContents(
+              views::Builder<GroupedNotificationsContainer>()
+                  .CopyAddressTo(&grouped_notifications_container_)
+                  .SetParentNotificationView(this)
+                  .SetOrientation(Orientation::kVertical)
+                  .SetInsideBorderInsets(kGroupedNotificationContainerInsets)
+                  .SetBetweenChildSpacing(
+                      IsExpanded() ? kGroupedNotificationsExpandedSpacing
+                                   : kGroupedNotificationsCollapsedSpacing))
+          .Build());
 
   AddChildView(CreateActionsRow(std::make_unique<views::FlexLayout>()));
 
@@ -723,8 +721,7 @@ void AshNotificationView::UpdateWithNotification(
   is_grouped_child_view_ = notification.group_child();
   is_grouped_parent_view_ = notification.group_parent();
 
-  if (!is_grouped_child_view_)
-    grouped_notifications_scroll_view_->SetVisible(is_grouped_parent_view_);
+  grouped_notifications_scroll_view_->SetVisible(is_grouped_parent_view_);
 
   if (is_grouped_child_view_ && !is_nested())
     SetIsNested();
