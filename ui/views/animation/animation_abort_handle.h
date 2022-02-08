@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/views_export.h"
 
@@ -21,9 +22,9 @@ namespace views {
 // A handle that aborts associated animations on destruction.
 // Caveat: ALL properties will be aborted on handle destruction,
 // including those not initiated by the builder.
-class VIEWS_EXPORT AnimationAbortHandle {
+class VIEWS_EXPORT AnimationAbortHandle : public ui::LayerObserver {
  public:
-  ~AnimationAbortHandle();
+  ~AnimationAbortHandle() override;
 
   void OnObserverDeleted();
 
@@ -41,11 +42,19 @@ class VIEWS_EXPORT AnimationAbortHandle {
   void OnAnimationStarted();
   void OnAnimationEnded();
 
+  // ui::LayerObserver:
+  void LayerDestroyed(ui::Layer* layer) override;
+
   AnimationState animation_state() const { return animation_state_; }
 
   raw_ptr<AnimationBuilder::Observer> observer_;
-  std::set<ui::Layer*> layers_;
   AnimationState animation_state_ = AnimationState::kNotStarted;
+
+  // Stores the layers tracked by the animation abort handle.
+  std::set<ui::Layer*> tracked_layers_;
+
+  // Stores the layers that are deleted during tracking.
+  std::set<ui::Layer*> deleted_layers_;
 };
 
 }  // namespace views
