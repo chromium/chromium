@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckRunOnOsLoginWorksOnPolicyAppAllowed) {
+                       DISABLED_CheckRunOnOsLoginWorksOnPolicyAppAllowed) {
   helper_.InstallPolicyAppOsLoginModeAllowed("SiteA");
   helper_.EnableRunOnOSLoginMode("SiteA");
   helper_.CheckRunOnOSLoginModeEnabled("SiteA");
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckRunOnOsLoginWorksOnPolicyAppBlocked) {
+                       DISABLED_CheckRunOnOsLoginWorksOnPolicyAppBlocked) {
   helper_.InstallPolicyAppOsLoginModeBlocked("SiteA");
   helper_.EnableRunOnOSLoginMode("SiteA");
   helper_.CheckRunOnOSLoginModeDisabled("SiteA");
