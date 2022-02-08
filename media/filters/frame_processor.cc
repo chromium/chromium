@@ -892,6 +892,15 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
 
     // 4. If timestampOffset is not 0, then run the following steps:
     if (!timestamp_offset->is_zero()) {
+      if (timestamp_offset->is_inf()) {
+        // This condition might occur if the app set timestampOffset while in
+        // 'segments' append mode, skipping the 'sequence' mode offset update
+        // checks, above.
+        MEDIA_LOG(ERROR, media_log_)
+            << "timestampOffset exceeds range allowed by implementation";
+        return false;
+      }
+
       // 4.1. Add timestampOffset to the presentation timestamp.
       // Note: |frame| PTS is only updated if it survives discontinuity
       // processing.

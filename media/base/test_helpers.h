@@ -547,6 +547,11 @@ MATCHER(SequenceOffsetUpdatePreventedByOutOfRangeGroupStartTimestamp, "") {
       "timestamp that exceeds range allowed by implementation");
 }
 
+MATCHER(OffsetOutOfRange, "") {
+  return CONTAINS_STRING(
+      arg, "timestampOffset exceeds range allowed by implementation");
+}
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_TEST_HELPERS_H_
