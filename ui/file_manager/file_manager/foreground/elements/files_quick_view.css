@@ -31,10 +31,6 @@ dialog:focus {
   outline: none;
 }
 
-dialog::backdrop {
-  background-color: var(--cros-app-shield-80);
-}
-
 dialog#delete-confirm-dialog::backdrop {
   background-color: transparent;
 }
