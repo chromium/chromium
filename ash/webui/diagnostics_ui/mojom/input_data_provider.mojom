@@ -81,6 +81,9 @@ struct KeyboardInfo {
   string name;
   PhysicalLayout physical_layout;
   MechanicalLayout mechanical_layout;
+  // For internal keyboards, the region code of the device (from which the
+  // visual layout can be determined).
+  string? region_code;
   NumberPadPresence number_pad_present;
   // List of ChromeOS specific action keys in the top row. This list excludes
   // the left-most Escape key, and right-most key (usually Power/Lock).
@@ -127,17 +130,6 @@ interface KeyboardObserver {
   OnKeyEventsPaused();
   // Called when delivery of events resumes.
   OnKeyEventsResumed();
-};
-
-// Describes the glyphs that appear on a single key.
-struct KeyGlyphSet {
-  // Glyph if pressed without modifiers. Displayed in the centre or on the lower
-  // half of the key.
-  string main_glyph;
-
-  // Glyph if pressed with Shift. Displayed in the upper half. Null if it's just
-  // the main glyph in upper-case.
-  string? shift_glyph;
 };
 
 enum TouchDeviceType {
@@ -188,12 +180,4 @@ interface InputDataProvider {
   // target SWA window, and enforces the security policy of only forwarding
   // key events to the observer when that window is visible and has focus.
   ObserveKeyEvents(uint32 id, pending_remote<KeyboardObserver> observer);
-
-  // Returns the visual layout for the keyboard with the given ID. For external
-  // keyboards where we can't be sure of their layout, this will default to the
-  // system layout.
-  //
-  // The layout is represented as a map from the evdev code of a key to a
-  // KeyGlyphSet describing its glyphs.
-  GetKeyboardVisualLayout(uint32 id) => (map<uint32, KeyGlyphSet> layout);
 };

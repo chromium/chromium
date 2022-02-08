@@ -125,10 +125,6 @@ class InputDataProvider : public mojom::InputDataProvider,
   void ObserveConnectedDevices(
       mojo::PendingRemote<mojom::ConnectedDevicesObserver> observer) override;
 
-  void GetKeyboardVisualLayout(
-      uint32_t id,
-      GetKeyboardVisualLayoutCallback callback) override;
-
   void ObserveKeyEvents(
       uint32_t id,
       mojo::PendingRemote<mojom::KeyboardObserver> observer) override;

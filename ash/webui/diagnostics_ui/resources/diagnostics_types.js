@@ -477,12 +477,6 @@ export const TopRowKey = ash.diagnostics.mojom.TopRowKey;
 export const KeyboardInfo = ash.diagnostics.mojom.KeyboardInfo;
 
 /**
- * Type alias for KeyGlyphSet.
- * @typedef {ash.diagnostics.mojom.KeyGlyphSet}
- */
-export const KeyGlyphSet = ash.diagnostics.mojom.KeyGlyphSet;
-
-/**
  * Type alias for TouchDeviceType.
  * @typedef {ash.diagnostics.mojom.TouchDeviceType}
  */
@@ -555,12 +549,6 @@ export const KeyboardObserverReceiver =
  *            touchDevices: !Array<!TouchDeviceInfo>}}
  */
 export let GetConnectedDevicesResponse;
-
-/**
- * Type alias for the response from InputDataProvider.GetKeyboardVisualLayout.
- * @typedef {{layout: !Object<number, !KeyGlyphSet>}}
- */
-export let GetKeyboardVisualLayoutResponse;
 
 /**
  * Type alias for InputDataProviderInterface.

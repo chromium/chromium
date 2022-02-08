@@ -628,6 +628,7 @@ export const fakeKeyboards = [
     name: 'AT Translated Set 2 keyboard',
     physicalLayout: PhysicalLayout.kChromeOS,
     mechanicalLayout: MechanicalLayout.kAnsi,
+    regionCode: 'jp',
     hasAssistantKey: true,
     topRowKeys: [
       TopRowKey.kBack, TopRowKey.kForward, TopRowKey.kRefresh,

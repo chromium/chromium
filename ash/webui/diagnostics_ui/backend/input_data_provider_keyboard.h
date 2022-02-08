@@ -8,10 +8,7 @@
 #include <vector>
 
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
-#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 namespace ash {
 namespace diagnostics {
@@ -42,10 +39,6 @@ class InputDataProviderKeyboard {
       delete;
   ~InputDataProviderKeyboard();
 
-  void GetKeyboardVisualLayout(
-      const mojom::KeyboardInfoPtr& keyboard,
-      mojom::InputDataProvider::GetKeyboardVisualLayoutCallback callback);
-
   mojom::KeyboardInfoPtr ConstructKeyboard(
       const InputDeviceInformation* device_info,
       AuxData* out_aux_data);
@@ -58,10 +51,6 @@ class InputDataProviderKeyboard {
       bool down);
 
  private:
-  void ProcessXkbLayout(
-      mojom::InputDataProvider::GetKeyboardVisualLayoutCallback callback);
-  mojom::KeyGlyphSetPtr LookupGlyphSet(uint32_t evdev_code);
-
   void ProcessKeyboardTopRowLayout(
       const InputDeviceInformation* device_info,
       ui::EventRewriterChromeOS::KeyboardTopRowLayout top_row_layout,
@@ -70,11 +59,6 @@ class InputDataProviderKeyboard {
           scan_code_map,
       std::vector<mojom::TopRowKey>* out_top_row_keys,
       AuxData* out_aux_data);
-
-  ui::XkbEvdevCodes xkb_evdev_codes_;
-  ui::XkbKeyboardLayoutEngine xkb_layout_engine_;
-
-  base::WeakPtrFactory<InputDataProviderKeyboard> weak_factory_{this};
 };
 
 }  // namespace diagnostics

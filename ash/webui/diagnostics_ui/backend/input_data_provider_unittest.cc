@@ -844,6 +844,57 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
   // this test.
 }
 
+TEST_F(InputDataProviderTest, KeyboardRegionDetection) {
+  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey, "jp");
+
+  ui::DeviceEvent event_internal(ui::DeviceEvent::DeviceType::INPUT,
+                                 ui::DeviceEvent::ActionType::ADD,
+                                 base::FilePath("/dev/input/event0"));
+  ui::DeviceEvent event_external(ui::DeviceEvent::DeviceType::INPUT,
+                                 ui::DeviceEvent::ActionType::ADD,
+                                 base::FilePath("/dev/input/event4"));
+  provider_->OnDeviceEvent(event_internal);
+  provider_->OnDeviceEvent(event_external);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  const auto& keyboards = future.Get<0>();
+
+  ASSERT_EQ(2ul, keyboards.size());
+
+  const mojom::KeyboardInfoPtr& internal_keyboard = keyboards[0];
+  EXPECT_EQ("jp", internal_keyboard->region_code);
+
+  const mojom::KeyboardInfoPtr& external_keyboard = keyboards[1];
+  EXPECT_EQ(absl::nullopt, external_keyboard->region_code);
+}
+
+TEST_F(InputDataProviderTest, KeyboardRegionDetection_Failure) {
+  statistics_provider_.ClearMachineStatistic(chromeos::system::kRegionKey);
+
+  ui::DeviceEvent event_internal(ui::DeviceEvent::DeviceType::INPUT,
+                                 ui::DeviceEvent::ActionType::ADD,
+                                 base::FilePath("/dev/input/event0"));
+  provider_->OnDeviceEvent(event_internal);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  const auto& keyboards = future.Get<0>();
+
+  ASSERT_EQ(1ul, keyboards.size());
+
+  const mojom::KeyboardInfoPtr& internal_keyboard = keyboards[0];
+  EXPECT_EQ(absl::nullopt, internal_keyboard->region_code);
+}
+
 TEST_F(InputDataProviderTest, KeyboardAssistantKeyDetection) {
   ui::DeviceEvent link_event(ui::DeviceEvent::DeviceType::INPUT,
                              ui::DeviceEvent::ActionType::ADD,
@@ -970,67 +1021,6 @@ TEST_F(InputDataProviderTest, SillyDeviceDoesNotCrash) {
                                          base::FilePath(kSillyDeviceName));
   provider_->OnDeviceEvent(add_silly_device_event);
   base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(InputDataProviderTest, GetKeyboardVisualLayout_AmericanEnglish) {
-  statistics_provider_.SetMachineStatistic(chromeos::system::kKeyboardLayoutKey,
-                                           "xkb:us::eng,m17n:ar,t13n:ar");
-
-  ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
-                                     ui::DeviceEvent::ActionType::ADD,
-                                     base::FilePath("/dev/input/event6"));
-  provider_->OnDeviceEvent(add_keyboard_event);
-  base::RunLoop().RunUntilIdle();
-
-  base::test::TestFuture<base::flat_map<uint32_t, mojom::KeyGlyphSetPtr>>
-      future;
-  provider_->GetKeyboardVisualLayout(6, future.GetCallback());
-  const auto& layout = future.Get<0>();
-
-  ASSERT_FALSE(layout.at(KEY_Q).is_null());
-  EXPECT_EQ("q", layout.at(KEY_Q)->main_glyph);
-  EXPECT_FALSE(layout.at(KEY_Q)->shift_glyph.has_value());
-
-  ASSERT_FALSE(layout.at(KEY_3).is_null());
-  EXPECT_EQ("3", layout.at(KEY_3)->main_glyph);
-  EXPECT_EQ("#", layout.at(KEY_3)->shift_glyph);
-
-  // Check all of the essential keys (at least on US QWERTY) have
-  // glyphs.
-  for (auto const& entry : layout) {
-    EXPECT_FALSE(entry.second.is_null())
-        << "No glyphs for evdev code " << entry.first;
-  }
-}
-
-TEST_F(InputDataProviderTest, GetKeyboardVisualLayout_FrenchFrench) {
-  statistics_provider_.SetMachineStatistic(chromeos::system::kKeyboardLayoutKey,
-                                           "xkb:fr::fra");
-
-  ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
-                                     ui::DeviceEvent::ActionType::ADD,
-                                     base::FilePath("/dev/input/event6"));
-  provider_->OnDeviceEvent(add_keyboard_event);
-  base::RunLoop().RunUntilIdle();
-
-  base::test::TestFuture<base::flat_map<uint32_t, mojom::KeyGlyphSetPtr>>
-      future;
-  provider_->GetKeyboardVisualLayout(6, future.GetCallback());
-  const auto& layout = future.Get<0>();
-
-  ASSERT_FALSE(layout.at(KEY_Q).is_null());
-  EXPECT_EQ("a", layout.at(KEY_Q)->main_glyph);
-  EXPECT_FALSE(layout.at(KEY_Q)->shift_glyph.has_value());
-
-  ASSERT_FALSE(layout.at(KEY_3).is_null());
-  EXPECT_EQ("\"", layout.at(KEY_3)->main_glyph);
-  EXPECT_EQ("3", layout.at(KEY_3)->shift_glyph);
-
-  // Check all of the essential keys have glyphs.
-  for (auto const& entry : layout) {
-    EXPECT_FALSE(entry.second.is_null())
-        << "No glyphs for evdev code " << entry.first;
-  }
 }
 
 TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayout_Unknown1) {

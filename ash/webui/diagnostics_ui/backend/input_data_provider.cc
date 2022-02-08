@@ -14,10 +14,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace ash {
 namespace diagnostics {
@@ -329,18 +327,6 @@ void InputDataProvider::GetConnectedDevices(
 void InputDataProvider::ObserveConnectedDevices(
     mojo::PendingRemote<mojom::ConnectedDevicesObserver> observer) {
   connected_devices_observers_.Add(std::move(observer));
-}
-
-void InputDataProvider::GetKeyboardVisualLayout(
-    uint32_t id,
-    GetKeyboardVisualLayoutCallback callback) {
-  if (!keyboards_.contains(id)) {
-    LOG(ERROR) << "Couldn't find keyboard with ID " << id
-               << " when retrieving visual layout.";
-    return;
-  }
-
-  keyboard_helper_.GetKeyboardVisualLayout(keyboards_[id], std::move(callback));
 }
 
 void InputDataProvider::OnWidgetVisibilityChanged(views::Widget* widget,

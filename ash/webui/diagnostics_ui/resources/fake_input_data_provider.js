@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, GetKeyboardVisualLayoutResponse, InputDataProviderInterface, KeyboardInfo, KeyboardObserverRemote, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
+import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, InputDataProviderInterface, KeyboardInfo, KeyboardObserverRemote, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
 
 /**
  * @fileoverview
@@ -42,7 +42,6 @@ export class FakeInputDataProvider {
    */
   registerMethods() {
     this.methods_.register('getConnectedDevices');
-    this.methods_.register('getKeyboardVisualLayout');
     this.methods_.register('observeKeyEvents');
   }
 
@@ -146,12 +145,5 @@ export class FakeInputDataProvider {
     for (const observer of this.observers_) {
       observer.onTouchDeviceDisconnected(id);
     }
-  }
-
-  /**
-   * @return {!Promise<!GetKeyboardVisualLayoutResponse>}
-   */
-  getKeyboardVisualLayout(id) {
-    return this.methods_.resolveMethod('getKeyboardVisualLayout');
   }
 }
