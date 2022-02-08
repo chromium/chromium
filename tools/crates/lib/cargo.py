@@ -150,6 +150,7 @@ def run_cargo_tree(path: str, build: CrateBuildOutput, target_arch: str,
         r = subprocess.check_output(tree_cmd, text=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
         print()
+        print(' '.join(tree_cmd))
         print(e.stderr)
         raise e
     return r.splitlines()
@@ -180,7 +181,8 @@ class ListOf3pCargoToml:
 def write_cargo_toml_in_tempdir(dir: str,
                                 all_3p_tomls: ListOf3pCargoToml,
                                 orig_toml_parsed: dict = None,
-                                orig_toml_path: str = None) -> str:
+                                orig_toml_path: str = None,
+                                verbose: bool = False) -> str:
     """Write a temporary Cargo.toml file that will work with `cargo tree`.
 
     Creates a copy of a Cargo.toml, specified in `orig_toml_path`, in to the
@@ -202,6 +204,8 @@ def write_cargo_toml_in_tempdir(dir: str,
           dictionary.
         orig_toml_path: An OS path to the Cargo.toml file which should be copied
           into the output Cargo.toml.
+        verbose: Whether to print verbose output, including the full TOML
+          content.
 
     Returns:
         The OS path to the output Cargo.toml file in `dir`, for convenience.
@@ -280,20 +284,27 @@ def write_cargo_toml_in_tempdir(dir: str,
         }
 
     tmp_cargo_toml_path = os.path.join(dir, "Cargo.toml")
+    # This is the third-party Cargo.toml file. Note that we do not write
+    # the `orig_toml_parsed` as the python parser does not like the contents
+    # of some Cargo.toml files that cargo is just fine with. So we write the
+    # contents without a round trip through the parser.
+    if orig_toml_text:
+        cargo_toml_text = orig_toml_text
+    else:
+        cargo_toml_text = toml.dumps(orig_toml_parsed)
+    # We attach our "patch" keys onto it to redirect all crates.io
+    # dependencies into `consts.THIRD_PARTY`.
+    cargo_toml_text = cargo_toml_text + toml.dumps(patch)
     # Generate our own (temp) copy of a Cargo.toml for the dependency
     # that we will run `cargo tree` against.
     with open(tmp_cargo_toml_path, mode="w") as tmp_cargo_toml:
-        # This is the third-party Cargo.toml file. Note that we do not write
-        # the `orig_toml_parsed` as the python parser does not like the contents
-        # of some Cargo.toml files that cargo is just fine with. So we write the
-        # contents without a round trip through the parser.
-        if orig_toml_text:
-            tmp_cargo_toml.write(orig_toml_text)
-        else:
-            tmp_cargo_toml.write(toml.dumps(orig_toml_parsed))
-        # We attach our "patch" keys onto it to redirect all crates.io
-        # dependencies into `consts.THIRD_PARTY`.
-        tmp_cargo_toml.write(toml.dumps(patch))
+        tmp_cargo_toml.write(cargo_toml_text)
+    if verbose:
+        print("Writing to %s:" % tmp_cargo_toml_path)
+        print("=======")
+        print(cargo_toml_text)
+        print("=======")
+
     return tmp_cargo_toml_path
 
 

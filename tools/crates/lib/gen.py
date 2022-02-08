@@ -359,7 +359,8 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
         cargo_toml_path = cargo.write_cargo_toml_in_tempdir(
             workdir,
             list_of_3p_cargo_toml,
-            orig_toml_parsed=cargo.add_required_cargo_fields(toml_3p))
+            orig_toml_parsed=cargo.add_required_cargo_fields(toml_3p),
+            verbose=args.verbose)
 
         # This collects the direct dependencies from first-party code. For
         # normal dependencies, cargo can output them all here, which we collect
@@ -431,7 +432,8 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
             tmp_cargo_toml_path = cargo.write_cargo_toml_in_tempdir(
                 workdir,
                 list_of_3p_cargo_toml,
-                orig_toml_path=orig_cargo_toml_path)
+                orig_toml_path=orig_cargo_toml_path,
+                verbose=args.verbose)
 
             last_printed = common.print_same_line(
                 "Collecting normal dependencies: {}/{} {} v{}".format(

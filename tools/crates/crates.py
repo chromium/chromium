@@ -36,6 +36,9 @@ download_parser.add_argument(
     type=str,
     help=("The license of the crate, if an approved license can't be found " +
           "automatically"))
+download_parser.add_argument("--verbose",
+                             action="store_true",
+                             help="Used for debugging of this tool.")
 download_parser.set_defaults(func=download.run)
 
 gen_parser = subparsers.add_parser("gen")

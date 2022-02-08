@@ -46,7 +46,8 @@ def run(args: argparse.Namespace):
     if _check_if_crate_is_blocked(args.crate_name):
         exit(1)
 
-    full_version = _find_crate_full_version(args.crate_name, args.crate_version)
+    full_version = _find_crate_full_version(args.crate_name, args.crate_version,
+                                            args.verbose)
 
     crate_tarball = _download_crate(args.crate_name, full_version)
     if not crate_tarball:
@@ -149,7 +150,8 @@ def _check_if_crate_is_blocked(crate_name: str) -> bool:
     return False
 
 
-def _find_crate_full_version(crate_name: str, partial_version: str) -> str:
+def _find_crate_full_version(crate_name: str, partial_version: str,
+                             verbose: bool) -> str:
     """Look up the latest matching version from crates.io.
 
     Returns:
@@ -169,7 +171,8 @@ def _find_crate_full_version(crate_name: str, partial_version: str) -> str:
         cargo.write_cargo_toml_in_tempdir(
             workdir,
             None,
-            orig_toml_parsed=cargo.add_required_cargo_fields(toml_version))
+            orig_toml_parsed=cargo.add_required_cargo_fields(toml_version),
+            verbose=verbose)
         # `cargo tree` will tell us the actual version number of the dependency,
         # finding the latest matching version on crates.io.
         out = cargo.run_cargo_tree(cargo_toml_path,
