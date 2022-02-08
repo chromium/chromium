@@ -85,6 +85,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1650222530560417226">Atinge butonul „Activează înregistrarea în jurnal” pentru a colecta jurnale și erori viitoare ale consolei JavaScript din toate filele. Jurnalele vor fi colectate (și stocate doar în memorie) până când această pagină este închisă sau se atinge „Dezactivează înregistrarea în jurnal”.</translation>
+<translation id="1654232554734641711">Se oferă acces la Microfon</translation>
 <translation id="1657011748321897393">Nu s-a trimis, pentru că nu te-ai conectat la rețea.</translation>
 <translation id="1657641691196698092">Cookie-uri blocate</translation>
 <translation id="165877110639533037">Nu există file deschise</translation>
@@ -397,6 +398,7 @@ Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru 
 <translation id="4682686630151240767">1. Deschide Setările dispozitivului iPhone.</translation>
 <translation id="4689564913179979534">Gestionează metodele de plată…</translation>
 <translation id="470966556546083668">Nu activa sincronizarea</translation>
+<translation id="4731472194328757163">Se oferă acces la Camera foto și Microfon</translation>
 <translation id="473775607612524610">Actualizează</translation>
 <translation id="4747097190499141774">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay. Numai un utilizator care are expresia de acces poate citi datele tale criptate. Google nu primește și nu stochează expresia ta de acces. Dacă uiți expresia de acces sau vrei să modifici această setare, va trebui să resetezi sincronizarea. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Filă incognito nouă</translation>
@@ -549,6 +551,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6059830886158432458">Gestionează subiectele și activitatea aici</translation>
 <translation id="6064824697233747382">Organizația îți solicită să dezactivezi sincronizarea.</translation>
 <translation id="6066301408025741299">Atinge pentru a anula.</translation>
+<translation id="6077126322656614846">Se oferă acces la Camera foto</translation>
 <translation id="60829778314739003">Accept și continui</translation>
 <translation id="6084848228346514841">Selectează file</translation>
 <translation id="6103540626693881831">Criptare pe dispozitiv</translation>

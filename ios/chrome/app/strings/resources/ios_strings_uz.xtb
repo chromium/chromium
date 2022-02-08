@@ -85,6 +85,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="1650222530560417226">Barcha varaqlardagi JavaScript konsoli jurnali va xatolari yigʻilishi uchun “Jurnalga yozishni boshlash” ustiga bosing. Jurnallar sahifa yopilmaguncha yoki “Jurnalga yozishni toʻxtatish” bosilmaguncha yigʻiladi (va faqat xotirada saqlanadi).</translation>
+<translation id="1654232554734641711">Mikrofondan foydalanishga ruxsat berildi</translation>
 <translation id="1657011748321897393">Yozuv tarmoq xatoligi sababli joylanmadi.</translation>
 <translation id="1657641691196698092">Cookie-fayllar bloklandi</translation>
 <translation id="165877110639533037">Ochiq tablar yo‘q</translation>
@@ -399,6 +400,7 @@ Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun
 <translation id="4682686630151240767">1. iPhone sozlamalarini oching</translation>
 <translation id="4689564913179979534">Toʻlov usullarini boshqarish...</translation>
 <translation id="470966556546083668">Sinxronizatsiya qilinmasin</translation>
+<translation id="4731472194328757163">Kamera va mikrofondan foydalanishga ruxsat berildi</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4747097190499141774">Kodli ibora yordamida shifrlaganda Google Pay manzillari va toʻlov usullari shifrlanmaydi. Shifrlangan maʼlumotlaringizni faqat kodli iborani biladiganlar koʻra oladi. Bu iborani Google bilmaydi va serverlarida saqlamaydi. Agar kodli iborani unutsangiz, sinxronlash sozlamalarini qayta tiklash kerak bo‘ladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Yangi inkognito sahifa</translation>
@@ -551,6 +553,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6059830886158432458">Yangiliklar va faoliyatni shu yerdan boshqaring</translation>
 <translation id="6064824697233747382">Tashkilotingiz sinxronizatsiyani faolsizlantirishni talab qiladi.</translation>
 <translation id="6066301408025741299">Bekor qilish uchun bu yerga bosing.</translation>
+<translation id="6077126322656614846">Kameradan foydalanishga ruxsat berildi</translation>
 <translation id="60829778314739003">Qabul qilish va davom etish</translation>
 <translation id="6084848228346514841">Varaqlarni tanlang</translation>
 <translation id="6103540626693881831">Qurilmada shifrlash</translation>

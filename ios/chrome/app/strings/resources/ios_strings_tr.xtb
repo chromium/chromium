@@ -85,6 +85,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1650222530560417226">İleri tarihli JavaScript konsolu günlüklerini ve tüm sekmelerdeki hataları toplamak için "Günlük Kaydını Başlat" düğmesine dokunun. Bu sayfa kapatılana veya "Günlük Kaydını Durdur" düğmesine dokunulana kadar günlükler toplanır (ve yalnızca bellekte saklanır).</translation>
+<translation id="1654232554734641711">Mikrofon erişimine izin veriliyor</translation>
 <translation id="1657011748321897393">Ağa bağlı olmadığınızdan paylaşma başarısız oldu.</translation>
 <translation id="1657641691196698092">Engellenmiş Çerez Sayısı</translation>
 <translation id="165877110639533037">Açık Sekme Yok</translation>
@@ -396,6 +397,7 @@ Verileriniz senkronizasyon parolanızla şifrelendi. Senkronizasyonu başlatmak 
 <translation id="4682686630151240767">1. iPhone ayarlarını açın</translation>
 <translation id="4689564913179979534">Ödeme Yöntemlerini yönet...</translation>
 <translation id="470966556546083668">Senkronizasyon Açılmasın</translation>
+<translation id="4731472194328757163">Kamera ve mikrofon erişimine izin veriliyor</translation>
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4747097190499141774">Parolayla şifreleme, Google Pay'deki adresleri ve ödeme yöntemlerini kapsamaz. Yalnızca parolanızı bilen biri, şifrelenmiş verilerinizi okuyabilir. Parola, Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz senkronizasyonu sıfırlamanız gerekir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Yeni Gizli Sekme</translation>
@@ -547,6 +549,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6059830886158432458">Haberlerinizi ve aktivitenizi buradan yönetin</translation>
 <translation id="6064824697233747382">Kuruluşunuz, senkronizasyonu kapatmanızı zorunlu tutuyor.</translation>
 <translation id="6066301408025741299">İptal etmek için hafifçe vurun.</translation>
+<translation id="6077126322656614846">Kamera erişimine izin veriliyor</translation>
 <translation id="60829778314739003">Kabul Et ve Devam Et</translation>
 <translation id="6084848228346514841">Sekme Seçin</translation>
 <translation id="6103540626693881831">Cihaz Üzerinde Şifreleme</translation>

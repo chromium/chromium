@@ -146,6 +146,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1836215606488044471">Assistente (a carregar...)</translation>
 <translation id="1838895407229022812">A Luz noturna está desativada.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
+<translation id="1879018240766558464">De momento, as janelas de navegação anónima não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="1882814835921407042">Sem rede móvel</translation>
 <translation id="1882897271359938046">A espelhar para <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear com impressão digital</translation>
@@ -636,6 +637,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5117590920725113268">Mostrar mês seguinte</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
+<translation id="5150070631291639005">Definições de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
 <translation id="5166007464919321363">Guardar espaço de trabalho como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
@@ -658,6 +660,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5286194356314741248">A procurar</translation>
 <translation id="5297423144044956168">Não foram encontrados dispositivos móveis</translation>
 <translation id="5297704307811127955">Desativada</translation>
+<translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5313326810920013265">Definições de Bluetooth</translation>
@@ -952,6 +955,7 @@ Nova instalação</translation>
 <translation id="7366890467478514168">Ligue ao dispositivo <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7377169924702866686">Caps Lock ativado.</translation>
+<translation id="7377481913241237033">Associar com um código</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área a gravar.</translation>
 <translation id="7378594059915113390">Controlos de multimédia</translation>
 <translation id="7378889811480108604">O modo de Poupança de bateria está desativado.</translation>
@@ -979,6 +983,7 @@ Nova instalação</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">De momento, as apps para Linux e as janelas de navegação anónima não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="7544300628205093162">A retroiluminação do teclado está ativada</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>

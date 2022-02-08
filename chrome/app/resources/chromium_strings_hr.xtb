@@ -201,6 +201,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6734291798041940871">Chromium je već instaliran za sve korisnike na računalu.</translation>
 <translation id="673636774878526923">Da biste mogli pristupiti svojim sadržajima u Chromiumu na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju.</translation>
 <translation id="6774082503108938489">Tvoj je roditelj isključio "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chromium. Nije dopušteno omogućiti <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti na ovaj račun. Ako ne želite da web-lokacije i aplikacije pristupaju podacima o vašem računu, koristite <ph name="LINK_BEGIN" />način rada za goste<ph name="LINK_END" /> u pregledniku Chromium. Možete i upravljati svojim Google računima u <ph name="LINK_2_BEGIN" />postavkama<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium će vas obavijestiti ako vaše zaporke budu ugrožene</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano na Chromium)</translation>

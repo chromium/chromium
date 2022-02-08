@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1650222530560417226">Допрете го копчето „Започни со евидентирање“ за да се собира идна евиденција за JavaScript конзолата и грешки од сите картички. Евиденцијата ќе се собира (и складира само во меморијата) додека не ја затворите страницава или не допрете „Сопри со евидентирање“.</translation>
+<translation id="1654232554734641711">Пристапот до „Микрофонот“ е дозволен</translation>
 <translation id="1657011748321897393">Споделувањето не успеа затоа што не сте поврзани на мрежата.</translation>
 <translation id="1657641691196698092">Блокирани колачиња</translation>
 <translation id="165877110639533037">Нема отворени картички</translation>
@@ -115,6 +116,7 @@
 <translation id="196896377990863006">Прикажи го прегледот на линкот</translation>
 <translation id="1973912524893600642">Задржи ги податоците</translation>
 <translation id="1974060860693918893">Напредни</translation>
+<translation id="1981118202195772574">Мобилен</translation>
 <translation id="1989112275319619282">Прелистувај</translation>
 <translation id="199425419756152024">Видете ја лозинката</translation>
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
@@ -235,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Видете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Се блокираат сите</translation>
 <translation id="313283613037595347">Создајте нова картичка „Инкогнито“.</translation>
+<translation id="3150887674190166798">Изберете како би сакале Chrome да го бара сајтот секојпат</translation>
 <translation id="3153862085237805241">Зачувај ја картичката</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157684681743766797">Означи ги сите…</translation>
@@ -348,6 +351,7 @@
 <translation id="4181841719683918333">Јазици</translation>
 <translation id="4237377247299956313">Допрете <ph name="BEGIN_BOLD" />Стандардна апликација за прелистување<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Внесете лозинка</translation>
+<translation id="4249955472157341256">Подредете според последни</translation>
 <translation id="4263576668337963058">Прикажи ги достапните дејства на страницата</translation>
 <translation id="4267380167363222949">Следна картичка</translation>
 <translation id="4272631900155121838">За да скенирате QR код, овозможете ја камерата во „Поставки“</translation>
@@ -396,6 +400,7 @@
 <translation id="4682686630151240767">1. Отворете ги поставките за iPhone</translation>
 <translation id="4689564913179979534">Управувајте со начините на плаќање…</translation>
 <translation id="470966556546083668">Не вклучувај синхронизација</translation>
+<translation id="4731472194328757163">Дозволен е пристап до „Камерата“ и „Микрофонот“</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4747097190499141774">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
@@ -504,6 +509,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="575902488528307720">Пребарај слика</translation>
 <translation id="5781453543752460388">Додај во „Фотографии“</translation>
 <translation id="5782227691023083829">Се преведува…</translation>
+<translation id="5791632441210678828">Копче за подредување активност со следење.</translation>
 <translation id="5802829331520313983">Поставете…</translation>
 <translation id="5803566855766646066">Дали сигурно сакате да ја отфрлите новава картичка?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
@@ -547,6 +553,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
 <translation id="6064824697233747382">Вашата организација бара да ја исклучите синхронизацијата.</translation>
 <translation id="6066301408025741299">Допри за откажување.</translation>
+<translation id="6077126322656614846">Пристапот до „Камерата“ е дозволен</translation>
 <translation id="60829778314739003">Прифати и продолжи</translation>
 <translation id="6084848228346514841">Изберете картички</translation>
 <translation id="6103540626693881831">Шифрирање на уредот</translation>
@@ -618,6 +625,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6561262006871132942">Зумирај</translation>
 <translation id="6583087784430677195">За да го исклучите, отворете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" /> и одете на „Автоматско пополнување лозинки“.</translation>
 <translation id="6585618849026997638">Може да се навратите на страница што ви е важна со додавање обележувач</translation>
+<translation id="6598875554591387303">Подредете според издавач</translation>
 <translation id="6603393121510733479">Вашата организација го исклучи прелистувањето „Инкогнито“.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Опции за „Преведи“</translation>
@@ -758,6 +766,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7911190106180361398">Вашата организација не дозволува да синхронизирате сѐ.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извезување лозинки…</translation>
+<translation id="793971554166979165">Стандарден режим за сајт</translation>
 <translation id="794799177247607889">Запри со собирање евиденција</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Нема компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="7961015016161918242">Никогаш</translation>
@@ -863,6 +872,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8881801611828450202">Пребарај <ph name="SEARCH_ENGINE" /> за сликава</translation>
 <translation id="8909135823018751308">Сподели…</translation>
 <translation id="8917490105272468696">Да, прифаќам</translation>
+<translation id="8928133177108699615">Компјутер</translation>
 <translation id="8952559610785099500">Додајте лозинка</translation>
 <translation id="895541991026785598">Пријави проблем</translation>
 <translation id="8974714402877957201">1. Отворете ги поставките за iPad</translation>

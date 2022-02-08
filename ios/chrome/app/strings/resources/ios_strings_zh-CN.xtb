@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1650222530560417226">点按“开始记录”按钮即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
+<translation id="1654232554734641711">已启用麦克风使用权限</translation>
 <translation id="1657011748321897393">分享失败，因为您没有连接到网络。</translation>
 <translation id="1657641691196698092">已拦截的 Cookie</translation>
 <translation id="165877110639533037">没有已打开的标签页</translation>
@@ -396,6 +397,7 @@
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4689564913179979534">管理付款方式…</translation>
 <translation id="470966556546083668">请勿开启同步功能</translation>
+<translation id="4731472194328757163">已启用摄像头和麦克风使用权限</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
@@ -547,6 +549,7 @@
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
 <translation id="6064824697233747382">贵单位要求您关闭同步功能。</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
+<translation id="6077126322656614846">已启用摄像头使用权限</translation>
 <translation id="60829778314739003">接受并继续</translation>
 <translation id="6084848228346514841">选择标签页</translation>
 <translation id="6103540626693881831">设备上加密</translation>

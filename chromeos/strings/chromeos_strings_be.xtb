@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Унутраная памылка</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Акно абнаўлення ўбудаванага праграмнага забеспячэння для знешніх прылад адкрыта. Даступных абнаўленняў: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1175697296044146566">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="1175951029573070619">Сярэдні (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Магчыма, партал узаемадзеяння</translation>
 <translation id="1290331692326790741">Слабы сігнал</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Ідзе абнаўленне (завершана <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Няма даступнай сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> кіруе гэтай прыладай і можа адсочваць вашы дзеянні.</translation>
 <translation id="1478594628797167447">Сканер</translation>
+<translation id="1491076385728777984">Ідзе абнаўленне ўбудаванага праграмнага забеспячэння прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> можа кіраваць наладамі гэтага карыстальніка і адсочваць яго дзеянні.</translation>
 <translation id="150962533380566081">Няправільны PUK-код.</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="155865706765934889">Сэнсарная панэль</translation>
+<translation id="1565038567006703504">Не ўдалося абнавіць прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1567064801249837505">Альбомы</translation>
 <translation id="1572585716423026576">Усталяваць як шпалеры</translation>
 <translation id="1621067168122174824">Выканаць праверку зарадкі</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Абнавіць відарыс, які выкарыстоўваецца як шпалеры</translation>
 <translation id="2517472476991765520">Пошук</translation>
+<translation id="253029298928638905">Ідзе перазапуск...</translation>
 <translation id="2536159006530886390">Не ўдаецца падключыцца да інтэрнэту.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2584559707064218956">Каб задаць канфігурацыю, перайдзіце ў Налады</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
+<translation id="3993704782688964914">Прылада "<ph name="DEVICE_NAME" />" абноўлена</translation>
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
 <translation id="4034824040120875894">Прынтар</translation>
 <translation id="4044093238444069296">Не ўдалося звязацца са шлюзам</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Паслядоўнасць дзеянняў не запускалася</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">Ідзе перазапуск прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="4418498623216225764">Абнаўленне ўбудаванага ПЗ перыферыйных прылад</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />: выключана</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Супадзенне па альтэрнатыўным імені суб'екта</translation>
 <translation id="4536864596629708641">Канфігурацыя IP-адраса</translation>
 <translation id="4548483925627140043">Сігнал не знойдзены</translation>
+<translation id="4556753742174065117">Усё ўбудаванае праграмнае забеспячэнне абноўлена</translation>
 <translation id="455835558791489930">Магутнасць акумулятара: <ph name="CHARGE_VALUE" /> мА·г</translation>
 <translation id="4561801978359312462">SIM-карта разблакіравана</translation>
 <translation id="4562494484721939086">Не абслугоўваецца</translation>
@@ -353,6 +361,7 @@
 <translation id="5691511426247308406">Сям'я</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
+<translation id="5733298426544876109">Абнавіць убудаванае ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="5760715441271661976">Стан партала</translation>
 <translation id="5784136236926853061">Вялікая затрымка HTTP-запытаў</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
@@ -433,6 +442,7 @@
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Ёсць інфармацыя, звязаная з вылучаным вамі фрагментам. Каб атрымаць да яе доступ, націсніце стрэлку ўверх.</translation>
 <translation id="6853312040151791195">Хуткасць разрадкі</translation>
+<translation id="6889786074662672253">Падчас перазапуску не адключайце гэту знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Перазапуск зойме некалькі хвілін – у гэты час знешняя прылада можа не працаваць.</translation>
 <translation id="6905724422583748843">Вярнуцца на старонку "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Вечка сканера адкрыта. Закрыйце вечка і паўтарыце спробу.</translation>
 <translation id="6911383237894364323">Не ўдалося падключыцца да сервераў мультымедыя</translation>

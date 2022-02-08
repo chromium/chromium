@@ -112,6 +112,7 @@
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1570871743947603115">Bluetooth-ის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
+<translation id="1610778689852195798">"მოქმედების გაუქმება"</translation>
 <translation id="1611993646327628135">ჩართული</translation>
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> მოწყობილობა</translation>
@@ -246,6 +247,7 @@
 <translation id="2596078834055697711">ფანჯრის ანაბეჭდის გადაღება</translation>
 <translation id="2607678425161541573">საჭიროა სიტემაში ონლაინ შესვლა</translation>
 <translation id="2621713457727696555">დაცული</translation>
+<translation id="263399434338050016">"ყველას არჩევა"</translation>
 <translation id="2653019840645008922">ფანჯრის აღბეჭდვა</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="2658778018866295321">დაწკაპუნება და ჩავლებით გადატანა</translation>
@@ -262,6 +264,7 @@
 <translation id="2727175239389218057">პასუხი</translation>
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"წაშლა"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
 <translation id="2782591952652094792">აღბეჭდვის რეჟიმიდან გასვლა</translation>
 <translation id="2792498699870441125">Alt+ძიება</translation>
@@ -305,6 +308,7 @@
 <translation id="3038571455154067151">სისტემაში შესასვლელად შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის</translation>
 <translation id="3039939407102840004">სტილუსის ბატარეა <ph name="PERCENTAGE" /> პროცენტზეა.</translation>
 <translation id="3045488863354895414">შუადღე მშვიდობის,</translation>
+<translation id="3047761520276763270">ცადეთ, თქვათ:</translation>
 <translation id="3051189971848907985">მიმდინარეობს პროფილის გადარქმევა. მოითმინეთ რამდენიმე წუთი.</translation>
 <translation id="3055162170959710888">ამ მოწყობილობას დღეს <ph name="USED_TIME" /> იყენებდით</translation>
 <translation id="3068711042108640621">თარო მდებარეობს მარცხენა ნაწილში</translation>
@@ -552,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">პაროლის დამალვა</translation>
 <translation id="4570957409596482333">წარმოსათქმელად მონიშვნის ღილაკი</translation>
+<translation id="4573176682887762361">"აკრიფეთ [სიტყვა / ფრაზა]"</translation>
 <translation id="4577274620589681794">დრო ამოიწურა · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">გადახედვის ჩართვა</translation>
 <translation id="4578196883126898996">თქვენი მიკროფონი გამორთულია. ჩართეთ თქვენი მოწყობილობის მიკროფონის ღილაკი.</translation>
@@ -632,6 +637,7 @@
 <translation id="5117590920725113268">შემდეგი თვის ჩვენება</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
 <translation id="5147567197700016471">განბლოკილია</translation>
+<translation id="5150070631291639005">კონფიდენციალურობის პარამეტრები</translation>
 <translation id="5155897006997040331">წაკითხვის სიჩქარე</translation>
 <translation id="5166007464919321363">სამუშაო მაგიდის შენახვა შაბლონად</translation>
 <translation id="5168181903108465623">ხელმისაწვდომია გადაცემის მოწყობილობები</translation>
@@ -654,6 +660,7 @@
 <translation id="5286194356314741248">მიმდინარეობს სკანირება</translation>
 <translation id="5297423144044956168">მობილური მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="5297704307811127955">გამორთვა</translation>
+<translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5302048478445481009">ენა</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
 <translation id="5313326810920013265">Bluetooth-ის პარამეტრები</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-თან დაკავშირება</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">საქაღალდე <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"დახმარება"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">შეყვანის მეთოდების პარამეტრები</translation>
 <translation id="8818320199597151042">მიმდინარეობს პროფილის ამოშლა. მოითმინეთ რამდენიმე წუთი.</translation>

@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Ішкі қате</translation>
 <translation id="1124772482545689468">Пайдаланушы</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Сыртқы құрылғылардың микробағдарламасын жаңарту терезесі ашық. <ph name="NUM_UPDATES" /> жаңа нұсқа бар.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="1175951029573070619">Орташа (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Өшіру</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Адаптивті портал болуы мүмкін.</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Жаңартылуда (<ph name="PERCENTAGE_VALUE" />% орындалды)</translation>
 <translation id="1310380015393971138">Қолжетімді <ph name="NETWORK_NAME" /> желісі жоқ.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Роуминг емес, үй желісі</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Ұсыныстар</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> құрылғыңызды басқарады және әрекетіңізді де бақылауы мүмкін.</translation>
 <translation id="1478594628797167447">Сканер</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> құрылғысының микробағдарламасы жаңартылуда</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> бұл пайдаланушыны басқарады және параметрлер мен пайдаланушы әрекеттерін қашықтан бақылай алады.</translation>
 <translation id="150962533380566081">PUK коды жарамсыз.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="155865706765934889">Сенсорлық тақта</translation>
+<translation id="1565038567006703504"><ph name="DEVICE_NAME" /> жаңарту мүмкін емес.</translation>
 <translation id="1567064801249837505">Aльбомдар</translation>
 <translation id="1572585716423026576">Тұсқағаз етіп орнату</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Ағымдағы тұсқағаз суретін жаңарту</translation>
 <translation id="2517472476991765520">Іздеу</translation>
+<translation id="253029298928638905">Қайта қосылуда…</translation>
 <translation id="2536159006530886390">Интернетке қосыла алмай жатыр.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
@@ -180,6 +185,7 @@
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Сигнал күші аз. Wi-Fi сигнал көзіне жақындап көріңіз.</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
+<translation id="3603829704940252505">Аватар</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
@@ -205,6 +211,7 @@
 <translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күннен асқан баспа жұмыстары өшіріледі.</translation>
+<translation id="3993704782688964914"><ph name="DEVICE_NAME" /> құрылғыңыз жаңартылды.</translation>
 <translation id="4003384961948020559">Сәтсіз: шығыс науа толып кеткен</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4044093238444069296">Шлюзге қосылу мүмкін емес.</translation>
@@ -231,6 +238,7 @@
 <translation id="4378373042927530923">Іске қосылмаған</translation>
 <translation id="4378551569595875038">Қосылуда…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> қайта қосылуда</translation>
 <translation id="4418498623216225764">Перифериялық құрылғыларды жаңарту</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> өшірулі</translation>
@@ -247,6 +255,7 @@
 <translation id="4521826082652183069">Балама атау тақырыбы сәйкестігі</translation>
 <translation id="4536864596629708641">IP конфигурациясы</translation>
 <translation id="4548483925627140043">Сигнал жоқ.</translation>
+<translation id="4556753742174065117">Барлық микробағдарлама жаңартылған.</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> мАсағ батарея</translation>
 <translation id="4561801978359312462">SIM құлпы ашық</translation>
 <translation id="4562494484721939086">Қызмет жоқ</translation>
@@ -432,9 +441,11 @@
 <translation id="680983167891198932">Кілт</translation>
 <translation id="6816797338148849397">Таңдауға қатысты ақпарат қолжетімді. Оны пайдалану үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
 <translation id="6853312040151791195">Заряд азаюының жылдамдығы</translation>
+<translation id="6889786074662672253">Қайта қосу кезінде сыртқы құрылғыны ажыратпаңыз немесе компьютерді өшірмеңіз. Бұл терезені кішірейте аласыз. Бұл бірнеше минутқа созылуы және осы уақытта сыртқы құрылғы жұмыс істемей қалуы мүмкін.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> бетіне оралу</translation>
 <translation id="6910312834584889076">Сканердің жапқышы ашық. Оның жапқышын жауып, әрекетті қайталаңыз.</translation>
 <translation id="6911383237894364323">Медиасерверлерге қосылмады.</translation>
+<translation id="6935486296377631201">Скринсейвер</translation>
 <translation id="6957231940976260713">Қызмет атауы</translation>
 <translation id="6961170852793647506">Бастау үшін құжатты сканерге қойыңыз.</translation>
 <translation id="6965382102122355670">Жарайды</translation>

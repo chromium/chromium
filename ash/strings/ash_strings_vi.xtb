@@ -112,6 +112,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1570871743947603115">Bật/tắt Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
+<translation id="1610778689852195798">"Huỷ"</translation>
 <translation id="1611993646327628135">Bật</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> thiết bị</translation>
@@ -145,6 +146,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1836215606488044471">Trợ lý (đang tải...)</translation>
 <translation id="1838895407229022812">Chế độ Ánh sáng đêm đang tắt.</translation>
 <translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
+<translation id="1879018240766558464">Hiện không hỗ trợ cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="1882814835921407042">Không có mạng di động</translation>
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Mở khóa bằng vân tay</translation>
@@ -245,6 +247,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
 <translation id="2607678425161541573">Yêu cầu đăng nhập trực tuyến</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
+<translation id="263399434338050016">"Chọn tất cả"</translation>
 <translation id="2653019840645008922">Chụp/ghi cửa sổ</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2658778018866295321">Nhấp và kéo</translation>
@@ -261,6 +264,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Xoá"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý</translation>
 <translation id="2782591952652094792">Thoát khỏi chế độ chụp</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -304,6 +308,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3038571455154067151">Để đăng nhập, hãy nhập mã truy cập dành cho cha mẹ của Family Link</translation>
 <translation id="3039939407102840004">Bút cảm ứng còn <ph name="PERCENTAGE" />% pin.</translation>
 <translation id="3045488863354895414">Xin chào!</translation>
+<translation id="3047761520276763270">Thử nói:</translation>
 <translation id="3051189971848907985">Đang đổi tên hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="3055162170959710888">Bạn đã dùng thiết bị này trong <ph name="USED_TIME" /> hôm nay</translation>
 <translation id="3068711042108640621">Giá ở bên trái</translation>
@@ -551,6 +556,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
 <translation id="4570957409596482333">Nút Chọn để nói</translation>
+<translation id="4573176682887762361">"Nhập [từ/cụm từ]"</translation>
 <translation id="4577274620589681794">Hết giờ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Hiển thị bản xem trước</translation>
 <translation id="4578196883126898996">Micrô đang tắt. Hãy bật nút micrô trên thiết bị của bạn.</translation>
@@ -631,6 +637,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
 <translation id="5147567197700016471">Đã mở khóa</translation>
+<translation id="5150070631291639005">Cài đặt quyền riêng tư</translation>
 <translation id="5155897006997040331">Tốc độ đọc</translation>
 <translation id="5166007464919321363">Lưu không gian làm việc ở dạng mẫu</translation>
 <translation id="5168181903108465623">Có thiết bị truyền</translation>
@@ -653,6 +660,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5286194356314741248">Đang quét</translation>
 <translation id="5297423144044956168">Không tìm thấy thiết bị di động nào</translation>
 <translation id="5297704307811127955">Đang tắt</translation>
+<translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5302048478445481009">Ngôn ngữ</translation>
 <translation id="5308380583665731573">Kết nối</translation>
 <translation id="5313326810920013265">Cài đặt Bluetooth</translation>
@@ -947,6 +955,7 @@ Mới cài đặt</translation>
 <translation id="7366890467478514168">Kết nối với <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Ghi hình nội dung của cửa sổ</translation>
 <translation id="7377169924702866686">Caps Lock đang bật.</translation>
+<translation id="7377481913241237033">Kết nối bằng mã</translation>
 <translation id="7378203170292176219">Kéo để chọn một vùng sẽ quay</translation>
 <translation id="7378594059915113390">Các chức năng điều khiển nội dung đa phương tiện</translation>
 <translation id="7378889811480108604">Chế độ trình tiết kiệm pin đang tắt</translation>
@@ -974,6 +983,7 @@ Mới cài đặt</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Hiện không hỗ trợ ứng dụng Linux và cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="7544300628205093162">Đèn nền bàn phím đang bật</translation>
 <translation id="7548434653388805669">Giờ đi ngủ</translation>
 <translation id="7551643184018910560">Ghim vào kệ</translation>
@@ -1165,6 +1175,7 @@ Mới cài đặt</translation>
 <translation id="8785070478575117577">Kết nối với <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Thư mục <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Trợ giúp"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Tùy chọn cài đặt phương thức nhập</translation>
 <translation id="8818320199597151042">Đang xóa hồ sơ. Hãy chờ ít phút.</translation>

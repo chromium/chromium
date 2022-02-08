@@ -143,6 +143,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1836215606488044471">Assistent (laden...)</translation>
 <translation id="1838895407229022812">Nachtverlichting staat uit.</translation>
 <translation id="1864454756846565995">USB-C-apparaat (poort aan achterkant)</translation>
+<translation id="1879018240766558464">Incognitovensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="1882814835921407042">Geen mobiel netwerk</translation>
 <translation id="1882897271359938046">Spiegelen naar <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ontgrendelen met vingerafdruk</translation>
@@ -633,6 +634,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5117590920725113268">Volgende maand bekijken</translation>
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
 <translation id="5147567197700016471">Ontgrendeld</translation>
+<translation id="5150070631291639005">Privacyinstellingen</translation>
 <translation id="5155897006997040331">Leesnelheid</translation>
 <translation id="5166007464919321363">Bureau opslaan als template</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
@@ -655,6 +657,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5286194356314741248">Scannen</translation>
 <translation id="5297423144044956168">Geen mobiele apparaten gevonden</translation>
 <translation id="5297704307811127955">Uit</translation>
+<translation id="5300589172476337783">Tonen</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5313326810920013265">Bluetooth-instellingen</translation>
@@ -949,6 +952,7 @@ Nieuwe installatie</translation>
 <translation id="7366890467478514168"><ph name="NAME" /> koppelen</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
 <translation id="7377169924702866686">Caps Lock staat aan.</translation>
+<translation id="7377481913241237033">Koppelen met een code</translation>
 <translation id="7378203170292176219">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
 <translation id="7378594059915113390">Mediabediening</translation>
 <translation id="7378889811480108604">Batterijbesparing staat uit</translation>
@@ -976,6 +980,7 @@ Nieuwe installatie</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7526573455193969409">Netwerk kan worden bijgehouden</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux-apps en incognitovensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="7544300628205093162">Achtergrondverlichting van toetsenbord staat aan</translation>
 <translation id="7548434653388805669">Bedtijd</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>

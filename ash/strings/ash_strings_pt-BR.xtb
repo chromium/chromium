@@ -112,6 +112,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1570871743947603115">Alternar Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
+<translation id="1610778689852195798">"Desfazer"</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
@@ -246,6 +247,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2596078834055697711">Fazer captura de tela da janela</translation>
 <translation id="2607678425161541573">É necessário fazer login on-line</translation>
 <translation id="2621713457727696555">Protegida</translation>
+<translation id="263399434338050016">"Selecionar todos"</translation>
 <translation id="2653019840645008922">Captura de janela</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clicar e arrastar</translation>
@@ -262,6 +264,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Excluir"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sair do modo de captura</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
@@ -305,6 +308,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3038571455154067151">Para fazer login, insira seu código de acesso do familiar responsável do Family Link</translation>
 <translation id="3039939407102840004">Bateria da stylus em <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
+<translation id="3047761520276763270">Tente dizer:</translation>
 <translation id="3051189971848907985">Renomeando o perfil. Aguarde alguns minutos.</translation>
 <translation id="3055162170959710888">Você usou este dispositivo por <ph name="USED_TIME" /> hoje</translation>
 <translation id="3068711042108640621">Estante à esquerda</translation>
@@ -552,6 +556,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar senha</translation>
 <translation id="4570957409596482333">Botão Selecionar para ouvir</translation>
+<translation id="4573176682887762361">"Digitar [palavra / frase]"</translation>
 <translation id="4577274620589681794">Tempo esgotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar visualizações</translation>
 <translation id="4578196883126898996">Seu microfone está desligado. Ative o botão de microfone do dispositivo.</translation>
@@ -632,6 +637,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5117590920725113268">Mostrar próximo mês</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
+<translation id="5150070631291639005">Config. de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
 <translation id="5166007464919321363">Salvar espaço de trabalho como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
@@ -654,6 +660,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5286194356314741248">Verificando</translation>
 <translation id="5297423144044956168">Nenhum dispositivo móvel encontrado</translation>
 <translation id="5297704307811127955">Desativado</translation>
+<translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configurações de Bluetooth</translation>
@@ -1168,6 +1175,7 @@ Nova instalação</translation>
 <translation id="8785070478575117577">Conectar-se a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Pasta <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Ajuda"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configurações de métodos de entrada</translation>
 <translation id="8818320199597151042">Removendo o perfil. Aguarde alguns minutos.</translation>

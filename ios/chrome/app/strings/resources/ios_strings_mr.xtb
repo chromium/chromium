@@ -116,6 +116,7 @@
 <translation id="196896377990863006">लिंक पूर्वावलोकन दाखवा</translation>
 <translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
 <translation id="1974060860693918893">प्रगत</translation>
+<translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="199425419756152024">पासवर्ड पहा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />तुम्ही काय सिंक करू शकता ते पहा<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">सर्व ब्लॉक करा</translation>
 <translation id="313283613037595347">नवीन गुप्त टॅब तयार करा.</translation>
+<translation id="3150887674190166798">Chrome ने तुम्हाला प्रत्येकवेळी साइटची विनंती कशी करावी हे निवडा</translation>
 <translation id="3153862085237805241">कार्ड सेव्ह करा</translation>
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157684681743766797">सर्व चिन्हांकित करा…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डीफॉल्ट ब्राउझर अ‍ॅप<ph name="END_BOLD" /> वर टॅप करा</translation>
 <translation id="424315890655130736">सांकेतिक पासफ्रेझ एंटर करा</translation>
+<translation id="4249955472157341256">नवीनतम यानुसार क्रमाने लावा</translation>
 <translation id="4263576668337963058">उपलब्ध असलेल्या पेज क्रिया दाखवा</translation>
 <translation id="4267380167363222949">पुढील टॅब</translation>
 <translation id="4272631900155121838">QR कोड स्कॅन करण्‍यासाठी, सेटिंग्ज मधून कॅमेरा सुरू करा</translation>
@@ -507,6 +510,7 @@
 <translation id="575902488528307720">इमेज शोधा</translation>
 <translation id="5781453543752460388">Photos मध्ये जोडा</translation>
 <translation id="5782227691023083829">भाषांतर करीत आहे...</translation>
+<translation id="5791632441210678828">फॉलो करत आहे या फीडसाठी क्रमाने लावा बटण.</translation>
 <translation id="5802829331520313983">सेट करा…</translation>
 <translation id="5803566855766646066">तुम्हाला हे नवीन कार्ड नक्की काढून टाकायचे आहे का?</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
@@ -623,6 +627,7 @@
 <translation id="6561262006871132942">झूम इन करा</translation>
 <translation id="6583087784430677195">बंद करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> उघडा आणि ऑटोफिल पासवर्ड वर जा.</translation>
 <translation id="6585618849026997638">बुकमार्क जोडून तुम्ही तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
+<translation id="6598875554591387303">प्रकाशक यानुसार क्रमाने लावा</translation>
 <translation id="6603393121510733479">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केले आहे.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">भाषांतराचे पर्याय</translation>
@@ -763,6 +768,7 @@
 <translation id="7911190106180361398">तुमची संस्था तुम्हाला सर्व गोष्टी सिंक करण्याची परवानगी देत नाही.</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
 <translation id="7939128259257418052">पासवर्ड एक्सपोर्ट करा...</translation>
+<translation id="793971554166979165">डीफॉल्ट साइट मोड</translation>
 <translation id="794799177247607889">लॉग इन करणे थांबवा</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{एकही पासवर्ड धोक्यात नाही}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
@@ -868,6 +874,7 @@
 <translation id="8881801611828450202">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>
 <translation id="8917490105272468696">होय, मला मान्य आहे</translation>
+<translation id="8928133177108699615">डेस्कटॉप</translation>
 <translation id="8952559610785099500">पासवर्ड जोडा</translation>
 <translation id="895541991026785598">समस्या नोंदवा</translation>
 <translation id="8974714402877957201">१. iPad सेटिंग्ज उघडा</translation>

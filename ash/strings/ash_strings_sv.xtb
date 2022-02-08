@@ -112,6 +112,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
+<translation id="1610778689852195798">”Ångra”</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
@@ -145,6 +146,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1836215606488044471">Assistent (läses in …)</translation>
 <translation id="1838895407229022812">Nattljus är inaktiverat.</translation>
 <translation id="1864454756846565995">USB-C-enhet (bakre port)</translation>
+<translation id="1879018240766558464">Inkognitofönster stöds inte för närvarande. Andra appar sparas.</translation>
 <translation id="1882814835921407042">Inget mobilnätverk</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås upp med fingeravtryck</translation>
@@ -245,6 +247,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
 <translation id="2621713457727696555">Skyddat</translation>
+<translation id="263399434338050016">”Markera allt”</translation>
 <translation id="2653019840645008922">Skärmbild/skärminspelning av fönster</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2658778018866295321">Klicka och dra</translation>
@@ -261,6 +264,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">”Radera”</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Stäng läget för skärmbild/skärminspelning</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
@@ -304,6 +308,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3038571455154067151">Ange föräldraåtkomstkoden för Family Link om du vill logga in</translation>
 <translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
 <translation id="3045488863354895414">Hej!</translation>
+<translation id="3047761520276763270">Testa att säga detta:</translation>
 <translation id="3051189971848907985">Byter namn på profilen. Vänta några minuter.</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
 <translation id="3068711042108640621">Hyllan till vänster</translation>
@@ -551,6 +556,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4570957409596482333">Knappen Textuppläsning</translation>
+<translation id="4573176682887762361">”Skriv [ord/fras]”</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
 <translation id="4578196883126898996">Mikrofonen är inaktiverad. Aktivera enhetens mikrofonknapp.</translation>
@@ -631,6 +637,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5117590920725113268">Visa nästa månad</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
 <translation id="5147567197700016471">Olåst</translation>
+<translation id="5150070631291639005">Integritetsinställningar</translation>
 <translation id="5155897006997040331">Läshastighet</translation>
 <translation id="5166007464919321363">Spara skrivbordet som mall</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
@@ -653,6 +660,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5286194356314741248">Skannar</translation>
 <translation id="5297423144044956168">Inga mobila enheter hittades</translation>
 <translation id="5297704307811127955">Av</translation>
+<translation id="5300589172476337783">Visa</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5313326810920013265">Bluetooth-inställningar</translation>
@@ -947,6 +955,7 @@ Nyligen installerad</translation>
 <translation id="7366890467478514168">Anslut <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Spela in fönster</translation>
 <translation id="7377169924702866686">Caps Lock är på.</translation>
+<translation id="7377481913241237033">Anslut med en kod</translation>
 <translation id="7378203170292176219">Välj ett område att spela in genom att dra</translation>
 <translation id="7378594059915113390">Mediereglage</translation>
 <translation id="7378889811480108604">Batterisparläget är avstängt</translation>
@@ -974,6 +983,7 @@ Nyligen installerad</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux-appar och inkognitofönster stöds inte för närvarande. Andra appar sparas.</translation>
 <translation id="7544300628205093162">Tangentbordets bakgrundsbelysning är på</translation>
 <translation id="7548434653388805669">Läggdags</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
@@ -1165,6 +1175,7 @@ Nyligen installerad</translation>
 <translation id="8785070478575117577">Anslut till <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">”Hjälp”</translation>
 <translation id="8814190375133053267">wifi</translation>
 <translation id="881757059229893486">Inmatningsinställningar</translation>
 <translation id="8818320199597151042">Tar bort profilen. Vänta några minuter.</translation>

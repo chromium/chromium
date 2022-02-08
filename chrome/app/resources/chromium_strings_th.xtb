@@ -201,6 +201,7 @@
 <translation id="6734291798041940871">มีการติดตั้ง Chromium สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
 <translation id="673636774878526923">หากต้องการเข้าถึงข้อมูล Chromium ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้แล้วเปิดการซิงค์</translation>
 <translation id="6774082503108938489">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chromium ไม่อนุญาตให้เปิดใช้<ph name="EXTENSION_TYPE_PARAMETER" />นี้</translation>
+<translation id="6808964260981102146">สิทธิ์ที่คุณให้กับเว็บไซต์และแอปต่างๆ อาจมีผลกับบัญชีนี้ หากไม่ต้องการให้เว็บไซต์หรือแอปเข้าถึงข้อมูลบัญชี ให้ใช้<ph name="LINK_BEGIN" />โหมดผู้มาเยือน<ph name="LINK_END" />ในเบราว์เซอร์ Chromium คุณยังจัดการบัญชี Google ใน<ph name="LINK_2_BEGIN" />การตั้งค่า<ph name="LINK_2_END" />ได้ด้วย</translation>
 <translation id="6847869444787758381">Chromium จะแจ้งให้ทราบหากมีคนล่วงรู้รหัสผ่านของคุณ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (คัดลอกไปยัง Chromium)</translation>

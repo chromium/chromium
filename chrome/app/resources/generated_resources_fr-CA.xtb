@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite restaurer vos paramètres Chrome par défaut. Votre page d'accueil, la page Nouvel onglet et votre moteur de recherche seront réinitialisés. Vos extensions seront désactivées et vos onglets ne seront plus épinglés. Les autres données temporaires ou mises en cache, telles que les témoins, les données relatives aux contenus et aux sites, seront effacées.</translation>
 <translation id="1084096383128641877">La suppression de ce mot de passe ne supprimera pas votre compte sur <ph name="DOMAIN" />. Changez votre mot de passe ou supprimez votre compte sur <ph name="DOMAIN_LINK" /> pour le protéger des autres.</translation>
 <translation id="1084824384139382525">Copier l'adr&amp;esse du lien</translation>
-<translation id="1085064499066015002">Toujours sur tous les sites</translation>
 <translation id="1085697365578766383">Erreur lors du démarrage de la machine virtuelle. Veuillez réessayer.</translation>
 <translation id="1087965115100412394">Ne pas autoriser les sites à se connecter à des appareils MIDI</translation>
 <translation id="1088654056000736875">Chrome est en train de retirer des logiciels nuisibles de votre ordinateur…</translation>
@@ -340,6 +339,7 @@
 <translation id="1340527397989195812">Sauvegarder les fichiers médiatiques de l’appareil en utilisant l’application Fichiers.</translation>
 <translation id="1341988552785875222">Le fond d'écran actuel est défini par « <ph name="APP_NAME" /> ». Il vous faudra peut-être désinstaller « <ph name="APP_NAME" /> » avant de sélectionner un autre fond d'écran.</translation>
 <translation id="1343865611738742294">Accordez aux applications Linux l'autorisation d'accéder à des appareils USB. Le système Linux ne se souviendra pas d'un appareil USB une fois celui-ci retiré.</translation>
+<translation id="1343920184519992513">Reprenez le cours de vos activités et ouvrez un ensemble défini de pages</translation>
 <translation id="1346630054604077329">Confirmer et redémarrer</translation>
 <translation id="1347256498747320987">Installer des mises à jour et des applications. En continuant, vous acceptez que cet appareil puisse également télécharger et installer automatiquement des mises à jour et des applications de Google, de votre fournisseur de services sans fil et du fabricant de votre appareil, éventuellement en utilisant les réseaux de données cellulaires. Certaines de ces applications peuvent aussi offrir des achats au moyen de l'application. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Espace de stockage de Linux</translation>
@@ -386,6 +386,7 @@
 <translation id="1396259464226642517">Ce résultat était-il inattendu? <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Le nom d'utilisateur et le mot de passe que vous avez entrés ne correspondent pas</translation>
 <translation id="1397500194120344683">Aucun appareil admissible. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="1397594434718759194">Vous êtes connecté à Chrome sur ces appareils, vous pouvez donc les utiliser comme clés de sécurité.</translation>
 <translation id="1398853756734560583">Agrandir</translation>
 <translation id="139911022479327130">Déverrouillez votre téléphone et confirmez qu'il s'agit bien de vous</translation>
 <translation id="1401308693935339022">Utiliser la localisation. Permettez aux services et aux applications d'utiliser la position de cet appareil s'ils disposent de l'autorisation d'accès nécessaire. Google peut collecter périodiquement des données de localisation et les utiliser de manière anonyme afin d'améliorer la précision et les services de localisation.</translation>
@@ -1168,6 +1169,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour accéder à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Activer le mode sombre</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre commutateur</translation>
+<translation id="2165102982098084499">Vous avez lié ces appareils en numérisant un code QR.</translation>
 <translation id="2165177462441582039">Sélectionnez la durée d'affichage de l'élément en surbrillance</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
@@ -1941,6 +1943,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2915873080513663243">Recherche automatique</translation>
 <translation id="2916073183900451334">Appuyer sur la touche de tabulation dans une page Web permet de sélectionner des liens et des champs de formulaire</translation>
 <translation id="2916745397441987255">Rechercher dans les extensions</translation>
+<translation id="2918484639460781603">Accéder aux paramètres</translation>
 <translation id="2918484644467055090">Impossible d'enregistrer cet appareil dans l'organisation à laquelle appartient votre compte, car il est marqué pour être géré par une autre organisation.</translation>
 <translation id="2920852127376356161">Non autorisés à gérer les protocoles</translation>
 <translation id="2921081876747860777">Veuillez créer un mot de passe pour protéger vos données locales.</translation>
@@ -2824,7 +2827,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="383891835335927981">Aucun site n'a fait l'objet d'un zoom avant ou arrière</translation>
 <translation id="3839509547554145593">Activer l'accélération du défilement pour la souris</translation>
 <translation id="3839516600093027468">Toujours empêcher <ph name="HOST" /> de voir le presse-papiers</translation>
-<translation id="3839526976593488376">Personnaliser pour chaque site</translation>
 <translation id="3841964634449506551">Mot de passe incorrect</translation>
 <translation id="3842552989725514455">Police avec empattement</translation>
 <translation id="3843464315703645664">Placé sur la liste verte à l'interne</translation>
@@ -5379,6 +5381,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="654871471440386944">Activer la navigation au clavier?</translation>
 <translation id="6549038875972762904">Rétablir la configuration</translation>
 <translation id="6550675742724504774">Options</translation>
+<translation id="65513682072153627">Vous verrez cette icône Géré lorsque la gestion d'un paramètre ou d'une fonctionnalité est assurée par votre administrateur.</translation>
 <translation id="6551508934388063976">Commande inaccessible. Appuyez sur Ctrl + N pour ouvrir une nouvelle fenêtre.</translation>
 <translation id="6551612971599078809">Le site utilise un appareil USB</translation>
 <translation id="6551739526055143276">Géré par Family Link</translation>
@@ -5681,6 +5684,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Paramètres de mandataire...</translation>
 <translation id="6860427144121307915">Ouvrir dans un onglet</translation>
+<translation id="6863496016067551393">Toutes les extensions sont autorisées</translation>
 <translation id="686366188661646310">Supprimer le mot de passe?</translation>
 <translation id="6865313869410766144">Données de remplissage automatique de formulaires</translation>
 <translation id="6865598234501509159">La page n'est pas en <ph name="LANGUAGE" /></translation>
@@ -5710,6 +5714,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6900651018461749106">Connectez-vous à nouveau pour mettre à jour <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Voulez-vous vraiment supprimer ce moteur de recherche?</translation>
+<translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voix à écouter</translation>
 <translation id="6902336033320348843">Section non prise en charge : <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Associer l'appareil au domaine</translation>
@@ -7358,6 +7363,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8610103157987623234">Format incorrect, veuillez réessayer.</translation>
 <translation id="8611682088849615761">Continuer d'autoriser le plein contrôle de vos appareils MIDI par ce site</translation>
 <translation id="8613164732773110792">Caractères minuscules, chiffres, traits de soulignement ou tirets uniquement</translation>
+<translation id="8613645710357126807">Non autorisés à utiliser des extensions</translation>
 <translation id="8613786722548417558">Impossible d'effectuer une vérification de sécurité du fichier <ph name="FILE_NAME" /> parce qu'il est trop volumineux. Vous ne pouvez pas ouvrir de fichiers de plus de 50 Mo.</translation>
 <translation id="8615618338313291042">Application en mode de navigation privée : <ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">Ajouter <ph name="CONTACT_NAME" /> à vos contacts</translation>
@@ -7801,6 +7807,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9040661932550800571">Mettre à jour le mot de passe pour <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre ordinateur</translation>
 <translation id="904224458472510106">Cette opération est irréversible</translation>
+<translation id="9042893549633094279">Sécurité et confidentialité</translation>
 <translation id="904451693890288097">Veuillez entrer le code d'authentification pour « <ph name="DEVICE_NAME" /> » :</translation>
 <translation id="9044646465488564462">Échec de connexion au réseau : <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée dans le nouveau panneau latéral. Essayez-la ici.</translation>

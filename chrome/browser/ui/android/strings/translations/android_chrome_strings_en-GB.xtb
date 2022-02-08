@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1829244130665387512">Find in page</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
-<translation id="1843805151597803366">To get better translations, let Google Search use the current page</translation>
 <translation id="1868024384445905608">Chrome now downloads files faster</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
@@ -227,7 +226,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2328985652426384049">Can’t sign in</translation>
 <translation id="2342601525305963189">Chrome tips:</translation>
 <translation id="234265804618409743">Can't open your camera. Something went wrong.</translation>
-<translation id="2345671828921229300">To search, touch &amp; hold a word</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
 <translation id="2353636109065292463">Checking your Internet connection</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
@@ -301,7 +299,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Get a better voice experience</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Tap a word to search instantly or see related actions</translation>
 <translation id="2760989362628427051">Turn on dark theme when your device's dark theme or Battery Saver is on</translation>
 <translation id="2762000892062317888">just now</translation>
 <translation id="276969039800130567">Signed in as <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3341262203274374114">Can’t unfollow. Something went wrong.</translation>
 <translation id="3359667936385849800">Use your current service provider</translation>
 <translation id="3367813778245106622">Sign in again to start sync</translation>
-<translation id="337236281855091893">To search, touch &amp; hold a word instead of tapping it</translation>
 <translation id="3373979091428520308">To share this page to another device, turn on sync in Chrome settings on the other device</translation>
 <translation id="3374023511497244703">Your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google account</translation>
 <translation id="3384347053049321195">Share image</translation>
@@ -431,7 +427,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3429160811076349561">Trial features are off</translation>
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
-<translation id="3440975416244667276">Touch &amp; hold for more relevant info</translation>
 <translation id="3443221991560634068">Reload the current page</translation>
 <translation id="3444179773590444986">Share feedback on Dark theme for sites?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download scheduled}other{# downloads scheduled}}</translation>
@@ -518,7 +513,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3976396876660209797">Remove and recreate this shortcut</translation>
 <translation id="3985215325736559418">Do you want to download <ph name="FILE_NAME" /> again?</translation>
 <translation id="3987993985790029246">Copy link</translation>
-<translation id="3988466920954086464">See instant search results in this panel</translation>
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
@@ -1139,7 +1133,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7475688122056506577">SD card not found. Some of your files may be missing.</translation>
 <translation id="7479104141328977413">Tab management</translation>
 <translation id="7481312909269577407">Forward</translation>
-<translation id="7481864133709957613">To search from this page, touch &amp; hold words instead of tapping them</translation>
 <translation id="7482656565088326534">Preview tab</translation>
 <translation id="7484997419527351112">Discover – off</translation>
 <translation id="7485033510383818941">To refresh the feed content, pull down the page</translation>

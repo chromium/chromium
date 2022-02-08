@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">همگام‌سازی اولیه کامل نشد</translation>
 <translation id="1829244130665387512">یافتن در صفحه</translation>
 <translation id="1832459821645506983">بله، موافقم</translation>
-<translation id="1843805151597803366">‏برای دریافت ترجمه‌های بهتر، به «جستجوی Google» اجازه دهید از صفحه کنونی استفاده کند</translation>
 <translation id="1868024384445905608">‏اکنون Chrome فایل‌ها را سریع‌تر بارگیری می‌کند</translation>
 <translation id="1877026089748256423">‏نسخه Chrome قدیمی است</translation>
 <translation id="1883903952484604915">فایل‌های من</translation>
@@ -227,7 +226,6 @@
 <translation id="2328985652426384049">ورود به سیستم امکان‌پذیر نیست</translation>
 <translation id="2342601525305963189">‏نکته‌های Chrome:</translation>
 <translation id="234265804618409743">نمی‌توان دوربین را باز کرد. مشکلی پیش آمد.</translation>
-<translation id="2345671828921229300">برای جستجو کردن، واژه را لمس کنید و نگه دارید</translation>
 <translation id="2349710944427398404">‏کل داده‌های استفاده‌شده توسط Chrome، شامل حساب‌ها، نشانک‌ها و تنظیمات ذخیره‌شده</translation>
 <translation id="2353636109065292463">بررسی اتصال اینترنت</translation>
 <translation id="235789365079050412">‏خط‌مشی رازداری Google</translation>
@@ -301,7 +299,6 @@
 <translation id="2723001399770238859">صدا</translation>
 <translation id="2732063072010454421">صدای بهتری را تجربه کنید</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">برای جستجوی فوری، روی کلمه‌ای ضربه بزنید یا اقدام‌های مرتبط را ببینید</translation>
 <translation id="2760989362628427051">روشن شدن طرح زمینه تیره وقتی طرح زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
@@ -417,7 +414,6 @@
 <translation id="3341262203274374114">لغو دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="3359667936385849800">استفاده از ارائه‌دهنده خدمات کنونی</translation>
 <translation id="3367813778245106622">دوباره به سیستم وارد شوید یا همگام‌سازی را شروع کنید</translation>
-<translation id="337236281855091893">برای جستجو کردن، به‌جای اینکه روی واژه ضربه بزنید آن را لمس کنید و نگه دارید</translation>
 <translation id="3373979091428520308">‏برای هم‌رسانی این صفحه در دستگاهی دیگر، همگام‌سازی را در تنظیمات Chrome در دستگاه دیگر روشن کنید</translation>
 <translation id="3374023511497244703">‏نشانک‌ها، سابقه، گذرواژه‌ها و سایر داده‌های Chrome، دیگر با حساب Google شما همگام‌سازی نمی‌شود.</translation>
 <translation id="3384347053049321195">اشتراک‌گذاری تصویر</translation>
@@ -431,7 +427,6 @@
 <translation id="3428747202529429621">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="3429160811076349561">ویژگی‌های آزمایشی خاموش است</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
-<translation id="3440975416244667276">برای دریافت اطلاعات مرتبط بیشتر، لمس کنید و نگه دارید</translation>
 <translation id="3443221991560634068">تازه‌سازی صفحه کنونی</translation>
 <translation id="3444179773590444986">مایلید بازخوردتان را درباره طرح زمینه تیره برای سایت‌ها هم‌رسانی کنید؟</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{یک بارگیری زمان‌بندی شد}one{# بارگیری زمان‌بندی شد}other{# بارگیری زمان‌بندی شد}}</translation>
@@ -518,7 +513,6 @@
 <translation id="3976396876660209797">این میان‌بر را بردارید و دوباره ایجاد کنید</translation>
 <translation id="3985215325736559418">می‌خواهید دوباره <ph name="FILE_NAME" /> را بارگیری کنید؟</translation>
 <translation id="3987993985790029246">کپی پیوند</translation>
-<translation id="3988466920954086464">نتایج جستجوی فوری را در این پانل مشاهده کنید</translation>
 <translation id="4000212216660919741">صفحه اصلیِ آفلاین</translation>
 <translation id="4016425174436051808">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ساعت}one{# ساعت}other{# ساعت}}</translation>
@@ -1139,7 +1133,6 @@
 <translation id="7475688122056506577">‏کارت SD پیدا نشد. ممکن است بعضی از فایل‌هایتان جا بیافتد.</translation>
 <translation id="7479104141328977413">مدیریت برگه</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
-<translation id="7481864133709957613">برای جستجو در این صفحه، به‌جای اینکه روی واژه‌ها ضربه بزنید، آن‌ها را لمس کنید و نگه دارید</translation>
 <translation id="7482656565088326534">برگه پیش‌نمایش</translation>
 <translation id="7484997419527351112">«یافته‌ها» - خاموش</translation>
 <translation id="7485033510383818941">برای بازخوانی محتوای جارزن، صفحه را به‌پایین بکشید</translation>

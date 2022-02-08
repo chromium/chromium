@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
 <translation id="1832459821645506983">Có, tôi đồng ý</translation>
-<translation id="1843805151597803366">Để có bản dịch chính xác hơn, hãy cho phép Google Tìm kiếm sử dụng trang hiện tại</translation>
 <translation id="1868024384445905608">Giờ đây, Chrome tải tệp xuống còn nhanh hơn nữa</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
@@ -227,7 +226,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
 <translation id="2342601525305963189">Mẹo khi dùng Chrome:</translation>
 <translation id="234265804618409743">Không thể mở máy ảnh. Đã xảy ra lỗi.</translation>
-<translation id="2345671828921229300">Để tìm kiếm, hãy chạm và giữ một từ</translation>
 <translation id="2349710944427398404">Tổng số dữ liệu mà Chrome sử dụng, bao gồm tài khoản, dấu trang và cài đặt đã lưu</translation>
 <translation id="2353636109065292463">Kiểm tra kết nối Internet</translation>
 <translation id="235789365079050412">Chính sách quyền riêng tư của Google</translation>
@@ -301,7 +299,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2723001399770238859">âm thanh</translation>
 <translation id="2732063072010454421">Cải thiện trải nghiệm sử dụng giọng nói</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Hãy nhấn vào một từ để tìm kiếm ngay hoặc xem các hành động có liên quan</translation>
 <translation id="2760989362628427051">Bật giao diện tối khi Trình tiết kiệm pin hoặc giao diện tối trên thiết bị đang bật</translation>
 <translation id="2762000892062317888">vừa xong</translation>
 <translation id="276969039800130567">Đăng nhập bằng địa chỉ <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3341262203274374114">Không thể ngừng theo dõi. Đã xảy ra lỗi.</translation>
 <translation id="3359667936385849800">Sử dụng nhà cung cấp dịch vụ hiện tại của bạn</translation>
 <translation id="3367813778245106622">Đăng nhập lại để bắt đầu đồng bộ hóa</translation>
-<translation id="337236281855091893">Để tìm kiếm, hãy chạm và giữ thay vì nhấn vào một từ</translation>
 <translation id="3373979091428520308">Để chia sẻ trang này với một thiết bị khác, hãy bật tính năng đồng bộ hóa trong phần cài đặt Chrome trên thiết bị đó</translation>
 <translation id="3374023511497244703">Dấu trang, lịch sử, mật khẩu và các dữ liệu khác trên Chrome sẽ không được đồng bộ hóa với Tài khoản Google của bạn nữa</translation>
 <translation id="3384347053049321195">Chia sẻ hình ảnh</translation>
@@ -431,7 +427,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
 <translation id="3435465986463792564">Có nhiều cửa sổ? Bạn có thể quản lý các trang web đó tại đây</translation>
-<translation id="3440975416244667276">Chạm và giữ để biết thêm thông tin liên quan</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
 <translation id="3444179773590444986">Bạn có muốn chia sẻ ý kiến phản hồi về giao diện tối cho các trang web?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Đã lên lịch 1 quá trình tải xuống}other{Đã lên lịch # quá trình tải xuống}}</translation>
@@ -518,7 +513,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3976396876660209797">Xóa và tạo lại lối tắt này</translation>
 <translation id="3985215325736559418">Bạn có muốn tải lại <ph name="FILE_NAME" /> xuống không?</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
-<translation id="3988466920954086464">Xem kết quả tìm kiếm tức thì trong bảng điều khiển này</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# giờ}other{# giờ}}</translation>
@@ -1137,7 +1131,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7475688122056506577">Không tìm thấy thẻ SD. Một số tệp của bạn có thể bị thiếu.</translation>
 <translation id="7479104141328977413">Quản lý thẻ</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
-<translation id="7481864133709957613">Để tìm kiếm trên trang này, hãy chạm và giữ các từ thay vì nhấn vào các từ đó</translation>
 <translation id="7482656565088326534">Thẻ xem trước</translation>
 <translation id="7484997419527351112">Khám phá – đang tắt</translation>
 <translation id="7485033510383818941">Để làm mới nội dung nguồn cấp dữ liệu, hãy kéo trang xuống</translation>
@@ -1175,6 +1168,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7663313374500954251"><ph name="PARENT_NAME" /> quản lý trình duyệt này.</translation>
 <translation id="7665369617277396874">Thêm tài khoản</translation>
 <translation id="766587987807204883">Các bài viết xuất hiện ở đây và bạn có thể đọc ngay cả khi không có kết nối mạng</translation>
+<translation id="768232549260819724">Đã sao chép GIF</translation>
 <translation id="7682724950699840886">Thử các mẹo sau: đảm bảo thiết bị của bạn có đủ dung lượng, sau đó thử xuất lại.</translation>
 <translation id="768618399695552958">Một số trang bạn truy cập đã được tải trước. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được liên kết bởi một trang web tạo bằng Google Sites.</translation>
 <translation id="7698359219371678927">Tạo email trong <ph name="APP_NAME" /></translation>
@@ -1353,6 +1347,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8570677896027847510">Không thể tải tệp xuống một cách an toàn</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
 <translation id="8572344201470131220">Đã sao chép hình ảnh</translation>
+<translation id="8580884231102452214">Sao chép GIF</translation>
 <translation id="8583805026567836021">Xóa dữ liệu tài khoản</translation>
 <translation id="859046281437143747">Theo dõi giá trong nút Tuỳ chọn khác</translation>
 <translation id="860043288473659153">Tên chủ thẻ</translation>

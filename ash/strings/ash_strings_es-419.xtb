@@ -112,6 +112,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1570871743947603115">Activar o desactivar Bluetooth: <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
+<translation id="1610778689852195798">"Deshacer"</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1632985212731562677">Accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
@@ -246,6 +247,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2607678425161541573">Se requiere acceso en línea</translation>
 <translation id="2621713457727696555">Segura</translation>
+<translation id="263399434338050016">"Seleccionar todo"</translation>
 <translation id="2653019840645008922">Captura de ventana</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
@@ -262,6 +264,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conexión a un cargador de baja potencia. Es posible que la carga de la batería no sea confiable.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Borrar"</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> administra <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
@@ -305,6 +308,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3038571455154067151">Para acceder, ingresa el código de acceso parental de Family Link.</translation>
 <translation id="3039939407102840004">El nivel de la batería de la pluma stylus es del <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Buenas tardes:</translation>
+<translation id="3047761520276763270">Intenta decir:</translation>
 <translation id="3051189971848907985">Se está cambiando el nombre del perfil. Espera unos minutos.</translation>
 <translation id="3055162170959710888">Hoy usaste este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Biblioteca a la izquierda</translation>
@@ -553,6 +557,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4570957409596482333">Botón de Seleccionar para pronunciar</translation>
+<translation id="4573176682887762361">"Escribir [palabra/frase]"</translation>
 <translation id="4577274620589681794">Pasó el tiempo indicado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578196883126898996">Tu micrófono está apagado. Activa el botón del micrófono de tu dispositivo.</translation>
@@ -633,6 +638,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5117590920725113268">Mostrar el mes siguiente</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
 <translation id="5147567197700016471">Desbloqueada</translation>
+<translation id="5150070631291639005">Configuración de privacidad</translation>
 <translation id="5155897006997040331">Velocidad de lectura</translation>
 <translation id="5166007464919321363">Guardar escritorio como plantilla</translation>
 <translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
@@ -655,6 +661,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5286194356314741248">Examinando</translation>
 <translation id="5297423144044956168">No se encontraron dispositivos móviles.</translation>
 <translation id="5297704307811127955">No</translation>
+<translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
@@ -1169,6 +1176,7 @@ Nueva instalación</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Ayuda"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configuración de los métodos de entrada</translation>
 <translation id="8818320199597151042">Se está quitando el perfil. Espera unos minutos.</translation>

@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">ບໍ່ສຳເລັດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນເບື້ອງຕົ້ນ</translation>
 <translation id="1829244130665387512">ຊອກ​ຫາ​ຢູ່​ໃນ​ຫນ້າ</translation>
 <translation id="1832459821645506983">ແມ່ນແລ້ວ, ຂ້ອຍເຂົ້າຮ່ວມ</translation>
-<translation id="1843805151597803366">ເພື່ອຮັບຄຳແປທີ່ດີກວ່າ, ກະລຸນາອະນຸຍາດໃຫ້ Google ຊອກຫາ ໃຊ້ໜ້າປັດຈຸບັນ</translation>
 <translation id="1868024384445905608">ດຽວນີ້ Chrome ດາວໂຫຼດໄຟລ໌ໄດ້ໄວກວ່າເກົ່າ</translation>
 <translation id="1877026089748256423">Chrome ລ້າສະໄໝແລ້ວ</translation>
 <translation id="1883903952484604915">ໄຟລ໌ຂອງຂ້ອຍ</translation>
@@ -227,7 +226,6 @@
 <translation id="2328985652426384049">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</translation>
 <translation id="2342601525305963189">ເຄັດລັບ Chrome:</translation>
 <translation id="234265804618409743">ບໍ່ສາມາດເປີດກ້ອງຂອງທ່ານໄດ້. ມີບາງຢ່າງຜິດພາດ.</translation>
-<translation id="2345671828921229300">ເພື່ອຊອກຫາ, ກະລຸນາແຕະຄຳໃດໜຶ່ງຄ້າງໄວ້</translation>
 <translation id="2349710944427398404">ຂໍ້ມູນທັງໝົດທີ່ໃຊ້ໂດຍ Chrome, ລວມທັງບັນຊີ, ບຸກມາກ ແລະ ການຕັ້ງຄ່າທີ່ບັນທຶກໄວ້</translation>
 <translation id="2353636109065292463">ກຳລັງກວດການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
 <translation id="235789365079050412">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ Google</translation>
@@ -301,7 +299,6 @@
 <translation id="2723001399770238859">ສຽງ</translation>
 <translation id="2732063072010454421">ຮັບປະສົບການສຽງທີ່ດີຂຶ້ນ</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">ແຕະຄຳສັບໃດໜຶ່ງເພື່ອຊອກຫາໃນທັນທີ ຫຼື ເບິ່ງການດຳເນີນການທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="2760989362628427051">ເປີດຮູບແບບສີສັນມືດເມື່ອຮູບແບບສີສັນມືດ ຫຼື ຕົວປະຢັດແບັດເຕີຣີຂອງອຸປະກອນຂອງທ່ານເປີດຢູ່</translation>
 <translation id="2762000892062317888">ຕອນນີ້</translation>
 <translation id="276969039800130567">ລົງຊື່ເຂົ້າ​ໃຊ້ເປັນ <ph name="USER_EMAIL_ADDRESS" /> ແລ້ວ.</translation>
@@ -417,7 +414,6 @@
 <translation id="3341262203274374114">ບໍ່ສາມາດເຊົາຕິດຕາມໄດ້. ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="3359667936385849800">ໃຊ້ຜູ້ໃຫ້ບໍລິການປັດຈຸບັນຂອງທ່ານ</translation>
 <translation id="3367813778245106622">ເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ</translation>
-<translation id="337236281855091893">ເພື່ອຊອກຫາ, ກະລຸນາແຕະຄຳໃດໜຶ່ງຄ້າງໄວ້ແທນການແຕະມັນ</translation>
 <translation id="3373979091428520308">ເພື່ອແບ່ງປັນໜ້ານີ້ກັບອຸປະກອນອື່ນ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome ຢູ່ໃນອຸປະກອນອື່ນ</translation>
 <translation id="3374023511497244703">ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນ Chrome ຂອງທ່ານຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ.</translation>
 <translation id="3384347053049321195">ແບ່ງ​ປັນ​ຮູບ</translation>
@@ -431,7 +427,6 @@
 <translation id="3428747202529429621">ຮັກສາໃຫ້ທ່ານປອດໄພໃນ Chrome ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພໃນແອັບອື່ນຂອງ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ</translation>
 <translation id="3429160811076349561">ຄຸນສົມບັດການທົດລອງໃຊ້ປິດຢູ່</translation>
 <translation id="3435465986463792564">ມີຫຼາຍໜ້າຈໍບໍ? ທ່ານສາມາດຈັດການພວກມັນໄດ້ຈາກບ່ອນນີ້</translation>
-<translation id="3440975416244667276">ແຕະຄ້າງໄວ້ເພື່ອເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="3444179773590444986">ແບ່ງປັນຄຳຕິຊົມກ່ຽວກັບຮູບແບບສີສັນມືດສຳລັບເວັບໄຊບໍ?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{ກຳນົດເວລາດາວໂຫຼດ 1 ລາຍການແລ້ວ}other{ກຳນົດເວລາດາວໂຫຼດ # ລາຍການແລ້ວ}}</translation>
@@ -518,7 +513,6 @@
 <translation id="3976396876660209797">ລຶບອອກ  ແລະ ສ້າງທາງລັດນີ້ຄືນໃໝ່</translation>
 <translation id="3985215325736559418">ທ່ານຕ້ອງການດາວໂຫຼດ <ph name="FILE_NAME" /> ອີກຄັ້ງບໍ?</translation>
 <translation id="3987993985790029246">ອັດ​ສຳ​ເນົາລິ້ງເຊື່ອມໂຍງ</translation>
-<translation id="3988466920954086464">ເບິ່ງຜົນການຊອກຫາທັນທີໃນແຜງນີ້</translation>
 <translation id="4000212216660919741">ໜ້າຫຼັກອອບລາຍຢູ່</translation>
 <translation id="4016425174436051808">ບໍ່ສາມາດຕິດຕາມໄດ້. ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ຊົ່ວໂມງ}other{# ຊົ່ວໂມງ}}</translation>
@@ -574,9 +568,11 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ກຳລັງດາວໂຫຼດ…</translation>
 <translation id="4404568932422911380">ບໍ່ມີບຸກມາກ</translation>
 <translation id="4405224443901389797">ຍ້າຍໄປໃສ່…</translation>
+<translation id="4405636711880428279">ລຶບບັດສະເໝືອນຂອງທ່ານອອກບໍ?</translation>
 <translation id="4409271659088619928">ໂປຣແກຣມຊອກຫາຂອງທ່ານແມ່ນ <ph name="DSE" />. ກະລຸນາອ່ານຄຳແນະນຳສຳລັບການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="4415276339145661267">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4425140285732600465">ກຳລັງຕິດຕາມລາຄາ. ຮັບການແຈ້ງເຕືອນຫາກມີການຫຼຸດລາຄາຢູ່ເວັບໄຊໃດກໍຕາມ.</translation>
+<translation id="442518031075347249">ທ່ານຈະບໍ່ສາມາດໃຊ້ບັດສະເໝືອນຂອງທ່ານກັບ Google Pay ໄດ້ອີກຕໍ່ໄປ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບບັດສະເໝືອນ<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">ຜົນການຊອກຫາຈາກ Google.</translation>
 <translation id="4452411734226507615">ປິດແຖບ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ</translation>
@@ -1137,7 +1133,6 @@
 <translation id="7475688122056506577">ບໍ່ພົບແຜ່ນ SD. ບາງໄຟລ໌ຂອງທ່ານອາດຈະຫາຍໄປ.</translation>
 <translation id="7479104141328977413">ການຈັດການແຖບ</translation>
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
-<translation id="7481864133709957613">ເພື່ອຊອກຫາຈາກໜ້ານີ້, ໃຫ້ແຕະໃສ່ຄຳສັບຄ້າງໄວ້ແທນການແຕະໃສ່ເທື່ອດຽວ</translation>
 <translation id="7482656565088326534">ແຖບສະແດງຕົວຢ່າງ</translation>
 <translation id="7484997419527351112">Discover - ປິດຢູ່</translation>
 <translation id="7485033510383818941">ເພື່ອໂຫຼດຂໍ້ມູນເນື້ອຫາຟີດຄືນໃໝ່, ໃຫ້ດຶງໜ້າລົງ</translation>

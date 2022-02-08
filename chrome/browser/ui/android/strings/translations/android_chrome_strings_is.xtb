@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Fyrstu uppsetningu samstillingar ekki lokið</translation>
 <translation id="1829244130665387512">Finna á síðu</translation>
 <translation id="1832459821645506983">Já, ég vil vera með</translation>
-<translation id="1843805151597803366">Til að fá betri þýðingar skaltu leyfa Google leit að nota núverandi síðu</translation>
 <translation id="1868024384445905608">Chrome er nú fljótara að sækja skrár</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
 <translation id="1883903952484604915">Skrárnar mínar</translation>
@@ -227,7 +226,6 @@
 <translation id="2328985652426384049">Innskráning mistókst</translation>
 <translation id="2342601525305963189">Ábendingar fyrir Chrome:</translation>
 <translation id="234265804618409743">Ekki tókst að opna myndavélina. Eitthvað fór úrskeiðis.</translation>
-<translation id="2345671828921229300">Haltu fingri á orði til að leita</translation>
 <translation id="2349710944427398404">Gögn sem Chrome notar alls, þ.m.t. reikningar, bókamerki og vistaðar stillingar</translation>
 <translation id="2353636109065292463">Verið er að athuga nettenginguna</translation>
 <translation id="235789365079050412">Persónuverndarstefna Google</translation>
@@ -301,7 +299,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2723001399770238859">hljóð</translation>
 <translation id="2732063072010454421">Láttu röddina þjóna þér betur</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Ýttu á orð til að leita að því eða sjá tengdar aðgerðir</translation>
 <translation id="2760989362628427051">Kveikja á dökku þema þegar kveikt er á dökku þema eða rafhlöðusparnaði í tækinu</translation>
 <translation id="2762000892062317888">rétt í þessu</translation>
 <translation id="276969039800130567">Skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3341262203274374114">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="3359667936385849800">Nota núverandi þjónustuaðila</translation>
 <translation id="3367813778245106622">Skráðu þig inn aftur til að hefja samstillingu</translation>
-<translation id="337236281855091893">Haltu fingri á orði til að leita í stað þess að ýta stutt á það</translation>
 <translation id="3373979091428520308">Til að deila þessari síðu í annað tæki skaltu kveikja á samstillingu Chrome í hinu tækinu</translation>
 <translation id="3374023511497244703">Bókamerkin þín, ferillinn, aðgangsorðin og önnur gögn úr Chrome verða ekki lengur samstillt við Google reikninginn þinn</translation>
 <translation id="3384347053049321195">Deila mynd</translation>
@@ -431,7 +427,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3429160811076349561">Slökkt er á prufueiginleikum</translation>
 <translation id="3435465986463792564">Ertu með of marga glugga opna? Þú getur stjórnað gluggunum héðan</translation>
-<translation id="3440975416244667276">Haltu fingri á atriði til að fá ítarlegri upplýsingar</translation>
 <translation id="3443221991560634068">Endurhlaða þessa síðu</translation>
 <translation id="3444179773590444986">Deila ábendingu um dökkt þema fyrir vefsvæði?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 niðurhal á áætlun}one{# niðurhal á áætlun}other{# niðurhöl á áætlun}}</translation>
@@ -518,7 +513,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3976396876660209797">Fjarlægðu flýtileiðina og búðu hana til aftur</translation>
 <translation id="3985215325736559418">Viltu sækja <ph name="FILE_NAME" /> aftur?</translation>
 <translation id="3987993985790029246">Afrita tengil</translation>
-<translation id="3988466920954086464">Sjá niðurstöður flýtileitar á þessu svæði</translation>
 <translation id="4000212216660919741">Ónettengt</translation>
 <translation id="4016425174436051808">Ekkki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# klst.}one{# klst.}other{# klst.}}</translation>
@@ -1137,7 +1131,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7475688122056506577">SD-kort fannst ekki. Sumar skrár vantar ef til vill.</translation>
 <translation id="7479104141328977413">Stjórnun flipa</translation>
 <translation id="7481312909269577407">Áfram</translation>
-<translation id="7481864133709957613">Til að leita af þessari síðu skaltu halda fingri á orðum í stað þess að ýta á þau</translation>
 <translation id="7482656565088326534">Forskoðunarflipi</translation>
 <translation id="7484997419527351112">Tillögur – slökkt</translation>
 <translation id="7485033510383818941">Dragðu síðuna niður til að endurnýja efni straumsins</translation>

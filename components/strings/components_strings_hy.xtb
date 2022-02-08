@@ -1056,6 +1056,7 @@
 <translation id="4250680216510889253">Ոչ</translation>
 <translation id="4253168017788158739">Նշում</translation>
 <translation id="425582637250725228">Ձեր կատարած փոփոխությունները հնարավոր է չպահպանվեն։</translation>
+<translation id="425869179292622354">Ուզո՞ւմ եք, որ այն ավելի ապահով լինի վիրտուալ քարտի շնորհիվ</translation>
 <translation id="4258748452823770588">Սխալ ստորագրություն</translation>
 <translation id="4261046003697461417">Պաշտպանված փաստաթղթերում հնարավոր չէ ծանոթագրություն ավելացնել</translation>
 <translation id="4265872034478892965">Թույլատրվել է ձեր ադմինիստրատորի կողմից</translation>
@@ -1567,6 +1568,7 @@
 <translation id="5921639886840618607">Պահե՞լ քարտը Google հաշվում</translation>
 <translation id="5922853866070715753">Գրեթե պատրաստ է</translation>
 <translation id="5932224571077948991">Կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում</translation>
+<translation id="5938153366081463283">Ավելացրեք վիրտուալ քարտ</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Բացվում է <ph name="SITE_NAME" /> կայքը…</translation>
 <translation id="5951495562196540101">Հնարավոր չէ գրանցվել սովորական հաշվով (հասանելի է փաթեթով արտոնագիր)։</translation>
@@ -2191,6 +2193,7 @@
 <translation id="7976214039405368314">Չափազանց շատ հարցումներ</translation>
 <translation id="7977538094055660992">Արտածման սարք</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Կապված է հետևյալ քարտի հետ՝</translation>
 <translation id="798134797138789862">Կարող է հայցել վիրտուալ իրականության ձեր սարքերն ու տվյալները օգտագործելու թույլտվություն</translation>
 <translation id="7984945080620862648">Այս պահին չեք կարող այցելել <ph name="SITE" />, քանի որ կայքը կոդավորված հավատարմագրեր է ուղարկել, որոնք Chrome-ը չի կարող մշակել: Ցանցային սխալներն ու հարձակումները սովորաբար ժամանակավոր բնույթ են կրում, ուստի, հավանաբար, այս էջը մատչելի կլինի ավելի ուշ:</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

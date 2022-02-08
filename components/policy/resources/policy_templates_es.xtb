@@ -913,6 +913,11 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="199764499252435679">Habilitar las actualizaciones de componentes en <ph name="PRODUCT_NAME" /></translation>
 <translation id="1998504583649140526">Configuración de solicitudes de redes privadas</translation>
 <translation id="1999000620918508488">Fuerza la pantalla de inicio de sesión a mostrar u ocultar la información del sistema.</translation>
+<translation id="1999942889260716089">Si se le asigna el valor True a esta política, se activarán las sugerencias de búsqueda en la barra de direcciones de <ph name="PRODUCT_NAME" />. Si se le asigna el valor False, se desactivarán esas sugerencias de búsqueda.
+
+      Esta política no afecta a las sugerencias basadas en los marcadores o en el historial.
+
+      Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no le asignas ningún valor, las sugerencias de búsqueda estarán activadas inicialmente, pero los usuarios podrán desactivarlas en cualquier momento.</translation>
 <translation id="2000937390924915996">No ejecuta una limpieza de disco automática al iniciar sesión</translation>
 <translation id="2001420846508294174">Si se le asigna un valor a esta política, se establecen las reglas de selección de impresora predeterminada de <ph name="PRODUCT_NAME" /> y se anulan las reglas predeterminadas. La impresora se selecciona la primera vez que los usuarios intentan imprimir, cuando <ph name="PRODUCT_NAME" /> busca una impresora que cumpla los atributos indicados. Si no se encuentra una coincidencia exacta, se puede configurar <ph name="PRODUCT_NAME" /> para que seleccione cualquier impresora que coincida, según el orden en el que se detecten.
 
@@ -1271,6 +1276,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si no se le asigna ningún valor, las cookies de terceros estarán activadas, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
 <translation id="238885588439957890">Hora a la que el dispositivo usará corriente alterna para cargar la batería, interpretada en la zona horaria local del dispositivo.</translation>
+<translation id="2393862222659066027">Abrir una lista de URLs y restaurar la última sesión</translation>
 <translation id="2394674739523870144">Si se define esta política como una lista de cadenas, dichas cadenas se unirán mediante espacios y pasarán de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de línea de comandos. Si un parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> se sustituirá por la URL de la página que se vaya a abrir. Si ningún parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, la URL se añadirá al final de la línea de comandos.
 
       Las variables de entorno se expanden. En <ph name="MS_WIN_NAME" />, <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> se sustituirá por el valor de la variable de entorno <ph name="ENV_VARIABLE_VALUE" />.
@@ -1686,6 +1692,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="285627849510728211">Define la configuración diaria del modo avanzado de carga de la batería</translation>
 <translation id="2856674246949497058">Vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. Realiza un Powerwash durante el proceso.</translation>
 <translation id="2866619962692161453">Tipo de metapolítica</translation>
+<translation id="2866726566162790531">Lista de orígenes que permiten todas las autenticaciones de HTTP</translation>
 <translation id="2869762730352628426">Habilitar el clic automático en la pantalla de inicio de sesión</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2874209944580848064">Nota para los dispositivos <ph name="PRODUCT_OS_NAME" /> compatibles con las aplicaciones de Android:</translation>
@@ -1714,6 +1721,10 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita la política o no se establece, los dispositivos registrados no informarán sobre el estado de Android.</translation>
 <translation id="288923520817177650">Permitir la creación de sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> de <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Conceder permiso automáticamente a estos sitios web para conectarse a dispositivos USB con los ID de proveedor y producto facilitados.</translation>
+<translation id="2891049933730408118">Si se establece esta política, se especificará desde qué orígenes se deben permitir los esquemas de autenticación HTTP admitidos por <ph name="PRODUCT_NAME" />, independientemente de la política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      El patrón de origen debe tener el formato que se indica en esta página: <ph name="URL_SCHEME_FORMAT_LINK" />. Pueden definirse hasta 1000 excepciones en <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Se permite el uso de comodines para todo el origen o para partes de este (el esquema, el alojamiento o el puerto).</translation>
 <translation id="2893546967669465276">Enviar los registros del sistema al servidor de administración</translation>
 <translation id="2893660462311365527">Intervalo de recogida de telemetría de red en milisegundos</translation>
 <translation id="2896434627453256512">Configura la política para habilitar la función de ventana fantasma.
@@ -1772,6 +1783,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo.
 
       Esta política está obsoleta. Usa la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> en su lugar.</translation>
+<translation id="2948268792364772890">Esta política permite que un administrador especifique si las páginas pueden enviar solicitudes XHR síncronas durante el cierre de la página.
+
+      Si la política se habilita, las páginas podrán enviar solicitudes XHR síncronas durante el cierre de la página.
+
+      Si la política se inhabilita o no se establece, las páginas no podrán enviar solicitudes XHR síncronas durante el cierre de la página.
+
+      Esta política se quitó en la versión 99 de Chrome.
+
+      Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Restricciones:</translation>
 <translation id="2957506574938329824">No permitir que los sitios soliciten acceso a los dispositivos Bluetooth a través de la API Bluetooth web</translation>
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
@@ -2136,6 +2156,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3284094172359247914">Controlar el uso de la API WebUSB</translation>
 <translation id="3288595667065905535">Canal de lanzamiento</translation>
 <translation id="3291318845269544294">Habilitar Projector</translation>
+<translation id="3292784416244243447">Permitir que los usuarios elijan qué sitios pueden usar información sobre las pantallas para abrir y colocar ventanas</translation>
 <translation id="3294430356898755483">Si se le asigna un valor a esta política, los administradores podrán establecer una lista de impresoras para los usuarios. La impresora se selecciona la primera vez que los usuarios intentan imprimir.
 
       La política funciona de la siguiente manera:
@@ -3917,6 +3938,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5526184558582921522">Permitir que se realicen consultas a Quirks Server y que potencialmente se descarguen archivos de configuración de hardware concreto</translation>
 <translation id="5526701598901867718">Todos (no seguro)</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
+<translation id="5535012472025435092">Si se le asigna el valor Enabled a esta política, se concederá automáticamente el permiso de colocación de ventanas a todos los sitios.
+      Esto permitirá que los sitios puedan ver y usar información sobre las pantallas conectadas para abrir y colocar ventanas.
+      Si se inhabilita esta política o no se establece, usará los ajustes predeterminados del navegador y los usuarios podrán elegir a qué sitios quieren conceder este permiso.</translation>
 <translation id="5535256585099022933">Definir el intervalo de tiempo para el reinicio</translation>
 <translation id="5535973522252703021">Lista de admisión de servidores de delegación Kerberos</translation>
 <translation id="553806128266843748">Un indicador booleano que especifica si las limitaciones de ancho de banda están habilitadas.</translation>
@@ -4006,6 +4030,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Nota: Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="5645779841392247734">Permitir cookies en estos sitios</translation>
 <translation id="5646234199535103501">Política de configuración del conector OnBulkDataEntry de Chrome Enterprise Connectors</translation>
+<translation id="5647868527087096729">Permitir que todos los sitios usen información sobre las pantallas para abrir y colocar ventanas</translation>
 <translation id="5649046890958064703">Si se utiliza <ph name="PRINTERS_BLACKLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />, esta especifica qué impresoras no pueden utilizar los usuarios. Los usuarios podrán utilizar todas las impresoras, excepto aquellas con los ID indicados en la política. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Esta política está obsoleta. Usa <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> en su lugar.</translation>
@@ -5829,6 +5854,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permitir que se usen notificaciones del sistema</translation>
 <translation id="7643883929273267746">Restringir cuentas que se muestran en <ph name="PRODUCT_NAME" /></translation>
+<translation id="7644125656003029520">Habilitar el permiso de colocación de ventanas en todos los sitios</translation>
 <translation id="7648664871086956188">Esta política sirve para activar o desactivar todas las reglas definidas en la política DataLeakPreventionRulesList.
       Si se le asigna el valor True, activará los informes en tiempo real de los eventos de prevención de filtración de datos.
       Si se le asigna el valor False o no se define, desactivará los informes.
@@ -6042,6 +6068,15 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7908384265697653397">Número de días tras los que se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="7912255076272890813">Configurar tipos de extensiones o aplicaciones permitidos</translation>
 <translation id="791267408364877739">Mostrar advertencias de seguridad si se utilizan instrucciones de línea de comandos potencialmente peligrosas</translation>
+<translation id="79156801312131034">Si se establece esta política, podrás especificar el comportamiento del sistema al iniciar el navegador. Si se desactiva esta opción, no se le asignará ningún valor, ya que <ph name="PRODUCT_NAME" /> debe tener un comportamiento definido para su inicio.
+
+      Si le asignas un valor a esta política, los usuarios no podrán cambiarlo en <ph name="PRODUCT_NAME" />. Si no le asignas ningún valor, los usuarios podrán cambiarlo.
+
+      Si se le asigna el valor <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> o <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> a esta política, se desactivarán algunas opciones que se basan en sesiones o realizan acciones al salir, como borrar los datos de navegación o las cookies de una sola sesión.
+
+      Si se le asigna el valor <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> a esta política, el navegador restaurará la sesión anterior y abrirá otra ventana para mostrar las URLs establecidas en <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Ten en cuenta que los usuarios pueden elegir mantener esas URLs abiertas. En ese caso, esas URLs también se restaurarán en la siguiente sesión.
+
+      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="7922358664346625612">Mantener abierta la última pestaña en Chrome.</translation>
 <translation id="7924321157669251966">Porcentaje de brillo de la pantalla cuando el dispositivo funcione con la batería</translation>
 <translation id="7925224837072026018">Si se define esta política, se concederá acceso a claves corporativas de extensiones o aplicaciones Android. Las claves están designadas solo para un uso corporativo si se generan con la API chrome.enterprise.platformKeys API en una cuenta gestionada. Los usuarios no pueden conceder acceso a extensiones o aplicaciones Android mediante claves corporativas ni quitarlo.

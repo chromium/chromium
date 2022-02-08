@@ -898,6 +898,11 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="199764499252435679">Consenti gli aggiornamenti dei componenti in <ph name="PRODUCT_NAME" /></translation>
 <translation id="1998504583649140526">Impostazioni relative alle richieste di rete privata</translation>
 <translation id="1999000620918508488">Forza la schermata di accesso a visualizzare o nascondere le informazioni di sistema.</translation>
+<translation id="1999942889260716089">Se il criterio viene impostato su Vero, vengono attivati i suggerimenti di ricerca nella barra degli indirizzi di <ph name="PRODUCT_NAME" />. Se il criterio viene impostato su Falso, i suggerimenti di ricerca vengono disattivati.
+
+      Il criterio non incide sui suggerimenti basati su preferiti o cronologia.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, i suggerimenti di ricerca sono attivi all'inizio, ma gli utenti possono disattivarli in qualsiasi momento.</translation>
 <translation id="2000937390924915996">Non eseguire la pulizia automatica del disco durante l'accesso</translation>
 <translation id="2001420846508294174">La configurazione del criterio consente di impostare le regole per la selezione della stampante predefinita in <ph name="PRODUCT_NAME" />, che sostituiscono le regole predefinite. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare, quando <ph name="PRODUCT_NAME" /> cerca una stampante corrispondente agli attributi specificati. In caso di corrispondenza non ottimale, è possibile impostare <ph name="PRODUCT_NAME" /> affinché venga selezionata qualsiasi stampante corrispondente, a seconda dell'ordine di rilevamento delle stampanti.
 
@@ -1255,6 +1260,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se il criterio non viene impostato, i cookie di terze parti vengono attivati, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="2386362615870139244">Consenti Wakelock dello schermo</translation>
 <translation id="238885588439957890">L'ora in cui il dispositivo userà la corrente alternata per ricaricare la batteria, nel fuso orario locale del dispositivo.</translation>
+<translation id="2393862222659066027">Apri un elenco di URL e ripristina l'ultima sessione</translation>
 <translation id="2394674739523870144">Se per questo criterio viene impostato un elenco di stringhe, queste ultime vengono unite usando degli spazi e passate da <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> sotto forma di parametri della riga di comando. Se un parametro contiene <ph name="URL_PLACEHOLDER" />, il valore <ph name="URL_PLACEHOLDER" /> viene sostituito con l'URL della pagina da aprire. Se nessun parametro contiene <ph name="URL_PLACEHOLDER" />, l'URL viene aggiunto alla fine della riga di comando.
 
       Le variabili di ambiente vengono espanse. Su <ph name="MS_WIN_NAME" />, il valore <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> viene sostituito con il valore della variabile di ambiente <ph name="ENV_VARIABLE_VALUE" />.
@@ -1670,6 +1676,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="285627849510728211">Imposta la configurazione giornaliera per la modalità di ricarica avanzata della batteria</translation>
 <translation id="2856674246949497058">Esegui il rollback e rimani nella versione target se la versione del sistema operativo è più recente di quella target. Esegui un powerwash durante la procedura.</translation>
 <translation id="2866619962692161453">Tipo di metacriterio</translation>
+<translation id="2866726566162790531">Elenco delle origini che consentono tutte le autenticazioni HTTP</translation>
 <translation id="2869762730352628426">Attiva la funzione di clic automatico nella schermata di accesso</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2874209944580848064">Nota per i dispositivi <ph name="PRODUCT_OS_NAME" /> che supportano le app Android:</translation>
@@ -1698,6 +1705,10 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano informazioni sullo stato di Android.</translation>
 <translation id="288923520817177650">È consentita la creazione di sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> di <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Concede automaticamente a questi siti l'autorizzazione a connettersi a dispositivi USB usando gli ID fornitore e prodotto forniti.</translation>
+<translation id="2891049933730408118">La configurazione di questo criterio consente di specificare per quali origini consentire tutti gli schemi di autenticazione HTTP supportati da <ph name="PRODUCT_NAME" /> indipendentemente dal criterio <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Il pattern dell'URL deve avere il seguente formato (<ph name="URL_SCHEME_FORMAT_LINK" />). In <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> possono essere definite fino a 1000 eccezioni.
+      I caratteri jolly sono consentiti sia per l'intera origine sia per le sue parti, ovvero lo schema, l'host e la porta.</translation>
 <translation id="2893546967669465276">Consente di inviare log di sistema al server di gestione</translation>
 <translation id="2893660462311365527">Velocità di raccolta della telemetria di rete in millisecondi.</translation>
 <translation id="2896434627453256512">Se il criterio viene impostato su Attivato, la funzionalità di finestre nascoste viene attivata.
@@ -1756,6 +1767,15 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene configurato, gli utenti non possono modificarlo.
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="2948268792364772890">Questo criterio consente a un amministratore di specificare che una pagina potrebbe inviare richieste XHR sincrone durante l'uscita dalla pagina.
+
+      Se il criterio viene attivato, le pagine possono inviare richieste XHR sincrone durante l'uscita dalle pagine.
+
+      Se il criterio viene disattivato o non viene impostato, le pagine non possono inviare richieste XHR sincrone durante l'uscita dalle pagine.
+
+      Questo criterio è stato rimosso in Chrome 99.
+
+      Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Limitazioni:</translation>
 <translation id="2957506574938329824">Non consentire ad alcun sito di richiedere l'accesso ai dispositivi Bluetooth tramite l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo di account per l'autenticazione <ph name="HTTP_NEGOTIATE" /></translation>
@@ -2120,6 +2140,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3288595667065905535">Canale di rilascio</translation>
 <translation id="3291318845269544294">Attiva Proiettore</translation>
+<translation id="3292784416244243447">Consenti agli utenti di scegliere i siti che possono usare le informazioni relative agli schermi per aprire e posizionare finestre</translation>
 <translation id="3294430356898755483">La configurazione del criterio consente agli amministratori di impostare un elenco di stampanti per i loro utenti. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare.
 
       Se viene usato il criterio:
@@ -3897,6 +3918,9 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5526184558582921522">Consenti le query a Quirks Server e il download di file di configurazione specifici per l'hardware</translation>
 <translation id="5526701598901867718">Tutto (non sicuro)</translation>
 <translation id="5534079385061985566">Attiva la funzionalità di ripristino completo.</translation>
+<translation id="5535012472025435092">Se questo criterio viene impostato su Attivato, l'autorizzazione di posizionamento delle finestre viene concessa automaticamente per tutti i siti.
+      I siti potranno vedere e usare le informazioni relative agli schermi collegati per aprire e posizionare finestre.
+      Se non viene configurato o se viene impostato su Disattivato, per questo criterio verranno usate le impostazioni predefinite del browser e gli utenti potranno scegliere questa autorizzazione per ogni sito.</translation>
 <translation id="5535256585099022933">Imposta l'intervallo di tempo per il riavvio</translation>
 <translation id="5535973522252703021">Whitelist server di delega Kerberos</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
@@ -3985,6 +4009,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="5645779841392247734">Consenti i cookie in questi siti</translation>
 <translation id="5646234199535103501">Criterio di configurazione per il connettore OnBulkDataEntry di Chrome Enterprise</translation>
+<translation id="5647868527087096729">Consenti a tutti i siti di usare le informazioni relative agli schermi per aprire e posizionare finestre</translation>
 <translation id="5649046890958064703">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLACKLIST" />, la configurazione del criterio <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. Gli utenti avranno a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Questo criterio è deprecato. Usa il criterio <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -5787,6 +5812,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Consenti l'uso delle notifiche di sistema</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
+<translation id="7644125656003029520">Attiva l'autorizzazione di posizionamento delle finestre per tutti i siti</translation>
 <translation id="7648664871086956188">Questo criterio è un'opzione generica per tutte le regole definite nel criterio DataLeakPreventionRulesList.
       Se questo criterio viene impostato su Vero, viene attivata la generazione di rapporti in tempo reale degli eventi di prevenzione di fughe di dati.
       Se viene impostato su Falso o se non viene configurato, la generazione di rapporti viene disattivata.
@@ -6000,6 +6026,15 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7908384265697653397">Il periodo di tempo, in giorni, trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nel criterio <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7912255076272890813">Configura tipi di app/estensioni consentiti</translation>
 <translation id="791267408364877739">Mostra avvisi di sicurezza quando vengono usati flag della riga di comando potenzialmente pericolosi</translation>
+<translation id="79156801312131034">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non impostarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
+
+      Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono modificarlo.
+
+      Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> o <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o dei cookie della sessione.
+
+      Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, il browser ripristinerà la sessione precedente e aprirà una finestra separata per mostrare gli URL impostati nel criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Tieni presente che gli utenti possono decidere di tenere aperti questi URL, che verranno ripristinati nella sessione futura.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7922358664346625612">Mantieni l'ultima scheda aperta in Chrome.</translation>
 <translation id="7924321157669251966">La percentuale di luminosità dello schermo quando viene usata la batteria.</translation>
 <translation id="7925224837072026018">La configurazione del criterio consente alle estensioni o alle app per Android di accedere alle chiavi aziendali. Le chiavi sono destinate unicamente all'utilizzo aziendale se vengono generate tramite l'API chrome.enterprise.platformKeys su un account gestito. Gli utenti non possono consentire o revocare l'accesso delle estensioni o delle app per Android alle chiavi aziendali.

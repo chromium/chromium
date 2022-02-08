@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">A szinkronizálás kezdeti beállítása nem fejeződött be</translation>
 <translation id="1829244130665387512">Keresés ezen az oldalon</translation>
 <translation id="1832459821645506983">Benne vagyok!</translation>
-<translation id="1843805151597803366">A jobb fordítások érdekében engedélyezze a Google Keresőnek a jelenlegi oldal használatát</translation>
 <translation id="1868024384445905608">Mostantól a Chrome gyorsabban tölti le a fájlokat</translation>
 <translation id="1877026089748256423">A Chrome elavult</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
@@ -227,7 +226,6 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2328985652426384049">Nem sikerült a bejelentkezés</translation>
 <translation id="2342601525305963189">Chrome-tippek:</translation>
 <translation id="234265804618409743">Nem lehet megnyitni a kamerát. Hiba történt.</translation>
-<translation id="2345671828921229300">A kereséshez tartsa lenyomva a kívánt szót</translation>
 <translation id="2349710944427398404">A Chrome által használt teljes adatmennyiség, beleértve a fiókokat, könyvjelzőket és mentett beállításokat is</translation>
 <translation id="2353636109065292463">Az internetkapcsolat ellenőrzése</translation>
 <translation id="235789365079050412">Google Adatvédelmi irányelvek</translation>
@@ -301,7 +299,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Jobb hangalapú élményben lehet része</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Az azonnali kereséshez koppintson a kívánt szóra, vagy tekintse meg a kapcsolódó műveleteket</translation>
 <translation id="2760989362628427051">Sötét téma bekapcsolása, amikor az eszköz sötét témája vagy Akkumulátorkímélő módja be van kapcsolva</translation>
 <translation id="2762000892062317888">éppen most</translation>
 <translation id="276969039800130567">Bejelentkezve a következőként: <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3341262203274374114">Nem sikerült felhagyni a követéssel. Hiba történt.</translation>
 <translation id="3359667936385849800">A jelenlegi szolgáltató használata</translation>
 <translation id="3367813778245106622">A szinkronizálás megkezdéséhez jelentkezzen be újra</translation>
-<translation id="337236281855091893">A kereséshez tartsa lenyomva a kívánt szót, ne koppintson rá</translation>
 <translation id="3373979091428520308">Úgy oszthatja meg az oldalt más eszközzel, ha azon az eszközön bekapcsolja a szinkronizálást a Chrome beállításai között</translation>
 <translation id="3374023511497244703">Könyvjelzői, előzményei, jelszavai és más Chrome-adatai többé nem lesznek szinkronizálva a Google-fiókjával.</translation>
 <translation id="3384347053049321195">Kép megosztása</translation>
@@ -431,7 +427,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3428747202529429621">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
 <translation id="3435465986463792564">Több ablak is meg van nyitva Önnél? Itt kezelheti őket.</translation>
-<translation id="3440975416244667276">Nyomva tartással további releváns információkhoz juthat</translation>
 <translation id="3443221991560634068">Az aktuális oldal újratöltése</translation>
 <translation id="3444179773590444986">Megosztja velünk véleményét a webhelyeknél használt sötét témával kapcsolatban?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ütemezett letöltés}other{# ütemezett letöltés}}</translation>
@@ -518,7 +513,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3976396876660209797">A gyorsparancs eltávolítása és újbóli létrehozása</translation>
 <translation id="3985215325736559418">Ismét letölti a(z) <ph name="FILE_NAME" /> fájlt?</translation>
 <translation id="3987993985790029246">Link másolása</translation>
-<translation id="3988466920954086464">Azonnali keresési találatok megtekintése ezen a panelen</translation>
 <translation id="4000212216660919741">Offline kezdőlap</translation>
 <translation id="4016425174436051808">Nem lehet követni. Hiba történt.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# órája}other{# órája}}</translation>
@@ -1137,7 +1131,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7475688122056506577">Az SD-kártya nem található. Előfordulhat, hogy egyes fájlok hiányoznak.</translation>
 <translation id="7479104141328977413">Lapkezelés</translation>
 <translation id="7481312909269577407">Előre</translation>
-<translation id="7481864133709957613">Az ezen az oldalon való kereséshez tartsa lenyomva a kívánt szavakat, ne koppintással válassza ki őket.</translation>
 <translation id="7482656565088326534">Előnézeti lap</translation>
 <translation id="7484997419527351112">Discover – kikapcsolva</translation>
 <translation id="7485033510383818941">A hírcsatorna tartalmának frissítéséhez húzza lefelé az oldalt</translation>

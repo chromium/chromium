@@ -85,6 +85,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1650222530560417226">Appuyez sur le bouton "Débuter la journalisation" pour recueillir les prochains journaux de la console JavaScript et les erreurs à partir de tous les onglets. Les journaux sont recueillis (et stockés uniquement en mémoire) jusqu'à ce que cette page soit fermée ou que vous appuyiez sur "Débuter la journalisation".</translation>
+<translation id="1654232554734641711">Accès au micro autorisé</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté au réseau.</translation>
 <translation id="1657641691196698092">Cookies bloqués</translation>
 <translation id="165877110639533037">Aucun onglet ouvert</translation>
@@ -396,6 +397,7 @@ Vos données sont chiffrées avec votre phrase secrète de synchronisation. Sais
 <translation id="4682686630151240767">1. Ouvrez les réglages de l'iPhone</translation>
 <translation id="4689564913179979534">Gérer les modes de paiement…</translation>
 <translation id="470966556546083668">Ne pas synchroniser</translation>
+<translation id="4731472194328757163">Accès à la caméra et au micro autorisé</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="4747097190499141774">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay. Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. La phrase secrète n'est pas envoyée à Google et Google ne la stocke pas. Si vous l'oubliez ou si vous souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
@@ -547,6 +549,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6064824697233747382">Votre organisation vous oblige à désactiver la synchronisation.</translation>
 <translation id="6066301408025741299">Appuyez sur l'écran pour annuler.</translation>
+<translation id="6077126322656614846">Accès à la caméra autorisé</translation>
 <translation id="60829778314739003">Accepter et continuer</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>

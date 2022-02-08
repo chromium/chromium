@@ -112,6 +112,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1570871743947603115">Activa o desactiva el Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1589090746204042747">Acceder a toda tu actividad de esta sesión</translation>
+<translation id="1610778689852195798">"Deshacer"</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1632985212731562677">La accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
@@ -145,6 +146,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1836215606488044471">Asistente (cargando...)</translation>
 <translation id="1838895407229022812">Luz nocturna desactivada.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
+<translation id="1879018240766558464">Las ventanas de incógnito no se admiten actualmente. Se guardarán las demás aplicaciones.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Proyectando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear con huella digital</translation>
@@ -245,6 +247,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2596078834055697711">Hacer una captura de pantalla de la ventana</translation>
 <translation id="2607678425161541573">Se requiere inicio de sesión online</translation>
 <translation id="2621713457727696555">Segura</translation>
+<translation id="263399434338050016">"Seleccionar todo"</translation>
 <translation id="2653019840645008922">Captura de ventana</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
@@ -261,6 +264,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baja potencia. Es posible que la carga de la batería no sea fiable.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Eliminar"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionado por <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
@@ -304,6 +308,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3038571455154067151">Para iniciar sesión, introduce tu código de acceso parental de Family Link</translation>
 <translation id="3039939407102840004">La batería del lápiz óptico está al <ph name="PERCENTAGE" /> por ciento.</translation>
 <translation id="3045488863354895414">Buenas tardes,</translation>
+<translation id="3047761520276763270">Prueba a decir:</translation>
 <translation id="3051189971848907985">Cambiando el nombre del perfil. Espera unos minutos.</translation>
 <translation id="3055162170959710888">Hoy has utilizado este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">La estantería está en la parte izquierda</translation>
@@ -552,6 +557,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4570957409596482333">Botón Enunciar selección</translation>
+<translation id="4573176682887762361">"Escribir [palabra/frase]"</translation>
 <translation id="4577274620589681794">Tiempo agotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578196883126898996">Tu micrófono está apagado. Activa el botón del micrófono de tu dispositivo.</translation>
@@ -607,7 +613,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que esta cuenta sea la primera en la que se inicie sesión cuando se cree una sesión de inicio de sesión múltiple.</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
-<translation id="4946376291507881335">Captar imagen</translation>
+<translation id="4946376291507881335">Hacer captura</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
 <translation id="4952936045814352993">La función de localizar el teléfono no está disponible si los sonidos de la alarma están inhabilitados</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requiere que restaures tu <ph name="DEVICE_TYPE" />. Tu dispositivo se reiniciará y se eliminarán todos los datos.</translation>
@@ -632,6 +638,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5117590920725113268">Mostrar mes siguiente</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
+<translation id="5150070631291639005">Configuración de privacidad</translation>
 <translation id="5155897006997040331">Velocidad de lectura</translation>
 <translation id="5166007464919321363">Guardar escritorio como plantilla</translation>
 <translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
@@ -654,6 +661,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5297423144044956168">No se han encontrado dispositivos móviles</translation>
 <translation id="5297704307811127955">Desactivada</translation>
+<translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
@@ -948,6 +956,7 @@ Nueva instalación</translation>
 <translation id="7366890467478514168">Conectar <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Grabar ventana</translation>
 <translation id="7377169924702866686">El bloqueo de mayúsculas está activado.</translation>
+<translation id="7377481913241237033">Conectar con un código</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área de grabación</translation>
 <translation id="7378594059915113390">Controles multimedia</translation>
 <translation id="7378889811480108604">El modo de ahorro de batería está desactivado</translation>
@@ -975,6 +984,7 @@ Nueva instalación</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Las aplicaciones Linux y las ventanas de incógnito no se admiten actualmente. Se guardarán las demás aplicaciones.</translation>
 <translation id="7544300628205093162">La retroiluminación del teclado está activada</translation>
 <translation id="7548434653388805669">Es hora de acostarse</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>
@@ -1166,6 +1176,7 @@ Nueva instalación</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Ayuda"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configuración de métodos de introducción de texto</translation>
 <translation id="8818320199597151042">Quitando perfil. Espera unos minutos.</translation>

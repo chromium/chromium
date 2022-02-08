@@ -197,6 +197,7 @@
 <translation id="6734291798041940871">O Chromium já está instalado para todos os usuários do seu computador.</translation>
 <translation id="673636774878526923">Para ter acesso aos recursos do Chromium em todos os seus dispositivos, faça login e ative a sincronização.</translation>
 <translation id="6774082503108938489">Seu pai/mãe desativou "Permissões para sites, apps e extensões" no Chromium. Não é permitido ativar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">As permissões que você já concedeu a sites e apps podem ser aplicadas a esta conta. Se você não quer que sites ou apps tenham acesso às informações da sua conta, use o <ph name="LINK_BEGIN" />Modo convidado<ph name="LINK_END" /> no navegador Chromium. Também é possível gerenciar suas Contas do Google nas <ph name="LINK_2_BEGIN" />Configurações<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">O Chromium avisa se suas senhas forem comprometidas</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>

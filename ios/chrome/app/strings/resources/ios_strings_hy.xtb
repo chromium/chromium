@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1650222530560417226">Հպեք «Սկսել գրանցումը» կոճակը՝ բոլոր ներդիրների JavaScript վահանակի գրանցումներն ու սխալները հավաքելու և պահելու համար։ Գրանցումները կպահվեն (և կպահվեն միայն հիշողության մեջ), քանի դեռ այս էջը չի փակվել կամ չեք սեղմել «Դադարեցնել գրանցումը» կոճակը։</translation>
+<translation id="1654232554734641711">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="1657011748321897393">Չհաջողվեց համօգտագործել, քանի որ դուք միացած չեք ցանցին:</translation>
 <translation id="1657641691196698092">Արգելափակված քուքիներ</translation>
 <translation id="165877110639533037">Բաց ներդիրներ չկան</translation>
@@ -115,6 +116,7 @@
 <translation id="196896377990863006">Ցույց տալ հղման նախադիտումը</translation>
 <translation id="1973912524893600642">Պահպանել տվյալները</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
+<translation id="1981118202195772574">Շարժական սարքի ռեժիմ</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
 <translation id="199425419756152024">Դիտել գաղտնաբառը</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
@@ -235,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Բոլոր քուքիներն արգելափակված են</translation>
 <translation id="313283613037595347">Ստեղծել նոր ինկոգնիտո ներդիր</translation>
+<translation id="3150887674190166798">Ընտրեք, թե ինչպես եք ուզում, որ Chrome-ն ամեն անգամ բացի կայքը</translation>
 <translation id="3153862085237805241">Պահել քարտը</translation>
 <translation id="3157387275655328056">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="3157684681743766797">Նշել բոլորը…</translation>
@@ -396,6 +399,7 @@
 <translation id="4682686630151240767">1. Բացեք iPhone-ի կարգավորումները։</translation>
 <translation id="4689564913179979534">Վճարման եղանակների կառավարում…</translation>
 <translation id="470966556546083668">Չմիացնել համաժամացումը</translation>
+<translation id="4731472194328757163">Տեսախցիկի և խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4747097190499141774">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։ Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին, և Google-ը չի պահում այն: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի վերակայել համաժամացումը: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Նոր ինկոգնիտո ներդիր</translation>
@@ -547,6 +551,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
 <translation id="6064824697233747382">Ձեր կազմակերպությունը պահանջում է, որ անջատեք համաժամացումը։</translation>
 <translation id="6066301408025741299">Հպեք՝ չեղարկելու համար:</translation>
+<translation id="6077126322656614846">Տեսախցիկի օգտագործումը թույլատրված է</translation>
 <translation id="60829778314739003">Ընդունել և շարունակել</translation>
 <translation id="6084848228346514841">Ընտրեք ներդիրներ</translation>
 <translation id="6103540626693881831">Գաղտնագրում սարքում</translation>
@@ -758,6 +763,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7911190106180361398">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ համաժամացնել բոլոր տվյալները։</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Գաղտնաբառերի արտահանում...</translation>
+<translation id="793971554166979165">Կայքի կանխադրված ռեժիմ</translation>
 <translation id="794799177247607889">Դադարեցնել գրանցումը</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="7961015016161918242">Երբեք</translation>
@@ -863,6 +869,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8881801611828450202">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>
 <translation id="8917490105272468696">Եղավ</translation>
+<translation id="8928133177108699615">Համակարգչի ռեժիմ</translation>
 <translation id="8952559610785099500">Ավելացրեք գաղտնաբառ</translation>
 <translation id="895541991026785598">Հաղորդել խնդրի մասին</translation>
 <translation id="8974714402877957201">1. Բացեք iPad-ի կարգավորումները։</translation>

@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Ներքին սխալ</translation>
 <translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Բացված է արտաքին սարքերի համար ներկառուցված ծրագրաշարի թարմացման պատուհանը։ Հասանելի է <ph name="NUM_UPDATES" /> թարմացում։</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
 <translation id="1175951029573070619">Միջին (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Հնարավոր մուտքի էջ</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Թարմացում (<ph name="PERCENTAGE_VALUE" />%-ը կատարված է)</translation>
 <translation id="1310380015393971138">Հասանելի <ph name="NETWORK_NAME" /> ցանց չկա</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Տնային ցանց, առանց ռոումինգի</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Առաջարկներ</translation>
 <translation id="1476467821656042872">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս կարող է տեսնել ձեր գործողությունները։</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրաշարը թարմացվում է</translation>
 <translation id="1499900233129743732">Այս օգտատերը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="150962533380566081">Անվավեր PUK:</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
+<translation id="1565038567006703504">Չհաջողվեց թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="1567064801249837505">Ալբոմներ</translation>
 <translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Թարմացնել ընթացիկ պաստառը</translation>
 <translation id="2517472476991765520">Որոնել</translation>
+<translation id="253029298928638905">Վերագործարկում…</translation>
 <translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
+<translation id="3993704782688964914">Ձեր <ph name="DEVICE_NAME" /> սարքն այժմ թարմացված է</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
 <translation id="4044093238444069296">Չհաջողվեց կապ հաստատել անցախուցի հետ</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Չի գործարկվել</translation>
 <translation id="4378551569595875038">Միացում…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> սարքը վերագործարկվում է</translation>
 <translation id="4418498623216225764">Թարմացրեք արտաքին սարքերը</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />-ն անջատված է</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Համընկնում սուբյեկտի այլընտրանքային անվան հետ</translation>
 <translation id="4536864596629708641">IP-ի կազմաձևում</translation>
 <translation id="4548483925627140043">Ազդանշան չի գտնվել</translation>
+<translation id="4556753742174065117">Ներկառուցված ծրագրաշարը թարմացման կարիք չունի</translation>
 <translation id="455835558791489930">Մարտկոց՝ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">SIM քարտն ապակողպված է</translation>
 <translation id="4562494484721939086">Ցանցը չի գտնվել</translation>
@@ -434,6 +442,7 @@
 <translation id="680983167891198932">Բանալի</translation>
 <translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>
+<translation id="6889786074662672253">Վերագործարկման ժամանակ մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Վերագործարկումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
 <translation id="6905724422583748843">Վերադառնալ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Սկաների կափարիչը բաց է։ Փակեք այն և նորից փորձեք։</translation>
 <translation id="6911383237894364323">Չհաջողվեց միանալ մեդիա սերվերներին</translation>

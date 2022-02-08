@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> möchte Ihre Chrome-Einstellungen auf ihre ursprünglichen Standardwerte zurücksetzen. Hierdurch werden Ihre Startseite, die "Neuer Tab"-Seite und die Suchmaschine zurückgesetzt, Ihre Erweiterungen deaktiviert und sämtliche Tabs losgelöst. Außerdem werden sonstige temporäre und im Cache gespeicherte Daten wie Cookies, Inhalte und Websitedaten gelöscht.</translation>
 <translation id="1084096383128641877">Durch das Entfernen dieses Passworts wird Ihr <ph name="DOMAIN" />-Konto nicht gelöscht. Ändern Sie Ihr Passwort oder löschen Sie Ihr <ph name="DOMAIN_LINK" />-Konto, um es vor anderen zu schützen.</translation>
 <translation id="1084824384139382525">Adr&amp;esse des Links kopieren</translation>
-<translation id="1085064499066015002">Immer auf allen Websites</translation>
 <translation id="1085697365578766383">Fehler beim Starten der virtuellen Maschine. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="1087965115100412394">Websites dürfen keine Verbindung mit MIDI-Geräten herstellen</translation>
 <translation id="1088654056000736875">Chrome entfernt schädliche Software von Ihrem Computer…</translation>
@@ -339,6 +338,7 @@
 <translation id="1340527397989195812">Sichern Sie Medien von diesem Gerät mit der App "Dateien".</translation>
 <translation id="1341988552785875222">Der aktuelle Hintergrund wurde von <ph name="APP_NAME" /> festgelegt. Sie müssen <ph name="APP_NAME" /> möglicherweise deinstallieren, bevor Sie einen anderen Hintergrund auswählen.</translation>
 <translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
+<translation id="1343920184519992513">Da weitermachen, wo Sie aufgehört haben, und bestimmte Seiten öffnen</translation>
 <translation id="1346630054604077329">Bestätigen und neu starten</translation>
 <translation id="1347256498747320987">Updates und Apps installieren: Wenn du fortfährst, stimmst du zu, dass dieses Gerät automatisch Updates und Apps von Google, deinem Mobilfunkanbieter und dem Hersteller deines Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-Speicher</translation>
@@ -2824,7 +2824,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="383891835335927981">Keine Websites wurden vergrößert oder verkleinert</translation>
 <translation id="3839509547554145593">Scroll-Beschleunigung für Maus aktivieren</translation>
 <translation id="3839516600093027468">Immer verhindern, dass <ph name="HOST" /> die Zwischenablage abruft</translation>
-<translation id="3839526976593488376">Für jede Website anpassen</translation>
 <translation id="3841964634449506551">Passwort ungültig</translation>
 <translation id="3842552989725514455">Schriftart Serif</translation>
 <translation id="3843464315703645664">Intern auf der Zulassungsliste</translation>
@@ -5378,6 +5377,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="654871471440386944">Tastaturnavigation aktivieren?</translation>
 <translation id="6549038875972762904">Einrichtung wiederholen</translation>
 <translation id="6550675742724504774">Optionen</translation>
+<translation id="65513682072153627">Das Symbol „Verwaltet“ wird angezeigt, wenn eine Einstellung oder Funktion von Ihrem Administrator verwaltet wird.</translation>
 <translation id="6551508934388063976">Befehl nicht verfügbar. Drücken Sie Strg+N, um ein neues Fenster zu öffnen.</translation>
 <translation id="6551612971599078809">Die Website verwendet ein USB-Gerät</translation>
 <translation id="6551739526055143276">Verwaltet über Family Link</translation>
@@ -6148,6 +6148,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7376553024552204454">Cursor bei Bewegung hervorheben</translation>
 <translation id="737728204345822099">Auf Ihrem Sicherheitsschlüssel kann zum Besuch dieser Website ein Datensatz angelegt werden.</translation>
 <translation id="7377451353532943397">Zugriff auf den Sensor weiterhin blockieren</translation>
+<translation id="7377481913241237033">Verbindung per Code herstellen</translation>
 <translation id="7378611153938412599">Schwache Passwörter sind einfach zu erraten. Erstellen Sie deshalb am besten starke Passwörter. <ph name="BEGIN_LINK" />Weitere Sicherheitstipps ansehen.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Web Store öffnen</translation>
 <translation id="7380622428988553498">Gerätename enthält ungültige Zeichen</translation>
@@ -7805,6 +7806,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="9040661932550800571">Passwort für <ph name="ORIGIN" /> aktualisieren?</translation>
 <translation id="9041692268811217999">Der Zugriff auf lokale Dateien auf Ihrem Gerät wurde von Ihrem Administrator deaktiviert</translation>
 <translation id="904224458472510106">Dieser Vorgang kann nicht rückgängig gemacht werden</translation>
+<translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="904451693890288097">Geben Sie bitte den Zugangscode für "<ph name="DEVICE_NAME" />" ein:</translation>
 <translation id="9044646465488564462">Fehler beim Herstellen einer Verbindung mit dem Netzwerk: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Ihre Leseliste wurde in die neue Seitenliste verschoben. Hier können Sie die Funktion testen.</translation>

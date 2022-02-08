@@ -203,6 +203,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6734291798041940871">Chromium is al geïnstalleerd voor alle gebruikers op je computer.</translation>
 <translation id="673636774878526923">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten</translation>
 <translation id="6774082503108938489">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chromium. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet aanzetten.</translation>
+<translation id="6808964260981102146">Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn op dit account. Als je niet wilt dat websites of apps toegang tot je accountgegevens hebben, gebruik je de <ph name="LINK_BEGIN" />gastmodus<ph name="LINK_END" /> in de Chromium-browser. Je kunt je Google-accounts ook beheren via <ph name="LINK_2_BEGIN" />Instellingen<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (gekopieerd naar Chromium)</translation>

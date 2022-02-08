@@ -882,6 +882,11 @@
 <translation id="199764499252435679">允许更新 <ph name="PRODUCT_NAME" /> 中的组件</translation>
 <translation id="1998504583649140526">专用网络请求设置</translation>
 <translation id="1999000620918508488">强制在登录屏幕上显示或隐藏系统信息。</translation>
+<translation id="1999942889260716089">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 地址栏中显示搜索建议。如果此政策设为 False，系统会停用此类搜索建议功能。
+
+      根据书签或历史记录提供的建议不受此政策的影响。
+
+      如果您设置了此政策，用户便无法更改相关设置。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
 <translation id="2000937390924915996">不在登录期间运行“自动清理磁盘”功能</translation>
 <translation id="2001420846508294174">通过设置此政策，您可以配置让系统遵循什么样的规则来选择默认打印机以供用户在 <ph name="PRODUCT_NAME" /> 中使用，并覆盖默认规则。当用户首次尝试打印时需要选择打印机，<ph name="PRODUCT_NAME" /> 会寻找一台与指定属性匹配的打印机。如果没有与指定属性完全匹配的打印机，可以通过设置让 <ph name="PRODUCT_NAME" /> 选择任意一台与指定属性部分匹配的打印机，具体选择哪一台取决于这些打印机被发现的顺序。
 
@@ -1228,6 +1233,7 @@
       如果此政策未设置，系统会开启第三方 Cookie，但用户可以更改此设置。</translation>
 <translation id="2386362615870139244">允许使用屏幕唤醒锁定</translation>
 <translation id="238885588439957890">设备将于何时（以设备的本地时区表示）使用交流电为电池充电。</translation>
+<translation id="2393862222659066027">打开一系列网址并恢复上次的会话</translation>
 <translation id="2394674739523870144">如果此政策设为一系列字符串，这些字符串会以空格连接，并作为命令行参数从 <ph name="IE_PRODUCT_NAME" /> 传递到 <ph name="PRODUCT_NAME" />。如果有参数包含 <ph name="URL_PLACEHOLDER" />，系统会将 <ph name="URL_PLACEHOLDER" /> 替换成要打开的网页对应的网址。如果没有参数包含 <ph name="URL_PLACEHOLDER" />，系统会将网址附加到命令行的末尾。
 
       系统会扩展环境变量。在 <ph name="MS_WIN_NAME" /> 上，<ph name="ENV_VARIABLE_WIN_EXAMPLE" /> 会被替换成 <ph name="ENV_VARIABLE_VALUE" /> 环境变量的值。
@@ -1637,6 +1643,7 @@
 <translation id="285627849510728211">设定日间高级电池充电模式配置</translation>
 <translation id="2856674246949497058">如果操作系统版本比目标版本新，则回滚到并持续使用目标版本。在此过程中，系统会执行 Powerwash 操作。</translation>
 <translation id="2866619962692161453">元政策类型</translation>
+<translation id="2866726566162790531">允许所有 HTTP 身份验证的来源列表</translation>
 <translation id="2869762730352628426">在登录屏幕上启用自动点击</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2874209944580848064">针对支持 Android 应用的 <ph name="PRODUCT_OS_NAME" />设备的注意事项：</translation>
@@ -1665,6 +1672,10 @@
       如果此政策已停用或未设置，已注册的设备将不会报告 Android 状态信息</translation>
 <translation id="288923520817177650">允许创建 <ph name="WEBXR_API_NAME_SHORT" /> 的<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />会话</translation>
 <translation id="2890645751406497668">自动授权这些网站通过给定的供应商 ID 和产品 ID 连接到 USB 设备。</translation>
+<translation id="2891049933730408118">通过设置此政策，您能指定哪些来源允许使用 <ph name="PRODUCT_NAME" /> 支持的所有 HTTP 身份验证方案（无论 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策设定的值为何）。
+
+      请按以下格式处理来源的格式 (<ph name="URL_SCHEME_FORMAT_LINK" />)。最多可在 <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 中定义 1,000 个例外情况。
+      来源的整体或部分内容都可以使用通配符，例如架构、主机和端口均可使用通配符。</translation>
 <translation id="2893546967669465276">将系统日志发送到管理服务器</translation>
 <translation id="2893660462311365527">网络遥测收集时间间隔（以毫秒为单位）。</translation>
 <translation id="2896434627453256512">通过设置此政策，您可以启用“ghost 窗口”功能。
@@ -1723,6 +1734,15 @@
       如果您设置了此政策，用户便无法更改相关设置。
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />。</translation>
+<translation id="2948268792364772890">借助此政策，管理员可以指定页面能否在关闭过程中发送同步 XHR 请求。
+
+      如果此政策已启用，页面便能够在关闭过程中发送同步 XHR 请求。
+
+      如果此政策已停用或未设置，页面将无法在关闭过程中发送同步 XHR 请求。
+
+      此政策已从 Chrome 99 中移除。
+
+      请参阅 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="2952347049958405264">限制：</translation>
 <translation id="2957506574938329824">不允许任何网站通过 Web Bluetooth API 请求访问蓝牙设备</translation>
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的帐号类型</translation>
@@ -2087,6 +2107,7 @@
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
 <translation id="3288595667065905535">发布版</translation>
 <translation id="3291318845269544294">启用投影仪</translation>
+<translation id="3292784416244243447">允许用户选择哪些网站可以使用屏幕的相关信息以打开并放置窗口</translation>
 <translation id="3294430356898755483">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
 
       使用此政策可以：
@@ -3852,6 +3873,9 @@
 <translation id="5526184558582921522">允许向 Quirks Server 发送查询并酌情下载硬件专用配置文件</translation>
 <translation id="5526701598901867718">所有（不安全）</translation>
 <translation id="5534079385061985566">启用“完全还原”功能。</translation>
+<translation id="5535012472025435092">如果此政策已启用，系统便会自动为所有网站授予窗口放置权限。
+      这将允许网站查看与已连接屏幕有关的信息，并使用这些信息打开和放置窗口。
+      如果此政策未设置或已停用，它将遵循浏览器的默认设置并允许用户为每个网站选择此权限。</translation>
 <translation id="5535256585099022933">设置重新启动时间间隔</translation>
 <translation id="5535973522252703021">Kerberos 授权服务器白名单</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
@@ -3940,6 +3964,7 @@
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="5645779841392247734">在这些网站上允许 Cookie</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise Connector 的配置政策</translation>
+<translation id="5647868527087096729">允许所有网站使用屏幕的相关信息以打开并放置窗口</translation>
 <translation id="5649046890958064703">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLACKLIST" />，您便可通过设置 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
 
       此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。</translation>
@@ -5733,6 +5758,7 @@
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">允许使用系统通知</translation>
 <translation id="7643883929273267746">限制可在<ph name="PRODUCT_NAME" />中显示的帐号</translation>
+<translation id="7644125656003029520">在所有网站上启用窗口放置权限</translation>
 <translation id="7648664871086956188">此政策是一个通用开关，适用于在 DataLeakPreventionRulesList 政策中定义的所有规则。
       如果此政策设为 True，系统会开启关于数据泄露预防事件的实时报告。
       如果此政策设为 False 或未设置，系统将会关闭这种报告。
@@ -5945,6 +5971,15 @@
 <translation id="7908384265697653397">如果 <ph name="PRODUCT_OS_NAME" />版本低于指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />，系统会在多少天后强制用户退出登录</translation>
 <translation id="7912255076272890813">配置允许的应用/扩展程序类型</translation>
 <translation id="791267408364877739">使用可能不安全的命令行标记时显示安全警告</translation>
+<translation id="79156801312131034">通过设置此政策，您可以指定 Chrome 启动时的系统行为。关闭此设置相当于未对其进行配置，因为 <ph name="PRODUCT_NAME" /> 必须具有指定的启动行为。
+
+      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行更改它。
+
+      如果此政策设为 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> 或 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，某些依赖于会话的设置或用于指定退出时应执行什么操作的设置（例如：退出时清除浏览数据，或仅在会话期间有效的 Cookie）就会被关闭。
+
+      如果此政策设为 <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />，浏览器将会恢复上一个会话并打开一个单独的窗口，以显示通过 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设置的网址。请注意，用户可以选择让这些网址保持打开状态，它们也会在未来的会话中恢复。
+
+      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
 <translation id="7922358664346625612">使 Chrome 中仅剩的那个标签页保持打开状态。</translation>
 <translation id="7924321157669251966">使用电池供电时的屏幕亮度百分比</translation>
 <translation id="7925224837072026018">通过设置此政策，您可以授权扩展程序或 Android 应用使用企业密钥。在受管理的帐号中使用 chrome.enterprise.platformKeys API 生成的密钥会被指定为仅供企业使用。用户无法授权/取消授权扩展程序或 Android 应用使用此类密钥。

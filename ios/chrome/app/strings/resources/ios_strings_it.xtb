@@ -85,6 +85,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1650222530560417226">Tocca il pulsante "Inizia registrazione" per raccogliere i log della console JavaScript e gli errori di tutte le schede. I log verranno raccolti e archiviati unicamente in memoria fino alla chiusura della pagina o finché non toccherai "Interrompi registrazione".</translation>
+<translation id="1654232554734641711">Accesso al microfono consentito</translation>
 <translation id="1657011748321897393">Condivisione non riuscita perché non sei collegato alla rete.</translation>
 <translation id="1657641691196698092">Cookie bloccati</translation>
 <translation id="165877110639533037">Nessuna scheda aperta</translation>
@@ -396,6 +397,7 @@ I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inserisc
 <translation id="4682686630151240767">1. Apri le Impostazioni dell'iPhone</translation>
 <translation id="4689564913179979534">Gestisci metodi di pagamento…</translation>
 <translation id="470966556546083668">Non attivare la sincronizzazione</translation>
+<translation id="4731472194328757163">Accesso a fotocamera e microfono consentito</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4747097190499141774">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay. Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai reimpostare la sincronizzazione. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nuova scheda in incognito</translation>
@@ -547,6 +549,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
 <translation id="6064824697233747382">La tua organizzazione richiede di disattivare la sincronizzazione.</translation>
 <translation id="6066301408025741299">Tocca per annullare.</translation>
+<translation id="6077126322656614846">Accesso alla fotocamera consentito</translation>
 <translation id="60829778314739003">Accetta e continua</translation>
 <translation id="6084848228346514841">Seleziona schede</translation>
 <translation id="6103540626693881831">Crittografia on-device</translation>

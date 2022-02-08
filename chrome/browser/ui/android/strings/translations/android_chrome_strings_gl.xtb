@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Non se completou a configuración de sincronización inicial</translation>
 <translation id="1829244130665387512">Buscar na páxina</translation>
 <translation id="1832459821645506983">Si, acepto</translation>
-<translation id="1843805151597803366">Para obter mellores traducións, deixa que a Busca de Google utilice a páxina actual</translation>
 <translation id="1868024384445905608">Chrome agora descarga os ficheiros máis rápido</translation>
 <translation id="1877026089748256423">Chromium está desactualizado</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
@@ -227,7 +226,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2328985652426384049">Non se puido iniciar sesión</translation>
 <translation id="2342601525305963189">Consellos de Chrome:</translation>
 <translation id="234265804618409743">Non se puido abrir a cámara. Produciuse un erro.</translation>
-<translation id="2345671828921229300">Para realizar buscas, mantén premida unha palabra</translation>
 <translation id="2349710944427398404">Datos totais usados por Chrome, incluídas as contas, os marcadores e a configuración gardada</translation>
 <translation id="2353636109065292463">Comprobando a túa conexión a Internet</translation>
 <translation id="235789365079050412">Política de privacidade de Google</translation>
@@ -301,7 +299,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Desfruta dunha experiencia de voz mellorada</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Toca unha palabra para realizar buscas de forma instantánea ou ver accións relacionadas</translation>
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
 <translation id="2762000892062317888">agora</translation>
 <translation id="276969039800130567">Sesión iniciada como <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3341262203274374114">Non se puido deixar de seguir o feed. Produciuse un erro.</translation>
 <translation id="3359667936385849800">Utilizar o teu fornecedor de servizo actual</translation>
 <translation id="3367813778245106622">Inicia sesión de novo para comezar a sincronización</translation>
-<translation id="337236281855091893">Para realizar buscas, tes que manter premida unha palabra non simplemente tocala</translation>
 <translation id="3373979091428520308">Para compartir esta páxina con outro dispositivo, activa a sincronización na configuración de Chrome dese dispositivo</translation>
 <translation id="3374023511497244703">Os marcadores, o historial, os contrasinais e outros datos de Chrome deixarán de sincronizarse coa túa Conta de Google</translation>
 <translation id="3384347053049321195">Compartir imaxe</translation>
@@ -431,7 +427,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3428747202529429621">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas iniciada a sesión</translation>
 <translation id="3429160811076349561">As funcións de proba están desactivadas</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
-<translation id="3440975416244667276">Mantén premidas as palabras para ver información relevante</translation>
 <translation id="3443221991560634068">Volver cargar a páxina actual</translation>
 <translation id="3444179773590444986">Queres compartir comentarios sobre o tema escuro para os sitios?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Hai 1 descarga programada}other{Hai # descargas programadas}}</translation>
@@ -518,7 +513,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3976396876660209797">Elimina e volve crear este atallo</translation>
 <translation id="3985215325736559418">Queres descargar <ph name="FILE_NAME" /> de novo?</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
-<translation id="3988466920954086464">Consulta os resultados da busca instantáneos neste panel</translation>
 <translation id="4000212216660919741">Inicio sen conexión</translation>
 <translation id="4016425174436051808">Non se puido seguir o feed. Produciuse un erro.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
@@ -1137,7 +1131,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7475688122056506577">Non se atopou a tarxeta SD. É posible que falten algúns dos teus ficheiros.</translation>
 <translation id="7479104141328977413">Xestión de pestanas</translation>
 <translation id="7481312909269577407">Adiante</translation>
-<translation id="7481864133709957613">Para facer buscas neste páxina, mantén premidas as palabras no canto de tocalas</translation>
 <translation id="7482656565088326534">Pestana de vista previa</translation>
 <translation id="7484997419527351112">Discover: desactivado</translation>
 <translation id="7485033510383818941">Para actualizar o contido do feed, arrastra a páxina cara abaixo</translation>

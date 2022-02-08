@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">最初の同期設定が終了していません</translation>
 <translation id="1829244130665387512">ページ内検索</translation>
 <translation id="1832459821645506983">同意する</translation>
-<translation id="1843805151597803366">翻訳を改善するには、Google 検索に現在のページへのアクセスを許可してください</translation>
 <translation id="1868024384445905608">Chrome でのファイルのダウンロードがさらに速くなりました</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
 <translation id="1883903952484604915">マイファイル</translation>
@@ -227,7 +226,6 @@
 <translation id="2328985652426384049">ログインできません</translation>
 <translation id="2342601525305963189">Chrome を使いこなすヒント:</translation>
 <translation id="234265804618409743">カメラを開けません。エラーが発生しました。</translation>
-<translation id="2345671828921229300">検索するには、単語を長押しします</translation>
 <translation id="2349710944427398404">Chrome が使用するデータ全体（アカウント、ブックマーク、保存済みの設定など）</translation>
 <translation id="2353636109065292463">インターネット接続を確認しています</translation>
 <translation id="235789365079050412">Google プライバシー ポリシー</translation>
@@ -301,7 +299,6 @@
 <translation id="2723001399770238859">音声</translation>
 <translation id="2732063072010454421">音声操作の利便性を向上</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">単語をタップすると、検索をすばやく実行したり、関連する操作メニューを確認したりできます</translation>
 <translation id="2760989362628427051">デバイスのダークモードまたはバッテリー セーバーがオンのときにダークモードをオンにする</translation>
 <translation id="2762000892062317888">たった今</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。</translation>
@@ -417,7 +414,6 @@
 <translation id="3341262203274374114">フォローを解除できません。エラーが発生しました。</translation>
 <translation id="3359667936385849800">現在のサービス プロバイダを使用</translation>
 <translation id="3367813778245106622">同期を開始するにはもう一度ログインします</translation>
-<translation id="337236281855091893">検索するには、単語をタップではなく長押しします</translation>
 <translation id="3373979091428520308">このページを別のデバイスと共有するには、別のデバイスの Chrome 設定で同期をオンにしてください</translation>
 <translation id="3374023511497244703">ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります</translation>
 <translation id="3384347053049321195">画像を共有</translation>
@@ -431,7 +427,6 @@
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3435465986463792564">ウィンドウの数が多くてお困りの場合も、ここで管理できます</translation>
-<translation id="3440975416244667276">長押しすると、その他の関連情報が表示されます</translation>
 <translation id="3443221991560634068">現在のページを再読み込みする</translation>
 <translation id="3444179773590444986">サイトのダークモードに関するフィードバックを共有しますか？</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 件のダウンロードがスケジュール設定されました}other{# 件のダウンロードがスケジュール設定されました}}</translation>
@@ -518,7 +513,6 @@
 <translation id="3976396876660209797">このショートカットを削除して再度作成します</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> をもう一度ダウンロードしますか？</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
-<translation id="3988466920954086464">このパネルにインスタント検索の結果が表示されます</translation>
 <translation id="4000212216660919741">オフライン ホーム</translation>
 <translation id="4016425174436051808">フォローできません。エラーが発生しました。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 時間}other{# 時間}}</translation>
@@ -1137,7 +1131,6 @@
 <translation id="7475688122056506577">SD カードが見つかりません。一部のファイルが欠落している可能性があります。</translation>
 <translation id="7479104141328977413">タブの管理</translation>
 <translation id="7481312909269577407">進む</translation>
-<translation id="7481864133709957613">このページで検索するには、単語をタップではなく長押しします</translation>
 <translation id="7482656565088326534">[プレビュー] タブ</translation>
 <translation id="7484997419527351112">Discover - オフ</translation>
 <translation id="7485033510383818941">フィード コンテンツを更新するには、ページを下にプルダウンします</translation>

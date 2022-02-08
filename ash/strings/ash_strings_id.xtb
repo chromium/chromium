@@ -112,6 +112,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1570871743947603115">Alihkan Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
+<translation id="1610778689852195798">"Urungkan"</translation>
 <translation id="1611993646327628135">Aktif</translation>
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> perangkat</translation>
@@ -145,6 +146,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1836215606488044471">Asisten (sedang dimuat...)</translation>
 <translation id="1838895407229022812">Cahaya Malam nonaktif.</translation>
 <translation id="1864454756846565995">Perangkat USB-C (port belakang)</translation>
+<translation id="1879018240766558464">Jendela Samaran saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="1882814835921407042">Tidak ada jaringan seluler</translation>
 <translation id="1882897271359938046">Mencerminkan ke <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Buka kunci dengan sidik jari</translation>
@@ -245,6 +247,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2596078834055697711">Mengambil screenshot jendela</translation>
 <translation id="2607678425161541573">Perlu login online</translation>
 <translation id="2621713457727696555">Aman</translation>
+<translation id="263399434338050016">"Pilih semua"</translation>
 <translation id="2653019840645008922">Tangkapan jendela</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2658778018866295321">Klik dan tarik</translation>
@@ -261,6 +264,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipasang ke pengisi daya rendah. Pengisian daya baterai mungkin tidak dapat diandalkan.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Hapus"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Keluar dari mode tangkapan layar</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
@@ -304,6 +308,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3038571455154067151">Untuk login, masukkan kode akses orang tua Family Link</translation>
 <translation id="3039939407102840004">Baterai stilus <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="3045488863354895414">Selamat siang,</translation>
+<translation id="3047761520276763270">Coba ucapkan:</translation>
 <translation id="3051189971848907985">Mengganti nama profil. Tunggu beberapa menit.</translation>
 <translation id="3055162170959710888">Anda menggunakan perangkat ini selama <ph name="USED_TIME" /> hari ini</translation>
 <translation id="3068711042108640621">Rak di bagian kiri</translation>
@@ -551,6 +556,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4570957409596482333">Tombol Klik untuk Diucapkan</translation>
+<translation id="4573176682887762361">"Ketik [kata/frasa]"</translation>
 <translation id="4577274620589681794">Waktu habis · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Tampilkan pratinjau</translation>
 <translation id="4578196883126898996">Mikrofon Anda nonaktif. Aktifkan tombol mikrofon perangkat.</translation>
@@ -631,6 +637,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5117590920725113268">Tampilkan bulan berikutnya</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
 <translation id="5147567197700016471">Kunci dibuka</translation>
+<translation id="5150070631291639005">Setelan privasi</translation>
 <translation id="5155897006997040331">Kecepatan baca</translation>
 <translation id="5166007464919321363">Simpan desktop sebagai template</translation>
 <translation id="5168181903108465623">Perangkat transmisi tersedia</translation>
@@ -653,6 +660,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5286194356314741248">Memindai</translation>
 <translation id="5297423144044956168">Perangkat seluler tidak ditemukan</translation>
 <translation id="5297704307811127955">Nonaktif</translation>
+<translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5302048478445481009">Bahasa</translation>
 <translation id="5308380583665731573">Hubungkan</translation>
 <translation id="5313326810920013265">Setelan bluetooth</translation>
@@ -947,6 +955,7 @@ Baru diinstal</translation>
 <translation id="7366890467478514168">Hubungkan <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Rekam jendela</translation>
 <translation id="7377169924702866686">Caps Lock aktif.</translation>
+<translation id="7377481913241237033">Hubungkan dengan kode</translation>
 <translation id="7378203170292176219">Tarik untuk memilih area yang akan direkam</translation>
 <translation id="7378594059915113390">Kontrol Media</translation>
 <translation id="7378889811480108604">Mode penghemat baterai tidak aktif</translation>
@@ -974,6 +983,7 @@ Baru diinstal</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7526573455193969409">Jaringan mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Aplikasi Linux dan jendela Samaran saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="7544300628205093162">Lampu latar keyboard mati</translation>
 <translation id="7548434653388805669">Waktunya tidur</translation>
 <translation id="7551643184018910560">Sematkan ke rak</translation>
@@ -1165,6 +1175,7 @@ Baru diinstal</translation>
 <translation id="8785070478575117577">Hubungkan ke <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Bantuan"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Setelan Metode Input</translation>
 <translation id="8818320199597151042">Menghapus profil. Tunggu beberapa menit.</translation>

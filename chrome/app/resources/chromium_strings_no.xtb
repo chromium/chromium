@@ -201,6 +201,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="6734291798041940871">Chromium er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="673636774878526923">For å få tilgang til Chromium-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="6774082503108938489">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å slå på denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne kontoen. Hvis du ikke vil at nettsteder eller apper skal ha tilgang til kontoinformasjonen din, kan du bruke <ph name="LINK_BEGIN" />gjestemodus<ph name="LINK_END" /> i Chromium-nettleseren. Du kan også administrere Google-kontoene dine i <ph name="LINK_2_BEGIN" />innstillingene<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Med Chromium får du beskjed hvis passordene dine noensinne utsettes for sikkerhetsbrudd</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopiert til Chromium)</translation>

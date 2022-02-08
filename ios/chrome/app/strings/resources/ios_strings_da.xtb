@@ -116,6 +116,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="196896377990863006">Vis forhåndsvisning af link</translation>
 <translation id="1973912524893600642">Behold data</translation>
 <translation id="1974060860693918893">Avanceret</translation>
+<translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="199425419756152024">Se adgangskode</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
@@ -236,6 +237,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloker alle</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
+<translation id="3150887674190166798">Vælg, hvordan Chrome altid skal anmode om websitet</translation>
 <translation id="3153862085237805241">Gem kortet</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157684681743766797">Markér alle…</translation>
@@ -761,6 +763,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7911190106180361398">Din organisation tillader ikke, at du synkroniserer alt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportér adgangskoder…</translation>
+<translation id="793971554166979165">Standardtilstand for website</translation>
 <translation id="794799177247607889">Stop logføring</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Ingen kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -866,6 +869,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8881801611828450202">Søg på <ph name="SEARCH_ENGINE" /> efter dette billede</translation>
 <translation id="8909135823018751308">Del…</translation>
 <translation id="8917490105272468696">Ja tak</translation>
+<translation id="8928133177108699615">Computer</translation>
 <translation id="8952559610785099500">Tilføj adgangskode</translation>
 <translation id="895541991026785598">Rapportér et problem</translation>
 <translation id="8974714402877957201">1. Åbn iPad-indstillingerne</translation>

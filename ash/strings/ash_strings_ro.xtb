@@ -112,6 +112,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1570871743947603115">Comută Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">să acceseze toată activitatea din această sesiune;</translation>
+<translation id="1610778689852195798">Anulează</translation>
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispozitive</translation>
@@ -246,6 +247,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
 <translation id="2607678425161541573">Este necesară conectarea online</translation>
 <translation id="2621713457727696555">Securizată</translation>
+<translation id="263399434338050016">Selectează tot.</translation>
 <translation id="2653019840645008922">Capturarea ferestrei</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2658778018866295321">Dă clic și trage</translation>
@@ -262,6 +264,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2727175239389218057">Răspunde</translation>
 <translation id="2727977024730340865">V-ați conectat la un încărcător de putere joasă. Încărcarea bateriei poate fi nesigură.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">Șterge</translation>
 <translation id="2778650143428714839">Dispozitivul <ph name="DEVICE_TYPE" /> gestionat de <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ieși din modul de capturare</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
@@ -305,6 +308,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3038571455154067151">Pentru a te conecta, introdu codul de acces pentru părinte Family Link</translation>
 <translation id="3039939407102840004">Bateria creionului este la <ph name="PERCENTAGE" /> %.</translation>
 <translation id="3045488863354895414">Bună!</translation>
+<translation id="3047761520276763270">Încearcă să rostești:</translation>
 <translation id="3051189971848907985">Se redenumește profilul. Așteaptă câteva minute.</translation>
 <translation id="3055162170959710888">Ai folosit acest dispozitiv <ph name="USED_TIME" /> astăzi</translation>
 <translation id="3068711042108640621">Raft în partea stângă</translation>
@@ -552,6 +556,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ascunde parola</translation>
 <translation id="4570957409596482333">Butonul Selectează și ascultă</translation>
+<translation id="4573176682887762361">Introdu [cuvântul / expresia]</translation>
 <translation id="4577274620589681794">Timpul a expirat · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Afișează previzualizările</translation>
 <translation id="4578196883126898996">Microfonul este dezactivat. Activează butonul pentru microfonul dispozitivului.</translation>
@@ -632,6 +637,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5117590920725113268">Afișează luna următoare</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
 <translation id="5147567197700016471">Deblocat</translation>
+<translation id="5150070631291639005">Setări de confidențialitate</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
 <translation id="5166007464919321363">Salvează desktopul ca șablon</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
@@ -654,6 +660,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5286194356314741248">Scanare</translation>
 <translation id="5297423144044956168">Nu s-au găsit dispozitive mobile</translation>
 <translation id="5297704307811127955">Dezactivată</translation>
+<translation id="5300589172476337783">Afișează</translation>
 <translation id="5302048478445481009">Limbă</translation>
 <translation id="5308380583665731573">Conectează-te</translation>
 <translation id="5313326810920013265">Setări Bluetooth</translation>
@@ -1168,6 +1175,7 @@ Instalare nouă</translation>
 <translation id="8785070478575117577">Conectează-te la <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Dosarul <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">Ajutor</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Setări pentru metode de introducere a textului</translation>
 <translation id="8818320199597151042">Se elimină profilul. Așteaptă câteva minute.</translation>

@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> brauzerning dastlabki sozlamalarini tiklamoqchi. Bosh sahifa, tezkor havolalar, qidiruv tizimi kabi sozlamalar qayta tayinlanadi, kengaytmalar o‘chirib qo‘yiladi va ochiq sahifalar yopiladi. Bundan tashqari, barcha cookie-fayllar kabi vaqtinchalik va keshlangan sayt ma’lumotlari o‘chiriladi.</translation>
 <translation id="1084096383128641877">Bu parol olib tashlangani bilan <ph name="DOMAIN" /> hisobingiz oʻchib ketmaydi. Boshqalardan himoyalash maqsadida <ph name="DOMAIN_LINK" /> hisobingiz parolini almashtiring yoki olib tashlang.</translation>
 <translation id="1084824384139382525">Havola manzilini &amp;nusxalash</translation>
-<translation id="1085064499066015002">Doim barcha saytlarda</translation>
 <translation id="1085697365578766383">Virtual mashinani ishga tushirishda xatolik yuz berdi. Qaytadan urining.</translation>
 <translation id="1087965115100412394">Saytlarga MIDI qurilmalarga ulanishni taqiqlash</translation>
 <translation id="1088654056000736875">Chrome zararli dasturni kompyuteringizdan olib tashlamoqda...</translation>
@@ -339,6 +338,7 @@
 <translation id="1340527397989195812">Fayllar ilovasi yordamida qurilmadagi mediani zaxiralang.</translation>
 <translation id="1341988552785875222">Joriy fon rasmi <ph name="APP_NAME" /> ilovasida o‘rnatilgan. Boshqa rasm tanlash uchun <ph name="APP_NAME" /> ilovasini o‘chirib tashlashingiz kerak.</translation>
 <translation id="1343865611738742294">Linux ilovalar uchun USB qurilmalarga ruxsat berish. USB qurilma olinganidan keyin Linux uni eslab qolmaydi.</translation>
+<translation id="1343920184519992513">Qolgan joyingizdan davom eting va maxsus sahifalar jamlanmasini oching</translation>
 <translation id="1346630054604077329">Tasdiqlang va oʻchirib yoqing</translation>
 <translation id="1347256498747320987">Yangilanish va ilovalarni oʻrnatish. Davom etish orqali siz bu qurilma Google, aloqa operatoringiz va qurilma ishlab chiqaruvchisidan dasturiy yangilanish va ilovalarni mobil internet orqali ham avtomatik ravishda yuklab olishi va oʻrnatishiga rozilik bildirgan hisoblanasiz. Baʼzi ilovalar ichki xaridlarni ham taklif etishlari mumkin.<ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux xotirasi</translation>
@@ -1947,6 +1947,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2915873080513663243">Avtomatik skanerlash</translation>
 <translation id="2916073183900451334">Veb-sahifada Ichki oyna bosilsa, havolalar va shakllar ajratib ko‘rsatiladi</translation>
 <translation id="2916745397441987255">Kengaytmalar ichidan qidirish</translation>
+<translation id="2918484639460781603">Sozlamalarni ochish</translation>
 <translation id="2918484644467055090">Bu qurilma allaqachon boshqa tashkilot domenida qayd etilgan.</translation>
 <translation id="2920852127376356161">Protokollarga ishlov berish taqiqlangan</translation>
 <translation id="2921081876747860777">Mahalliy ma’lumotlarni himoyalash uchun parol kiriting.</translation>
@@ -2836,7 +2837,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="383891835335927981">Hech qanday sayt uchun masshtab tayinlanmagan</translation>
 <translation id="3839509547554145593">Sichqonchada tez varaqlash funksiyasini yoqish</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> saytiga klipbordni ko‘rishga ruxsat har doim taqiqlansin</translation>
-<translation id="3839526976593488376">Har bir saytni moslang</translation>
 <translation id="3841964634449506551">Parol xato terildi</translation>
 <translation id="3842552989725514455">Serif shrifti</translation>
 <translation id="3843464315703645664">Ichki ruxsat etilganlar</translation>
@@ -4805,6 +4805,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5935158534896975820">Sertifikatni imzolash talabi tayyorlanmoqda (server javobi kutilmoqda)</translation>
 <translation id="5935656526031444304">Saytlarni xavfsiz kezish rejimini boshqarish</translation>
 <translation id="5938002010494270685">Xavfsizlikka oid yangilanish mavjud</translation>
+<translation id="5938153366081463283">Virtual karta kiritish</translation>
 <translation id="5939518447894949180">Asliga qaytarish</translation>
 <translation id="5939719276406088041">Yorliq yaratilmadi</translation>
 <translation id="594048410531370124">Notanish tugma. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
@@ -4989,7 +4990,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6122093587541546701">Email (ixtiyoriy):</translation>
 <translation id="6122095009389448667">Saytning klipbordga ruxsati taqiqlanaversin</translation>
 <translation id="6122600716821516697">Bu qurilmaga yuborilsinmi?</translation>
-<translation id="6122672589410944322">Ilovani alohida oynada ochish</translation>
 <translation id="6122831415929794347">Saytlarni xavfsiz kezish faolsizlantirilsinmi?</translation>
 <translation id="6122875415561139701">“<ph name="DEVICE_NAME" />” qurilmasida ma’lumot yozish taqiqlangan.</translation>
 <translation id="6124213551517593835">Bunda <ph name="SITE_GROUP_NAME" /> saytlar guruhidan saqlangan barcha maʼlumotlar va cookie fayllar tozalab tashlanadi</translation>
@@ -5401,6 +5401,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="654871471440386944">Faol kursor rejimi yoqilsinmi?</translation>
 <translation id="6549038875972762904">Qayta sozlash</translation>
 <translation id="6550675742724504774">Parametrlar</translation>
+<translation id="65513682072153627">Agar siz ushbu belgini koʻrsangiz, sozlama yoki funksiya administrator tomonidan boshqarilmoqda.</translation>
 <translation id="6551508934388063976">Buyruq ish faoliyatida emas. Yangi oyna ochish uchun “Ctrl + N” tugmalarini bosing.</translation>
 <translation id="6551612971599078809">Saytda USB ishlatilmoqda</translation>
 <translation id="6551739526055143276">Family Link orqali boshqariladi</translation>
@@ -7834,6 +7835,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9040661932550800571"><ph name="ORIGIN" /> uchun parol yangilansinmi?</translation>
 <translation id="9041692268811217999">Kompyuteringizdagi fayllarga kirish administrator tomonidan taqiqlab qo‘yilgan</translation>
 <translation id="904224458472510106">Bu amalni bekor qilish imkonsiz</translation>
+<translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
 <translation id="904451693890288097">“<ph name="DEVICE_NAME" />” qurilmasi uchun kodli ibora kiriting:</translation>
 <translation id="9044646465488564462">Tarmoqqa ulanmadi: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Mutolaa roʻyxatingiz yangi yon panelga koʻchdi. Bu yerda sinang.</translation>

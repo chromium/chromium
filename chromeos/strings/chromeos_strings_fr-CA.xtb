@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">La fenêtre de mise à jour du micrologiciel pour les appareils externes est ouverte. <ph name="NUM_UPDATES" /> mises à jour disponibles.</translation>
 <translation id="1175697296044146566">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Moyen (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> accessible</translation>
 <translation id="1314565355471455267">RPV Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="1478594628797167447">Numériseur</translation>
+<translation id="1491076385728777984">Mise à jour du micrologiciel de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
+<translation id="1565038567006703504">Impossible de mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2517472476991765520">Rechercher</translation>
+<translation id="253029298928638905">Redémarrage en cours…</translation>
 <translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
 <translation id="2584559707064218956">Pour configurer le réseau, accédez à Paramètres</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
+<translation id="3993704782688964914">Votre <ph name="DEVICE_NAME" /> est maintenant à jour</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4044093238444069296">Impossible de communiquer avec la passerelle</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4378551569595875038">Connexion...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">Redémarrage de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="4418498623216225764">Mettre à jour les périphériques</translation>
 <translation id="4425149324548788773">Mon disque</translation>
 <translation id="4428374560396076622">Le réseau <ph name="NETWORK_NAME" /> est désactivé</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Correspondance du nom alternatif du sujet</translation>
 <translation id="4536864596629708641">Configuration de l'adresse IP</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
+<translation id="4556753742174065117">Tous les micrologiciels sont à jour</translation>
 <translation id="455835558791489930">Pile de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Carte SIM déverrouillée</translation>
 <translation id="4562494484721939086">Aucun service</translation>
@@ -433,6 +441,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Des renseignements concernant votre sélection sont accessibles. Servez-vous de la touche de flèche vers le haut pour y accéder.</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
+<translation id="6889786074662672253">Pendant le redémarrage, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cela peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="6905724422583748843">Retourner à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>

@@ -105,6 +105,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1516740043221086139">Forstyr ikke er aktiveret.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis indstillinger for notifikationer. Notifikationer er slået fra for en app}one{Vis indstillinger for notifikationer. Notifikationer er slået fra for # app}other{Vis indstillinger for notifikationer. Notifikationer er slået fra for # apps}}</translation>
 <translation id="1525508553941733066">AFVIS</translation>
+<translation id="1528259147807435347">Redigeret inden for den seneste uge</translation>
 <translation id="1536604384701784949">Hvis du vil bruge <ph name="USER_EMAIL_ADDRESS" />, skal du først logge ud af alle dine konti først. Klik på Annuller for at gå tilbage og logge ud. Vælg derefter klokkeslættet for at åbne statusområdet, og vælg så Log ud. Log derefter ind på <ph name="USER_EMAIL_ADDRESS_2" /> igen.</translation>
 <translation id="15373452373711364">Stor musemarkør</translation>
 <translation id="1546492247443594934">Skrivebord 2</translation>
@@ -146,6 +147,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1836215606488044471">Assistent (indlæser...)</translation>
 <translation id="1838895407229022812">Nattelys er slået fra.</translation>
 <translation id="1864454756846565995">USB-C-enhed (port bagpå)</translation>
+<translation id="1879018240766558464">Inkognitovinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
 <translation id="1882814835921407042">Intet mobilnetværk</translation>
 <translation id="1882897271359938046">Spejler mod <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås op med fingeraftryk</translation>
@@ -226,6 +228,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2427507373259914951">Venstreklik</translation>
 <translation id="2429753432712299108">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Inden du accepterer, skal du bekræfte, at denne adgangsnøgle er vist på den pågældende enhed: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
+<translation id="243878895369688216">Åbnet i går</translation>
 <translation id="24452542372838207">Udvid notifikation</translation>
 <translation id="2450205753526923158">Screenshottilstand</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -274,6 +277,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2819276065543622893">Du bliver logget ud nu.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" />. Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylde</translation>
+<translation id="2834813915651407382">Åbnet for nylig</translation>
 <translation id="2841907151129139818">Skiftede til tablettilstand</translation>
 <translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
 <translation id="2849936225196189499">Kritisk</translation>
@@ -392,6 +396,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> blev fastgjort</translation>
 <translation id="3560866052109807830">Tegneværktøjer</translation>
 <translation id="3563775809269155755">Aktivér hotspot</translation>
+<translation id="3566240529365775567">Åbnet lige nu</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3573179567135747900">Skift tilbage til "<ph name="FROM_LOCALE" />" (kræver genstart)</translation>
 <translation id="3576141592585647168">Skift tidszone</translation>
@@ -426,6 +431,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> mere er ikke på denne enhed.</translation>
 <translation id="3735740477244556633">Sortér efter</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
+<translation id="3765841986579723851">Redigeret i dag</translation>
 <translation id="3771549900096082774">Tilstanden Høj kontrast</translation>
 <translation id="3773700760453577392">En administrator har afvist samlet login fra flere konti for <ph name="USER_EMAIL" />. Alle brugere skal logge ud for at fortsætte.</translation>
 <translation id="3779139509281456663">Opretter forbindelse til <ph name="NAME" /></translation>
@@ -444,6 +450,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3846575436967432996">Der er ingen tilgængelige netværksoplysninger</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="385300504083504382">Begyndelsen</translation>
+<translation id="3886872229787704059">Åbnet i dag</translation>
 <translation id="3891340733213178823">Tryk på Ctrl+Shift+Q to gange for at logge ud.</translation>
 <translation id="3893630138897523026">ChromeVox (talefeedback)</translation>
 <translation id="3897533311200664389">Start en tekstforespørgsel</translation>
@@ -483,6 +490,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{Genstart enheden inden for en dag}one{Genstart enheden inden for # dag}other{Genstart enheden inden for # dage}}</translation>
 <translation id="4181841719683918333">Sprog</translation>
+<translation id="4192112279662688596">Eller</translation>
 <translation id="4195814663415092787">Fortsæt, hvor du slap</translation>
 <translation id="4195877955194704651">Knap til automatisk klik</translation>
 <translation id="4197790712631116042">Fra</translation>
@@ -531,6 +539,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4421231901400348175">Skærmdeling med <ph name="HELPER_NAME" /> via Fjernsupport.</translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
+<translation id="4441283832827406317">Apps er sorteret efter navn</translation>
 <translation id="4445159312344259901">Log ind for at låse op</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 vigtig notifikation}one{# vigtig notifikation}other{# vigtige notifikationer}}</translation>
 <translation id="4450893287417543264">Vis ikke igen</translation>
@@ -636,6 +645,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5117590920725113268">Vis næste måned</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
 <translation id="5147567197700016471">Låst op</translation>
+<translation id="5150070631291639005">Privatlivsindstillinger</translation>
 <translation id="5155897006997040331">Læsehastighed</translation>
 <translation id="5166007464919321363">Gem skrivebord som en skabelon</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>
@@ -658,6 +668,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5286194356314741248">Søger</translation>
 <translation id="5297423144044956168">Der blev ikke fundet nogen mobilenheder</translation>
 <translation id="5297704307811127955">Fra</translation>
+<translation id="5300589172476337783">Vis</translation>
 <translation id="5302048478445481009">Sprog</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5313326810920013265">Indstillinger for Bluetooth</translation>
@@ -777,6 +788,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
+<translation id="6099678161144790572">Redigeret inden for den seneste måned</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> talefiler blev downloadet</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekræft download af <ph name="FILENAME" /></translation>
@@ -876,6 +888,7 @@ Installeret for nylig</translation>
 <translation id="6777216307882431711">Leverer strøm til tilsluttede USB-C-enheder</translation>
 <translation id="6786750046913594791">Luk mappe</translation>
 <translation id="6790428901817661496">Afspil</translation>
+<translation id="6801878137098616817">Redigeret for nylig</translation>
 <translation id="6803622936009808957">Skærmene kunne ikke spejles, da der ikke fandtes en understøttet opløsning. I stedet anvendes Udvidet skrivebord.</translation>
 <translation id="6811454077060061666">Google Drev til computer er ikke tilgængelig</translation>
 <translation id="6818242057446442178">Et ord tilbage</translation>
@@ -884,10 +897,12 @@ Installeret for nylig</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
 <translation id="6837064795450991317">Skjul diskbjælke</translation>
 <translation id="6852052252232534364">Aktivér</translation>
+<translation id="6855029042976311970">Redigeret lige nu</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Der skal angives ét ciffer mere}one{Der skal angives # ciffer mere}other{Der skal angives # cifre mere}}</translation>
 <translation id="6867938213751067702">Download af <ph name="FILENAME" /> er sat på pause</translation>
 <translation id="6878400149835617132">Genvejen er deaktiveret</translation>
+<translation id="6880133753431418782">Du har tidligere søgt efter denne forespørgsel. Hvis du sletter denne søgning fra din historik, fjernes den permanent fra din Google-konto på alle dine enheder.</translation>
 <translation id="6884665277231944629">Gå tilbage til i dag</translation>
 <translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Tryk på pil ned for at skifte vindue</translation>
@@ -926,6 +941,7 @@ Installeret for nylig</translation>
 <translation id="7098389117866926363">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="7106330611027933926">Vis diskbjælke</translation>
 <translation id="7118268675952955085">screenshot</translation>
+<translation id="7126996685418858413">Åbnet inden for den seneste uge</translation>
 <translation id="7130207228079676353">HØJST SANDSYNLIGT</translation>
 <translation id="7131634465328662194">Du logges automatisk ud.</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
@@ -937,6 +953,7 @@ Installeret for nylig</translation>
 <translation id="7189412385142492784">Hvor langt væk er Venus?</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denne Chromebook skal genstartes, før opdateringen kan anvendes. Dette kan tage op til 1 minut.</translation>
 <translation id="7256634071279256947">Mikrofon på bagsiden</translation>
+<translation id="7258828758145722155">Redigeret i går</translation>
 <translation id="726276584504105859">Træk hertil for at bruge opdelt skærm</translation>
 <translation id="7262906531272962081">Opret påmindelse</translation>
 <translation id="7279434993080105272">Tuschfarven <ph name="COLOR_PARAMETER" /></translation>
@@ -952,6 +969,7 @@ Installeret for nylig</translation>
 <translation id="7366890467478514168">Opret forbindelse til <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Optag vindue</translation>
 <translation id="7377169924702866686">Caps Lock er slået til.</translation>
+<translation id="7377481913241237033">Opret forbindelse med en kode</translation>
 <translation id="7378203170292176219">Træk for at vælge et område, der skal optages</translation>
 <translation id="7378594059915113390">Mediestyring</translation>
 <translation id="7378889811480108604">Tilstanden Batterisparefunktion er deaktiveret</translation>
@@ -973,12 +991,14 @@ Installeret for nylig</translation>
 <translation id="7483025031359818980">Fuld skærm er valgt som kilde</translation>
 <translation id="7486227320194954040">Skjul tuschværktøjer</translation>
 <translation id="7497767806359279797">Vælg sprog og tastatur</translation>
+<translation id="7508690557411636492">Åbnet inden for den seneste måned</translation>
 <translation id="7509246181739783082">Bekræft din identitet</translation>
 <translation id="7513622367902644023">Screenshottilstand er valgt</translation>
 <translation id="7513922695575567867">Kalender for ugen med <ph name="DATE" /> – <ph name="SELECTED_DATE" /> er valgt.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7526573455193969409">Netværket kan være overvåget</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux-apps og inkognitovinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
 <translation id="7544300628205093162">Baggrundslyset på tastaturet er tændt</translation>
 <translation id="7548434653388805669">Det er sengetid</translation>
 <translation id="7551643184018910560">Fastgør til hylde</translation>
@@ -1005,6 +1025,7 @@ Installeret for nylig</translation>
 <translation id="7654687942625752712">Tryk på begge lydstyrketaster, og hold dem nede i fem sekunder for at deaktivere oplæsning.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
+<translation id="7671610481353807627">Apps er sorteret efter farve</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tilføj et mobilnetværk</translation>
 <translation id="7720410380936703141">PRØV IGEN</translation>

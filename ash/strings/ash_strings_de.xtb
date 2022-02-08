@@ -109,6 +109,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1570871743947603115">Bluetooth aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Auf alle Ihre Aktivitäten in dieser Sitzung zugreifen</translation>
+<translation id="1610778689852195798">„Rückgängig machen“</translation>
 <translation id="1611993646327628135">An</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> Geräte</translation>
@@ -142,6 +143,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1836215606488044471">Assistant (wird geladen…)</translation>
 <translation id="1838895407229022812">Nachtlicht ist ausgeschaltet.</translation>
 <translation id="1864454756846565995">USB-C-Gerät (Port hinten)</translation>
+<translation id="1879018240766558464">Inkognitofenster werden derzeit nicht unterstützt. Andere Apps werden gespeichert.</translation>
 <translation id="1882814835921407042">Kein Mobilfunknetz</translation>
 <translation id="1882897271359938046">Wird auf <ph name="DISPLAY_NAME" /> gespiegelt...</translation>
 <translation id="1885785240814121742">Mit Fingerabdruck entsperren</translation>
@@ -242,6 +244,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2596078834055697711">Screenshot von Fenster erstellen</translation>
 <translation id="2607678425161541573">Online-Anmeldung erforderlich</translation>
 <translation id="2621713457727696555">Gesichert</translation>
+<translation id="263399434338050016">„Alles auswählen“</translation>
 <translation id="2653019840645008922">Fensteraufnahme</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2658778018866295321">Klicken und ziehen</translation>
@@ -258,6 +261,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2727175239389218057">Antworten</translation>
 <translation id="2727977024730340865">Das Gerät ist an ein Schwachstrom-Ladegerät angeschlossen. Möglicherweise kann der Akku nicht zuverlässig aufgeladen werden.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">„Löschen“</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Aufnahmemodus beenden</translation>
 <translation id="2792498699870441125">Alt+Suchtaste</translation>
@@ -301,6 +305,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3038571455154067151">Wenn Sie sich anmelden möchten, geben Sie Ihren Eltern-Zugangscode für Family Link ein</translation>
 <translation id="3039939407102840004">Der Akku des Eingabestifts ist bei <ph name="PERCENTAGE" /> %.</translation>
 <translation id="3045488863354895414">Guten Tag,</translation>
+<translation id="3047761520276763270">Sagen Sie z. B.:</translation>
 <translation id="3051189971848907985">Profil wird umbenannt. Warten Sie ein paar Minuten.</translation>
 <translation id="3055162170959710888">Du hast das Gerät heute <ph name="USED_TIME" /> verwendet</translation>
 <translation id="3068711042108640621">Ablage links</translation>
@@ -548,6 +553,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4570957409596482333">Vorlese-Schaltfläche</translation>
+<translation id="4573176682887762361">„[Wort/Wortgruppe] eingeben“</translation>
 <translation id="4577274620589681794">Die Zeit ist um · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Vorschauen anzeigen</translation>
 <translation id="4578196883126898996">Ihr Mikrofon ist ausgeschaltet, drücken Sie auf die Mikrofontaste Ihres Geräts.</translation>
@@ -628,6 +634,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5117590920725113268">Nächsten Monat anzeigen</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
 <translation id="5147567197700016471">Entsperrt</translation>
+<translation id="5150070631291639005">Datenschutzeinstellungen</translation>
 <translation id="5155897006997040331">Lesegeschwindigkeit</translation>
 <translation id="5166007464919321363">Desktop als Vorlage speichern</translation>
 <translation id="5168181903108465623">Übertragungsgeräte verfügbar</translation>
@@ -650,6 +657,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5286194356314741248">Durchsuchen</translation>
 <translation id="5297423144044956168">Keine Mobilgeräte gefunden</translation>
 <translation id="5297704307811127955">Aus</translation>
+<translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5302048478445481009">Sprache</translation>
 <translation id="5308380583665731573">Verbinden</translation>
 <translation id="5313326810920013265">Bluetooth-Einstellungen</translation>
@@ -944,6 +952,7 @@ Neuinstallation</translation>
 <translation id="7366890467478514168">Verbindung mit <ph name="NAME" /> herstellen</translation>
 <translation id="7371404428569700291">Fenster aufzeichnen</translation>
 <translation id="7377169924702866686">Feststelltaste An</translation>
+<translation id="7377481913241237033">Verbindung per Code herstellen</translation>
 <translation id="7378203170292176219">Ziehen, um einen Bereich für die Aufnahme auszuwählen</translation>
 <translation id="7378594059915113390">Mediensteuerelemente</translation>
 <translation id="7378889811480108604">Energiesparmodus ist deaktiviert</translation>
@@ -971,6 +980,7 @@ Neuinstallation</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7526573455193969409">Das Netzwerk wird möglicherweise überwacht</translation>
 <translation id="7536035074519304529">IP-Adresse: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux-Apps und Inkognitofenster werden derzeit nicht unterstützt. Andere Apps werden gespeichert.</translation>
 <translation id="7544300628205093162">Hintergrundbeleuchtung der Tastatur ist an</translation>
 <translation id="7548434653388805669">Schlafenszeit</translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
@@ -1161,6 +1171,7 @@ Neuinstallation</translation>
 <translation id="8785070478575117577">Mit <ph name="NETWORK_NAME" /> verbinden</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Ordner <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">„Hilfe“</translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="881757059229893486">Einstellungen für Eingabemethoden</translation>
 <translation id="8818320199597151042">Profil wird entfernt. Warten Sie ein paar Minuten.</translation>

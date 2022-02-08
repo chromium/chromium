@@ -112,6 +112,7 @@
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="1570871743947603115">புளூடூத்தை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">இந்த அமர்விலுள்ள உங்கள் அனைத்துச் செயல்பாடுகளையும் அணுகுதல்</translation>
+<translation id="1610778689852195798">"செயல்தவிர்"</translation>
 <translation id="1611993646327628135">இயக்கு</translation>
 <translation id="1632985212731562677">அமைப்புகள் &gt; அணுகலம்சங்கள் என்பதற்குச் சென்று சுவிட்ச் அணுகலை முடக்கலாம்.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> சாதனங்கள்</translation>
@@ -145,6 +146,7 @@
 <translation id="1836215606488044471">அசிஸ்டண்ட் (ஏற்றுகிறது...)</translation>
 <translation id="1838895407229022812">நைட் லைட் ஆஃப் செய்யப்பட்டுள்ளது.</translation>
 <translation id="1864454756846565995">USB-C சாதனம் (பின்பக்கப் போர்ட்)</translation>
+<translation id="1879018240766558464">மறைநிலைச் சாளரங்களைத் தற்போது பயன்படுத்த முடியாது. பிற ஆப்ஸ் சேமிக்கப்படும்.</translation>
 <translation id="1882814835921407042">மொபைலில் நெட்வொர்க் இல்லை</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ஐப் பிரதிபலிக்கிறது</translation>
 <translation id="1885785240814121742">கைரேகை மூலம் அன்லாக் செய்யலாம்</translation>
@@ -245,6 +247,7 @@
 <translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
 <translation id="2607678425161541573">ஆன்லைன் உள்நுழைவு அவசியம்</translation>
 <translation id="2621713457727696555">பாதுகாக்கப்பட்ட வைஃபை நெட்வொர்க்</translation>
+<translation id="263399434338050016">"அனைத்தையும் தேர்ந்தெடு"</translation>
 <translation id="2653019840645008922">சாளரத்தைப் படமெடுக்கும்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2658778018866295321">கிளிக் செய்து இழுக்கும்</translation>
@@ -261,6 +264,7 @@
 <translation id="2727175239389218057">பதிலளி</translation>
 <translation id="2727977024730340865">குறைந்த சக்தியிலான சார்ஜர் செருகப்பட்டுள்ளது. பேட்டரி சார்ஜிங் நம்பகமானதாக இல்லாமல் இருக்கலாம்.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"நீக்கு"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
 <translation id="2782591952652094792">படமெடுப்புப் பயன்முறையிலிருந்து வெளியேறும்</translation>
 <translation id="2792498699870441125">Alt+தேடல்</translation>
@@ -304,6 +308,7 @@
 <translation id="3038571455154067151">உள்நுழைய உங்கள் Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="3039939407102840004">ஸ்டைலஸ் பேட்டரி: <ph name="PERCENTAGE" /> சதவீதம்.</translation>
 <translation id="3045488863354895414">மதிய வணக்கம்,</translation>
+<translation id="3047761520276763270">இதைக் கூறி முயலவும்:</translation>
 <translation id="3051189971848907985">நெட்வொர்க் சுயவிவரத்தின் பெயரை மாற்றுகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="3055162170959710888">இந்தச் சாதனத்தை இன்று <ph name="USED_TIME" /> பயன்படுத்தியுள்ளீர்கள்</translation>
 <translation id="3068711042108640621">ஷெல்ஃப் இடப்புறம் உள்ளது</translation>
@@ -551,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">கடவுச்சொல்லை மறைக்கும்</translation>
 <translation id="4570957409596482333">பேசும் திரை பொத்தான்</translation>
+<translation id="4573176682887762361">"[சொல்/சொற்றொடர்] டைப் செய்க"</translation>
 <translation id="4577274620589681794">நேரம் முடிந்தது · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">மாதிரிக்காட்சிகளைக் காட்டு</translation>
 <translation id="4578196883126898996">மைக்ரோஃபோன் முடக்கப்பட்டுள்ளது. சாதனத்தின் மைக்ரோஃபோனை இயக்கவும்.</translation>
@@ -631,6 +637,7 @@
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
 <translation id="5147567197700016471">அன்லாக் செய்யப்பட்டது</translation>
+<translation id="5150070631291639005">தனியுரிமை அமைப்புகள்</translation>
 <translation id="5155897006997040331">வாசிப்பு வேகம்</translation>
 <translation id="5166007464919321363">டெஸ்க்கை டெம்ப்ளேட்டாகச் சேமி</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
@@ -653,6 +660,7 @@
 <translation id="5286194356314741248">ஸ்கேன் செய்கிறது</translation>
 <translation id="5297423144044956168">மொபைல்கள் எதுவும் கண்டறியப்படவில்லை</translation>
 <translation id="5297704307811127955">முடக்கப்பட்டுள்ளது</translation>
+<translation id="5300589172476337783">காண்பி</translation>
 <translation id="5302048478445481009">மொழி</translation>
 <translation id="5308380583665731573">இணை</translation>
 <translation id="5313326810920013265">புளூடூத் அமைப்புகள்</translation>
@@ -947,6 +955,7 @@
 <translation id="7366890467478514168"><ph name="NAME" /> ஐ இணைத்திடுங்கள்</translation>
 <translation id="7371404428569700291">சாளரத்தை ரெக்கார்டு செய்யும்</translation>
 <translation id="7377169924702866686">Caps Lock இயக்கத்தில் உள்ளது.</translation>
+<translation id="7377481913241237033">குறியீடு மூலம் இணை</translation>
 <translation id="7378203170292176219">ரெக்கார்டு செய்வதற்கான பகுதியைத் தேர்ந்தெடுக்க இழுக்கவும்</translation>
 <translation id="7378594059915113390">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="7378889811480108604">பேட்டரி சேமிப்பான் பயன்முறை முடக்கத்தில் உள்ளது</translation>
@@ -974,6 +983,7 @@
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7526573455193969409">நெட்வொர்க் கண்காணிக்கப்படலாம்</translation>
 <translation id="7536035074519304529">IP முகவரி: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux ஆப்ஸ், மறைநிலைச் சாளரங்களைத் தற்போது பயன்படுத்த முடியாது. பிற ஆப்ஸ் சேமிக்கப்படும்.</translation>
 <translation id="7544300628205093162">கீபோர்டின் பேக்லைட் ஆன் செய்யப்பட்டது</translation>
 <translation id="7548434653388805669">தூங்கும் நேரம்</translation>
 <translation id="7551643184018910560">அடுக்கில் பொருத்து</translation>
@@ -1165,6 +1175,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> உடன் இணைக்கும்</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> ஃபோல்டர்</translation>
+<translation id="880709030178078220">"உதவி"</translation>
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="881757059229893486">உள்ளீட்டு முறைகளுக்கான அமைப்புகள்</translation>
 <translation id="8818320199597151042">நெட்வொர்க் சுயவிவரத்தை அகற்றுகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>

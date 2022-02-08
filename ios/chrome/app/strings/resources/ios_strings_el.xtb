@@ -349,6 +349,7 @@
 <translation id="4181841719683918333">Γλώσσες</translation>
 <translation id="4237377247299956313">Πατήστε <ph name="BEGIN_BOLD" />Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Εισαγωγή φράσης πρόσβασης</translation>
+<translation id="4249955472157341256">Ταξινόμηση με βάση την πιο πρόσφατη</translation>
 <translation id="4263576668337963058">Εμφάνιση διαθέσιμων ενεργειών σελίδας</translation>
 <translation id="4267380167363222949">Επόμενη καρτέλα</translation>
 <translation id="4272631900155121838">Για να σαρώσετε έναν κώδικα QR, ενεργοποιήστε την κάμερα από τις ρυθμίσεις</translation>
@@ -506,6 +507,7 @@
 <translation id="575902488528307720">Αναζήτηση για εικόνα</translation>
 <translation id="5781453543752460388">Προσθήκη στις Φωτογραφίες</translation>
 <translation id="5782227691023083829">Μετάφραση...</translation>
+<translation id="5791632441210678828">Κουμπί ταξινόμησης για τη ροή Ακολουθείτε.</translation>
 <translation id="5802829331520313983">Ρύθμιση…</translation>
 <translation id="5803566855766646066">Είστε βέβαιοι ότι θέλετε να απορρίψετε αυτήν τη νέα κάρτα;</translation>
 <translation id="5804241973901381774">Άδειες</translation>
@@ -622,6 +624,7 @@
 <translation id="6561262006871132942">Μεγέθυνση</translation>
 <translation id="6583087784430677195">Για απενεργοποίηση, ανοίξτε τις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /> και μεταβείτε στην επιλογή Αυτόματη συμπλήρωση κωδικών πρόσβασης.</translation>
 <translation id="6585618849026997638">Μπορείτε να επιστρέψετε σε μια σελίδα που είναι σημαντική για εσάς προσθέτοντας έναν σελιδοδείκτη.</translation>
+<translation id="6598875554591387303">Ταξινόμηση με βάση τον εκδότη</translation>
 <translation id="6603393121510733479">Ο οργανισμός σας απενεργοποίησε την απόρρητη περιήγηση.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Μετάφραση επιλογών</translation>

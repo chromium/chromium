@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
 <translation id="1832459821645506983">是，我同意使用</translation>
-<translation id="1843805151597803366">如要獲得更佳的翻譯，請允許「Google 搜尋」使用目前的網頁</translation>
 <translation id="1868024384445905608">Chrome 現在的檔案下載速度更快了</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
@@ -227,7 +226,6 @@
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="2342601525305963189">Chrome 提示：</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
-<translation id="2345671828921229300">如要搜尋，請輕觸並按住字詞</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
 <translation id="2353636109065292463">檢查互聯網連線</translation>
 <translation id="235789365079050412">Google 私隱權政策</translation>
@@ -301,7 +299,6 @@
 <translation id="2723001399770238859">音效檔案</translation>
 <translation id="2732063072010454421">獲得更佳的語音體驗</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">輕按字詞即可搜尋，或查看相關操作</translation>
 <translation id="2760989362628427051">在裝置啟用深色主題背景或開啟「省電模式」後啟用深色主題背景</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
@@ -417,7 +414,6 @@
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
 <translation id="3367813778245106622">如要開始同步處理，請重新登入</translation>
-<translation id="337236281855091893">如要搜尋，請輕觸並按住 (而非輕按) 字詞</translation>
 <translation id="3373979091428520308">如要將此頁面分享至另一部裝置，請在另一部裝置的 Chrome 設定中開啟同步功能</translation>
 <translation id="3374023511497244703">您的書籤、記錄、密碼及其他 Chrome 資料將不會同步至您的 Google 帳戶。</translation>
 <translation id="3384347053049321195">分享圖片</translation>
@@ -431,7 +427,6 @@
 <translation id="3428747202529429621">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
-<translation id="3440975416244667276">輕觸並按住即可查看更多相關資料</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已預定 1 項下載}other{已預定 # 項下載}}</translation>
@@ -518,7 +513,6 @@
 <translation id="3976396876660209797">移除並重新建立此捷徑</translation>
 <translation id="3985215325736559418">您要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
-<translation id="3988466920954086464">您可以在此面板查看即時搜尋結果</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
@@ -1137,7 +1131,6 @@
 <translation id="7475688122056506577">找不到 SD 卡，您的部分檔案可能會遺失。</translation>
 <translation id="7479104141328977413">分頁管理</translation>
 <translation id="7481312909269577407">向前</translation>
-<translation id="7481864133709957613">如要在此頁面上搜尋，請輕觸並按住 (而非輕按) 字詞</translation>
 <translation id="7482656565088326534">預覽分頁</translation>
 <translation id="7484997419527351112">探索 - 關閉</translation>
 <translation id="7485033510383818941">如要重新整理資訊提供內容，請將頁面往下拉</translation>

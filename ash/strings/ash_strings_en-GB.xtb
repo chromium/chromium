@@ -645,6 +645,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5117590920725113268">Show next month</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
 <translation id="5147567197700016471">Unlocked</translation>
+<translation id="5150070631291639005">Privacy settings</translation>
 <translation id="5155897006997040331">Reading speed</translation>
 <translation id="5166007464919321363">Save desk as a template</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
@@ -667,6 +668,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5286194356314741248">Scanning</translation>
 <translation id="5297423144044956168">No mobile devices found</translation>
 <translation id="5297704307811127955">Off</translation>
+<translation id="5300589172476337783">Show</translation>
 <translation id="5302048478445481009">Language</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5313326810920013265">Bluetooth settings</translation>
@@ -681,7 +683,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
-<translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
 <translation id="5400461572260843123">Quick Settings: press search + left to access the notification centre.</translation>
@@ -972,7 +973,6 @@ New install</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
 <translation id="7378594059915113390">Media controls</translation>
 <translation id="7378889811480108604">Battery saver mode is off</translation>
-<translation id="7384028040782072252">Right-click anywhere to reorder your apps</translation>
 <translation id="7392563512730092880">You can always perform setup later from Settings.</translation>
 <translation id="7405710164030118432">To unlock the device, enter your Family Link parent access code</translation>
 <translation id="7406608787870898861">Finish setting up your mobile network</translation>
@@ -1162,7 +1162,6 @@ New install</translation>
 <translation id="8563862697512465947">Notification Settings</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="8598235756057743477">Sort your apps by name or colour</translation>
 <translation id="8627191004499078455">Connected to <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Accessibility settings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>

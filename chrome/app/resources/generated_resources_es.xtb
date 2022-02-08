@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restablecer la configuración predeterminada original de Chrome. Se restablecerá la página principal, la página Nueva pestaña y el motor de búsqueda. Asimismo, se inhabilitarán las extensiones y no se fijará ninguna pestaña. También se borrarán los datos temporales y los almacenados en la memoria caché, como las cookies, el contenido y los datos de sitios.</translation>
 <translation id="1084096383128641877">Aunque quites esta contraseña, no se eliminará tu cuenta de <ph name="DOMAIN" />. Cambia la contraseña o elimina tu cuenta de <ph name="DOMAIN_LINK" /> para protegerla de otros.</translation>
 <translation id="1084824384139382525">Copiar dir&amp;ección de enlace</translation>
-<translation id="1085064499066015002">Siempre en todos los sitios</translation>
 <translation id="1085697365578766383">No se ha podido iniciar la máquina virtual. Inténtalo de nuevo.</translation>
 <translation id="1087965115100412394">No permitir que los sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088654056000736875">Chrome está quitando el software dañino de tu ordenador...</translation>
@@ -339,6 +338,7 @@
 <translation id="1340527397989195812">Realiza una copia de seguridad de los archivos multimedia desde el dispositivo con la aplicación Archivos.</translation>
 <translation id="1341988552785875222">'<ph name="APP_NAME" />' ha establecido el fondo de pantalla actual. Es posible que tengas que desinstalar '<ph name="APP_NAME" />' para seleccionar otro fondo de pantalla.</translation>
 <translation id="1343865611738742294">Da permiso a las aplicaciones de Linux para acceder a los dispositivos USB. Linux no recordará el dispositivo USB después de retirarlo.</translation>
+<translation id="1343920184519992513">Seguir por donde lo dejaste y abrir un conjunto concreto de páginas</translation>
 <translation id="1346630054604077329">Confirmar y reiniciar</translation>
 <translation id="1347256498747320987">Instalar actualizaciones y aplicaciones. Si continúas, aceptas que este dispositivo pueda descargar e instalar actualizaciones y aplicaciones de Google, de tu operador y del fabricante de forma automática, y que pueda usar datos móviles para ello. Es posible que algunas de estas aplicaciones ofrezcan compras en la aplicación. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Almacenamiento de Linux</translation>
@@ -1754,7 +1754,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2742448780373473567">Al instalar <ph name="DEVICE_OS" />, se sobrescribirán todos los datos de tu dispositivo.</translation>
 <translation id="274290345632688601">Restaurando las aplicaciones y los archivos de Linux</translation>
 <translation id="274318651891194348">Buscando teclado</translation>
-<translation id="2743387203779672305">Copiar en el portapapeles</translation>
+<translation id="2743387203779672305">Copiar en portapapeles</translation>
 <translation id="2745080116229976798">Subordinación completa de Microsoft</translation>
 <translation id="2747266560080989517">Este archivo incluye contenido sensible o peligroso. Pídele al propietario que lo corrija.</translation>
 <translation id="2748061034695037846"><ph name="DOMAIN" /> está en pausa</translation>
@@ -2827,7 +2827,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="383891835335927981">No se ha ampliado ni reducido ningún sitio web</translation>
 <translation id="3839509547554145593">Habilitar aceleración de desplazamiento del ratón</translation>
 <translation id="3839516600093027468">No permitir nunca que <ph name="HOST" /> vea el portapapeles</translation>
-<translation id="3839526976593488376">Personalizar para cada sitio</translation>
 <translation id="3841964634449506551">La contraseña no es válida</translation>
 <translation id="3842552989725514455">Fuente Serif</translation>
 <translation id="3843464315703645664">En la lista de permitidos interna</translation>
@@ -5382,6 +5381,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="654871471440386944">¿Activar navegación por cursor de texto?</translation>
 <translation id="6549038875972762904">Volver a configurar</translation>
 <translation id="6550675742724504774">Opciones</translation>
+<translation id="65513682072153627">Se mostrará este icono de elemento gestionado cuando un ajuste o una función estén gestionados por tu administrador.</translation>
 <translation id="6551508934388063976">El comando no está disponible. Pulsa Ctrl+N para abrir una ventana nueva.</translation>
 <translation id="6551612971599078809">El sitio web está usando un dispositivo USB</translation>
 <translation id="6551739526055143276">Gestionado por Family Link</translation>
@@ -6152,6 +6152,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7376553024552204454">Resaltar el cursor del ratón al moverlo</translation>
 <translation id="737728204345822099">Se guardará un registro de tu visita a este sitio web en tu llave de seguridad.</translation>
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
+<translation id="7377481913241237033">Conectar con un código</translation>
 <translation id="7378611153938412599">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de que tus contraseñas sean seguras. <ph name="BEGIN_LINK" />Ver más consejos de seguridad<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
 <translation id="7380622428988553498">El nombre del dispositivo contiene caracteres no válidos</translation>
@@ -7810,6 +7811,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9040661932550800571">¿Quieres actualizar la contraseña de <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Tu administrador ha inhabilitado el acceso a los archivos locales de tu equipo</translation>
 <translation id="904224458472510106">Esta operación no se puede deshacer</translation>
+<translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="904451693890288097">Introduce la clave de acceso de "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">Error al establecer conexión con la red: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Tu lista de lectura se ha movido al nuevo panel lateral. Pruébala.</translation>

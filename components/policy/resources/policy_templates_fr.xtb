@@ -904,6 +904,11 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="199764499252435679">Activer la mise à jour des composants de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1998504583649140526">Paramètres des requêtes à un réseau privé</translation>
 <translation id="1999000620918508488">Forcer l'écran de connexion à afficher ou à masquer les informations système.</translation>
+<translation id="1999942889260716089">Si cette règle est définie sur "True", la fonctionnalité Suggestions de recherche est activée dans la barre d'adresse du navigateur <ph name="PRODUCT_NAME" />. Si cette règle est définie sur "False", cette fonctionnalité est désactivée.
+
+      Les suggestions basées sur les favoris ou sur l'historique ne sont pas concernées par cette règle.
+
+      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, cette fonctionnalité est activée par défaut, mais les utilisateurs peuvent la désactiver à tout moment.</translation>
 <translation id="2000937390924915996">Ne pas lancer le nettoyage de disque automatique lors de la connexion</translation>
 <translation id="2001420846508294174">Cette règle permet de définir les règles de sélection de l'imprimante par défaut dans <ph name="PRODUCT_NAME" />, ignorant ainsi les règles par défaut. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression, lorsque <ph name="PRODUCT_NAME" /> cherche une imprimante correspondant aux attributs spécifiés. Si la correspondance n'est pas parfaite, <ph name="PRODUCT_NAME" /> peut être configuré de manière à sélectionner toute imprimante correspondante, selon l'ordre dans lequel les imprimantes sont découvertes.
 
@@ -1261,6 +1266,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle n'est pas configurée, les cookies tiers sont activés. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="2386362615870139244">Autoriser les WakeLock forçant l'activation de l'écran</translation>
 <translation id="238885588439957890">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil rechargera la batterie sur secteur.</translation>
+<translation id="2393862222659066027">Ouvrir une liste d'URL et restaurer la dernière session</translation>
 <translation id="2394674739523870144">Si cette règle est définie sur une liste de chaînes, celles-ci sont reliées par des espaces avant d'être transmises entre <ph name="IE_PRODUCT_NAME" /> et <ph name="PRODUCT_NAME" /> comme paramètres de ligne de commande. Si un paramètre contient <ph name="URL_PLACEHOLDER" />, l'URL <ph name="URL_PLACEHOLDER" /> est remplacée par l'URL de la page à ouvrir. Si aucun paramètre ne contient l'URL <ph name="URL_PLACEHOLDER" />, elle est ajoutée à la fin de la ligne de commande.
 
       Les variables d'environnement sont développées. Sous <ph name="MS_WIN_NAME" />, la variable <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> est remplacée par la valeur de la variable d'environnement <ph name="ENV_VARIABLE_VALUE" />.
@@ -1671,6 +1677,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="285627849510728211">Définir le jour de recharge de la batterie en mode avancé</translation>
 <translation id="2856674246949497058">Rétablissez et conservez la version cible si elle est antérieure à la version de l'OS. Effectuez un Powerwash pendant le processus.</translation>
 <translation id="2866619962692161453">Type de métarègles</translation>
+<translation id="2866726566162790531">Liste des origines autorisant toutes les authentifications HTTP</translation>
 <translation id="2869762730352628426">Activer le clic automatique sur l'écran de connexion</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2874209944580848064">Remarque concernant les appareils <ph name="PRODUCT_OS_NAME" /> compatibles avec les applications Android :</translation>
@@ -1699,6 +1706,10 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés ne communiquent pas ces informations.</translation>
 <translation id="288923520817177650">Autoriser la création des sessions <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> de <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Autoriser automatiquement ces sites à se connecter à des appareils USB correspondant au fournisseur et aux ID de produit indiqués.</translation>
+<translation id="2891049933730408118">Permet de lister les origines devant autoriser tous les schémas d'authentification HTTP compatibles avec <ph name="PRODUCT_NAME" />, quel que soit le contenu de la règle <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Indiquez l'origine en respectant le format suivant : <ph name="URL_SCHEME_FORMAT_LINK" />. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Les caractères génériques sont autorisés pour tout ou partie de l'origine (schéma, hôte ou port).</translation>
 <translation id="2893546967669465276">Envoyer des journaux système au serveur de gestion</translation>
 <translation id="2893660462311365527">Fréquence de collecte des données télémétriques du réseau en millisecondes.</translation>
 <translation id="2896434627453256512">Cette règle permet d'activer ou non la fonctionnalité Fenêtre fantôme.
@@ -1757,6 +1768,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier.
 
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> à la place.</translation>
+<translation id="2948268792364772890">Cette règle permet à un administrateur de spécifier qu'une page peut envoyer des requêtes XHR synchrones pendant sa fermeture.
+
+      Si cette règle est activée, les pages sont autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
+
+      Si cette règle est désactivée ou n'est pas configurée, les pages ne sont pas autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
+
+      Cette règle a été supprimée dans Chrome 99.
+
+      Voir https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Restrictions :</translation>
 <translation id="2957506574938329824">Interdire à tous les sites de demander l'accès à des appareils Bluetooth via l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Type de compte pour l'authentification <ph name="HTTP_NEGOTIATE" /></translation>
@@ -2121,6 +2141,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
 <translation id="3288595667065905535">Version disponible</translation>
 <translation id="3291318845269544294">Activer Projector</translation>
+<translation id="3292784416244243447">Autoriser les utilisateurs à choisir quels sites peuvent utiliser les informations relatives aux écrans pour ouvrir et placer les fenêtres</translation>
 <translation id="3294430356898755483">Cette règle permet aux administrateurs de configurer une liste d'imprimantes pour leurs utilisateurs. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression.
 
       Vous pouvez utiliser cette règle pour effectuer les opérations suivantes :
@@ -3894,6 +3915,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5526184558582921522">Autoriser les requêtes au serveur Quirks et le téléchargement potentiel de fichiers de configuration spécifiques au matériel</translation>
 <translation id="5526701598901867718">Tous les types de chiffrement (option non sécurisée)</translation>
 <translation id="5534079385061985566">Activer la fonctionnalité de restauration complète.</translation>
+<translation id="5535012472025435092">Lorsque cette règle est activée, l'autorisation de positionnement des fenêtres est accordée automatiquement pour tous les sites.
+      Cette règle vous permet ainsi de voir et d'utiliser les informations relatives aux écrans connectés pour ouvrir et placer des fenêtres.
+      Si cette règle n'est pas configurée ou si elle est désactivée, elle respectera les paramètres par défaut du navigateur et permettra aux utilisateurs de décider ou non d'accorder cette autorisation pour chaque site.</translation>
 <translation id="5535256585099022933">Définir l'intervalle du redémarrage</translation>
 <translation id="5535973522252703021">Liste blanche des serveurs de délégation Kerberos</translation>
 <translation id="553806128266843748">Indicateur booléen spécifiant si la limitation est activée.</translation>
@@ -3983,6 +4007,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Remarque : S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="5645779841392247734">Autoriser les cookies sur ces sites</translation>
 <translation id="5646234199535103501">Règle de configuration du connecteur Chrome Enterprise OnBulkDataEntry</translation>
+<translation id="5647868527087096729">Autoriser tous les sites à utiliser les informations relatives aux écrans pour ouvrir et placer les fenêtres</translation>
 <translation id="5649046890958064703">Si <ph name="PRINTERS_BLACKLIST" /> est choisi pour <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
@@ -5789,6 +5814,7 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
 <translation id="7643883929273267746">Limiter les comptes visibles dans <ph name="PRODUCT_NAME" /></translation>
+<translation id="7644125656003029520">Activer l'autorisation de positionnement des fenêtres sur tous les sites</translation>
 <translation id="7648664871086956188">Cette règle est une option générale pour toutes les règles définies dans la règle DataLeakPreventionRulesList.
       Si cette règle est définie sur "True", le reporting en temps réel des événements de prévention des fuites de données sera activée.
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le reporting sera désactivé.
@@ -6004,6 +6030,15 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7908384265697653397">Durée en jours au terme de laquelle l'utilisateur est déconnecté si la version de <ph name="PRODUCT_OS_NAME" /> est antérieure à la version <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> spécifiée</translation>
 <translation id="7912255076272890813">Configurer les types d'applications ou d'extensions autorisés</translation>
 <translation id="791267408364877739">Afficher les avertissements de sécurité lorsque des indicateurs de ligne de commande potentiellement dangereux sont utilisés</translation>
+<translation id="79156801312131034">Cette règle permet de définir le comportement du système au démarrage. Désactiver cette règle revient à ne pas la configurer, car le comportement de <ph name="PRODUCT_NAME" /> au démarrage doit être spécifié.
+
+      Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, les utilisateurs peuvent la modifier.
+
+      Configurer cette règle sur <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> ou <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> entraîne la désactivation de certains paramètres qui sont basés sur les sessions de navigation ou qui ont pour effet d'exécuter des actions lors de la fermeture du navigateur, comme la suppression des données de navigation ou des cookies d'une session.
+
+      Si cette règle est définie sur <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, le navigateur restaurera la session précédente et ouvrira une fenêtre distincte pour afficher les URL configurées dans <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Les utilisateurs peuvent choisir de garder ces URL ouvertes, et celles-ci seront également restaurées lors de la prochaine session.
+
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou jointes à un domaine via MCX.</translation>
 <translation id="7922358664346625612">Laisser le dernier onglet ouvert dans Chrome.</translation>
 <translation id="7924321157669251966">Pourcentage de luminosité de l'écran lorsque l'appareil fonctionne sur batterie.</translation>
 <translation id="7925224837072026018">Si cette règle est activée, les extensions ou applications Android sont autorisées à accéder aux clés d'entreprise. Ces clés sont destinées à une utilisation en entreprise uniquement si elles sont générées à l'aide de l'API chrome.enterprise.platformKeys sur un compte géré. Les accès réciproques entre clés d'entreprise et extensions ou applications Android ne peuvent pas être accordés ni supprimés par les utilisateurs.

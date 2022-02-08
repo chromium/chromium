@@ -912,6 +912,11 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="199764499252435679">Habilitar las actualizaciones de componentes en <ph name="PRODUCT_NAME" /></translation>
 <translation id="1998504583649140526">Configuración de solicitudes de red privada</translation>
 <translation id="1999000620918508488">Fuerza la pantalla de acceso para ocultar o mostrar la información del sistema.</translation>
+<translation id="1999942889260716089">Si estableces la política como verdadera, se activarán las sugerencias de búsqueda en la barra de direcciones de <ph name="PRODUCT_NAME" />. Si la estableces como falsa, se desactivarán estas sugerencias de búsqueda.
+
+      Las sugerencias basadas en los favoritos o el Historial no se ven afectadas por la política.
+
+      Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, las sugerencias de búsqueda estarán activadas al principio, pero los usuarios podrán desactivarlas en cualquier momento.</translation>
 <translation id="2000937390924915996">No ejecutar la limpieza automática del disco durante el acceso</translation>
 <translation id="2001420846508294174">Si estableces la política, se determinarán las reglas para seleccionar la impresora predeterminada en <ph name="PRODUCT_NAME" /> y se anularán las reglas predeterminadas. Los usuarios eligen la impresora la primera vez que realizan una impresión, cuando <ph name="PRODUCT_NAME" /> busca una impresora que coincida con los atributos especificados. En caso de no haber una coincidencia perfecta, podrá determinarse que <ph name="PRODUCT_NAME" /> seleccione cualquier impresora que coincida con la política, en función del orden en el que se detectaron.
 
@@ -1268,6 +1273,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no la estableces, se activarán las cookies de terceros, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
 <translation id="238885588439957890">La hora a la que el dispositivo usará corriente alterna para cargar la batería (según la zona horaria local del dispositivo).</translation>
+<translation id="2393862222659066027">Abrir una lista de URLs y restablecer la última sesión</translation>
 <translation id="2394674739523870144">Si estableces la política como una lista de strings, estas se unen con espacios y se transfieren de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de la línea de comandos. Si un parámetro contiene <ph name="URL_PLACEHOLDER" />, se reemplazará <ph name="URL_PLACEHOLDER" /> por la URL de la página que se abrirá. Si ningún parámetro contiene <ph name="URL_PLACEHOLDER" />, se agregará la dirección URL al final de la línea de comandos.
 
       Se expanden las variables del entorno. En <ph name="MS_WIN_NAME" />, se reemplaza <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> por el valor de la variable del entorno <ph name="ENV_VARIABLE_VALUE" />.
@@ -2146,6 +2152,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3284094172359247914">Controla el uso de la API de WebUSB</translation>
 <translation id="3288595667065905535">Canal de versión</translation>
 <translation id="3291318845269544294">Habilitar Projector</translation>
+<translation id="3292784416244243447">Permitir a los usuarios escoger qué sitios pueden usar información sobre las pantallas para abrir y ubicar las ventanas</translation>
 <translation id="3294430356898755483">Si estableces la política, los administradores podrán configurar una lista de impresoras para sus usuarios. Los usuarios eligen la impresora la primera vez que realizan una impresión.
 
       Esta política permite hacer lo siguiente:
@@ -3920,6 +3927,9 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5526184558582921522">Permitir las consultas a Quirks Server y los archivos de configuración específicos de hardware que se pueden descargar</translation>
 <translation id="5526701598901867718">Todos (inseguro)</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
+<translation id="5535012472025435092">Cuando habilitas esta política, se otorga el permiso de ubicación de ventanas a todos los sitios automáticamente.
+      De esta manera, se permitirá a los sitios ver y usar información relacionada con las pantallas conectadas para abrir y ubicar las ventanas.
+      Si no la estableces o la inhabilitas, esta política seguirá la configuración predeterminada del navegador y permitirá a los usuarios escoger este permiso para cada sitio.</translation>
 <translation id="5535256585099022933">Establecer el lapso para el reinicio</translation>
 <translation id="5535973522252703021">Lista blanca de servidores de delegación de Kerberos</translation>
 <translation id="553806128266843748">Una función experimental booleana que indica si está habilitada la limitación de la red.</translation>
@@ -4009,6 +4019,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Nota: Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="5645779841392247734">Permitir cookies en estos sitios</translation>
 <translation id="5646234199535103501">Política de configuración para Chrome Enterprise Connector OnBulkDataEntry</translation>
+<translation id="5647868527087096729">Permitir a todos los sitios usar información sobre las pantallas para abrir y cerrar ventanas</translation>
 <translation id="5649046890958064703">Si eliges <ph name="PRINTERS_BLACKLIST" /> para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> especificará las impresoras que no podrán utilizar los usuarios. Los usuarios podrán acceder a todas las impresoras, excepto aquellas con los ID mencionados en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Esta política dejó de estar disponible; usa <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> en su lugar.</translation>
@@ -5826,6 +5837,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permite el uso de notificaciones del sistema</translation>
 <translation id="7643883929273267746">Restringir las cuentas visibles en <ph name="PRODUCT_NAME" /></translation>
+<translation id="7644125656003029520">Habilitar el permiso de ubicación de ventanas para todos los sitios</translation>
 <translation id="7648664871086956188">Esta política es una activación general de todas las reglas definidas en la política DataLeakPreventionRulesList.
       Si estableces esta política como verdadera, se activará la generación de informes en tiempo real para los eventos de prevención de filtraciones de datos.
       Si la estableces como falsa o no la estableces, se desactivará la generación de informes.
@@ -6039,6 +6051,15 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7908384265697653397">El tiempo restante (en días) para que se haga salir al usuario de la cuenta si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la versión <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
 <translation id="7912255076272890813">Configurar tipos de extensiones o aplicaciones permitidos</translation>
 <translation id="791267408364877739">Muestra las advertencias de seguridad cuando se utilizan marcas de la línea de comandos potencialmente peligrosas</translation>
+<translation id="79156801312131034">Si estableces la política, podrás especificar el comportamiento del sistema al iniciar el navegador. Si desactivas esta configuración, equivale a no establecerla, dado que debe especificarse el comportamiento de <ph name="PRODUCT_NAME" /> al iniciarse.
+
+      Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, los usuarios podrán cambiarla.
+
+      Si estableces esta política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> o <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, se desactivarán algunos parámetros de configuración asociados a las sesiones o que realizan acciones al salir del navegador, como borrar cookies específicas de la sesión o los datos de navegación al salir del navegador.
+
+      Si estableces esta política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, el navegador restablecerá la sesión anterior y abrirá una ventana independiente para mostrar URLs que se establecen desde <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Ten en cuenta que los usuarios pueden escoger dejar las URLs abiertas, y estas se restablecerán en la próxima sesión.
+
+      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="7922358664346625612">Mantener la última pestaña abierta en Chrome</translation>
 <translation id="7924321157669251966">El porcentaje de brillo de la pantalla cuando el dispositivo esté funcionando con batería.</translation>
 <translation id="7925224837072026018">Si estableces la política, se habilitará el acceso a claves empresariales desde extensiones o aplicaciones para Android. Solo se designan las claves para uso corporativo si se generan con la API chrome.enterprise.platformKeys en una cuenta administrada. Los usuarios no pueden otorgar ni quitar acceso a claves empresariales desde extensiones ni aplicaciones para Android.

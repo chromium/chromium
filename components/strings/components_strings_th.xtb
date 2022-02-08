@@ -420,6 +420,7 @@
 <translation id="22081806969704220">ถาด 3</translation>
 <translation id="2212735316055980242">ไม่พบนโยบาย</translation>
 <translation id="2213606439339815911">กำลังดึงรายการ...</translation>
+<translation id="2213612003795704869">พิมพ์หน้าแล้ว</translation>
 <translation id="2215727959747642672">การแก้ไขไฟล์</translation>
 <translation id="2218879909401188352">ผู้โจมตีที่กำลังอยู่ใน <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> สามารถติดตั้งแอปอันตรายที่ทำลายอุปกรณ์ของคุณ เพิ่มค่าใช้จ่ายแฝงในใบแจ้งยอดมือถือ หรือขโมยข้อมูลส่วนบุคคล <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">ไม่มีอินเทอร์เน็ต</translation>
@@ -956,6 +957,7 @@
 <translation id="3987940399970879459">ไม่ถึง 1 MB</translation>
 <translation id="3990250421422698716">การชดเชยพื้นผิวที่ไม่สม่ำเสมอ</translation>
 <translation id="3996311196211510766">เว็บไซต์ <ph name="ORIGIN" /> ขอให้บังคับใช้นโยบายดั้งเดิมกับคำขอทั้งหมดที่ส่งถึงเว็บไซต์ แต่ขณะนี้ใช้นโยบายนี้ไม่ได้</translation>
+<translation id="4009243425692662128">ระบบจะส่งเนื้อหาของหน้าที่คุณพิมพ์ไปยัง Google Cloud หรือบุคคลที่สามเพื่อการวิเคราะห์ เช่น สแกนหาข้อมูลที่ละเอียดอ่อน</translation>
 <translation id="4010758435855888356">อนุญาตให้เข้าถึงพื้นที่เก็บข้อมูลไหม</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{เอกสาร PDF ที่มี {COUNT} หน้า}other{เอกสาร PDF ที่มี {COUNT} หน้า}}</translation>
 <translation id="4023431997072828269">เนื่องจากแบบฟอร์มนี้ส่งผ่านการเชื่อมต่อที่ไม่ปลอดภัย ผู้อื่นอาจมองเห็นข้อมูลของคุณ</translation>

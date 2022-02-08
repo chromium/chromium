@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
 <translation id="1832459821645506983">Po, jam dakord</translation>
-<translation id="1843805151597803366">Për të marrë përkthime më të mira, lejo që "Kërko në Google" të përdorë faqen aktuale</translation>
 <translation id="1868024384445905608">Chrome tani i shkarkon skedarët më shpejt</translation>
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
 <translation id="1883903952484604915">Skedarët e mi</translation>
@@ -227,7 +226,6 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2328985652426384049">Nuk mund të identifikohet</translation>
 <translation id="2342601525305963189">Këshilla për Chrome:</translation>
 <translation id="234265804618409743">Kamera nuk mund të hapet. Ndodhi një gabim.</translation>
-<translation id="2345671828921229300">Për të kërkuar, mbaj shtypur një fjalë</translation>
 <translation id="2349710944427398404">Të dhënat gjithsej të përdorura nga Chrome, duke përfshirë llogaritë, faqeshënuesit dhe cilësimet e ruajtura</translation>
 <translation id="2353636109065292463">Po kontrollon lidhjen e internetit</translation>
 <translation id="235789365079050412">Politika e privatësisë së Google</translation>
@@ -301,7 +299,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Merr një përvojë më të mirë zanore</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Trokit një fjalë për të kërkuar në çast ose për të parë veprimet e lidhura</translation>
 <translation id="2760989362628427051">Aktivizo temën e errët kur tema e errët ose "Kursyesi i baterisë" i pajisjes është aktiv</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
 <translation id="276969039800130567">I identifikuar si <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3341262203274374114">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
 <translation id="3359667936385849800">Përdor ofruesin aktual të shërbimit</translation>
 <translation id="3367813778245106622">Identifikohu përsëri për të nisur sinkronizimin</translation>
-<translation id="337236281855091893">Për të kërkuar, mbaj shtypur një fjalë në vend që të trokasësh mbi të</translation>
 <translation id="3373979091428520308">Për ta ndarë këtë faqe në një pajisje tjetër, aktivizo sinkronizimin në cilësimet e Chrome në pajisjen tjetër</translation>
 <translation id="3374023511497244703">Faqeshënuesit, historiku, fjalëkalimet dhe të dhënat e tjera të Chrome nuk do të sinkronizohen më në "Llogarinë tënde të Google"</translation>
 <translation id="3384347053049321195">Shpërndaje imazhin</translation>
@@ -431,7 +427,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3428747202529429621">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
 <translation id="3435465986463792564">Ke shumë dritare? Mund t'i menaxhosh ato nga këtu</translation>
-<translation id="3440975416244667276">Prek dhe mbaj të shtypur për më shumë informacione të rëndësishme</translation>
 <translation id="3443221991560634068">Ringarko faqen aktuale</translation>
 <translation id="3444179773590444986">Të ndahen komentet për temën e errët për sajtet?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 shkarkim i planifikuar}other{# shkarkime të planifikuara}}</translation>
@@ -518,7 +513,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3976396876660209797">Hiqe këtë shkurtore dhe rikrijoje</translation>
 <translation id="3985215325736559418">Dëshiron që ta shkarkosh përsëri <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
-<translation id="3988466920954086464">Shiko rezultatet e çastit të kërkimit në këtë panel</translation>
 <translation id="4000212216660919741">Shtëpia jashtë linje</translation>
 <translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# orë}other{# orë}}</translation>
@@ -1137,7 +1131,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7475688122056506577">Karta SD nuk u gjet. Mund të mungojnë disa nga skedarët e tu.</translation>
 <translation id="7479104141328977413">Menaxhimi i skedave</translation>
 <translation id="7481312909269577407">Përpara</translation>
-<translation id="7481864133709957613">Për të kërkuar nga kjo faqe, prek dhe mbaj prekur fjalët në vend që të trokasësh mbi to</translation>
 <translation id="7482656565088326534">Skeda e shikimit paraprak</translation>
 <translation id="7484997419527351112">Zbulo - joaktiv</translation>
 <translation id="7485033510383818941">Për të rifreskuar përmbajtjen e furnizimit, tërhiqe faqen poshtë</translation>

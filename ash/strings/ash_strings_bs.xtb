@@ -112,7 +112,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1570871743947603115">Uključivanje/isključivanje Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristupiti svim aktivnostima u ovoj sesiji</translation>
-<translation id="1610778689852195798">"Poništi"</translation>
+<translation id="1610778689852195798">"Opozovite"</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1632985212731562677">Prekidač za pristup se može onemogućiti u meniju Postavke &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaj(a)</translation>
@@ -247,7 +247,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2596078834055697711">Napravite snimak ekrana prozora</translation>
 <translation id="2607678425161541573">Potrebna je online prijava</translation>
 <translation id="2621713457727696555">Osigurano</translation>
-<translation id="263399434338050016">"Odaberi sve"</translation>
+<translation id="263399434338050016">"Odaberite sve"</translation>
 <translation id="2653019840645008922">Snimanje prozora</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Kliknite i prevucite</translation>
@@ -264,7 +264,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Priključeno na niskonaponski punjač. Punjenje baterije može biti nepouzdano.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2750932254614666392">"Izbriši"</translation>
+<translation id="2750932254614666392">"Izbrišite"</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Izlaz iz načina rada za snimanje</translation>
 <translation id="2792498699870441125">Alt + tipka za pretraživanje</translation>
@@ -308,7 +308,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3038571455154067151">Da se prijavite, unesite kôd za pristup roditelja za Family Link</translation>
 <translation id="3039939407102840004">Postotak baterije olovke je <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
-<translation id="3047761520276763270">Pokušajte reći:</translation>
+<translation id="3047761520276763270">Pokušajte izgovoriti:</translation>
 <translation id="3051189971848907985">Promjena naziva profila. Pričekajte nekoliko minuta.</translation>
 <translation id="3055162170959710888">Danas je uređaj korišten <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Polica je na lijevoj strani</translation>
@@ -556,7 +556,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4570957409596482333">Dugme Odaberite za govor</translation>
-<translation id="4573176682887762361">"Upiši [riječ/izraz]"</translation>
+<translation id="4573176682887762361">"Napišite [riječ/frazu]"</translation>
 <translation id="4577274620589681794">Vrijeme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
 <translation id="4578196883126898996">Mikrofon je isključen. Uključite dugme mikrofona uređaja.</translation>
@@ -637,6 +637,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5117590920725113268">Prikaz sljedećeg mjeseca</translation>
 <translation id="5136175204352732067">Povezana je drugačija tastatura</translation>
 <translation id="5147567197700016471">Otključano</translation>
+<translation id="5150070631291639005">Postavke privatnosti</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
 <translation id="5166007464919321363">Sačuvaj radnu površinu kao šablon</translation>
 <translation id="5168181903108465623">Dostupni su "cast" uređaji</translation>
@@ -659,6 +660,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
 <translation id="5297423144044956168">Nije pronađen nijedan mobilni uređaj</translation>
 <translation id="5297704307811127955">Isključeno</translation>
+<translation id="5300589172476337783">Prikaži</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5313326810920013265">Bluetooth postavke</translation>

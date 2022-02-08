@@ -203,6 +203,7 @@
 <translation id="6734291798041940871">Chromium веќе е инсталиран за сите корисници на вашиот компјутер.</translation>
 <translation id="673636774878526923">За да пристапувате до вашите работи на Chromium на сите уреди, најавете се и вклучете ја синхронизацијата.</translation>
 <translation id="6774082503108938489">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chromium. Не е дозволено овозможувањето на оваа<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">Дозволите што веќе сте им ги дале на веб-сајтовите и апликациите можеби ќе важат за оваа сметка. Ако не сакате веб-сајтовите или апликациите да пристапуваат до податоците за сметката, користете <ph name="LINK_BEGIN" />Режим на гостин<ph name="LINK_END" /> во прелистувачот Chromium. Можете да управувате со сметките на Google и во <ph name="LINK_2_BEGIN" />Поставки<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium ве известува дали вашите лозинки се компромитирани</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирана во Chromium)</translation>

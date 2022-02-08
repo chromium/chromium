@@ -424,6 +424,7 @@
 <translation id="22081806969704220">3-науа</translation>
 <translation id="2212735316055980242">Саясат табылмады</translation>
 <translation id="2213606439339815911">Жазбалар алынуда…</translation>
+<translation id="2213612003795704869">Бет басып шығарылды.</translation>
 <translation id="2215727959747642672">Файлды өңдеу</translation>
 <translation id="2218879909401188352">Ағымдағы <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар құрылғыңызға зақым келтіретін қауіпті қолданбаларды орнатуы, мобильді шотқа жасырын ақыларды қосуы немесе жеке ақпаратты ұрлауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">Интернет жоқ</translation>
@@ -961,6 +962,7 @@
 <translation id="3990250421422698716">Бірқалыпты ығысу</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> сайты өзінің барлық сұрауына түпнұсқа саясатын
     қолдануын талап етті, бірақ бұл саясатты дәл қазір қолдану мүмкін емес.</translation>
+<translation id="4009243425692662128">Сіз басып шығаратын беттердің мазмұны талдау үшін Google Cloud қызметіне немесе үшінші тараптарға жіберіледі. Мысалы, онда құпия деректердің бар-жоғы тексерілуі мүмкін.</translation>
 <translation id="4010758435855888356">Жадты пайдалануға рұқсат берілсін бе?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} беттік PDF құжаты}other{{COUNT} беттік PDF құжаты}}</translation>
 <translation id="4023431997072828269">Бұл үлгі қорғалмаған байланыс арқылы жіберілгендіктен, ақпаратыңыз басқаларға көрінетін болады.</translation>
@@ -1235,6 +1237,7 @@
 <translation id="4819347708020428563">Аннотацияларды әдепкі көріністе өзгерту керек пе?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google парағын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4825507807291741242">Қуатты</translation>
+<translation id="4829962028570902310">Еленбеді, себебі саясат бұлт пайдаланушысы саясаты арқылы ғана орнатылады.</translation>
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4838327282952368871">Арманшыл</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>

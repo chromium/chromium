@@ -112,6 +112,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1570871743947603115">Activar/desactivar o Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
+<translation id="1610778689852195798">"Desfai"</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
@@ -246,6 +247,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
 <translation id="2621713457727696555">Protexida</translation>
+<translation id="263399434338050016">"Selecciona todo"</translation>
 <translation id="2653019840645008922">Captura de ventá</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Facer clic e arrastrar</translation>
@@ -262,6 +264,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baixa potencia. É posible que a carga da batería non sexa fiable.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2782591952652094792">Saír do modo de captura</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -305,6 +308,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3038571455154067151">Para iniciar sesión, escribe o teu código de acceso parental de Family Link</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
+<translation id="3047761520276763270">Proba a dicir:</translation>
 <translation id="3051189971848907985">Cambiando nome de perfil. Agarda uns minutos.</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">O estante está na parte esquerda</translation>
@@ -553,6 +557,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4570957409596482333">Botón Escoitar selección</translation>
+<translation id="4573176682887762361">"Escribe [palabra/frase]"</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578196883126898996">Tes o micrófono apagado. Activa o botón do micrófono do dispositivo.</translation>
@@ -633,6 +638,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
+<translation id="5150070631291639005">Configuración de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de lectura</translation>
 <translation id="5166007464919321363">Gardar escritorio como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
@@ -655,6 +661,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5297423144044956168">Non se atoparon dispositivos móbiles</translation>
 <translation id="5297704307811127955">Desactivada</translation>
+<translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
@@ -1169,6 +1176,7 @@ Nova instalación</translation>
 <translation id="8785070478575117577">Conectar con <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Cartafol <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"Axuda"</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Configuración dos métodos de introdución de texto</translation>
 <translation id="8818320199597151042">Quitando perfil. Agarda uns minutos.</translation>

@@ -914,6 +914,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="199764499252435679">Aktifkan update komponen di <ph name="PRODUCT_NAME" /></translation>
 <translation id="1998504583649140526">Setelan permintaan jaringan pribadi</translation>
 <translation id="1999000620918508488">Memaksa layar login untuk menampilkan atau menyembunyikan informasi sistem.</translation>
+<translation id="1999942889260716089">Jika kebijakan disetel ke Benar (True), saran penelusuran akan diaktifkan di kolom URL <ph name="PRODUCT_NAME" />. Jika kebijakan disetel ke Salah (False), saran penelusuran akan dinonaktifkan.
+
+      Saran yang didasarkan pada bookmark atau histori tidak akan terpengaruh oleh kebijakan ini.
+
+      Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika kebijakan tidak disetel, saran penelusuran mula-mula akan diaktifkan, tetapi pengguna dapat menonaktifkannya kapan saja.</translation>
 <translation id="2000937390924915996">Jangan jalankan pembersihan disk otomatis selama login</translation>
 <translation id="2001420846508294174">Jika kebijakan disetel, aturan pemilihan printer default di <ph name="PRODUCT_NAME" /> akan disetel juga dengan mengesampingkan aturan default. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya, saat <ph name="PRODUCT_NAME" /> mencari printer yang cocok dengan atribut yang ditentukan. Jika kecocokan kurang dari sempurna, <ph name="PRODUCT_NAME" /> dapat disetel untuk memilih printer yang cocok, bergantung pada urutan printer ditemukan.
 
@@ -1271,6 +1276,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika tidak disetel, cookie pihak ketiga akan aktif, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="2386362615870139244">Izinkan penguncian layar saat bangun</translation>
 <translation id="238885588439957890">Waktu saat perangkat akan menggunakan arus listrik AC untuk mengisi daya baterai, disesuaikan dengan zona waktu lokal perangkat.</translation>
+<translation id="2393862222659066027">Buka daftar URL dan pulihkan sesi sebelumnya</translation>
 <translation id="2394674739523870144">Menyetel kebijakan ke daftar string berarti string tersebut digabungkan dengan spasi dan diteruskan dari <ph name="IE_PRODUCT_NAME" /> ke <ph name="PRODUCT_NAME" /> sebagai parameter command line. Jika parameter berisi <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> akan diganti dengan URL halaman yang akan dibuka. Jika tidak ada parameter yang berisi <ph name="URL_PLACEHOLDER" />, URL akan ditambahkan di akhir command line.
 
       Variabel lingkungan diperluas. Pada <ph name="MS_WIN_NAME" />, <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> akan diganti dengan nilai variabel lingkungan <ph name="ENV_VARIABLE_VALUE" />.
@@ -1686,6 +1692,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="285627849510728211">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan</translation>
 <translation id="2856674246949497058">Rollback dan tetap menggunakan versi target jika versi OS lebih baru dari target. Lakukan powerwash selama prosesnya.</translation>
 <translation id="2866619962692161453">Jenis Metapolicy</translation>
+<translation id="2866726566162790531">Daftar asal yang mengizinkan semua autentikasi HTTP</translation>
 <translation id="2869762730352628426">Mengaktifkan klik otomatis di layar login</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2874209944580848064">Catatan untuk perangkat <ph name="PRODUCT_OS_NAME" /> yang mendukung aplikasi Android:</translation>
@@ -1714,6 +1721,10 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan informasi status Android</translation>
 <translation id="288923520817177650">Izinkan pembuatan sesi <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Otomatis berikan izin ke situs ini untuk terhubung ke perangkat USB dengan ID produk dan vendor yang ditentukan.</translation>
+<translation id="2891049933730408118">Menyetel kebijakan akan menentukan asal mana yang akan mengizinkan semua skema autentikasi HTTP yang didukung oleh <ph name="PRODUCT_NAME" />, terlepas dari nilai kebijakan <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Format pola asal sesuai dengan format ini (<ph name="URL_SCHEME_FORMAT_LINK" />). Hingga 1.000 pengecualian dapat ditentukan di <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Karakter pengganti diizinkan untuk keseluruhan asal atau sebagian asal, baik skema, host, maupun port.</translation>
 <translation id="2893546967669465276">Mengirim log sistem ke server pengelolaan</translation>
 <translation id="2893660462311365527">Interval pengumpulan telemetri jaringan dalam milidetik.</translation>
 <translation id="2896434627453256512">Menyetel kebijakan akan mengaktifkan fitur jendela bayangan.
@@ -1772,6 +1783,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="2948268792364772890">Kebijakan ini memungkinkan admin menentukan bahwa halaman dapat mengirimkan permintaan XHR sinkron selama penutupan halaman.
+
+      Jika kebijakan disetel ke aktif, halaman akan diizinkan untuk mengirim permintaan XHR sinkron selama penutupan halaman.
+
+      Jika kebijakan disetel ke nonaktif atau tidak disetel, halaman tidak diizinkan untuk mengirim permintaan XHR sinkron selama penutupan halaman.
+
+      Kebijakan ini dihapus di Chrome 99.
+
+      Buka https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Pembatasan:</translation>
 <translation id="2957506574938329824">Jangan izinkan situs apa pun meminta akses ke perangkat Bluetooth melalui API Bluetooth Web</translation>
 <translation id="2957513448235202597">Jenis akun untuk autentikasi <ph name="HTTP_NEGOTIATE" /></translation>
@@ -2136,6 +2156,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
 <translation id="3288595667065905535">Saluran rilis</translation>
 <translation id="3291318845269544294">Aktifkan Projector</translation>
+<translation id="3292784416244243447">Izinkan pengguna memilih situs yang dapat menggunakan info tentang layar untuk membuka dan menempatkan jendela</translation>
 <translation id="3294430356898755483">Jike kebijakan disetel, administrator dapat menyiapkan daftar printer bagi pengguna mereka. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya.
 
       Menggunakan kebijakan:
@@ -3917,6 +3938,9 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5526184558582921522">Izinkan kueri ke Server Quirk dan file konfigurasi khusus hardware yang mungkin didownload</translation>
 <translation id="5526701598901867718">Semua (tidak aman)</translation>
 <translation id="5534079385061985566">Aktifkan fitur pemulihan penuh.</translation>
+<translation id="5535012472025435092">Jika kebijakan ini disetel ke Aktif, izin penempatan jendela akan otomatis diberikan untuk semua situs.
+      Hal ini akan mengizinkan situs melihat dan menggunakan informasi tentang layar yang terhubung untuk membuka dan menempatkan jendela.
+      Jika tidak disetel atau disetel ke Nonaktif, kebijakan ini akan mengikuti setelan default browser dan mengizinkan pengguna memilih izin ini untuk situs masing-masing.</translation>
 <translation id="5535256585099022933">Menyetel interval waktu untuk peluncuran kembali</translation>
 <translation id="5535973522252703021">Daftar putih server delegasi Kerberos</translation>
 <translation id="553806128266843748">Tanda boolean menunjukkan jika throttling diaktifkan.</translation>
@@ -4006,6 +4030,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="5645779841392247734">Izinkan cookie di situs ini</translation>
 <translation id="5646234199535103501">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnBulkDataEntry</translation>
+<translation id="5647868527087096729">Izinkan semua situs menggunakan info tentang layar untuk membuka dan menempatkan jendela</translation>
 <translation id="5649046890958064703">Jika <ph name="PRINTERS_BLACKLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> akan menentukan printer yang tidak dapat digunakan oleh pengguna. Semua printer diberikan kepada pengguna kecuali ID yang tercantum dalam kebijakan ini. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -5827,6 +5852,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Izinkan penggunaan notifikasi sistem</translation>
 <translation id="7643883929273267746">Batasi akun yang terlihat di <ph name="PRODUCT_NAME" /></translation>
+<translation id="7644125656003029520">Mengaktifkan izin penempatan jendela di semua situs</translation>
 <translation id="7648664871086956188">Kebijakan ini adalah tombol umum untuk semua aturan yang ditentukan dalam kebijakan DataLeakPreventionRulesList.
       Jika kebijakan ini disetel ke Benar (True), pelaporan real-time peristiwa pencegahan kebocoran data akan diaktifkan.
       Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, pelaporan akan dinonaktifkan.
@@ -6040,6 +6066,15 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7908384265697653397">Waktu dalam satuan hari sebelum pengguna logout jika versi <ph name="PRODUCT_OS_NAME" /> lebih rendah dari <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> yang ditentukan.</translation>
 <translation id="7912255076272890813">Konfigurasikan jenis aplikasi/ekstensi yang diizinkan</translation>
 <translation id="791267408364877739">Perlihatkan peringatan keamanan saat tanda command line yang berpotensi berbahaya digunakan</translation>
+<translation id="79156801312131034">Menyetel kebijakan memungkinkan Anda menentukan perilaku sistem saat browser mulai dijalankan. Menonaktifkan setelan ini memiliki efek yang sama dengan tidak menyetelnya, karena <ph name="PRODUCT_NAME" /> sudah menetapkan perilaku saat browser mulai dijalankan.
+
+      Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat mengubahnya.
+
+      Menyetel kebijakan ini ke <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> atau <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> akan menonaktifkan beberapa setelan yang mengandalkan sesi atau yang melakukan tindakan saat keluar, seperti menghapus data penjelajahan saat keluar atau cookie khusus sesi.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, browser akan memulihkan sesi sebelumnya dan membuka jendela terpisah untuk menampilkan URL yang disetel dari <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Perlu diperhatikan bahwa pengguna dapat memilih untuk membiarkan URL tersebut dibuka dan URL tersebut juga akan dipulihkan pada sesi mendatang.
+
+      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="7922358664346625612">Biarkan tab terakhir terbuka di Chrome.</translation>
 <translation id="7924321157669251966">Persentase kecerahan layar saat menggunakan daya baterai.</translation>
 <translation id="7925224837072026018">Menyetel kebijakan akan memberi ekstensi atau aplikasi Android akses ke kunci perusahaan. Kunci hanya ditujukan untuk pemakaian dalam perusahaan jika dibuat menggunakan chrome.enterprise.platformKeys API pada akun terkelola. Pengguna tidak dapat memberikan atau menarik akses ke kunci perusahaan kepada atau dari ekstensi atau aplikasi Android.

@@ -349,6 +349,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4237377247299956313">Dodirnite opciju <ph name="BEGIN_BOLD" />Zadana aplikacija preglednika<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Unesite šifru</translation>
+<translation id="4249955472157341256">Poredaj po najnovijem</translation>
 <translation id="4263576668337963058">Prikaži dostupne radnje na stranici</translation>
 <translation id="4267380167363222949">Sljedeća kartica</translation>
 <translation id="4272631900155121838">Da biste skenirali QR kod, omogućite fotoaparat u postavkama</translation>
@@ -506,6 +507,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="575902488528307720">Pretraži sliku</translation>
 <translation id="5781453543752460388">Dodaj u fotografije</translation>
 <translation id="5782227691023083829">Prijevod u tijeku...</translation>
+<translation id="5791632441210678828">Gumb za razvrstavanje za feed Praćeno</translation>
 <translation id="5802829331520313983">Postavi…</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti ovu novu karticu?</translation>
 <translation id="5804241973901381774">Dozvoljeno</translation>
@@ -621,6 +623,7 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6561262006871132942">Povećaj</translation>
 <translation id="6583087784430677195">Da biste isključili značajku, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />, a zatim Automatsko popunjavanje zaporki.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
+<translation id="6598875554591387303">Poredaj po izdavaču</translation>
 <translation id="6603393121510733479">Vaša organizacija isključila je anonimno pregledavanje.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcije Prevoditelja</translation>

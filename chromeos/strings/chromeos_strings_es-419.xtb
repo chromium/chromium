@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">La ventana de actualización de firmware para dispositivos externos está abierta. Hay <ph name="NUM_UPDATES" /> actualizaciones disponibles.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Promedio (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Quitar</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" />% completo)</translation>
 <translation id="1310380015393971138">No hay redes <ph name="NETWORK_NAME" /> disponibles</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
 <translation id="131461803491198646">Red local, no en modo roaming</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administra este dispositivo y es posible que pueda supervisar tu actividad.</translation>
 <translation id="1478594628797167447">Escáner</translation>
+<translation id="1491076385728777984">Actualizando el firmware de <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administra a este usuario y es posible que administre la configuración y supervise la actividad del usuario de forma remota.</translation>
 <translation id="150962533380566081">PUK no válida.</translation>
 <translation id="1510238584712386396">Selector</translation>
 <translation id="155865706765934889">Panel táctil</translation>
+<translation id="1565038567006703504">No se puede actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Establecer como fondo de pantalla</translation>
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualiza la imagen del fondo de pantalla actual</translation>
 <translation id="2517472476991765520">Buscar</translation>
+<translation id="253029298928638905">Reiniciando…</translation>
 <translation id="2536159006530886390">No puedo conectarme a Internet.</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Se quitarán los trabajos de impresión que tengan más de <ph name="NUMBER_OF_DAYS" /> días</translation>
+<translation id="3993704782688964914">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
 <translation id="4003384961948020559">Error: La bandeja de salida está llena</translation>
 <translation id="4034824040120875894">Impresora</translation>
 <translation id="4044093238444069296">No se puede establecer contacto con la puerta de enlace</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">No se ejecutó la rutina</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">Reiniciando <ph name="DEVICE_NAME" /></translation>
 <translation id="4418498623216225764">Actualiza los periféricos</translation>
 <translation id="4425149324548788773">Mi unidad</translation>
 <translation id="4428374560396076622">La red <ph name="NETWORK_NAME" /> está desactivada</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Coincidencia del nombre alternativo del sujeto</translation>
 <translation id="4536864596629708641">Configuración de IP</translation>
 <translation id="4548483925627140043">no se encontró la señal</translation>
+<translation id="4556753742174065117">Todo el firmware está actualizado</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM desbloqueado</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
@@ -434,6 +442,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Información disponible sobre el texto seleccionado. Utiliza la flecha hacia arriba para acceder.</translation>
 <translation id="6853312040151791195">Velocidad de descarga</translation>
+<translation id="6889786074662672253">No desconectes este dispositivo externo ni apagues la computadora durante el reinicio. Puedes minimizar esta ventana. Es posible que este proceso demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La tapa del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
 <translation id="6911383237894364323">No es posible conectarse a los servidores de medios</translation>

@@ -85,6 +85,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1650222530560417226">Klepnutím na tlačítko Spustit protokolování začnete shromažďovat budoucí protokoly konzole JavaScriptu a chyby ze všech karet. Protokoly se budou shromažďovat (a ukládat jen do paměti), dokud tuto stránku nezavřete nebo neklepnete na Zastavit protokolování.</translation>
+<translation id="1654232554734641711">Přístup k mikrofonu je povolen</translation>
 <translation id="1657011748321897393">Sdílení se nezdařilo, protože nejste připojeni k síti.</translation>
 <translation id="1657641691196698092">Blokované soubory cookie</translation>
 <translation id="165877110639533037">Žádné otevřené karty</translation>
@@ -396,6 +397,7 @@ Vaše data jsou šifrována pomocí heslové fráze pro synchronizaci. Chcete-li
 <translation id="4682686630151240767">1. Otevřete nastavení iPhonu.</translation>
 <translation id="4689564913179979534">Spravovat platební metody...</translation>
 <translation id="470966556546083668">Nezapínat synchronizaci</translation>
+<translation id="4731472194328757163">Přístup k fotoaparátu a mikrofonu je povolen</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4747097190499141774">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay. Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud ji zapomenete nebo toto nastavení budete chtít změnit, bude nutné synchronizaci resetovat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nová anonymní karta</translation>
@@ -547,6 +549,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
 <translation id="6064824697233747382">Vaše organizace vyžaduje, abyste vypnuli synchronizaci.</translation>
 <translation id="6066301408025741299">Stahování zrušíte klepnutím.</translation>
+<translation id="6077126322656614846">Přístup k fotoaparátu je povolen</translation>
 <translation id="60829778314739003">Přijmout a pokračovat</translation>
 <translation id="6084848228346514841">Vybrat karty</translation>
 <translation id="6103540626693881831">Šifrování v zařízení</translation>

@@ -112,6 +112,7 @@
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1570871743947603115">Bluetooth функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
+<translation id="1610778689852195798">"Қайтару"</translation>
 <translation id="1611993646327628135">Қосулы</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> құрылғы</translation>
@@ -246,6 +247,7 @@
 <translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
 <translation id="2607678425161541573">Онлайн кіру қажет</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
+<translation id="263399434338050016">"Барлығын таңдау"</translation>
 <translation id="2653019840645008922">Терезені түсіру</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2658778018866295321">Басу және сүйреу</translation>
@@ -262,6 +264,7 @@
 <translation id="2727175239389218057">Жауап беру</translation>
 <translation id="2727977024730340865">Төмен қуатты зарядтағышқа жалғанған. Батареяны зарядтау кезінде қиындықтар болуы мүмкін.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"Жою"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="2782591952652094792">Түсіру режимінен шығу</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
@@ -305,6 +308,7 @@
 <translation id="3038571455154067151">Аккаунтқа кіру үшін Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
 <translation id="3039939407102840004">Стилус батареясының заряды – <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="3045488863354895414">Қайырлы күн!</translation>
+<translation id="3047761520276763270">Былай айтып көріңіз:</translation>
 <translation id="3051189971848907985">Профильдің аты өзгертілуде. Бірнеше минут күтіңіз.</translation>
 <translation id="3055162170959710888">Бүгін бұл құрылғыны <ph name="USED_TIME" /> рет пайдаландыңыз</translation>
 <translation id="3068711042108640621">Сол жақтағы сөре</translation>
@@ -552,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Құпия сөзді жасыру</translation>
 <translation id="4570957409596482333">Select-to-Speak түймесі</translation>
+<translation id="4573176682887762361">"[Cөз немесе фраза] теру"</translation>
 <translation id="4577274620589681794">Уақыт бітті · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көріністерді көрсету</translation>
 <translation id="4578196883126898996">Микрофон өшірулі. Құрылғыңыздың микрофон түймесін басыңыз.</translation>
@@ -632,6 +637,7 @@
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
 <translation id="5147567197700016471">Құлып ашылды.</translation>
+<translation id="5150070631291639005">Құпиялылық параметрлері</translation>
 <translation id="5155897006997040331">Оқу жылдамдығы</translation>
 <translation id="5166007464919321363">Жұмыс үстелін үлгі ретінде сақтау</translation>
 <translation id="5168181903108465623">Трансляциялау құрылғылары қолжетімді</translation>
@@ -654,6 +660,7 @@
 <translation id="5286194356314741248">Ізделуде</translation>
 <translation id="5297423144044956168">Ешқандай мобильдік құрылғы табылмады.</translation>
 <translation id="5297704307811127955">Өшірулі</translation>
+<translation id="5300589172476337783">Көрсету</translation>
 <translation id="5302048478445481009">Тіл</translation>
 <translation id="5308380583665731573">Қосылу</translation>
 <translation id="5313326810920013265">Bluetooth параметрлері</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> желісіне қосылу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> қалтасы</translation>
+<translation id="880709030178078220">"Анықтама"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Енгізу әдістерінің параметрлері</translation>
 <translation id="8818320199597151042">Профиль өшірілуде. Бірнеше минут күтіңіз.</translation>

@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
 <translation id="1832459821645506983">हां, वॉइस सर्च करें</translation>
-<translation id="1843805151597803366">बेहतर अनुवाद पाने के लिए, Google Search को मौजूदा पेज इस्तेमाल करने दें</translation>
 <translation id="1868024384445905608">Chrome अब ज़्यादा तेज़ी से फ़ाइलें डाउनलोड करता है</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="1883903952484604915">मेरी फ़ाइलें</translation>
@@ -227,7 +226,6 @@
 <translation id="2328985652426384049">साइन इन नहीं कर सकते</translation>
 <translation id="2342601525305963189">Chrome से जुड़ी सलाह:</translation>
 <translation id="234265804618409743">कैमरा खाेला नहीं जा सकता. कोई गड़बड़ी हुई.</translation>
-<translation id="2345671828921229300">किसी शब्द को खोजने के लिए, उसे दबाकर रखें</translation>
 <translation id="2349710944427398404">Chrome द्वारा उपयोग किया गया कुल डेटा, जिसमें खाते, बुकमार्क और सहेजी गईं सेटिंग शामिल हैं</translation>
 <translation id="2353636109065292463">आपके इंटरनेट कनेक्शन की जाँच की जा रही है</translation>
 <translation id="235789365079050412">Google निजता नीति</translation>
@@ -301,7 +299,6 @@
 <translation id="2723001399770238859">ऑडियो</translation>
 <translation id="2732063072010454421">वॉइस सर्च का बेहतर अनुभव पाएं</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">इंस्टैंट सर्च या मिलती-जुलती कार्रवाई देखने के लिए किसी शब्द पर टैप करें</translation>
 <translation id="2760989362628427051">अपने डिवाइस की गहरे रंग वाली थीम या 'बैटरी सेवर' चालू होने पर गहरे रंग वाली थीम चालू करें</translation>
 <translation id="2762000892062317888">अभी-अभी</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> के रूप में प्रवेश किया गया.</translation>
@@ -417,7 +414,6 @@
 <translation id="3341262203274374114">अनफ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
 <translation id="3359667936385849800">आपको सेवा देने वाली मौजूदा कंपनी का इस्तेमाल करें</translation>
 <translation id="3367813778245106622">सिंक शुरू करने के लिए फिर से साइन इन करें</translation>
-<translation id="337236281855091893">किसी शब्द को खोजने के लिए, उस पर टैप करने के बजाय, दबाकर रखें</translation>
 <translation id="3373979091428520308">इस पेज को किसी और डिवाइस पर शेयर करने के लिए, दूसरे डिवाइस की Chrome सेटिंग में सिंक की सुविधा चालू करें</translation>
 <translation id="3374023511497244703">आपके बुकमार्क, इतिहास, पासवर्ड, और Chrome पर मौजूद दूसरा डेटा अब Google खाते से सिंक नहीं होगा</translation>
 <translation id="3384347053049321195">इमेज शेयर करें</translation>
@@ -431,7 +427,6 @@
 <translation id="3428747202529429621">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है</translation>
 <translation id="3429160811076349561">ट्रायल की सुविधाएं बंद हैं</translation>
 <translation id="3435465986463792564">कई विंडो खुली हैं? उन सभी को यहां से मैनेज किया जा सकता है</translation>
-<translation id="3440975416244667276">ज़्यादा काम की जानकारी के लिए इसे दबाकर रखें</translation>
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
 <translation id="3444179773590444986">क्या आप साइटों के लिए गहरे रंग वाली थीम से जुड़े सुझाव, शिकायत या राय शेयर करना चाहते हैं?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 डाउनलोड शेड्यूल किया गया}one{# डाउनलोड शेड्यूल किया गया}other{# डाउनलोड शेड्यूल किए गए}}</translation>
@@ -518,7 +513,6 @@
 <translation id="3976396876660209797">इस शॉर्टकट को निकालें और इसे फिर से बनाएं</translation>
 <translation id="3985215325736559418">क्या आप <ph name="FILE_NAME" /> को फिर से डाउनलोड करना चाहते हैं?</translation>
 <translation id="3987993985790029246">लिंक की प्रति बनाएं</translation>
-<translation id="3988466920954086464">झटपट खोज नतीजे इस पैनल में देखें</translation>
 <translation id="4000212216660919741">ऑफ़लाइन होम</translation>
 <translation id="4016425174436051808">फ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
@@ -1137,7 +1131,6 @@
 <translation id="7475688122056506577">SD कार्ड नहीं मिला. हो सकता है कि आपकी कुछ फ़ाइलें उपलब्ध न हों.</translation>
 <translation id="7479104141328977413">टैब प्रबंधन</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
-<translation id="7481864133709957613">इस पेज पर मौजूद किसी शब्द को खोजने के लिए, उस पर टैप करने के बजाय, दबाकर रखें</translation>
 <translation id="7482656565088326534">झलक टैब</translation>
 <translation id="7484997419527351112">डिस्कवर - बंद है</translation>
 <translation id="7485033510383818941">फ़ीड का कॉन्टेंट रीफ़्रेश करने के लिए, पेज को नीचे खींचें</translation>

@@ -203,6 +203,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6734291798041940871">Naka-install na ang Chromium para sa lahat ng user sa iyong computer.</translation>
 <translation id="673636774878526923">Para ma-access ang iyong mga bagay sa Chromium sa lahat ng device mo, mag-sign in, at pagkatapos ay i-on ang pag-sync.</translation>
 <translation id="6774082503108938489">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chromium. Hindi pinapayagan ang pag-enable sa <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>
+<translation id="6808964260981102146">Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga website at app. Kung ayaw mong ma-access ng mga website o app ang impormasyon ng iyong account, gumamit ng <ph name="LINK_BEGIN" />Guest mode<ph name="LINK_END" /> sa Chromium browser. Puwede mo ring pamahalaan ang iyong Mga Google Account sa <ph name="LINK_2_BEGIN" />Mga Setting<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Ipinapaalam sa iyo ng Chromium kung nakompromiso ang mga password mo</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kinopya sa Chromium)</translation>

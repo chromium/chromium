@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">İlkin sinxronizasiya ayarlanması tamamlanmayıb</translation>
 <translation id="1829244130665387512">Səhifədə tapın</translation>
 <translation id="1832459821645506983">Bəli, varam</translation>
-<translation id="1843805151597803366">Daha yaxşı tərcümələr üçün Google Axtarışın bu səhifəni istifadə etməsinə icazə verin</translation>
 <translation id="1868024384445905608">Chrome artıq faylları sürətlə endirir</translation>
 <translation id="1877026089748256423">Chrome'un vaxtı keçib</translation>
 <translation id="1883903952484604915">Fayllarım</translation>
@@ -227,7 +226,6 @@ Axtarmaq üçün istənilən sözə toxunun. Axtarışı dəqiqləşdirmək üç
 <translation id="2328985652426384049">Daxil olmaq mümkün deyil</translation>
 <translation id="2342601525305963189">Chrome ipucuları:</translation>
 <translation id="234265804618409743">Kameranı açmaq olmur. Xəta baş verdi.</translation>
-<translation id="2345671828921229300">Axtarış üçün sözə toxunub saxlayın</translation>
 <translation id="2349710944427398404">Hesablar, əlfəcinlər və yadda saxlanılan ayarlar daxil olmaqla, Chrome tərəfindən istifadə olunmuş ümumi data</translation>
 <translation id="2353636109065292463">İnternet bağlantısının yoxlanması</translation>
 <translation id="235789365079050412">Google Məxfilik Siyasəti</translation>
@@ -301,7 +299,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Daha yaxşı səs təcrübəsi əldə edin</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Dərhal axtarmaq və əlaqədar fəaliyyətə baxmaq üçün söz yazın</translation>
 <translation id="2760989362628427051">Cihazın tünd tema və ya Enerjiyə Qənaət rejimi aktiv olduqda tünd temanı aktiv edin</translation>
 <translation id="2762000892062317888">indicə</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> olaraq hesaba girdi.</translation>
@@ -417,7 +414,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="3341262203274374114">İzləmədən çıxarmaq olmur. Xəta baş verdi.</translation>
 <translation id="3359667936385849800">Cari xidmət təminatçınızı istifadə edin</translation>
 <translation id="3367813778245106622">Sinxronizasiyanı başlamaq üçün yenidən daxil olun</translation>
-<translation id="337236281855091893">Axtarış üçün sözün üzərinə toxunmaq əvəzinə ona toxunub saxlayın</translation>
 <translation id="3373979091428520308">Bu səhifəni başqa bir cihaz ilə paylaşmaq üçün digər cihazın Chrome ayarlarında sinxronlaşdırmanı yandırın</translation>
 <translation id="3374023511497244703">Əlfəcin, tarixçə, parol və digər Chrome datası artıq Google Hesabınıza sinxronizasiya edilməyəcək</translation>
 <translation id="3384347053049321195">Şəkli paylaşın</translation>
@@ -431,7 +427,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="3428747202529429621">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər</translation>
 <translation id="3429160811076349561">Sınaq funksiyaları deaktivdir</translation>
 <translation id="3435465986463792564">Çox sayda pəncərə var? Onları buradan idarə edə bilərsiniz</translation>
-<translation id="3440975416244667276">Daha çox əlaqəli məlumat üçün toxunub saxlayın</translation>
 <translation id="3443221991560634068">Cari səhifəni yenidən yükləyin</translation>
 <translation id="3444179773590444986">Saytlar üçün tünd tema barədə rəy paylaşılsın?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 endirmə planlanıb}other{# endirmə planlanıb}}</translation>
@@ -518,7 +513,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="3976396876660209797">Bu qısayolu silin və yenidən yaradın</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> faylını yenidən endirmək istəyirsiniz?</translation>
 <translation id="3987993985790029246">Linki kopyalayın</translation>
-<translation id="3988466920954086464">Ani axtarış nəticələrinə bu paneldə baxın</translation>
 <translation id="4000212216660919741">Ev oflayndır</translation>
 <translation id="4016425174436051808">İzləmək olmur. Xəta baş verdi.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# saat}other{# saat}}</translation>
@@ -574,9 +568,11 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4402611456429872546"><ph name="LANG" /> - Endirilir…</translation>
 <translation id="4404568932422911380">Əlfəcin yoxdur</translation>
 <translation id="4405224443901389797">Bura köçürün:</translation>
+<translation id="4405636711880428279">Virtual kartınız silinsin?</translation>
 <translation id="4409271659088619928">Axtarış sisteminiz <ph name="DSE" />. Axtarış tarixçənizi silmək üçün onun təlimatlarına (təmin edilibsə) baxın.</translation>
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
 <translation id="4425140285732600465">Qiymət izlənilir. Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
+<translation id="442518031075347249">Artıq virtual kartınızı Google Pay ilə istifadə edə bilməyəcəksiniz. <ph name="BEGIN_LINK1" />Virtual kartlar haqqında ətraflı məlumat<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Google'dan nəticələri axtarın.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> tabını bağlayın</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> qovluğuna əlfəcinləndi</translation>
@@ -1135,7 +1131,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="7475688122056506577">SD kart tapılmadı. Bəzi fayllar əskik ola bilər.</translation>
 <translation id="7479104141328977413">Tab idarəetməsi</translation>
 <translation id="7481312909269577407">İrəli</translation>
-<translation id="7481864133709957613">Bu səhifədən axtarış etmək üçün sözlərin üzərinə toxunmaq əvəzinə onlara toxunub saxlayın</translation>
 <translation id="7482656565088326534">Önbaxış tabı</translation>
 <translation id="7484997419527351112">"Təkliflər" - deaktivdir</translation>
 <translation id="7485033510383818941">Lent məzmununu yeniləmək üçün səhifəni aşağı çəkin</translation>

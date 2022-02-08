@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">مطابقت پذیر بنانے کا ابتدائی سیٹ اپ مکمل نہیں ہوا</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
 <translation id="1832459821645506983">ہاں، میں تیار ہوں</translation>
-<translation id="1843805151597803366">‏بہتر ترجمے حاصل کرنے کے لیے، Google تلاش کو موجودہ صفحہ استعمال کرنے دیں</translation>
 <translation id="1868024384445905608">‏Chrome اب فائلز کو مزید تیزی سے ڈاؤن لوڈ کرتا ہے</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
@@ -227,7 +226,6 @@
 <translation id="2328985652426384049">سائن نہیں کیا جا سکتا ہے</translation>
 <translation id="2342601525305963189">‏Chrome کی تجاویز:</translation>
 <translation id="234265804618409743">اپنا کیمرا نہیں کھول سکتے۔ کچھ غلط ہو گیا۔</translation>
-<translation id="2345671828921229300">تلاش کرنے کیلئے کسی لفظ کو ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="2349710944427398404">‏اکاؤنٹس، بُک مارکس اور محفوظ کردہ ترتیبات سمیت، Chrome کے ذریعے استعمال کردہ کُل ڈیٹا</translation>
 <translation id="2353636109065292463">آپ کا انٹرنیٹ کنکشن چیک کیا جا رہا ہے</translation>
 <translation id="235789365079050412">‏Google کی رازداری کی پالیسی</translation>
@@ -301,7 +299,6 @@
 <translation id="2723001399770238859">آڈیو</translation>
 <translation id="2732063072010454421">ایک بہتر صوتی تجربہ حاصل کریں</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">فوری تلاش یا متعلقہ کارروائی کے لیے کسی لفظ پر تھپتھپائیں</translation>
 <translation id="2760989362628427051">اپنے آلہ کے بیٹری سیور یا گہری تھیم کے آن ہونے پر گہری تھیم آن کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
@@ -417,7 +414,6 @@
 <translation id="3341262203274374114">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="3359667936385849800">اپنے موجودہ سروس فراہم کنندہ کو استعمال کریں</translation>
 <translation id="3367813778245106622">مطابقت پذیری شروع کرنے کیلئے دوبارہ سائن ان کریں</translation>
-<translation id="337236281855091893">تلاش کرنے کیلئے، کسی لفظ کو تھپتھپانے کی بجائے اسے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="3373979091428520308">‏اس صفحہ کا کسی دوسرے آلے پر اشتراک کرنے کے لیے، دیگر آلہ پر Chrome کی ترتیبات میں سِنک کرنا آن کریں</translation>
 <translation id="3374023511497244703">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر Chrome ڈیٹا کی اب آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی</translation>
 <translation id="3384347053049321195">تصویر کا اشتراک کریں</translation>
@@ -431,7 +427,6 @@
 <translation id="3428747202529429621">‏آپ کے سائن ان ہونے پر آپ کو Chrome پر محفوظ رکھتا ہے اور دیگر Google ایپس میں آپ کی سیکیورٹی کو بہتر بنانے کے لیے استعمال کیا جا سکتا ہے</translation>
 <translation id="3429160811076349561">ٹرائل کی خصوصیات آف ہیں</translation>
 <translation id="3435465986463792564">کیا آپ کے پاس بہت ساری ونڈوز ہیں؟ آپ یہاں سے ان کا نظم کر سکتے ہیں</translation>
-<translation id="3440975416244667276">مزید متعلقہ معلومات کیلئے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="3443221991560634068">موجودہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="3444179773590444986">سائٹس کیلئے گہری تھیم پر تاثرات کا اشتراک کریں؟</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ شیڈول کیا گیا}other{# ڈاؤن لوڈز شیڈول کیے گئے}}</translation>
@@ -518,7 +513,6 @@
 <translation id="3976396876660209797">ہٹا کر یہ شارٹ کٹ تخلیق کریں</translation>
 <translation id="3985215325736559418">کیا آپ <ph name="FILE_NAME" /> کو دوبارہ ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
-<translation id="3988466920954086464">اس پینل میں فوری تلاش کے نتائج دیکھیں</translation>
 <translation id="4000212216660919741">آف لائن ہوم</translation>
 <translation id="4016425174436051808">پیروی نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# گھنٹہ}other{# گھنٹے}}</translation>
@@ -1137,7 +1131,6 @@
 <translation id="7475688122056506577">‏SD کارڈ نہیں ملا۔ آپ کی کچھ فائلیں ہو سکتا ہے موجود نہ ہوں۔</translation>
 <translation id="7479104141328977413">ٹیب مینیجمنٹ</translation>
 <translation id="7481312909269577407">فارورڈ کریں</translation>
-<translation id="7481864133709957613">اس صفحے سے تلاش کرنے کیلئے، الفاظ پر تھپتھپانے کی بجائے انہیں ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="7482656565088326534">پیش منظر ٹیب</translation>
 <translation id="7484997419527351112">‏Discover - آف ہے</translation>
 <translation id="7485033510383818941">فیڈ کے مواد کو ریفریش کرنے کے لیے، صفحے کو نیچے کی طرف کھینچیں</translation>

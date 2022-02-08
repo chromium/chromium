@@ -113,6 +113,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1570871743947603115">Bluetooth qurilmasini yoqish/o‘chirish <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
+<translation id="1610778689852195798">“Qaytarish”</translation>
 <translation id="1611993646327628135">Yoniq</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Maxsus imkoniyatlar orqali faolsizlantirish mumkin.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ta qurilma</translation>
@@ -248,6 +249,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2596078834055697711">Oynadan skrinshot olish</translation>
 <translation id="2607678425161541573">Onlayn kirish zarur</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
+<translation id="263399434338050016">“Hammasini tanlash”</translation>
 <translation id="2653019840645008922">Oynani tasvirga olish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2658778018866295321">Bosib torting</translation>
@@ -264,6 +266,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2727175239389218057">Javob berish</translation>
 <translation id="2727977024730340865">Kam quvvatli zaryadlash vositasi ulanildi. Quvvatlantirishda muammolar bo‘lishi mumkin.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">“Oʻchirish”</translation>
 <translation id="2778650143428714839">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domeni tomonidan boshqariladi</translation>
 <translation id="2782591952652094792">Tasvirga olish rejimidan chiqish</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
@@ -308,6 +311,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3038571455154067151">Kirish uchun Family Link ota-ona ruxsat kodini tering</translation>
 <translation id="3039939407102840004">Stilus batareyasi <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Xayrli kun,</translation>
+<translation id="3047761520276763270">Aytib koʻring:</translation>
 <translation id="3051189971848907985">Profil qayta nomlanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="3055162170959710888">Bu qurilmadan bugun <ph name="USED_TIME" /> foydalandingiz</translation>
 <translation id="3068711042108640621">Javon chapda</translation>
@@ -560,6 +564,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Parolni berkitish</translation>
 <translation id="4570957409596482333">Teginib tinglash tugmasi</translation>
+<translation id="4573176682887762361">“[soʻz yoki iborani] yozing”</translation>
 <translation id="4577274620589681794">Vaqt tugadi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Razm solishni yoqish</translation>
 <translation id="4578196883126898996">Mikrofon oʻchiq. Uni qurilma tugmasi orqali yoqing.</translation>
@@ -640,6 +645,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5117590920725113268">Keyingi oyni ko‘rsatish</translation>
 <translation id="5136175204352732067">Boshqa klaviatura ulandi</translation>
 <translation id="5147567197700016471">Ochiq</translation>
+<translation id="5150070631291639005">Maxfiylik sozlamalari</translation>
 <translation id="5155897006997040331">Oʻqish tezligi</translation>
 <translation id="5166007464919321363">Ish stolini andoza sifatida saqlash</translation>
 <translation id="5168181903108465623">Translatsiya qurilmalari mavjud</translation>
@@ -662,6 +668,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5286194356314741248">Qidiruv</translation>
 <translation id="5297423144044956168">Mobil qurilmalar topilmadi</translation>
 <translation id="5297704307811127955">Yoqilmagan</translation>
+<translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5302048478445481009">Til</translation>
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5313326810920013265">Bluetooth sozlamalari</translation>
@@ -676,7 +683,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (oʻng)</translation>
 <translation id="5352250171825660495">Tungi mavzu yoniq</translation>
 <translation id="5379115545237091094">Juda ko‘p urinishlar bo‘ldi</translation>
-<translation id="5393156353051693207">Ilovalarni qayta saralash uchun istalgan joyni bosib turing</translation>
 <translation id="5395308026110844773">Jild yaratish uchun <ph name="DRAGGED_APP_NAME" /> ilovaisini <ph name="IN_PLACE_APP" /> ustiga sudrang.</translation>
 <translation id="5397578532367286026">Boshqaruvchi (<ph name="MANAGER_EMAIL" />) bu foydalanuvchining brauzerdagi ish tarixini chrome.com saytida ko‘rishi mumkin.</translation>
 <translation id="5400461572260843123">Tezkor sozlamalar, Bildirishnomalar markazini ochish uchun “Qidiruv + Chapga strelka” tugmalarini bosing.</translation>
@@ -967,7 +973,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7378203170292176219">Yozib olinadigan hududni tanlash uchun suring</translation>
 <translation id="7378594059915113390">Media boshqaruv elementlari</translation>
 <translation id="7378889811480108604">Quvvat tejash rejimi oʻchiq</translation>
-<translation id="7384028040782072252">Ilovalarni qayta saralash uchun oʻng klikni istalgan joyga bosing</translation>
 <translation id="7392563512730092880">Buni istalgan vaqtda Sozlamalar orqali sozlash mumkin.</translation>
 <translation id="7405710164030118432">Bu qurilma qulfini ochish uchun Family Link ota-ona kodini kiriting</translation>
 <translation id="7406608787870898861">Mobil tarmoqni sozlashni yakunlash</translation>
@@ -1157,7 +1162,6 @@ yangi oʻrnatilgan</translation>
 <translation id="8563862697512465947">Bildirishnoma sozlamalari</translation>
 <translation id="857201607579416096">Menyu ekranning quyi oʻng burchagiga surildi.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="8598235756057743477">Ilovalarni nomi yoki rangi asosida saralash</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> qurilmasiga ulandi</translation>
 <translation id="8631727435199967028">Maxsus imkoniyatlar sozlamalari</translation>
 <translation id="8637598503828012618">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
@@ -1187,6 +1191,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8785070478575117577">Bunga ulanish: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> jildi</translation>
+<translation id="880709030178078220">“Yordam”</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Matn kiritish sozlamalari</translation>
 <translation id="8818320199597151042">Profil olib tashlanmoqda. Bir necha daqiqa kuting.</translation>

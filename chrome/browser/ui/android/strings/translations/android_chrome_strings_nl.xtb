@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Eerste synchronisatieconfiguratie niet voltooid</translation>
 <translation id="1829244130665387512">Zoeken op pagina</translation>
 <translation id="1832459821645506983">Ja, is goed</translation>
-<translation id="1843805151597803366">Sta Google Zoeken toe de huidige pagina te gebruiken om betere vertalingen te krijgen</translation>
 <translation id="1868024384445905608">Chrome downloadt bestanden nu sneller</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">Mijn bestanden</translation>
@@ -227,7 +226,6 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2328985652426384049">Kan niet inloggen</translation>
 <translation id="2342601525305963189">Chrome-tips:</translation>
 <translation id="234265804618409743">Kan de camera niet openen. Er is iets misgegaan.</translation>
-<translation id="2345671828921229300">Tik op een woord en houd dit vast om te zoeken</translation>
 <translation id="2349710944427398404">Totale gegevens gebruikt door Chrome, inclusief accounts, bookmarks en opgeslagen instellingen</translation>
 <translation id="2353636109065292463">Je internetverbinding controleren…</translation>
 <translation id="235789365079050412">Privacybeleid van Google</translation>
@@ -301,7 +299,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Krijg betere spraakfunctionaliteit</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Tik op een woord om meteen te zoeken of gerelateerde acties te bekijken</translation>
 <translation id="2760989362628427051">Zet het donkere thema aan als het donkere thema of de batterijbesparing van je apparaat aanstaat</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="276969039800130567">Ingelogd als <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3341262203274374114">Niet meer volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="3359667936385849800">Je huidige serviceprovider gebruiken</translation>
 <translation id="3367813778245106622">Log opnieuw in om de synchronisatie te starten</translation>
-<translation id="337236281855091893">Als je wilt zoeken, tik je op een woord en houd je dit vast in plaats van erop te tikken</translation>
 <translation id="3373979091428520308">Als je deze pagina wilt delen met een ander apparaat, zet je op het andere apparaat de synchronisatie aan via de Chrome-instellingen</translation>
 <translation id="3374023511497244703">Je bookmarks, geschiedenis, wachtwoorden en andere Chrome-gegevens worden niet meer gesynchroniseerd met je Google-account</translation>
 <translation id="3384347053049321195">Afbeelding delen</translation>
@@ -431,7 +427,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3429160811076349561">Proeffuncties staan uit</translation>
 <translation id="3435465986463792564">Heb je veel vensters open? Beheer ze hier.</translation>
-<translation id="3440975416244667276">Tik en houd vast voor meer relevante informatie</translation>
 <translation id="3443221991560634068">De huidige pagina opnieuw laden</translation>
 <translation id="3444179773590444986">Feedback delen over donker thema voor sites?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download gepland}other{# downloads gepland}}</translation>
@@ -518,7 +513,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3976396876660209797">Verwijder de snelkoppeling en maak deze opnieuw</translation>
 <translation id="3985215325736559418">Wil je <ph name="FILE_NAME" /> opnieuw downloaden?</translation>
 <translation id="3987993985790029246">Link kop.</translation>
-<translation id="3988466920954086464">Instant-zoekresultaten bekijken in dit venster</translation>
 <translation id="4000212216660919741">Homepage voor offline</translation>
 <translation id="4016425174436051808">Volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# uur}other{# uur}}</translation>
@@ -574,9 +568,11 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4402611456429872546"><ph name="LANG" /> - Downloaden…</translation>
 <translation id="4404568932422911380">Geen bookmarks</translation>
 <translation id="4405224443901389797">Verplaatsen naar…</translation>
+<translation id="4405636711880428279">Je virtuele kaart verwijderen?</translation>
 <translation id="4409271659088619928">Je zoekmachine is <ph name="DSE" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="4415276339145661267">Je Google-account beheren</translation>
 <translation id="4425140285732600465">Prijs wordt gevolgd. Krijg meldingen bij een prijsdaling op een site.</translation>
+<translation id="442518031075347249">Je kunt je virtuele kaart niet meer gebruiken met Google Pay. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Zoekresultaten van Google.</translation>
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
 <translation id="4452548195519783679">Bookmark gemaakt in <ph name="FOLDER_NAME" /></translation>
@@ -1137,7 +1133,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7475688122056506577">SD-kaart niet gevonden. Sommige van je bestanden kunnen ontbreken.</translation>
 <translation id="7479104141328977413">Tabbladbeheer</translation>
 <translation id="7481312909269577407">Vooruit</translation>
-<translation id="7481864133709957613">Als je wilt zoeken vanaf deze pagina, moet je op woorden tikken en deze vasthouden in plaats van erop te tikken</translation>
 <translation id="7482656565088326534">Voorbeeldtabblad</translation>
 <translation id="7484997419527351112">Discover - uit</translation>
 <translation id="7485033510383818941">Als je de feed wilt vernieuwen, swipe je de pagina omlaag</translation>

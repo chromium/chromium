@@ -89,7 +89,6 @@
 <translation id="1082398631555931481">Tööriist <ph name="THIRD_PARTY_TOOL_NAME" /> soovib teie Chrome'i seaded lähtestada algsetele vaikevalikutele. See lähtestab teie avalehe, uue vahelehe ja otsingumootori, keelab laiendused ning vabastab kõik vahelehed. Peale selle kustutatakse kõik muud ajutised ja vahemällu salvestatud andmed, nagu küpsisefailid ning sisu- ja saidiandmed.</translation>
 <translation id="1084096383128641877">Selle parooli eemaldamisel ei kustutata teie kontot saidil <ph name="DOMAIN" />. Muutke oma parooli või kustutage saidil <ph name="DOMAIN_LINK" /> olev konto, et parooli kaitsta.</translation>
 <translation id="1084824384139382525">Kopeeri lingi aadr&amp;ess</translation>
-<translation id="1085064499066015002">Alati kõigil saitidel</translation>
 <translation id="1085697365578766383">Viga virtuaalseadme käivitamisel. Proovige uuesti.</translation>
 <translation id="1087965115100412394">Ära luba saitidel MIDI-seadmetega ühendust luua</translation>
 <translation id="1088654056000736875">Chrome eemaldab teie arvutist kahjuliku tarkvara …</translation>
@@ -341,6 +340,7 @@
 <translation id="1340527397989195812">Seadme meediumi varundamine rakendusega Failid.</translation>
 <translation id="1341988552785875222">Praeguse taustapildi määras rakendus „<ph name="APP_NAME" />”. Enne teise taustapildi valimist peate rakenduse „<ph name="APP_NAME" />” võib-olla desinstallima.</translation>
 <translation id="1343865611738742294">Andke Linuxi rakendustele luba USB-seadmetele juurde pääseda. Linux ei mäleta USB-seadet pärast selle eemaldamist.</translation>
+<translation id="1343920184519992513">Jätka sealt, kus pooleli jäin, ja ava konkreetne lehtede kogum</translation>
 <translation id="1346630054604077329">Kinnita ja taaskäivita</translation>
 <translation id="1347256498747320987">Installige rakendusi ja värskendusi. Jätkamisel nõustute, et see seade võib Google'i, teie operaatori ja seadme tootja värskendusi ning rakendusi automaatselt alla laadida ja installida, kasutades selleks võib-olla teie mobiilset andmesidet. Mõned rakendused võivad pakkuda rakendusesiseseid oste. <ph name="BEGIN_LINK1" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linuxi salvestusruum</translation>
@@ -2833,7 +2833,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="383891835335927981">Ühtegi saiti pole sisse ega välja suumitud</translation>
 <translation id="3839509547554145593">Luba hiire kerimise kiirendamine</translation>
 <translation id="3839516600093027468">Blokeeri hosti <ph name="HOST" /> jaoks alati lõikelaua nägemine</translation>
-<translation id="3839526976593488376">Kohanda iga saidi jaoks</translation>
 <translation id="3841964634449506551">Parool on sobimatu</translation>
 <translation id="3842552989725514455">Seriifidega font</translation>
 <translation id="3843464315703645664">Sisemiselt lubamisloendisse lisatud</translation>
@@ -5389,6 +5388,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="654871471440386944">Kas soovite sisestusmärgiga sirvimise sisse lülitada?</translation>
 <translation id="6549038875972762904">Seadista uuesti</translation>
 <translation id="6550675742724504774">Valikud</translation>
+<translation id="65513682072153627">Näete seda haldamise ikooni, kui seadet või funktsiooni haldab teie administraator.</translation>
 <translation id="6551508934388063976">Käsk pole saadaval. Uue akna avamiseks vajutage klahve Ctrl + N.</translation>
 <translation id="6551612971599078809">Sait kasutab USB-seadet</translation>
 <translation id="6551739526055143276">Hallatakse Family Linkiga</translation>
@@ -6159,6 +6159,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7376553024552204454">Tõsta hiirekursor esile, kui see liigub</translation>
 <translation id="737728204345822099">Kirje teie külastusest sellele saidile võidakse säilitada teie turvavõtmes.</translation>
 <translation id="7377451353532943397">Blokeeri ka edaspidi juurdepääs anduritele</translation>
+<translation id="7377481913241237033">Ühendamine koodiga</translation>
 <translation id="7378611153938412599">Nõrku paroole on lihtne ära arvata. Veenduge, et looksite tugevad paroolid. <ph name="BEGIN_LINK" />Vaadake rohkem turvanõuandeid.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ava Chrome'i veebipood</translation>
 <translation id="7380622428988553498">Seadme nimi sisaldab sobimatuid tähemärke</translation>
@@ -7817,6 +7818,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9040661932550800571">Kas värskendada saidi <ph name="ORIGIN" /> parooli?</translation>
 <translation id="9041692268811217999">Administraator keelas juurdepääsu arvutis olevatele kohalikele failidele</translation>
 <translation id="904224458472510106">Seda toimingut ei saa tagasi võtta</translation>
+<translation id="9042893549633094279">Privaatsus ja turvalisus</translation>
 <translation id="904451693890288097">Sisestage seadme „<ph name="DEVICE_NAME" />” pääsuvõti:</translation>
 <translation id="9044646465488564462">Võrguga ühenduse loomine ebaõnnestus: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lugemisloend teisaldati külgpaneelile. Proovige seda siin.</translation>

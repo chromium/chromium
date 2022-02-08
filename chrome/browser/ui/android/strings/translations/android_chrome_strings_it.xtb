@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Configurazione iniziale della sincronizzazione non terminata</translation>
 <translation id="1829244130665387512">Trova nella pagina</translation>
 <translation id="1832459821645506983">OK</translation>
-<translation id="1843805151597803366">Consenti alla Ricerca Google di accedere alla pagina corrente per ricevere traduzioni migliori</translation>
 <translation id="1868024384445905608">Ora Chrome scarica i file più velocemente</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
 <translation id="1883903952484604915">I miei file</translation>
@@ -227,7 +226,6 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2328985652426384049">Impossibile eseguire l'accesso</translation>
 <translation id="2342601525305963189">Suggerimenti di Chrome:</translation>
 <translation id="234265804618409743">Impossibile aprire la fotocamera. Si è verificato un problema.</translation>
-<translation id="2345671828921229300">Per eseguire una ricerca, tocca e tieni premuta una parola</translation>
 <translation id="2349710944427398404">Dati totali utilizzati da Chrome, tra cui account, preferiti e impostazioni salvate</translation>
 <translation id="2353636109065292463">Controllare la connessione a Internet</translation>
 <translation id="235789365079050412">Norme sulla privacy di Google</translation>
@@ -301,7 +299,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Ottieni un'esperienza di ricerca vocale migliore</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Tocca una parola per eseguire una ricerca immediata o visualizzare le azioni correlate</translation>
 <translation id="2760989362628427051">Attiva il tema scuro quando sul dispositivo è attivo il tema scuro o il risparmio energetico</translation>
 <translation id="2762000892062317888">in questo istante</translation>
 <translation id="276969039800130567">Accesso eseguito come <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
 <translation id="3359667936385849800">Usa il tuo attuale fornitore di servizi</translation>
 <translation id="3367813778245106622">Accedi nuovamente per avviare la sincronizzazione</translation>
-<translation id="337236281855091893">Per eseguire una ricerca, tocca e tieni premuta una parola anziché toccarla</translation>
 <translation id="3373979091428520308">Per condividere questa pagina con un altro dispositivo, attiva la sincronizzazione nelle impostazioni di Chrome sull'altro dispositivo</translation>
 <translation id="3374023511497244703">I preferiti, la cronologia, le password e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google</translation>
 <translation id="3384347053049321195">Condividi immagine</translation>
@@ -431,7 +427,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
-<translation id="3440975416244667276">Tocca e tieni premuto per altre informazioni pertinenti</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
 <translation id="3444179773590444986">Vuoi condividere un feedback sul tema scuro per i siti?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download programmato}one{# download programmati}other{# download programmati}}</translation>
@@ -518,7 +513,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3976396876660209797">Rimuovi e ricrea la scorciatoia</translation>
 <translation id="3985215325736559418">Scaricare di nuovo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copia link</translation>
-<translation id="3988466920954086464">Visualizza i risultati della ricerca immediata in questo riquadro</translation>
 <translation id="4000212216660919741">Home page offline</translation>
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}one{# hrs}other{# ore}}</translation>
@@ -1137,7 +1131,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7475688122056506577">Scheda SD non trovata. Potrebbero mancare alcuni dei tuoi file.</translation>
 <translation id="7479104141328977413">Gestione schede</translation>
 <translation id="7481312909269577407">Avanti</translation>
-<translation id="7481864133709957613">Per cercare da questa pagina, tocca e tieni premute le parole anziché toccarle</translation>
 <translation id="7482656565088326534">Scheda di anteprima</translation>
 <translation id="7484997419527351112">Discover - Disattivato</translation>
 <translation id="7485033510383818941">Per aggiornare i contenuti del feed, trascina verso il basso la pagina</translation>

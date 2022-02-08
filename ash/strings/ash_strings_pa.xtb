@@ -112,6 +112,7 @@
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1570871743947603115">ਬਲੂਟੁੱਥ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ਇਸ ਸ਼ੈਸ਼ਨ ਦੀ ਆਪਣੀ ਸਾਰੀ ਸਰਗਰਮੀ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
+<translation id="1610778689852195798">"ਅਣਕੀਤਾ ਕਰੋ"</translation>
 <translation id="1611993646327628135">ਚਾਲੂ ਹੈ</translation>
 <translation id="1632985212731562677">ਸਵਿੱਚ ਪਹੁੰਚ ਨੂੰ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਬੰਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸ</translation>
@@ -145,6 +146,7 @@
 <translation id="1836215606488044471">Assistant ਨੂੰ (ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...)</translation>
 <translation id="1838895407229022812">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਬੰਦ ਹੈ।</translation>
 <translation id="1864454756846565995">USB-C ਡੀਵਾਈਸ (ਪਿਛਲਾ ਪੋਰਟ)</translation>
+<translation id="1879018240766558464">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1882814835921407042">ਕੋਈ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ਲਈ ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="1885785240814121742">ਫਿੰਗਰਪ੍ਰਿੰਟ ਨਾਲ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -245,6 +247,7 @@
 <translation id="2596078834055697711">ਵਿੰਡੋ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
 <translation id="2607678425161541573">ਆਨਲਾਈਨ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="2621713457727696555">ਸੁਰੱਖਿਅਤ</translation>
+<translation id="263399434338050016">"ਸਭ ਚੁਣੋ"</translation>
 <translation id="2653019840645008922">ਵਿੰਡੋ ਕੈਪਚਰ</translation>
 <translation id="2653659639078652383">ਪ੍ਰਸਤੁਤ ਕਰੋ</translation>
 <translation id="2658778018866295321">ਕਲਿੱਕ ਕਰਕੇ ਘਸੀਟੋ</translation>
@@ -261,6 +264,7 @@
 <translation id="2727175239389218057">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="2727977024730340865">ਇੱਕ ਘੱਟ-ਪਾਵਰ ਦੇ ਚਾਰਜਰ ਨਾਲ ਪਲੱਗ-ਇਨ ਕੀਤਾ ਗਿਆ। ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦੀ।</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">"ਮਿਟਾਓ"</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ਡੋਮੇਨ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="2782591952652094792">ਕੈਪਚਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
@@ -304,6 +308,7 @@
 <translation id="3038571455154067151">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ, ਆਪਣਾ Family Link ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3039939407102840004">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਪ੍ਰਤੀਸ਼ਤ ਹੈ।</translation>
 <translation id="3045488863354895414">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
+<translation id="3047761520276763270">ਇਹ ਕਹਿ ਕੇ ਦੇਖੋ:</translation>
 <translation id="3051189971848907985">ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="3055162170959710888">ਤੁਸੀਂ ਅੱਜ ਇਸ ਡੀਵਾਈਸ ਨੂੰ <ph name="USED_TIME" /> ਤੱਕ ਵਰਤਿਆ</translation>
 <translation id="3068711042108640621">ਸ਼ੈਲਫ਼ ਖੱਬੇ ਪਾਸੇ</translation>
@@ -551,6 +556,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="4570957409596482333">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਬਟਨ</translation>
+<translation id="4573176682887762361">"ਕਿਸਮ [ਸ਼ਬਦ / ਵਾਕਾਂਸ਼]"</translation>
 <translation id="4577274620589681794">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ਪੂਰਵ-ਝਲਕਾਂ ਦਿਖਾਓ</translation>
 <translation id="4578196883126898996">ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬੰਦ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬਟਨ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
@@ -632,6 +638,7 @@
 <translation id="5117590920725113268">ਅਗਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5147567197700016471">Chromebook ਅਣਲਾਕ ਹੋ ਗਈ</translation>
+<translation id="5150070631291639005">ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5155897006997040331">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਗਤੀ</translation>
 <translation id="5166007464919321363">ਡੈਸਕ ਨੂੰ ਟੈਮਪਲੇਟ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5168181903108465623">ਕਾਸਟ ਡਿਵਾਈਸਾਂ ਉਪਲਬਧ</translation>
@@ -654,6 +661,7 @@
 <translation id="5286194356314741248">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5297423144044956168">ਕੋਈ ਮੋਬਾਈਲ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="5297704307811127955">ਬੰਦ</translation>
+<translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5302048478445481009">ਭਾਸ਼ਾ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5313326810920013265">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
@@ -948,6 +956,7 @@
 <translation id="7366890467478514168"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7371404428569700291">ਰਿਕਾਰਡ ਵਿੰਡੋ</translation>
 <translation id="7377169924702866686">Caps Lock ਚਾਲੂ ਹੈ।</translation>
+<translation id="7377481913241237033">ਕੋਡ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7378203170292176219">ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕਿਸੇ ਖੇਤਰ ਨੂੰ ਚੁਣਨ ਵਾਸਤੇ ਘਸੀਟੋ</translation>
 <translation id="7378594059915113390">ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
 <translation id="7378889811480108604">ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਬੰਦ ਹੈ</translation>
@@ -975,6 +984,7 @@
 <translation id="7514365320538308">ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux ਐਪਾਂ ਅਤੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7544300628205093162">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਚਾਲੂ ਹੈ</translation>
 <translation id="7548434653388805669">ਸੌਣ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="7551643184018910560">ਸ਼ੈਲਫ ਤੇ ਪਿਨ ਕਰੋ</translation>
@@ -1166,6 +1176,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">ਫੋਲਡਰ <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">"ਮਦਦ"</translation>
 <translation id="8814190375133053267">ਵਾਈ-ਫਾਈ</translation>
 <translation id="881757059229893486">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8818320199597151042">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>

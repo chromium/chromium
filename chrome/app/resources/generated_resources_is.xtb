@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vill endurstilla Chrome stillingarnar þínar í upprunaleg gildi. Þetta endurstillir upphafssíðuna, síðu nýrra flipa og leitarvélina, gerir viðbætur óvirkar og fjarlægir alla festa flipa. Þetta hreinsar líka skammtímagögn á borð við fótspor, innihald og vefsvæðagögn.</translation>
 <translation id="1084096383128641877">Reikningnum þínum á <ph name="DOMAIN" /> verður ekki eytt þó að þetta aðgangsorð verði fjarlægt. Breyttu aðgangsorðinu eða eyddu reikningnum þínum á <ph name="DOMAIN_LINK" /> til að halda honum öruggum fyrir öðrum.</translation>
 <translation id="1084824384139382525">Afrita slóð t&amp;engils</translation>
-<translation id="1085064499066015002">Alltaf á öllum vefsvæðum</translation>
 <translation id="1085697365578766383">Villa við að ræsa sýndarvél. Reyndu aftur.</translation>
 <translation id="1087965115100412394">Ekki leyfa vefsvæðum að tengjast MIDI-tækjum</translation>
 <translation id="1088654056000736875">Chrome er að fjarlægja skaðlegan hugbúnað úr tölvunni...</translation>
@@ -342,6 +341,7 @@
 <translation id="1340527397989195812">Afrita efni tækisins með forritinu Skrár.</translation>
 <translation id="1341988552785875222">„<ph name="APP_NAME" />“ valdi núverandi veggfóður. Þú gætir þurft að fjarlægja „<ph name="APP_NAME" />“ áður en nýtt veggfóður er valið.</translation>
 <translation id="1343865611738742294">Veita Linux-forritum heimild til að opna USB-tæki. Linux man ekki eftir USB-tæki þegar það hefur verið fjarlægt.</translation>
+<translation id="1343920184519992513">Haltu áfram þar sem frá var horfið og opnaðu ákveðinn hóp síðna</translation>
 <translation id="1346630054604077329">Staðfesta og endurræsa</translation>
 <translation id="1347256498747320987">Setja upp uppfærslur og forrit. Með því að halda áfram samþykkirðu að þetta tæki geti einnig sjálfkrafa sótt og sett upp uppfærslur og forrit frá Google, símafyrirtækinu þínu og framleiðanda tækisins, mögulega með því að nota farsímagögn. Einhver þessara forrita kunna að bjóða upp á innkaup í forriti. <ph name="BEGIN_LINK1" />Frekari upplýsingar<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-geymslurými</translation>
@@ -1957,6 +1957,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2915873080513663243">Sjálfvirk skönnun</translation>
 <translation id="2916073183900451334">Ef ýtt er á dálkalykilinn á vefsíðu auðkennast tenglar sem og eyðublaðsreitir.</translation>
 <translation id="2916745397441987255">Leita í viðbótum</translation>
+<translation id="2918484639460781603">Opna stillingar</translation>
 <translation id="2918484644467055090">Ekki er hægt að skrá þetta tæki á fyrirtækið sem reikningurinn þinn tilheyrir vegna þess að tækið lýtur stjórn annars fyrirtækis.</translation>
 <translation id="2920852127376356161">Mega ekki sjá um samskiptareglur</translation>
 <translation id="2921081876747860777">Búðu til aðgangsorð til að vernda staðbundin gögn.</translation>
@@ -2841,7 +2842,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="383891835335927981">Aðdráttur hefur ekki verið aukinn eða minnkaður á neinum vefsvæðum</translation>
 <translation id="3839509547554145593">Kveikja á flettihröðun músar</translation>
 <translation id="3839516600093027468">Koma alltaf í veg fyrir að <ph name="HOST" /> sjái klippiborðið</translation>
-<translation id="3839526976593488376">Sérsníða fyrir hvert vefsvæði fyrir sig</translation>
 <translation id="3841964634449506551">Rangt aðgangsorð</translation>
 <translation id="3842552989725514455">Serif-letur</translation>
 <translation id="3843464315703645664">Innri hvítur listi</translation>
@@ -5398,6 +5398,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="654871471440386944">Viltu kveikja á skoðun með textabendli?</translation>
 <translation id="6549038875972762904">Keyra aftur uppsetningu</translation>
 <translation id="6550675742724504774">Valkostir</translation>
+<translation id="65513682072153627">Þegar stilling eða eiginleiki er í umsjón stjórnanda sérðu þetta stjórnunartákn.</translation>
 <translation id="6551508934388063976">Skipun óaðgengileg. Ýttu á Ctrl+N til að opna nýjan glugga.</translation>
 <translation id="6551612971599078809">Vefsvæðið notar USB</translation>
 <translation id="6551739526055143276">Í umsjón Family Link</translation>
@@ -6168,6 +6169,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7376553024552204454">Auðkenna músarbendilinn þegar hann hreyfist</translation>
 <translation id="737728204345822099">Færsla um heimsókn þína á þetta vefsvæði verður mögulega vistuð á öryggislyklinum þínum.</translation>
 <translation id="7377451353532943397">Halda áfram að loka á aðgang að skynjurum</translation>
+<translation id="7377481913241237033">Tengjast með kóða</translation>
 <translation id="7378611153938412599">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Passaðu að búa til traust aðgangsorð. <ph name="BEGIN_LINK" />Sjá fleiri öryggisábendingar.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Opna vefverslun Chrome</translation>
 <translation id="7380622428988553498">Heiti tækis inniheldur ógilda stafi</translation>
@@ -7826,6 +7828,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9040661932550800571">Uppfæra aðgangsorð fyrir <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Stjórnandi hefur lokað fyrir aðgang að staðbundnum skrám tölvunnar</translation>
 <translation id="904224458472510106">Ekki er hægt að afturkalla þessa aðgerð</translation>
+<translation id="9042893549633094279">Persónuvernd og öryggi</translation>
 <translation id="904451693890288097">Sláðu inn aðgangslykil fyrir „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9044646465488564462">Mistókst að tengjast netinu: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Leslistinn þinn var færður yfir í nýja hliðargluggann. Prófaðu hann hér.</translation>

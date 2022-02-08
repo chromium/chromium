@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
-<translation id="1843805151597803366">Pour obtenir de meilleures traductions, autorisez la recherche Google à accéder au contenu de la page actuelle</translation>
 <translation id="1868024384445905608">Chrome permet désormais de télécharger des fichiers plus vite</translation>
 <translation id="1877026089748256423">Version de Chrome obsolète</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
@@ -227,7 +226,6 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2328985652426384049">Impossible de se connecter</translation>
 <translation id="2342601525305963189">Astuces Chrome :</translation>
 <translation id="234265804618409743">Impossible d'ouvrir l'appareil photo. Un problème est survenu.</translation>
-<translation id="2345671828921229300">Pour faire une recherche, appuyez de manière prolongée sur un mot</translation>
 <translation id="2349710944427398404">Espace de stockage utilisé pour l'ensemble des données Chrome, y compris les comptes, favoris et paramètres enregistrés</translation>
 <translation id="2353636109065292463">Vérifier votre connexion Internet</translation>
 <translation id="235789365079050412">Règles de confidentialité de Google</translation>
@@ -301,7 +299,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Améliorez l'expérience vocale</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Appuyez sur un mot pour lancer une recherche instantanée ou afficher les actions associées</translation>
 <translation id="2760989362628427051">Activer le thème sombre lorsque le thème sombre ou l'économiseur de batterie de votre appareil est activé</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="276969039800130567">Connecté en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3341262203274374114">Impossible de vous désabonner en raison d'une erreur.</translation>
 <translation id="3359667936385849800">Utiliser votre fournisseur de services actuel</translation>
 <translation id="3367813778245106622">Connectez-vous de nouveau à votre compte pour démarrer la synchronisation.</translation>
-<translation id="337236281855091893">Pour effectuer une recherche, appuyez de manière prolongée sur un mot</translation>
 <translation id="3373979091428520308">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres Chrome de ce second appareil</translation>
 <translation id="3374023511497244703">Vos favoris, votre historique, vos mots de passe et d'autres données Chrome ne seront plus synchronisés avec votre compte Google</translation>
 <translation id="3384347053049321195">Partager l'image</translation>
@@ -431,7 +427,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
 <translation id="3435465986463792564">Vous pouvez gérer toutes vos fenêtres depuis ce menu</translation>
-<translation id="3440975416244667276">Appuyez de manière prolongée pour plus d'informations</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
 <translation id="3444179773590444986">Envoyer des commentaires sur le thème sombre pour les sites ?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 téléchargement planifié}one{# téléchargement planifié}other{# téléchargements planifiés}}</translation>
@@ -518,7 +513,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3976396876660209797">Supprimez et recréez ce raccourci</translation>
 <translation id="3985215325736559418">Voulez-vous télécharger <ph name="FILE_NAME" /> de nouveau ?</translation>
 <translation id="3987993985790029246">Copier lien</translation>
-<translation id="3988466920954086464">Consultez les résultats de la recherche instantanée dans ce panneau</translation>
 <translation id="4000212216660919741">Mode hors connexion</translation>
 <translation id="4016425174436051808">Impossible de vous abonner en raison d'une erreur.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
@@ -1137,7 +1131,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7475688122056506577">Carte SD introuvable. Certains de vos fichiers risquent d'être manquants.</translation>
 <translation id="7479104141328977413">Gestion des onglets</translation>
 <translation id="7481312909269577407">Avancer</translation>
-<translation id="7481864133709957613">Pour lancer une recherche, appuyez sur des mots de manière prolongée</translation>
 <translation id="7482656565088326534">Onglet ''Aperçu''</translation>
 <translation id="7484997419527351112">Discover - désactivé</translation>
 <translation id="7485033510383818941">Pour actualiser le contenu du flux, déroulez la page</translation>

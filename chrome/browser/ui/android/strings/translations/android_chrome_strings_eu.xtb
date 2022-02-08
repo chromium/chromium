@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Ez da amaitu hasierako sinkronizazioa konfiguratzen</translation>
 <translation id="1829244130665387512">Bilatu orrian</translation>
 <translation id="1832459821645506983">Ados</translation>
-<translation id="1843805151597803366">Itzulpen hobeak lortzeko, eman oraingo orria erabiltzeko baimena Google Bilaketa zerbitzuari</translation>
 <translation id="1868024384445905608">Chrome-k orain bizkorrago deskargatzen ditu fitxategiak</translation>
 <translation id="1877026089748256423">Chrome zaharkituta dago</translation>
 <translation id="1883903952484604915">Nire fitxategiak</translation>
@@ -227,7 +226,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2328985652426384049">Ezin da hasi saioa</translation>
 <translation id="2342601525305963189">Chrome-ri buruzko aholkuak:</translation>
 <translation id="234265804618409743">Ezin da ireki kamera. Arazo bat izan da.</translation>
-<translation id="2345671828921229300">Bilatzeko, eduki hitz bat sakatuta</translation>
 <translation id="2349710944427398404">Chrome-k erabilitako datuak, guztira; hala nola kontuak, laster-markak eta gordetako ezarpenak.</translation>
 <translation id="2353636109065292463">Internetera konektatuta zaudela egiaztatzea</translation>
 <translation id="235789365079050412">Google-ren Pribatutasun-gidalerroak</translation>
@@ -301,7 +299,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2723001399770238859">audioa</translation>
 <translation id="2732063072010454421">Lortu ahots-esperientzia hobea</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Sakatu hitz bat bilaketa egiteko edo lotutako ekintzak ikusteko</translation>
 <translation id="2760989362628427051">Aktibatu gai iluna gailuaren gai iluna edo bateria-aurrezlea aktibatuta dagoenean</translation>
 <translation id="2762000892062317888">oraintxe</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> gisa dauka saioa hasita.</translation>
@@ -417,7 +414,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazo bat izan da.</translation>
 <translation id="3359667936385849800">Erabili oraingo zerbitzu-hornitzailea</translation>
 <translation id="3367813778245106622">Hasi saioa berriro sinkronizatzen hasteko</translation>
-<translation id="337236281855091893">Bilatzeko, hitz bat labur sakatu beharrean, eduki ezazu sakatuta tarte batez</translation>
 <translation id="3373979091428520308">Orri hau beste gailu batekin partekatzeko, joan Chrome-ren ezarpenetara eta aktibatu sinkronizazioa beste gailuan</translation>
 <translation id="3374023511497244703">Laster-markak, historia, pasahitzak eta Chrome-ko gainerako datuak ez dira sinkronizatuko Google-ko kontuarekin aurrerantzean.</translation>
 <translation id="3384347053049321195">Partekatu irudia</translation>
@@ -431,7 +427,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3429160811076349561">Probako eginbideak desaktibatuta daude</translation>
 <translation id="3435465986463792564">Leiho ugari dituzu? Hemendik kudea ditzakezu</translation>
-<translation id="3440975416244667276">Informazio esanguratsu gehiago ikusteko, eduki hitzak sakatuta</translation>
 <translation id="3443221991560634068">Kargatu berriro oraingo orria</translation>
 <translation id="3444179773590444986">Webguneetarako gai ilunari buruzko iritzia partekatu nahi duzu?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 deskarga programatu}other{# deskarga programatu}}</translation>
@@ -518,7 +513,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3976396876660209797">Kendu eta sortu berriro lasterbide hau</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> berriro deskargatu nahi duzu?</translation>
 <translation id="3987993985790029246">Kopiatu esteka</translation>
-<translation id="3988466920954086464">Ikusi istanteko bilaketaren emaitzak panel honetan</translation>
 <translation id="4000212216660919741">Etxea konexiorik gabeko moduan dago</translation>
 <translation id="4016425174436051808">Ezin zaio jarraitu. Arazo bat izan da.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ordu}other{# ordu}}</translation>
@@ -1137,7 +1131,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7475688122056506577">Ez da aurkitu SD txartela. Baliteke fitxategi batzuk falta izatea.</translation>
 <translation id="7479104141328977413">Fitxen kudeaketa</translation>
 <translation id="7481312909269577407">Aurrera</translation>
-<translation id="7481864133709957613">Orri honetako gauzak bilatzeko, hitzak labur sakatu beharrean, eduki itzazu sakatuta</translation>
 <translation id="7482656565088326534">Aurrebista-fitxa</translation>
 <translation id="7484997419527351112">Discover: desaktibatuta</translation>
 <translation id="7485033510383818941">Jarioko edukia freskatzeko, tiratu behera orriari</translation>

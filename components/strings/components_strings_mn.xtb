@@ -424,6 +424,7 @@
 <translation id="22081806969704220">Гарах цаасны тавиур 3</translation>
 <translation id="2212735316055980242">Тохиргоо олдсонгүй</translation>
 <translation id="2213606439339815911">Оролтыг оруулж байна...</translation>
+<translation id="2213612003795704869">Хуудсыг хэвлэсэн</translation>
 <translation id="2215727959747642672">Файл засах</translation>
 <translation id="2218879909401188352"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-н халдагчид таны төхөөрөмжийг гэмтээж болзошгүй аюултай апп суулгах, таны мобайл тооцоонд нэмэлт төлбөр гаргах, таны хувийн мэдээллийг хулгайлах боломжтой. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
@@ -963,6 +964,7 @@
 <translation id="3990250421422698716">Шилжүүлэн байрлуулах оффсет</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> сайт үндсэн удирдамжийг
     бүх хүсэлтдээ хэрэгжүүлэх хүсэлт тавьсан хэдий ч энэ удирдамжийг одоогоор хэрэгжүүлэх боломжгүй байна.</translation>
+<translation id="4009243425692662128">Таы хэвлэх хуудасны контентыг задлан шинжлүүлэхээр Google Cloud эсвэл гуравдагч тал руу илгээнэ. Жишээ нь үүнд эмзэг өгөгдөл байгаа эсэхийг скан хийж болзошгүй.</translation>
 <translation id="4010758435855888356">Хадгалах санд хандахыг зөвшөөрөх үү?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} хуудастай PDF форматтай документ}other{{COUNT} хуудастай PDF форматтай документ}}</translation>
 <translation id="4023431997072828269">Энэ маягтыг аюулгүй байдлыг хангаагүй холболт ашиглан илгээж байгаа тул таны мэдээлэл бусдад харагдана.</translation>
@@ -1057,6 +1059,7 @@
 <translation id="4250680216510889253">Үгүй</translation>
 <translation id="4253168017788158739">Тайлбар</translation>
 <translation id="425582637250725228">Таны хийсэн өөрчлөлтийг хадгалаагүй байж болзошгүй.</translation>
+<translation id="425869179292622354">Үүнийг виртуал картаар илүү аюулгүй болгох уу?</translation>
 <translation id="4258748452823770588">Хангалтгүй гарын үсэг</translation>
 <translation id="4261046003697461417">Хамгаалагдсан документ дээр тэмдэглэгээ хийх боломжгүй</translation>
 <translation id="4265872034478892965">Таны администратор зөвшөөрсөн</translation>
@@ -1567,6 +1570,7 @@
 <translation id="5921639886840618607">Картыг Google Account-д хадгалах уу?</translation>
 <translation id="5922853866070715753">Бараг дууслаа</translation>
 <translation id="5932224571077948991">Сайт төвөгтэй эсвэл хуурамч зар харуулдаг</translation>
+<translation id="5938153366081463283">Виртуал карт нэмнэ үү</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" />-г нээж байна…</translation>
 <translation id="5951495562196540101">Хэрэглэгчийн бүртгэлээр бүртгүүлэх боломжгүй (багцалсан лиценз боломжтой).</translation>
@@ -2190,6 +2194,7 @@
 <translation id="7976214039405368314">Хэт олон хүсэлт</translation>
 <translation id="7977538094055660992">Гаралтын төхөөрөмж</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Дараахад холбосон</translation>
 <translation id="798134797138789862">Виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашиглахыг хүсэх боломжтой</translation>
 <translation id="7984945080620862648">Та энэхүү <ph name="SITE" />-д хандах боломжгүй байна. Учир нь вебсайт эмх замбараагүй мэдээлэл илгээсэн тул Chrome энэ мэдээллийг боловсруулах боломжгүй байна. Сүлжээний алдаа болон халдлага нь ихэвчлэн түр зуурынх байдаг бөгөөд энэ хуудас хэсэг хугацааны дараа ажиллаж болох юм.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

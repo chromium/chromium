@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wil jou Chrome-instellings na hul oorspronklike verstekwaardes herstel. Dit sal jou tuisblad, nuwe oortjie-bladsy en soekenjin terugstel, jou uitbreidings deaktiveer en alle oortjies ontspeld. Dit sal ook alle tydelike en gekaste data soos koekies, inhoud en werfdata uitvee.</translation>
 <translation id="1084096383128641877">As hierdie wagwoord verwyder word, sal dit nie jou rekening op <ph name="DOMAIN" /> uitvee nie. Verander jou wagwoord of vee jou rekening op <ph name="DOMAIN_LINK" /> uit om dit veilig te hou van ander mense.</translation>
 <translation id="1084824384139382525">Kopieer skakeladres</translation>
-<translation id="1085064499066015002">Altyd op alle werwe</translation>
 <translation id="1085697365578766383">Kon nie die virtuele masjien begin nie. Probeer asseblief weer.</translation>
 <translation id="1087965115100412394">Moenie werwe toelaat om aan MIDI-toestelle te koppel nie</translation>
 <translation id="1088654056000736875">Chrome verwyder tans skadelike sagteware van jou toestel …</translation>
@@ -703,6 +702,7 @@
 <translation id="1692118695553449118">Sinkronisering is aan</translation>
 <translation id="1692210323591458290">Donkerpers</translation>
 <translation id="1695487653372841667">Jy kan beheer watter data met Google gedeel word. Jy kan dit enige tyd in Instellings verander.</translation>
+<translation id="1695510246756136088">Kan nie aan die internet koppel nie. Probeer weer.</translation>
 <translation id="169675691788639886">SSH-bediener is vir toestel opgestel. Moenie met sensitiewe rekeninge aanmeld nie.</translation>
 <translation id="1697150536837697295">Kuns</translation>
 <translation id="1697686431566694143">Wysig lêer</translation>
@@ -846,6 +846,7 @@
 <translation id="1819721979226826163">Tik op Programkennisgewings &gt; Google Play Dienste.</translation>
 <translation id="1820028137326691631">Voer wagwoord wat deur admin goedgekeur is, in</translation>
 <translation id="1822140782238030981">Reeds 'n Chrome-gebruiker? Meld aan</translation>
+<translation id="1823098433522728610">Hierdie dokument het sensitiewe inhoud.</translation>
 <translation id="18245044880483936">Rugsteundata sal nie deel vorm van jou kind se Drive-bergingkwota nie.</translation>
 <translation id="1825565032302550710">Poort moet tussen 1024 en 65535 wees</translation>
 <translation id="1826192255355608658">Sinkroniseer jou Chrome-blaaierboekmerke, -wagwoorde, -geskiedenis en meer</translation>
@@ -2515,6 +2516,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3511307672085573050">Kopieer skakeladres</translation>
 <translation id="351152300840026870">Vastebreedte-lettertipe</translation>
 <translation id="3511528412952710609">Kort</translation>
+<translation id="3514335087372914653">Speletjiebeheer</translation>
 <translation id="3514373592552233661">Voorkeurnetwerke sal verkies word bo ander bekende netwerke indien meer as een beskikbaar is</translation>
 <translation id="3515983984924808886">Raak weer jou sekuriteitsleutel om terugstelling te bevestig. Alle inligting wat op die sekuriteitsleutel geberg is, insluitend sy PIN, sal uitgevee word.</translation>
 <translation id="3518985090088779359">Aanvaar, gaan voort</translation>
@@ -2665,6 +2667,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3670229581627177274">Skakel Bluetooth aan</translation>
 <translation id="3672681487849735243">'n Fabriekfout is bespeur</translation>
 <translation id="3673097791729989571">Gasheer van aanmelding is <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673622964532248901">Jy het nie toestemming om nie na hierdie toestel uit te saai nie.</translation>
 <translation id="367645871420407123">laat leeg as jy die kernwagwoord op die verstektoetsprentwaarde wil stel</translation>
 <translation id="3677106374019847299">Voer gepasmaakte verskaffer in</translation>
 <translation id="3677911431265050325">Versoek mobiele werf</translation>
@@ -2843,7 +2846,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="383891835335927981">Geen werwe is in- of uitgezoem nie</translation>
 <translation id="3839509547554145593">Aktiveer muisrolleesversnelling</translation>
 <translation id="3839516600093027468">Blokkeer <ph name="HOST" /> altyd om die knipbord te sien</translation>
-<translation id="3839526976593488376">Pasmaak vir elke werf</translation>
 <translation id="3841964634449506551">Wagwoord is ongeldig</translation>
 <translation id="3842552989725514455">Serif-lettertipe</translation>
 <translation id="3843464315703645664">Intern toegelaat</translation>
@@ -3206,6 +3208,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="42126664696688958">Voer uit</translation>
 <translation id="42137655013211669">Toegang tot hierdie hulpbron is deur die bediener verbied.</translation>
 <translation id="4217571870635786043">Diktee</translation>
+<translation id="4218081191298393750">Klik die luidsprekerikoon om hierdie oortjie te demp</translation>
 <translation id="4219558185499589032">Boks</translation>
 <translation id="4220648711404560261">Kon nie aktiveer nie.</translation>
 <translation id="4225397296022057997">Op alle werwe</translation>
@@ -3367,6 +3370,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4400367121200150367">Werwe wat nooit wagwoorde stoor nie, sal hier verskyn</translation>
 <translation id="4400632832271803360">Hou die Lanseerder-sleutel in om te verander wat die boonste ry sleutels doen</translation>
 <translation id="4400963414856942668">Jy kan die ster klik om 'n oortjie te boekmerk</translation>
+<translation id="4401912261345737180">Koppel aan 'n kode om uit te saai</translation>
 <translation id="4402755511846832236">Keer dat werwe weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="4403266582403435904">Stel data enige tyd maklik terug of wissel toestelle. Rugsteune word na Google toe opgelaai en met jou kind se Google-rekeningwagwoord geënkripteer.</translation>
 <translation id="4403775189117163360">Kies 'n ander vouer</translation>
@@ -3918,6 +3922,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4972164225939028131">Verkeerde wagwoord</translation>
 <translation id="4972737347717125191">Werwe kan vra om virtuelerealiteittoestelle en -data te gebruik</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Demp werf}other{Demp werwe}}</translation>
+<translation id="497403230787583386">Sekuriteitkontroles is afgehandel. Jou dokument sal gedruk word.</translation>
 <translation id="4977942889532008999">Bevestig toegang</translation>
 <translation id="4980805016576257426">Hierdie uitbreiding bevat wanware.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Meld aan<ph name="END_LINK" /> om jou blaaierdata van al jou gesinkroniseerde toestelle en jou Google-rekening af uit te vee.</translation>
@@ -6503,6 +6508,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7691698019618282776">Crostini-opgradering</translation>
 <translation id="7696063401938172191">Op jou "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Besonderhede word versteek terwyl jy jou skerm deel</translation>
+<translation id="769824636077131955">Hierdie dokument is te groot vir 'n sekuriteitkontrole. Jy kan dokumente van tot 50 MB druk.</translation>
 <translation id="7698507637739331665">Sommige items is geblokkeer</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7701869757853594372">GEBRUIKER-handvatsel</translation>
@@ -7025,6 +7031,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8186609076106987817">Die bediener kon nie die lêer vind nie.</translation>
 <translation id="8186704951085064172">Deursoek 'n deel van die bladsy met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Gaan jou toestelinstellings na en skakel dit aan om voort te gaan</translation>
+<translation id="8188742492803591566">Voer die toegangskode in wat op die Chromecast of TV gewys word om na jou skerm te begin uitsaai</translation>
 <translation id="8189306097519446565">Skoolrekeninge</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8191230140820435481">Bestuur jou programme, uitbreidings en temas</translation>
@@ -7056,6 +7063,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8226619461731305576">Waglys</translation>
 <translation id="8226628635270268143">Kies jou gunstelingfoto's en -albums</translation>
 <translation id="8227119283605456246">Heg lêer aan</translation>
+<translation id="8228783756378591900">Kontroleer tans hierdie dokument met jou organisasie se sekuriteitbeleide …</translation>
 <translation id="8230134520748321204">Stoor wagwoord vir <ph name="ORIGIN" />?</translation>
 <translation id="8230446983261649357">Moenie werwe toelaat om prente te wys nie</translation>
 <translation id="8234795456569844941">Help asseblief ons ingenieurs om hierdie probleem op te los. Sê vir ons wat gebeur het net voordat jy die profielfoutboodskap gekry het:</translation>
@@ -7447,6 +7455,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8662978096466608964">Chrome kan nie muurpapier stel nie.</translation>
 <translation id="8663099077749055505">Blokkeer altyd veelvuldige outomatiese aflaaie op <ph name="HOST" /></translation>
 <translation id="8664389313780386848">Bekyk bladsybron</translation>
+<translation id="8665110742939124773">Jy het 'n verkeerde toegangskode ingevoer. Probeer weer.</translation>
 <translation id="8665180165765946056">Rugsteun is voltooi</translation>
 <translation id="866611985033792019">Vertrou hierdie sertifikaat om e-posgebruikers te identifiseer</translation>
 <translation id="8666584013686199826">Vra wanneer 'n werf toegang tot USB-toestelle wil verkry</translation>
@@ -7830,6 +7839,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9040661932550800571">Dateer wagwoord op vir <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Toegang tot plaaslike lêers op jou masjien is deur jou administrateur gedeaktiveer</translation>
 <translation id="904224458472510106">Hierdie handeling kan nie ontdoen word nie</translation>
+<translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
 <translation id="904451693890288097">Voer asseblief die wagfrase vir "<ph name="DEVICE_NAME" />" in:</translation>
 <translation id="9044646465488564462">Kon nie aan die netwerk koppel nie: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Jou leeslys het na die nuwe kantpaneel toe geskuif. Probeer dit hier.</translation>

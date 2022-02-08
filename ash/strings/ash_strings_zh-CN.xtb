@@ -109,6 +109,7 @@
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1570871743947603115">切换蓝牙设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
+<translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
@@ -142,6 +143,7 @@
 <translation id="1836215606488044471">智能助理（正在加载中…）</translation>
 <translation id="1838895407229022812">当前已关闭护眼模式。</translation>
 <translation id="1864454756846565995">USB-C 设备（背面端口）</translation>
+<translation id="1879018240766558464">目前不支持无痕式窗口。其他应用会被保存。</translation>
 <translation id="1882814835921407042">无移动网络</translation>
 <translation id="1882897271359938046">正在镜像到<ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">使用指纹解锁</translation>
@@ -242,6 +244,7 @@
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
 <translation id="2621713457727696555">受保护</translation>
+<translation id="263399434338050016">“全选”</translation>
 <translation id="2653019840645008922">窗口截取/录制</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
@@ -258,6 +261,7 @@
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
+<translation id="2750932254614666392">“删除”</translation>
 <translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">退出截屏/录屏模式</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
@@ -301,6 +305,7 @@
 <translation id="3038571455154067151">如需登录，请输入您的 Family Link 家长访问码</translation>
 <translation id="3039939407102840004">触控笔电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="3045488863354895414">下午好！</translation>
+<translation id="3047761520276763270">试着说：</translation>
 <translation id="3051189971848907985">正在重命名配置文件。请稍等几分钟。</translation>
 <translation id="3055162170959710888">您今天的设备使用时长：<ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">任务栏位于屏幕左侧</translation>
@@ -548,6 +553,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4570957409596482333">随选朗读按钮</translation>
+<translation id="4573176682887762361">“输入 [字词/短语]”</translation>
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
 <translation id="4578196883126898996">您设备的麦克风处于关闭状态。请使用相应按钮开启它。</translation>
@@ -628,6 +634,7 @@
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5147567197700016471">已解锁</translation>
+<translation id="5150070631291639005">隐私设置</translation>
 <translation id="5155897006997040331">朗读速度</translation>
 <translation id="5166007464919321363">将桌面另存为模板</translation>
 <translation id="5168181903108465623">有可用的投射设备</translation>
@@ -650,6 +657,7 @@
 <translation id="5286194356314741248">正在扫描</translation>
 <translation id="5297423144044956168">找不到任何移动设备</translation>
 <translation id="5297704307811127955">已关闭</translation>
+<translation id="5300589172476337783">显示</translation>
 <translation id="5302048478445481009">语言</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
@@ -944,6 +952,7 @@
 <translation id="7366890467478514168">连接“<ph name="NAME" />”</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
+<translation id="7377481913241237033">利用代码连接</translation>
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
 <translation id="7378594059915113390">媒体控件</translation>
 <translation id="7378889811480108604">省电模式已关闭</translation>
@@ -971,6 +980,7 @@
 <translation id="7514365320538308">下载</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">目前不支持 Linux 应用和无痕式窗口。其他应用会被保存。</translation>
 <translation id="7544300628205093162">键盘背光已开启</translation>
 <translation id="7548434653388805669">该睡觉了</translation>
 <translation id="7551643184018910560">固定到任务栏</translation>
@@ -1161,6 +1171,7 @@
 <translation id="8785070478575117577">连接到“<ph name="NETWORK_NAME" />”</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">文件夹“<ph name="FOLDER_NAME" />”</translation>
+<translation id="880709030178078220">“帮助”</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">输入法设置</translation>
 <translation id="8818320199597151042">正在移除配置文件。请稍等几分钟。</translation>

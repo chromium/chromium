@@ -85,7 +85,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="1650222530560417226">Dodirnite gumb "Pokreni bilježenje" za prikupljanje budućih zapisnika konzole JavaScript i pogrešaka sa svih kartica. Zapisnici će se prikupljati (i pohranjivati samo u memoriju) dok se ne zatvori ova stranica ili dodirne "Prekini bilježenje".</translation>
-<translation id="1654232554734641711">Dopušten je pristup mikrofonu</translation>
+<translation id="1654232554734641711">Pristup mikrofonu je dozvoljen</translation>
 <translation id="1657011748321897393">Dijeljenje nije uspjelo jer niste povezani na mrežu.</translation>
 <translation id="1657641691196698092">Blokirani kolačići</translation>
 <translation id="165877110639533037">Nema otvorenih kartica</translation>
@@ -349,6 +349,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4237377247299956313">Dodirnite <ph name="BEGIN_BOLD" />Zadana aplikacija preglednika<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Unesite pristupni izraz</translation>
+<translation id="4249955472157341256">Poredaj po najnovijem</translation>
 <translation id="4263576668337963058">Prikaži dostupne radnje za stranicu</translation>
 <translation id="4267380167363222949">Sljedeća kartica</translation>
 <translation id="4272631900155121838">Omogućite kameru u postavkama da skenirate QR kôd</translation>
@@ -397,7 +398,7 @@ Vaši podaci su šifrirani sinhroniziranim pristupnim izrazom. Unesite da započ
 <translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
 <translation id="470966556546083668">Nemojte uključiti sinhronizaciju</translation>
-<translation id="4731472194328757163">Dopušten je pristup kameri i mikrofonu</translation>
+<translation id="4731472194328757163">Pristup kameri i mikrofonu je dozvoljen</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Šifriranje pristupnim izrazom ne obuhvata načine plaćanja i adrese iz Google Paya. Vaše šifrirane podatke može čitati samo osoba koja posjeduje vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga Google pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, morate poništiti sinhronizaciju <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova anonimna kartica</translation>
@@ -506,6 +507,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="575902488528307720">Pretražite sliku</translation>
 <translation id="5781453543752460388">Dodaj u Fotografije</translation>
 <translation id="5782227691023083829">Prevođenje...</translation>
+<translation id="5791632441210678828">Gumb za razvrstavanje za feed Praćeno</translation>
 <translation id="5802829331520313983">Postavljanje…</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti novu karticu?</translation>
 <translation id="5804241973901381774">Odobrenja</translation>
@@ -549,7 +551,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6059830886158432458">Upravljajte pričama i aktivnostima ovdje</translation>
 <translation id="6064824697233747382">Vaša organizacija zahtijeva da isključite sinhronizaciju.</translation>
 <translation id="6066301408025741299">Dodirnite da otkažete.</translation>
-<translation id="6077126322656614846">Dopušten je pristup kameri</translation>
+<translation id="6077126322656614846">Pristup kameri je dozvoljen</translation>
 <translation id="60829778314739003">Prihvati i nastavi</translation>
 <translation id="6084848228346514841">Odaberite kartice</translation>
 <translation id="6103540626693881831">Šifriranje na uređaju</translation>
@@ -621,6 +623,7 @@ Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="6561262006871132942">Uvećaj</translation>
 <translation id="6583087784430677195">Da isključite, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" /> i idite u Automatsko popunjavanje lozinki.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
+<translation id="6598875554591387303">Poredaj po izdavaču</translation>
 <translation id="6603393121510733479">Vaša organizacija je isključila privatno pregledavanje.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcije za prevođenje</translation>

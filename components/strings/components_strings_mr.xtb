@@ -424,6 +424,7 @@
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2212735316055980242">धोरण आढळले नाही</translation>
 <translation id="2213606439339815911">एंट्री आणत आहे...</translation>
+<translation id="2213612003795704869">पेज प्रिंट केले आहे</translation>
 <translation id="2215727959747642672">फाइलचे संपादन</translation>
 <translation id="2218879909401188352">सध्या <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />वर असलेले आक्रमणकर्ता तुमच्या डिव्हाइसला हानी पोहोचवणारे धोकादायक ॲप इंस्टॉल करू शकतात, तुमच्या मोबाइल बिलामध्ये लपलेले शुल्क जोडू शकतात किंवा तुमची वैयक्तिक माहिती चोरू शकतात. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">इंटरनेट नाही</translation>
@@ -961,6 +962,7 @@
 <translation id="3990250421422698716">जॉग ऑफसेट</translation>
 <translation id="3996311196211510766">साइटने <ph name="ORIGIN" /> विनंती केली आहे की, मूळ धोरण
     त्याच्या सर्व विनंत्यांवर लागू होईल पण हे धोरण सध्या लागू केले जाऊ शकत नाही.</translation>
+<translation id="4009243425692662128">तुम्ही प्रिंट करता त्या पेजचा आशय विश्लेषणासाठी Google क्लाउड किंवा तृतीय पक्षांना पाठवला जातो. उदाहरणार्थ, तो संवेदनशील डेटासाठी स्कॅन केला जाऊ शकतो.</translation>
 <translation id="4010758435855888356">स्टोरेज अ‍ॅक्सेस करण्याची अनुमती द्यायची का?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF दस्तऐवजामध्ये {COUNT} पेज आहे}other{PDF दस्तऐवजामध्ये {COUNT} पेज आहेत}}</translation>
 <translation id="4023431997072828269">हा फॉर्म सुरक्षित नसलेले कनेक्शन वापरून सबमिट केल्यामुळे, तुमची माहिती इतरांना दिसू शकते.</translation>
@@ -1055,6 +1057,7 @@
 <translation id="4250680216510889253">नाही</translation>
 <translation id="4253168017788158739">टीप</translation>
 <translation id="425582637250725228">तुम्ही केलेले बदल कदाचित सेव्ह केले जाणार नाहीत.</translation>
+<translation id="425869179292622354">व्हर्च्युअल कार्डसह ते आणखी सुरक्षित करायचे आहे का?</translation>
 <translation id="4258748452823770588">खराब स्वाक्षरी</translation>
 <translation id="4261046003697461417">संरक्षित दस्तऐवजमध्ये भाष्य केले जाऊ शकत नाही</translation>
 <translation id="4265872034478892965">तुमच्या ॲडमिनिस्ट्रेटरकडून परवानगी असलेले</translation>
@@ -1565,6 +1568,7 @@
 <translation id="5921639886840618607">Google खात्यात कार्ड सेव्ह करायचे?</translation>
 <translation id="5922853866070715753">जवळजवळ पूर्ण झाले</translation>
 <translation id="5932224571077948991">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते</translation>
+<translation id="5938153366081463283">व्हर्च्युअल कार्ड जोडा</translation>
 <translation id="5938793338444039872">ट्रॉय</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> उघडत आहे…</translation>
 <translation id="5951495562196540101">उपभोक्ता खात्याने नोंदणी करू शकत नाही (पॅकेज केलेला परवाना उपलब्ध).</translation>
@@ -2190,6 +2194,7 @@
 <translation id="7976214039405368314">खूप जास्त विनंत्या</translation>
 <translation id="7977538094055660992">आउटपुट डिव्हाइस</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">यासह लिंक केलेले</translation>
 <translation id="798134797138789862">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्याची विनंती करू शकते</translation>
 <translation id="7984945080620862648">Chrome प्रक्रिया करू शकत नसलेले न समजणारे क्रेडेन्शियल वेबसाइटने पाठविल्यामुळे तुम्ही आत्ता <ph name="SITE" /> ला भेट देऊ शकत नाही. नेटवर्क एरर आणि आक्रमणकर्ते सामान्यतः तात्पुरते असतात, यामुळे हे पृष्ठ कदाचित नंतर कार्य करेल.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

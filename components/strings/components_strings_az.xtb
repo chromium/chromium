@@ -424,6 +424,7 @@
 <translation id="22081806969704220">Qab 3</translation>
 <translation id="2212735316055980242">Siyasət tapılmadı</translation>
 <translation id="2213606439339815911">Daxil etmələr əldə edilir...</translation>
+<translation id="2213612003795704869">Səhifə çap olunub</translation>
 <translation id="2215727959747642672">Fayl redaktəsi</translation>
 <translation id="2218879909401188352">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular cihazı zədələyən təhlükəli tətbiqlər quraşdıra, mobil fakturaya gizli ödəniş əlavə edə və ya şəxsi məlumatı oğurlaya bilərlər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
@@ -958,6 +959,7 @@
 <translation id="3990250421422698716">Kənarını bükün</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> saytı ona yönləndirilən
     bütün sorğulara mənbə siyasətin tətbiq edilməsini tələb edib, lakin bu siyasət hazırda tətbiq edilə bilmir.</translation>
+<translation id="4009243425692662128">Çap etdiyiniz səhifələrin məzmunu təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas dataya görə skanlana bilər.</translation>
 <translation id="4010758435855888356">Yaddaşa giriş icazəsi verilsin?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} səhifədən ibarət PDF sənədi}other{{COUNT} səhifədən ibarət PDF sənədi}}</translation>
 <translation id="4023431997072828269">Bu forma təhlükəsiz olmayan bağlantıdan istifadə etməklə təqdim edildiyinə görə məlumatlarınız digərləri tərəfindən görüləcək.</translation>

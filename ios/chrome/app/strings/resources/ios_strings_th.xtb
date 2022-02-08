@@ -349,6 +349,7 @@
 <translation id="4181841719683918333">ภาษา</translation>
 <translation id="4237377247299956313">แตะ<ph name="BEGIN_BOLD" />แอปเบราว์เซอร์เริ่มต้น<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">ป้อนรหัสผ่าน</translation>
+<translation id="4249955472157341256">จัดเรียงตามล่าสุด</translation>
 <translation id="4263576668337963058">แสดงการทำงานของหน้าเว็บที่ใช้ได้</translation>
 <translation id="4267380167363222949">แท็บถัดไป</translation>
 <translation id="4272631900155121838">หากต้องการสแกนโค้ด QR ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
@@ -506,6 +507,7 @@
 <translation id="575902488528307720">ค้นหารูปภาพ</translation>
 <translation id="5781453543752460388">เพิ่มในไฟล์รูปภาพ</translation>
 <translation id="5782227691023083829">กำลังแปล...</translation>
+<translation id="5791632441210678828">ปุ่มจัดเรียงสำหรับฟีดที่กำลังติดตาม</translation>
 <translation id="5802829331520313983">ตั้งค่า…</translation>
 <translation id="5803566855766646066">คุณแน่ใจไหมว่าต้องการทิ้งบัตรใบใหม่นี้</translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
@@ -621,6 +623,7 @@
 <translation id="6561262006871132942">ซูมเข้า</translation>
 <translation id="6583087784430677195">หากต้องการปิด ให้เปิด<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />แล้วไปที่ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
 <translation id="6585618849026997638">กลับไปที่หน้าที่สำคัญกับคุณได้โดยการเพิ่มบุ๊กมาร์ก</translation>
+<translation id="6598875554591387303">จัดเรียงตามผู้เผยแพร่เนื้อหา</translation>
 <translation id="6603393121510733479">องค์กรปิดการเรียกดูแบบส่วนตัวไว้
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">ตัวเลือกการแปลภาษา</translation>

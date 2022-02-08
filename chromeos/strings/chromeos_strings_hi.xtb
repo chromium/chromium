@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">आंतरिक गड़बड़ी</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">बाहरी डिवाइसों के लिए फ़र्मवेयर को अपडेट करने वाली विंडो खुली है. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध हैं.</translation>
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="1175951029573070619">सिग्नल ठीक-ठाक है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">हटाएं</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">अपडेट हो रहा है (<ph name="PERCENTAGE_VALUE" />% हो गया)</translation>
 <translation id="1310380015393971138">कोई भी <ph name="NETWORK_NAME" /> नेटवर्क मौजूद नहीं है</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">होम नेटवर्क, रोमिंग नहीं</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">ऑफ़र</translation>
 <translation id="1476467821656042872">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है और यह आपकी गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> का फ़र्मवेयर अपडेट किया जा रहा है</translation>
 <translation id="1499900233129743732">इस उपयोगकर्ता को <ph name="MANAGER" /> प्रबंधित करता है और यह किसी दूसरी जगह पर होते हुए भी सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता की गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="150962533380566081">गलत पीयूके.</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
 <translation id="155865706765934889">टचपैड</translation>
+<translation id="1565038567006703504"><ph name="DEVICE_NAME" /> को अपडेट नहीं किया जा सकता</translation>
 <translation id="1567064801249837505">एल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">मौजूदा वॉलपेपर रीफ़्रेश करें</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
+<translation id="253029298928638905">रीस्टार्ट हो रहा है…</translation>
 <translation id="2536159006530886390">इंटरनेट से कनेक्ट नहीं किया जा सका.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2584559707064218956">सेट अप के लिए, सेटिंग पर जाएं</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
+<translation id="3993704782688964914">अब आपका <ph name="DEVICE_NAME" /> अप-टू-डेट है</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4044093238444069296">गेटवे से संपर्क नहीं किया जा सकता</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">चल नहीं पाया</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> को रीस्टार्ट किया जा रहा है</translation>
 <translation id="4418498623216225764">सहायक डिवाइस, जैसे- कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह को अपडेट करें</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> बंद है</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">विषय के दूसरे नाम से मिलते-जुलते</translation>
 <translation id="4536864596629708641">आईपी कॉन्फ़िगरेशन</translation>
 <translation id="4548483925627140043">सिग्नल नहीं मिला</translation>
+<translation id="4556753742174065117">फ़र्मवेयर पूरी तरह अप-टू-डेट है</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh बैटरी</translation>
 <translation id="4561801978359312462">सिम अनलॉक है</translation>
 <translation id="4562494484721939086">कोई सेवा नहीं</translation>
@@ -434,6 +442,7 @@
 <translation id="680983167891198932">कुंजी</translation>
 <translation id="6816797338148849397">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी उपलब्ध है. इसे ऐक्सेस करने के लिए, अप ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="6853312040151791195">डिस्चार्ज होने की दर</translation>
+<translation id="6889786074662672253">रीस्टार्ट करते समय, न तो इस बाहरी डिवाइस को डिसकनेक्ट करें और न ही अपने कंप्यूटर को शट डाउन करें. इस विंडो को छोटा किया जा सकता है. रीस्टार्ट होने में कुछ मिनट लग सकते हैं. हो सकता है कि इस दौरान आपका बाहरी डिवाइस काम न करे.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> पर वापस जाएं</translation>
 <translation id="6910312834584889076">स्कैनर का कवर खुला हुआ है. कवर बंद करें और फिर से कोशिश करें.</translation>
 <translation id="6911383237894364323">मीडिया सर्वर से कनेक्ट नहीं किया जा सका</translation>

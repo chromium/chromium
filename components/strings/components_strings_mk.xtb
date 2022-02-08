@@ -424,6 +424,7 @@
 <translation id="22081806969704220">Фиока 3</translation>
 <translation id="2212735316055980242">Политиката не е пронајдена</translation>
 <translation id="2213606439339815911">Земање записи...</translation>
+<translation id="2213612003795704869">Страницата е испечатена</translation>
 <translation id="2215727959747642672">Изменување датотеки</translation>
 <translation id="2218879909401188352">Напаѓачите што се моментално на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> може да инсталираат опасни апликации што го оштетуваат вашиот уред, да додаваат скриени трошоци на сметката за мобилниот телефон или да крадат лични информации. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">Нема интернет</translation>
@@ -962,6 +963,7 @@
 <translation id="3990250421422698716">Офсет превиткување</translation>
 <translation id="3996311196211510766">Сајтот <ph name="ORIGIN" /> побарал да се применува правило за потекло
      за сите барања до него, но ова правило не може да се примени во моментов.</translation>
+<translation id="4009243425692662128">Содржините на страниците што ги печатите се испраќаат на Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци.</translation>
 <translation id="4010758435855888356">Да се дозволи пристап до капацитетот?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-документ со {COUNT} страница}one{PDF-документ со {COUNT} страница}other{PDF-документ со {COUNT} страници}}</translation>
 <translation id="4023431997072828269">Бидејќи формуларов се испраќа преку врска што не е безбедна, вашите податоци ќе бидат видливи за другите.</translation>
@@ -1056,6 +1058,7 @@
 <translation id="4250680216510889253">Не</translation>
 <translation id="4253168017788158739">Забелешка</translation>
 <translation id="425582637250725228">Измените што ги направивте можеби нема да се зачуваат.</translation>
+<translation id="425869179292622354">Дали сакате поголема безбедност со виртуелна картичка?</translation>
 <translation id="4258748452823770588">Лош потпис</translation>
 <translation id="4261046003697461417">Не може да се стави прибелешка на заштитени документи</translation>
 <translation id="4265872034478892965">Дозволено од администраторот</translation>
@@ -1566,6 +1569,7 @@
 <translation id="5921639886840618607">Да се зачува картичката на сметката на Google?</translation>
 <translation id="5922853866070715753">Речиси готово</translation>
 <translation id="5932224571077948991">Сајтот прикажува нападни или лажни реклами</translation>
+<translation id="5938153366081463283">Додајте виртуелна картичка</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Се отвора <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Не може да се регистрирате со сметка на потрошувач (достапна е вклучена лиценца).</translation>
@@ -2190,6 +2194,7 @@
 <translation id="7976214039405368314">Премногу барања</translation>
 <translation id="7977538094055660992">Излезен уред</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Поврзана со</translation>
 <translation id="798134797138789862">Може да прашува за да ги користи податоците и уредите со виртуелна реалност</translation>
 <translation id="7984945080620862648">Не може сега да го посетите <ph name="SITE" /> затоа што веб-локацијата испрати измешани акредитации што Chrome не може да ги обработи. Мрежните грешки и напади обично се привремени, така што страницата веројатно ќе работи подоцна.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

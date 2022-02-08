@@ -424,6 +424,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="22081806969704220">Laai 3</translation>
 <translation id="2212735316055980242">Beleid nie gevind nie</translation>
 <translation id="2213606439339815911">Gaan haal tans inskrywings …</translation>
+<translation id="2213612003795704869">Bladsy is gedruk</translation>
 <translation id="2215727959747642672">Lêerwysiging</translation>
 <translation id="2218879909401188352">Aanvallers wat tans op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> is, kan dalk gevaarlike programme installeer wat jou toestel kan beskadig, verskuilde koste by jou toestelrekening kan voeg of jou persoonlike inligting kan steel. <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">Geen internet nie</translation>
@@ -962,6 +963,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3990250421422698716">Gelykskudafwyking</translation>
 <translation id="3996311196211510766">Die werf <ph name="ORIGIN" /> het versoek dat 'n oorsprongbeleid
     op alle versoeke daaraan toegepas word, maar hierdie beleid kan nie op die oomblik toegepas word nie.</translation>
+<translation id="4009243425692662128">Die inhoud van bladsye wat jy druk, word na Google Wolk of derde partye toe gestuur vir ontleding. Dit kan byvoorbeeld vir sensitiewe data geskandeer word.</translation>
 <translation id="4010758435855888356">Laat bergingtoegang toe?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument met {COUNT} bladsy}other{PDF-dokument met {COUNT} bladsye}}</translation>
 <translation id="4023431997072828269">Ander mense sal jou inligting kan sien omdat hierdie vorm ingedien word oor 'n verbinding wat nie heeltemal veilig is nie.</translation>

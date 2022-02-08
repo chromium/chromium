@@ -201,6 +201,7 @@
 <translation id="6734291798041940871">Chromium-г таны компьютерийн бүх хэрэглэгчид суулгасан байна.</translation>
 <translation id="673636774878526923">Та бүх төхөөрөмж дээрээ Chromium-н зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу.</translation>
 <translation id="6774082503108938489">Таны эцэг эх Chromium-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г идэвхжүүлэхийг зөвшөөрдөггүй.</translation>
+<translation id="6808964260981102146">Таны вебсайтууд болон аппуудад аль хэдийн өгсөн зөшөөрөл нь энэ бүртгэлд хэрэгжиж болзошгүй. Хэрэв та вебсайтууд эсвэл аппуудыг таны бүртгэлийн мэдээлэлд хандахыг хүсэхгүй байвал Chromium хөтчийг <ph name="LINK_BEGIN" />Зочны горимд<ph name="LINK_END" /> ашиглана уу. Та мөн Google Бүртгэлүүдээ <ph name="LINK_2_BEGIN" />Тохиргоо<ph name="LINK_2_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="6847869444787758381">Хэрэв таны нууц үг алдагдсан байвал Chromium танд мэдэгдэнэ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-д хуулсан)</translation>

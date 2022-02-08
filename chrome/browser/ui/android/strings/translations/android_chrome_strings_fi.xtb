@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Synkronoinnin alkumääritys ei valmis</translation>
 <translation id="1829244130665387512">Haku sivulta</translation>
 <translation id="1832459821645506983">Kyllä</translation>
-<translation id="1843805151597803366">Anna Google Haun käyttää nykyistä sivua, jotta saat parempia käännöksiä</translation>
 <translation id="1868024384445905608">Chrome lataa tiedostot nyt nopeammin</translation>
 <translation id="1877026089748256423">Chrome on vanhentunut</translation>
 <translation id="1883903952484604915">Omat tiedostot</translation>
@@ -227,7 +226,6 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="2328985652426384049">Kirjautuminen epäonnistui</translation>
 <translation id="2342601525305963189">Vinkit Chromen käyttöön:</translation>
 <translation id="234265804618409743">Kameraa ei voi avata. Jotain meni pieleen.</translation>
-<translation id="2345671828921229300">Hae koskettamalla sanaa pitkään</translation>
 <translation id="2349710944427398404">Chromen käyttämän tallennustilan kokonaismäärä, mukaan lukien tilit, kirjanmerkit ja tallennetut asetukset.</translation>
 <translation id="2353636109065292463">Internetyhteyttäsi tarkistetaan</translation>
 <translation id="235789365079050412">Googlen tietosuojakäytäntö</translation>
@@ -301,7 +299,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2723001399770238859">ääni</translation>
 <translation id="2732063072010454421">Parempi kokemus puhehaulla</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Napauta sanaa etsiäksesi välittömästi tai nähdäksesi asiaan liittyviä toimia.</translation>
 <translation id="2760989362628427051">Ota tumma teema käyttöön, kun laitteen tumma teema tai virransäästö on käytössä</translation>
 <translation id="2762000892062317888">äsken</translation>
 <translation id="276969039800130567">Kirjautunut osoitteella <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3341262203274374114">Ei voi seurata. Jotain meni pieleen.</translation>
 <translation id="3359667936385849800">Käytä nykyistä palveluasi</translation>
 <translation id="3367813778245106622">Aloita synkronointi kirjautumalla uudelleen sisään.</translation>
-<translation id="337236281855091893">Hae koskettamalla sanaa pitkään napauttamisen sijaan</translation>
 <translation id="3373979091428520308">Jos haluat jakaa tämän sivun toiselle laitteelle, ota synkronointi käyttöön toisen laitteen Chrome-asetuksista</translation>
 <translation id="3374023511497244703">Kirjanmerkkejä, historiaa, salasanoja tai muuta Chrome-dataa ei enää synkronoida Google-tilille.</translation>
 <translation id="3384347053049321195">Jaa kuva</translation>
@@ -431,7 +427,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3428747202529429621">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena</translation>
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
 <translation id="3435465986463792564">Onko monta ikkunaa auki? Voit ylläpitää niitä täältä</translation>
-<translation id="3440975416244667276">Katso lisää olennaisia tietoja koskettamalla pitkään</translation>
 <translation id="3443221991560634068">Päivitä nykyinen sivu</translation>
 <translation id="3444179773590444986">Haluatko antaa palautetta sivustojen tummasta teemasta?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 lataus ajoitettu}other{# latausta ajoitettu}}</translation>
@@ -518,7 +513,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3976396876660209797">Poista tämä pikakuvake ja luo se uudelleen.</translation>
 <translation id="3985215325736559418">Haluatko ladata tiedoston <ph name="FILE_NAME" /> uudelleen?</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
-<translation id="3988466920954086464">Näytä Instant-hakutulokset tässä paneelissa</translation>
 <translation id="4000212216660919741">Offline-etusivu</translation>
 <translation id="4016425174436051808">Ei voi seurata. Jotain meni pieleen.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
@@ -1137,7 +1131,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7475688122056506577">SD-korttia ei löydy. Osa tiedostoista voi puuttua.</translation>
 <translation id="7479104141328977413">Välilehtien ylläpito</translation>
 <translation id="7481312909269577407">Seuraava</translation>
-<translation id="7481864133709957613">Voit hakea tältä sivulta koskettamalla sanoja pitkään napauttamisen sijaan</translation>
 <translation id="7482656565088326534">Esikatseluvälilehti</translation>
 <translation id="7484997419527351112">Discover – pois päältä</translation>
 <translation id="7485033510383818941">Voit päivittää fiidin sisällön vetämällä sivua alas</translation>

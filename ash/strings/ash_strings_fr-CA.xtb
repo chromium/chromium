@@ -112,6 +112,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1570871743947603115">Activer/désactiver le Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
+<translation id="1610778689852195798">« Annuler »</translation>
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
@@ -245,6 +246,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2596078834055697711">Faire une capture d'écran de la fenêtre</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
+<translation id="263399434338050016">« Tout sélectionner »</translation>
 <translation id="2653019840645008922">Capturer la fenêtre</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquez et faites glisser</translation>
@@ -261,6 +263,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la recharge de la batterie ne soit pas fiable.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">« Supprimer »</translation>
 <translation id="2778650143428714839">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Quitter le mode de capture</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
@@ -304,6 +307,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3038571455154067151">Pour vous connecter, entrez votre code d'accès parental Family Link</translation>
 <translation id="3039939407102840004">La pile du stylet est chargée à <ph name="PERCENTAGE" /> pour cent.</translation>
 <translation id="3045488863354895414">Bon après-midi,</translation>
+<translation id="3047761520276763270">Essayez de dire :</translation>
 <translation id="3051189971848907985">Modification du nom du profil en cours… Patientez quelques minutes.</translation>
 <translation id="3055162170959710888">Tu as utilisé cet appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
 <translation id="3068711042108640621">Étagère à gauche</translation>
@@ -551,6 +555,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4570957409596482333">Bouton Sélectionner pour énoncer</translation>
+<translation id="4573176682887762361">« Taper [mot/phrase] »</translation>
 <translation id="4577274620589681794">Temps écoulé : <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Afficher les aperçus</translation>
 <translation id="4578196883126898996">Votre micro est éteint. Activez le bouton du micro de votre appareil.</translation>
@@ -631,6 +636,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
+<translation id="5150070631291639005">Paramètres de confidentialité</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
 <translation id="5166007464919321363">Enregistrer le bureau comme modèle</translation>
 <translation id="5168181903108465623">Appareils de diffusion disponibles</translation>
@@ -653,6 +659,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5286194356314741248">Recherche en cours…</translation>
 <translation id="5297423144044956168">Aucun appareil mobile trouvé</translation>
 <translation id="5297704307811127955">Désactivé</translation>
+<translation id="5300589172476337783">Afficher</translation>
 <translation id="5302048478445481009">Langue</translation>
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
@@ -1164,6 +1171,7 @@ Nouvelle installation</translation>
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Dossier <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">« Aide »</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Paramètres des méthodes d'entrée</translation>
 <translation id="8818320199597151042">Retrait du profil en cours… Patientez quelques minutes.</translation>

@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
-<translation id="1843805151597803366">Pour obtenir des traductions de meilleure qualité, autorisez la recherche Google à utiliser la page actuelle</translation>
 <translation id="1868024384445905608">Chrome télécharge maintenant les fichiers plus rapidement</translation>
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
@@ -227,7 +226,6 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2328985652426384049">Impossible de se connecter</translation>
 <translation id="2342601525305963189">Conseils Chrome :</translation>
 <translation id="234265804618409743">Impossible d'ouvrir votre appareil photo. Un problème s'est produit.</translation>
-<translation id="2345671828921229300">Pour effectuer une recherche, maintenez le doigt sur un mot</translation>
 <translation id="2349710944427398404">Le total des données utilisées par Chrome, comprenant les comptes, les favoris et les paramètres enregistrés</translation>
 <translation id="2353636109065292463">Vérification de votre connexion Internet en cours…</translation>
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
@@ -301,7 +299,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Obtenir une meilleure expérience vocale</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Touchez un mot pour lancer une recherche instantanée ou afficher les actions associées</translation>
 <translation id="2760989362628427051">Activer le thème sombre lorsque le thème sombre ou la fonction Économiseur de pile de votre appareil est activé</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="276969039800130567">Connecté en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3341262203274374114">Le désabonnement a échoué. Un problème est survenu.</translation>
 <translation id="3359667936385849800">Utiliser votre fournisseur de services actuel</translation>
 <translation id="3367813778245106622">Reconnectez-vous pour commencer la synchronisation</translation>
-<translation id="337236281855091893">Pour effectuer une recherche, maintenez le doigt sur un mot au lieu de le toucher</translation>
 <translation id="3373979091428520308">Pour partager cette page sur un autre appareil, activez la synchronisation dans les paramètres de Chrome sur l'autre appareil</translation>
 <translation id="3374023511497244703">Vos favoris, votre historique, vos mots de passe et d'autres données de Chrome ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="3384347053049321195">Partager une image</translation>
@@ -431,7 +427,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3428747202529429621">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="3429160811076349561">Les fonctionnalités d'essai sont désactivées</translation>
 <translation id="3435465986463792564">Vous avez de nombreuses fenêtres ouvertes? Vous pouvez les gérer à partir d'ici</translation>
-<translation id="3440975416244667276">Maintenez le doigt sur le contenu sélectionné pour afficher de l'information pertinente</translation>
 <translation id="3443221991560634068">Actualiser la page actuelle</translation>
 <translation id="3444179773590444986">Faire part de vos commentaires sur le thème sombre pour les sites?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 téléchargement programmé}one{# téléchargement programmé}other{# téléchargements programmés}}</translation>
@@ -518,7 +513,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3976396876660209797">Supprimez ce raccourci et recréez-le</translation>
 <translation id="3985215325736559418">Voulez-vous télécharger <ph name="FILE_NAME" /> à nouveau?</translation>
 <translation id="3987993985790029246">Copier lien</translation>
-<translation id="3988466920954086464">Affichez les résultats de recherche instantanée dans ce volet</translation>
 <translation id="4000212216660919741">Accueil hors ligne</translation>
 <translation id="4016425174436051808">L'abonnement a échoué. Un problème est survenu.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
@@ -1137,7 +1131,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7475688122056506577">Carte SD introuvable. Certains de vos fichiers pourraient être manquants.</translation>
 <translation id="7479104141328977413">Gestion des onglets</translation>
 <translation id="7481312909269577407">Suivant</translation>
-<translation id="7481864133709957613">Pour effectuer une recherche à partir de cette page, maintenez le doigt sur des mots au lieu de les toucher</translation>
 <translation id="7482656565088326534">Onglet d'aperçu</translation>
 <translation id="7484997419527351112">Fonctionnalité Découvertes désactivée</translation>
 <translation id="7485033510383818941">Pour actualiser le contenu du flux, tirez la page vers le bas</translation>
@@ -1175,6 +1168,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7663313374500954251">Ce navigateur est géré par <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="766587987807204883">Les articles s'affichent ici, et vous pouvez les lire même lorsque vous êtes hors ligne</translation>
+<translation id="768232549260819724">GIF copié</translation>
 <translation id="7682724950699840886">Essayez de suivre les conseils suivants : assurez-vous qu'il y a suffisamment d'espace sur votre appareil et réessayez d'exporter les mots de passe.</translation>
 <translation id="768618399695552958">Certaines des pages que vous visitez sont préchargées. Les pages peuvent être préchargées par les serveurs de Google lorsqu'elles sont associées à un site Google.</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
@@ -1353,6 +1347,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8570677896027847510">Impossible de télécharger le fichier en toute sécurité</translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8572344201470131220">Image copiée</translation>
+<translation id="8580884231102452214">Copier le GIF</translation>
 <translation id="8583805026567836021">Suppression des données du compte</translation>
 <translation id="859046281437143747">Suivez le prix à partir du bouton Plus d'options</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>

@@ -201,6 +201,7 @@
 <translation id="6734291798041940871">‏يتم تثبيت Chromium بالفعل لجميع المستخدمين على جهاز الكمبيوتر.</translation>
 <translation id="673636774878526923">‏للوصول من خلال جميع أجهزتك إلى بياناتك في Chromium، عليك تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="6774082503108938489">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chromium. ولا يمكن تفعيل <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">‏يمكن أن تنطبق الأذونات التي منحتها إلى المواقع الإلكترونية والتطبيقات على هذا الحساب. وإذا كنت لا تريد السماح للمواقع الإلكترونية أو التطبيقات بالوصول إلى معلومات حسابك، عليك استخدام <ph name="LINK_BEGIN" />وضع الضيف<ph name="LINK_END" /> في متصفّح Chromium. ويمكنك أيضًا إدارة حساباتك على Google من خلال <ph name="LINK_2_BEGIN" />الإعدادات<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">‏يتم إعلامك من خلال Chromium في حال تم اختراق كلمات المرور في أي وقت.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (تم النسخ إلى Chromium)</translation>

@@ -112,6 +112,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1555130319947370107">Blár</translation>
 <translation id="1570871743947603115">Kveikja/slökkva á Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
+<translation id="1610778689852195798">„Afturkalla“</translation>
 <translation id="1611993646327628135">Kveikt</translation>
 <translation id="1632985212731562677">Hægt er að slökkva á rofaaðgangi í Stillingar &gt; Aðgengi.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> tæki</translation>
@@ -145,6 +146,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1836215606488044471">Aðstoðarmaður (hleður...)</translation>
 <translation id="1838895407229022812">Slökkt er á næturljósi.</translation>
 <translation id="1864454756846565995">USB-C-tæki (tengi að aftan)</translation>
+<translation id="1879018240766558464">Huliðsgluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
 <translation id="1882814835921407042">Ekkert farsímakerfi</translation>
 <translation id="1882897271359938046">Speglar á <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Opna með fingrafari</translation>
@@ -245,6 +247,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2596078834055697711">Taka skjámynd af glugga</translation>
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
 <translation id="2621713457727696555">Læst</translation>
+<translation id="263399434338050016">„Velja allt“</translation>
 <translation id="2653019840645008922">Myndataka glugga</translation>
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2658778018866295321">Smella og draga</translation>
@@ -261,6 +264,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Tengt við afllítið hleðslutæki. Hleðsla rafhlöðunnar kann að vera brigðul.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">„Eyða“</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> hefur umsjón með <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Loka tökustillingu</translation>
 <translation id="2792498699870441125">Alt+leitarhnappur</translation>
@@ -304,6 +308,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3038571455154067151">Til að skrá þig inn skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
 <translation id="3039939407102840004">Rafhleðsla penna er <ph name="PERCENTAGE" /> prósent.</translation>
 <translation id="3045488863354895414">Góðan dag,</translation>
+<translation id="3047761520276763270">Prófaðu að segja:</translation>
 <translation id="3051189971848907985">Endurnefnir prófíl. Hinkraðu í nokkrar mínútur.</translation>
 <translation id="3055162170959710888">Þú hefur notað þetta tæki í <ph name="USED_TIME" /> í dag</translation>
 <translation id="3068711042108640621">Hilla til vinstri</translation>
@@ -551,6 +556,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4570957409596482333">Hnappur fyrir textaupplestur</translation>
+<translation id="4573176682887762361">„Sláðu inn [orð/setning]“</translation>
 <translation id="4577274620589681794">Tíminn er liðinn · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Sýna forskoðun</translation>
 <translation id="4578196883126898996">Slökkt er á hljóðnemanum. Kveiktu á hljóðnemahnappi tækisins.</translation>
@@ -631,6 +637,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5117590920725113268">Sýna næsta mánuð</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
 <translation id="5147567197700016471">Ólæst</translation>
+<translation id="5150070631291639005">Persónuverndarstillingar</translation>
 <translation id="5155897006997040331">Leshraði</translation>
 <translation id="5166007464919321363">Vista skrifborð sem sniðmát</translation>
 <translation id="5168181903108465623">Útsendingartæki í boði</translation>
@@ -653,6 +660,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5286194356314741248">Leit</translation>
 <translation id="5297423144044956168">Engin fartæki fundust</translation>
 <translation id="5297704307811127955">Slökkt</translation>
+<translation id="5300589172476337783">Sýna</translation>
 <translation id="5302048478445481009">Tungumál</translation>
 <translation id="5308380583665731573">Tengjast</translation>
 <translation id="5313326810920013265">Bluetooth-stillingar</translation>
@@ -947,6 +955,7 @@ Ný uppsetning</translation>
 <translation id="7366890467478514168">Tengja <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Upptökugluggi</translation>
 <translation id="7377169924702866686">Kveikt er á hástafalás.</translation>
+<translation id="7377481913241237033">Tengjast með kóða</translation>
 <translation id="7378203170292176219">Dragðu til að velja svæðið sem á að taka upp</translation>
 <translation id="7378594059915113390">Spilunarstýringar</translation>
 <translation id="7378889811480108604">Slökkt er á rafhlöðusparnaði</translation>
@@ -974,6 +983,7 @@ Ný uppsetning</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux forrit og huliðsgluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
 <translation id="7544300628205093162">Kveikt er á baklýsingu lyklaborðs</translation>
 <translation id="7548434653388805669">Háttatími</translation>
 <translation id="7551643184018910560">Festa á hillu</translation>
@@ -1165,6 +1175,7 @@ Ný uppsetning</translation>
 <translation id="8785070478575117577">Tengjast <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Mappan <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">„Hjálp“</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Stillingar innfærsluaðferða</translation>
 <translation id="8818320199597151042">Fjarlægir prófíl. Hinkraðu í nokkrar mínútur.</translation>

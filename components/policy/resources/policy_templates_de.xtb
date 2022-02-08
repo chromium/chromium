@@ -911,6 +911,11 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="199764499252435679">Komponentenupdates in <ph name="PRODUCT_NAME" /> aktivieren</translation>
 <translation id="1998504583649140526">Einstellungen für die Anforderung privater Netzwerkressourcen</translation>
 <translation id="1999000620918508488">Hiermit wird erzwungen, dass die Anmeldeseite Systeminformationen ein- oder ausblendet.</translation>
+<translation id="1999942889260716089">Wenn die Richtlinie auf „True“ gesetzt ist, werden die Suchvorschläge in der Adressleiste von <ph name="PRODUCT_NAME" /> aktiviert. Ist sie auf „False“ gesetzt, werden die Suchvorschläge deaktiviert.
+
+      Die Richtlinie wirkt sich nicht auf Vorschläge aus, die auf Lesezeichen oder Verlauf beruhen.
+
+      Wenn Sie die Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, sind die Suchvorschläge standardmäßig aktiviert, können aber jederzeit von Nutzern deaktiviert werden.</translation>
 <translation id="2000937390924915996">Automatische Datenträgerbereinigung während der Anmeldung nicht ausführen</translation>
 <translation id="2001420846508294174">Durch diese Richtlinie werden die Regeln für die Auswahl des Standarddruckers in <ph name="PRODUCT_NAME" /> festgelegt. Die Standardregeln werden dadurch überschrieben. Die Druckerauswahl wird angezeigt, wenn die Nutzer zum ersten Mal einen Druckauftrag ausführen und <ph name="PRODUCT_NAME" /> einen Drucker sucht, der den angegebenen Attributen entspricht. Falls kein Drucker gefunden wird, der allen Attributen entspricht, kann in <ph name="PRODUCT_NAME" /> eingestellt werden, dass ein beliebiger übereinstimmender Drucker ausgewählt werden soll. Die Auswahl hängt dann von der Reihenfolge ab, in der die Drucker gefunden werden.
 
@@ -1255,6 +1260,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Wenn sie nicht konfiguriert ist, werden Cookies von Drittanbietern zugelassen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="2386362615870139244">Bildschirm-Wakelocks zulassen</translation>
 <translation id="238885588439957890">Zeitpunkt, an dem der Akku mit Netzstrom aufgeladen werden soll, angegeben in der lokalen Zeit des Geräts.</translation>
+<translation id="2393862222659066027">Liste mit URLs öffnen und die letzte Sitzung wiederherstellen</translation>
 <translation id="2394674739523870144">Wenn für die Richtlinie eine Liste von Strings festgelegt ist, werden diese Strings mit Leerzeichen verbunden und als Befehlszeilenparameter von <ph name="IE_PRODUCT_NAME" /> an <ph name="PRODUCT_NAME" /> weitergegeben. Ist in einem Parameter <ph name="URL_PLACEHOLDER" /> enthalten, wird <ph name="URL_PLACEHOLDER" /> durch die URL der Seite ersetzt, die geöffnet werden soll. Wenn kein Parameter <ph name="URL_PLACEHOLDER" /> enthält, wird die URL an das Ende der Befehlszeile angehängt.
 
       Umgebungsvariablen werden erweitert. Unter <ph name="MS_WIN_NAME" /> wird <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> durch den Wert der <ph name="ENV_VARIABLE_VALUE" />-Umgebungsvariablen ersetzt.
@@ -1665,6 +1671,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="285627849510728211">Tageskonfiguration für den intelligenten Akkulademodus festlegen</translation>
 <translation id="2856674246949497058">Führen Sie ein Rollback durch und bleiben Sie bei der Zielversion, falls die Version des Betriebssystems neuer ist als die der Zielversion. Außerdem sollten Sie während des Vorgangs einen Powerwash durchführen.</translation>
 <translation id="2866619962692161453">Typ der Metarichtlinie</translation>
+<translation id="2866726566162790531">Liste der Ursprünge, für die alle HTTP-Authentifizierungsschemas zulässig sind</translation>
 <translation id="2869762730352628426">Funktion "Automatisch klicken" auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2874209944580848064">Hinweis für <ph name="PRODUCT_OS_NAME" />-Geräte, die Android-Apps unterstützen:</translation>
@@ -1693,6 +1700,10 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Android-Statusinformationen.</translation>
 <translation id="288923520817177650">Erstellen von <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />-Sitzungen mit <ph name="WEBXR_API_NAME_SHORT" /> zulassen</translation>
 <translation id="2890645751406497668">Websites automatisch die Berechtigung erteilen, eine Verbindung zu USB-Geräten mit der angegebenen Anbieter-ID und Produkt-ID herzustellen.</translation>
+<translation id="2891049933730408118">Mit dieser Richtlinie wird festgelegt, für welche Ursprünge alle HTTP-Authentifizierungsschemas zulässig sind, die von <ph name="PRODUCT_NAME" /> unterstützt werden, unabhängig von der Richtlinie „<ph name="AUTH_SCHEMES_POLICY_NAME" />“.
+
+      Für das Ursprungsmuster muss folgendes Format verwendet werden: <ph name="URL_SCHEME_FORMAT_LINK" />. In „<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ können bis zu 1.000 Ausnahmen definiert werden.
+      Platzhalter sind für den gesamten Ursprung oder seine Bestandteile zulässig, also das Schema, den Host oder den Port.</translation>
 <translation id="2893546967669465276">Systemprotokolle an den Verwaltungsserver senden</translation>
 <translation id="2893660462311365527">Häufigkeit der Erhebung der Netzwerktelemetrie in Millisekunden.</translation>
 <translation id="2896434627453256512">Wenn die Richtlinie konfiguriert ist, wird die Funktion für das ghost-Dialogfeld aktiviert.
@@ -1751,6 +1762,15 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden.
 
       Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="2948268792364772890">Mit dieser Richtlinie kann ein Administrator festlegen, ob eine Seite beim Schließen eine synchrone XHR-Anfrage senden darf.
+
+      Wenn die Richtlinie aktiviert ist, dürfen Seiten beim Schließen synchrone XHR-Anfragen senden.
+
+      Ist die Richtlinie deaktiviert oder nicht konfiguriert, dürfen Seiten beim Schließen keine synchronen XHR-Anfragen senden.
+
+      Diese Richtlinie wurde in Chrome 99 entfernt.
+
+      Weitere Informationen finden Sie unter https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Einschränkungen:</translation>
 <translation id="2957506574938329824">Keine Website darf Zugriff auf Bluetooth-Geräte über die Web Bluetooth API anfordern</translation>
 <translation id="2957513448235202597">Kontotyp für die <ph name="HTTP_NEGOTIATE" />-Authentifizierung</translation>
@@ -2115,6 +2135,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
 <translation id="3288595667065905535">Release-Kanal</translation>
 <translation id="3291318845269544294">Projector aktivieren</translation>
+<translation id="3292784416244243447">Nutzer können festlegen, welche Websites Informationen zu Bildschirmen verwenden dürfen, um Fenster zu öffnen und zu positionieren</translation>
 <translation id="3294430356898755483">Mit dieser Richtlinie können Administratoren eine Liste von Druckern für die Nutzer festlegen. Die Druckerauswahl wird angezeigt, wenn die Nutzer zum ersten Mal einen Druckauftrag ausführen.
 
       So können Sie die Richtlinie verwenden:
@@ -3890,6 +3911,9 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="5526184558582921522">Anfragen an den Quirks Server und potenzielle Downloads von Hardware-spezifischen Konfigurationsdateien zulassen</translation>
 <translation id="5526701598901867718">Alle (nicht sicher)</translation>
 <translation id="5534079385061985566">Funktion zur vollständigen Wiederherstellung aktivieren.</translation>
+<translation id="5535012472025435092">Wenn diese Richtlinie aktiviert ist, wird die Berechtigung für die Fensterpositionierung automatisch allen Websites gewährt.
+      Websites können dann Informationen zu verbundenen Bildschirmen abrufen und verwenden, um Fenster zu öffnen und zu positionieren.
+      Ist die Richtlinie nicht konfiguriert oder deaktiviert, werden die Standardeinstellungen des Browsers verwendet und Nutzer können die Berechtigung pro Website gewähren.</translation>
 <translation id="5535256585099022933">Zeitintervall für den Neustart festlegen</translation>
 <translation id="5535973522252703021">Zulassungsliste für Kerberos-Bevollmächtigungs-Server</translation>
 <translation id="553806128266843748">Boolescher Parameter, der angibt, ob die Drosselung aktiviert ist.</translation>
@@ -3978,6 +4002,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
       Trennen Sie mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="5645779841392247734">Cookies auf diesen Websites zulassen</translation>
 <translation id="5646234199535103501">Konfigurationsrichtlinie für den Chrome Enterprise Connector "OnBulkDataEntry"</translation>
+<translation id="5647868527087096729">Alle Websites dürfen Informationen zu Bildschirmen verwenden, um Fenster zu öffnen und zu positionieren</translation>
 <translation id="5649046890958064703">Wenn <ph name="PRINTERS_BLACKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.
 
       Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -5775,6 +5800,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Verwendung von Systembenachrichtigungen zulassen</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
+<translation id="7644125656003029520">Berechtigung für die Fensterpositionierung für alle Websites aktivieren</translation>
 <translation id="7648664871086956188">Mit dieser Richtlinie werden alle in der Richtlinie DataLeakPreventionRulesList definierten Regeln gesteuert.
       Wenn die Richtlinie auf „True“ gesetzt ist, werden Echtzeitberichte zur Verhinderung von Datenlecks aktiviert.
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, wird die Berichterstellung deaktiviert.
@@ -5988,6 +6014,15 @@ werden abgelehnt.</translation>
 <translation id="7908384265697653397">Zeitraum in Tagen, nach dem der Nutzer abgemeldet wird, wenn die Version von <ph name="PRODUCT_OS_NAME" /> niedriger ist als der angegebene <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />-Wert.</translation>
 <translation id="7912255076272890813">Zulässige App- bzw. Erweiterungstypen konfigurieren</translation>
 <translation id="791267408364877739">Sicherheitswarnungen anzeigen, wenn potenziell schädliche Befehlszeilen-Flags verwendet werden</translation>
+<translation id="79156801312131034">Mit dieser Richtlinie können Sie festlegen, wie sich das System beim Start verhält. Wenn diese Einstellung deaktiviert ist, hat das den gleichen Effekt, als wäre sie nicht konfiguriert, da <ph name="PRODUCT_NAME" /> ein festgelegtes Verhalten beim Start benötigt.
+
+      Ist diese Richtlinie konfiguriert, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn Sie sie nicht konfigurieren, können Nutzer sie ändern.
+
+      Ist diese Richtlinie auf „<ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />“ oder „<ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />“ gesetzt, werden einige Einstellungen deaktiviert, die während oder beim Beenden einer Sitzung ausgeführt werden, wie das Löschen der Browserdaten beim Schließen oder der Sitzungscookies.
+
+      Wenn sie auf „<ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />“ gesetzt ist, wird im Browser die vorherige Sitzung wiederhergestellt und ein separates Fenster für URLs geöffnet, die in „<ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />“ festgelegt sind. Nutzer können diese URLs geöffnet lassen. In diesem Fall werden sie ebenfalls in der nächsten Sitzung wiederhergestellt.
+
+      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die mit einer <ph name="MS_AD_NAME" />-Domain verbunden sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="7922358664346625612">Letzten in Chrome geöffneten Tab beibehalten.</translation>
 <translation id="7924321157669251966">Bildschirmhelligkeit im Akkubetrieb in Prozent.</translation>
 <translation id="7925224837072026018">Ist die Richtlinie konfiguriert, wird Erweiterungen oder Android-Apps Zugriff auf Schlüssel für die geschäftliche Nutzung gewährt. Schlüssel sind ausschließlich für die geschäftliche Nutzung bestimmt, wenn sie über die chrome.enterprise.platformKeys API eines verwalteten Kontos generiert wurden. Nutzer können den Zugriff auf Schlüssel zur geschäftlichen Nutzung für Erweiterungen oder Android-Apps weder erteilen noch verweigern.

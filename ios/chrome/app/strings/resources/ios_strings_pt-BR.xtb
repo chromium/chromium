@@ -85,6 +85,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
+<translation id="1654232554734641711">Acesso permitido ao microfone</translation>
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
 <translation id="1657641691196698092">Cookies bloqueados</translation>
 <translation id="165877110639533037">Não há guias abertas</translation>
@@ -348,6 +349,7 @@ Siga estas etapas:</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegação padrão<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Informar senha longa</translation>
+<translation id="4249955472157341256">Ordenar por mais recentes</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267380167363222949">Próxima guia</translation>
 <translation id="4272631900155121838">Para ler um código QR, ative a câmera nas configurações</translation>
@@ -396,6 +398,7 @@ Seus dados são criptografados com sua senha longa de sincronização. Informe-a
 <translation id="4682686630151240767">1. Abra o app Ajustes do iPhone</translation>
 <translation id="4689564913179979534">Gerenciar formas de pagamento…</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
+<translation id="4731472194328757163">Acesso permitido à câmera e ao microfone</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay. Só alguém com acesso a sua senha longa pode ler seus dados criptografados. Essa senha não é enviada ou armazenada pelo Google. Se você esquecer a senha longa ou quiser alterar essa configuração, será necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova guia anônima</translation>
@@ -504,6 +507,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="575902488528307720">Pesquisar imagem</translation>
 <translation id="5781453543752460388">Adicionar ao Fotos</translation>
 <translation id="5782227691023083829">Traduzindo...</translation>
+<translation id="5791632441210678828">Botão para ordenar o feed "Seguindo".</translation>
 <translation id="5802829331520313983">Configurar…</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -547,6 +551,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
 <translation id="6064824697233747382">Sua organização requer que você desative a sincronização.</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
+<translation id="6077126322656614846">Acesso permitido à câmera</translation>
 <translation id="60829778314739003">Aceitar e continuar</translation>
 <translation id="6084848228346514841">Selecionar guias</translation>
 <translation id="6103540626693881831">Criptografia no dispositivo</translation>
@@ -618,6 +623,7 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6583087784430677195">Para desativar, abra <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> e acesse "Preenchimento Automático de Senhas".</translation>
 <translation id="6585618849026997638">Você pode adicionar uma página importante aos favoritos para acessá-la com facilidade</translation>
+<translation id="6598875554591387303">Ordenar por editor</translation>
 <translation id="6603393121510733479">Sua organização desativou a navegação privada.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opções de tradução</translation>

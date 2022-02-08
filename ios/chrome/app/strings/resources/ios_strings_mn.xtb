@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Холбоосны урьдчилан үзэлтийг харуулах</translation>
 <translation id="1973912524893600642">Өгөгдлийг хадгалах</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
+<translation id="1981118202195772574">Мобайл</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="199425419756152024">Нууц үгийг харах</translation>
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Та юу синк хийх боломжтойгоо хараарай<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Бүх күүкийг блоклосон</translation>
 <translation id="313283613037595347">Шинэ Нууцлалтай таб үүсгэх</translation>
+<translation id="3150887674190166798">Та Chrome-г сайтын хүсэлтийг үргэлж хэрхэн тавихыг сонгоно уу</translation>
 <translation id="3153862085237805241">Картыг хадгалах</translation>
 <translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="3157684681743766797">Бүгдийг тэмдэглэх...</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">Хэл</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Өгөгдмөл хөтчийн апп<ph name="END_BOLD" />-ыг товшино уу</translation>
 <translation id="424315890655130736">Нэвтрэх үгийг оруулах</translation>
+<translation id="4249955472157341256">Сүүлийн үеийнхээр нь эрэмбэлэх</translation>
 <translation id="4263576668337963058">Хуудасны боломжтой үйлдлүүдийг харуулах</translation>
 <translation id="4267380167363222949">Дараагийн таб</translation>
 <translation id="4272631900155121838">QR кодыг скан хийхийн тулд камерыг тохиргоо хэсэгт идэвхжүүлнэ үү</translation>
@@ -505,6 +508,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="575902488528307720">Зургийг хайх</translation>
 <translation id="5781453543752460388">Зурагт нэмэх</translation>
 <translation id="5782227691023083829">Орчуулж байна...</translation>
+<translation id="5791632441210678828">'Дагаж буй' хангамжийг эрэмбэлэх товчлуур.</translation>
 <translation id="5802829331520313983">Тохируулах…</translation>
 <translation id="5803566855766646066">Та энэ шинэ картыг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
@@ -620,6 +624,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6561262006871132942">Томруулах</translation>
 <translation id="6583087784430677195">Унтраахын тулд <ph name="BEGIN_LINK" />Тохиргоог<ph name="END_LINK" /> нээж, Нууц үгнүүдийг автоматаар бөглөх хэсэг рүү очно уу.</translation>
 <translation id="6585618849026997638">Та хавчуурга нэмснээр чухал хуудас руугаа буцан очих боломжтой</translation>
+<translation id="6598875554591387303">Нийтлэгчээр эрэмбэлэх</translation>
 <translation id="6603393121510733479">Танай байгууллага хувийн хөтчийг унтраасан.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Орчуулах сонголт</translation>
@@ -760,6 +765,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7911190106180361398">Танай байгууллага танд бүх зүйлийг синк хийхийг зөвшөөрдөггүй.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Нууц үгийг экспортлох...</translation>
+<translation id="793971554166979165">Сайтын өгөгдмөл горим</translation>
 <translation id="794799177247607889">Лог хийхийг зогсоох</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Алдагдсан нууц үг алга}=1{Алдагдсан {COUNT} нууц үг}other{Алдагдсан {COUNT} нууц үг}}</translation>
 <translation id="7961015016161918242">Хэзээ ч</translation>
@@ -865,6 +871,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8881801611828450202">Энэ зургийг <ph name="SEARCH_ENGINE" />-с хайх</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>
 <translation id="8917490105272468696">Тийм, би зөвшөөрч байна</translation>
+<translation id="8928133177108699615">Компьютер</translation>
 <translation id="8952559610785099500">Нууц үг нэмэх</translation>
 <translation id="895541991026785598">Асуудлыг мэдэгдэх…</translation>
 <translation id="8974714402877957201">1. iPad-н тохиргоог нээнэ үү</translation>

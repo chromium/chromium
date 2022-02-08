@@ -85,6 +85,7 @@ Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum 
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1650222530560417226">Tippen Sie auf die Schaltfläche "Protokollierung starten", um künftig Protokolle und Fehler von allen Tabs der JavaScript-Konsole zu erheben. Protokolle werden erfasst und ausschließlich im Speicher aufbewahrt, bis die Seite geschlossen oder "Protokoll anhalten" angetippt wird.</translation>
+<translation id="1654232554734641711">Mikrofonzugriff gewährt</translation>
 <translation id="1657011748321897393">Fehler beim Teilen, weil keine Netzwerkverbindung besteht</translation>
 <translation id="1657641691196698092">Blockierte Cookies</translation>
 <translation id="165877110639533037">Keine geöffneten Tabs</translation>
@@ -396,6 +397,7 @@ Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie 
 <translation id="4682686630151240767">1. Öffnen Sie die iPhone-Einstellungen</translation>
 <translation id="4689564913179979534">Zahlungsmethoden verwalten…</translation>
 <translation id="470966556546083668">Synchronisierung nicht aktivieren</translation>
+<translation id="4731472194328757163">Kamera- und Mikrofonzugriff gewährt</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4747097190499141774">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay. Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
@@ -547,6 +549,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6059830886158432458">Hier können Sie festlegen, welche Meldungen und Aktivitäten Ihnen angezeigt werden</translation>
 <translation id="6064824697233747382">Ihre Organisation verlangt, dass Sie die Synchronisierung deaktivieren.</translation>
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
+<translation id="6077126322656614846">Kamerazugriff gewährt</translation>
 <translation id="60829778314739003">Akzeptieren und fortfahren</translation>
 <translation id="6084848228346514841">Tabs auswählen</translation>
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>

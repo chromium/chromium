@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />에서 Chrome 설정을 기본값으로 복원하려 합니다. 홈페이지, 새 탭 페이지, 검색엔진이 초기화되고, 확장 프로그램이 사용 중지되며, 모든 탭이 고정 해제됩니다. 쿠키, 콘텐츠 데이터, 사이트 데이터 등 기타 임시 데이터와 캐시된 데이터도 삭제됩니다.</translation>
 <translation id="1084096383128641877">비밀번호를 삭제해도 <ph name="DOMAIN" /> 계정은 삭제되지 않습니다. 비밀번호를 변경하거나 <ph name="DOMAIN_LINK" /> 계정을 삭제하여 보안을 유지하세요.</translation>
 <translation id="1084824384139382525">링크 주소 복사(&amp;E)</translation>
-<translation id="1085064499066015002">항상 모든 사이트에서 사용</translation>
 <translation id="1085697365578766383">가상 머신을 시작하는 동안 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="1087965115100412394">사이트에서 MIDI 기기에 연결하도록 허용하지 않음</translation>
 <translation id="1088654056000736875">Chrome이 컴퓨터에서 유해 소프트웨어를 삭제하는 중입니다...</translation>
@@ -2843,7 +2842,6 @@
 <translation id="383891835335927981">확대 또는 축소된 사이트가 없음</translation>
 <translation id="3839509547554145593">마우스 스크롤 가속 사용</translation>
 <translation id="3839516600093027468"><ph name="HOST" />에서 클립보드를 볼 수 없도록 항상 차단</translation>
-<translation id="3839526976593488376">사이트별 맞춤설정</translation>
 <translation id="3841964634449506551">잘못된 비밀번호입니다.</translation>
 <translation id="3842552989725514455">Serif</translation>
 <translation id="3843464315703645664">내부적으로 허용됨</translation>
@@ -7827,6 +7825,7 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="9041692268811217999">관리자가 시스템의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="904224458472510106">이 작업은 되돌릴 수 없습니다.</translation>
+<translation id="9042893549633094279">개인정보 및 보안</translation>
 <translation id="904451693890288097">'<ph name="DEVICE_NAME" />'의 암호를 입력하세요:</translation>
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>

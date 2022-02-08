@@ -112,6 +112,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="1570871743947603115">Pārslēgt Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Piekļūt visām jūsu darbībām šīs sesijas laikā</translation>
+<translation id="1610778689852195798">“Undo” (Atsaukt)</translation>
 <translation id="1611993646327628135">Ieslēgts</translation>
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ierīces</translation>
@@ -145,6 +146,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1836215606488044471">Asistents (notiek ielāde...)</translation>
 <translation id="1838895407229022812">Nakts režīms ir izslēgts.</translation>
 <translation id="1864454756846565995">USB-C ierīce (aizmugurējā pieslēgvieta)</translation>
+<translation id="1879018240766558464">Inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atbloķēšana ar pirksta nospiedumu</translation>
@@ -245,6 +247,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2596078834055697711">Uzņemt loga ekrānuzņēmumu</translation>
 <translation id="2607678425161541573">Nepieciešama pierakstīšanās tiešsaistē</translation>
 <translation id="2621713457727696555">Aizsargāts</translation>
+<translation id="263399434338050016">“Select all” (Atlasīt visu)</translation>
 <translation id="2653019840645008922">Loga uzņemšana</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2658778018866295321">Noklikšķiniet un velciet</translation>
@@ -261,6 +264,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2727175239389218057">Atbildēt</translation>
 <translation id="2727977024730340865">Pievienots lādētājs ar mazu strāvas padevi. Akumulatora uzlāde var nebūt uzticama.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">“Delete” (Dzēst)</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Iziet no uzņemšanas režīma</translation>
 <translation id="2792498699870441125">Alt+Meklēt</translation>
@@ -304,6 +308,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3038571455154067151">Lai pierakstītos, ievadiet Family Link vecāku piekļuves kodu</translation>
 <translation id="3039939407102840004">Skārienekrāna pildspalvas akumulatora uzlādes līmenis: <ph name="PERCENTAGE" /> procenti.</translation>
 <translation id="3045488863354895414">Labdien!</translation>
+<translation id="3047761520276763270">Mēģiniet teikt:</translation>
 <translation id="3051189971848907985">Notiek profila pārdēvēšana. Uzgaidiet dažas minūtes.</translation>
 <translation id="3055162170959710888">Šodien jūs izmantojāt šo ierīci: <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Plaukts tiek rādīts kreisajā pusē</translation>
@@ -551,6 +556,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Slēpt paroli</translation>
 <translation id="4570957409596482333">Poga “Atlasīt, lai izrunātu”</translation>
+<translation id="4573176682887762361">“Type [word / phrase]” (Ievadīt [vārds/frāze])</translation>
 <translation id="4577274620589681794">Laiks ir beidzies! · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Rādīt priekšskatījumus</translation>
 <translation id="4578196883126898996">Jūsu mikrofons ir izslēgts. Ieslēdziet to, izmantojot ierīces mikrofona pogu.</translation>
@@ -631,6 +637,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
 <translation id="5147567197700016471">Atbloķēts</translation>
+<translation id="5150070631291639005">Konfidencialitātes iestatījumi</translation>
 <translation id="5155897006997040331">Lasīšanas ātrums</translation>
 <translation id="5166007464919321363">Saglabāt darbvietu kā veidni</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
@@ -653,6 +660,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5286194356314741248">Notiek skenēšana</translation>
 <translation id="5297423144044956168">Netika atrasta neviena mobilā ierīce</translation>
 <translation id="5297704307811127955">Izslēgta</translation>
+<translation id="5300589172476337783">Rādīt</translation>
 <translation id="5302048478445481009">Valoda</translation>
 <translation id="5308380583665731573">Pievienošana</translation>
 <translation id="5313326810920013265">Bluetooth iestatījumi</translation>
@@ -947,6 +955,7 @@ Jauna instalācija</translation>
 <translation id="7366890467478514168">Izveidojiet savienojumu ar ierīci <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Ierakstīt logu</translation>
 <translation id="7377169924702866686">Funkcija Caps Lock ir ieslēgta.</translation>
+<translation id="7377481913241237033">Pievienot, izmantojot kodu</translation>
 <translation id="7378203170292176219">Velciet, lai atlasītu apgabalu, kura saturs jāieraksta</translation>
 <translation id="7378594059915113390">Multivides vadīklas</translation>
 <translation id="7378889811480108604">Akumulatora enerģijas taupīšanas režīms ir izslēgts</translation>
@@ -974,6 +983,7 @@ Jauna instalācija</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7526573455193969409">Var tikt pārraudzītas tīklā veiktās darbības</translation>
 <translation id="7536035074519304529">IP adrese: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Linux lietotnes un inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
 <translation id="7544300628205093162">Tastatūras fona apgaismojums ir ieslēgts.</translation>
 <translation id="7548434653388805669">Laiks naktsmieram</translation>
 <translation id="7551643184018910560">Piespraust plauktam</translation>
@@ -1165,6 +1175,7 @@ Jauna instalācija</translation>
 <translation id="8785070478575117577">Savienošana ar ierīci <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Mape <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">“Help” (Palīdzība)</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ievades metožu iestatījumi</translation>
 <translation id="8818320199597151042">Notiek profila noņemšana. Uzgaidiet dažas minūtes.</translation>

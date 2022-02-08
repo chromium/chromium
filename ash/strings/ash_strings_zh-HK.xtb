@@ -308,7 +308,7 @@
 <translation id="3038571455154067151">如要登入帳戶，請輸入 Family Link 家長存取碼</translation>
 <translation id="3039939407102840004">觸控筆有 <ph name="PERCENTAGE" />% 電。</translation>
 <translation id="3045488863354895414">午安，</translation>
-<translation id="3047761520276763270">試著說出：</translation>
+<translation id="3047761520276763270">請嘗試說：</translation>
 <translation id="3051189971848907985">正在重新命名設定檔。請等候幾分鐘。</translation>
 <translation id="3055162170959710888">您今天的裝置使用時間：<ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">捷徑列喺螢幕左邊</translation>
@@ -636,6 +636,7 @@
 <translation id="5117590920725113268">顯示下個月</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
 <translation id="5147567197700016471">已解鎖</translation>
+<translation id="5150070631291639005">私隱設定</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
 <translation id="5166007464919321363">將桌面儲存為範本</translation>
 <translation id="5168181903108465623">有可用投放裝置</translation>
@@ -658,6 +659,7 @@
 <translation id="5286194356314741248">掃描中</translation>
 <translation id="5297423144044956168">找不到流動裝置</translation>
 <translation id="5297704307811127955">已關閉</translation>
+<translation id="5300589172476337783">顯示</translation>
 <translation id="5302048478445481009">語言</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5313326810920013265">藍牙設定</translation>

@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
 <translation id="1829244130665387512">Finn på side</translation>
 <translation id="1832459821645506983">Ja, den er grei</translation>
-<translation id="1843805151597803366">For å få bedre oversettelser, la Google Søk bruke den nåværende siden</translation>
 <translation id="1868024384445905608">Chrome laster ned filer raskere nå</translation>
 <translation id="1877026089748256423">Chrome er utdatert</translation>
 <translation id="1883903952484604915">Mine filer</translation>
@@ -227,7 +226,6 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2328985652426384049">Kan ikke logge på</translation>
 <translation id="2342601525305963189">Chrome-tips:</translation>
 <translation id="234265804618409743">Kan ikke åpne kameraet. Noe gikk galt.</translation>
-<translation id="2345671828921229300">For å søke, trykk og hold inne på et ord</translation>
 <translation id="2349710944427398404">Total datamengde som brukes av Chrome, deriblant kontoer, bokmerker og lagrede innstillinger</translation>
 <translation id="2353636109065292463">Sjekker internettilkoblingen din</translation>
 <translation id="235789365079050412">Googles personvernregler</translation>
@@ -301,7 +299,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2723001399770238859">lyd</translation>
 <translation id="2732063072010454421">Få en bedre taleopplevelse</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Trykk på et ord for å søke umiddelbart eller se relaterte handlinger</translation>
 <translation id="2760989362628427051">Slå på mørkt tema når batterisparing eller enhetsinnstillingen for mørkt tema er på</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="276969039800130567">Pålogget som <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3341262203274374114">Kan ikke slutte å følge. Noe gikk galt.</translation>
 <translation id="3359667936385849800">Bruk den nåværende tjenesteleverandøren din</translation>
 <translation id="3367813778245106622">Logg på igjen for å starte synkroniseringen</translation>
-<translation id="337236281855091893">For å søke, trykk og hold inne på et ord i stedet for å trykke på det</translation>
 <translation id="3373979091428520308">For å dele denne siden med en annen enhet, slå på synkronisering i Chrome-innstillingene på den andre enheten</translation>
 <translation id="3374023511497244703">Bokmerker, logg, passord og andre Chrome-data synkroniseres ikke lenger med Google-kontoen din.</translation>
 <translation id="3384347053049321195">Del bildet</translation>
@@ -431,7 +427,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3428747202529429621">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
 <translation id="3435465986463792564">Har du mange vinduer? Du kan administrere dem her</translation>
-<translation id="3440975416244667276">Trykk og hold for mer relevant informasjon</translation>
 <translation id="3443221991560634068">Last inn den aktive siden på nytt</translation>
 <translation id="3444179773590444986">Vil du dele tilbakemeldinger om mørkt tema for nettsteder?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 nedlasting er planlagt}other{# nedlastinger er planlagt}}</translation>
@@ -518,7 +513,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3976396876660209797">Fjern denne snarveien, og opprett den på nytt</translation>
 <translation id="3985215325736559418">Vil du laste ned <ph name="FILE_NAME" /> igjen?</translation>
 <translation id="3987993985790029246">Kopiér link</translation>
-<translation id="3988466920954086464">Se umiddelbare søkeresultater i dette panelet</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
 <translation id="4016425174436051808">Kan ikke følge. Noe gikk galt.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t}other{# t}}</translation>
@@ -574,9 +568,11 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4402611456429872546"><ph name="LANG" /> – Laster ned …</translation>
 <translation id="4404568932422911380">Ingen bokmerker</translation>
 <translation id="4405224443901389797">Flytt til …</translation>
+<translation id="4405636711880428279">Vil du fjerne det virtuelle kortet ditt?</translation>
 <translation id="4409271659088619928">Søkemotoren din er <ph name="DSE" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
 <translation id="4425140285732600465">Sporer prisen. Du får varsler hvis prisen settes ned på noe nettsted.</translation>
+<translation id="442518031075347249">Du kommer ikke lenger til å kunne bruke det virtuelle kortet ditt med Google Pay. <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Søkeresultater fra Google.</translation>
 <translation id="4452411734226507615">Lukk <ph name="TAB_TITLE" />-fanen</translation>
 <translation id="4452548195519783679">Satt som bokmerke i <ph name="FOLDER_NAME" /></translation>
@@ -1137,7 +1133,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7475688122056506577">Finner ikke SD-kort. Noen av filene dine kan mangle.</translation>
 <translation id="7479104141328977413">Faneadministrering</translation>
 <translation id="7481312909269577407">Frem</translation>
-<translation id="7481864133709957613">For å søke på denne siden, trykk og hold på ord i stedet for å trykke på dem</translation>
 <translation id="7482656565088326534">Fane for forhåndsvisning</translation>
 <translation id="7484997419527351112">Discover – av</translation>
 <translation id="7485033510383818941">For å oppdatere innholdet i strømmen, trekk ned siden</translation>

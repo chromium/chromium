@@ -89,7 +89,6 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />要将您的 Chrome 设置恢复为原始默认设置。这不仅会重置您的主页、“打开新的标签页”页面和搜索引擎，而且还会禁用您的扩展程序并取消固定所有标签页。此外，其他临时数据和缓存的数据（例如 Cookie、内容和网站数据）也将被清除。</translation>
 <translation id="1084096383128641877">移除此密码不会删除您在 <ph name="DOMAIN" /> 上的帐号。如需保护您在 <ph name="DOMAIN_LINK" /> 上的帐号免遭他人盗用，请更改您的密码或删除该帐号。</translation>
 <translation id="1084824384139382525">复制链接地址(&amp;E)</translation>
-<translation id="1085064499066015002">在所有网站上始终允许</translation>
 <translation id="1085697365578766383">启动虚拟机时出错。请重试。</translation>
 <translation id="1087965115100412394">不允许网站连接到 MIDI 设备</translation>
 <translation id="1088654056000736875">Chrome 正在从您的计算机中移除有害软件…</translation>
@@ -339,6 +338,7 @@
 <translation id="1340527397989195812">使用“文件”应用备份设备上的媒体。</translation>
 <translation id="1341988552785875222">当前壁纸是由“<ph name="APP_NAME" />”设置的。您可能需要先卸载“<ph name="APP_NAME" />”，然后才能选择其他壁纸。</translation>
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
+<translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
 <translation id="1346630054604077329">确认并重启</translation>
 <translation id="1347256498747320987">安装更新和应用。继续操作即表示您同意此设备还可从 Google、您的运营商以及您设备的制造商处自动下载并安装更新和应用（可能会使用移动数据网络）。部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux 存储空间</translation>
@@ -2823,7 +2823,6 @@
 <translation id="383891835335927981">未对任何网站设置缩放级别</translation>
 <translation id="3839509547554145593">启用鼠标滚屏加速</translation>
 <translation id="3839516600093027468">始终禁止 <ph name="HOST" /> 查看剪贴板</translation>
-<translation id="3839526976593488376">针对每个网站进行自定义</translation>
 <translation id="3841964634449506551">密码无效</translation>
 <translation id="3842552989725514455">Serif 字体</translation>
 <translation id="3843464315703645664">已列入内部许可名单</translation>
@@ -5378,6 +5377,7 @@
 <translation id="654871471440386944">要开启光标浏览模式吗？</translation>
 <translation id="6549038875972762904">重新设置</translation>
 <translation id="6550675742724504774">选项</translation>
+<translation id="65513682072153627">如果某项设置或功能由您的管理员管理，您将会看到此“受管”图标。</translation>
 <translation id="6551508934388063976">无法使用命令。请按 Ctrl+N 打开一个新窗口。</translation>
 <translation id="6551612971599078809">此网站正在使用 USB</translation>
 <translation id="6551739526055143276">由 Family Link 管理</translation>
@@ -6148,6 +6148,7 @@
 <translation id="7376553024552204454">在移动鼠标光标时突出显示光标</translation>
 <translation id="737728204345822099">您对该网站的访问记录可能会保留在安全密钥上。</translation>
 <translation id="7377451353532943397">继续禁止使用传感器</translation>
+<translation id="7377481913241237033">利用代码连接</translation>
 <translation id="7378611153938412599">安全系数低的密码容易被人猜到。请务必设置安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
 <translation id="73786666777299047">打开 Chrome 网上应用店</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
@@ -7805,6 +7806,7 @@
 <translation id="9040661932550800571">要更新 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="9041692268811217999">您的管理员已禁止访问您计算机上的本地文件</translation>
 <translation id="904224458472510106">此操作无法撤消</translation>
+<translation id="9042893549633094279">隐私设置和安全性</translation>
 <translation id="904451693890288097">请输入“<ph name="DEVICE_NAME" />”的配对密钥：</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>

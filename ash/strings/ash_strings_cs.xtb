@@ -112,6 +112,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1570871743947603115">Přepnout Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
+<translation id="1610778689852195798">„Vrátit zpět“</translation>
 <translation id="1611993646327628135">Zap</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> zařízení</translation>
@@ -246,6 +247,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2607678425161541573">Je vyžadováno online přihlášení</translation>
 <translation id="2621713457727696555">Zabezpečeno</translation>
+<translation id="263399434338050016">„Vybrat vše“</translation>
 <translation id="2653019840645008922">Záznam okna</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2658778018866295321">Kliknout a přetáhnout</translation>
@@ -262,6 +264,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2727175239389218057">Odpovědět</translation>
 <translation id="2727977024730340865">Byla připojena nabíječka s nízkým výkonem. Nabíjení baterie nemusí probíhat spolehlivě.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2750932254614666392">„Smazat“</translation>
 <translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ukončit režim nahrávání</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
@@ -305,6 +308,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3038571455154067151">Pokud se chcete přihlásit, zadejte rodičovský přístupový kód Family Link</translation>
 <translation id="3039939407102840004">Baterie dotykového pera je na <ph name="PERCENTAGE" /> procentech.</translation>
 <translation id="3045488863354895414">Dobré odpoledne,</translation>
+<translation id="3047761520276763270">Řekněte:</translation>
 <translation id="3051189971848907985">Probíhá přejmenování profilu. Několik minut počkejte.</translation>
 <translation id="3055162170959710888">Toto zařízení jsi dnes používal(a) <ph name="USED_TIME" /></translation>
 <translation id="3068711042108640621">Polička vlevo</translation>
@@ -552,6 +556,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4570957409596482333">Tlačítko pro poslech vybraného textu</translation>
+<translation id="4573176682887762361">„Napsat [slovo/frázi]“</translation>
 <translation id="4577274620589681794">Čas vypršel · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Zobrazit náhledy</translation>
 <translation id="4578196883126898996">Mikrofon je vypnutý. Zapněte tlačítko mikrofonu zařízení.</translation>
@@ -632,6 +637,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5117590920725113268">Zobrazit další měsíc</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
 <translation id="5147567197700016471">Odemknuto</translation>
+<translation id="5150070631291639005">Nastavení soukromí</translation>
 <translation id="5155897006997040331">Rychlost čtení</translation>
 <translation id="5166007464919321363">Uložit plochu jako šablonu</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
@@ -654,6 +660,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5286194356314741248">Skenování</translation>
 <translation id="5297423144044956168">Nebyla nalezena žádná mobilní zařízení</translation>
 <translation id="5297704307811127955">Vypnuto</translation>
+<translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5302048478445481009">Jazyk</translation>
 <translation id="5308380583665731573">Připojení</translation>
 <translation id="5313326810920013265">Nastavení Bluetooth</translation>
@@ -1168,6 +1175,7 @@ Nová instalace</translation>
 <translation id="8785070478575117577">Připojit k síti <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Složka <ph name="FOLDER_NAME" /></translation>
+<translation id="880709030178078220">„Nápověda“</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Nastavení metody zadávání</translation>
 <translation id="8818320199597151042">Odstraňování profilu. Několik minut počkejte.</translation>

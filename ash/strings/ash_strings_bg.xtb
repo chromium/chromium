@@ -146,6 +146,7 @@
 <translation id="1836215606488044471">Асистент (зарежда се...)</translation>
 <translation id="1838895407229022812">Функцията за нощно осветление е изключена.</translation>
 <translation id="1864454756846565995">USB-C устройство (задният порт)</translation>
+<translation id="1879018240766558464">Понастоящем не се поддържат прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
 <translation id="1882814835921407042">Няма мобилна мрежа</translation>
 <translation id="1882897271359938046">Дублира се на „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="1885785240814121742">Отключване с отпечатък</translation>
@@ -636,6 +637,7 @@
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5147567197700016471">Отключено</translation>
+<translation id="5150070631291639005">Настройки за поверителност</translation>
 <translation id="5155897006997040331">Скорост на четене</translation>
 <translation id="5166007464919321363">Запазване на работния кът като шаблон</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
@@ -658,6 +660,7 @@
 <translation id="5286194356314741248">Сканира се</translation>
 <translation id="5297423144044956168">Няма намерени мобилни устройства</translation>
 <translation id="5297704307811127955">Изключено</translation>
+<translation id="5300589172476337783">Показване</translation>
 <translation id="5302048478445481009">Език</translation>
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5313326810920013265">Настройки за Bluetooth</translation>
@@ -952,6 +955,7 @@
 <translation id="7366890467478514168">Свързване с(ъс) <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Прозорец за записване</translation>
 <translation id="7377169924702866686">„Caps Lock“ е включен.</translation>
+<translation id="7377481913241237033">Свързване чрез код</translation>
 <translation id="7378203170292176219">С плъзгане изберете областта, която да бъде записана</translation>
 <translation id="7378594059915113390">Контроли за мултимедия</translation>
 <translation id="7378889811480108604">Режимът за запазване на батерията е изключен</translation>
@@ -979,6 +983,7 @@
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Понастоящем не се поддържат приложения за Linux и прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
 <translation id="7544300628205093162">Фоновото осветление на клавиатурата е включено</translation>
 <translation id="7548434653388805669">Време е за сън</translation>
 <translation id="7551643184018910560">Фиксиране в лавицата</translation>

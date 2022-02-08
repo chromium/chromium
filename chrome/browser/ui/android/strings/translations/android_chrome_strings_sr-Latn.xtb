@@ -137,7 +137,6 @@
 <translation id="1810845389119482123">Početno podešavanje sinhronizacije nije završeno</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
 <translation id="1832459821645506983">Da, omogući</translation>
-<translation id="1843805151597803366">Da biste dobili bolje prevode, omogućite da Google pretraga koristi aktuelnu stranicu</translation>
 <translation id="1868024384445905608">Chrome sada brže preuzima datoteke</translation>
 <translation id="1877026089748256423">Chrome je zastareo</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
@@ -227,7 +226,6 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2328985652426384049">Ne mogu da se prijavim</translation>
 <translation id="2342601525305963189">Saveti za Chrome:</translation>
 <translation id="234265804618409743">Ne možemo da otvorimo kameru. Nešto nije u redu.</translation>
-<translation id="2345671828921229300">Da biste pretraživali, dodirnite i zadržite reč</translation>
 <translation id="2349710944427398404">Svi podaci koje koristi Chrome, uključujući naloge, obeleživače i sačuvana podešavanja</translation>
 <translation id="2353636109065292463">Proverava se internet veza</translation>
 <translation id="235789365079050412">Google politika privatnosti</translation>
@@ -301,7 +299,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Dobijte bolji glasovni doživljaj</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2744248271121720757">Dodirnite reč da biste je trenutno pretražili ili videli povezane radnje</translation>
 <translation id="2760989362628427051">Uključite tamnu temu kada je tamna tema ili Ušteda baterije uključena na uređaju</translation>
 <translation id="2762000892062317888">malopre</translation>
 <translation id="276969039800130567">Prijavljen/na kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -417,7 +414,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3341262203274374114">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>
 <translation id="3359667936385849800">Koristi aktuelnog dobavljača usluge</translation>
 <translation id="3367813778245106622">Prijavite se ponovo da biste započeli sinhronizaciju</translation>
-<translation id="337236281855091893">Da biste pretraživali, dodirnite i zadržite reč umesto da je samo dodirnete</translation>
 <translation id="3373979091428520308">Da biste delili ovu stranicu sa drugim uređajem, uključite sinhronizaciju u podešavanjima Chrome-a na drugom uređaju</translation>
 <translation id="3374023511497244703">Obeleživači, istorija, lozinke i drugi Chrome podaci više se neće sinhronizovati sa Google nalogom</translation>
 <translation id="3384347053049321195">Deli sliku</translation>
@@ -431,7 +427,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
-<translation id="3440975416244667276">Dodirnite i zadržite da biste videli relevantnije informacije</translation>
 <translation id="3443221991560634068">Ponovno učitavanje aktuelne stranice</translation>
 <translation id="3444179773590444986">Želite da delite povratne informacije o tamnoj temi za sajtove?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zakazano je 1 preuzimanje}one{Zakazano je # preuzimanje}few{Zakazana su # preuzimanja}other{Zakazano je # preuzimanja}}</translation>
@@ -518,7 +513,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3976396876660209797">Uklonite i ponovo napravite ovu prečicu</translation>
 <translation id="3985215325736559418">Želite li stvarno da ponovo preuzmete <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
-<translation id="3988466920954086464">Pogledajte instant rezultate pretrage na ovoj tabli</translation>
 <translation id="4000212216660919741">Oflajn početna stranica</translation>
 <translation id="4016425174436051808">Praćenje nije uspelo. Došlo je do greške.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# č}one{# č}few{# č}other{# č}}</translation>
@@ -1137,7 +1131,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7475688122056506577">SD kartica nije pronađena. Neke datoteke možda nedostaju.</translation>
 <translation id="7479104141328977413">Upravljanje karticama</translation>
 <translation id="7481312909269577407">Prosledi</translation>
-<translation id="7481864133709957613">Da biste pretraživali sa ove stranice, dodirnite i zadržite reči umesto da ih dodirnete</translation>
 <translation id="7482656565088326534">Kartica za pregled</translation>
 <translation id="7484997419527351112">Discover – isključeno</translation>
 <translation id="7485033510383818941">Da biste osvežili sadržaj fida, povucite stranicu nadole</translation>
