@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -163,7 +164,10 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
     return;
   }
   std::string version_ascii;
-  manifest->GetStringASCII("version", &version_ascii);
+  if (const std::string* ptr = manifest->FindStringKey("version")) {
+    if (base::IsStringASCII(*ptr))
+      version_ascii = *ptr;
+  }
   base::Version version(version_ascii);
   if (!version.IsValid()) {
     ComponentLoadFailedInternal(ComponentLoadResult::kInvalidVersion);
