@@ -160,6 +160,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   bool IsEvicted() const;
   const FaviconStatus& GetFaviconStatus() const;
   void SetFaviconStatus(const FaviconStatus& favicon_status);
+  int GetNavigationItemCount() const;
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const;

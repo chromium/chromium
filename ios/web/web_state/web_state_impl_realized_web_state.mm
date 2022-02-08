@@ -703,6 +703,10 @@ void WebStateImpl::RealizedWebState::SetFaviconStatus(
     item->SetFaviconStatus(favicon_status);
 }
 
+int WebStateImpl::RealizedWebState::GetNavigationItemCount() const {
+  return navigation_manager_->GetItemCount();
+}
+
 const GURL& WebStateImpl::RealizedWebState::GetVisibleURL() const {
   NavigationItem* item = navigation_manager_->GetVisibleItem();
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();

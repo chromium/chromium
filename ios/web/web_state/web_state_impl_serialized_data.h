@@ -53,6 +53,7 @@ class WebStateImpl::SerializedData {
   const std::u16string& GetTitle() const;
   const FaviconStatus& GetFaviconStatus() const;
   void SetFaviconStatus(const FaviconStatus& favicon_status);
+  int GetNavigationItemCount() const;
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
 

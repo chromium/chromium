@@ -81,9 +81,7 @@ TEST_F(SynthesizedSessionRestoreTest, TestRestore) {
   synthesized_restore_helper_.Init(0, items, false);
 
   EXPECT_TRUE(synthesized_restore_helper_.Restore(web_state_.get()));
-  web::NavigationManager* navigationManager =
-      web_state_.get()->GetNavigationManager();
-  EXPECT_EQ(navigationManager->GetItemCount(), 100);
+  EXPECT_EQ(web_state_->GetNavigationItemCount(), 100);
 }
 
 }  // namespace web

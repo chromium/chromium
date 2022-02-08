@@ -366,6 +366,11 @@ class WebState : public base::SupportsUserData {
   virtual const FaviconStatus& GetFaviconStatus() const = 0;
   virtual void SetFaviconStatus(const FaviconStatus& favicon_status) = 0;
 
+  // Returns the number of items in the NavigationManager, excluding
+  // pending entries.
+  // TODO(crbug.com/533848): Update to return size_t.
+  virtual int GetNavigationItemCount() const = 0;
+
   // Gets the URL currently being displayed in the URL bar, if there is one.
   // This URL might be a pending navigation that hasn't committed yet, so it is
   // not guaranteed to match the current page in this WebState. A typical

@@ -231,6 +231,10 @@ bool FakeWebState::ContentIsHTML() const {
   return content_is_html_;
 }
 
+int FakeWebState::GetNavigationItemCount() const {
+  return navigation_item_count_;
+}
+
 const GURL& FakeWebState::GetVisibleURL() const {
   return url_;
 }
@@ -456,6 +460,10 @@ bool FakeWebState::IsClosed() const {
 
 void FakeWebState::SetCurrentURL(const GURL& url) {
   url_ = url;
+}
+
+void FakeWebState::SetNavigationItemCount(int count) {
+  navigation_item_count_ = count;
 }
 
 void FakeWebState::SetVisibleURL(const GURL& url) {

@@ -403,7 +403,7 @@ bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
   web::NavigationManager* navigationManager = web_state->GetNavigationManager();
-  for (int i = 0; i < navigationManager->GetItemCount(); i++) {
+  for (int i = 0; i < web_state->GetNavigationItemCount(); i++) {
     // The WKWebView URL underneath the NTP is about://newtab, which has no
     // title. When restoring the NTP, be sure to re-add the title below.
     web::NavigationItem* item = navigationManager->GetItemAtIndex(i);

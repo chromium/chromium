@@ -80,10 +80,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
       // Check if there is navigation history for this WebState that is showing
       // the NTP. If there is, then set |keepOneNTP| to NO, indicating that all
       // WebStates in NTPs with no navigation history will get removed.
-      // TODO(crbug.com/1291626): Remove IsRealized and check GetItemCount
-      // directly on webState.
-      if (webState->IsRealized() &&
-          webState->GetNavigationManager()->GetItemCount() <= 1) {
+      if (webState->GetNavigationItemCount() <= 1) {
         // Keep track if active WebState is showing an NTP and has no navigation
         // history since it may get removed if |keepOneNTP| is NO.
         if (i == activeWebStateIndex) {

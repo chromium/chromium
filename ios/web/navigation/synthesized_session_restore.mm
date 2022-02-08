@@ -108,8 +108,7 @@ bool SynthesizedSessionRestore::Restore(WebState* web_state) {
   if (!restore_session_succeeded)
     return false;
 
-  web::NavigationManager* navigationManager = web_state->GetNavigationManager();
-  DCHECK(navigationManager->GetItemCount());
+  DCHECK(web_state->GetNavigationItemCount());
   web::GetWebClient()->CleanupNativeRestoreURLs(web_state);
   return true;
 }

@@ -62,7 +62,7 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
 
   // No need to record history if the tab has no navigation or has only
   // presented the NTP or the bookmark UI.
-  if (navigation_manager->GetItemCount() <= 1) {
+  if (web_state->GetNavigationItemCount() <= 1) {
     const GURL& last_committed_url = web_state->GetLastCommittedURL();
     if (!last_committed_url.is_valid() ||
         (last_committed_url.host_piece() == kChromeUINewTabHost)) {

@@ -68,7 +68,7 @@ bool IOSChromeSyncedTabDelegate::IsInitialBlankNavigation() const {
   if (GetSessionStorageIfNeeded()) {
     return session_storage_.itemStorages.count == 0;
   }
-  return web_state_->GetNavigationManager()->GetItemCount() == 0;
+  return web_state_->GetNavigationItemCount() == 0;
 }
 
 int IOSChromeSyncedTabDelegate::GetCurrentEntryIndex() const {
@@ -95,7 +95,7 @@ int IOSChromeSyncedTabDelegate::GetEntryCount() const {
   if (GetSessionStorageIfNeeded()) {
     return static_cast<int>(session_storage_.itemStorages.count);
   }
-  return web_state_->GetNavigationManager()->GetItemCount();
+  return web_state_->GetNavigationItemCount();
 }
 
 GURL IOSChromeSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {

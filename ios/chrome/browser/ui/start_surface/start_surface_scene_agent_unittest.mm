@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -58,8 +57,6 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   void InsertNewWebState(int index, WebStateOpener opener, GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
-    test_web_state->SetNavigationManager(
-        std::make_unique<web::FakeNavigationManager>());
     Browser* browser = scene_state_.interfaceProvider.mainInterface.browser;
     WebStateList* web_state_list = browser->GetWebStateList();
     web_state_list->InsertWebState(index, std::move(test_web_state),
@@ -73,11 +70,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
                                               GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
-    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-    navigation_manager->AddItem(url, ui::PAGE_TRANSITION_HOME_PAGE);
-    navigation_manager->AddItem(GURL("http://www.chromium.test"),
-                                ui::PAGE_TRANSITION_LINK);
-    test_web_state->SetNavigationManager(std::move(navigation_manager));
+    test_web_state->SetNavigationItemCount(2);
     Browser* browser = scene_state_.interfaceProvider.mainInterface.browser;
     WebStateList* web_state_list = browser->GetWebStateList();
     web_state_list->InsertWebState(index, std::move(test_web_state),

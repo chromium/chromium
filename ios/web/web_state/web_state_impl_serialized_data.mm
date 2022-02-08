@@ -100,6 +100,10 @@ void WebStateImpl::SerializedData::SetFaviconStatus(
   favicon_status_ = favicon_status;
 }
 
+int WebStateImpl::SerializedData::GetNavigationItemCount() const {
+  return session_storage_.itemStorages.count;
+}
+
 const GURL& WebStateImpl::SerializedData::GetVisibleURL() const {
   // A restored WebState has no pending item. Thus the visible item is the
   // last committed item. This means that GetVisibleURL() must return the

@@ -106,8 +106,7 @@ TEST_F(SessionStorageBuilderTest, BuildStorageForExtraLongSession) {
   [fake_web_view() setCurrentURL:current_url
                     backListURLs:back_urls
                  forwardListURLs:nil];
-  NavigationManager* navigation_manager = web_state()->GetNavigationManager();
-  int original_item_count = navigation_manager->GetItemCount();
+  int original_item_count = web_state()->GetNavigationItemCount();
   ASSERT_EQ(kMaxSessionSize + 1, original_item_count);
 
   // Verify that storage item count does not exceed kMaxSessionSize.
@@ -120,6 +119,7 @@ TEST_F(SessionStorageBuilderTest, BuildStorageForExtraLongSession) {
 
   // Walk backwards and verify that URLs in the storage match original URLs.
   for (int i = 0; i < kMaxSessionSize; i++) {
+    NavigationManager* navigation_manager = web_state()->GetNavigationManager();
     NavigationItem* item =
         navigation_manager->GetItemAtIndex(original_item_count - i - 1);
     CRWNavigationItemStorage* item_storage =
@@ -142,7 +142,7 @@ TEST_F(SessionStorageBuilderTest, ShouldSkipSerializationItems) {
                     backListURLs:back_urls
                  forwardListURLs:nil];
   NavigationManager* navigation_manager = web_state()->GetNavigationManager();
-  int original_item_count = navigation_manager->GetItemCount();
+  int original_item_count = web_state()->GetNavigationItemCount();
   ASSERT_EQ(kMaxSessionSize + 1, original_item_count);
 
   const int kSkippedItemIndex = kMaxSessionSize - 1;
@@ -162,7 +162,7 @@ TEST_F(SessionStorageBuilderTest, ShouldSkipSerializationItems) {
   // Verify that URLs in the storage match original URLs without skipped item.
   for (int storage_index = 0, item_index = 0;
        storage_index < kMaxSessionSize &&
-       item_index < web_state()->GetNavigationManagerImpl().GetItemCount();
+       item_index < web_state()->GetNavigationItemCount();
        storage_index++, item_index++) {
     if (item_index == kSkippedItemIndex) {
       item_index++;
@@ -187,8 +187,7 @@ TEST_F(SessionStorageBuilderTest, SkipLongUrls) {
   [fake_web_view() setCurrentURL:normal_url
                     backListURLs:@[ long_url ]
                  forwardListURLs:nil];
-  NavigationManager* navigation_manager = web_state()->GetNavigationManager();
-  ASSERT_EQ(2, navigation_manager->GetItemCount());
+  ASSERT_EQ(2, web_state()->GetNavigationItemCount());
 
   web_state()
       ->GetNavigationManagerImpl()

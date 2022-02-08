@@ -182,6 +182,11 @@ NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() {
   return RealizedState()->GetNavigationManager();
 }
 
+int WebStateImpl::GetNavigationItemCount() const {
+  return LIKELY(pimpl_) ? pimpl_->GetNavigationItemCount()
+                        : saved_->GetNavigationItemCount();
+}
+
 WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl() {
   return RealizedState()->GetWebFramesManager();
 }

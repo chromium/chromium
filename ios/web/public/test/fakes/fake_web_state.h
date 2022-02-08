@@ -79,6 +79,7 @@ class FakeWebState : public WebState {
   bool IsBeingDestroyed() const override;
   const FaviconStatus& GetFaviconStatus() const final;
   void SetFaviconStatus(const FaviconStatus& favicon_status) final;
+  int GetNavigationItemCount() const override;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
@@ -124,6 +125,7 @@ class FakeWebState : public WebState {
   void SetContentsMimeType(const std::string& mime_type);
   void SetLoading(bool is_loading);
   void SetCurrentURL(const GURL& url);
+  void SetNavigationItemCount(int count);
   void SetVisibleURL(const GURL& url);
   void SetTrustLevel(URLVerificationTrustLevel trust_level);
   void SetNavigationManager(
@@ -184,6 +186,7 @@ class FakeWebState : public WebState {
   bool can_take_snapshot_ = false;
   bool is_closed_ = false;
   base::Time last_active_time_ = base::Time::Now();
+  int navigation_item_count_ = 0;
   FaviconStatus favicon_status_;
   GURL url_;
   std::u16string title_;
