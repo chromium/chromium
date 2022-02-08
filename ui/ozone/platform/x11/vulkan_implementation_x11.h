@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_VULKAN_X_VULKAN_IMPLEMENTATION_X11_H_
-#define GPU_VULKAN_X_VULKAN_IMPLEMENTATION_X11_H_
+#ifndef UI_OZONE_PLATFORM_X11_VULKAN_IMPLEMENTATION_X11_H_
+#define UI_OZONE_PLATFORM_X11_VULKAN_IMPLEMENTATION_X11_H_
 
 #include <memory>
 
-#include "base/component_export.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
 
-namespace gpu {
+namespace ui {
 
-class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
-    : public VulkanImplementation {
+class VulkanImplementationX11 : public gpu::VulkanImplementation {
  public:
   explicit VulkanImplementationX11(bool use_swiftshader = false);
 
@@ -25,8 +23,8 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
 
   // VulkanImplementation:
   bool InitializeVulkanInstance(bool using_surface) override;
-  VulkanInstance* GetVulkanInstance() override;
-  std::unique_ptr<VulkanSurface> CreateViewSurface(
+  gpu::VulkanInstance* GetVulkanInstance() override;
+  std::unique_ptr<gpu::VulkanSurface> CreateViewSurface(
       gfx::AcceleratedWidget window) override;
   bool GetPhysicalDevicePresentationSupport(
       VkPhysicalDevice device,
@@ -40,23 +38,23 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
       VkFence vk_fence) override;
   VkSemaphore CreateExternalSemaphore(VkDevice vk_device) override;
   VkSemaphore ImportSemaphoreHandle(VkDevice vk_device,
-                                    SemaphoreHandle handle) override;
-  SemaphoreHandle GetSemaphoreHandle(VkDevice vk_device,
-                                     VkSemaphore vk_semaphore) override;
+                                    gpu::SemaphoreHandle handle) override;
+  gpu::SemaphoreHandle GetSemaphoreHandle(VkDevice vk_device,
+                                          VkSemaphore vk_semaphore) override;
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
       gfx::GpuMemoryBufferType memory_buffer_type) override;
-  std::unique_ptr<VulkanImage> CreateImageFromGpuMemoryHandle(
-      VulkanDeviceQueue* device_queue,
+  std::unique_ptr<gpu::VulkanImage> CreateImageFromGpuMemoryHandle(
+      gpu::VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
       VkFormat vk_formae) override;
 
  private:
   bool using_surface_ = true;
-  VulkanInstance vulkan_instance_;
+  gpu::VulkanInstance vulkan_instance_;
 };
 
-}  // namespace gpu
+}  // namespace ui
 
-#endif  // GPU_VULKAN_X_VULKAN_IMPLEMENTATION_X11_H_
+#endif  // UI_OZONE_PLATFORM_X11_VULKAN_IMPLEMENTATION_X11_H_

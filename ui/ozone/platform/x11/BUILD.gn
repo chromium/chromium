@@ -103,7 +103,13 @@ source_set("x11") {
   }
 
   if (enable_vulkan) {
-    deps += [ "//gpu/vulkan/x" ]
+    sources += [
+      "vulkan_implementation_x11.cc",
+      "vulkan_implementation_x11.h",
+      "vulkan_surface_x11.cc",
+      "vulkan_surface_x11.h",
+    ]
+    deps += [ "//gpu/vulkan" ]
   }
 
   if (use_xkbcommon) {

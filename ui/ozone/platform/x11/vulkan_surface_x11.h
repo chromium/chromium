@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_VULKAN_X_VULKAN_SURFACE_X11_H_
-#define GPU_VULKAN_X_VULKAN_SURFACE_X11_H_
+#ifndef UI_OZONE_PLATFORM_X11_VULKAN_SURFACE_X11_H_
+#define UI_OZONE_PLATFORM_X11_VULKAN_SURFACE_X11_H_
 
 #include <vulkan/vulkan.h>
 
@@ -15,9 +15,9 @@ namespace x11 {
 class XScopedEventSelector;
 }
 
-namespace gpu {
+namespace ui {
 
-class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
+class VulkanSurfaceX11 : public gpu::VulkanSurface, public x11::EventObserver {
  public:
   static std::unique_ptr<VulkanSurfaceX11> Create(VkInstance vk_instance,
                                                   x11::Window parent_window);
@@ -31,7 +31,7 @@ class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
 
   ~VulkanSurfaceX11() override;
 
-  // VulkanSurface:
+  // gpu::VulkanSurface:
   void Destroy() override;
   bool Reshape(const gfx::Size& size,
                gfx::OverlayTransform pre_transform) override;
@@ -45,6 +45,6 @@ class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
   std::unique_ptr<x11::XScopedEventSelector> event_selector_;
 };
 
-}  // namespace gpu
+}  // namespace ui
 
-#endif  // GPU_VULKAN_X_VULKAN_SURFACE_X11_H_
+#endif  // UI_OZONE_PLATFORM_X11_VULKAN_SURFACE_X11_H_

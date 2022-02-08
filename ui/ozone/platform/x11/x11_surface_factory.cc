@@ -21,7 +21,7 @@
 #include "ui/ozone/platform/x11/x11_canvas_surface.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "gpu/vulkan/x/vulkan_implementation_x11.h"
+#include "ui/ozone/platform/x11/vulkan_implementation_x11.h"
 #endif
 
 namespace ui {
@@ -129,7 +129,7 @@ GLOzone* X11SurfaceFactory::GetGLOzone(
 std::unique_ptr<gpu::VulkanImplementation>
 X11SurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
                                               bool allow_protected_memory) {
-  return std::make_unique<gpu::VulkanImplementationX11>(use_swiftshader);
+  return std::make_unique<VulkanImplementationX11>(use_swiftshader);
 }
 #endif
 

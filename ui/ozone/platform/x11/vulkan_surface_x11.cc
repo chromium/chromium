@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/vulkan/x/vulkan_surface_x11.h"
+#include "ui/ozone/platform/x11/vulkan_surface_x11.h"
 
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -13,7 +13,7 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 
-namespace gpu {
+namespace ui {
 
 // static
 std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
@@ -72,11 +72,11 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
                                    VkSurfaceKHR vk_surface,
                                    x11::Window parent_window,
                                    x11::Window window)
-    : VulkanSurface(vk_instance,
-                    static_cast<gfx::AcceleratedWidget>(window),
-                    vk_surface,
-                    base::Time::kNanosecondsPerSecond *
-                        2 /* acquire_next_image_timeout_ns */),
+    : gpu::VulkanSurface(vk_instance,
+                         static_cast<gfx::AcceleratedWidget>(window),
+                         vk_surface,
+                         base::Time::kNanosecondsPerSecond *
+                             2 /* acquire_next_image_timeout_ns */),
       parent_window_(parent_window),
       window_(window),
       event_selector_(std::make_unique<x11::XScopedEventSelector>(
@@ -122,4 +122,4 @@ void VulkanSurfaceX11::OnEvent(const x11::Event& event) {
   x11::Connection::Get()->Flush();
 }
 
-}  // namespace gpu
+}  // namespace ui
