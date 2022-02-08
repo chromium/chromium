@@ -1038,15 +1038,5 @@ void SetAccountManager(const AccountId& account_id,
   return KnownUser(local_state).SetAccountManager(account_id, manager);
 }
 
-void SetUserLastLoginInputMethodId(const AccountId& account_id,
-                                   const std::string& input_method_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state)
-      .SetUserLastLoginInputMethodId(account_id, input_method_id);
-}
-
 }  // namespace known_user
 }  // namespace user_manager

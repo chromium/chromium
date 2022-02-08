@@ -417,11 +417,6 @@ bool USER_MANAGER_EXPORT GetIsEnterpriseManaged(const AccountId& account_id);
 // instead.
 void USER_MANAGER_EXPORT SetAccountManager(const AccountId& account_id,
                                            const std::string& manager);
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetUserLastLoginInputMethodId instead.
-void USER_MANAGER_EXPORT
-SetUserLastLoginInputMethodId(const AccountId& account_id,
-                              const std::string& input_method_id);
 
 }  // namespace known_user
 }  // namespace user_manager
