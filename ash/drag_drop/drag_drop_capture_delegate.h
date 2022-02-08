@@ -61,6 +61,8 @@ class ASH_EXPORT DragDropCaptureDelegate {
   std::unique_ptr<DragDropTracker> drag_drop_tracker_;
 };
 
+void DispatchGestureEndToWindow(aura::Window* window);
+
 }  // namespace ash
 
 #endif  // ASH_DRAG_DROP_DRAG_DROP_CAPTURE_DELEGATE_H_

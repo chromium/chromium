@@ -74,15 +74,6 @@ gfx::Rect AdjustDragImageBoundsForScaleAndOffset(
       gfx::RectF(gfx::PointF(final_origin), final_size));
 }
 
-void DispatchGestureEndToWindow(aura::Window* window) {
-  if (window && window->delegate()) {
-    ui::GestureEventDetails details(ui::ET_GESTURE_END);
-    details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
-    ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(), details);
-    window->delegate()->OnGestureEvent(&gesture_end);
-  }
-}
-
 void DropIfAllowed(const ui::OSExchangeData* drag_data,
                    aura::client::DragUpdateInfo& drag_info,
                    base::OnceClosure drop_cb) {
