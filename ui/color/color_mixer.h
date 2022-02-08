@@ -19,6 +19,7 @@
 
 namespace ui {
 
+class ColorProvider;
 class ColorRecipe;
 
 // ColorMixer represents a single conceptual mapping of a set of inputs, via a
@@ -40,7 +41,7 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // to the ColorProvider, which would need to query different mixers in order.
   // |input_mixer_getter| can be .Run() to obtain the appropriate mixer to
   // query for transform inputs.
-  explicit ColorMixer(const ColorMixer* previous_mixer = nullptr,
+  explicit ColorMixer(MixerGetter previous_mixer_getter = base::NullCallback(),
                       MixerGetter input_mixer_getter = base::NullCallback());
   // ColorMixer is movable since it holds both sets and recipes, each of which
   // might be expensive to copy.
@@ -79,7 +80,7 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // Returns an iterator to the set in |sets_| with ID |id|, or sets_.cend().
   ColorSets::const_iterator FindSetWithId(ColorSetId id) const;
 
-  raw_ptr<const ColorMixer> previous_mixer_;
+  MixerGetter previous_mixer_getter_;
   MixerGetter input_mixer_getter_;
   ColorSets sets_;
 

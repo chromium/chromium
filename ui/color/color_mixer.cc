@@ -14,9 +14,9 @@
 
 namespace ui {
 
-ColorMixer::ColorMixer(const ColorMixer* previous_mixer,
+ColorMixer::ColorMixer(MixerGetter previous_mixer_getter,
                        MixerGetter input_mixer_getter)
-    : previous_mixer_(previous_mixer),
+    : previous_mixer_getter_(previous_mixer_getter),
       input_mixer_getter_(std::move(input_mixer_getter)) {}
 
 ColorMixer::ColorMixer(ColorMixer&&) noexcept = default;
@@ -47,17 +47,19 @@ SkColor ColorMixer::GetInputColor(ColorId id) const {
       return i->second;
     }
   }
+  const ColorMixer* previous_mixer =
+      previous_mixer_getter_ ? previous_mixer_getter_.Run() : nullptr;
   // Don't log transitions to previous mixers unless the logging level is a
   // little higher.
-  DVLOG_IF(3, previous_mixer_)
+  DVLOG_IF(3, previous_mixer)
       << "GetInputColor: ColorId " << ColorIdName(id) << " not found. "
       << "Checking previous mixer.";
   // If there's no previous mixer, always log color id misses.
-  DVLOG_IF(2, !previous_mixer_)
+  DVLOG_IF(2, !previous_mixer)
       << "GetInputColor: ColorId " << ColorIdName(id) << " not found. "
       << "Returning gfx::kPlaceholderColor.";
-  return previous_mixer_ ? previous_mixer_->GetResultColor(id)
-                         : gfx::kPlaceholderColor;
+  return previous_mixer ? previous_mixer->GetResultColor(id)
+                        : gfx::kPlaceholderColor;
 }
 
 SkColor ColorMixer::GetOriginalColorFromSet(ColorId id,
@@ -74,17 +76,19 @@ SkColor ColorMixer::GetOriginalColorFromSet(ColorId id,
       return j->second;
     }
   }
+  const ColorMixer* previous_mixer =
+      previous_mixer_getter_ ? previous_mixer_getter_.Run() : nullptr;
   // Don't log transitions to previous mixers unless the logging level is a
   // little higher.
-  DVLOG_IF(3, previous_mixer_)
+  DVLOG_IF(3, previous_mixer)
       << "GetOriginalColorFromSet: ColorId " << ColorIdName(id)
       << " not found. Checking previous mixer.";
   // If there's no previous mixer, always log color id misses.
-  DVLOG_IF(2, !previous_mixer_)
+  DVLOG_IF(2, !previous_mixer)
       << "GetOriginalColorFromSet: ColorId " << ColorIdName(id)
       << " not found. Returning gfx::kPlaceholderColor.";
-  return previous_mixer_ ? previous_mixer_->GetOriginalColorFromSet(id, set_id)
-                         : gfx::kPlaceholderColor;
+  return previous_mixer ? previous_mixer->GetOriginalColorFromSet(id, set_id)
+                        : gfx::kPlaceholderColor;
 }
 
 SkColor ColorMixer::GetResultColor(ColorId id) const {

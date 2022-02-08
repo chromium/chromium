@@ -6,10 +6,21 @@
 
 #include <set>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"
 #include "ui/gfx/color_palette.h"
+
+namespace {
+
+ui::ColorMixer::MixerGetter PassThrough(const ui::ColorMixer* mixer) {
+  return base::BindRepeating([](const ui::ColorMixer* mixer) { return mixer; },
+                             mixer);
+}
+
+}  // namespace
 
 namespace ui {
 namespace {
@@ -78,7 +89,7 @@ TEST(ColorMixerTest, GetInputColorTwoSetsOverlapping) {
 TEST(ColorMixerTest, GetInputColorPreviousMixer) {
   ColorMixer mixer0;
   mixer0.AddSet({kColorSetTest0, {{kColorTest0, SK_ColorGREEN}}});
-  ColorMixer mixer1(&mixer0);
+  ColorMixer mixer1(PassThrough(&mixer0));
   mixer1.AddSet({kColorSetTest1, {{kColorTest1, SK_ColorRED}}});
   EXPECT_EQ(SK_ColorGREEN, mixer1.GetInputColor(kColorTest0));
 }
@@ -99,7 +110,7 @@ TEST(ColorMixerTest, GetInputColorRespectsRecipePreviousMixer) {
   ColorMixer mixer0;
   mixer0.AddSet({kColorSetTest0, {{kColorTest0, SK_ColorGREEN}}});
   mixer0[kColorTest0] = GetColorWithMaxContrast(FromTransformInput());
-  ColorMixer mixer1(&mixer0);
+  ColorMixer mixer1(PassThrough(&mixer0));
   mixer1.AddSet({kColorSetTest1, {{kColorTest1, SK_ColorRED}}});
   EXPECT_EQ(color_utils::GetColorWithMaxContrast(SK_ColorGREEN),
             mixer1.GetInputColor(kColorTest0));
@@ -158,7 +169,7 @@ TEST(ColorMixerTest, GetOriginalColorFromSetTwoSetsOverlapping) {
 TEST(ColorMixerTest, GetOriginalColorFromSetPreviousMixer) {
   ColorMixer mixer0;
   mixer0.AddSet({kColorSetTest0, {{kColorTest0, SK_ColorGREEN}}});
-  ColorMixer mixer1(&mixer0);
+  ColorMixer mixer1(PassThrough(&mixer0));
   mixer1.AddSet({kColorSetTest1, {{kColorTest1, SK_ColorRED}}});
   EXPECT_EQ(SK_ColorGREEN,
             mixer1.GetOriginalColorFromSet(kColorTest0, kColorSetTest0));
@@ -181,7 +192,7 @@ TEST(ColorMixerTest, GetOriginalColorFromSetIgnoresRecipePreviousMixer) {
   ColorMixer mixer0;
   mixer0.AddSet({kColorSetTest0, {{kColorTest0, SK_ColorGREEN}}});
   mixer0[kColorTest0] = GetColorWithMaxContrast(FromTransformInput());
-  ColorMixer mixer1(&mixer0);
+  ColorMixer mixer1(PassThrough(&mixer0));
   mixer1.AddSet({kColorSetTest1, {{kColorTest1, SK_ColorRED}}});
   EXPECT_EQ(SK_ColorGREEN,
             mixer1.GetOriginalColorFromSet(kColorTest0, kColorSetTest0));
@@ -242,8 +253,8 @@ TEST(ColorMixerTest, GetResultColorWithInputGetter) {
   const ColorMixer* front_mixer;
   const auto getter = base::BindRepeating(
       [](const ColorMixer** mixer) { return *mixer; }, &front_mixer);
-  ColorMixer mixer0(nullptr, getter);
-  ColorMixer mixer1(&mixer0, getter);
+  ColorMixer mixer0(PassThrough(nullptr), getter);
+  ColorMixer mixer1(PassThrough(&mixer0), getter);
   front_mixer = &mixer1;
   mixer0[kColorTest0] = {SK_ColorWHITE};
   mixer0[kColorTest1] = GetColorWithMaxContrast(kColorTest0);

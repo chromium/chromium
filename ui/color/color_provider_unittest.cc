@@ -63,6 +63,17 @@ TEST(ColorProviderTest, WithProcessing) {
   EXPECT_EQ(SK_ColorWHITE, provider.GetColor(kColorTest0));
 }
 
+// A "postprocessing" mixer can be added before regular mixers. The result
+// should be equivalent.
+TEST(ColorProviderTest, WithProcessingAddedBeforeRegular) {
+  ColorProvider provider;
+  provider.AddPostprocessingMixer()[kColorTest0] =
+      GetColorWithMaxContrast(FromTransformInput());
+  provider.AddMixer().AddSet({kColorSetTest0, {{kColorTest0, SK_ColorBLACK}}});
+  provider.GenerateColorMap();
+  EXPECT_EQ(SK_ColorWHITE, provider.GetColor(kColorTest0));
+}
+
 // Tests that if a color is redefined by a later mixer, an earlier mixer will
 // "see" the result.
 TEST(ColorProviderTest, Redefinition) {

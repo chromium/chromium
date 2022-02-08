@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider_utils.h"
@@ -26,13 +27,13 @@ ColorProvider::~ColorProvider() = default;
 ColorMixer& ColorProvider::AddMixer() {
   DCHECK(!color_map_);
 
-  mixers_.emplace_after(first_postprocessing_mixer_,
-                        GetLastNonPostprocessingMixer(),
-                        base::BindRepeating(
-                            [](const ColorProvider* provider) {
-                              return provider->GetLastNonPostprocessingMixer();
-                            },
-                            base::Unretained(this)));
+  mixers_.emplace_after(
+      first_postprocessing_mixer_,
+      base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
+                          GetLastNonPostprocessingMixer()),
+      base::BindRepeating(&ColorProvider::GetLastNonPostprocessingMixer,
+                          base::Unretained(this)));
+
   return *std::next(first_postprocessing_mixer_, 1);
 }
 
@@ -40,19 +41,17 @@ ColorMixer& ColorProvider::AddPostprocessingMixer() {
   DCHECK(!color_map_);
 
   if (first_postprocessing_mixer_ == mixers_.before_begin()) {
-    mixers_.emplace_front(
-        mixers_.empty() ? nullptr : &mixers_.front(),
-        base::BindRepeating(
-            [](const ColorProvider* provider) {
-              return provider->GetLastNonPostprocessingMixer();
-            },
-            base::Unretained(this)));
+    // The first postprocessing mixer points to the last regular mixer.
+    auto previous_mixer_getter = base::BindRepeating(
+        &ColorProvider::GetLastNonPostprocessingMixer, base::Unretained(this));
+    mixers_.emplace_front(previous_mixer_getter, previous_mixer_getter);
     first_postprocessing_mixer_ = mixers_.begin();
   } else {
-    mixers_.emplace_front(
-        &mixers_.front(),
+    // Other postprocessing mixers point to the next postprocessing mixer.
+    auto previous_mixer_getter =
         base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
-                            base::Unretained(&mixers_.front())));
+                            base::Unretained(&mixers_.front()));
+    mixers_.emplace_front(previous_mixer_getter, previous_mixer_getter);
   }
   return mixers_.front();
 }
