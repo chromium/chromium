@@ -403,6 +403,11 @@ bool ChromeAutocompleteProviderClient::IsSharingHubAvailable() const {
 #endif
 }
 
+base::WeakPtr<AutocompleteProviderClient>
+ChromeAutocompleteProviderClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ChromeAutocompleteProviderClient::OnAutocompleteControllerResultReady(
     AutocompleteController* controller) {
   auto* search_prefetch_service =

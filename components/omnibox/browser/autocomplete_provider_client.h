@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -193,6 +194,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   // Returns true if the sharing hub command is enabled.
   virtual bool IsSharingHubAvailable() const;
+
+  // Gets a weak pointer to the client. Used when providers need to use the
+  // client when the client may no longer be around.
+  virtual base::WeakPtr<AutocompleteProviderClient> GetWeakPtr();
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_CLIENT_H_
