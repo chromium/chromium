@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /** Utilities for use in power bookmarks. */
@@ -320,5 +321,113 @@ public class PowerBookmarkUtils {
     /** Sets the current page meta to the test value given. */
     public static void setPowerBookmarkMetaForTesting(@Nullable PowerBookmarkMeta meta) {
         sPowerBookmarkMetaForTesting = meta;
+    }
+
+    /**
+     * Perform a sanity check on the bookmarked products that are considered to be price tracked. We
+     * need this because we can't guarantee that the backend successfully completed the update --
+     * this is currently done asynchronously without a confirmation. This method gets the current
+     * list of subscriptions and compares them to the user's local collection. There are two
+     * possible scenarios:
+     *
+     * 1. The service is missing a subscription that the user has locally. In this case we mark the
+     *    local bookmark as not price tracked.
+     * 2. The service has a USER_MANAGED subscription that is not in the user's local bookmarks. In
+     *    this case we remove the subscription from the service.
+     *
+     * @param bookmarkBridge A means of accessing the user's bookmarks.
+     * @param subscriptionsManager A handle to the subscriptions backend.
+     */
+    public static void validateBookmarkedCommerceSubscriptions(
+            BookmarkBridge bookmarkBridge, SubscriptionsManager subscriptionsManager) {
+        if (subscriptionsManager == null || bookmarkBridge == null) return;
+
+        Runnable updater = () -> {
+            subscriptionsManager.getSubscriptions(
+                    CommerceSubscriptionType.PRICE_TRACK, false, (subscriptions) -> {
+                        doBookmarkedSubscriptionValidation(
+                                bookmarkBridge, subscriptionsManager, subscriptions);
+                    });
+        };
+
+        // Make sure the bookmark model is loaded prior to attempting to operate on it. Otherwise
+        // wait and then execute.
+        if (bookmarkBridge.isBookmarkModelLoaded()) {
+            updater.run();
+        } else {
+            bookmarkBridge.addObserver(new BookmarkBridge.BookmarkModelObserver() {
+                @Override
+                public void bookmarkModelLoaded() {
+                    updater.run();
+                    bookmarkBridge.removeObserver(this);
+                }
+
+                @Override
+                public void bookmarkModelChanged() {}
+            });
+        }
+    }
+
+    /** @see #validateBookmarkedCommerceSubscriptions(BookmarkBridge, SubscriptionsManager) */
+    private static void doBookmarkedSubscriptionValidation(BookmarkBridge bookmarkBridge,
+            SubscriptionsManager subscriptionsManager, List<CommerceSubscription> subscriptions) {
+        if (bookmarkBridge.isDestroyed() || subscriptions == null) return;
+
+        List<BookmarkId> products =
+                bookmarkBridge.searchBookmarks("", null, PowerBookmarkType.SHOPPING, -1);
+
+        // Even if we get nothing back from bookmarks, run through the process since we might need
+        // to unsubscribe from products on the backend.
+        if (products == null) products = new ArrayList<>();
+
+        // Keep two sets of IDs since ID:Bookmark is NOT 1:1. |unusedCusterIds| will be used to
+        // remove subscriptions for bookmarks not currently on (removed from) the client.
+        HashSet<Long> clusterIdSet = new HashSet<>();
+        HashSet<Long> unusedClusterIds = new HashSet<>();
+
+        for (CommerceSubscription c : subscriptions) {
+            if (CommerceSubscription.SubscriptionManagementType.USER_MANAGED.equals(
+                        c.getManagementType())) {
+                long clusterId = UnsignedLongs.parseUnsignedLong(c.getTrackingId());
+                clusterIdSet.add(clusterId);
+                unusedClusterIds.add(clusterId);
+            }
+        }
+
+        // Iterate over all the bookmarked products and ensure the ones that are tracked agree
+        // with the ones that the subscription manager thinks are tracked.
+        for (BookmarkId product : products) {
+            PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(product);
+            if (meta.getType() != PowerBookmarkType.SHOPPING) continue;
+
+            ShoppingSpecifics specifics = meta.getShoppingSpecifics();
+
+            if (!specifics.getIsPriceTracked()) continue;
+
+            if (clusterIdSet.contains(specifics.getProductClusterId())) {
+                // A cluster ID is only considered used if the user is still subscribed to it.
+                unusedClusterIds.remove(specifics.getProductClusterId());
+                continue;
+            }
+
+            // Reset the meta using a copy of the existing one, but set the price tracking flag
+            // to false.
+            ShoppingSpecifics newSpecifics =
+                    ShoppingSpecifics.newBuilder(specifics).setIsPriceTracked(false).build();
+            bookmarkBridge.setPowerBookmarkMeta(product,
+                    PowerBookmarkMeta.newBuilder(meta).setShoppingSpecifics(newSpecifics).build());
+        }
+
+        // Finally, unsubscribe from active subscriptions if the bookmark either didn't exist or the
+        // bookmark wasn't flagged as being price tracked. Subscriptions in bookmarks are always
+        // USER_MANAGED and use PRODUCT_CLUSTER_ID as the identifier.
+        for (Long clusterId : unusedClusterIds) {
+            subscriptionsManager.unsubscribe(
+                    new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
+                            UnsignedLongs.toString(clusterId),
+                            SubscriptionManagementType.USER_MANAGED,
+                            TrackingIdType.PRODUCT_CLUSTER_ID),
+                    (id) -> {});
+        }
     }
 }
