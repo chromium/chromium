@@ -125,6 +125,8 @@ double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
   switch (PermittedValueRange()) {
     case CSSPrimitiveValue::ValueRange::kInteger:
       return RoundHalfTowardsPositiveInfinity(value);
+    case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
+      return RoundHalfTowardsPositiveInfinity(std::max(value, 0.0));
     case CSSPrimitiveValue::ValueRange::kPositiveInteger:
       return RoundHalfTowardsPositiveInfinity(std::max(value, 1.0));
     case CSSPrimitiveValue::ValueRange::kNonNegative:
@@ -154,6 +156,8 @@ scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
     const CSSToLengthConversionData& conversion_data) const {
   DCHECK_NE(value_range_in_target_context_,
             CSSPrimitiveValue::ValueRange::kInteger);
+  DCHECK_NE(value_range_in_target_context_,
+            CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
   DCHECK_NE(value_range_in_target_context_,
             CSSPrimitiveValue::ValueRange::kPositiveInteger);
   return expression_->ToCalcValue(

@@ -220,7 +220,13 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitCategory UnitTypeToUnitCategory(UnitType);
   static float ClampToCSSLengthRange(double);
 
-  enum class ValueRange { kAll, kNonNegative, kInteger, kPositiveInteger };
+  enum class ValueRange {
+    kAll,
+    kNonNegative,
+    kInteger,
+    kNonNegativeInteger,
+    kPositiveInteger
+  };
 
   static Length::ValueRange ConversionToLengthValueRange(ValueRange);
   static ValueRange ValueRangeForLengthValueRange(Length::ValueRange);

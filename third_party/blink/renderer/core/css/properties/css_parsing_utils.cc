@@ -711,9 +711,17 @@ CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
         range.ConsumeIncludingWhitespace().NumericValue(),
         CSSPrimitiveValue::UnitType::kInteger);
   }
+
+  DCHECK(minimum_value == -std::numeric_limits<double>::max() ||
+         minimum_value == 0 || minimum_value == 1);
+
   CSSPrimitiveValue::ValueRange value_range =
-      minimum_value == 1 ? CSSPrimitiveValue::ValueRange::kPositiveInteger
-                         : CSSPrimitiveValue::ValueRange::kInteger;
+      CSSPrimitiveValue::ValueRange::kInteger;
+  if (minimum_value == 0)
+    value_range = CSSPrimitiveValue::ValueRange::kNonNegativeInteger;
+  else if (minimum_value == 1)
+    value_range = CSSPrimitiveValue::ValueRange::kPositiveInteger;
+
   MathFunctionParser math_parser(range, context, value_range);
   if (const CSSMathFunctionValue* math_value = math_parser.Value()) {
     if (math_value->Category() != kCalcNumber)
