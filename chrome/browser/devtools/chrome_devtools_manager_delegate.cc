@@ -250,11 +250,6 @@ ChromeDevToolsManagerDelegate::CreateNewTarget(const GURL& url) {
       params.navigated_or_inserted_contents);
 }
 
-std::string ChromeDevToolsManagerDelegate::GetDiscoveryPageHTML() {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-      IDR_DEVTOOLS_DISCOVERY_PAGE_HTML);
-}
-
 std::vector<content::BrowserContext*>
 ChromeDevToolsManagerDelegate::GetBrowserContexts() {
   return DevToolsBrowserContextManager::GetInstance().GetBrowserContexts();

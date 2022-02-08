@@ -260,11 +260,6 @@ DevToolsManagerDelegateAndroid::CreateNewTarget(const GURL& url) {
   return tab ? DevToolsAgentHostForTab(tab) : nullptr;
 }
 
-std::string DevToolsManagerDelegateAndroid::GetDiscoveryPageHTML() {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-      IDR_DEVTOOLS_DISCOVERY_PAGE_HTML);
-}
-
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {
   return true;
 }
