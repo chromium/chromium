@@ -395,11 +395,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // been used.
   bool DocumentUsedWebOTP() const;
 
-  // Show a bubble or infobar indicating that the current page has an eligible
-  // offer or reward, if the bubble/infobar is not currently being visible.
-  void ShowOfferNotificationIfApplicable(
-      content::NavigationHandle* navigation_handle);
-
   // Returns the AutofillRouter and confirms that it may be accessed (we should
   // not be using the router if we're prerendering).
   ContentAutofillRouter& GetAutofillRouter();

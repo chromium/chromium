@@ -602,12 +602,14 @@ class AutofillClient : public RiskDataLoader {
   // TODO(crbug.com/1093057): Rename all the "domain" in this flow to origin.
   //                          The server is passing down full origin of the
   //                          urls. "Domain" is no longer accurate.
-  // Will show a bubble or infobar indicating that the current web domain has an
-  // eligible offer or reward if no other notification bubble is currently
-  // visible. See bubble controller for details. The bubble is sticky over a set
-  // of domains given in the offer.
-  virtual void ShowOfferNotificationIfApplicable(
-      const AutofillOfferData* offer);
+  // Notifies the client to update the offer notification when the |offer| is
+  // available. |notification_has_been_shown| indicates whether this
+  // notification has been shown since profile start-up.
+  virtual void UpdateOfferNotification(const AutofillOfferData* offer,
+                                       bool notification_has_been_shown);
+
+  // Dismiss any visible offer notification on the current tab.
+  virtual void DismissOfferNotification();
 
   // Called when the virtual card has been fetched successfully.
   // |masked_card_identifier_string| is the network + last four digits of

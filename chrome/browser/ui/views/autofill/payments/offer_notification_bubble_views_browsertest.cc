@@ -45,21 +45,6 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, OpenNewTab) {
-  SetUpCardLinkedOfferDataWithDomains(
-      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
-
-  NavigateTo(chrome::kChromeUINewTabURL);
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.example.com/"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_TRUE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-}
-
 // TODO(crbug.com/1270516): Does not work for Wayland-based tests.
 // TODO(crbug.com/1256480): Disabled on Mac, Win, ChromeOS, and Lacros due to
 // flakiness.
