@@ -783,7 +783,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac11-arm64-rel.browser_tests.filter',
         ],
         'swarming': {
-          'shards': 20,
+          'shards': 30,
         },
       },
       'win-asan': {
