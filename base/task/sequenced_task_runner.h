@@ -23,6 +23,7 @@ namespace base {
 
 namespace internal {
 class DelayTimerBase;
+class DelayedTaskManager;
 }
 class DeadlineTimer;
 class TimeDelta;
@@ -38,6 +39,7 @@ class PostDelayedTaskPassKey {
   PostDelayedTaskPassKey() {}
 
   friend class base::internal::DelayTimerBase;
+  friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
   friend class blink::TimerBase;
   friend class PostDelayedTaskPassKeyForTesting;
@@ -180,6 +182,20 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
       subtle::DelayPolicy delay_policy =
           subtle::DelayPolicy::kFlexibleNoSooner);
 
+  // Posts the given |task| to be run at |delayed_run_time|, following
+  // |delay_policy|. This is used by the default implementation of
+  // PostCancelableDelayedTaskAt(). The default behavior subtracts
+  // TimeTicks::Now() from |delayed_run_time| to get a delay. See base::Timer to
+  // post precise/repeating timeouts.
+  // TODO(1153139): Make pure virtual once all SequencedTaskRunners implement
+  // this.
+  virtual bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                                 const Location& from_here,
+                                 OnceClosure task,
+                                 TimeTicks delayed_run_time,
+                                 subtle::DelayPolicy delay_policy =
+                                     subtle::DelayPolicy::kFlexibleNoSooner);
+
   // Submits a non-nestable task to delete the given object.  Returns
   // true if the object may be deleted at some point in the future,
   // and false if the object definitely will not be deleted.
@@ -231,20 +247,6 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
 
  protected:
   ~SequencedTaskRunner() override = default;
-
-  // Posts the given |task| to be run at |delayed_run_time|, following
-  // |delay_policy|. This is used by the default implementation of
-  // PostCancelableDelayedTaskAt(). The default behavior subtracts
-  // TimeTicks::Now() from |delayed_run_time| to get a delay. See base::Timer to
-  // post precise/repeating timeouts.
-  // TODO(1153139): Make pure virtual once all SequencedTaskRunners implement
-  // this.
-  virtual bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
-                                 const Location& from_here,
-                                 OnceClosure task,
-                                 TimeTicks delayed_run_time,
-                                 subtle::DelayPolicy delay_policy =
-                                     subtle::DelayPolicy::kFlexibleNoSooner);
 
  private:
   bool DeleteOrReleaseSoonInternal(const Location& from_here,

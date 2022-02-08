@@ -153,10 +153,9 @@ void DelayedTaskManager::ScheduleProcessRipeTasksOnServiceThread(
   DCHECK(!next_delayed_task_run_time.is_null());
   if (next_delayed_task_run_time.is_max())
     return;
-  const TimeTicks now = tick_clock_->NowTicks();
-  TimeDelta delay = std::max(TimeDelta(), next_delayed_task_run_time - now);
-  service_thread_task_runner_->PostDelayedTask(
-      FROM_HERE, process_ripe_tasks_closure_, delay);
+  service_thread_task_runner_->PostDelayedTaskAt(
+      subtle::PostDelayedTaskPassKey(), FROM_HERE, process_ripe_tasks_closure_,
+      next_delayed_task_run_time, subtle::DelayPolicy::kPrecise);
 }
 
 }  // namespace internal
