@@ -32,19 +32,29 @@ export const SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB: Window[] = [{
   height: SAMPLE_WINDOW_HEIGHT,
   tabs: [
     createTab({
+      active: false,
       alertStates: [TabAlertState.kMediaRecording],
       index: 0,
       tabId: 1,
       title: 'Meet',
       url: {url: 'https://meet.google.com/'},
-      lastActiveTimeTicks: {internalValue: BigInt(3)},
+      lastActiveTimeTicks: {internalValue: BigInt(4)},
     }),
     createTab({
+      active: false,
       index: 1,
       tabId: 2,
       title: 'Google',
       url: {url: 'https://www.google.com'},
       lastActiveTimeTicks: {internalValue: BigInt(5)},
+    }),
+    createTab({
+      active: false,
+      index: 2,
+      tabId: 3,
+      title: 'Example',
+      url: {url: 'https://www.example.com'},
+      lastActiveTimeTicks: {internalValue: BigInt(3)},
     }),
   ],
 }];
