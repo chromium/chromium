@@ -371,6 +371,10 @@ TFLiteOpResolver::TFLiteOpResolver() {
              tflite::ops::builtin::Register_BATCH_MATMUL(),
              /* min_version = */ 1,
              /* max_version = */ 4);
+  AddBuiltin(tflite::BuiltinOperator_GELU,
+             tflite::ops::builtin::Register_GELU(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
 }
 
 }  // namespace optimization_guide

@@ -302,6 +302,9 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_8 = 6;
   // A model using only operations that are supported by TensorflowLite 2.9.0.
   MODEL_ENGINE_VERSION_TFLITE_2_9 = 7;
+  // A model using only operations that are supported by TensorflowLite 2.9.0.
+  // This adds GELU to the supported ops in Optimiziation Guide.
+  MODEL_ENGINE_VERSION_TFLITE_2_9_0_1 = 8;
 }
 
 // A set of model features and the host that it applies to.
