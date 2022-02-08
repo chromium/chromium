@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -54,6 +55,7 @@ class FakeStreamFactory : public media::mojom::AudioStreamFactory {
       uint32_t shared_memory_count,
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback callback) override {}
 
   void AssociateInputAndOutputForAec(

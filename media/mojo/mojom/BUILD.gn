@@ -18,6 +18,7 @@ mojom("mojom") {
     "audio_logging.mojom",
     "audio_output_stream.mojom",
     "audio_parameters.mojom",
+    "audio_processing.mojom",
     "audio_stream_factory.mojom",
     "capture_handle.mojom",
     "cdm_document_service.mojom",
@@ -159,6 +160,17 @@ mojom("mojom") {
   ]
 
   cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.AudioProcessingSettings"
+          cpp = "::media::AudioProcessingSettings"
+        },
+      ]
+      traits_headers = [ "audio_processing_mojom_traits.h" ]
+      traits_sources = [ "audio_processing_mojom_traits.cc" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
+    },
     {
       types = [
         {
@@ -748,6 +760,7 @@ source_set("unit_tests") {
 
   sources = [
     "audio_decoder_config_mojom_traits_unittest.cc",
+    "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",

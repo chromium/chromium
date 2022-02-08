@@ -39,6 +39,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -401,7 +402,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
   // over time, with little consideration for maintainable code structure, and
   // add to the fun we're having here.
   //
-  // See if you can spot all 6 unused fields! :P
+  // See if you can spot all 7 unused fields! :P
   audio_stream_factory_->CreateInputStream(
       mojo::PendingReceiver<AudioInputStream>(
           std::move(pipe_to_audio_service.handle1)),
@@ -409,7 +410,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
           std::move(pipe_to_mirroring_service.handle0), 0),
       mojo::NullRemote(), mojo::NullRemote(),
       media::AudioDeviceDescription::kLoopbackWithMuteDeviceId, params,
-      total_segments, false, base::ReadOnlySharedMemoryRegion(),
+      total_segments, false, base::ReadOnlySharedMemoryRegion(), nullptr,
       base::BindOnce(
           [](mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
              mojo::PendingRemote<AudioInputStream> stream,

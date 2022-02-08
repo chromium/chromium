@@ -22,6 +22,7 @@
 #include "media/audio/audio_logging.h"
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -118,6 +119,7 @@ void AudioInputStreamBroker::CreateStream(
   // Note that the component id for AudioLog is used to differentiate between
   // several users of the same audio log. Since this audio log is for a single
   // stream, the component id used doesn't matter.
+  // TODO(crbug.com/1284652): Pass in a real AudioProcessorConfig.
   constexpr int log_component_id = 0;
   factory->CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
@@ -125,7 +127,7 @@ void AudioInputStreamBroker::CreateStream(
           media::AudioLogFactory::AudioComponent::AUDIO_INPUT_CONTROLLER,
           log_component_id, render_process_id(), render_frame_id()),
       device_id_, params_, shared_memory_count_, enable_agc_,
-      std::move(key_press_count_buffer),
+      std::move(key_press_count_buffer), /*processing_config=*/nullptr,
       base::BindOnce(&AudioInputStreamBroker::StreamCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(stream)));
 }

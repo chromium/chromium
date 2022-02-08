@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -150,6 +151,7 @@ class InputController final : public StreamMonitor {
       media::UserInputMonitor* user_input_monitor,
       InputStreamActivityMonitor* activity_monitor,
       DeviceOutputListener* device_output_listener,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& params,
       const std::string& device_id,
       bool agc_is_enabled);
@@ -202,6 +204,7 @@ class InputController final : public StreamMonitor {
                   media::UserInputMonitor* user_input_monitor,
                   InputStreamActivityMonitor* activity_monitor,
                   DeviceOutputListener* device_output_listener,
+                  media::mojom::AudioProcessingConfigPtr processing_config,
                   const media::AudioParameters& params,
                   StreamType type);
 
@@ -254,7 +257,7 @@ class InputController final : public StreamMonitor {
   // Called from the constructor. Helper to isolate logic setting up audio
   // processing components.
   void MaybeSetUpAudioProcessing(
-      const absl::optional<media::AudioProcessingSettings>& settings,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       DeviceOutputListener* device_output_listener);
 #endif
 

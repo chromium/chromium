@@ -230,13 +230,15 @@ class InputController::AudioCallback
   bool error_during_callback_ = false;
 };
 
-InputController::InputController(EventHandler* event_handler,
-                                 SyncWriter* sync_writer,
-                                 media::UserInputMonitor* user_input_monitor,
-                                 InputStreamActivityMonitor* activity_monitor,
-                                 DeviceOutputListener* device_output_listener,
-                                 const media::AudioParameters& params,
-                                 StreamType type)
+InputController::InputController(
+    EventHandler* event_handler,
+    SyncWriter* sync_writer,
+    media::UserInputMonitor* user_input_monitor,
+    InputStreamActivityMonitor* activity_monitor,
+    DeviceOutputListener* device_output_listener,
+    media::mojom::AudioProcessingConfigPtr processing_config,
+    const media::AudioParameters& params,
+    StreamType type)
     : event_handler_(event_handler),
       stream_(nullptr),
       sync_writer_(sync_writer),
@@ -249,10 +251,8 @@ InputController::InputController(EventHandler* event_handler,
   DCHECK(activity_monitor_);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  // TODO(https://crbug.com/1215061): Receive real processing settings via the
-  // constructor.
-  absl::optional<media::AudioProcessingSettings> processing_settings;
-  MaybeSetUpAudioProcessing(processing_settings, device_output_listener);
+  MaybeSetUpAudioProcessing(std::move(processing_config),
+                            device_output_listener);
 #endif
 
   if (!user_input_monitor_) {
@@ -263,21 +263,23 @@ InputController::InputController(EventHandler* event_handler,
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 void InputController::MaybeSetUpAudioProcessing(
-    const absl::optional<media::AudioProcessingSettings>& settings,
+    media::mojom::AudioProcessingConfigPtr processing_config,
     DeviceOutputListener* device_output_listener) {
   if (!device_output_listener)
     return;
 
   // TODO(https://crbug.com/1224845): Clean up this initialization logic once
   // the output mixing experiment is over.
-  // |settings| will not be populated while the mixing experiment is ongoing, so
-  // there is no interference here. The mixing experiment always gets a
-  // NoopReferenceOutputListener.
+  // |processing_config| will not be populated while the mixing experiment is
+  // ongoing, so there is no interference here. The mixing experiment always
+  // gets a NoopReferenceOutputListener.
   ReferenceOutput::Listener* output_listener = nullptr;
-  if (settings && settings->NeedAudioModification()) {
-    audio_processor_handler_ =
-        std::make_unique<AudioProcessorHandler>(*settings);
-    if (settings->NeedPlayoutReference())
+  if (processing_config &&
+      processing_config->settings.NeedAudioModification()) {
+    audio_processor_handler_ = std::make_unique<AudioProcessorHandler>(
+        processing_config->settings,
+        std::move(processing_config->controls_receiver));
+    if (processing_config->settings.NeedPlayoutReference())
       output_listener = audio_processor_handler_.get();
   } else {
     noop_reference_output_listener_ =
@@ -309,6 +311,7 @@ std::unique_ptr<InputController> InputController::Create(
     media::UserInputMonitor* user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
+    media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& params,
     const std::string& device_id,
     bool enable_agc) {
@@ -324,9 +327,11 @@ std::unique_ptr<InputController> InputController::Create(
 
   // Create the InputController object and ensure that it runs on
   // the audio-manager thread.
-  std::unique_ptr<InputController> controller(new InputController(
-      event_handler, sync_writer, user_input_monitor, activity_monitor,
-      device_output_listener, params, ParamsToStreamType(params)));
+  std::unique_ptr<InputController> controller =
+      base::WrapUnique(new InputController(
+          event_handler, sync_writer, user_input_monitor, activity_monitor,
+          device_output_listener, std::move(processing_config), params,
+          ParamsToStreamType(params)));
 
   controller->DoCreate(audio_manager, params, device_id, enable_agc);
   return controller;

@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -117,6 +118,7 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     uint32_t shared_memory_count;
     bool enable_agc;
     base::ReadOnlySharedMemoryRegion key_press_count_buffer;
+    media::mojom::AudioProcessingConfigPtr processing_config;
     CreateInputStreamCallback created_callback;
   };
 
@@ -135,6 +137,7 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
       uint32_t shared_memory_count,
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) override {
     // No way to cleanly exit the test here in case of failure, so use CHECK.
     CHECK(stream_request_data_);
@@ -149,6 +152,7 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     stream_request_data_->enable_agc = enable_agc;
     stream_request_data_->key_press_count_buffer =
         std::move(key_press_count_buffer);
+    stream_request_data_->processing_config = std::move(processing_config);
     stream_request_data_->created_callback = std::move(created_callback);
   }
 
@@ -166,7 +170,10 @@ struct TestEnvironment {
             nullptr /*user_input_monitor*/,
             kEnableAgc,
             deleter.Get(),
-            renderer_factory_client.MakeRemote())) {}
+            renderer_factory_client.MakeRemote())) {
+    // TODO(crbug.com/1284652) : Pass in a AudioProcessingConfig to |this|, and
+    // make sure it is forwarded to the stream factory during creation.
+  }
 
   void RunUntilIdle() { task_environment.RunUntilIdle(); }
 

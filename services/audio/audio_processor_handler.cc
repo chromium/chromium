@@ -10,7 +10,10 @@
 namespace audio {
 
 AudioProcessorHandler::AudioProcessorHandler(
-    const media::AudioProcessingSettings& settings) {
+    const media::AudioProcessingSettings& settings,
+    mojo::PendingReceiver<media::mojom::AudioProcessorControls>
+        controls_receiver)
+    : receiver_(this, std::move(controls_receiver)) {
   DCHECK(settings.NeedAudioModification());
 }
 

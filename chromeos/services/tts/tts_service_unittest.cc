@@ -40,6 +40,7 @@ class MockAudioStreamFactory : public media::mojom::AudioStreamFactory {
       uint32_t shared_memory_count,
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback callback) override {}
   void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,

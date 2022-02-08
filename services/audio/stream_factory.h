@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/buildflags.h"
@@ -69,6 +70,7 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
       uint32_t shared_memory_count,
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) final;
 
   void AssociateInputAndOutputForAec(

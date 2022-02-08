@@ -143,7 +143,8 @@ class TimeSourceInputControllerTest : public ::testing::Test {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
         &user_input_monitor_, &mock_stream_activity_monitor_,
-        /*device_output_listener =*/nullptr, params_,
+        /*device_output_listener =*/nullptr,
+        /*processing_config =*/nullptr, params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
@@ -307,12 +308,76 @@ class InputControllerTestWithDeviceListener : public InputControllerTest {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
         &user_input_monitor_, &mock_stream_activity_monitor_,
-        &device_output_listener_, params_,
+        &device_output_listener_, std::move(processing_config_), params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
+  void SetupProcessingConfig(bool force_need_audio_modification) {
+    media::AudioProcessingSettings settings;
+    if (force_need_audio_modification) {
+      settings.echo_cancellation = true;
+    } else {
+      settings.echo_cancellation = false;
+      settings.noise_suppression = false;
+      settings.transient_noise_suppression = false;
+      settings.automatic_gain_control = false;
+      settings.experimental_automatic_gain_control = false;
+      settings.high_pass_filter = false;
+      settings.multi_channel_capture_processing = false;
+      settings.stereo_mirroring = false;
+      settings.force_apm_creation = false;
+    }
+
+    processing_config_ = media::mojom::AudioProcessingConfig::New(
+        remote_controls_.BindNewPipeAndPassReceiver(), settings);
+  }
+
   MockDeviceOutputListener device_output_listener_;
+  media::mojom::AudioProcessingConfigPtr processing_config_;
+  mojo::Remote<media::mojom::AudioProcessorControls> remote_controls_;
 };
+
+TEST_F(InputControllerTestWithDeviceListener,
+       CreateWithAudioProcessingConfig_EchoCancellation) {
+  SetupProcessingConfig(/*force_need_audio_modification=*/true);
+
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  base::RunLoop loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   loop.QuitClosure());
+  loop.Run();
+
+  // |controller_| should have bound the pending AudioProcessorControls
+  // receiver it received through its ctor.
+  EXPECT_TRUE(remote_controls_.is_connected());
+
+  // Test cleanup.
+  controller_->Close();
+}
+
+TEST_F(InputControllerTestWithDeviceListener,
+       CreateWithAudioProcessingConfig_WithoutEchoCancellation) {
+  SetupProcessingConfig(/*force_need_audio_modification=*/false);
+
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  base::RunLoop loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   loop.QuitClosure());
+  loop.Run();
+
+  // When all forms of audio processing are disabled, |controller_| should
+  // ignore the pending AudioProcessorControls Receiver it received in its ctor.
+  EXPECT_FALSE(remote_controls_.is_connected());
+
+  // Test cleanup.
+  controller_->Close();
+}
 
 TEST_F(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
   const std::string kOutputDeviceId = "0x123";

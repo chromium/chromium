@@ -1,0 +1,39 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+// Settings for the software audio processing performed in the audio service.
+// The settings are determined in the renderer from media constraints passed by
+// JavaScript clients and platform capabilities, and are passed to the audio
+// service where the actual processing is applied.
+struct AudioProcessingSettings {
+  bool echo_cancellation;
+  bool noise_suppression;
+  bool transient_noise_suppression;
+  bool automatic_gain_control;
+  bool experimental_automatic_gain_control;
+  bool high_pass_filter;
+  bool multi_channel_capture_processing;
+  bool stereo_mirroring;
+  bool force_apm_creation;
+};
+
+// This interface is hosted in the audio service and called from the renderer.
+// It's only used when the audio processing is performed in the audio service.
+interface AudioProcessorControls {
+  // TODO(crbug.com/1284652): Add methods once this interface is plumbed through
+  // all layers.
+};
+
+struct AudioProcessingConfig {
+  // Used for getting stats and controlling diagnostic audio recordings (AEC
+  // dumps).
+  pending_receiver<AudioProcessorControls> controls_receiver;
+
+  // Used for determining which kind of audio processing is enabled.
+  AudioProcessingSettings settings;
+};

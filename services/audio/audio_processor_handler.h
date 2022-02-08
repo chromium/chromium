@@ -7,6 +7,8 @@
 
 #include "base/sequence_checker.h"
 #include "media/base/audio_processing.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/audio/reference_output.h"
 
 namespace media {
@@ -17,11 +19,17 @@ namespace audio {
 
 // Encapsulates audio processing effects in the audio process.
 // TODO(https://crbug.com/1215061): Create and manage a media::AudioProcessor.
+// TODO(https://crbug.com/1284652): Add methods to AudioProcessorControls and
+//                                  implement them.
 // This class is currently a no-op implementation of ReferenceOutput::Listener.
-class AudioProcessorHandler final : public ReferenceOutput::Listener {
+class AudioProcessorHandler final
+    : public ReferenceOutput::Listener,
+      public media::mojom::AudioProcessorControls {
  public:
   explicit AudioProcessorHandler(
-      const media::AudioProcessingSettings& settings);
+      const media::AudioProcessingSettings& settings,
+      mojo::PendingReceiver<media::mojom::AudioProcessorControls>
+          controls_receiver);
   AudioProcessorHandler(const AudioProcessorHandler&) = delete;
   AudioProcessorHandler& operator=(const AudioProcessorHandler&) = delete;
   ~AudioProcessorHandler() final;
@@ -33,6 +41,8 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener {
                      base::TimeDelta delay) final;
 
   SEQUENCE_CHECKER(owning_sequence_);
+
+  mojo::Receiver<media::mojom::AudioProcessorControls> receiver_;
 };
 
 }  // namespace audio
