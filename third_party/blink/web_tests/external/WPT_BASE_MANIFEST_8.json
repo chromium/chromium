@@ -2044,6 +2044,17 @@
         ]
        ]
       }
+     },
+     "the-stylepropertymap": {
+      "computed": {
+       "getAll-disconnected-element-crash.html": [
+        "5292ebae1cfe2cababc58d0c25439b5bfe9996b6",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
      }
     },
     "css-ui": {
@@ -286225,12 +286236,20 @@
          "307bd14234d626c558b4070b1f9225ae6b722981",
          []
         ],
+        "dedicated-worker-expected.txt": [
+         "85a5fdcde1ff95e636351f144acb89d9ea79b17f",
+         []
+        ],
         "inflight-fetch-expected.txt": [
          "187f0a83c26d1787dd1bbbf854f1a0159e5c4d38",
          []
         ],
         "inflight-fetch-redirects-expected.txt": [
          "7a97c17c52f2b642f8a48cded54e5e386705beb0",
+         []
+        ],
+        "shared-worker-expected.txt": [
+         "0c04ef6f3ccdb7b1e376d150310a7cf2e87145e9",
          []
         ]
        },
@@ -286239,12 +286258,16 @@
         []
        ],
        "resources": {
+        "echo-worker.js": [
+         "3e3ecb52e9f13f83053e99e3871e950937ebce05",
+         []
+        ],
         "event-recorder.js": [
          "469286a3992120157a90c3d058aade3ac56f6a45",
          []
         ],
         "executor.html": [
-         "4741fb7690c1b115d3870bb5a8b17b123606bd7d",
+         "a93f68cce72e3b3cf4392a4fc98a892c9aecbd52",
          []
         ],
         "helper.sub.js": [
@@ -286257,6 +286280,10 @@
         ],
         "slow.py": [
          "01bb3309b103d5bba772bdbf1d0d0b8bc28c8e99",
+         []
+        ],
+        "worker-helper.js": [
+         "d5f3a0c81484ebd85e0711dc13e24704cb72edd3",
          []
         ]
        },
@@ -361617,6 +361644,13 @@
         {}
        ]
       ],
+      "container-units-small-viewport-fallback.html": [
+       "f78dbc1772dcd94b13dc19f60ffb5563e1aca04a",
+       [
+        null,
+        {}
+       ]
+      ],
       "container-units-typed-om.html": [
        "9baf12d1c9059e58fb8103a8baa0d1d9997a4deb",
        [
@@ -421260,6 +421294,13 @@
           {}
          ]
         ],
+        "dedicated-worker.html": [
+         "4a9f551de0efcc914d7cfde99f497df3e43833fc",
+         [
+          null,
+          {}
+         ]
+        ],
         "inflight-fetch-cors.html": [
          "c04089a5e25ebae1d22b287cb1a063b2a44076c0",
          [
@@ -421285,6 +421326,13 @@
           {
            "timeout": "long"
           }
+         ]
+        ],
+        "shared-worker.html": [
+         "b142985b2230ad0f31eb6cb758db8d5bb76338a7",
+         [
+          null,
+          {}
          ]
         ]
        },
@@ -503857,6 +503905,15 @@
      ],
      "focus-autofocus.html": [
       "75a50b84c6df5525b5da0df86192637b70247820",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-method-delegatesFocus-nested-browsing-context.html": [
+      "d2724f17d52b93912544cda8a44aae7017918ac9",
       [
        null,
        {
