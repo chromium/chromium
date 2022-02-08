@@ -383,8 +383,7 @@ TEST_F(TabMetricsTest, Basic) {
   }
 
   // Closing the tabs destroys the WebContentses but should not trigger logging.
-  // The TestWebContentsObserver simulates hiding these tabs as they are closed;
-  // we verify in TearDown() that no logging occurred.
+  // We verify in TearDown() that no logging occurred.
   tab_strip_model->CloseAllTabs();
 }
 

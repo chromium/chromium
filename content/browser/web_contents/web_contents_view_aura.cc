@@ -609,7 +609,9 @@ class WebContentsViewAura::WindowObserver
   bool ShouldNotifyOfBoundsChanges() const {
     // Do not notify of bounds changes for guests as guests' window bounds are
     // supposed to come from its embedder.
-    return !view_->web_contents_->IsGuest();
+    // We also do not handle bounds changes during destruction.
+    return !view_->web_contents_->IsBeingDestroyed() &&
+           !view_->web_contents_->IsGuest();
   }
 
   // Used to avoid multiple calls to SendScreenRects(). In particular, when
@@ -995,6 +997,9 @@ void WebContentsViewAura::CreateAuraWindow(aura::Window* context) {
 }
 
 void WebContentsViewAura::UpdateWebContentsVisibility() {
+  if (web_contents_->IsBeingDestroyed())
+    return;
+
   web_contents_->UpdateWebContentsVisibility(GetVisibility());
 }
 

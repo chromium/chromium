@@ -1476,9 +1476,14 @@ std::vector<FrameTree*> WebContentsImpl::GetOutermostFrameTrees() {
 }
 
 std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
+  // Do nothing if the WebContents is currently being initialized or destroyed.
+  if (!GetMainFrame())
+    return {};
+
   std::vector<RenderFrameHostImpl*> result;
 
   for (FrameTree* outermost_frame_tree : GetOutermostFrameTrees()) {
+    DCHECK(outermost_frame_tree->GetMainFrame());
     result.push_back(outermost_frame_tree->GetMainFrame());
   }
 
@@ -3532,6 +3537,8 @@ PageVisibilityState WebContentsImpl::GetPageVisibilityState() const {
 void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     Visibility new_visibility,
     bool is_activity) {
+  DCHECK(!IsBeingDestroyed());
+
   PageVisibilityState page_visibility =
       CalculatePageVisibilityState(new_visibility);
 
@@ -4286,6 +4293,9 @@ bool WebContentsImpl::ShouldIgnoreUnresponsiveRenderer() {
           switches::kDisableHangMonitor))
     return true;
 
+  if (IsBeingDestroyed())
+    return true;
+
   if (suppress_unresponsive_renderer_count_ > 0)
     return true;
 
@@ -4420,6 +4430,9 @@ void WebContentsImpl::GetNFC(
 
 void WebContentsImpl::SendScreenRects() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendScreenRects");
+
+  DCHECK(!IsBeingDestroyed());
+
   GetMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
         if (render_frame_host->is_local_root()) {
