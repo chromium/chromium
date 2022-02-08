@@ -22,7 +22,9 @@
     void beginOcclusionQuery(GPUSize32 queryIndex);
     void endOcclusionQuery();
     void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
-    void endPass();
+
+    void end();
+    void endPass(); // TODO(dawn:1286): Remove after deprecation period.
 };
 GPURenderPassEncoder includes GPUObjectBase;
 GPURenderPassEncoder includes GPUProgrammablePassEncoder;

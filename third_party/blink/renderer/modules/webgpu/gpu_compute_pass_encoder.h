@@ -70,7 +70,8 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
     GetProcs().computePassEncoderWriteTimestamp(
         GetHandle(), querySet->GetHandle(), queryIndex);
   }
-  void endPass() { GetProcs().computePassEncoderEndPass(GetHandle()); }
+  void end() { GetProcs().computePassEncoderEnd(GetHandle()); }
+  void endPass();
 };
 
 }  // namespace blink

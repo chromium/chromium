@@ -15,7 +15,9 @@
     void dispatchIndirect(GPUBuffer indirectBuffer,
                           GPUSize64 indirectOffset);
     void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
-    void endPass();
+
+    void end();
+    void endPass(); // TODO(dawn:1286): Remove after deprecation period.
 };
 GPUComputePassEncoder includes GPUObjectBase;
 GPUComputePassEncoder includes GPUProgrammablePassEncoder;

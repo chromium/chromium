@@ -47,4 +47,11 @@ void GPUComputePassEncoder::setBindGroup(
                                             dynamic_offsets_data_length, data);
 }
 
+void GPUComputePassEncoder::endPass() {
+  device_->AddConsoleWarning(
+      "endPass() has been deprecated and will soon be "
+      "removed. Use end() instead.");
+  end();
+}
+
 }  // namespace blink
