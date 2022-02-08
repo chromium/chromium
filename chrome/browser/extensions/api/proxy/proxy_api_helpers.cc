@@ -70,8 +70,11 @@ bool GetProxyModeFromExtensionPref(const base::DictionaryValue* proxy_config,
 
   // We can safely assume that this is ASCII due to the allowed enumeration
   // values specified in the extension API JSON.
-  proxy_config->GetStringASCII(proxy_api_constants::kProxyConfigMode,
-                               &proxy_mode);
+  if (const std::string* proxy_mode_ptr =
+          proxy_config->FindStringKey(proxy_api_constants::kProxyConfigMode)) {
+    proxy_mode = *proxy_mode_ptr;
+    DCHECK(base::IsStringASCII(proxy_mode));
+  }
   if (!ProxyPrefs::StringToProxyMode(proxy_mode, out)) {
     LOG(ERROR) << "Invalid mode for proxy settings: " << proxy_mode;
     *bad_message = true;
@@ -173,8 +176,11 @@ bool GetProxyServer(const base::DictionaryValue* proxy_server,
 
   // We can safely assume that this is ASCII due to the allowed enumeration
   // values specified in the extension API JSON.
-  proxy_server->GetStringASCII(proxy_api_constants::kProxyConfigRuleScheme,
-                               &scheme_string);
+  if (const std::string* scheme_string_ptr = proxy_server->FindStringKey(
+          proxy_api_constants::kProxyConfigRuleScheme)) {
+    scheme_string = *scheme_string_ptr;
+    DCHECK(base::IsStringASCII(scheme_string));
+  }
 
   net::ProxyServer::Scheme scheme = net::GetSchemeFromUriScheme(scheme_string);
   if (scheme == net::ProxyServer::SCHEME_INVALID)

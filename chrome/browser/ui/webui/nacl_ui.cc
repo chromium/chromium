@@ -353,8 +353,10 @@ void CheckVersion(const base::FilePath& pnacl_path, std::string* version) {
 
   // Now try to get the field. This may leave version empty if the
   // the "get" fails (no key, or wrong type).
-  static_cast<base::DictionaryValue*>(root.get())->GetStringASCII(
-      "pnacl-version", version);
+  if (const std::string* ptr = root->FindStringKey("pnacl-version")) {
+    if (base::IsStringASCII(*ptr))
+      *version = *ptr;
+  }
 }
 
 bool CheckPathAndVersion(std::string* version) {

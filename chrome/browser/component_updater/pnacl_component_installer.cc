@@ -147,13 +147,13 @@ bool CheckPnaclComponentManifest(const base::Value& manifest,
   }
 
   // Now check the |pnacl_manifest|.
-  std::string arch;
-  if (!pnacl_manifest.GetStringASCII("pnacl-arch", &arch)) {
+  const std::string* arch = pnacl_manifest.FindStringKey("pnacl-arch");
+  if (!arch || !base::IsStringASCII(*arch)) {
     LOG(WARNING) << "'pnacl-arch' field is missing from pnacl-manifest!";
     return false;
   }
-  if (arch.compare(UpdateQueryParams::GetNaclArch()) != 0) {
-    LOG(WARNING) << "'pnacl-arch' field in manifest is invalid (" << arch
+  if (arch->compare(UpdateQueryParams::GetNaclArch()) != 0) {
+    LOG(WARNING) << "'pnacl-arch' field in manifest is invalid (" << *arch
                  << " vs " << UpdateQueryParams::GetNaclArch() << ")";
     return false;
   }
