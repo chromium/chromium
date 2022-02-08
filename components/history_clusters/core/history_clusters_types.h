@@ -14,21 +14,11 @@
 
 namespace history_clusters {
 
-// The result data returned by `QueryClusters()`.
-struct QueryClustersResult {
-  QueryClustersResult();
-  ~QueryClustersResult();
-  QueryClustersResult(const QueryClustersResult&);
-
-  std::vector<history::Cluster> clusters;
-
-  // A nullopt `continuation_end_time` means we have exhausted History.
-  // Note that this differs from History itself, which uses base::Time() as the
-  // value to indicate we've exhausted history. I've found that to be not
-  // explicit enough in practice. This value will never be base::Time().
-  absl::optional<base::Time> continuation_end_time;
-};
-using QueryClustersCallback = base::OnceCallback<void(QueryClustersResult)>;
+// If `continuation_end_time` is base::Time(), then we've exhausted History.
+// This matches the same semantics as returned directly from History.
+using QueryClustersCallback =
+    base::OnceCallback<void(std::vector<history::Cluster> clusters,
+                            base::Time continuation_end_time)>;
 
 // Tracks which fields have been or are pending recording. This helps 1) avoid
 // re-recording fields and 2) determine whether a visit is compete (i.e. has all

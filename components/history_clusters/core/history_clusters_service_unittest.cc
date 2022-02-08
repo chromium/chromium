@@ -382,8 +382,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
         /*end_time=*/base::Time(),
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
-        base::BindLambdaForTesting([&](QueryClustersResult result) {
-          auto& clusters = result.clusters;
+        base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters,
+                                       base::Time) {
           size_t expected_size = int(test_data[i].expect_first_cluster) +
                                  int(test_data[i].expect_second_cluster);
           ASSERT_EQ(clusters.size(), expected_size);

@@ -33,8 +33,11 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
 
 void QueryClustersState::OnGotClusters(base::TimeTicks query_start_time,
                                        ResultCallback callback,
-                                       QueryClustersResult result) {
-  continuation_end_time_ = std::move(result.continuation_end_time);
+                                       std::vector<history::Cluster> clusters,
+                                       base::Time continuation_end_time) {
+  continuation_end_time_.reset();
+  if (!continuation_end_time.is_null())
+    continuation_end_time_ = continuation_end_time;
 
   // In case no clusters came back, recursively ask for more here. We do this
   // to fulfill the mojom contract where we always return at least one cluster,
@@ -46,13 +49,13 @@ void QueryClustersState::OnGotClusters(base::TimeTicks query_start_time,
   // This is distinct from the "tall monitor" case because the page may already
   // be full of clusters. In that case, the WebUI would not know to make another
   // request for clusters.
-  if (result.clusters.empty() && continuation_end_time_.has_value()) {
+  if (clusters.empty() && continuation_end_time_.has_value()) {
     LoadNextBatchOfClusters(std::move(callback));
     return;
   }
 
   bool can_load_more = continuation_end_time_.has_value();
-  std::move(callback).Run(query_, std::move(result.clusters), can_load_more,
+  std::move(callback).Run(query_, std::move(clusters), can_load_more,
                           is_continuation_);
 
   // Further responses should be consider continuations.

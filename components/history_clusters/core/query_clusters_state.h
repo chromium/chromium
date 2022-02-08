@@ -50,10 +50,10 @@ class QueryClustersState {
   void LoadNextBatchOfClusters(ResultCallback callback);
 
  private:
-  // TODO(tommycli): Delete QueryClustersResult struct.
   void OnGotClusters(base::TimeTicks query_start_time,
                      ResultCallback callback,
-                     QueryClustersResult result);
+                     std::vector<history::Cluster> clusters,
+                     base::Time continuation_end_time);
 
   // A weak pointer to the service in case we outlive the service.
   const base::WeakPtr<HistoryClustersService> service_;

@@ -179,7 +179,8 @@ class HistoryClustersService : public KeyedService {
       base::Time begin_time,
       std::unique_ptr<std::vector<std::u16string>> keyword_accumulator,
       KeywordSet* cache,
-      QueryClustersResult result);
+      std::vector<history::Cluster> clusters,
+      base::Time continuation_end_time);
 
   // Internally used callback for `QueryClusters()`.
   void OnGotHistoryVisits(const std::string& query,
@@ -194,17 +195,12 @@ class HistoryClustersService : public KeyedService {
                         QueryClustersCallback callback,
                         std::vector<history::Cluster> clusters) const;
 
-  // Runs on `post_processing_task_runner_`, posted by `OnGotRawClusters()`.
-  static QueryClustersResult PostProcessClusters(
-      const std::string& query,
-      base::Time continuation_end_time,
-      std::vector<history::Cluster> clusters);
-
   // Runs on UI thread. Used as the 'reply' part from `PostProcessClusters()`.
   void OnProcessedClusters(base::ElapsedTimer post_processing_timer,
                            size_t clusters_from_backend_count,
                            QueryClustersCallback callback,
-                           QueryClustersResult result) const;
+                           base::Time continuation_end_time,
+                           std::vector<history::Cluster> clusters) const;
 
   // True if the Journeys feature is enabled for the application locale.
   const bool is_journeys_enabled_;
