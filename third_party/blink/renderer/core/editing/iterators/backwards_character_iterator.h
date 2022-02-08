@@ -45,6 +45,11 @@ class BackwardsCharacterIteratorAlgorithm {
 
   bool AtEnd() const { return text_iterator_.AtEnd(); }
 
+  int length() const { return text_iterator_.length() - run_offset_; }
+  UChar CharacterAt(unsigned index) const {
+    return text_iterator_.CharacterAt(run_offset_ + index);
+  }
+
   PositionTemplate<Strategy> EndPosition() const;
 
  private:
@@ -62,6 +67,9 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 
 using BackwardsCharacterIterator =
     BackwardsCharacterIteratorAlgorithm<EditingStrategy>;
+
+using BackwardsCharacterIteratorInFlatTree =
+    BackwardsCharacterIteratorAlgorithm<EditingInFlatTreeStrategy>;
 
 }  // namespace blink
 

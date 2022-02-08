@@ -39,6 +39,16 @@ class CORE_EXPORT TextFragmentFinder
 
   // Used for tracking what should be the next match stage.
   enum FindBufferRunnerType { kAsynchronous, kSynchronous };
+
+  // Returns next position that is not space or equivalent.
+  static PositionInFlatTree NextTextPosition(PositionInFlatTree position,
+                                             PositionInFlatTree end_position);
+
+  // Returns previous position that is not space or equivalent.
+  static PositionInFlatTree PreviousTextPosition(
+      PositionInFlatTree position,
+      PositionInFlatTree max_position);
+
   // Returns true if start and end positions are in the same block and there are
   // no other blocks between them. Otherwise, returns false.
   static bool IsInSameUninterruptedBlock(const PositionInFlatTree& start,

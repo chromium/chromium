@@ -135,6 +135,8 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 
 using SimplifiedBackwardsTextIterator =
     SimplifiedBackwardsTextIteratorAlgorithm<EditingStrategy>;
+using SimplifiedBackwardsTextIteratorInFlatTree =
+    SimplifiedBackwardsTextIteratorAlgorithm<EditingInFlatTreeStrategy>;
 
 }  // namespace blink
 

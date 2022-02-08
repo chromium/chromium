@@ -76,9 +76,11 @@ EphemeralRange CalculateHotModeCheckingRange(const Element& editable,
     return paragraph_range;
 
   // Otherwise, check a chunk of text centered at |position|.
-  TextIteratorBehavior behavior = TextIteratorBehavior::Builder()
-                                      .SetEmitsObjectReplacementCharacter(true)
-                                      .Build();
+  TextIteratorBehavior behavior =
+      TextIteratorBehavior::Builder()
+          .SetEmitsObjectReplacementCharacter(true)
+          .SetEmitsPunctuationForReplacedElements(true)
+          .Build();
   BackwardsCharacterIterator backward_iterator(
       EphemeralRange(full_range.StartPosition(), position), behavior);
   if (!backward_iterator.AtEnd())

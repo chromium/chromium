@@ -219,6 +219,10 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
     return true;
 
   String text = layout_object->GetText();
+
+  if (behavior_.EmitsSpaceForNbsp())
+    text.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
+
   if (!layout_object->HasInlineFragments() && text.length() > 0)
     return true;
 
@@ -299,9 +303,9 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<
     Strategy>::HandleReplacedElement() {
   // We want replaced elements to behave like punctuation for boundary
   // finding, and to simply take up space for the selection preservation
-  // code in moveParagraphs, so we use a comma. Unconditionally emit
-  // here because this iterator is only used for boundary finding.
-  text_state_.EmitChar16AsNode(',', *node_);
+  // code in moveParagraphs, so we use a comma.
+  if (behavior_.EmitsPunctuationForReplacedElements())
+    text_state_.EmitChar16AsNode(',', *node_);
   return true;
 }
 
