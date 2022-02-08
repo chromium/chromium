@@ -76,8 +76,6 @@ public class CastWebContentsActivity extends Activity {
 
     // Tracks whether this Activity is between onCreate() and onDestroy().
     private final Controller<Unit> mCreatedState = new Controller<>();
-    // Tracks whether this Activity is between onResume() and onPause().
-    private final Controller<Unit> mResumedState = new Controller<>();
     // Tracks whether this Activity is between onStart() and onStop().
     private final Controller<Unit> mStartedState = new Controller<>();
     // Tracks the most recent Intent for the Activity.
@@ -208,20 +206,6 @@ public class CastWebContentsActivity extends Activity {
         if (DEBUG) Log.d(TAG, "onStart");
         mStartedState.set(Unit.unit());
         super.onStart();
-    }
-
-    @Override
-    protected void onPause() {
-        if (DEBUG) Log.d(TAG, "onPause");
-        super.onPause();
-        mResumedState.reset();
-    }
-
-    @Override
-    protected void onResume() {
-        if (DEBUG) Log.d(TAG, "onResume");
-        super.onResume();
-        mResumedState.set(Unit.unit());
     }
 
     @Override
