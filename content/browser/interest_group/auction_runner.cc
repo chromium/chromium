@@ -111,7 +111,34 @@ AuctionRunner::Auction::Auction(
       config_(config),
       auction_start_time_(auction_start_time) {}
 
-AuctionRunner::Auction::~Auction() = default;
+AuctionRunner::Auction::~Auction() {
+  if (!final_auction_result_)
+    final_auction_result_ = AuctionResult::kAborted;
+
+  UMA_HISTOGRAM_ENUMERATION("Ads.InterestGroup.Auction.Result",
+                            *final_auction_result_);
+
+  // Only record time of full auctions and aborts.
+  switch (*final_auction_result_) {
+    case AuctionResult::kAborted:
+      UMA_HISTOGRAM_MEDIUM_TIMES("Ads.InterestGroup.Auction.AbortTime",
+                                 base::Time::Now() - auction_start_time_);
+      break;
+    case AuctionResult::kNoBids:
+    case AuctionResult::kAllBidsRejected:
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Ads.InterestGroup.Auction.CompletedWithoutWinnerTime",
+          base::Time::Now() - auction_start_time_);
+      break;
+    case AuctionResult::kSuccess:
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Ads.InterestGroup.Auction.AuctionWithWinnerTime",
+          base::Time::Now() - auction_start_time_);
+      break;
+    default:
+      break;
+  }
+}
 
 void AuctionRunner::Auction::LoadInterestGroups(
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -373,7 +400,7 @@ void AuctionRunner::FailAuction(AuctionResult result,
   DCHECK(callback_);
 
   auction_.errors_.insert(auction_.errors_.end(), errors.begin(), errors.end());
-  RecordResult(result);
+  auction_.final_auction_result_ = result;
 
   ClosePipes();
 
@@ -845,7 +872,7 @@ void AuctionRunner::ReportSuccess() {
 
   ClosePipes();
 
-  RecordResult(AuctionResult::kSuccess);
+  auction_.final_auction_result_ = AuctionResult::kSuccess;
 
   std::string ad_metadata;
   if (auction_.top_bid_->bid->bid_ad->metadata) {
@@ -881,35 +908,6 @@ void AuctionRunner::ClosePipes() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   auction_.ClosePipes();
-}
-
-void AuctionRunner::RecordResult(AuctionResult result) {
-  // TODO(mmenke): Remove this, once Auction always sets this on completion.
-  auction_.final_auction_result_ = result;
-
-  UMA_HISTOGRAM_ENUMERATION("Ads.InterestGroup.Auction.Result", result);
-
-  // Only record time of full auctions and aborts.
-  switch (result) {
-    case AuctionResult::kAborted:
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "Ads.InterestGroup.Auction.AbortTime",
-          base::Time::Now() - auction_.auction_start_time_);
-      break;
-    case AuctionResult::kNoBids:
-    case AuctionResult::kAllBidsRejected:
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "Ads.InterestGroup.Auction.CompletedWithoutWinnerTime",
-          base::Time::Now() - auction_.auction_start_time_);
-      break;
-    case AuctionResult::kSuccess:
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "Ads.InterestGroup.Auction.AuctionWithWinnerTime",
-          base::Time::Now() - auction_.auction_start_time_);
-      break;
-    default:
-      break;
-  }
 }
 
 bool AuctionRunner::RequestBidderWorklet(

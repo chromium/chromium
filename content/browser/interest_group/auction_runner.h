@@ -516,9 +516,6 @@ class CONTENT_EXPORT AuctionRunner {
   // completion.
   void ClosePipes();
 
-  // Logs the result of the auction to UMA.
-  void RecordResult(AuctionResult result);
-
   // Requests a WorkletHandle for the interest group identified by `bid_state`,
   // using the provided callbacks. Returns true if a worklet was received
   // synchronously.

@@ -1050,6 +1050,10 @@ class AuctionRunnerTest : public testing::Test,
                          std::vector<std::string> errors) {
     DCHECK(auction_run_loop_);
     DCHECK(!auction_complete_);
+    DCHECK_EQ(auction_runner, auction_runner_.get());
+
+    // Delete the auction runner, which is needed to update histograms.
+    auction_runner_.reset();
 
     auction_complete_ = true;
     result_.ad_url = std::move(ad_url);
