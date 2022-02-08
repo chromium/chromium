@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.UTE.AppWillTerminateWasCalledInForeground"
-    enum="Boolean" expires_after="2022-06-06">
+    enum="Boolean" expires_after="2022-08-07">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>

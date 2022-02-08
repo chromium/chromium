@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="VideoTutorials.LanguagePicker.Action"
-    enum="VideoTutorials.LanguagePickerAction" expires_after="2022-06-05">
+    enum="VideoTutorials.LanguagePickerAction" expires_after="2022-08-07">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
