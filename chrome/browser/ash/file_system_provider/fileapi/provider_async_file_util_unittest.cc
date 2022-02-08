@@ -61,6 +61,9 @@ class EventLogger {
   }
 
   void OnCreateOrOpen(base::File file, base::OnceClosure on_close_callback) {
+    // ProviderAsyncFileUtil always provides a null `on_close_callback`.
+    DCHECK(on_close_callback.is_null());
+
     if (file.IsValid())
       result_ = std::make_unique<base::File::Error>(base::File::FILE_OK);
 
