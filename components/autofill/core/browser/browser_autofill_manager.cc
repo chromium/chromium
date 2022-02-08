@@ -1715,10 +1715,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       continue;
     }
 
-    // Do not override prefilled field values.
+    // Do not override prefilled text/input field values. Selection fields are
+    // excluded from this check because they may have a non-empty value.
     if (base::FeatureList::IsEnabled(
             features::kAutofillPreventOverridingPrefilledValues) &&
-        !form_structure->field(i)->value.empty()) {
+        form.fields[i].form_control_type != "select-one" &&
+        !form.fields[i].value.empty()) {
       buffer << Tr{} << field_number << "Skipped: value is prefilled";
       continue;
     }

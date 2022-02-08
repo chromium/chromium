@@ -9330,7 +9330,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
-// Test that the Autofill does not override field values that were already
+// Test that the Autofill does not override input field values that were already
 // prefilled.
 TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   base::test::ScopedFeatureList features;
@@ -9346,6 +9346,10 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   form.fields.push_back(field);
   test::CreateTestFormField("City", "city", "Test City", "text", &field);
   form.fields.push_back(field);
+  test::CreateTestSelectField("State", "state", "California",
+                              {"Washington", "Tennessee", "California"},
+                              {"DC", "TN", "CA"}, 3, &field);
+  form.fields.push_back(field);
   test::CreateTestFormField("Country", "country", "Test Country", "text",
                             &field);
   form.fields.push_back(field);
@@ -9360,7 +9364,8 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
                                      &response_page_id, &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Test Name");
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
-  EXPECT_EQ(response_data.fields[2].value, u"Test Country");
+  EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
+  EXPECT_EQ(response_data.fields[3].value, u"Test Country");
 
   features.Reset();
   features.InitAndDisableFeature(
@@ -9371,7 +9376,8 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
                                      &response_page_id, &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Elvis Aaron Presley");
   EXPECT_EQ(response_data.fields[1].value, u"Memphis");
-  EXPECT_EQ(response_data.fields[2].value, u"United States");
+  EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
+  EXPECT_EQ(response_data.fields[3].value, u"United States");
 }
 
 // Desktop only tests.
