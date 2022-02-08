@@ -487,7 +487,9 @@ public class DownloadUtils {
             DownloadManagerService.removeCCTDownload(downloadGuid);
             return;
         }
-        boolean canOpen = DownloadUtils.openFile(filePath, mimeType, downloadGuid, otrProfileID,
+        // Mapping generic MIME type to android openable type based on URL and file extension.
+        String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
+        boolean canOpen = DownloadUtils.openFile(filePath, newMimeType, downloadGuid, otrProfileID,
                 originalUrl, referer, source, ContextUtils.getApplicationContext());
         if (!canOpen) {
             DownloadUtils.showDownloadManager(null, null, otrProfileID, source);
