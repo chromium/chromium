@@ -47,6 +47,12 @@ _SECTION_SORT_ORDER = {
     models.SECTION_OTHER: 6,
 }
 
+# Keys in build config for old .size files.
+_LEGACY_METADATA_BUILD_CONFIG_KEYS = (
+    models.BUILD_CONFIG_GIT_REVISION,
+    models.BUILD_CONFIG_GN_ARGS,
+)
+
 # Ensure each |models.SECTION_*| (except |SECTION_MULTIPLE|) has an entry.
 assert len(_SECTION_SORT_ORDER) + 1 == len(models.SECTION_NAME_TO_SECTION)
 
@@ -446,7 +452,7 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
     build_config = {}
     metadata = fields.get('metadata')
     if metadata:
-      for key in models.BUILD_CONFIG_KEYS:
+      for key in _LEGACY_METADATA_BUILD_CONFIG_KEYS:
         if key in metadata:
           build_config[key] = metadata[key]
           del metadata[key]

@@ -17,11 +17,8 @@ import match_util
 
 BUILD_CONFIG_GIT_REVISION = 'git_revision'
 BUILD_CONFIG_GN_ARGS = 'gn_args'
-
-BUILD_CONFIG_KEYS = (
-    BUILD_CONFIG_GIT_REVISION,
-    BUILD_CONFIG_GN_ARGS,
-)
+BUILD_CONFIG_TITLE = 'title'
+BUILD_CONFIG_URL = 'url'
 
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.
 METADATA_APK_SIZE = 'apk_size'  # File size of apk in bytes.

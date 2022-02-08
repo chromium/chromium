@@ -221,7 +221,7 @@ def LoadAndPostProcessDeltaSizeInfo(path, file_obj=None):
   return before_size_info, after_size_info
 
 
-def CreateBuildConfig(output_directory, source_directory):
+def CreateBuildConfig(output_directory, source_directory, url=None, title=None):
   """Creates the dict to use for SizeInfo.build_info."""
   logging.debug('Constructing build_config')
   build_config = {}
@@ -232,6 +232,10 @@ def CreateBuildConfig(output_directory, source_directory):
   git_rev = _DetectGitRevision(source_directory)
   if git_rev:
     build_config[models.BUILD_CONFIG_GIT_REVISION] = git_rev
+  if url is not None:
+    build_config[models.BUILD_CONFIG_URL] = url
+  if title is not None:
+    build_config[models.BUILD_CONFIG_TITLE] = title
 
   return build_config
 
@@ -524,6 +528,9 @@ def _AddContainerArguments(parser, is_top_args=False):
 
 def AddArguments(parser):
   parser.add_argument('size_file', help='Path to output .size file.')
+  parser.add_argument('--title',
+                      help='Value for the "title" build_config entry.')
+  parser.add_argument('--url', help='Value for the "url" build_config entry.')
   _AddContainerArguments(parser, is_top_args=True)
 
 
@@ -1041,7 +1048,9 @@ def Run(top_args, on_config_error):
     container_specs = _FilterContainerSpecs(container_specs, container_re)
 
     build_config = CreateBuildConfig(top_args.output_directory,
-                                     top_args.source_directory)
+                                     top_args.source_directory,
+                                     url=top_args.url,
+                                     title=top_args.title)
     size_info = CreateSizeInfo(container_specs,
                                build_config,
                                apk_file_manager,
