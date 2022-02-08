@@ -42,8 +42,6 @@ public class ShoppingPersistedTabDataNativeTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:enable_persisted_tab_data_maintenance/true"})
     public void testMaintenance() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ShoppingPersistedTabData.onDeferredStartup(); });
