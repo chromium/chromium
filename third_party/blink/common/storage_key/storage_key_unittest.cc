@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -40,6 +41,11 @@ TEST(StorageKeyTest, ConstructionValidity) {
   url::Origin valid_origin = url::Origin::Create(GURL("https://example.com"));
   StorageKey valid = StorageKey(valid_origin);
   EXPECT_FALSE(IsOpaque(valid));
+  // TODO(https://crbug.com/1287130): Change or remove this expectation once the
+  // full ancestor tree has been properly searched to determine AncestorChainBit
+  // value.
+  EXPECT_EQ(valid.ancestor_chain_bit(),
+            blink::mojom::AncestorChainBit::kSameSite);
 
   url::Origin invalid_origin =
       url::Origin::Create(GURL("I'm not a valid URL."));
@@ -78,6 +84,11 @@ TEST(StorageKeyTest, Equivalence) {
 
   StorageKey key11_origin1_origin2 = StorageKey(origin1, origin2);
   StorageKey key12_origin2_origin1 = StorageKey(origin2, origin1);
+  // TODO(https://crbug.com/1287130): Change or remove this expectation once the
+  // full ancestor tree has been properly searched to determine AncestorChainBit
+  // value.
+  EXPECT_EQ(key11_origin1_origin2.ancestor_chain_bit(),
+            blink::mojom::AncestorChainBit::kSameSite);
 
   // All are equivalent to themselves
   EXPECT_EQ(key1_origin1, key1_origin1);
@@ -229,10 +240,12 @@ TEST(StorageKeyTest, SerializePartitioned) {
     const char* expected_serialization;
   } kTestCases[] = {
       // 3p context case
+      // TODO(https://crbug.com/1287130): Correctly infer the actual ancestor
+      // chain bit value - will currently be serialized as same-site.
       {{"https://example.com/", SiteTest},
-       "https://example.com/^0https://test.example"},
+       "https://example.com/^0https://test.example^30"},
       {{"https://sub.test.example/", SiteExample},
-       "https://sub.test.example/^0https://example.com"},
+       "https://sub.test.example/^0https://example.com^30"},
   };
 
   for (const auto& test : kTestCases) {
@@ -301,12 +314,16 @@ TEST(StorageKeyTest, Deserialize) {
   EXPECT_FALSE(key3.has_value());
   EXPECT_FALSE(key4.has_value());
 
-  std::string example_with_test = "https://example.com/^0https://test.example";
+  std::string example_with_test =
+      "https://example.com/^0https://test.example^31";
   std::string example_with_wrong_seperator_site =
-      "https://example.com/^1https://test.example";
-  std::string test_with_example = "https://test.example/^0https://example.com";
-  std::string example_with_wrong = "https://example.com/^0I'm not a valid URL.";
-  std::string wrong_with_example = "I'm not a valid URL.^0https://example.com";
+      "https://example.com/^1https://test.example^31";
+  std::string test_with_example =
+      "https://test.example/^0https://example.com^31";
+  std::string example_with_wrong =
+      "https://example.com/^0I'm not a valid URL.^31";
+  std::string wrong_with_example =
+      "I'm not a valid URL.^0https://example.com^31";
 
   absl::optional<StorageKey> key5 = StorageKey::Deserialize(example_with_test);
   absl::optional<StorageKey> key5b =
@@ -349,17 +366,21 @@ TEST(StorageKeyTest, Deserialize) {
 
   std::string nonce_low_first = "https://example.com/^212345^167890";
   std::string malformed_3_carets = "https://example.com/^112345^267890^";
-  std::string malformed_seperators_too_close = "https://example.com/^1^267890";
+  std::string malformed_separators_too_close = "https://example.com/^1^267890";
   std::string malformed_first_party =
-      "https://www.example.com/^0https://example.com";
+      "https://www.example.com/^0https://example.com^30";
+  std::string malformed_ancestor_chain_bit =
+      "https://example.com^0https://test.example^35";
 
   absl::optional<StorageKey> key12 = StorageKey::Deserialize(nonce_low_first);
   absl::optional<StorageKey> key13 =
       StorageKey::Deserialize(malformed_3_carets);
   absl::optional<StorageKey> key14 =
-      StorageKey::Deserialize(malformed_seperators_too_close);
+      StorageKey::Deserialize(malformed_separators_too_close);
   absl::optional<StorageKey> key15 =
       StorageKey::Deserialize(malformed_first_party);
+  absl::optional<StorageKey> key16 =
+      StorageKey::Deserialize(malformed_ancestor_chain_bit);
 
   EXPECT_FALSE(key12.has_value());
   EXPECT_FALSE(key13.has_value());
@@ -549,6 +570,51 @@ TEST(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   EXPECT_EQ(net::SchemefulSite(origin2), key_origin1_site2.top_level_site());
 }
 
+// Test that the AncestorChainBit enum class is not reordered and returns
+// kSameSite when partitioning is not enabled.
+TEST(StorageKeyTest, AncestorChainBitGetter) {
+  std::string same_site_string =
+      "https://example.com/^0https://test.example^30";
+  std::string cross_site_string =
+      "https://example.com/^0https://test.example^31";
+
+  absl::optional<StorageKey> key_same_site =
+      StorageKey::Deserialize(same_site_string);
+  absl::optional<StorageKey> key_cross_site =
+      StorageKey::Deserialize(cross_site_string);
+
+  EXPECT_TRUE(key_same_site.has_value());
+  EXPECT_TRUE(key_cross_site.has_value());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+            key_same_site->ancestor_chain_bit());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+            key_cross_site->ancestor_chain_bit());
+}
+
+// Test that the AncestorChainBit enum class is not reordered and returns the
+// correct value when storage partitioning is enabled.
+TEST(StorageKeyTest, AncestorChainBitGetterWithPartitioningEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+  std::string same_site_string =
+      "https://example.com/^0https://test.example^30";
+  std::string cross_site_string =
+      "https://example.com/^0https://test.example^31";
+
+  absl::optional<StorageKey> key_same_site =
+      StorageKey::Deserialize(same_site_string);
+  absl::optional<StorageKey> key_cross_site =
+      StorageKey::Deserialize(cross_site_string);
+
+  EXPECT_TRUE(key_same_site.has_value());
+  EXPECT_TRUE(key_cross_site.has_value());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+            key_same_site->ancestor_chain_bit());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kCrossSite,
+            key_cross_site->ancestor_chain_bit());
+}
+
 TEST(StorageKeyTest, IsThirdPartyContext) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -567,11 +633,11 @@ TEST(StorageKeyTest, IsThirdPartyContext) {
     const url::Origin top_level_origin;
     const bool expected;
     const bool has_nonce = false;
-  } test_cases[] = {
-      {kOrigin, kOrigin, false},          {kOrigin, kInsecureOrigin, true},
-      {kOrigin, kSubdomainOrigin, false}, {kOrigin, kDifferentSite, true},
-      {kOrigin, kOrigin, true, true},
-  };
+  } test_cases[] = {{kOrigin, kOrigin, false},
+                    {kOrigin, kInsecureOrigin, true},
+                    {kOrigin, kSubdomainOrigin, false},
+                    {kOrigin, kDifferentSite, true},
+                    {kOrigin, kOrigin, true, true}};
   for (const auto& test_case : test_cases) {
     if (test_case.has_nonce) {
       StorageKey key = StorageKey::CreateWithNonce(
@@ -588,6 +654,12 @@ TEST(StorageKeyTest, IsThirdPartyContext) {
     EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
     EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
   }
+  // Explicitly testing the A->B->A case AncestorChainBit is preventing:
+  // Same origin and top-level site but cross-site ancestor
+  StorageKey cross_key = StorageKey::CreateWithOptionalNonce(
+      kOrigin, net::SchemefulSite(kOrigin), nullptr,
+      blink::mojom::AncestorChainBit::kCrossSite);
+  EXPECT_EQ(true, cross_key.IsThirdPartyContext());
 }
 
 TEST(StorageKeyTest, ToNetSiteForCookies) {

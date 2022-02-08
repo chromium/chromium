@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
@@ -45,6 +46,8 @@ TEST(BlinkStorageKeyMojomTraitsTest, SerializeAndDeserialize_BlinkStorageKey) {
       BlinkStorageKey(origin4, site2),
       BlinkStorageKey::CreateWithNonce(origin1, nonce),
       BlinkStorageKey::CreateWithNonce(origin2, nonce),
+      BlinkStorageKey(origin2, site2, nullptr,
+                      mojom::blink::AncestorChainBit::kCrossSite),
   };
 
   for (BlinkStorageKey& key : keys) {
@@ -56,6 +59,7 @@ TEST(BlinkStorageKeyMojomTraitsTest, SerializeAndDeserialize_BlinkStorageKey) {
         copied.GetSecurityOrigin().get()));
     EXPECT_EQ(key.GetTopLevelSite(), copied.GetTopLevelSite());
     EXPECT_EQ(key.GetNonce(), copied.GetNonce());
+    EXPECT_EQ(key.GetAncestorChainBit(), copied.GetAncestorChainBit());
   }
 }
 
@@ -95,6 +99,9 @@ TEST(BlinkStorageKeyMojomTraitsTest,
       StorageKey(url_origin4, net_site2),
       StorageKey::CreateWithNonce(url_origin1, nonce),
       StorageKey::CreateWithNonce(url_origin2, nonce),
+      StorageKey::CreateWithOptionalNonce(
+          url_origin2, net_site2, nullptr,
+          mojom::blink::AncestorChainBit::kCrossSite),
   };
   Vector<BlinkStorageKey> blink_storage_keys = {
       BlinkStorageKey(origin1),
@@ -107,6 +114,8 @@ TEST(BlinkStorageKeyMojomTraitsTest,
       BlinkStorageKey(origin4, blink_site2),
       BlinkStorageKey::CreateWithNonce(origin1, nonce),
       BlinkStorageKey::CreateWithNonce(origin2, nonce),
+      BlinkStorageKey(origin2, blink_site2, nullptr,
+                      mojom::blink::AncestorChainBit::kCrossSite),
   };
 
   for (size_t i = 0; i < storage_keys.size(); ++i) {
@@ -159,6 +168,9 @@ TEST(BlinkStorageKeyMojomTraitsTest,
       StorageKey(url_origin4, net_site2),
       StorageKey::CreateWithNonce(url_origin1, nonce),
       StorageKey::CreateWithNonce(url_origin2, nonce),
+      StorageKey::CreateWithOptionalNonce(
+          url_origin2, net_site2, nullptr,
+          mojom::blink::AncestorChainBit::kCrossSite),
   };
 
   Vector<BlinkStorageKey> blink_storage_keys = {
@@ -172,6 +184,8 @@ TEST(BlinkStorageKeyMojomTraitsTest,
       BlinkStorageKey(origin4, blink_site2),
       BlinkStorageKey::CreateWithNonce(origin1, nonce),
       BlinkStorageKey::CreateWithNonce(origin2, nonce),
+      BlinkStorageKey(origin2, blink_site2, nullptr,
+                      mojom::blink::AncestorChainBit::kCrossSite),
   };
 
   for (size_t i = 0; i < storage_keys.size(); ++i) {

@@ -44,7 +44,8 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
   using EncodedAttribute = StorageKey::EncodedAttribute;
   // As per the Serialize() call, we have to expect the
   // following structure: <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
-  // `key`.top_level_site> ] The brackets indicate an optional component.
+  // `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit> ]
+  // The brackets indicate an optional component.
   // - or -
   // <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey 'nonce'.High64Bits> +
   // "^2" + <StorageKey 'nonce'.Low64Bits>
@@ -52,17 +53,20 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
   // Let's check for a delimiting caret. The presence of a caret means this key
   // is partitioned.
 
-  // More than 2 carets indicates a malformed input.
+  // More than two encoded attributes (delimited by carets) indicates a
+  // malformed input.
   if (std::count(in.begin(), in.end(), '^') > 2)
     return absl::nullopt;
 
-  size_t pos = in.find_first_of('^');
+  size_t pos_first_caret = in.find_first_of('^');
+  size_t pos_last_caret = in.find_last_of('^');
 
   url::Origin key_origin;
   net::SchemefulSite key_top_level_site;
   std::unique_ptr<base::UnguessableToken> nonce;
+  blink::mojom::AncestorChainBit ancestor_chain_bit;
 
-  if (pos == std::string::npos) {
+  if (pos_first_caret == std::string::npos) {
     // Only the origin is serialized.
 
     key_origin = url::Origin::Create(GURL(in));
@@ -76,15 +80,16 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
     if (key_origin.opaque())
       return absl::nullopt;
 
-    return StorageKey(key_origin, key_top_level_site);
+    return StorageKey(key_origin, key_top_level_site, nullptr,
+                      blink::mojom::AncestorChainBit::kSameSite);
   }
 
-  if (!ValidSeparatorWithData(in, pos))
+  if (!ValidSeparatorWithData(in, pos_first_caret))
     return absl::nullopt;
 
   // Otherwise the key is partitioned, let's see what it's partitioned by.
   EncodedAttribute encoded_attribute =
-      DeserializeAttributeSeparator(in.substr(pos, 2));
+      DeserializeAttributeSeparator(in.substr(pos_first_caret, 2));
 
   switch (encoded_attribute) {
     case EncodedAttribute::kTopLevelSite: {
@@ -92,50 +97,76 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the caret
       // separator.
-      key_origin = url::Origin::Create(GURL(in.substr(0, pos)));
+      key_origin = url::Origin::Create(GURL(in.substr(0, pos_first_caret)));
 
-      // The top_level_site is the portion beyond the separator.
-      key_top_level_site =
-          net::SchemefulSite(GURL(in.substr(pos + 2, std::string::npos)));
+      // The top_level_site is the portion between the two separators.
+      int length_of_site = pos_last_caret - (pos_first_caret + 2);
+      key_top_level_site = net::SchemefulSite(
+          GURL(in.substr(pos_first_caret + 2, length_of_site)));
 
       // There is no nonce.
 
-      // In addition to checking for opaque-ness, check to make sure that the
-      // origin is not same-site with the top-level site (i.e.: A first-party
-      // StorageKey). This is important because we specifically do not serialize
-      // the top-level site portion of a 1p StorageKey for backwards
-      // compatibility reasons, meaning that such an input is malformed.
-      if (key_origin.opaque() || key_top_level_site.opaque() ||
-          key_top_level_site == net::SchemefulSite(key_origin)) {
+      // Make sure we found the last separator, it's valid, that it's the
+      // correct attribute.
+      if (pos_last_caret == std::string::npos ||
+          !ValidSeparatorWithData(in, pos_last_caret) ||
+          DeserializeAttributeSeparator(in.substr(pos_last_caret, 2)) !=
+              EncodedAttribute::kAncestorChainBit)
         return absl::nullopt;
-      }
 
-      return StorageKey(key_origin, key_top_level_site);
+      // The ancestor_chain_bit is the portion beyond the last separator.
+      int raw_bit;
+      if (!base::StringToInt(in.substr(pos_last_caret + 2, std::string::npos),
+                             &raw_bit))
+        return absl::nullopt;
+
+      // If the integer conversion results in a value outside the enumerated
+      // indices of [0,1]
+      if (raw_bit < 0 || raw_bit > 1)
+        return absl::nullopt;
+      ancestor_chain_bit = static_cast<blink::mojom::AncestorChainBit>(raw_bit);
+
+      // In addition to checking for opaque-ness, if the AncestorChainBit is
+      // marked as kSameSite, check to make sure that the origin is not
+      // same-site with the top-level site (i.e.: A first-party StorageKey).
+      // This is important because we specifically do not serialize the
+      // top-level site portion of a 1p StorageKey for backwards compatibility
+      // reasons, meaning that such an input is malformed.
+      if (key_origin.opaque() || key_top_level_site.opaque() ||
+          (ancestor_chain_bit == blink::mojom::AncestorChainBit::kSameSite &&
+           key_top_level_site == net::SchemefulSite(key_origin)))
+        return absl::nullopt;
+
+      return StorageKey(key_origin, key_top_level_site, nullptr,
+                        ancestor_chain_bit);
     }
     case EncodedAttribute::kNonceHigh: {
       // A nonce is serialized.
-      // There should be two carets separators, let's grab the second.
-      size_t pos_2 = in.find_first_of('^', pos + 2);
+      // There should be three caret separators, let's grab the second
+      // (the separator between high and low nonce).
+      size_t pos_second_caret = in.find_first_of('^', pos_first_caret + 2);
 
       // Make sure we found the next separator, it's valid, that it's the
       // correct attribute.
-      if (pos_2 == std::string::npos || !ValidSeparatorWithData(in, pos_2) ||
-          DeserializeAttributeSeparator(in.substr(pos_2, 2)) !=
+      if (pos_second_caret == std::string::npos ||
+          !ValidSeparatorWithData(in, pos_second_caret) ||
+          DeserializeAttributeSeparator(in.substr(pos_second_caret, 2)) !=
               EncodedAttribute::kNonceLow)
         return absl::nullopt;
 
       // The origin is the portion up to, but not including, the first
       // separator.
-      key_origin = url::Origin::Create(GURL(in.substr(0, pos)));
+      key_origin = url::Origin::Create(GURL(in.substr(0, pos_first_caret)));
 
       // The first high 64 bits of the nonce are next, between the two
       // separators.
-      int length_of_high = pos_2 - (pos + 2);
-      std::string high_digits =
-          static_cast<std::string>(in.substr(pos + 2, length_of_high));
+      int length_of_high = pos_second_caret - (pos_first_caret + 2);
+      int length_of_low = pos_last_caret - (pos_second_caret + 2);
+      std::string high_digits = static_cast<std::string>(
+          in.substr(pos_first_caret + 2, length_of_high));
       // The low 64 bits are last, after the second separator.
-      std::string low_digits =
-          static_cast<std::string>(in.substr(pos_2 + 2, std::string::npos));
+      std::string low_digits = static_cast<std::string>(
+          in.substr(pos_second_caret + 2, length_of_low));
 
       uint64_t nonce_high = 0;
       uint64_t nonce_low = 0;
@@ -177,19 +208,26 @@ bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
 StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
                                        const base::UnguessableToken& nonce) {
   DCHECK(!nonce.is_empty());
-  return StorageKey(origin, net::SchemefulSite(origin), &nonce);
+  // The AncestorChainBit is not applicable to StorageKeys with a non-empty
+  // nonce, so they are initialized to be kSameSite.
+  return StorageKey(origin, net::SchemefulSite(origin), &nonce,
+                    blink::mojom::AncestorChainBit::kSameSite);
 }
 
 // static
 StorageKey StorageKey::CreateWithOptionalNonce(
     const url::Origin& origin,
     const net::SchemefulSite& top_level_site,
-    const base::UnguessableToken* nonce) {
+    const base::UnguessableToken* nonce,
+    blink::mojom::AncestorChainBit ancestor_chain_bit) {
   DCHECK(!nonce || !nonce->is_empty());
-  return StorageKey(origin, top_level_site, nonce);
+  return StorageKey(origin, top_level_site, nonce, ancestor_chain_bit);
 }
 
 // static
+// TODO(https://crbug.com/1287134): refactor FromNetIsolationInfo to correctly
+// infer the AncestorChainBit value instead of constructing with kSameSite each
+// time.
 blink::StorageKey StorageKey::FromNetIsolationInfo(
     const net::IsolationInfo& isolation_info) {
   DCHECK(isolation_info.frame_origin().has_value());
@@ -197,7 +235,8 @@ blink::StorageKey StorageKey::FromNetIsolationInfo(
   return StorageKey(
       isolation_info.frame_origin().value(),
       net::SchemefulSite(isolation_info.top_frame_origin().value()),
-      base::OptionalOrNullptr(isolation_info.nonce()));
+      base::OptionalOrNullptr(isolation_info.nonce()),
+      blink::mojom::AncestorChainBit::kSameSite);
 }
 
 std::string StorageKey::Serialize() const {
@@ -210,6 +249,10 @@ std::string StorageKey::Serialize() const {
   //
   // <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey 'nonce'.High64Bits> +
   // "^2" + <StorageKey 'nonce'.Low64Bits>
+  //
+  // Note that we intentionally do not include the AncestorChainBit in
+  // serialization with nonce formats as that information is not applicable
+  // (similar to top-level-site).
   if (nonce_.has_value()) {
     return origin_.GetURL().spec() +
            SerializeAttributeSeparator(EncodedAttribute::kNonceHigh) +
@@ -222,18 +265,22 @@ std::string StorageKey::Serialize() const {
   // the following scheme:
   //
   // <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
-  // `key`.top_level_site> ]
+  // `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit> ]
   //
   // The top_level_site is optional (indicated by the square brackets) if it's
-  // the same site as the origin in order to enable backwards compatibility for
-  // 1p contexts. Meaning that in the case of a 1p context the serialization
-  // structure is the same as if features::kThirdPartyStoragePartitioning was
-  // disabled.
+  // the same site as the origin and kSameSite in order to enable backwards
+  // compatibility for 1p contexts. Meaning that in the case of a 1p context the
+  // serialization structure is the same as if
+  // features::kThirdPartyStoragePartitioning was disabled.
   if (IsThirdPartyStoragePartitioningEnabled() &&
-      top_level_site_ != net::SchemefulSite(origin_)) {
-    return origin_.GetURL().spec() +
-           SerializeAttributeSeparator(EncodedAttribute::kTopLevelSite) +
-           top_level_site_.Serialize();
+      (top_level_site_ != net::SchemefulSite(origin_) ||
+       ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kCrossSite)) {
+    return base::StrCat(
+        {origin_.GetURL().spec(),
+         SerializeAttributeSeparator(EncodedAttribute::kTopLevelSite),
+         top_level_site_.Serialize(),
+         SerializeAttributeSeparator(EncodedAttribute::kAncestorChainBit),
+         base::NumberToString(static_cast<int>(ancestor_chain_bit_))});
   }
 
   return origin_.GetURL().spec();
@@ -265,7 +312,12 @@ std::string StorageKey::GetDebugString() const {
   return base::StrCat(
       {"{ origin: ", origin_.GetDebugString(),
        ", top-level site: ", top_level_site_.Serialize(),
-       ", nonce: ", nonce_.has_value() ? nonce_->ToString() : "<null>", " }"});
+       ", nonce: ", nonce_.has_value() ? nonce_->ToString() : "<null>",
+       ", ancestor chain bit: ",
+       ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite
+           ? "Same-Site"
+           : "Cross-Site",
+       " }"});
 }
 
 std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
@@ -281,6 +333,15 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
         nonce_->ToString().substr(0, max_length - memory_dump_str.length()));
   }
 
+  if (max_length > memory_dump_str.length()) {
+    std::string ancestor_full_string =
+        ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite
+            ? "Same-Site"
+            : "Cross-Site";
+    memory_dump_str.append(
+        ancestor_full_string.substr(0, max_length - memory_dump_str.length()));
+  }
+
   base::ranges::replace_if(
       memory_dump_str.begin(), memory_dump_str.end(),
       [](char c) { return !std::isalnum(static_cast<unsigned char>(c)); }, '_');
@@ -289,6 +350,7 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
 
 const net::SiteForCookies StorageKey::ToNetSiteForCookies() const {
   if (!nonce_ &&
+      ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite &&
       net::registry_controlled_domains::SameDomainOrHost(
           origin_, url::Origin::Create(top_level_site_.GetURL()),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
@@ -321,9 +383,33 @@ StorageKey::EncodedAttribute StorageKey::DeserializeAttributeSeparator(
   return static_cast<StorageKey::EncodedAttribute>(number);
 }
 
+// static
+bool StorageKey::ShouldSkipKeyDueToPartitioning(
+    const std::string& reg_key_string) {
+  // Don't skip anything if storage partitioning is enabled.
+  if (IsThirdPartyStoragePartitioningEnabled())
+    return false;
+
+  // Determine if there is a valid attribute encoded with a caret
+  size_t pos_first_caret = reg_key_string.find_first_of('^');
+  if (pos_first_caret != std::string::npos &&
+      ValidSeparatorWithData(reg_key_string, pos_first_caret)) {
+    StorageKey::EncodedAttribute attribute = DeserializeAttributeSeparator(
+        reg_key_string.substr(pos_first_caret, 2));
+    // Do skip if partitioning is disabled and we detect a top-level site
+    // serialization scheme:
+    if (attribute == StorageKey::EncodedAttribute::kTopLevelSite)
+      return true;
+  }
+  // If otherwise first-party, nonce, or corrupted, don't skip.
+  return false;
+}
+
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
-  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_) ==
-         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_);
+  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
+                  lhs.ancestor_chain_bit_) ==
+         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
+                  rhs.ancestor_chain_bit_);
 }
 
 bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
@@ -331,8 +417,10 @@ bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
 }
 
 bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
-  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_) <
-         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_);
+  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
+                  lhs.ancestor_chain_bit_) <
+         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
+                  rhs.ancestor_chain_bit_);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk) {

@@ -234,6 +234,7 @@
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
@@ -10817,7 +10818,10 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   blink::StorageKey storage_key_to_commit =
       blink::StorageKey::CreateWithOptionalNonce(
           GetLastCommittedOrigin(), provisional_storage_key.top_level_site(),
-          base::OptionalOrNullptr(provisional_storage_key.nonce()));
+          base::OptionalOrNullptr(provisional_storage_key.nonce()),
+          ComputeSiteForCookies().IsNull()
+              ? blink::mojom::AncestorChainBit::kCrossSite
+              : blink::mojom::AncestorChainBit::kSameSite);
   SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();

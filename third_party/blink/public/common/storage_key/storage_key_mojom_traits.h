@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom.h"
 
 namespace base {
@@ -41,6 +42,11 @@ class BLINK_COMMON_EXPORT
   static const absl::optional<base::UnguessableToken>& nonce(
       const blink::StorageKey& key) {
     return key.nonce();
+  }
+
+  static blink::mojom::AncestorChainBit ancestor_chain_bit(
+      const blink::StorageKey& key) {
+    return key.ancestor_chain_bit();
   }
 
   static bool Read(blink::mojom::StorageKeyDataView data,

@@ -189,6 +189,7 @@ mojom("mojom_platform") {
     "speech/speech_recognizer.mojom",
     "speech/speech_synthesis.mojom",
     "storage_access/storage_access_automation.mojom",
+    "storage_key/ancestor_chain_bit.mojom",
     "storage_key/storage_key.mojom",
     "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",

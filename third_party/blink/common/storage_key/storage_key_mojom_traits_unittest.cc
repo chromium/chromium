@@ -9,6 +9,7 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -42,7 +43,10 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
           base::UnguessableToken::Create()),
       StorageKey::CreateWithNonce(url::Origin(),
                                   base::UnguessableToken::Create()),
-  };
+      StorageKey::CreateWithOptionalNonce(
+          url::Origin::Create(GURL("http://sub2.example.com")),
+          net::SchemefulSite(url::Origin::Create(GURL("https://example.com"))),
+          nullptr, blink::mojom::AncestorChainBit::kCrossSite)};
 
   for (auto& original : test_keys) {
     StorageKey copied;

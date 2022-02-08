@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -48,11 +49,21 @@ class PLATFORM_EXPORT BlinkStorageKey {
                   const BlinkSchemefulSite& top_level_site,
                   const base::UnguessableToken* nonce);
 
+  // Creates a BlinkStorageKey with the given origin, top-level site and nonce.
+  // `origin` must not be null. `origin` can be opaque.
+  // `nonce` can be null to create a key without a nonce.
+  // `ancestor_chain_bit` must not be null, if it cannot be determined, default
+  // to kSameSite.
+  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                  const BlinkSchemefulSite& top_level_site,
+                  const base::UnguessableToken* nonce,
+                  mojom::blink::AncestorChainBit ancestor_chain_bit);
+
   // Creates a BlinkStorageKey converting the given StorageKey `storage_key`.
-  BlinkStorageKey(const StorageKey& storage_key);
+  BlinkStorageKey(const blink::StorageKey& storage_key);
 
   // Converts this BlinkStorageKey into a StorageKey.
-  operator StorageKey() const;
+  operator blink::StorageKey() const;
 
   ~BlinkStorageKey() = default;
 
@@ -77,6 +88,10 @@ class PLATFORM_EXPORT BlinkStorageKey {
     return nonce_;
   }
 
+  mojom::blink::AncestorChainBit GetAncestorChainBit() const {
+    return ancestor_chain_bit_;
+  }
+
   String ToDebugString() const;
 
  private:
@@ -86,6 +101,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
   scoped_refptr<const SecurityOrigin> origin_;
   BlinkSchemefulSite top_level_site_;
   absl::optional<base::UnguessableToken> nonce_;
+  mojom::blink::AncestorChainBit ancestor_chain_bit_;
 };
 
 PLATFORM_EXPORT

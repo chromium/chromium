@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
 
@@ -30,8 +31,13 @@ bool StructTraits<blink::mojom::StorageKeyDataView, blink::StorageKey>::Read(
   if (!data.ReadNonce(&nonce))
     return false;
 
+  blink::mojom::AncestorChainBit ancestor_chain_bit;
+  if (!data.ReadAncestorChainBit(&ancestor_chain_bit))
+    return false;
+
   *out = blink::StorageKey::CreateWithOptionalNonce(
-      origin, top_level_site, base::OptionalOrNullptr(nonce));
+      origin, top_level_site, base::OptionalOrNullptr(nonce),
+      ancestor_chain_bit);
   return true;
 }
 

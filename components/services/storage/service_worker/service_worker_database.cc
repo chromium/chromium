@@ -19,6 +19,7 @@
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -63,7 +64,8 @@
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "REG:" + <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
-//   `key`.top_level_site> ] + '\x00' + <int64_t 'registration_id'>
+//   `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit> ] +
+//   '\x00' + <int64_t 'registration_id'>
 //   - or -
 //   key: "REG:" + <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey
 //   'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits> + '\x00' +
@@ -95,7 +97,7 @@
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
 //   value: <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
-//   `key`.top_level_site> ]
+//   `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit>]
 //   - or -
 //   value: <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey
 //   'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits>
@@ -115,45 +117,6 @@
 //   OBSOLETE: https://crbug.com/788604
 //   key: "INITDATA_FOREIGN_FETCH_ORIGIN:" + <GURL 'origin'>
 //   value: <empty>
-namespace {
-
-// Returns true if the registration key string is partitioned by top-level site
-// but storage partitioning is currently disabled. Returns false if the key
-// string contains a serialized nonce.
-bool ShouldSkipKeyDueToPartitioning(const std::string& reg_key_string) {
-  // Don't skip anything if storage partitioning is enabled.
-  if (blink::StorageKey::IsThirdPartyStoragePartitioningEnabled())
-    return false;
-
-  // TODO(crbug.com/1246549) : This currently counts carets to tell the
-  // difference between nonce and top-level site schemes. When the ancestor bit
-  // is implemented this will need to be modified to handle that case (since it
-  // will also use 2 carets).
-  int number_of_carets =
-      std::count(reg_key_string.begin(), reg_key_string.end(), '^');
-
-  switch (number_of_carets) {
-    case 2: {
-      // Don't skip if a nonce serialization scheme is found.
-      return false;
-    }
-    case 1: {
-      // Do skip if partitioning is disabled and we detect a top-level site
-      // serialization scheme.
-      return true;
-    }
-    case 0: {
-      // Don't skip for a 1p context key.
-      return false;
-    }
-    default: {
-      NOTREACHED();
-      return true;
-    }
-  }
-}
-
-}  // namespace
 
 namespace storage {
 
@@ -431,7 +394,7 @@ ServiceWorkerDatabase::GetStorageKeysWithRegistrations(
                         service_worker_internals::kUniqueOriginKey, &key_str))
         break;
 
-      if (ShouldSkipKeyDueToPartitioning(key_str))
+      if (blink::StorageKey::ShouldSkipKeyDueToPartitioning(key_str))
         continue;
 
       absl::optional<blink::StorageKey> key =
@@ -623,7 +586,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
       // Get only the sub-string before the separator.
       std::string reg_key_string = prefix_string.substr(0, separator_pos);
 
-      if (ShouldSkipKeyDueToPartitioning(reg_key_string))
+      if (blink::StorageKey::ShouldSkipKeyDueToPartitioning(reg_key_string))
         continue;
 
       absl::optional<blink::StorageKey> key =
@@ -700,7 +663,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationStorageKey(
 
   // If storage partitioning is disabled we shouldn't have any handles to
   // registration IDs associated with partitioned entries.
-  DCHECK(!ShouldSkipKeyDueToPartitioning(value));
+  DCHECK(!blink::StorageKey::ShouldSkipKeyDueToPartitioning(value));
 
   absl::optional<blink::StorageKey> parsed =
       blink::StorageKey::Deserialize(value);
