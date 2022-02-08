@@ -168,6 +168,11 @@ void ExternallyInstalledWebAppPrefs::Insert(
   update->SetKey(url.spec(), std::move(dict));
 }
 
+bool ExternallyInstalledWebAppPrefs::Remove(const GURL& url) {
+  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  return update->RemoveKey(url.spec());
+}
+
 absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

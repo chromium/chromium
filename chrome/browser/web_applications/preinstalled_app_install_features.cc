@@ -95,6 +95,7 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
     // See |kAllowDefaultWebAppMigrationForChromeOsManagedUsers| comment above.
     if (base::FeatureList::IsEnabled(*feature) &&
         feature->name == feature_name && IsMigrationFeature(*feature) &&
+        profile.GetProfilePolicyConnector() &&
         profile.GetProfilePolicyConnector()->IsManaged()) {
       return base::FeatureList::IsEnabled(
           kAllowDefaultWebAppMigrationForChromeOsManagedUsers);
