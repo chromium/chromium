@@ -828,11 +828,7 @@ void LocalFrameView::PerformLayout() {
 #if DCHECK_IS_ON()
       // Ensure fragment-tree consistency after a subtree layout.
       for (const auto& p : fragment_tree_spines) {
-        // |LayoutNGMixin::UpdateInFlowBlockLayout| may |SetNeedsLayout| to its
-        // containing block. Don't check if it will be re-laid out.
-        if (!p.key->NeedsLayout()) {
-          p.key->AssertFragmentTree();
-        }
+        p.key->AssertFragmentTree();
         DCHECK_EQ(p.value, 0u);
       }
 #endif

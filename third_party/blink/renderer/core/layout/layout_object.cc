@@ -442,6 +442,13 @@ bool LayoutObject::RequiresAnonymousTableWrappers(
 void LayoutObject::AssertFragmentTree(bool display_locked) const {
   NOT_DESTROYED();
   for (const LayoutObject* layout_object = this; layout_object;) {
+    // |LayoutNGMixin::UpdateInFlowBlockLayout| may |SetNeedsLayout| to its
+    // containing block. Don't check if it will be re-laid out.
+    if (layout_object->NeedsLayout()) {
+      layout_object = layout_object->NextInPreOrderAfterChildren(this);
+      continue;
+    }
+
     // If display-locked, fragments may not be removed from the tree even after
     // the |LayoutObject| was destroyed, but still they should be consistent.
     if (!display_locked && layout_object->ChildLayoutBlockedByDisplayLock()) {
