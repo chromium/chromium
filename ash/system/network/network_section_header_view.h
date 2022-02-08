@@ -116,7 +116,9 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
   // TrayNetworkStateObserver:
   void DeviceStateListChanged() override;
 
-  void PerformAddExtraButtons(bool enabled);
+  void PerformAddExtraButtons(
+      bool enabled,
+      chromeos::network_config::mojom::GlobalPolicyPtr global_policy);
 
   void AddCellularButtonPressed();
 

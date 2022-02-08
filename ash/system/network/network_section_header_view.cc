@@ -4,6 +4,7 @@
 
 #include "ash/system/network/network_section_header_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -341,8 +342,11 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
 
   // The button opens the eSIM setup flow, and should only be added if the
   // device is eSIM-capable.
-  if (IsESimSupported())
-    PerformAddExtraButtons(enabled);
+  if (IsESimSupported()) {
+    model()->cros_network_config()->GetGlobalPolicy(
+        base::BindOnce(&MobileSectionHeaderView::PerformAddExtraButtons,
+                       base::Unretained(this), enabled));
+  }
 }
 
 void MobileSectionHeaderView::DeviceStateListChanged() {
@@ -354,7 +358,15 @@ void MobileSectionHeaderView::DeviceStateListChanged() {
       l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));
 }
 
-void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
+void MobileSectionHeaderView::PerformAddExtraButtons(
+    bool enabled,
+    chromeos::network_config::mojom::GlobalPolicyPtr global_policy) {
+  // Adding new cellular networks is disallowed when only policy cellular
+  // networks are allowed by admin.
+  if (ash::features::IsESimPolicyEnabled() &&
+      global_policy->allow_only_policy_cellular_networks) {
+    return;
+  }
   can_add_esim_button_be_enabled_ = enabled;
   const gfx::VectorIcon& icon = base::i18n::IsRTL() ? kAddCellularNetworkRtlIcon
                                                     : kAddCellularNetworkIcon;
