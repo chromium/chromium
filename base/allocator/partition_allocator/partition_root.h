@@ -193,8 +193,8 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 #if !defined(PA_EXTRAS_REQUIRED)
   // Teach the compiler that code can be optimized in builds that use no
   // extras.
-  static constexpr inline uint32_t extras_size = 0;
-  static constexpr inline uint32_t extras_offset = 0;
+  static inline constexpr uint32_t extras_size = 0;
+  static inline constexpr uint32_t extras_offset = 0;
 #endif  // !defined(PA_EXTRAS_REQUIRED)
 
   // Read-mostly flags.

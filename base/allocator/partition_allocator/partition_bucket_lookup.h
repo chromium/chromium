@@ -47,7 +47,7 @@ static_assert(kBitsPerSizeT == 64, "");
 static_assert(kBitsPerSizeT == 32, "");
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-constexpr inline uint8_t kOrderIndexShift[PA_BITS_PER_SIZE_T + 1] = {
+inline constexpr uint8_t kOrderIndexShift[PA_BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
     OrderIndexShift(3),  OrderIndexShift(4),  OrderIndexShift(5),
     OrderIndexShift(6),  OrderIndexShift(7),  OrderIndexShift(8),
@@ -74,7 +74,7 @@ constexpr inline uint8_t kOrderIndexShift[PA_BITS_PER_SIZE_T + 1] = {
 #endif
 };
 
-constexpr inline size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
+inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
     OrderSubIndexMask(0),  OrderSubIndexMask(1),  OrderSubIndexMask(2),
     OrderSubIndexMask(3),  OrderSubIndexMask(4),  OrderSubIndexMask(5),
     OrderSubIndexMask(6),  OrderSubIndexMask(7),  OrderSubIndexMask(8),

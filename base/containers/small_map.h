@@ -15,7 +15,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 
-constexpr inline size_t kUsingFullMapSentinel =
+inline constexpr size_t kUsingFullMapSentinel =
     std::numeric_limits<size_t>::max();
 
 namespace base {
