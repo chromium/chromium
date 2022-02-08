@@ -111,10 +111,8 @@
   self.view.clipsToBounds = YES;
 
   // TODO(crbug.com/1170995): The contentCollectionView width might be narrower
-  // than the ContentSuggestions view. This causes elements to be hidden. As a
-  // temporary workaround set clipsToBounds to NO to display these elements, and
-  // add a gesture recognizer to interact with them.
-  self.collectionView.clipsToBounds = NO;
+  // than the ContentSuggestions view. This causes elements to be hidden. A
+  // gesture recognizer is added to allow these elements to be interactable.
   UITapGestureRecognizer* singleTapRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(handleSingleTapInView:)];
@@ -189,6 +187,12 @@
     [self.feedHeaderViewController
         didMoveToParentViewController:parentViewController];
   }
+
+  // TODO(crbug.com/1170995): The contentCollectionView width might be narrower
+  // than the ContentSuggestions view. This causes elements to be hidden, so we
+  // set clipsToBounds to ensure that they remain visible. The collection view
+  // changes, so we must set this property each time it does.
+  self.collectionView.clipsToBounds = NO;
 
   [self.overscrollActionsController invalidate];
   [self configureOverscrollActionsController];
