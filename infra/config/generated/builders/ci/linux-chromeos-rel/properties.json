@@ -1,0 +1,26 @@
+{
+  "$build/chromium_tests": {
+    "project_trigger_overrides": {
+      "chromium": "chromium-m96"
+    }
+  },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
+  "$kitchen": {
+    "devshell": true,
+    "git_auth": true
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.chromiumos",
+  "recipe": "chromium"
+}
