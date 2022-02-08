@@ -665,8 +665,8 @@ bool ParseInspectorMessage(const std::string& message,
   if (!message_value || !message_value->GetAsDictionary(&message_dict))
     return false;
   session_id->clear();
-  if (message_dict->HasKey("sessionId"))
-    message_dict->GetString("sessionId", session_id);
+  if (const std::string* str = message_dict->FindStringKey("sessionId"))
+    *session_id = *str;
 
   base::Value* id_value = message_dict->FindKey("id");
   if (!id_value) {

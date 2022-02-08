@@ -397,5 +397,5 @@ TEST(PerformanceLogger, WarnWhenTraceBufferFull) {
   EXPECT_EQ("Tracing.bufferUsage", method);
   base::DictionaryValue* actual_params;
   EXPECT_TRUE(message->GetDictionary("message.params", &actual_params));
-  EXPECT_TRUE(actual_params->HasKey("error"));
+  EXPECT_TRUE(actual_params->FindKey("error"));
 }

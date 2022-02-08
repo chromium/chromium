@@ -42,7 +42,7 @@ TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
   std::string text;
   ASSERT_TRUE(client.commands_[0].params.GetString("promptText", &text));
   ASSERT_EQ(given_text, text);
-  ASSERT_TRUE(client.commands_[0].params.HasKey("accept"));
+  ASSERT_TRUE(client.commands_[0].params.FindKey("accept"));
 }
 
 TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
@@ -57,8 +57,8 @@ TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
   ASSERT_EQ(kOk, manager.HandleDialog(false, NULL).code());
-  ASSERT_TRUE(client.commands_[0].params.HasKey("promptText"));
-  ASSERT_TRUE(client.commands_[0].params.HasKey("accept"));
+  ASSERT_TRUE(client.commands_[0].params.FindKey("promptText"));
+  ASSERT_TRUE(client.commands_[0].params.FindKey("accept"));
 }
 
 TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {

@@ -263,9 +263,9 @@ TEST(SessionCommandsTest, ProcessCapabilities_Merge) {
       &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(result.DictSize(), 2u);
-  ASSERT_TRUE(result.HasKey("timeouts"));
-  ASSERT_TRUE(result.HasKey("unhandledPromptBehavior"));
-  ASSERT_FALSE(result.HasKey("pageLoadStrategy"));
+  ASSERT_TRUE(result.FindKey("timeouts"));
+  ASSERT_TRUE(result.FindKey("unhandledPromptBehavior"));
+  ASSERT_FALSE(result.FindKey("pageLoadStrategy"));
 
   // Selection by platformName
   std::string platform_name =
@@ -301,10 +301,10 @@ TEST(SessionCommandsTest, ProcessCapabilities_Merge) {
       &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(result.DictSize(), 3u);
-  ASSERT_TRUE(result.HasKey("timeouts"));
+  ASSERT_TRUE(result.FindKey("timeouts"));
   ASSERT_EQ(result.FindKey("browserName")->GetString(), "chrome");
-  ASSERT_FALSE(result.HasKey("unhandledPromptBehavior"));
-  ASSERT_TRUE(result.HasKey("pageLoadStrategy"));
+  ASSERT_FALSE(result.FindKey("unhandledPromptBehavior"));
+  ASSERT_TRUE(result.FindKey("pageLoadStrategy"));
 
   // No acceptable firstMatch
   status = ProcessCapabilitiesJson(

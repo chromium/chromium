@@ -388,7 +388,7 @@ class MockListener : public DevToolsEventListener {
                  const base::DictionaryValue& params) override {
     called_ = true;
     EXPECT_STREQ("method", method.c_str());
-    EXPECT_TRUE(params.HasKey("key"));
+    EXPECT_TRUE(params.FindKey("key"));
     return Status(kOk);
   }
 

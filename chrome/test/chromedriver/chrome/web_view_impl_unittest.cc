@@ -99,7 +99,7 @@ TEST(EvaluateScript, Ok) {
                                        base::TimeDelta::Max(), false, &result)
                   .IsOk());
   ASSERT_TRUE(result);
-  ASSERT_TRUE(result->HasKey("key"));
+  ASSERT_TRUE(result->FindKey("key"));
 }
 
 TEST(EvaluateScriptAndGetValue, MissingType) {
