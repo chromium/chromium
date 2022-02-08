@@ -1274,19 +1274,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (void)webViewScrollViewDidZoom:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   _pageHasZoomed = YES;
-
-  __weak UIScrollView* weakScrollView = self.webScrollView;
-  [self extractViewportTagWithCompletion:^(
-            const web::PageViewportState* viewportState) {
-    if (!weakScrollView)
-      return;
-    UIScrollView* scrollView = weakScrollView;
-    if (viewportState && !viewportState->viewport_tag_present() &&
-        [scrollView minimumZoomScale] == [scrollView maximumZoomScale] &&
-        [scrollView zoomScale] > 1.0) {
-      UMA_HISTOGRAM_BOOLEAN("Renderer.ViewportZoomBugCount", true);
-    }
-  }];
 }
 
 - (void)webViewScrollViewDidResetContentSize:

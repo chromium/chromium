@@ -344,17 +344,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.Hung.MobileInfoBar.UserEvent"
-    enum="MobileHungRendererInfoBarEvent" expires_after="M85">
-  <owner>dfalcantara@chromium.org</owner>
-  <summary>
-    Android: Records the terminal event associated with a hung renderer infobar.
-    This includes both the explicit user actions as well as implicit dismissals,
-    e.g., when the renderer regains responsiveness before the infobar is
-    interactively dismissed.
-  </summary>
-</histogram>
-
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
     units="ms" expires_after="2022-06-12">
   <owner>ckitagawa@chromium.org</owner>
@@ -430,16 +419,6 @@ chromium-metrics-reviews@google.com.
     use 4 minutes of CPU time. Not recorded on Android.
   </summary>
   <token key="Lifetime" variants="RendererLifetime"/>
-</histogram>
-
-<histogram name="Renderer.ViewportZoomBugCount" enum="BooleanHit"
-    expires_after="M77">
-  <owner>kkhorimoto@chromium.org</owner>
-  <summary>
-    [iOS] A boolean that is used to indicate that the WebKit rendering bug in
-    http://crbug.com/583231 has occurred. This occurs when a page with no
-    viewport tag is rendered with an unusable zoom scale. Only logged on iOS.
-  </summary>
 </histogram>
 
 <histogram name="RendererScheduler.IPC.FrameVisibility" enum="Boolean"

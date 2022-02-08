@@ -656,9 +656,6 @@ void JNI_TabWebContentsDelegateAndroidImpl_OnRendererResponsive(
   if (!hung_renderer_infobar)
     return;
 
-  hung_renderer_infobar->delegate()
-      ->AsHungRendererInfoBarDelegate()
-      ->OnRendererResponsive();
   infobar_manager->RemoveInfoBar(hung_renderer_infobar);
 }
 
