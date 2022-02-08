@@ -4582,6 +4582,12 @@
   <message name="IDS_CROSTINI_UPGRADER_BACKING_UP_MESSAGE" desc="Text shown by the Crostini upgrader when the container backup is in progress.">
     This may take up to 30 minutes.
   </message>
+  <message name="IDS_CROSTINI_UPGRADER_BACKUP_ERROR_TITLE" desc="Title of the Crostini upgrader when the container backup fails.">
+    Backing up failed
+  </message>
+  <message name="IDS_CROSTINI_UPGRADER_BACKUP_ERROR_MESSAGE" desc="Text shown by the Crostini upgrader when the container backup fails.">
+    Backing up Linux apps and files failed. This can happen if your device doesn't have enough free storage space. Try freeing some space on your device, or picking a different location to back up to.
+  </message>
   <message name="IDS_CROSTINI_UPGRADER_BACKUP_SUCCEEDED_TITLE" desc="Title of the Crostini upgrader when the container backup completed successfully, prior to the main upgrade.">
     Backing up complete
   </message>
@@ -4614,6 +4620,12 @@
   </message>
   <message name="IDS_CROSTINI_UPGRADER_RESTORE_TITLE" desc="Title of the Crostini upgrader when the container upgrade fails and restore of a backup is in progress.">
     Restoring Linux
+  </message>
+  <message name="IDS_CROSTINI_UPGRADER_RESTORE_ERROR_TITLE" desc="Title of the Crostini upgrader when restoring from backup fails.">
+    Restore failed
+  </message>
+  <message name="IDS_CROSTINI_UPGRADER_RESTORE_ERROR_MESSAGE" desc="Text shown by the Crostini upgrader when restoring from backup fails fails.">
+    Restoring your Linux backup failed. This may be because Linux doesn't have enough disk space. You can change how much disk space Linux has and try to restore your backup again in the OS Settings.
   </message>
   <message name="IDS_CROSTINI_UPGRADER_RESTORE_SUCCEEDED_TITLE" desc="Title of the Crostini upgrader when the upgrade failed but the restore of a backup completed successfully.">
     Restore complete

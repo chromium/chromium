@@ -47,10 +47,12 @@ void AddStringResources(content::WebUIDataSource* source) {
 
       {"promptTitle", IDS_CROSTINI_UPGRADER_TITLE},
       {"backingUpTitle", IDS_CROSTINI_UPGRADER_BACKING_UP_TITLE},
+      {"backupErrorTitle", IDS_CROSTINI_UPGRADER_BACKUP_ERROR_TITLE},
       {"backupSucceededTitle", IDS_CROSTINI_UPGRADER_BACKUP_SUCCEEDED_TITLE},
       {"prechecksFailedTitle", IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_TITLE},
       {"upgradingTitle", IDS_CROSTINI_UPGRADER_UPGRADING_TITLE},
       {"restoreTitle", IDS_CROSTINI_UPGRADER_RESTORE_TITLE},
+      {"restoreErrorTitle", IDS_CROSTINI_UPGRADER_RESTORE_ERROR_TITLE},
       {"restoreSucceededTitle", IDS_CROSTINI_UPGRADER_RESTORE_SUCCEEDED_TITLE},
       {"succeededTitle", IDS_CROSTINI_UPGRADER_SUCCEEDED_TITLE},
       {"cancelingTitle", IDS_CROSTINI_UPGRADER_CANCELING_TITLE},
@@ -61,6 +63,7 @@ void AddStringResources(content::WebUIDataSource* source) {
 
       {"promptMessage", IDS_CROSTINI_UPGRADER_BODY},
       {"backingUpMessage", IDS_CROSTINI_UPGRADER_BACKING_UP_MESSAGE},
+      {"backupErrorMessage", IDS_CROSTINI_UPGRADER_BACKUP_ERROR_MESSAGE},
       {"backupSucceededMessage",
        IDS_CROSTINI_UPGRADER_BACKUP_SUCCEEDED_MESSAGE},
       {"upgradingMessage", IDS_CROSTINI_UPGRADER_UPGRADING},
@@ -68,6 +71,7 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"cancelingMessage", IDS_CROSTINI_UPGRADER_CANCELING},
       {"offerRestoreMessage", IDS_CROSTINI_UPGRADER_OFFER_RESTORE_MESSAGE},
       {"restoreMessage", IDS_CROSTINI_UPGRADER_RESTORE_MESSAGE},
+      {"restoreErrorMessage", IDS_CROSTINI_UPGRADER_RESTORE_ERROR_MESSAGE},
       {"restoreSucceededMessage",
        IDS_CROSTINI_UPGRADER_RESTORE_SUCCEEDED_MESSAGE},
       {"logFileMessageError", IDS_CROSTINI_UPGRADER_LOG_FILE_ERROR},

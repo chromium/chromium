@@ -21,14 +21,15 @@ import {BrowserProxy} from './browser_proxy.js';
 const State = {
   PROMPT: 'prompt',
   BACKUP: 'backup',
+  BACKUP_ERROR: 'backupError',
   BACKUP_SUCCEEDED: 'backupSucceeded',
   PRECHECKS_FAILED: 'prechecksFailed',
   UPGRADING: 'upgrading',
   UPGRADE_ERROR: 'upgrade_error',
   OFFER_RESTORE: 'offerRestore',
   RESTORE: 'restore',
+  RESTORE_ERROR: 'restoreError',
   RESTORE_SUCCEEDED: 'restoreSucceeded',
-  ERROR: 'error',
   CANCELING: 'canceling',
   SUCCEEDED: 'succeeded',
 };
@@ -149,7 +150,7 @@ Polymer({
       }),
       callbackRouter.onBackupFailed.addListener(() => {
         assert(this.state_ === State.BACKUP);
-        this.state_ = State.ERROR;
+        this.state_ = State.BACKUP_ERROR;
       }),
       callbackRouter.precheckStatus.addListener((status) => {
         this.precheckStatus_ = status;
@@ -196,11 +197,11 @@ Polymer({
       }),
       callbackRouter.onRestoreFailed.addListener(() => {
         assert(this.state_ === State.RESTORE);
-        this.state_ = State.ERROR;
+        this.state_ = State.RESTORE_ERROR;
       }),
       callbackRouter.onCanceled.addListener(() => {
         if (this.state_ === State.RESTORE) {
-          this.state_ = State.ERROR;
+          this.state_ = State.RESTORE_ERROR;
           return;
         }
         this.closePage_();
@@ -278,8 +279,9 @@ Polymer({
         this.closePage_();
         break;
       case State.PRECHECKS_FAILED:
+      case State.BACKUP_ERROR:
       case State.UPGRADE_ERROR:
-      case State.ERROR:
+      case State.RESTORE_ERROR:
       case State.OFFER_RESTORE:
       case State.SUCCEEDED:
         this.closePage_();
@@ -421,6 +423,9 @@ Polymer({
       case State.BACKUP:
         titleId = 'backingUpTitle';
         break;
+      case State.BACKUP_ERROR:
+        titleId = 'backupErrorTitle';
+        break;
       case State.BACKUP_SUCCEEDED:
         titleId = 'backupSucceededTitle';
         break;
@@ -432,11 +437,13 @@ Polymer({
         break;
       case State.OFFER_RESTORE:
       case State.UPGRADE_ERROR:
-      case State.ERROR:
         titleId = 'errorTitle';
         break;
       case State.RESTORE:
         titleId = 'restoreTitle';
+        break;
+      case State.RESTORE_ERROR:
+        titleId = 'restoreErrorTitle';
         break;
       case State.RESTORE_SUCCEEDED:
         titleId = 'restoreSucceededTitle';
@@ -464,11 +471,7 @@ Polymer({
         return loadTimeData.getString('upgrade');
       case State.PRECHECKS_FAILED:
         return loadTimeData.getString('retry');
-      case State.UPGRADE_ERROR:
-      case State.ERROR:
-        return loadTimeData.getString('cancel');
       case State.SUCCEEDED:
-      case State.RESTORE_SUCCEEDED:
         return loadTimeData.getString('done');
       case State.OFFER_RESTORE:
         return loadTimeData.getString('restore');
@@ -483,10 +486,10 @@ Polymer({
    */
   getCancelButtonLabel_(state) {
     switch (state) {
-      case State.SUCCEEDED:
       case State.RESTORE_SUCCEEDED:
+      case State.BACKUP_ERROR:
       case State.UPGRADE_ERROR:
-      case State.ERROR:
+      case State.RESTORE_ERROR:
         return loadTimeData.getString('close');
       case State.PROMPT:
         return loadTimeData.getString('notNow');
@@ -508,6 +511,9 @@ Polymer({
         break;
       case State.BACKUP:
         messageId = 'backingUpMessage';
+        break;
+      case State.BACKUP_ERROR:
+        messageId = 'backupErrorMessage';
         break;
       case State.BACKUP_SUCCEEDED:
         messageId = 'backupSucceededMessage';
@@ -535,6 +541,9 @@ Polymer({
       case State.RESTORE:
         messageId = 'restoreMessage';
         break;
+      case State.RESTORE_ERROR:
+        messageId = 'restoreErrorMessage';
+        break;
       case State.RESTORE_SUCCEEDED:
         messageId = 'restoreSucceededMessage';
         break;
@@ -561,10 +570,11 @@ Polymer({
    */
   getIllustrationStyle_(state) {
     switch (state) {
+      case State.BACKUP_ERROR:
       case State.BACKUP_SUCCEEDED:
+      case State.RESTORE_ERROR:
       case State.RESTORE_SUCCEEDED:
       case State.PRECHECKS_FAILED:
-      case State.ERROR:
         return 'img-square-illustration';
     }
     return 'img-rect-illustration';
@@ -581,7 +591,8 @@ Polymer({
       case State.RESTORE_SUCCEEDED:
         return 'images/success_illustration.svg';
       case State.PRECHECKS_FAILED:
-      case State.ERROR:
+      case State.BACKUP_ERROR:
+      case State.RESTORE_ERROR:
         return 'images/error_illustration.png';
     }
     return 'images/linux_illustration.png';
