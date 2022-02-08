@@ -361,6 +361,8 @@ mojo::internal::MayAutoLock::lock_
 mojo::internal::MayAutoUnlock::lock_
 mojo::internal::MultiplexRouter::header_validator_
 url::CanonOutputT::buffer_
+prefs::ScopedDictionaryPrefUpdate::service_
+prefs::DictionaryValueUpdate::value_
 
 # Populated manually - type is unsupported by raw_ptr to avoid being used in
 # performance sensitive base::Unretained

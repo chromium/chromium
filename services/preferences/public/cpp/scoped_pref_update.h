@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 class PrefService;
@@ -62,7 +61,9 @@ class ScopedDictionaryPrefUpdate {
   void RecordPath(const std::vector<std::string>& path);
 
   // Weak pointer.
-  const raw_ptr<PrefService> service_;
+  // `service_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
+  PrefService* const service_;
   // Path of the preference being updated.
   const std::string path_;
 
