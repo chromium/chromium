@@ -705,6 +705,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   // TODO(crbug.com/1291626): remove when there is a way to
   // clone a WebState navigation history.
   web::WebState::CreateParams createParams(self.browserState);
+  createParams.last_active_time = base::Time::Now();
   _webState = web::WebState::CreateWithStorageSession(
       createParams, _webStateToReplace->BuildSessionStorage());
   // Do not trigger a CheckForOverRealization here, as it's expected

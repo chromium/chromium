@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
@@ -262,6 +263,7 @@ class WebStateImpl final : public WebState {
   UIView* GetView() final;
   void DidCoverWebContent() final;
   void DidRevealWebContent() final;
+  base::Time GetLastActiveTime() const final;
   void WasShown() final;
   void WasHidden() final;
   void SetKeepRenderProcessAlive(bool keep_alive) final;
@@ -296,7 +298,6 @@ class WebStateImpl final : public WebState {
   void SetFaviconStatus(const FaviconStatus& favicon_status) final;
   const GURL& GetVisibleURL() const final;
   const GURL& GetLastCommittedURL() const final;
-  const base::Time GetLastCommittedTimestamp() const final;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const final;
   base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,

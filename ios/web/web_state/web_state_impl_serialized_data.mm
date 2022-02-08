@@ -69,6 +69,13 @@ CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
   return session_storage_;
 }
 
+base::Time WebStateImpl::SerializedData::GetLastActiveTime() const {
+  if (!create_params_.last_active_time.is_null())
+    return create_params_.last_active_time;
+
+  return session_storage_.lastActiveTime;
+}
+
 BrowserState* WebStateImpl::SerializedData::GetBrowserState() const {
   return create_params_.browser_state;
 }
@@ -103,12 +110,6 @@ const GURL& WebStateImpl::SerializedData::GetVisibleURL() const {
 const GURL& WebStateImpl::SerializedData::GetLastCommittedURL() const {
   CRWNavigationItemStorage* item = GetLastCommittedItem();
   return item ? item.virtualURL : GURL::EmptyGURL();
-}
-
-const base::Time WebStateImpl::SerializedData::GetLastCommittedTimestamp()
-    const {
-  CRWNavigationItemStorage* item = GetLastCommittedItem();
-  return item ? item.timestamp : base::Time();
 }
 
 // TODO(crbug.com/1264451): this private method allow to implement `GetTitle()`

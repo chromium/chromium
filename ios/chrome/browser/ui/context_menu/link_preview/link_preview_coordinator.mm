@@ -110,6 +110,7 @@
   // TODO(crbug.com/1291626): remove when there is a way to
   // clone a WebState navigation history.
   web::WebState::CreateParams createParams(browserState);
+  createParams.last_active_time = base::Time::Now();
   _previewWebState = web::WebState::CreateWithStorageSession(
       createParams, currentWebState->BuildSessionStorage());
   _previewWebState->ForceRealized();

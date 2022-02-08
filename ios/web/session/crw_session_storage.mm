@@ -28,6 +28,7 @@ NSString* const kLastCommittedItemIndexKey = @"lastCommittedItemIndex";
 NSString* const kUserAgentKey = @"userAgentKey";
 NSString* const kStableIdentifierKey = @"stableIdentifier";
 NSString* const kSerializedUserDataKey = @"serializedUserData";
+NSString* const kLastActiveTimeKey = @"lastActiveTime";
 
 // Deprecated, used for backward compatibility.
 // TODO(crbug.com/1278308): Remove this key.
@@ -135,6 +136,12 @@ NSString* const kTabIdKey = @"TabId";
     // NSMutableString (to prevent this value from being mutated).
     _stableIdentifier = [_stableIdentifier copy];
     DCHECK(_stableIdentifier.length);
+
+    if ([decoder containsValueForKey:kLastActiveTimeKey]) {
+      const int64_t lastActiveTimeDelta =
+          [decoder decodeInt64ForKey:kLastActiveTimeKey];
+      _lastActiveTime = base::Time() + base::Microseconds(lastActiveTimeDelta);
+    }
   }
   return self;
 }
@@ -159,6 +166,12 @@ NSString* const kTabIdKey = @"TabId";
   web::nscoder_util::EncodeString(
       coder, kUserAgentKey, web::GetUserAgentTypeDescription(userAgentType));
   [coder encodeObject:_stableIdentifier forKey:kStableIdentifierKey];
+
+  if (!_lastActiveTime.is_null()) {
+    const base::TimeDelta lastActiveTimeDelta = _lastActiveTime - base::Time();
+    [coder encodeInt64:lastActiveTimeDelta.InMicroseconds()
+                forKey:kLastActiveTimeKey];
+  }
 }
 
 @end

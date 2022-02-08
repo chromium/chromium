@@ -107,7 +107,6 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
     auth_service_->SignIn(fake_identity_);
-    web_state_.SetCurrentTimestamp(base::Time::Now());
   }
 
   void MockOptimizationGuideResponse(

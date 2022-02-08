@@ -108,7 +108,14 @@ void FakeWebState::DidCoverWebContent() {}
 
 void FakeWebState::DidRevealWebContent() {}
 
+base::Time FakeWebState::GetLastActiveTime() const {
+  return last_active_time_;
+}
+
 void FakeWebState::WasShown() {
+  if (!is_visible_)
+    last_active_time_ = base::Time::Now();
+
   is_visible_ = true;
   for (auto& observer : observers_)
     observer.WasShown(this);
@@ -232,10 +239,6 @@ const GURL& FakeWebState::GetLastCommittedURL() const {
   return url_;
 }
 
-const base::Time FakeWebState::GetLastCommittedTimestamp() const {
-  return timestamp_;
-}
-
 GURL FakeWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   if (trust_level) {
     *trust_level = trust_level_;
@@ -249,6 +252,10 @@ base::CallbackListSubscription FakeWebState::AddScriptCommandCallback(
   last_added_callback_ = callback;
   last_command_prefix_ = command_prefix;
   return callback_list_.Add(callback);
+}
+
+void FakeWebState::SetLastActiveTime(base::Time time) {
+  last_active_time_ = time;
 }
 
 void FakeWebState::SetBrowserState(BrowserState* browser_state) {
@@ -449,10 +456,6 @@ bool FakeWebState::IsClosed() const {
 
 void FakeWebState::SetCurrentURL(const GURL& url) {
   url_ = url;
-}
-
-void FakeWebState::SetCurrentTimestamp(const base::Time& timestamp) {
-  timestamp_ = timestamp;
 }
 
 void FakeWebState::SetVisibleURL(const GURL& url) {

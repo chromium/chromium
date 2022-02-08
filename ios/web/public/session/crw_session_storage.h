@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/time/time.h"
 #include "ios/web/common/user_agent.h"
 
 @class CRWNavigationItemStorage;
@@ -25,6 +26,7 @@
 @property(nonatomic, strong) CRWSessionUserData* userData;
 @property(nonatomic, assign) web::UserAgentType userAgentType;
 @property(nonatomic, copy) NSString* stableIdentifier;
+@property(nonatomic, assign) base::Time lastActiveTime;
 
 @end
 

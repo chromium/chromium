@@ -59,8 +59,8 @@ class TabUrlProviderImplTest : public PlatformTest {
   // committed navigation.
   void AddURL(Browser* browser, const GURL& url, const base::Time& timestamp) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
-    fake_web_state->SetCurrentTimestamp(timestamp);
     fake_web_state->SetCurrentURL(url);
+    fake_web_state->SetLastActiveTime(timestamp);
     browser->GetWebStateList()->InsertWebState(
         browser->GetWebStateList()->count(), std::move(fake_web_state),
         WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());

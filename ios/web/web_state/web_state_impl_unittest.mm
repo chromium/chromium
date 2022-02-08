@@ -1228,6 +1228,26 @@ TEST_F(WebStateImplTest, VisibilitychangeEventFired) {
   [web_state_->GetView() removeFromSuperview];
 }
 
+// Test that changing visibility update the WebState last active time.
+TEST_F(WebStateImplTest, LastActiveTimeUpdatedWhenBecomeVisible) {
+  base::Time last_active_time = web_state_->GetLastActiveTime();
+
+  // Spin the RunLoop a bit to ensure that the active time changes.
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1));
+    run_loop.Run();
+  }
+
+  // Check that the last active time has not changed.
+  EXPECT_EQ(web_state_->GetLastActiveTime(), last_active_time);
+
+  // Mark the WebState has visible. The last active time should be updated.
+  web_state_->WasShown();
+  EXPECT_GT(web_state_->GetLastActiveTime(), last_active_time);
+}
+
 // Tests that WebState sessionState data doesn't load things with unsafe
 // restore.
 TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {

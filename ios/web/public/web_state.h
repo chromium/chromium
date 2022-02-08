@@ -82,6 +82,13 @@ class WebState : public base::SupportsUserData {
     // clicking a link with a blank target.  Used to determine whether the
     // WebState is allowed to be closed via window.close().
     bool created_with_opener;
+
+    // Value used to set the last time the WebState was made active; this
+    // is the value that will be returned by GetLastActiveTime(). If this
+    // is left default initialized, then the value will not be passed on
+    // to the WebState and GetLastActiveTime() will return the WebState's
+    // creation time.
+    base::Time last_active_time;
   };
 
   // Parameters for the OpenURL() method.
@@ -243,6 +250,10 @@ class WebState : public base::SupportsUserData {
   // visibilitychange event.
   virtual void DidRevealWebContent() = 0;
 
+  // Get the last time that the WebState was made active (either when it was
+  // created or shown with WasShown()).
+  virtual base::Time GetLastActiveTime() const = 0;
+
   // Must be called when the WebState becomes shown/hidden.
   virtual void WasShown() = 0;
   virtual void WasHidden() = 0;
@@ -365,9 +376,6 @@ class WebState : public base::SupportsUserData {
   // Gets the last committed URL. It represents the current page that is
   // displayed in this WebState. It represents the current security context.
   virtual const GURL& GetLastCommittedURL() const = 0;
-
-  // Gets the time at which the last committed navigation completed.
-  virtual const base::Time GetLastCommittedTimestamp() const = 0;
 
   // Returns the WebState view of the current URL. Moreover, this method
   // will set the trustLevel enum to the appropriate level from a security point

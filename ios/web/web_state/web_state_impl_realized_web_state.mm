@@ -92,6 +92,12 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
     // Load the stable identifier. Must not be empty or nil.
     DCHECK(session_storage.stableIdentifier.length);
     stable_identifier_ = [session_storage.stableIdentifier copy];
+
+    // Restore the last active time, even if it is null, as that would mean
+    // the session predates M-99 (when the last active time started to be
+    // saved in CRWSessionStorage) and thus the WebState can be considered
+    // "infinitely" old.
+    last_active_time_ = session_storage.lastActiveTime;
   } else {
     certificate_policy_cache_ =
         std::make_unique<SessionCertificatePolicyCacheImpl>(
@@ -100,6 +106,10 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
     // Generate a random stable identifier. Ensure it is immutable.
     stable_identifier_ = [[[NSUUID UUID] UUIDString] copy];
   }
+
+  // Let CreateParams override the last active time.
+  if (!params.last_active_time.is_null())
+    last_active_time_ = params.last_active_time;
 }
 
 void WebStateImpl::RealizedWebState::TearDown() {
@@ -535,9 +545,16 @@ void WebStateImpl::RealizedWebState::DidRevealWebContent() {
   WasShown();
 }
 
+base::Time WebStateImpl::RealizedWebState::GetLastActiveTime() const {
+  return last_active_time_;
+}
+
 void WebStateImpl::RealizedWebState::WasShown() {
   if (IsVisible())
     return;
+
+  // Update last active time when the WebState transition to visible.
+  last_active_time_ = base::Time::Now();
 
   [web_controller_ wasShown];
   for (auto& observer : observers())
@@ -694,12 +711,6 @@ const GURL& WebStateImpl::RealizedWebState::GetVisibleURL() const {
 const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
   NavigationItem* item = navigation_manager_->GetLastCommittedItem();
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();
-}
-
-const base::Time WebStateImpl::RealizedWebState::GetLastCommittedTimestamp()
-    const {
-  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
-  return item ? item->GetTimestamp() : base::Time();
 }
 
 GURL WebStateImpl::RealizedWebState::GetCurrentURL(
