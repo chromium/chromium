@@ -34,7 +34,19 @@
   }
 
   :host([modules-redesigned-layout-enabled_]) {
-    --ntp-module-layout-width: 1170px;
+    --ntp-module-layout-width: 360px;
+  }
+
+  @media (min-width: 960px) {
+    :host([modules-redesigned-layout-enabled_]) {
+      --ntp-module-layout-width: 780px;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    :host([modules-redesigned-layout-enabled_]) {
+      --ntp-module-layout-width: 1170px;
+    }
   }
 
   :host([show-background-image_]) {
