@@ -7724,6 +7724,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="ClipboardReadWrite" label="Clipboard permission actions"/>
   <suffix name="DisplayCapture" label="Display capture permission actions"/>
   <suffix name="Geolocation" label="Geolocation permission actions"/>
+  <suffix name="IdleDetection" label="Idle detection permission actions"/>
   <suffix name="MidiSysEx" label="Midi SysEx permsision actions"/>
   <suffix name="Nfc" label="Nfc permsision actions"/>
   <suffix name="Notifications" label="Notification permission actions"/>
