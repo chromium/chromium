@@ -139,7 +139,7 @@
 <translation id="1774796056689732716">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" />၊ လက်ရှိ <ph name="DATE" /> ကိုရွေးထားသည်။</translation>
 <translation id="1787955149152357925">ပိတ်ထားသည်</translation>
 <translation id="1804572139604454141">ဒစ်ခ်နေရာ အလွန်နည်းနေသောကြောင့် ရိုက်ကူးမှု ရပ်သွားသည်</translation>
-<translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားပါသည်</translation>
+<translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်</translation>
 <translation id="1812997170047690955">ကျွန်ုပ်၏ ဖန်သားပြင်ပေါ်တွင် မည်သည့်အရာများ ရှိပါသလဲ။</translation>
 <translation id="1823873187264960516">အီသာနက်− <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ကို ပင်ဖြုတ်လိုက်သည်</translation>
@@ -367,7 +367,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3445925074670675829">USB-C ကိရိယာ</translation>
 <translation id="3465223694362104965">သင်နောက်ဆုံးအကြိမ် လက်မှတ်ထိုးဝင်သည့်အချိန်မှစ၍ အခြားကီးဘုတ်တစ်ခုကို ဤစက်ပစ္စည်းသို့ ချိတ်ဆက်ထားပါသည်။ ကီးဘုတ်ကို အသုံးမပြုမီ သင်ယုံကြည်မှုရှိမရှိ သေချာစစ်ဆေးပါ။</translation>
-<translation id="3465356146291925647">သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်</translation>
+<translation id="3465356146291925647">သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="3477079411857374384">Control−Shift−Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">စင်ကို အလိုလိုဖျောက်ထားသည်</translation>
@@ -759,7 +759,7 @@
 <translation id="602001110135236999">ဘယ်သို့ လှိမ့်ရန်</translation>
 <translation id="6022924867608035986">ရှာဖွေရန်အကွက်ထဲရှိ စာသားကို ရှင်းလင်းရန်</translation>
 <translation id="602472752137106327">ဝင်းဒိုးများကို မျက်နှာပြင်နေရာအားလုံးမှ ပြရန်၊ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>
-<translation id="6025324406281560198"><ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'စီမံခန့်ခွဲသူ' က စီမံပါသည်</translation>
+<translation id="6025324406281560198"><ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံပါသည်</translation>
 <translation id="6030495522958826102">မီနူးကို ဖန်သားပြင်၏ ဘယ်ဘက်အောက်ခြေထောင့်သို့ ရွှေ့လိုက်သည်။</translation>
 <translation id="6032620807120418574">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="6040071906258664830">မိုက်ခရိုဖုန်းအသံဖမ်းရန် <ph name="STATE" /></translation>
@@ -838,7 +838,7 @@
 <translation id="6585808820553845416">ချိတ်ဆက်ချိန်<ph name="SESSION_TIME_REMAINING" /> မှာ ပြီးဆုံးမည်။</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />၊ <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6602800870584047641">သင်၏ ချိတ်ဆက်မှုကို ပိုမိုလုံခြုံသည့် ကွန်ရက်သို့ ပြောင်းထားပါသည်</translation>
-<translation id="661203523074512333"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်</translation>
+<translation id="661203523074512333"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင်၏ 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="6612802754306526077">ဖန်သားပြင်ရိုက်ကူးခြင်းမုဒ် ရွေးထားသည်</translation>
 <translation id="6614169507485700968">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို ဖွင့်ထားသည်</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1076,7 +1076,7 @@
 <translation id="8142699993796781067">ကိုယ်ပိုင်ကွန်ရက်</translation>
 <translation id="8152092012181020186">ပိတ်ရန် Ctrl + W နှိပ်ပါ။</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />၊ အလိုအလျောက်ဖြည့်သည်</translation>
-<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ဤဆက်တင်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်။</translation>
+<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ဤဆက်တင်ကို သင့် 'ကြီးကြပ်သူ' က စီမံသည်။</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ခ် ဖွင့်ပါ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> အသုံးပြုခြင်း</translation>
 <translation id="8192202700944119416">အကြောင်းကြားချက်များကို ဝှက်ထားသည်။</translation>
@@ -1137,7 +1137,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8631727435199967028">အများသုံးစွဲနိုင်မှု ဆက်တင်များ</translation>
-<translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'စီမံခန့်ခွဲသူ' က စီမံပါသည်</translation>
+<translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ကျန်ပါသည်</translation>
 <translation id="8641805545866562088">ပရိုဖိုင်စာရင်းကို ပြန်လည် စတင်နေသည်။ မိနစ်အနည်းငယ် စောင့်ပါ။</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> တိုင်မာ</translation>
@@ -1226,7 +1226,7 @@
 <translation id="9194617393863864469">အခြားသူ အနေဖြင့် လက်မှတ်ထိုးဝင်ပါ...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ပုံရိပ်ပြတ်သားကိန်းကို <ph name="RESOLUTION" /> သို့ ပြောင်းလိုက်သည်။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> ကို ဤ Chromebook နှင့် ချိတ်ဆက်ပါ</translation>
-<translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်</translation>
+<translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="9210037371811586452">ပေါင်းစည်းထားသည့် ကွန်ပျူတာမျက်နှာပြင်မုဒ်မှ ထွက်နေသည်</translation>
 <translation id="9211490828691860325">မျက်နှာပြင်နေရာအားလုံး</translation>
 <translation id="9211681782751733685">ဘက်ထရီ အားအပြည့်သွင်းရန် <ph name="TIME_REMAINING" /> လိုသေးသည်။</translation>

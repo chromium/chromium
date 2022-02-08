@@ -4528,6 +4528,16 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="631183702829488873">Khi được bật, tính năng này sẽ hiển thị một nút trên màn hình đăng nhập và màn hình khóa, cho phép hiển thị mật khẩu.
           Nút này được biểu thị bằng biểu tượng con mắt trên trường văn bản mật khẩu. Nút này sẽ không xuất hiện khi tính năng này tắt.
       </translation>
+<translation id="6313108604615108577">Chính sách này kiểm soát việc liệu phiên bản lớn chuỗi User-Agent có bị dừng lại ở 99 hay không.
+
+      Tiêu đề của yêu cầu User-Agent cho phép trang web xác định ứng dụng, hệ điều hành, nhà cung cấp và/hoặc phiên bản của tác nhân người dùng gửi yêu cầu.
+      Một số trang web đưa ra giả định về cách định dạng tiêu đề này và có thể gặp vấn đề với chuỗi phiên bản bao gồm ba chữ số ở phiên bản lớn (ví dụ: 100.0.0.0).
+
+      Khi bạn đặt chính sách này thành "Mặc định" (Default) hoặc không đặt, chế độ cài đặt của trình duyệt cho phiên bản lớn chuỗi User-Agent sẽ chuyển về chế độ mặc định.
+      Nếu được đặt thành "ForceDisabled", chuỗi User-Agent sẽ không làm dừng phiên bản lớn.
+      Nếu được đặt thành "ForceEnabled", chuỗi User-Agent sẽ luôn báo cáo phiên bản lớn là 99 và bao gồm cả phiên bản lớn của trình duyệt trong phiên bản nhỏ. Ví dụ: phiên bản trình duyệt 101.0.0.0 sẽ gửi một tiêu đề của yêu cầu User-Agent để báo cáo phiên bản 99.101.0.0.
+
+      Chính sách này là tạm thời và sau này sẽ không dùng nữa. Xin lưu ý rằng, nếu cả chính sách này và <ph name="USER_AGENT_REDUCTION_POLICY_NAME" /> đều được bật, thì chuỗi phiên bản User-Agent sẽ luôn là 99.0.0.0.</translation>
 <translation id="6313170479290171718">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Khi bạn đặt chính sách này thành Bật, bàn phím ảo sẽ bật khi đăng nhập. Khi bạn đặt chính sách này thành Tắt, bàn phím ảo sẽ tắt khi đăng nhập.
@@ -4954,6 +4964,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       chrome://flags và bất kỳ cách thức nào khác để tắt và bật các tính năng của trình duyệt sẽ vẫn hoạt động như dự kiến, cho dù chính sách này được Bật hay Tắt.</translation>
 <translation id="6794083666143216172">Cho phép nguồn gốc truy vấn các thuộc tính của thiết bị</translation>
 <translation id="6795485990775913659">Chỉ cho phép in khi không có mã PIN</translation>
+<translation id="6796215185873669533">Đặt phiên bản chuỗi User-Agent thành giá trị mặc định của chế độ cài đặt trình duyệt</translation>
 <translation id="6800181452282128474">Không truy vấn máy chủ Quirks</translation>
 <translation id="68031099365512050">Báo cáo trạng thái âm thanh</translation>
 <translation id="6810445994095397827">Chặn JavaScript trên các trang web này</translation>
@@ -5275,6 +5286,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="7070525176564511548">Yêu cầu nhập mật khẩu hàng tuần (168 giờ).</translation>
 <translation id="7072208053150563108">Tần suất thay đổi mật khẩu máy</translation>
 <translation id="7072567600438630966">Chính sách Cho phép Trung tâm điều khiển điện thoại sẽ được bật.</translation>
+<translation id="7074437930865599190">Làm phiên bản lớn chuỗi User-Agent dừng lại ở 99</translation>
 <translation id="7079519252486108041">Chặn cửa sổ bật lên trên các trang web này</translation>
 <translation id="707988220162760379">Luôn mở tệp PDF bằng trình xem PDF bên ngoài</translation>
 <translation id="7081784525008938771">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng sẽ được coi là không hoạt động trong khi video phát. Điều này ngăn hệ thống đạt tới thời gian trì hoãn khi ở chế độ rảnh, thời gian trì hoãn giảm độ sáng màn hình, thời gian trì hoãn tắt màn hình cũng như thời gian trì hoãn khóa màn hình và ngăn việc thực hiện các hành động tương ứng.
@@ -5981,6 +5993,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Theo mặc định, một tiện ích hoặc ứng dụng Android không thể dùng khóa được chỉ định để sử dụng trong công ty, điều này tương đương với việc đặt allowCorporateKeyUsage thành Tắt cho tiện ích/ứng dụng đó. Chỉ khi bạn đặt allowCorporateKeyUsage thành Bật cho một tiện ích hoặc ứng dụng Android, thì tiện ích/ứng dụng đó mới có thể dùng khóa nền tảng được đánh dấu để sử dụng trong công ty nhằm ký dữ liệu tùy ý. Chỉ cấp quyền này nếu bạn tin tưởng rằng tiện ích hoặc ứng dụng Android sẽ ngăn những kẻ tấn công truy cập vào khóa.</translation>
 <translation id="7933141401888114454">Cho phép tạo người dùng được giám sát</translation>
 <translation id="793473937901685727">Đặt mức độ khả dụng của chứng chỉ cho ứng dụng ARC</translation>
+<translation id="7936302526928951356">Chuỗi User-Agent sẽ không làm phiên bản lớn dừng lại.</translation>
 <translation id="7937766917976512374">Cho phép hoặc từ chối quay video</translation>
 <translation id="7941975817681987555">Không dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
 <translation id="7951605113561734721">Chỉ định chứng chỉ ứng dụng cần được đăng ký bằng giao thức quản lý thiết bị cho toàn thiết bị.</translation>
@@ -6783,6 +6796,7 @@ Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù vi�
       Mỗi mục trong danh sách của chính sách là một chuỗi chứa một mã tiện ích và một URL "cập nhật" (không bắt buộc) phân tách bằng dấu chấm phẩy (;). Mã tiện ích là một chuỗi gồm 32 chữ cái, chẳng hạn như trên chrome://extensions khi ở Chế độ nhà phát triển. Nếu được chỉ định, URL "cập nhật" phải trỏ đến tài liệu XML của tệp kê khai cập nhật (https://developer.chrome.com/extensions/autoupdate). Theo mặc định, URL cập nhật của Cửa hàng Chrome trực tuyến sẽ được sử dụng. URL "cập nhật" được đặt trong chính sách này chỉ dùng cho lần cài đặt ban đầu. Các lần cập nhật tiện ích tiếp theo sẽ sử dụng URL cập nhật nêu trong tệp kê khai của tiện ích.
 
        Lưu ý: Chính sách này không áp dụng cho Chế độ ẩn danh. Tìm hiểu về các tiện ích lưu trữ (https://developer.chrome.com/extensions/hosting).</translation>
+<translation id="8827275450034266143">Chuỗi User-Agent sẽ làm phiên bản lớn dừng ở 99 và bao gồm cả phiên bản lớn của trình duyệt trong phiên bản nhỏ.</translation>
 <translation id="8827366480126575426">Giao thức của trình xử lý giao thức.</translation>
 <translation id="8827417642396462482">Cho phép các loại truy vấn DNS khác</translation>
 <translation id="8831911834413504983">Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web có thể chạy JavaScript.

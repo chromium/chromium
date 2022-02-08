@@ -349,7 +349,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="334252345105450327">Vytvoriť snímku obrazovky</translation>
 <translation id="3351879221545518001">Momentálne prenášate obrazovku.</translation>
 <translation id="3364721542077212959">Nástroje pre dotykové pero</translation>
-<translation id="3365977133351922112">Telefón je príliš ďaleko. Prineste ho bližšie.</translation>
+<translation id="3365977133351922112">Telefón je príliš ďaleko, prineste ho bližšie.</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3371140690572404006">zariadenia USB-C (port vpravo vpredu)</translation>
 <translation id="3375634426936648815">Pripojené</translation>
@@ -662,7 +662,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5322611492012084517">Telefón sa nepodarilo nájsť</translation>
 <translation id="5327248766486351172">Názov</translation>
 <translation id="5329548388331921293">Pripája sa…</translation>
-<translation id="5330201449517439522">Zadajte klepnutím alebo kliknutím</translation>
+<translation id="5330201449517439522">Pokračujte klepnutím alebo kliknutím</translation>
 <translation id="5331975486040154427">Zariadenie USB-C (port vľavo vzadu)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (pravé)</translation>
 <translation id="5352250171825660495">Tmavý motív je zapnutý</translation>
@@ -1066,7 +1066,7 @@ Nová inštalácia</translation>
 <translation id="8061464966246066292">Vysoký kontrast</translation>
 <translation id="8098591350844501178">Zastaviť prenos obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Zap., vš. apl.</translation>
-<translation id="8120151603115102514">Telefón nemá uzamknutú obrazovku. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
+<translation id="8120151603115102514">Telefón nemá zámku obrazovky. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8132487352815776550">Ukončiť skryté titulky</translation>

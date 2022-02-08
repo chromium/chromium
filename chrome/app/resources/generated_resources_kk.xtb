@@ -1161,6 +1161,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi желісін қосу…</translation>
 <translation id="2162155940152307086">Синхрондау, сіз параметрлерден шыққан кезде, басталады.</translation>
+<translation id="2162926944953615670">Қолжетімді eSIM профильдері жоқ.</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> құрылғысына кіру үшін, интернетке қосылыңыз.</translation>
 <translation id="2163937499206714165">Қараңғы режимді қосу</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> және тағы 1 ауыстырғыш</translation>
@@ -1854,6 +1855,7 @@
 <translation id="2828650939514476812">Wi-Fi желісіне қосылу</translation>
 <translation id="2831430281393059038">Құрылғыға қолдау көрсетіледі.</translation>
 <translation id="2832124733806557606">Құрылғыға кіру немесе оның құлпын ашу үшін балаңыз PIN кодын пайдалана алады.</translation>
+<translation id="2835177225987815960">Сканерлеудің қазіргі реттеуі, соның ішінде тағайындалған ауыстырғыштар мен автосканерлеу жылдамдығының параметрлері бастапқы күйге қайтарылады.</translation>
 <translation id="2835547721736623118">Айтылған сөзді тану қызметі</translation>
 <translation id="2836269494620652131">Бұзылу</translation>
 <translation id="2836635946302913370">Бұл пайдаланушы атымен кіру мүмкіндігін әкімші өшірген.</translation>
