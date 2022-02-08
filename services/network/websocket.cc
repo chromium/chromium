@@ -743,7 +743,8 @@ void WebSocket::OnReadable(MojoResult result,
 }
 
 void WebSocket::ReadAndSendFromDataPipe(InterruptionReason resume_reason) {
-  if (outgoing_frames_interrupted_ != resume_reason)
+  if (outgoing_frames_interrupted_ != resume_reason &&
+      outgoing_frames_interrupted_ != InterruptionReason::kNone)
     return;
 
   if (outgoing_frames_interrupted_ != InterruptionReason::kNone)
