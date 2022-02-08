@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
+import {fakeCalibrationComponentsWithFails} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, State, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
 
@@ -626,10 +626,11 @@ export function fakeShimlessRmaServiceTestSuite() {
         CalibrationSetupInstruction
             .kCalibrationInstructionPlaceBaseOnFlatSurface);
 
-    return service.startCalibration(fakeCalibrationComponents).then((state) => {
-      assertEquals(state.state, State.kChooseDestination);
-      assertEquals(state.error, RmadErrorCode.kOk);
-    });
+    return service.startCalibration(fakeCalibrationComponentsWithFails)
+        .then((state) => {
+          assertEquals(state.state, State.kChooseDestination);
+          assertEquals(state.error, RmadErrorCode.kOk);
+        });
   });
 
   test('RunCalibrationStepOk', () => {

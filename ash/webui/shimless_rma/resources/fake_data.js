@@ -188,7 +188,7 @@ export const fakeComponentsForRepairStateTest = [
 ];
 
 /** @type {!Array<!CalibrationComponentStatus>} */
-export const fakeCalibrationComponents = [
+export const fakeCalibrationComponentsWithFails = [
   {
     component: ComponentType.kCamera,
     status: CalibrationStatus.kCalibrationWaiting,
@@ -212,6 +212,35 @@ export const fakeCalibrationComponents = [
   {
     component: ComponentType.kTouchpad,
     status: CalibrationStatus.kCalibrationSkip,
+    progress: 0.0
+  },
+];
+
+/** @type {!Array<!CalibrationComponentStatus>} */
+export const fakeCalibrationComponentsWithoutFails = [
+  {
+    component: ComponentType.kCamera,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 0.0
+  },
+  {
+    component: ComponentType.kBattery,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 1.0
+  },
+  {
+    component: ComponentType.kBaseAccelerometer,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 1.0
+  },
+  {
+    component: ComponentType.kLidAccelerometer,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 1.0
+  },
+  {
+    component: ComponentType.kTouchpad,
+    status: CalibrationStatus.kCalibrationComplete,
     progress: 0.0
   },
 ];

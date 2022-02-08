@@ -2192,6 +2192,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_OK_BUTTON" desc="Default text for OK button used to acknowledge and close dialogs.">
         OK
       </message>
+      <message name="IDS_SHIMLESS_RMA_RETRY_BUTTON" desc="Default text for Retry button used to retry an action.">
+        Retry
+      </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
         Chromebook repair
@@ -2310,6 +2313,15 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry calibrating.">
         Retry calibration
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_DIALOG_TITLE" translateable="false" desc="The title for the dialog warning users they have components that failed calibration.">
+        Proceed with failed calibrations?
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_DIALOG_TEXT" translateable="false" desc="The text in the dialog warning users the consequences of proceeding with components that failed calibration.">
+        Components may not work correctly unless calibrated
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_SKIP_CALIBRATION_LABEL" translateable="false" desc="The label for the button letting the user skip component calibration.">
+        Skip calibration
       </message>
       <!-- Setup calibration page -->
       <message name="IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page that displays specific instructions required for some calibration steps.">

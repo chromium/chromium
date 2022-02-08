@@ -29,3 +29,18 @@
     </div>
   </div>
 </base-page>
+
+<cr-dialog id="failedComponentsDialog" on-cancel="closeDialog_" ignore-popstate>
+  <div slot="title">[[i18n('calibrationFailedDialogTitle')]]</div>
+  <div slot="body" id="dialogBody">[[i18n('calibrationFailedDialogText')]]</div>
+  <div slot="button-container">
+    <cr-button id="dialogSkipButton" class="cancel-button"
+        on-click="onSkipDialogButtonClicked_">
+      [[i18n('calibrationFailedSkipCalibrationButtonLabel')]]
+    </cr-button>
+    <cr-button id="dialogRetryButton" class="action-button"
+        on-click="closeDialog_">
+      [[i18n('retryButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

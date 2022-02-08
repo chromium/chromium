@@ -77,6 +77,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"nextButtonLabel", IDS_SHIMLESS_RMA_NEXT_BUTTON},
       {"skipButtonLabel", IDS_SHIMLESS_RMA_SKIP_BUTTON},
       {"okButtonLabel", IDS_SHIMLESS_RMA_OK_BUTTON},
+      {"retryButtonLabel", IDS_SHIMLESS_RMA_RETRY_BUTTON},
       // Landing page
       {"welcomeTitleText", IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE},
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},
@@ -162,6 +163,12 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CALIBRATION_FAILED_INSTRUCTIONS},
       {"calibrationFailedRetryButtonLabel",
        IDS_SHIMLESS_RMA_CALIBRATION_FAILED_RETRY_BUTTON_LABEL},
+      {"calibrationFailedDialogTitle",
+       IDS_SHIMLESS_RMA_CALIBRATION_FAILED_DIALOG_TITLE},
+      {"calibrationFailedDialogText",
+       IDS_SHIMLESS_RMA_CALIBRATION_FAILED_DIALOG_TEXT},
+      {"calibrationFailedSkipCalibrationButtonLabel",
+       IDS_SHIMLESS_RMA_CALIBRATION_FAILED_SKIP_CALIBRATION_LABEL},
       // Setup calibration page
       {"setupCalibrationTitleText",
        IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE},

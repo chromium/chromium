@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
+import {fakeCalibrationComponentsWithFails, fakeCalibrationComponentsWithoutFails} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationFailedPage} from 'chrome://shimless-rma/reimaging_calibration_failed_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {CalibrationComponentStatus, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function reimagingCalibrationFailedPageTest() {
@@ -97,7 +97,7 @@ export function reimagingCalibrationFailedPageTest() {
 
 
   test('Initializes', async () => {
-    await initializeCalibrationPage(fakeCalibrationComponents);
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
     const cameraComponent =
         component.shadowRoot.querySelector('#componentCamera');
@@ -133,7 +133,7 @@ export function reimagingCalibrationFailedPageTest() {
   });
 
   test('ToggleComponent', async () => {
-    await initializeCalibrationPage(fakeCalibrationComponents);
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
     getComponentsList().forEach(
         component =>
             assertEquals(CalibrationStatus.kCalibrationSkip, component.status));
@@ -153,7 +153,7 @@ export function reimagingCalibrationFailedPageTest() {
 
   test('NextButtonTriggersCalibrationComplete', async () => {
     const resolver = new PromiseResolver();
-    await initializeCalibrationPage(fakeCalibrationComponents);
+    await initializeCalibrationPage(fakeCalibrationComponentsWithoutFails);
     let startCalibrationCalls = 0;
     service.startCalibration = (components) => {
       assertEquals(5, components.length);
@@ -178,7 +178,7 @@ export function reimagingCalibrationFailedPageTest() {
 
   test('RetryButtonTriggersCalibration', async () => {
     const resolver = new PromiseResolver();
-    await initializeCalibrationPage(fakeCalibrationComponents);
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
     getComponentsList().forEach(
         component =>
@@ -203,7 +203,7 @@ export function reimagingCalibrationFailedPageTest() {
   });
 
   test('ComponentChipAllButtonsDisabled', async () => {
-    await initializeCalibrationPage(fakeCalibrationComponents);
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
     // Lid Accelerometer is a failed component so it starts off not disabled.
     const lidAccelerometerComponent =
@@ -214,12 +214,74 @@ export function reimagingCalibrationFailedPageTest() {
   });
 
   test('RetryCalibrationAllButtonsDisabled', async () => {
-    await initializeCalibrationPage(fakeCalibrationComponents);
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
     const retryButton =
         component.shadowRoot.querySelector('#retryCalibrationButton');
     assertFalse(retryButton.disabled);
     component.allButtonsDisabled = true;
     assertTrue(retryButton.disabled);
+  });
+
+  test('SkipCalibrationWithFailedComponents', async () => {
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
+
+    let wasPromiseRejected = false;
+    component.onNextButtonClick()
+        .then(() => assertNotReached('Do not proceed with failed components'))
+        .catch(() => {
+          wasPromiseRejected = true;
+        });
+
+    await flushTasks();
+    assertTrue(wasPromiseRejected);
+  });
+
+  test('FailedComponentsDialogSkipButton', async () => {
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
+
+    const resolver = new PromiseResolver();
+    let startCalibrationCalls = 0;
+    service.startCalibration = (components) => {
+      startCalibrationCalls++;
+      return resolver.promise;
+    };
+
+    component.onNextButtonClick().catch(() => {});
+
+    await flushTasks();
+    assertEquals(0, startCalibrationCalls);
+    assertTrue(
+        component.shadowRoot.querySelector('#failedComponentsDialog').open);
+    component.shadowRoot.querySelector('#dialogSkipButton').click();
+
+    await flushTasks();
+    assertEquals(1, startCalibrationCalls);
+    assertFalse(
+        component.shadowRoot.querySelector('#failedComponentsDialog').open);
+  });
+
+  test('FailedComponentsDialogRetryButton', async () => {
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
+
+    const resolver = new PromiseResolver();
+    let startCalibrationCalls = 0;
+    service.startCalibration = (components) => {
+      startCalibrationCalls++;
+      return resolver.promise;
+    };
+
+    component.onNextButtonClick().catch(() => {});
+
+    await flushTasks();
+    assertEquals(0, startCalibrationCalls);
+    assertTrue(
+        component.shadowRoot.querySelector('#failedComponentsDialog').open);
+    component.shadowRoot.querySelector('#dialogRetryButton').click();
+
+    await flushTasks();
+    assertEquals(0, startCalibrationCalls);
+    assertFalse(
+        component.shadowRoot.querySelector('#failedComponentsDialog').open);
   });
 }
