@@ -189,6 +189,24 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
       }
     }
 
+    if (!workarounds.disable_accelerated_vp9_decode) {
+      if (profile_id == D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0) {
+        supported_resolutions[VP9PROFILE_PROFILE0] = GetResolutionsForGUID(
+            video_device.Get(), profile_id, kModernResolutions);
+        continue;
+      }
+
+      // RS3 has issues with VP9.2 decoding. See https://crbug.com/937108.
+      if (!workarounds.disable_accelerated_vp9_profile2_decode &&
+          profile_id == D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2 &&
+          base::win::GetVersion() != base::win::Version::WIN10_RS3) {
+        supported_resolutions[VP9PROFILE_PROFILE2] =
+            GetResolutionsForGUID(video_device.Get(), profile_id,
+                                  kModernResolutions, DXGI_FORMAT_P010);
+        continue;
+      }
+    }
+
     if (!workarounds.disable_accelerated_vp8_decode &&
         profile_id == D3D11_DECODER_PROFILE_VP8_VLD &&
         base::FeatureList::IsEnabled(kMediaFoundationVP8Decoding)) {
@@ -201,24 +219,6 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
           video_device.Get(), profile_id,
           {gfx::Size(4096, 2160), gfx::Size(4096, 2304), gfx::Size(4096, 4096)},
           DXGI_FORMAT_NV12, kMinVp8Resolution);
-      continue;
-    }
-
-    if (workarounds.disable_accelerated_vp9_decode)
-      continue;
-
-    if (profile_id == D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0) {
-      supported_resolutions[VP9PROFILE_PROFILE0] = GetResolutionsForGUID(
-          video_device.Get(), profile_id, kModernResolutions);
-      continue;
-    }
-
-    // RS3 has issues with VP9.2 decoding. See https://crbug.com/937108.
-    if (!workarounds.disable_accelerated_vp9_profile2_decode &&
-        profile_id == D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2 &&
-        base::win::GetVersion() != base::win::Version::WIN10_RS3) {
-      supported_resolutions[VP9PROFILE_PROFILE2] = GetResolutionsForGUID(
-          video_device.Get(), profile_id, kModernResolutions, DXGI_FORMAT_P010);
       continue;
     }
   }
