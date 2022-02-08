@@ -60,6 +60,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -402,16 +403,23 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
 
   // Add other buttons.
   if (!params.buttons.empty()) {
-    auto close_bubble_and_run_callback = [](HelpBubbleView* view,
-                                            base::OnceClosure callback) {
-      view->GetWidget()->Close();
+    auto run_callback_and_close = [](HelpBubbleView* bubble_view,
+                                     base::OnceClosure callback) {
+      // We want to call the button callback before deleting the bubble in case
+      // the caller needs to do something with it, but the callback itself
+      // could close the bubble. Therefore, we need to ensure that the
+      // underlying bubble view is not deleted before trying to close it.
+      views::ViewTracker tracker(bubble_view);
       std::move(callback).Run();
+      auto* const view = tracker.view();
+      if (view && view->GetWidget() && !view->GetWidget()->IsClosed())
+        view->GetWidget()->Close();
     };
     for (HelpBubbleButtonParams& button_params : params.buttons) {
       MdIPHBubbleButton* const button =
           button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
               base::BindRepeating(
-                  close_bubble_and_run_callback, base::Unretained(this),
+                  run_callback_and_close, base::Unretained(this),
                   base::Passed(std::move(button_params.callback))),
               button_params.text, button_params.is_default));
       buttons_.push_back(button);

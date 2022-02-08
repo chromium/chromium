@@ -316,9 +316,9 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
 
   // Feature isn't present for some critical promos.
   if (spec.feature()) {
-    create_params.dismiss_callback =
-        base::BindOnce(&FeaturePromoControllerCommon::OnHelpBubbleDismissed,
-                       weak_ptr_factory_.GetWeakPtr(), *spec.feature());
+    create_params.dismiss_callback = base::BindOnce(
+        &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()));
   }
 
   if (CheckScreenReaderPromptAvailable()) {
@@ -378,39 +378,50 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
 
   if (bubble_closed_callback_)
     std::move(bubble_closed_callback_).Run();
-
-  if (!pending_tutorial_.empty()) {
-    StartTutorial(pending_tutorial_);
-    pending_tutorial_ = TutorialIdentifier();
-  }
 }
 
 void FeaturePromoControllerCommon::OnHelpBubbleSnoozed(
-    const base::Feature& feature) {
-  snooze_service_->OnUserSnooze(feature);
+    const base::Feature* feature) {
+  snooze_service_->OnUserSnooze(*feature);
 }
 
 void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
-    const base::Feature& feature) {
+    const base::Feature* feature) {
   if (snooze_service_)
-    snooze_service_->OnUserDismiss(feature);
+    snooze_service_->OnUserDismiss(*feature);
 }
 
 void FeaturePromoControllerCommon::OnTutorialStarted(
-    const base::Feature& iph_feature,
+    const base::Feature* iph_feature,
     TutorialIdentifier tutorial_id) {
-  if (snooze_service_)
-    snooze_service_->OnUserDismiss(iph_feature);
   if (!promo_bubble_ || !promo_bubble_->is_open()) {
-    StartTutorial(tutorial_id);
+    NOTREACHED();
   } else {
-    pending_tutorial_ = tutorial_id;
+    DCHECK_EQ(current_iph_feature_, iph_feature);
+    tutorial_promo_handle_ = CloseBubbleAndContinuePromo(*iph_feature);
+    tutorial_service_->StartTutorial(
+        tutorial_id, GetAnchorContext(),
+        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Unretained(iph_feature)),
+        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Unretained(iph_feature)));
   }
 }
 
-void FeaturePromoControllerCommon::StartTutorial(
-    TutorialIdentifier tutorial_id) {
-  tutorial_service_->StartTutorial(tutorial_id, GetAnchorContext());
+void FeaturePromoControllerCommon::OnTutorialComplete(
+    const base::Feature* iph_feature) {
+  tutorial_promo_handle_.Release();
+  if (snooze_service_)
+    snooze_service_->OnUserDismiss(*iph_feature);
+}
+
+void FeaturePromoControllerCommon::OnTutorialAborted(
+    const base::Feature* iph_feature) {
+  tutorial_promo_handle_.Release();
+  if (snooze_service_)
+    snooze_service_->OnUserSnooze(*iph_feature);
 }
 
 std::vector<HelpBubbleButtonParams>
@@ -421,17 +432,17 @@ FeaturePromoControllerCommon::CreateSnoozeButtons(
   HelpBubbleButtonParams snooze_button;
   snooze_button.text = GetSnoozeButtonText();
   snooze_button.is_default = false;
-  snooze_button.callback =
-      base::BindOnce(&FeaturePromoControllerCommon::OnHelpBubbleSnoozed,
-                     weak_ptr_factory_.GetWeakPtr(), feature);
+  snooze_button.callback = base::BindOnce(
+      &FeaturePromoControllerCommon::OnHelpBubbleSnoozed,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
   buttons.push_back(std::move(snooze_button));
 
   HelpBubbleButtonParams dismiss_button;
   dismiss_button.text = GetDismissButtonText();
   dismiss_button.is_default = true;
-  dismiss_button.callback =
-      base::BindOnce(&FeaturePromoControllerCommon::OnHelpBubbleDismissed,
-                     weak_ptr_factory_.GetWeakPtr(), feature);
+  dismiss_button.callback = base::BindOnce(
+      &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
   buttons.push_back(std::move(dismiss_button));
 
   if (IsOkButtonLeading())
@@ -451,9 +462,9 @@ FeaturePromoControllerCommon::CreateTutorialButtons(
     HelpBubbleButtonParams snooze_button;
     snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
     snooze_button.is_default = false;
-    snooze_button.callback =
-        base::BindRepeating(&FeaturePromoControllerCommon::OnHelpBubbleSnoozed,
-                            weak_ptr_factory_.GetWeakPtr(), feature);
+    snooze_button.callback = base::BindRepeating(
+        &FeaturePromoControllerCommon::OnHelpBubbleSnoozed,
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
     buttons.push_back(std::move(snooze_button));
   } else {
     HelpBubbleButtonParams dismiss_button;
@@ -461,7 +472,7 @@ FeaturePromoControllerCommon::CreateTutorialButtons(
     dismiss_button.is_default = false;
     dismiss_button.callback = base::BindRepeating(
         &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
-        weak_ptr_factory_.GetWeakPtr(), feature);
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
     buttons.push_back(std::move(dismiss_button));
   }
 
@@ -469,9 +480,9 @@ FeaturePromoControllerCommon::CreateTutorialButtons(
   tutorial_button.text =
       l10n_util::GetStringUTF16(IDS_PROMO_SHOW_TUTORIAL_BUTTON);
   tutorial_button.is_default = true;
-  tutorial_button.callback =
-      base::BindRepeating(&FeaturePromoControllerCommon::OnTutorialStarted,
-                          weak_ptr_factory_.GetWeakPtr(), feature, tutorial_id);
+  tutorial_button.callback = base::BindRepeating(
+      &FeaturePromoControllerCommon::OnTutorialStarted,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature), tutorial_id);
   buttons.push_back(std::move(tutorial_button));
 
   if (views::PlatformStyle::kIsOkButtonLeading)

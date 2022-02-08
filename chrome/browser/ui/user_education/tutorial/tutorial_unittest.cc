@@ -111,7 +111,6 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
       CreateTestTutorialBubbleFactoryRegistry();
   TutorialRegistry registry;
   TutorialService service(&registry, bubble_factory_registry.get());
-  service.SetOnCompleteTutorialForTesting(completed.Get());
 
   // build elements and keep them for triggering show/hide
   ui::TestElement element_1(kTestIdentifier1, kTestContext1);
@@ -127,7 +126,8 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
 
   EXPECT_CALL_IN_SCOPE(
       completed, Run,
-      service.StartTutorial(kTestTutorial1, element_1.context()));
+      service.StartTutorial(kTestTutorial1, element_1.context(),
+                            completed.Get()));
 }
 
 TEST(TutorialTest, TutorialWithCustomEvent) {
@@ -137,8 +137,6 @@ TEST(TutorialTest, TutorialWithCustomEvent) {
       CreateTestTutorialBubbleFactoryRegistry();
   TutorialRegistry registry;
   TutorialService service(&registry, bubble_factory_registry.get());
-
-  service.SetOnCompleteTutorialForTesting(completed.Get());
 
   // build elements and keep them for triggering show/hide
   ui::TestElement element_1(kTestIdentifier1, kTestContext1);
@@ -152,7 +150,7 @@ TEST(TutorialTest, TutorialWithCustomEvent) {
       HelpBubbleArrow::kNone, kCustomEventType1));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
-  service.StartTutorial(kTestTutorial1, element_1.context());
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
   EXPECT_CALL_IN_SCOPE(
       completed, Run,
       ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(

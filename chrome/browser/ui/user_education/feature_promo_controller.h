@@ -277,18 +277,21 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   void OnHelpBubbleClosed(HelpBubble* bubble);
 
   // Callback for snoozed features.
-  void OnHelpBubbleSnoozed(const base::Feature& feature);
+  void OnHelpBubbleSnoozed(const base::Feature* feature);
 
   // Callback when a feature's help bubble is dismissed by any means other than
   // snoozing (including "OK" or "Got it!" buttons).
-  void OnHelpBubbleDismissed(const base::Feature& feature);
+  void OnHelpBubbleDismissed(const base::Feature* feature);
 
   // Callback when a tutorial triggered from a promo is actually started.
-  void OnTutorialStarted(const base::Feature& iph_feature,
+  void OnTutorialStarted(const base::Feature* iph_feature,
                          TutorialIdentifier tutorial_id);
 
-  // Launch a tutorial.
-  void StartTutorial(TutorialIdentifier tutorial_id);
+  // Called when a tutorial launched via StartTutorial() completes.
+  void OnTutorialComplete(const base::Feature* iph_feature);
+
+  // Called when a tutorial launched via StartTutorial() aborts.
+  void OnTutorialAborted(const base::Feature* iph_feature);
 
   // Create appropriate buttons for a snoozable promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateSnoozeButtons(
@@ -317,8 +320,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // end.
   raw_ptr<HelpBubble> critical_promo_bubble_ = nullptr;
 
-  // Pending tutorial to run, if any.
-  TutorialIdentifier pending_tutorial_;
+  // Promo that is being continued during a tutorial launched from the promo
+  // bubble.
+  PromoHandle tutorial_promo_handle_;
 
   base::OnceClosure bubble_closed_callback_;
   base::CallbackListSubscription bubble_closed_subscription_;

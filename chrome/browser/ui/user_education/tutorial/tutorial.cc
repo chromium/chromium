@@ -186,8 +186,10 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
         params.body_text = body_text_;
         params.tutorial_progress = progress_;
         params.arrow = arrow_;
-        if (!is_last_step_)
+        if (!is_last_step_) {
           params.timeout = base::TimeDelta();
+          params.dismiss_callback = abort_callback;
+        }
 
         std::unique_ptr<HelpBubble> bubble =
             tutorial_service->bubble_factory_registry()->CreateHelpBubble(

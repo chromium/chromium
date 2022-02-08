@@ -21,42 +21,41 @@ TutorialService::TutorialService(
 TutorialService::~TutorialService() = default;
 
 bool TutorialService::StartTutorial(TutorialIdentifier id,
-                                    ui::ElementContext context) {
-  return StartTutorialImpl(
-      tutorial_registry_->CreateTutorial(id, this, context));
-}
-
-bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
+                                    ui::ElementContext context,
+                                    CompletedCallback completed_callback,
+                                    AbortedCallback aborted_callback) {
   if (running_tutorial_)
     return false;
 
-  CHECK(tutorial);
+  running_tutorial_ = tutorial_registry_->CreateTutorial(id, this, context);
+  CHECK(running_tutorial_);
 
-  running_tutorial_ = std::move(tutorial);
+  completed_callback_ = std::move(completed_callback);
+  aborted_callback_ = std::move(aborted_callback);
   running_tutorial_->Start();
+
   return true;
 }
 
-void TutorialService::SetOnCompleteTutorialForTesting(
-    CompletedCallback callback) {
-  completed_callback_ = std::move(callback);
-}
-
-void TutorialService::SetOnAbortTutorialForTesting(AbortedCallback callback) {
-  aborted_callback_ = std::move(callback);
-}
-
 void TutorialService::AbortTutorial() {
+  // For various reasons, we could get called here while e.g. tearing down the
+  // interaction sequence. We only want to actually run AbortTutorial() or
+  // CompleteTutorial() exactly once, so we won't continue if the tutorial has
+  // already been disposed.
+  if (!running_tutorial_)
+    return;
+
   running_tutorial_.reset();
   currently_displayed_bubble_.reset();
-  if (aborted_callback_)
-    aborted_callback_.Run();
+  std::move(aborted_callback_).Run();
 }
 
 void TutorialService::CompleteTutorial() {
+  // We should never call this after AbortTutorial() or call it twice, so this
+  // is a useful sanity check.
+  DCHECK(running_tutorial_);
   running_tutorial_.reset();
-  if (completed_callback_)
-    completed_callback_.Run();
+  std::move(completed_callback_).Run();
 
   // TODO (dpenning): decide what to do with the currently displayed bubble, we
   // want it to stick around for a while, but we also want to cleanup the

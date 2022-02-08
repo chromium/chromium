@@ -38,8 +38,6 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     auto* const service = GetTutorialService();
-    service->SetOnCompleteTutorialForTesting(base::DoNothing());
-    service->SetOnAbortTutorialForTesting(base::DoNothing());
     service->AbortTutorial();
     service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
   }
@@ -85,11 +83,9 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
 
-  GetTutorialService()->SetOnCompleteTutorialForTesting(completed.Get());
-  GetTutorialService()->SetOnAbortTutorialForTesting(aborted.Get());
-
   const bool started = GetTutorialService()->StartTutorial(
-      kTestTutorialId, browser()->window()->GetElementContext());
+      kTestTutorialId, browser()->window()->GetElementContext(),
+      completed.Get(), aborted.Get());
   EXPECT_TRUE(started);
 
   views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
