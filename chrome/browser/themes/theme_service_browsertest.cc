@@ -11,6 +11,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -49,13 +50,13 @@ class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, PRE_ThemeDataPackInvalid) {
   Profile* profile = browser()->profile();
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile);
+  const ui::ThemeProvider* theme_provider =
+      browser()->window()->GetThemeProvider();
 
   // Test initial state.
   EXPECT_FALSE(UsingCustomTheme(*theme_service));
   EXPECT_NE(kThemeNtpLinkColor,
-            theme_provider.GetColor(ThemeProperties::COLOR_NTP_LINK));
+            theme_provider->GetColor(ThemeProperties::COLOR_NTP_LINK));
   EXPECT_EQ(base::FilePath(),
             profile->GetPrefs()->GetFilePath(prefs::kCurrentThemePackFilename));
 
@@ -66,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, PRE_ThemeDataPackInvalid) {
   // Check that the theme was installed.
   EXPECT_TRUE(UsingCustomTheme(*theme_service));
   EXPECT_EQ(kThemeNtpLinkColor,
-            theme_provider.GetColor(ThemeProperties::COLOR_NTP_LINK));
+            theme_provider->GetColor(ThemeProperties::COLOR_NTP_LINK));
   EXPECT_NE(base::FilePath(),
             profile->GetPrefs()->GetFilePath(prefs::kCurrentThemePackFilename));
 
@@ -80,11 +81,11 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, PRE_ThemeDataPackInvalid) {
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, ThemeDataPackInvalid) {
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(
       browser()->profile());
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(browser()->profile());
+  const ui::ThemeProvider* theme_provider =
+      browser()->window()->GetThemeProvider();
   EXPECT_TRUE(UsingCustomTheme(*theme_service));
   EXPECT_EQ(kThemeNtpLinkColor,
-            theme_provider.GetColor(ThemeProperties::COLOR_NTP_LINK));
+            theme_provider->GetColor(ThemeProperties::COLOR_NTP_LINK));
 }
 
 }  // namespace
