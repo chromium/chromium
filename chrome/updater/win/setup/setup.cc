@@ -21,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -111,6 +112,10 @@ int Setup(UpdaterScope scope) {
       key = HKEY_CURRENT_USER;
       break;
   }
+
+  auto scoped_com_initializer =
+      std::make_unique<base::win::ScopedCOMInitializer>(
+          base::win::ScopedCOMInitializer::kMTA);
 
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir)) {
