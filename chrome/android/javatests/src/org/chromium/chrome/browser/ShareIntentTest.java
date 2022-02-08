@@ -158,8 +158,7 @@ public class ShareIntentTest {
                     mockActivity.getTabContentManagerSupplier(),
                     mockActivity.getOverviewModeBehaviorSupplier(),
                     mockActivity::getSnackbarManager, mockActivity.getActivityType(),
-                    mockActivity::isInOverviewMode, mockActivity::shouldShowOverviewPageOnStart,
-                    mockActivity::isWarmOnResume,
+                    mockActivity::isInOverviewMode, mockActivity::isWarmOnResume,
                     /* appMenuDelegate= */ mockActivity,
                     /* statusBarColorProvider= */ mockActivity,
                     mockActivity.getIntentRequestTracker(), new OneshotSupplierImpl<>(), false);

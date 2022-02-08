@@ -19,7 +19,6 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.SmallTest;
 
@@ -48,7 +47,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -159,22 +157,6 @@ public class InstantStartToolbarTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1263928")
-    public void testToolbarLayoutAndShadowVisibilityWithInstant() {
-        testToolbarLayoutAndShadowVisibility();
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    public void testToolbarLayoutAndShadowVisibilityWithoutInstant() {
-        testToolbarLayoutAndShadowVisibility();
-    }
-
-    @Test
-    @SmallTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
             ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available"})
@@ -200,28 +182,6 @@ public class InstantStartToolbarTest {
     Add({INSTANT_START_TEST_BASE_PARAMS, ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=none"})
     public void testMenuUpdateBadgeWithoutUpdate() throws IOException {
         testMenuUpdateBadge(/*shouldShowUpdateBadgeOnStartAndTabs=*/false);
-    }
-
-    private void testToolbarLayoutAndShadowVisibility() {
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-
-        onView(withId(org.chromium.chrome.test.R.id.toolbar))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(org.chromium.chrome.test.R.id.toolbar_shadow))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
-
-        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
-
-        onView(withId(org.chromium.chrome.test.R.id.toolbar))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(org.chromium.chrome.test.R.id.toolbar_shadow))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
-
-        StartSurfaceTestUtils.scrollToolbar(cta);
-        onView(withId(org.chromium.chrome.test.R.id.toolbar_shadow))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     }
 
     private void testMenuUpdateBadge(boolean shouldShowUpdateBadgeOnStartAndTabs)
