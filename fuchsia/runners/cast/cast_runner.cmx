@@ -1,4 +1,7 @@
 {
+  "program": {
+    "binary": "cast_runner_exe"
+  },
   "sandbox": {
     "features": [
       "config-data",

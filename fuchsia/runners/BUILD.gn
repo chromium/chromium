@@ -154,11 +154,15 @@ if (!is_component_build && !fuchsia_code_coverage) {
   _web_instance_host_deps_files_to_exclude += [ "lib/libfuchsia_egl.so" ]
 }
 
-cr_fuchsia_package("cast_runner_pkg") {
-  binary = ":cast_runner_exe"
-  package_name = "cast_runner"
+fuchsia_component("cast_runner_component") {
   manifest = "cast/cast_runner.cmx"
+  data_deps = [ ":cast_runner_exe" ]
+  visibility = [ ":*" ]
+}
 
+fuchsia_package("cast_runner_pkg") {
+  package_name = "cast_runner"
+  deps = [ ":cast_runner_component" ]
   excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
