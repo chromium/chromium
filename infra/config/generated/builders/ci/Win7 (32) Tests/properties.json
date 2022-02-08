@@ -1,0 +1,14 @@
+{
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.win",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
+}
