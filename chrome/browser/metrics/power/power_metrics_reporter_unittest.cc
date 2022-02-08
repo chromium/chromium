@@ -52,14 +52,14 @@ performance_monitor::ProcessMonitor::Metrics GetFakeProcessMetrics() {
 #if BUILDFLAG(IS_MAC)
 power_metrics::CoalitionResourceUsageRate GetFakeResourceUsageRate() {
   power_metrics::CoalitionResourceUsageRate rate;
-  rate.cpu_time_per_second = 0.1;
-  rate.interrupt_wakeups_per_second = 0.3;
-  rate.platform_idle_wakeups_per_second = 2;
-  rate.bytesread_per_second = 10;
-  rate.byteswritten_per_second = 0.1;
-  rate.gpu_time_per_second = 0.8;
-  rate.energy_impact_per_second = 3.0;
-  rate.power_nw = 1000;
+  rate.cpu_time_per_second = 0.5;
+  rate.interrupt_wakeups_per_second = 10;
+  rate.platform_idle_wakeups_per_second = 11;
+  rate.bytesread_per_second = 12;
+  rate.byteswritten_per_second = 13;
+  rate.gpu_time_per_second = 0.6;
+  rate.energy_impact_per_second = 15;
+  rate.power_nw = 1000000;
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i)
     rate.qos_time_per_second[i] = i * 0.1;
@@ -67,6 +67,29 @@ power_metrics::CoalitionResourceUsageRate GetFakeResourceUsageRate() {
   return rate;
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+struct HistogramSampleExpectation {
+  std::string histogram_name_prefix;
+  base::Histogram::Sample sample;
+};
+
+// For each histogram named after the combination of prefixes from
+// `expectations` and suffixes from `suffixes`, verifies that there is a unique
+// sample `expectation.sample`.
+void ExpectHistogramSamples(
+    base::HistogramTester* histogram_tester,
+    const std::vector<const char*>& suffixes,
+    const std::vector<HistogramSampleExpectation>& expectations) {
+  for (const char* suffix : suffixes) {
+    for (const auto& expectation : expectations) {
+      std::string histogram_name =
+          base::StrCat({expectation.histogram_name_prefix, suffix});
+      SCOPED_TRACE(histogram_name);
+      histogram_tester->ExpectUniqueSample(histogram_name, expectation.sample,
+                                           1);
+    }
+  }
+}
 
 using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
@@ -571,20 +594,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.ZeroWindow",
-                                       2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.ZeroWindow",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.ZeroWindow", 500, 1);
+  const std::vector<const char*> suffixes({"", ".ZeroWindow"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -609,22 +625,13 @@ TEST_F(PowerMetricsReporterUnitTest,
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.AllTabsHidden_VideoCapture", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.AllTabsHidden_VideoCapture",
-      BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_VideoCapture", 500,
-      1);
+  const std::vector<const char*> suffixes({"", ".AllTabsHidden_VideoCapture"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -648,21 +655,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.AllTabsHidden_Audio", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.AllTabsHidden_Audio",
-      BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_Audio", 500, 1);
+  const std::vector<const char*> suffixes({"", ".AllTabsHidden_Audio"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -687,24 +686,14 @@ TEST_F(PowerMetricsReporterUnitTest,
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.AllTabsHidden_NoVideoCaptureOrAudio", 2500,
-      1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.AllTabsHidden_NoVideoCaptureOrAudio",
-      BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden_"
-      "NoVideoCaptureOrAudio",
-      500, 1);
+  const std::vector<const char*> suffixes(
+      {"", ".AllTabsHidden_NoVideoCaptureOrAudio"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -728,21 +717,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.VideoCapture", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.VideoCapture",
-      BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.VideoCapture", 500, 1);
+  const std::vector<const char*> suffixes({"", ".VideoCapture"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -766,21 +747,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.FullscreenVideo", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.FullscreenVideo",
-      BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.FullscreenVideo", 500, 1);
+  const std::vector<const char*> suffixes({"", ".FullscreenVideo"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -805,22 +778,13 @@ TEST_F(PowerMetricsReporterUnitTest,
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.EmbeddedVideo_NoNavigation", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.EmbeddedVideo_NoNavigation",
-      BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.EmbeddedVideo_NoNavigation", 500,
-      1);
+  const std::vector<const char*> suffixes({"", ".EmbeddedVideo_NoNavigation"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -845,22 +809,14 @@ TEST_F(PowerMetricsReporterUnitTest,
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.EmbeddedVideo_WithNavigation", 2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeMode.EmbeddedVideo_WithNavigation",
-      BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.EmbeddedVideo_WithNavigation", 500,
-      1);
+  const std::vector<const char*> suffixes(
+      {"", ".EmbeddedVideo_WithNavigation"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -884,20 +840,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Audio",
-                                       2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Audio",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.Audio", 500, 1);
+  const std::vector<const char*> suffixes({"", ".Audio"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -921,20 +870,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Navigation",
-                                       2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Navigation",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.Navigation", 500, 1);
+  const std::vector<const char*> suffixes({"", ".Navigation"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -957,20 +899,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeRate2.Interaction", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Interaction",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.Interaction", 500, 1);
+  const std::vector<const char*> suffixes({"", ".Interaction"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -993,20 +928,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
       kExpectedMetricsCollectionInterval,
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
 
-  // Non-suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
-                                       500, 1);
-
-  // Suffixed histograms.
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Passive",
-                                       2500, 1);
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeMode.Passive",
-                                       BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceMonitor.AverageCPU2.Total.Passive", 500, 1);
+  const std::vector<const char*> suffixes({"", ".Passive"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"Power.BatteryDischargeRate2", 2500},
+       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                          BatteryDischargeMode::kDischarging)},
+       {"PerformanceMonitor.AverageCPU2.Total", 500}});
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -1205,91 +1133,43 @@ TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
 #if BUILDFLAG(IS_MAC)
 TEST_F(PowerMetricsReporterUnitTest, ReportResourceCoalitionHistograms) {
   base::HistogramTester histogram_tester;
-  power_metrics::CoalitionResourceUsageRate rate = GetFakeResourceUsageRate();
 
-  std::vector<const char*> suffixes = {"", ".Foo", ".Bar"};
-  PowerMetricsReporterAccess::ReportResourceCoalitionHistograms(rate, suffixes);
+  const std::vector<const char*> suffixes = {"", ".Foo", ".Bar"};
+  PowerMetricsReporterAccess::ReportResourceCoalitionHistograms(
+      GetFakeResourceUsageRate(), suffixes);
 
-  for (const char* scenario_suffix : suffixes) {
-    // These histograms reports the CPU/GPU times as a percentage of time with a
-    // permyriad granularity, 10% (0.1) will be represented as 1000.
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.CPUTime2", scenario_suffix}),
-        rate.cpu_time_per_second * 10000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.GPUTime2", scenario_suffix}),
-        rate.gpu_time_per_second * 10000, 1);
-
-    // These histograms report counts with a millievent/second granularity.
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond",
-             scenario_suffix}),
-        rate.interrupt_wakeups_per_second * 1000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition."
-                      "PlatformIdleWakeupsPerSecond",
-                      scenario_suffix}),
-        rate.platform_idle_wakeups_per_second * 1000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond",
-                      scenario_suffix}),
-        rate.bytesread_per_second * 1000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond",
-             scenario_suffix}),
-        rate.byteswritten_per_second * 1000, 1);
-    // EI is reported in centi-EI so the data needs to be multiplied by 100.0.
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition.EnergyImpact",
-                      scenario_suffix}),
-        rate.energy_impact_per_second.value() * 100.0, 1);
-
-    // Power is reported in milliwatts (mj/s), the data is in nj/s so it has to
-    // be divided by 1000000.
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.Power", scenario_suffix}),
-        rate.power_nw / 1000000, 1);
-
-    // The QoS histograms also reports the CPU times as a percentage of time
-    // with a permyriad granularity.
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition.QoSLevel.Default",
-                      scenario_suffix}),
-        rate.qos_time_per_second[0] * 10000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.QoSLevel.Maintenance",
-             scenario_suffix}),
-        rate.qos_time_per_second[1] * 10000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.QoSLevel.Background",
-             scenario_suffix}),
-        rate.qos_time_per_second[2] * 10000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition.QoSLevel.Utility",
-                      scenario_suffix}),
-        rate.qos_time_per_second[3] * 10000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition.QoSLevel.Legacy",
-                      scenario_suffix}),
-        rate.qos_time_per_second[4] * 10000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInitiated",
-             scenario_suffix}),
-        rate.qos_time_per_second[5] * 10000, 1);
-    histogram_tester.ExpectUniqueSample(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInteractive",
-             scenario_suffix}),
-        rate.qos_time_per_second[6] * 10000, 1);
-  }
+  ExpectHistogramSamples(
+      &histogram_tester, suffixes,
+      {// These histograms reports the CPU/GPU times as a percentage of
+       // time with a permyriad granularity, 10% (0.1) will be represented
+       // as 1000.
+       {"PerformanceMonitor.ResourceCoalition.CPUTime2", 5000},
+       {"PerformanceMonitor.ResourceCoalition.GPUTime2", 6000},
+       // These histograms report counts with a millievent/second
+       // granularity.
+       {"PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond",
+        10000},
+       {"PerformanceMonitor.ResourceCoalition."
+        "PlatformIdleWakeupsPerSecond",
+        11000},
+       {"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond", 12000},
+       {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond", 13000},
+       // EI is reported in centi-EI so the data needs to be multiplied by
+       // 100.0.
+       {"PerformanceMonitor.ResourceCoalition.EnergyImpact", 1500},
+       // Power is reported in milliwatts (mj/s), the data is in nj/s so it
+       // has to be divided by 1000000.
+       {"PerformanceMonitor.ResourceCoalition.Power", 1},
+       // The QoS histograms also reports the CPU times as a percentage of
+       // time with a permyriad granularity.
+       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Default", 0},
+       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Maintenance", 1000},
+       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Background", 2000},
+       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Utility", 3000},
+       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Legacy", 4000},
+       {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInitiated", 5000},
+       {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInteractive",
+        6000}});
 }
 
 // Verify that no energy impact histogram is reported when
