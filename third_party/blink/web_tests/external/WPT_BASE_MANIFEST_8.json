@@ -78270,6 +78270,58 @@
        {}
       ]
      ],
+     "block-in-inline-000.html": [
+      "ae9ee3421b4e0e2971a4ba41033d9368525c5289",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-in-inline-001.html": [
+      "de967599fe30e7debf002fb1ba5858060882e5b5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-in-inline-002.html": [
+      "c5e44c901c6ceda32d9f4fd81b0dc5608e43f7e8",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-in-inline-003.html": [
+      "a276fde583903efe83545a6bb147ecf3f7bb3b28",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "block-max-height-001.html": [
       "acb4316d13eee6d791e8c27e5e1b8ab2be03e0ac",
       [
@@ -91486,13 +91538,13 @@
         {}
        ]
       ],
-      "pseudo-elements-002.tentative.html": [
-       "e46d25cf8754bd1ec277dda727fc88018af65126",
+      "pseudo-elements-002.html": [
+       "a41bc43b9acc07e5e05c4e8adc940b4227ad1c0a",
        [
         null,
         [
          [
-          "/css/css-contain/container-queries/pseudo-elements-002.tentative-ref.html",
+          "/css/css-contain/container-queries/pseudo-elements-002-ref.html",
           "=="
          ]
         ],
@@ -244124,7 +244176,7 @@
      ],
      "parsing": {
       "color-computed-expected.txt": [
-       "a9c6646d7d9739fa774e22e74f13984dc598280e",
+       "d2901735005c041eb9c8d85d4383387641a05632",
        []
       ],
       "color-contrast-computed-expected.txt": [
@@ -244136,23 +244188,23 @@
        []
       ],
       "color-mix-computed-expected.txt": [
-       "e334342b011a7fa1fd28d406105d27416faccaad",
+       "b9c96909a7c8bf32cd9ca9a974929651a03891fa",
        []
       ],
       "color-mix-valid-expected.txt": [
-       "9a7345f45b02ba4896a4a9790fcae6efb64fd377",
+       "3d1143afb9aa8978ead0a69ac82f64368319a53e",
        []
       ],
       "color-valid-expected.txt": [
-       "36e511b3edc2a053f51abfe75da15d6095644022",
+       "f1e4105202864b39ace6e8695bf82c5bf639e457",
        []
       ],
       "relative-color-computed-expected.txt": [
-       "6b9f5f94de3d30775647a10d97273a6246cc7daf",
+       "a22d69eee728ffebe473dbfb925488fc108c9501",
        []
       ],
       "relative-color-valid-expected.txt": [
-       "feb3805b2a6b0c47c5a2fdc30296d0dbf09c0e9e",
+       "612ee9bf5ed9112fefd5e982f4f8a4c44f6c7e22",
        []
       ],
       "system-color-valid-expected.txt": [
@@ -244843,7 +244895,7 @@
        "7dde7f870c4d04ff81e8727b5e90aec1f79907de",
        []
       ],
-      "pseudo-elements-002.tentative-ref.html": [
+      "pseudo-elements-002-ref.html": [
        "66bddf379d133e6c541c003c8e7a280118b678a4",
        []
       ],
@@ -361081,7 +361133,7 @@
      ],
      "parsing": {
       "color-computed.html": [
-       "6d0a7074f76c086117c5b3a964003aa94f49e814",
+       "88de9dfe4a7dba96e8716377dfd579803dc479c5",
        [
         null,
         {}
@@ -361109,14 +361161,14 @@
        ]
       ],
       "color-invalid.html": [
-       "a8336fe81b55e0cce779ee44dabe80a48d9e809e",
+       "0f9a6f414ee4bf262b39ebe3e10b2c924f73c55f",
        [
         null,
         {}
        ]
       ],
       "color-mix-computed.html": [
-       "41ffdcae64c64be6d92d9bd89b12f7f8670f3bdc",
+       "b7fc240827377b7ccf8009e6d1c6fc407cb90460",
        [
         null,
         {}
@@ -361130,14 +361182,14 @@
        ]
       ],
       "color-mix-valid.html": [
-       "5c66ab1c42973cbc70228de68a098aef94e0ea74",
+       "d8a32f4ae1243d2bc5888357145e1c7d8e9dbfa6",
        [
         null,
         {}
        ]
       ],
       "color-valid.html": [
-       "bfe2726adf2cf9e3d1ebe07e22aa74aeda9e06df",
+       "22c6abe7fe5060739435e92721cc45a2dc3ad6eb",
        [
         null,
         {}
@@ -361165,21 +361217,21 @@
        ]
       ],
       "relative-color-computed.html": [
-       "b7eccdba9f45ae0b8d8abb0e242c20be1873187f",
+       "3c72f569df836e7a6d2a37b987936f10c355b7d0",
        [
         null,
         {}
        ]
       ],
       "relative-color-invalid.html": [
-       "c6f19e1e8b911dec234aeb10f3b3f41b38cd12fb",
+       "6fbb5aa338d7fce7eb74dfda370981c8f2f686de",
        [
         null,
         {}
        ]
       ],
       "relative-color-valid.html": [
-       "257939633b2ef8ba530baec37ec45e03f459e9b4",
+       "0788641b3925683cf04d898126edfe59bac78e75",
        [
         null,
         {}
@@ -361439,7 +361491,7 @@
         {}
        ]
       ],
-      "container-for-shadow-dom.tentative.html": [
+      "container-for-shadow-dom.html": [
        "66e9ea088aaa024a3ae3f15da2e69436e7855383",
        [
         null,
@@ -361670,7 +361722,7 @@
         {}
        ]
       ],
-      "pseudo-elements-003.tentative.html": [
+      "pseudo-elements-003.html": [
        "7d03dc04b9c5281eb336e8efa36e7973526f9b4d",
        [
         null,
@@ -449391,7 +449443,7 @@
       },
       "processing-model": {
        "focus-fixup-rule-one-no-dialogs.html": [
-        "31b191938402a4c10ef5c42e6dcde2b292695279",
+        "2413fe266737720d6c3155c4c298d193ae6311fa",
         [
          null,
          {}
@@ -467500,7 +467552,7 @@
    },
    "inert": {
     "dynamic-inert-on-focused-element.tentative.html": [
-     "42b6e21935b743ac77bd3334d0abf32c8aa7078a",
+     "0ddf5a995afad3e19f31b9f76ab67e704737355f",
      [
       null,
       {}
