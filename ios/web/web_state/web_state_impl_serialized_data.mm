@@ -105,6 +105,12 @@ const GURL& WebStateImpl::SerializedData::GetLastCommittedURL() const {
   return item ? item.virtualURL : GURL::EmptyGURL();
 }
 
+const base::Time WebStateImpl::SerializedData::GetLastCommittedTimestamp()
+    const {
+  CRWNavigationItemStorage* item = GetLastCommittedItem();
+  return item ? item.timestamp : base::Time();
+}
+
 // TODO(crbug.com/1264451): this private method allow to implement `GetTitle()`
 // and `GetLastCommittedURL()` without duplicating code. As of today, the title
 // and URL for the WebState are not saved directly, so this method access them

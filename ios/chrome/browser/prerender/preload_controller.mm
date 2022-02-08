@@ -706,6 +706,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   web::WebState::CreateParams createParams(self.browserState);
   _webState = web::WebState::CreateWithStorageSession(
       createParams, _webStateToReplace->BuildSessionStorage());
+  // Do not trigger a CheckForOverRealization here, as it's expected
+  // that typing fast may trigger multiple prerenders.
+  web::IgnoreOverRealizationCheck();
   _webState->ForceRealized();
   _webStateToReplace = nullptr;
 

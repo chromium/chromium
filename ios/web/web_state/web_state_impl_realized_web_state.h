@@ -161,6 +161,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SetFaviconStatus(const FaviconStatus& favicon_status);
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
+  const base::Time GetLastCommittedTimestamp() const;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const;
   id<CRWWebViewProxy> GetWebViewProxy() const;
   void DidChangeVisibleSecurityState();

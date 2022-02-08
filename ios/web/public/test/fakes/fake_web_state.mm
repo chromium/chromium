@@ -232,6 +232,10 @@ const GURL& FakeWebState::GetLastCommittedURL() const {
   return url_;
 }
 
+const base::Time FakeWebState::GetLastCommittedTimestamp() const {
+  return timestamp_;
+}
+
 GURL FakeWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   if (trust_level) {
     *trust_level = trust_level_;
@@ -445,6 +449,10 @@ bool FakeWebState::IsClosed() const {
 
 void FakeWebState::SetCurrentURL(const GURL& url) {
   url_ = url;
+}
+
+void FakeWebState::SetCurrentTimestamp(const base::Time& timestamp) {
+  timestamp_ = timestamp;
 }
 
 void FakeWebState::SetVisibleURL(const GURL& url) {

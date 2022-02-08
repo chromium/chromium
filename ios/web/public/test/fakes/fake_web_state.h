@@ -80,6 +80,7 @@ class FakeWebState : public WebState {
   void SetFaviconStatus(const FaviconStatus& favicon_status) final;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
+  const base::Time GetLastCommittedTimestamp() const override;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
   base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,
@@ -120,6 +121,7 @@ class FakeWebState : public WebState {
   void SetContentsMimeType(const std::string& mime_type);
   void SetLoading(bool is_loading);
   void SetCurrentURL(const GURL& url);
+  void SetCurrentTimestamp(const base::Time& timestamp);
   void SetVisibleURL(const GURL& url);
   void SetTrustLevel(URLVerificationTrustLevel trust_level);
   void SetNavigationManager(
@@ -181,6 +183,7 @@ class FakeWebState : public WebState {
   bool is_closed_ = false;
   FaviconStatus favicon_status_;
   GURL url_;
+  base::Time timestamp_;
   std::u16string title_;
   std::u16string last_executed_javascript_;
   URLVerificationTrustLevel trust_level_ = kAbsolute;

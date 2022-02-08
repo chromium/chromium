@@ -534,6 +534,11 @@ const GURL& WebStateImpl::GetLastCommittedURL() const {
                         : saved_->GetLastCommittedURL();
 }
 
+const base::Time WebStateImpl::GetLastCommittedTimestamp() const {
+  return LIKELY(pimpl_) ? pimpl_->GetLastCommittedTimestamp()
+                        : saved_->GetLastCommittedTimestamp();
+}
+
 GURL WebStateImpl::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   return LIKELY(pimpl_) ? pimpl_->GetCurrentURL(trust_level) : GURL();
 }

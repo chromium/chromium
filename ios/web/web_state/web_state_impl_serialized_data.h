@@ -54,6 +54,7 @@ class WebStateImpl::SerializedData {
   void SetFaviconStatus(const FaviconStatus& favicon_status);
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
+  const base::Time GetLastCommittedTimestamp() const;
 
  private:
   // Returns a reference to the owning WebState WebStateObserverList.
