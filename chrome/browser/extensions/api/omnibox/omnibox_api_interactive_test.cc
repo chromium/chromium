@@ -33,6 +33,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -72,6 +73,42 @@ std::u16string AutocompleteResultAsString(const AutocompleteResult& result) {
                                      provider_name.c_str()));
   }
   return base::UTF8ToUTF16(output);
+}
+
+struct ExpectedMatchComponent {
+  std::u16string text;
+  ACMatchClassification::Style style;
+};
+using ExpectedMatchComponents = std::vector<ExpectedMatchComponent>;
+
+// A helper method to verify the expected styled components of an autocomplete
+// match.
+// TODO(devlin): Update other tests to use this handy check.
+void VerifyMatchComponents(const ExpectedMatchComponents& expected,
+                           const AutocompleteMatch& match) {
+  std::u16string expected_string;
+  for (const auto& component : expected)
+    expected_string += component.text;
+
+  EXPECT_EQ(expected_string, match.contents);
+
+  // Check if we have the right number of components. If we don't, safely bail
+  // so that we don't access out-of-bounds elements.
+  if (expected.size() != match.contents_class.size()) {
+    ADD_FAILURE() << "Improper number of components: " << expected.size()
+                  << " vs " << match.contents_class.size();
+    return;
+  }
+
+  // Iterate over the string and match each component.
+  size_t curr_offset = 0;
+  for (size_t i = 0; i < expected.size(); ++i) {
+    SCOPED_TRACE(expected[i].text);
+
+    EXPECT_EQ(curr_offset, match.contents_class[i].offset);
+    EXPECT_EQ(expected[i].style, match.contents_class[i].style);
+    curr_offset += expected[i].text.size();
+  }
 }
 
 using OmniboxApiTest = extensions::ExtensionApiTest;
@@ -509,5 +546,78 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
     EXPECT_EQ(u"kw d", result.match_at(1).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SetDefaultSuggestion) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "SetDefaultSuggestion",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "word" },
+           "background": { "scripts": [ "background.js" ] }
+         })";
+  constexpr char kBackground[] =
+      R"(chrome.test.runTests([
+           function setDefaultSuggestion() {
+             chrome.omnibox.setDefaultSuggestion(
+                 {description: 'hello <match>match</match> world'},
+                 () => {
+                   chrome.test.succeed();
+                 });
+           }
+         ]);)";
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+
+  // The results depend on the TemplateURLService being loaded. Make sure it is
+  // loaded so that the autocomplete results are consistent.
+  // TODO(devlin): Hoist this into a SetUp() method?
+  search_test_utils::WaitForTemplateURLServiceToLoad(
+      TemplateURLServiceFactory::GetForProfile(profile()));
+
+  AutocompleteController* autocomplete_controller =
+      GetAutocompleteController(browser());
+
+  chrome::FocusLocationBar(browser());
+  ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+
+  // Input a keyword query and wait for suggestions from the extension.
+  // Note that we need to add a character after the keyword for the service to
+  // trigger the extension.
+  InputKeys(browser(), {ui::VKEY_W, ui::VKEY_O, ui::VKEY_R, ui::VKEY_D,
+                        ui::VKEY_SPACE, ui::VKEY_D});
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  ASSERT_EQ(2u, result.size()) << AutocompleteResultAsString(result);
+
+  {
+    const AutocompleteMatch& match = result.match_at(0);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE, match.type);
+    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD, match.provider->type());
+
+    // The "description" given by the extension is shown as the "contents" in
+    // the AutocompleteMatch. The XML-marked string is
+    // "hello <match>match</match> world", which is then shown as
+    // "hello match world".
+    // It should have 3 "components": an unstyled "hello ", a match-styled
+    // "match", and an unstyled " world".
+    const ExpectedMatchComponents expected_components = {
+        {u"hello ", ACMatchClassification::NONE},
+        {u"match", ACMatchClassification::MATCH},
+        {u" world", ACMatchClassification::NONE},
+    };
+    VerifyMatchComponents(expected_components, match);
+  }
+
+  {
+    const AutocompleteMatch& match = result.match_at(1);
+    EXPECT_EQ(u"word d", match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
   }
 }

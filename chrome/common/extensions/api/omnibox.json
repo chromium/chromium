@@ -125,7 +125,12 @@
             "$ref": "DefaultSuggestResult",
             "description": "A partial SuggestResult object, without the 'content' parameter."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ],
     "events": [
