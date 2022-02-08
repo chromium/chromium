@@ -50,8 +50,8 @@ using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialManagerError;
 using blink::mojom::blink::CredentialType;
 using blink::mojom::blink::LargeBlobSupport;
-using blink::mojom::blink::LogoutRequest;
-using blink::mojom::blink::LogoutRequestPtr;
+using blink::mojom::blink::LogoutRpsRequest;
+using blink::mojom::blink::LogoutRpsRequestPtr;
 using blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr;
 using blink::mojom::blink::PublicKeyCredentialDescriptor;
 using blink::mojom::blink::PublicKeyCredentialDescriptorPtr;
@@ -308,10 +308,10 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
 }
 
 // static
-LogoutRequestPtr
-TypeConverter<LogoutRequestPtr, blink::FederatedCredentialLogoutRequest>::
-    Convert(const blink::FederatedCredentialLogoutRequest& request) {
-  auto mojo_request = LogoutRequest::New();
+LogoutRpsRequestPtr
+TypeConverter<LogoutRpsRequestPtr, blink::FederatedCredentialLogoutRpsRequest>::
+    Convert(const blink::FederatedCredentialLogoutRpsRequest& request) {
+  auto mojo_request = LogoutRpsRequest::New();
 
   mojo_request->url = blink::KURL(request.url());
   mojo_request->account_id = request.accountId();

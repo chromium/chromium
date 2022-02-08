@@ -7,7 +7,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_rps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_identity_provider.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential_manager_proxy.h"
@@ -18,17 +18,17 @@
 namespace blink {
 
 namespace {
-using mojom::blink::LogoutStatus;
+using mojom::blink::LogoutRpsStatus;
 using mojom::blink::RevokeStatus;
 
 constexpr char kFederatedCredentialType[] = "federated";
 
-void OnLogoutResponse(ScriptPromiseResolver* resolver, LogoutStatus status) {
+void OnLogoutResponse(ScriptPromiseResolver* resolver, LogoutRpsStatus status) {
   // TODO(kenrb); There should be more thought put into how this API works.
   // Returning success or failure doesn't have a lot of meaning. If some
   // logout attempts fail and others succeed, and even different attempts
   // fail for different reasons, how does that get conveyed to the caller?
-  if (status != LogoutStatus::kSuccess) {
+  if (status != LogoutRpsStatus::kSuccess) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNetworkError, "Error logging out endpoints."));
 
@@ -104,9 +104,9 @@ bool FederatedCredential::IsFederatedCredential() const {
   return true;
 }
 
-ScriptPromise FederatedCredential::logout(
+ScriptPromise FederatedCredential::logoutRps(
     ScriptState* script_state,
-    const HeapVector<Member<FederatedCredentialLogoutRequest>>&
+    const HeapVector<Member<FederatedCredentialLogoutRpsRequest>>&
         logout_endpoints) {
   if (!RuntimeEnabledFeatures::WebIDEnabled(
           ExecutionContext::From(script_state))) {
@@ -120,9 +120,9 @@ ScriptPromise FederatedCredential::logout(
     return ScriptPromise();
   }
 
-  Vector<mojom::blink::LogoutRequestPtr> logout_requests;
+  Vector<mojom::blink::LogoutRpsRequestPtr> logout_requests;
   for (auto& request : logout_endpoints) {
-    auto logout_request = mojom::blink::LogoutRequest::From(*request);
+    auto logout_request = mojom::blink::LogoutRpsRequest::From(*request);
     if (!logout_request->url.IsValid()) {
       ScriptPromise::RejectWithDOMException(
           script_state,
@@ -144,8 +144,8 @@ ScriptPromise FederatedCredential::logout(
   ScriptPromise promise = resolver->Promise();
 
   auto* fedcm_logout_request =
-      CredentialManagerProxy::From(script_state)->FedCmLogoutRequest();
-  fedcm_logout_request->Logout(
+      CredentialManagerProxy::From(script_state)->FedCmLogoutRpsRequest();
+  fedcm_logout_request->LogoutRps(
       std::move(logout_requests),
       WTF::Bind(&OnLogoutResponse, WrapPersistent(resolver)));
   return promise;
