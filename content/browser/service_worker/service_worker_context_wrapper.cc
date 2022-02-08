@@ -174,6 +174,15 @@ class WrapResultCallbackToTakeStatusCode {
   ServiceWorkerContext::ResultCallback callback_;
 };
 
+void RunOrPostTaskOnUIThread(const base::Location& location,
+                             base::OnceClosure task) {
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    std::move(task).Run();
+  } else {
+    GetUIThreadTaskRunner({})->PostTask(location, std::move(task));
+  }
+}
+
 }  // namespace
 
 
@@ -675,7 +684,6 @@ void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
     const blink::StorageKey& key,
     blink::TransferableMessage message,
     ResultCallback result_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Ensure the callback is called asynchronously.
   auto wrapped_callback = base::BindOnce(
       [](ResultCallback callback, bool success) {
@@ -684,12 +692,44 @@ void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
       },
       std::move(result_callback));
 
+  // TODO(https://crbug.com/1295029): Don't post task to the UI thread. Instead,
+  // make all call sites run on the UI thread.
+  RunOrPostTaskOnUIThread(
+      FROM_HERE,
+      base::BindOnce(&ServiceWorkerContextWrapper::
+                         StartServiceWorkerAndDispatchMessageOnUIThread,
+                     this, scope, key, std::move(message),
+                     base::BindOnce(
+                         [](ResultCallback callback,
+                            scoped_refptr<base::TaskRunner> callback_runner,
+                            bool success) {
+                           callback_runner->PostTask(
+                               FROM_HERE,
+                               base::BindOnce(std::move(callback), success));
+                         },
+                         std::move(wrapped_callback),
+                         base::ThreadTaskRunnerHandle::Get())));
+}
+
+void ServiceWorkerContextWrapper::
+    StartServiceWorkerAndDispatchMessageOnUIThread(
+        const GURL& scope,
+        const blink::StorageKey& key,
+        blink::TransferableMessage message,
+        ResultCallback result_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!context_core_) {
+    std::move(result_callback).Run(/*success=*/false);
+    return;
+  }
+
   FindRegistrationForScopeImpl(
       net::SimplifyUrlForRequest(scope), key,
       /*include_installing_version=*/false,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForMessageDispatch,
-          this, std::move(message), scope, std::move(wrapped_callback)));
+          this, std::move(message), scope, std::move(result_callback)));
 }
 
 void ServiceWorkerContextWrapper::DidFindRegistrationForMessageDispatch(
