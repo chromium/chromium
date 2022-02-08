@@ -8678,13 +8678,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
   // Synchronize with the renderer.
   EXPECT_TRUE(ExecJs(new_shell, ""));
 
-  // The resources associated with the speculative RFH should be freed now.
+  // The resources associated with the speculative RFH should be freed now, as
+  // well as the original frame from the now closed shell.
   {
     blink::mojom::LeakDetectionResultPtr result;
     leak_detector.PerformLeakDetection(&result);
     EXPECT_EQ(1u, result->number_of_live_documents);
     // Note: the number of live frames includes remote frames.
-    EXPECT_EQ(2u, result->number_of_live_frames);
+    EXPECT_EQ(1u, result->number_of_live_frames);
   }
 }
 

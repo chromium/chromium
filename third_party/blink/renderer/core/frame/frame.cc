@@ -135,6 +135,7 @@ bool Frame::Detach(FrameDetachType type) {
       provisional_frame_->Detach(FrameDetachType::kRemove);
     }
     SetOpener(nullptr);
+    opened_frame_tracker_.Dispose();
     // Clearing the window proxies can call back into `LocalFrameClient`, so
     // this must be done before nulling out `client_` below.
     GetWindowProxyManager()->ClearForClose();
