@@ -371,41 +371,59 @@ gfx::Rect SurfaceAggregator::DamageRectForSurface(
 
 // This function is called at each render pass - CopyQuadsToPass().
 void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
+    const ResolvedFrameData& resolved_frame,
+    const CompositorRenderPassDrawQuad* render_pass_quad,
     const gfx::Transform& parent_target_transform,
     const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
-    const CompositorRenderPass* source_pass,
-    AggregatedRenderPass* dest_pass) {
+    const gfx::Transform& dest_transform_to_root_target) {
+  const CompositorRenderPassId child_pass_id = render_pass_quad->render_pass_id;
+  const ResolvedPassData& child_resolved_pass =
+      resolved_frame.GetRenderPassDataById(child_pass_id);
+  const CompositorRenderPass& child_render_pass =
+      child_resolved_pass.render_pass();
+
   // Add damages from render passes with pixel-moving foreground filters or
   // backdrop filters to the surface damage list.
-  if (!source_pass->filters.HasFilterThatMovesPixels() &&
-      !source_pass->backdrop_filters.HasFilterThatMovesPixels()) {
+  if (!child_render_pass.filters.HasFilterThatMovesPixels() &&
+      !child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     return;
   }
 
-  gfx::Transform parent_to_root_target_transform = gfx::Transform(
-      dest_pass->transform_to_root_target, parent_target_transform);
-
-  gfx::Rect damage_rect = source_pass->output_rect;
-  if (source_pass->filters.HasFilterThatMovesPixels()) {
-    float max_pixel_movement = source_pass->filters.MaximumPixelMovement();
-    gfx::RectF damage_rect_f(damage_rect);
-    damage_rect_f.Inset(-max_pixel_movement, -max_pixel_movement);
-    damage_rect = gfx::ToEnclosingRect(damage_rect_f);
+  gfx::Rect damage_rect = render_pass_quad->rect;
+  gfx::Rect damage_rect_in_target_space;
+  if (child_render_pass.filters.HasFilterThatMovesPixels()) {
+    // The size of pixel-moving foreground filter is allowed to expand.
+    // No intersecting shared_quad_state->clip_rect for the expanded rect.
+    damage_rect_in_target_space =
+        GetExpandedRectWithPixelMovingForegroundFilter(render_pass_quad,
+                                                       child_render_pass);
+  } else if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
+    const auto* shared_quad_state = render_pass_quad->shared_quad_state;
+    damage_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
+        shared_quad_state->quad_to_target_transform, damage_rect);
+    if (shared_quad_state->clip_rect) {
+      damage_rect_in_target_space.Intersect(
+          shared_quad_state->clip_rect.value());
+    }
   }
 
   gfx::Rect damage_rect_in_root_target_space =
-      cc::MathUtil::MapEnclosingClippedRect(parent_to_root_target_transform,
-                                            damage_rect);
+      TransformRectToDestRootTargetSpace(
+          damage_rect_in_target_space, parent_target_transform,
+          dest_transform_to_root_target, dest_root_target_clip_rect);
 
   // The whole render pass rect with pixel-moving foreground filters or
   // backdrop filters is considered damaged if it intersects with the other
   // damages.
   if (damage_rect_in_root_target_space.Intersects(root_damage_rect_)) {
-    // Transform will be performed again in AddSurfaceDamageToDamageList()
-    // Just pass in damage_rect instead of damage_rect_in_root_target_space.
-    AddSurfaceDamageToDamageList(damage_rect, parent_target_transform,
-                                 dest_root_target_clip_rect, dest_pass,
-                                 /*resolved_frame=*/nullptr);
+    // Since |damage_rect_in_root_target_space| is available, just pass this
+    // rect and reset the other arguments.
+    AddSurfaceDamageToDamageList(
+        damage_rect_in_root_target_space,
+        /*parent_target_transform*/ gfx::Transform(),
+        /*dest_root_target_clip_rect*/ {},
+        /*dest_transform_to_root_target*/ gfx::Transform(),
+        /*resolved_frame=*/nullptr);
   }
 }
 
@@ -413,7 +431,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     const gfx::Rect& default_damage_rect,
     const gfx::Transform& parent_target_transform,
     const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
-    AggregatedRenderPass* dest_pass,
+    const gfx::Transform& dest_transform_to_root_target,
     const ResolvedFrameData* resolved_frame) {
   gfx::Rect damage_rect;
   if (!resolved_frame) {
@@ -437,7 +455,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
   gfx::Rect damage_rect_in_root_target_space =
       TransformRectToDestRootTargetSpace(
           /*rect_in_target_space=*/damage_rect, parent_target_transform,
-          dest_pass->transform_to_root_target, dest_root_target_clip_rect);
+          dest_transform_to_root_target, dest_root_target_clip_rect);
 
   surface_damage_rect_list_->push_back(damage_rect_in_root_target_space);
 }
@@ -631,7 +649,8 @@ void SurfaceAggregator::HandleSurfaceQuad(
       // entire SurfaceDrawQuad visible_rect on the root target space of the
       // root surface.
       AddSurfaceDamageToDamageList(surface_in_target_space, target_transform,
-                                   dest_root_target_clip_rect, dest_pass,
+                                   dest_root_target_clip_rect,
+                                   dest_pass->transform_to_root_target,
                                    /*resolved_frame=*/nullptr);
     }
 
@@ -794,7 +813,8 @@ void SurfaceAggregator::EmitSurfaceContent(
   if (needs_surface_damage_rect_list_ && resolved_frame.WillDraw()) {
     AddSurfaceDamageToDamageList(
         /*default_damage_rect =*/gfx::Rect(), combined_transform,
-        dest_root_target_clip_rect, dest_pass, &resolved_frame);
+        dest_root_target_clip_rect, dest_pass->transform_to_root_target,
+        &resolved_frame);
   }
 
   if (frame.metadata.delegated_ink_metadata) {
@@ -1242,8 +1262,6 @@ void SurfaceAggregator::CopyQuadsToPass(
   const DrawQuad* quad_with_overlay_damage_index = nullptr;
   if (needs_surface_damage_rect_list_ &&
       resolved_pass.aggregation().will_draw) {
-    AddRenderPassFilterDamageToDamageList(
-        target_transform, dest_root_target_clip_rect, &source_pass, dest_pass);
     quad_with_overlay_damage_index =
         FindQuadWithOverlayDamage(source_pass, dest_pass, target_transform,
                                   surface, &overlay_damage_index);
@@ -1303,10 +1321,10 @@ void SurfaceAggregator::CopyQuadsToPass(
               GetOptionalDamageRectFromQuad(quad);
           dest_shared_quad_state->overlay_damage_index =
               surface_damage_rect_list_->size();
-          AddSurfaceDamageToDamageList(damage_rect_in_target_space.value(),
-                                       target_transform,
-                                       dest_root_target_clip_rect, dest_pass,
-                                       /*resolved_frame=*/nullptr);
+          AddSurfaceDamageToDamageList(
+              damage_rect_in_target_space.value(), target_transform,
+              dest_root_target_clip_rect, dest_pass->transform_to_root_target,
+              /*resolved_frame=*/nullptr);
         } else if (quad == quad_with_overlay_damage_index) {
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
         }
@@ -1345,6 +1363,13 @@ void SurfaceAggregator::CopyQuadsToPass(
 
         dest_quad = dest_pass->CopyFromAndAppendRenderPassDrawQuad(
             pass_quad, remapped_pass_id);
+
+        if (needs_surface_damage_rect_list_ &&
+            resolved_pass.aggregation().will_draw) {
+          AddRenderPassFilterDamageToDamageList(
+              resolved_frame, pass_quad, target_transform,
+              dest_root_target_clip_rect, dest_pass->transform_to_root_target);
+        }
       } else if (quad->material == DrawQuad::Material::kTextureContent) {
         const auto* texture_quad = TextureDrawQuad::MaterialCast(quad);
         if (texture_quad->secure_output_only &&
@@ -1445,8 +1470,8 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
       AddSurfaceDamageToDamageList(
           /*default_damage_rect=*/gfx::Rect(),
           /*parent_target_transform=*/surface_transform,
-          /*dest_root_target_clip_rect=*/{}, /*dest_pass=*/copy_pass.get(),
-          &resolved_frame);
+          /*dest_root_target_clip_rect=*/{},
+          copy_pass->transform_to_root_target, &resolved_frame);
     }
 
     CopyQuadsToPass(resolved_frame, resolved_pass, copy_pass.get(),

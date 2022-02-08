@@ -297,14 +297,15 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const gfx::Rect& default_damage_rect,
       const gfx::Transform& parent_target_transform,
       const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
-      AggregatedRenderPass* dest_pass,
+      const gfx::Transform& dest_transform_to_root_target,
       const ResolvedFrameData* resolved_frame);
 
   void AddRenderPassFilterDamageToDamageList(
+      const ResolvedFrameData& resolved_frame,
+      const CompositorRenderPassDrawQuad* render_pass_quad,
       const gfx::Transform& parent_target_transform,
       const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
-      const CompositorRenderPass* source_pass,
-      AggregatedRenderPass* dest_pass);
+      const gfx::Transform& dest_transform_to_root_target);
 
   // Determine the overlay damage and location in the surface damage list.
   const DrawQuad* FindQuadWithOverlayDamage(
