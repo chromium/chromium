@@ -62,6 +62,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #endif
@@ -437,6 +438,14 @@ SerialPolicyAllowedPorts* TestingBrowserProcess::serial_policy_allowed_ports() {
   }
   return serial_policy_allowed_ports_.get();
 }
+
+HidPolicyAllowedDevices* TestingBrowserProcess::hid_policy_allowed_devices() {
+  if (!hid_policy_allowed_devices_) {
+    hid_policy_allowed_devices_ =
+        std::make_unique<HidPolicyAllowedDevices>(local_state());
+  }
+  return hid_policy_allowed_devices_.get();
+}
 #endif
 
 BuildState* TestingBrowserProcess::GetBuildState() {
@@ -490,6 +499,7 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
 #endif
 #if !BUILDFLAG(IS_ANDROID)
     serial_policy_allowed_ports_.reset();
+    hid_policy_allowed_devices_.reset();
 #endif
     ShutdownBrowserPolicyConnector();
     created_browser_policy_connector_ = false;
