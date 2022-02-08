@@ -3716,31 +3716,13 @@
     'gpu_webgpu_integration_backend_validation_isolated_scripts': {
       'webgpu_blink_web_tests_with_backend_validation': {
         'name': 'webgpu_blink_web_tests_with_backend_validation',
+        'isolate_name': 'webgpu_blink_web_tests',
         'args': [
-          # crbug.com/953991 Ensure WebGPU is ready before running tests
-          '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--flag-specific=webgpu-with-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--timeout-ms=30000',
         ],
-        'win64_args': [ '--target=Release_x64' ],
-        'mac_args': [
-          '--platform=mac-mac11'
-        ],
-        'linux_args': [
-          '--no-xvfb',
-          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
-        ],
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'isolate_name': 'webgpu_blink_web_tests',
-        'resultdb': {
-          'enable': True,
-        },
+        'mixins': ['webgpu_cts'],
         'swarming': {
           'shards': 4,
         },
@@ -3750,29 +3732,11 @@
     'gpu_webgpu_integration_isolated_scripts': {
       'webgpu_blink_web_tests': {
         'name': 'webgpu_blink_web_tests',
+        'isolate_name': 'webgpu_blink_web_tests',
         'args': [
-          # crbug.com/953991 Ensure WebGPU is ready before running tests
-          '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--flag-specific=webgpu',
         ],
-        'win64_args': [ '--target=Release_x64' ],
-        'mac_args': [
-          '--platform=mac-mac11'
-        ],
-        'linux_args': [
-          '--no-xvfb',
-          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
-        ],
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'isolate_name': 'webgpu_blink_web_tests',
-        'resultdb': {
-          'enable': True,
-        },
+        'mixins': ['webgpu_cts'],
         'swarming': {
           'shards': 4,
         },
@@ -3784,31 +3748,13 @@
     'gpu_webgpu_integration_partial_backend_validation_isolated_scripts': {
       'webgpu_blink_web_tests_with_backend_validation': {
         'name': 'webgpu_blink_web_tests_with_partial_backend_validation',
+        'isolate_name': 'webgpu_blink_web_tests',
         'args': [
-          # crbug.com/953991 Ensure WebGPU is ready before running tests
-          '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--flag-specific=webgpu-with-partial-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--timeout-ms=30000',
         ],
-        'win64_args': [ '--target=Release_x64' ],
-        'mac_args': [
-          '--platform=mac-mac11'
-        ],
-        'linux_args': [
-          '--no-xvfb',
-          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
-        ],
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'isolate_name': 'webgpu_blink_web_tests',
-        'resultdb': {
-          'enable': True,
-        },
+        'mixins': ['webgpu_cts'],
         'swarming': {
           'shards': 4,
         },

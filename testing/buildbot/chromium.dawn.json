@@ -192,8 +192,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -224,9 +224,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -446,8 +446,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -478,9 +478,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -700,8 +700,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -732,9 +732,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -954,8 +954,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -986,9 +986,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -1225,8 +1225,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1259,9 +1259,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1482,8 +1482,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1514,9 +1514,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1758,8 +1758,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1793,9 +1793,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2069,8 +2069,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2103,9 +2103,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2326,8 +2326,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2358,9 +2358,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2578,8 +2578,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
           "--timeout-ms=48000"
         ],
@@ -2800,8 +2800,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2831,9 +2831,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3046,8 +3046,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3077,9 +3077,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3292,8 +3292,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3323,9 +3323,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3538,8 +3538,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3569,9 +3569,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3786,8 +3786,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu"
+          "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3816,9 +3816,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--timeout-ms=30000"
+          "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4030,8 +4030,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu"
+          "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4060,9 +4060,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--timeout-ms=30000"
+          "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4274,8 +4274,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu"
+          "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4304,9 +4304,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--timeout-ms=30000"
+          "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4518,8 +4518,8 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu"
+          "--flag-specific=webgpu",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4548,9 +4548,9 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--timeout-ms=30000"
+          "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {

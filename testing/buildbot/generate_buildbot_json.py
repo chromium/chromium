@@ -1314,7 +1314,7 @@ class BBJSONGenerator(object):
         if mixin in remove_mixins:
           continue
         valid_mixin(mixin)
-        test = self.apply_mixin(self.mixins[mixin], test)
+        test = self.apply_mixin(self.mixins[mixin], test, builder)
 
     if 'mixins' in builder:
       must_be_list(builder['mixins'], 'builder', builder_name)
@@ -1322,7 +1322,7 @@ class BBJSONGenerator(object):
         if mixin in remove_mixins:
           continue
         valid_mixin(mixin)
-        test = self.apply_mixin(self.mixins[mixin], test)
+        test = self.apply_mixin(self.mixins[mixin], test, builder)
 
     if not 'mixins' in test:
       return test
@@ -1338,11 +1338,11 @@ class BBJSONGenerator(object):
       # since this is already the lowest level, so if a mixin is added here that
       # we don't want, we can just delete its entry.
       valid_mixin(mixin)
-      test = self.apply_mixin(self.mixins[mixin], test)
+      test = self.apply_mixin(self.mixins[mixin], test, builder)
     del test['mixins']
     return test
 
-  def apply_mixin(self, mixin, test):
+  def apply_mixin(self, mixin, test, builder):
     """Applies a mixin to a test.
 
     Mixins will not override an existing key. This is to ensure exceptions can
@@ -1387,6 +1387,7 @@ class BBJSONGenerator(object):
       # Values specified under $mixin_append should be appended to existing
       # lists, rather than replacing them.
       mixin_append = mixin['$mixin_append']
+      del mixin['$mixin_append']
 
       # Append swarming named cache and delete swarming key, since it's under
       # another layer of dict.
@@ -1408,9 +1409,30 @@ class BBJSONGenerator(object):
           raise BBGenErr(
               'Cannot apply $mixin_append to non-list "' + key + '".')
         new_test[key].extend(mixin_append[key])
+
+      args = new_test.get('args', [])
+      # Array so we can assign to it in a nested scope.
+      args_need_fixup = [False]
       if 'args' in mixin_append:
-        new_test['args'] = self.maybe_fixup_args_array(new_test['args'])
-      del mixin['$mixin_append']
+        args_need_fixup[0] = True
+
+      def add_conditional_args(key, fn):
+        val = new_test.pop(key, [])
+        if val and fn(builder):
+          args.extend(val)
+          args_need_fixup[0] = True
+
+      add_conditional_args('desktop_args', lambda cfg: not self.is_android(cfg))
+      add_conditional_args('lacros_args', self.is_lacros)
+      add_conditional_args('linux_args', self.is_linux)
+      add_conditional_args('android_args', self.is_android)
+      add_conditional_args('chromeos_args', self.is_chromeos)
+      add_conditional_args('mac_args', self.is_mac)
+      add_conditional_args('win_args', self.is_win)
+      add_conditional_args('win64_args', self.is_win64)
+
+      if args_need_fixup[0]:
+        new_test['args'] = self.maybe_fixup_args_array(args)
 
     new_test.update(mixin)
     return new_test

@@ -1056,6 +1056,31 @@
       },
     },
   },
+  'webgpu_cts': {
+    '$mixin_append': {
+      'args': [
+        # crbug.com/953991 Ensure WebGPU is ready before running tests
+        '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
+      ],
+      'win64_args': [ '--target=Release_x64' ],
+      'mac_args': [
+        '--platform=mac-mac11'
+      ],
+      'linux_args': [
+        '--no-xvfb',
+        '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
+      ],
+    },
+    'merge': {
+      'args': [
+        '--verbose',
+      ],
+      'script': '//third_party/blink/tools/merge_web_test_results.py',
+    },
+    'resultdb': {
+      'enable': True,
+    },
+  },
   'win10': {
     'swarming': {
       'dimensions': {
