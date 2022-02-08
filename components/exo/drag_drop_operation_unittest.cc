@@ -89,7 +89,10 @@ class DragDropOperationTest : public test::ExoTestBase,
         FROM_HERE, std::move(drag_blocked_callback_));
   }
 
-  void OnDragEnded() override { drag_end_count_++; }
+  void OnDragCompleted(const ui::DropTargetEvent& event) override {
+    drag_end_count_++;
+  }
+  void OnDragCancelled() override { drag_end_count_++; }
 
  protected:
   void set_drag_blocked_callback(base::OnceClosure callback) {

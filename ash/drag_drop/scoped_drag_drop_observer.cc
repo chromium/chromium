@@ -28,7 +28,11 @@ void ScopedDragDropObserver::OnDragUpdated(const ui::DropTargetEvent& event) {
   event_callback_.Run(&event);
 }
 
-void ScopedDragDropObserver::OnDragEnded() {
+void ScopedDragDropObserver::OnDragCompleted(const ui::DropTargetEvent& event) {
+  event_callback_.Run(/*event=*/nullptr);
+}
+
+void ScopedDragDropObserver::OnDragCancelled() {
   event_callback_.Run(/*event=*/nullptr);
 }
 

@@ -611,6 +611,8 @@ void DragDropController::Drop(aura::Window* target,
                      std::move(tab_drag_drop_delegate_),
                      std::move(drag_cancel)));
 
+  for (aura::client::DragDropClientObserver& observer : observers_)
+    observer.OnDragCompleted(e);
   Cleanup();
 
   // Tab drag-n-drop should never be async.
@@ -665,7 +667,10 @@ void DragDropController::DoDragCancel(
   if (toplevel_window_drag_delegate_)
     toplevel_window_drag_delegate_->OnToplevelWindowDragCancelled();
 
+  for (aura::client::DragDropClientObserver& observer : observers_)
+    observer.OnDragCancelled();
   Cleanup();
+
   // If the drop is async, then |drag_image_widget_| is already reset.
   if (drag_image_widget_)
     StartCanceledAnimation(drag_cancel_animation_duration);
@@ -722,9 +727,6 @@ void DragDropController::ForwardPendingLongTap() {
 }
 
 void DragDropController::Cleanup() {
-  for (aura::client::DragDropClientObserver& observer : observers_)
-    observer.OnDragEnded();
-
   // Do not remove observer `the drag_window_1 is same as `drag_source_window_`.
   // `drag_source_window_` is still necessary to process long tab and the
   // observer will be reset when `drag_source_window_` is destroyed.

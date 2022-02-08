@@ -241,10 +241,9 @@ class TestDragDropController : public DragDropController {
 class MockObserver : public aura::client::DragDropClientObserver {
  public:
   // aura::client::DragDropClientObserver
-
   MOCK_METHOD(void, OnDragStarted, (), (override));
   MOCK_METHOD(void, OnDragUpdated, (const ui::DropTargetEvent&), (override));
-  MOCK_METHOD(void, OnDragEnded, (), (override));
+  MOCK_METHOD(void, OnDragCompleted, (const ui::DropTargetEvent&), (override));
 };
 
 class TestObserver : public aura::client::DragDropClientObserver {
@@ -259,13 +258,12 @@ class TestObserver : public aura::client::DragDropClientObserver {
   State state() const { return state_; }
 
   // aura::client::DragDropClientObserver
-
   void OnDragStarted() override {
     EXPECT_EQ(State::kNotInvoked, state_);
     state_ = State::kDragStartedInvoked;
   }
 
-  void OnDragEnded() override {
+  void OnDragCompleted(const ui::DropTargetEvent& event) override {
     EXPECT_EQ(State::kDragStartedInvoked, state_);
     state_ = State::kDragEndedInvoked;
   }
@@ -1348,7 +1346,7 @@ TEST_F(DragDropControllerTest, DragObserverEvents) {
             EXPECT_EQ(gfx::Point(200, 0), root_location_in_screen);
             EXPECT_EQ(&event.data(), data_ptr);
           }));
-      EXPECT_CALL(observer, OnDragEnded);
+      EXPECT_CALL(observer, OnDragCompleted);
     }
 
     drag_drop_controller_->Drop(window, e);
