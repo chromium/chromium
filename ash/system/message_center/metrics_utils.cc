@@ -239,16 +239,30 @@ absl::optional<NotificationTypeDetailed> GetNotificationType(
 }
 
 void LogClickedBody(const std::string& notification_id, bool is_popup) {
-  auto type = GetNotificationType(notification_id);
-  if (!type.has_value())
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id);
+  if (!notification)
     return;
+  auto type = GetNotificationType(*notification);
 
   if (is_popup) {
     UMA_HISTOGRAM_ENUMERATION("Notifications.Cros.Actions.Popup.ClickedBody",
-                              type.value());
+                              type);
   } else {
     UMA_HISTOGRAM_ENUMERATION("Notifications.Cros.Actions.Tray.ClickedBody",
-                              type.value());
+                              type);
+  }
+
+  // If notification's delegate is null, that means the notification is not
+  // clickable and the user just did a "bad click", which is a click that did
+  // not do anything.
+  if (notification->delegate()) {
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.ClickedBody.GoodClick", type);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.ClickedBody.BadClick", type);
   }
 }
 
