@@ -27,15 +27,14 @@ FollowActionState GetFollowActionState(web::WebState* webState,
   const GURL& URL = webState->GetLastCommittedURL();
   // Show the follow action when:
   // 1. The page url is valid;
-  // 2. Users are not on NTP or Chrome internal pages.
-  if (URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL)) {
+  // 2. Users are not on NTP or Chrome internal pages;
+  // 3. Users are not in incognito mode.
+  if (URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL) &&
+      !browserState->IsOffTheRecord()) {
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForBrowserState(browserState);
-    // Enable the follow action when:
-    // 1. Users are not in incognito mode;
-    // 2. Users have signed in.
-    if (!browserState->IsOffTheRecord() &&
-        authenticationService->GetPrimaryIdentity(
+    // Enable the follow action when users have signed in.
+    if (authenticationService->GetPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
       return FollowActionStateEnabled;
     }
