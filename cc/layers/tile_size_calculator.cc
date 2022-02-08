@@ -89,9 +89,24 @@ gfx::Size CalculateGpuRawDrawTileSize(const gfx::Size& base_tile_size,
                                       const gfx::Size& max_tile_size,
                                       int min_height_for_gpu_raster_tile,
                                       double raw_draw_tile_size_factor) {
-  int tile_size =
-      std::ceil(std::max(base_tile_size.width(), base_tile_size.height()) *
-                raw_draw_tile_size_factor);
+  // Sometime the |base_tile_size| could be (0x0) or (1x1), so set a min base
+  // tile size, to avoid incorrect calculation.
+  // Use 2280 (mid range phone screen height) as the min base tile size for now.
+  // TODO(penghuang): find better numbers for different platforms.
+  constexpr int kMinBaseTileSize = 2280;
+  int tile_size = std::max(
+      {base_tile_size.width(), base_tile_size.height(), kMinBaseTileSize});
+  tile_size = std::ceil(tile_size * raw_draw_tile_size_factor);
+
+  // If the content area is not greater than the calculated tile area, then
+  // content bounds is used for the tile size.
+  // Sometime |content_bounds| is longer than |tile_size| in one direction, but
+  // it is much shorter in the other direction. In that case, we don't want to
+  // split the content into several very small tiles.
+  if (content_bounds.GetArea() <= tile_size * tile_size) {
+    return AdjustGpuTileSize(content_bounds.width(), content_bounds.height(),
+                             max_tile_size, min_height_for_gpu_raster_tile);
+  }
 
   // Clamp tile size with content bounds
   int tile_width = std::min(tile_size, content_bounds.width());
@@ -171,7 +186,7 @@ gfx::Size TileSizeCalculator::CalculateTileSize() {
   int default_tile_width = 0;
   int default_tile_height = 0;
   if (affecting_params_.use_gpu_rasterization) {
-    gfx::Size max_tile_size = affecting_params_.max_tile_size;
+    const gfx::Size& max_tile_size = affecting_params_.max_tile_size;
 
     // Calculate |base_tile_size| based on |gpu_raster_max_texture_size|,
     // adjusting for ceil operations that may occur due to DSF.
@@ -233,13 +248,13 @@ gfx::Size TileSizeCalculator::CalculateTileSize() {
 
   // Clamp the tile width/height to the content width/height to save space.
   if (content_bounds.width() < default_tile_width) {
-    tile_width = std::min(tile_width, content_bounds.width());
-    tile_width = MathUtil::UncheckedRoundUp(tile_width, kTileRoundUp);
+    tile_width =
+        MathUtil::UncheckedRoundUp(content_bounds.width(), kTileRoundUp);
     tile_width = std::min(tile_width, default_tile_width);
   }
   if (content_bounds.height() < default_tile_height) {
-    tile_height = std::min(tile_height, content_bounds.height());
-    tile_height = MathUtil::UncheckedRoundUp(tile_height, kTileRoundUp);
+    tile_height =
+        MathUtil::UncheckedRoundUp(content_bounds.height(), kTileRoundUp);
     tile_height = std::min(tile_height, default_tile_height);
   }
 
