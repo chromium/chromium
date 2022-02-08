@@ -11,10 +11,7 @@ proto_library("root_store_proto_full") {
   # should not be linked into the browser. If the browser needs this protobuf in
   # the future, make a separate target with cc_generator_options = "lite".
   use_protobuf_full = true
-  visibility = [
-    ":root_store_tool",
-    "//net/tools/ev_store_tool:ev_store_tool",
-  ]
+  visibility = [ ":root_store_tool" ]
 }
 
 # TODO(https://crbug.com/1216547): add unit tests
