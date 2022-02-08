@@ -47,19 +47,6 @@ class BuiltInBackendToAndroidBackendMigrator {
   using PasswordFormPtrFlatSet =
       base::flat_set<const PasswordForm*, IsPasswordLess>;
 
-  // Helper methods to {Add,Update,Remove} |form| in |backend|. This is used to
-  // ensure that all the operations are happening inside
-  // BuiltInBackendToAndroidBackendMigrator life-scope.
-  void AddLoginToBackend(PasswordStoreBackend* backend,
-                         const PasswordForm& form,
-                         base::OnceClosure callback);
-  void UpdateLoginInBackend(PasswordStoreBackend* backend,
-                            const PasswordForm& form,
-                            base::OnceClosure callback);
-  void RemoveLoginFromBackend(PasswordStoreBackend* backend,
-                              const PasswordForm& form,
-                              base::OnceClosure callback);
-
   // Saves current migration version in |prefs_|.
   void UpdateMigrationVersionInPref();
 
@@ -86,6 +73,22 @@ class BuiltInBackendToAndroidBackendMigrator {
   void MirrorAndroidBackendToBuiltInBackend(
       PasswordFormPtrFlatSet built_in_backend_logins,
       PasswordFormPtrFlatSet android_logins);
+
+  // Helper methods to {Add,Update,Remove} |form| in |backend|. This is used to
+  // ensure that all the operations are happening inside
+  // BuiltInBackendToAndroidBackendMigrator life-scope.
+  void AddLoginToBackend(PasswordStoreBackend* backend,
+                         const PasswordForm& form,
+                         base::OnceClosure callback);
+  void UpdateLoginInBackend(PasswordStoreBackend* backend,
+                            const PasswordForm& form,
+                            base::OnceClosure callback);
+  void RemoveLoginFromBackend(PasswordStoreBackend* backend,
+                              const PasswordForm& form,
+                              base::OnceClosure callback);
+
+  // Reports metrics and deletes |metrics_reporter_|
+  void MigrationFinished(bool is_success);
 
   const raw_ptr<PasswordStoreBackend> built_in_backend_;
   const raw_ptr<PasswordStoreBackend> android_backend_;

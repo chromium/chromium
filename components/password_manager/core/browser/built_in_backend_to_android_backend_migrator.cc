@@ -75,14 +75,14 @@ class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
       : metric_infix_(metric_infix) {}
   ~MigrationMetricsReporter() = default;
 
-  void MigrationFinished(bool is_success) {
+  void ReportMetrics(bool migration_succeeded) {
     auto BuildMetricName = [this](base::StringPiece suffix) {
       return base::StrCat({"PasswordManager.UnifiedPasswordManager.",
                            metric_infix_, ".", suffix});
     };
     base::TimeDelta duration = base::Time::Now() - start_;
     base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
-    base::UmaHistogramBoolean(BuildMetricName("Success"), is_success);
+    base::UmaHistogramBoolean(BuildMetricName("Success"), migration_succeeded);
   }
 
  private:
@@ -175,8 +175,7 @@ void BuiltInBackendToAndroidBackendMigrator::
   DCHECK_EQ(2u, results.size());
 
   if (results[0].HasError() || results[1].HasError()) {
-    metrics_reporter_->MigrationFinished(/*is_success=*/false);
-    metrics_reporter_.reset();
+    MigrationFinished(/*is_success=*/false);
     return;
   }
 
@@ -217,9 +216,8 @@ void BuiltInBackendToAndroidBackendMigrator::
   // completion for the next operation. At the end, update pref to mark
   // successful completion.
   base::OnceClosure callbacks_chain =
-      base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
-                         MigrationMetricsReporter::MigrationFinished,
-                     std::move(metrics_reporter_), /*is_success=*/true);
+      base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::MigrationFinished,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_success=*/true);
 
   callbacks_chain =
       base::BindOnce(
@@ -301,9 +299,8 @@ void BuiltInBackendToAndroidBackendMigrator::
   // Callbacks are chained like in a stack way by passing 'callback_chain' as a
   // completion for the next operation.
   base::OnceClosure callbacks_chain =
-      base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
-                         MigrationMetricsReporter::MigrationFinished,
-                     std::move(metrics_reporter_), /*is_success=*/true);
+      base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::MigrationFinished,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_success=*/true);
 
   for (auto* const login : built_in_backend_logins) {
     auto android_login_iter = android_logins.find(login);
@@ -377,6 +374,13 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
     base::OnceClosure callback) {
   backend->RemoveLoginAsync(
       form, IgnoreChangeListAndRunCallback(std::move(callback)));
+}
+
+void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
+    bool is_success) {
+  DCHECK(metrics_reporter_);
+  metrics_reporter_->ReportMetrics(is_success);
+  metrics_reporter_.reset();
 }
 
 }  // namespace password_manager
