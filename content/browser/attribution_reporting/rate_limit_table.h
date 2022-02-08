@@ -13,7 +13,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 
@@ -28,6 +27,7 @@ class Origin;
 namespace content {
 
 class AttributionReport;
+class AttributionStorageDelegate;
 
 // Manages storage for rate-limiting reports.
 // This class may be constructed on any sequence but must be accessed and
@@ -40,7 +40,7 @@ class CONTENT_EXPORT RateLimitTable {
     kError,
   };
 
-  explicit RateLimitTable(const AttributionStorage::Delegate* delegate);
+  explicit RateLimitTable(const AttributionStorageDelegate* delegate);
   RateLimitTable(const RateLimitTable& other) = delete;
   RateLimitTable& operator=(const RateLimitTable& other) = delete;
   RateLimitTable(RateLimitTable&& other) = delete;
@@ -89,7 +89,7 @@ class CONTENT_EXPORT RateLimitTable {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Must outlive |this|.
-  raw_ptr<const AttributionStorage::Delegate> delegate_
+  raw_ptr<const AttributionStorageDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to

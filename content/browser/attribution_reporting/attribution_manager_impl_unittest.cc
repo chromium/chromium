@@ -27,6 +27,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -121,7 +123,7 @@ class OverrideRandomizedResponseStorageDelegate
   RandomizedResponse randomized_response_ = absl::nullopt;
 };
 
-class MockNetworkSender : public AttributionManagerImpl::NetworkSender {
+class MockNetworkSender : public AttributionNetworkSender {
  public:
   // AttributionManagerImpl::NetworkSender:
   void SendReport(GURL report_url,
@@ -164,7 +166,7 @@ class MockNetworkSender : public AttributionManagerImpl::NetworkSender {
   std::vector<ReportSentCallback> callbacks_;
 };
 
-class MockCookieChecker : public AttributionManagerImpl::CookieChecker {
+class MockCookieChecker : public AttributionCookieChecker {
  public:
   ~MockCookieChecker() override { EXPECT_THAT(callbacks_, IsEmpty()); }
 
@@ -1221,7 +1223,7 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
 // Regression test for https://crbug.com/1294519.
 TEST_F(AttributionManagerImplTest, FakeReport_UpdatesSendReportTimer) {
   storage_delegate_->set_randomized_response(
-      std::vector<AttributionStorage::Delegate::FakeReport>{
+      std::vector<AttributionStorageDelegate::FakeReport>{
           {
               .trigger_data = 0,
               .report_time = base::Time::Now() + base::Days(1),

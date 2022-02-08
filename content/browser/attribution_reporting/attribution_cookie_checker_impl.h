@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_COOKIE_CHECKER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -14,7 +14,7 @@ namespace content {
 class StoragePartitionImpl;
 
 class CONTENT_EXPORT AttributionCookieCheckerImpl
-    : public AttributionManagerImpl::CookieChecker {
+    : public AttributionCookieChecker {
  public:
   explicit AttributionCookieCheckerImpl(
       StoragePartitionImpl* storage_partition);

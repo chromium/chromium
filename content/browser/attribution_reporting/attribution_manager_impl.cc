@@ -16,10 +16,13 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
+#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -120,7 +123,7 @@ bool IsOffline() {
   return content::GetNetworkConnectionTracker()->IsOffline();
 }
 
-std::unique_ptr<AttributionStorage::Delegate> MakeStorageDelegate() {
+std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kConversionsDebugMode);
 
@@ -172,9 +175,9 @@ AttributionManagerImpl::CreateForTesting(
     IsReportAllowedCallback is_report_allowed_callback,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-    std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
-    std::unique_ptr<CookieChecker> cookie_checker,
-    std::unique_ptr<NetworkSender> network_sender) {
+    std::unique_ptr<AttributionStorageDelegate> storage_delegate,
+    std::unique_ptr<AttributionCookieChecker> cookie_checker,
+    std::unique_ptr<AttributionNetworkSender> network_sender) {
   return absl::WrapUnique(new AttributionManagerImpl(
       std::move(is_report_allowed_callback), user_data_directory,
       std::move(special_storage_policy), std::move(storage_delegate),
@@ -197,9 +200,9 @@ AttributionManagerImpl::AttributionManagerImpl(
     IsReportAllowedCallback is_report_allowed_callback,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-    std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
-    std::unique_ptr<CookieChecker> cookie_checker,
-    std::unique_ptr<NetworkSender> network_sender)
+    std::unique_ptr<AttributionStorageDelegate> storage_delegate,
+    std::unique_ptr<AttributionCookieChecker> cookie_checker,
+    std::unique_ptr<AttributionNetworkSender> network_sender)
     : is_report_allowed_callback_(std::move(is_report_allowed_callback)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),

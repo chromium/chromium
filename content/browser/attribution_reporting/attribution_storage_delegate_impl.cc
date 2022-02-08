@@ -10,6 +10,7 @@
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
 
@@ -49,7 +50,7 @@ int AttributionStorageDelegateImpl::
   return 100;
 }
 
-AttributionStorage::Delegate::RateLimitConfig
+AttributionStorageDelegate::RateLimitConfig
 AttributionStorageDelegateImpl::GetRateLimits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RateLimitConfig{
@@ -87,7 +88,7 @@ base::GUID AttributionStorageDelegateImpl::NewReportID() const {
   return base::GUID::GenerateRandomV4();
 }
 
-absl::optional<AttributionStorage::Delegate::OfflineReportDelayConfig>
+absl::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
 AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
   if (noise_mode_ == AttributionNoiseMode::kDefault &&
       delay_mode_ == AttributionDelayMode::kDefault) {
@@ -117,7 +118,7 @@ void AttributionStorageDelegateImpl::ShuffleReports(
   }
 }
 
-AttributionStorage::Delegate::RandomizedResponse
+AttributionStorageDelegate::RandomizedResponse
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     const CommonSourceInfo& source) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -138,7 +139,7 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
   }
 }
 
-std::vector<AttributionStorage::Delegate::FakeReport>
+std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetRandomFakeReports(
     const CommonSourceInfo& source) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -155,7 +156,7 @@ AttributionStorageDelegateImpl::GetRandomFakeReports(
   return GetFakeReportsForSequenceIndex(source, sequence_index);
 }
 
-std::vector<AttributionStorage::Delegate::FakeReport>
+std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     const CommonSourceInfo& source,
     int random_stars_and_bars_sequence_index) const {

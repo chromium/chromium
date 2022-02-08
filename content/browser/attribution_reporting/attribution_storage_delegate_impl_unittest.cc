@@ -21,7 +21,7 @@ namespace content {
 
 namespace {
 
-using FakeReport = ::content::AttributionStorage::Delegate::FakeReport;
+using FakeReport = ::content::AttributionStorageDelegate::FakeReport;
 
 constexpr base::TimeDelta kDefaultExpiry = base::Days(30);
 

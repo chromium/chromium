@@ -86,7 +86,7 @@ int ConfigurableStorageDelegate::
   return max_destinations_per_source_site_reporting_origin_;
 }
 
-AttributionStorage::Delegate::RateLimitConfig
+AttributionStorageDelegate::RateLimitConfig
 ConfigurableStorageDelegate::GetRateLimits() const {
   return rate_limits_;
 }
@@ -105,7 +105,7 @@ base::GUID ConfigurableStorageDelegate::NewReportID() const {
   return DefaultExternalReportID();
 }
 
-absl::optional<AttributionStorage::Delegate::OfflineReportDelayConfig>
+absl::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
 ConfigurableStorageDelegate::GetOfflineReportDelayConfig() const {
   return offline_report_delay_config_;
 }
@@ -116,7 +116,7 @@ void ConfigurableStorageDelegate::ShuffleReports(
     base::ranges::reverse(reports);
 }
 
-AttributionStorage::Delegate::RandomizedResponse
+AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
     const CommonSourceInfo& source) const {
   return randomized_response_;
@@ -380,17 +380,17 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const AttributionStorage::Delegate::FakeReport& a,
-                const AttributionStorage::Delegate::FakeReport& b) {
-  const auto tie = [](const AttributionStorage::Delegate::FakeReport& r) {
+bool operator==(const AttributionStorageDelegate::FakeReport& a,
+                const AttributionStorageDelegate::FakeReport& b) {
+  const auto tie = [](const AttributionStorageDelegate::FakeReport& r) {
     return std::make_tuple(r.trigger_data, r.report_time);
   };
   return tie(a) == tie(b);
 }
 
-bool operator<(const AttributionStorage::Delegate::FakeReport& a,
-               const AttributionStorage::Delegate::FakeReport& b) {
-  const auto tie = [](const AttributionStorage::Delegate::FakeReport& r) {
+bool operator<(const AttributionStorageDelegate::FakeReport& a,
+               const AttributionStorageDelegate::FakeReport& b) {
+  const auto tie = [](const AttributionStorageDelegate::FakeReport& r) {
     return std::make_tuple(r.trigger_data, r.report_time);
   };
   return tie(a) < tie(b);
@@ -597,7 +597,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << "}";
 }
 std::ostream& operator<<(std::ostream& out,
-                         const AttributionStorage::Delegate::FakeReport& r) {
+                         const AttributionStorageDelegate::FakeReport& r) {
   return out << "{trigger_data=" << r.trigger_data
              << ",report_time=" << r.report_time << "}";
 }

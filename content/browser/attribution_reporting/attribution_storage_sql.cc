@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -324,7 +325,7 @@ bool AttributionStorageSql::g_run_in_memory_ = false;
 
 AttributionStorageSql::AttributionStorageSql(
     const base::FilePath& path_to_database,
-    std::unique_ptr<Delegate> delegate)
+    std::unique_ptr<AttributionStorageDelegate> delegate)
     : path_to_database_(g_run_in_memory_
                             ? base::FilePath(kInMemoryPath)
                             : path_to_database.Append(kDatabasePath)),
@@ -468,7 +469,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   if (!deactivated_sources.has_value())
     return StoreSourceResult(StoreSourceResult::Status::kInternalError);
 
-  AttributionStorage::Delegate::RandomizedResponse randomized_response =
+  AttributionStorageDelegate::RandomizedResponse randomized_response =
       delegate_->GetRandomizedResponse(common_info);
 
   int num_conversions = 0;
@@ -1751,7 +1752,7 @@ bool AttributionStorageSql::
   const int max = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
   // TODO(apaseltiner): We could just make
   // `GetMaxDestinationsPerSourceSiteReportingOrigin()` return `size_t`, but it
-  // would be inconsistent with the other `AttributionStorage::Delegate`
+  // would be inconsistent with the other `AttributionStorageDelegate`
   // methods.
   DCHECK_GT(max, 0);
 

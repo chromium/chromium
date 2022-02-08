@@ -8,19 +8,13 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_reporting.h"
 
-namespace base {
-class GUID;
-class Time;
-}  // namespace base
-
 namespace content {
 
-class AttributionReport;
+class CommonSourceInfo;
 
 // Implementation of the storage delegate. This class handles assigning
 // report times to newly created reports. It
@@ -28,7 +22,7 @@ class AttributionReport;
 // AttributionStorageSql, and should only be accessed on the attribution storage
 // task runner.
 class CONTENT_EXPORT AttributionStorageDelegateImpl
-    : public AttributionStorage::Delegate {
+    : public AttributionStorageDelegate {
  public:
   explicit AttributionStorageDelegateImpl(
       AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault,

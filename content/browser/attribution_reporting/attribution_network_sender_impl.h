@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -30,7 +30,7 @@ class StoragePartition;
 // conversions. Maintains a set of all ongoing UrlLoaders used for posting
 // conversion reports. Created and owned by AttributionReporterImpl.
 class CONTENT_EXPORT AttributionNetworkSenderImpl
-    : public AttributionManagerImpl::NetworkSender {
+    : public AttributionNetworkSender {
  public:
   explicit AttributionNetworkSenderImpl(StoragePartition* storage_partition);
   AttributionNetworkSenderImpl(const AttributionNetworkSenderImpl&) = delete;

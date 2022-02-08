@@ -14,7 +14,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
@@ -44,7 +46,7 @@ base::Time GetEventTime(const AttributionSimulationEvent& event) {
 }
 
 // TODO(apaseltiner): Consider exposing other behaviors here.
-class AlwaysSetCookieChecker : public AttributionManagerImpl::CookieChecker {
+class AlwaysSetCookieChecker : public AttributionCookieChecker {
  public:
   AlwaysSetCookieChecker() = default;
 
@@ -64,7 +66,7 @@ class AlwaysSetCookieChecker : public AttributionManagerImpl::CookieChecker {
   }
 };
 
-class SentReportAccumulator : public AttributionManagerImpl::NetworkSender {
+class SentReportAccumulator : public AttributionNetworkSender {
  public:
   SentReportAccumulator(base::Value::ListStorage& reports,
                         bool remove_report_ids)

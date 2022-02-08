@@ -27,11 +27,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-class GURL;
-
 namespace base {
 class FilePath;
-class Value;
 }  // namespace base
 
 namespace url {
@@ -40,6 +37,9 @@ class Origin;
 
 namespace content {
 
+class AttributionCookieChecker;
+class AttributionNetworkSender;
+class AttributionStorageDelegate;
 class BrowserContext;
 class StoragePartitionImpl;
 
@@ -70,36 +70,11 @@ class CONTENT_EXPORT AttributionManagerImpl
     : public AttributionManager,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  // This class is responsible for sending conversion reports to their
-  // configured endpoints over the network.
-  class NetworkSender {
-   public:
-    virtual ~NetworkSender() = default;
-
-    // Callback used to notify caller that the requested report has been sent.
-    using ReportSentCallback = base::OnceCallback<void(SendResult)>;
-
-    // Generates and sends a conversion report matching |report|. This should
-    // generate a secure POST request with no-credentials.
-    virtual void SendReport(GURL report_url,
-                            base::Value report_body,
-                            ReportSentCallback sent_callback) = 0;
-  };
-
   using IsReportAllowedCallback =
       base::RepeatingCallback<bool(const AttributionReport&)>;
 
   static IsReportAllowedCallback DefaultIsReportAllowedCallback(
       BrowserContext*);
-
-  class CookieChecker {
-   public:
-    virtual ~CookieChecker() = default;
-
-    // Checks if an attribution debug key is set for `origin`.
-    virtual void IsDebugCookieSet(const url::Origin& origin,
-                                  base::OnceCallback<void(bool)> callback) = 0;
-  };
 
   // Configures underlying storage to be setup in memory, rather than on
   // disk. This speeds up initialization to avoid timeouts in test environments.
@@ -109,9 +84,9 @@ class CONTENT_EXPORT AttributionManagerImpl
       IsReportAllowedCallback is_report_allowed_callback,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
-      std::unique_ptr<CookieChecker> cookie_checker,
-      std::unique_ptr<NetworkSender> network_sender);
+      std::unique_ptr<AttributionStorageDelegate> storage_delegate,
+      std::unique_ptr<AttributionCookieChecker> cookie_checker,
+      std::unique_ptr<AttributionNetworkSender> network_sender);
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -153,9 +128,9 @@ class CONTENT_EXPORT AttributionManagerImpl
       IsReportAllowedCallback is_report_allowed_callback,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      std::unique_ptr<AttributionStorage::Delegate> storage_delegate,
-      std::unique_ptr<CookieChecker> cookie_checker,
-      std::unique_ptr<NetworkSender> network_sender);
+      std::unique_ptr<AttributionStorageDelegate> storage_delegate,
+      std::unique_ptr<AttributionCookieChecker> cookie_checker,
+      std::unique_ptr<AttributionNetworkSender> network_sender);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(
@@ -214,9 +189,9 @@ class CONTENT_EXPORT AttributionManagerImpl
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
-  std::unique_ptr<CookieChecker> cookie_checker_;
+  std::unique_ptr<AttributionCookieChecker> cookie_checker_;
 
-  std::unique_ptr<NetworkSender> network_sender_;
+  std::unique_ptr<AttributionNetworkSender> network_sender_;
 
   base::WallClockTimer get_reports_to_send_timer_;
 

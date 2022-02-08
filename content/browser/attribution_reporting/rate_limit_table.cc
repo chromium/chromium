@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
@@ -24,7 +25,7 @@ using AttributionAllowedStatus =
 
 }  // namespace
 
-RateLimitTable::RateLimitTable(const AttributionStorage::Delegate* delegate)
+RateLimitTable::RateLimitTable(const AttributionStorageDelegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -125,7 +126,7 @@ AttributionAllowedStatus RateLimitTable::AttributionAllowed(
 
   const CommonSourceInfo& common_info = report.source().common_info();
 
-  const AttributionStorage::Delegate::RateLimitConfig rate_limits =
+  const AttributionStorageDelegate::RateLimitConfig rate_limits =
       delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
   DCHECK_GT(rate_limits.max_attributions_per_window, 0);
