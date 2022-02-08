@@ -114,20 +114,40 @@ ConditionType ConvertMojomConditionTypeToConditionType(
     const apps::mojom::ConditionType& mojom_condition_type);
 
 COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::ConditionType ConvertConditionTypeToMojomConditionType(
+    const ConditionType& condition_type);
+
+COMPONENT_EXPORT(APP_TYPES)
 PatternMatchType ConvertMojomPatternMatchTypeToPatternMatchType(
     const apps::mojom::PatternMatchType& mojom_pattern_match_type);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::PatternMatchType ConvertPatternMatchTypeToMojomPatternMatchType(
+    const PatternMatchType& pattern_match_type);
 
 COMPONENT_EXPORT(APP_TYPES)
 ConditionValuePtr ConvertMojomConditionValueToConditionValue(
     const apps::mojom::ConditionValuePtr& mojom_condition_value);
 
 COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::ConditionValuePtr ConvertConditionValueToMojomConditionValue(
+    const ConditionValuePtr& condition_value);
+
+COMPONENT_EXPORT(APP_TYPES)
 ConditionPtr ConvertMojomConditionToCondition(
     const apps::mojom::ConditionPtr& mojom_condition);
 
 COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::ConditionPtr ConvertConditionToMojomCondition(
+    const ConditionPtr& condition);
+
+COMPONENT_EXPORT(APP_TYPES)
 IntentFilterPtr ConvertMojomIntentFilterToIntentFilter(
     const apps::mojom::IntentFilterPtr& mojom_intent_filter);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::IntentFilterPtr ConvertIntentFilterToMojomIntentFilter(
+    const IntentFilterPtr& intent_filter);
 
 }  // namespace apps
 

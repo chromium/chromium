@@ -104,6 +104,28 @@ PermissionType ConvertMojomPermissionTypeToPermissionType(
   }
 }
 
+apps::mojom::PermissionType ConvertPermissionTypeToMojomPermissionType(
+    PermissionType permission_type) {
+  switch (permission_type) {
+    case PermissionType::kUnknown:
+      return apps::mojom::PermissionType::kUnknown;
+    case PermissionType::kCamera:
+      return apps::mojom::PermissionType::kCamera;
+    case PermissionType::kLocation:
+      return apps::mojom::PermissionType::kLocation;
+    case PermissionType::kMicrophone:
+      return apps::mojom::PermissionType::kMicrophone;
+    case PermissionType::kNotifications:
+      return apps::mojom::PermissionType::kNotifications;
+    case PermissionType::kContacts:
+      return apps::mojom::PermissionType::kContacts;
+    case PermissionType::kStorage:
+      return apps::mojom::PermissionType::kStorage;
+    case PermissionType::kPrinting:
+      return apps::mojom::PermissionType::kPrinting;
+  }
+}
+
 TriState ConvertMojomTriStateToTriState(apps::mojom::TriState mojom_tri_state) {
   switch (mojom_tri_state) {
     case apps::mojom::TriState::kAllow:
@@ -112,6 +134,17 @@ TriState ConvertMojomTriStateToTriState(apps::mojom::TriState mojom_tri_state) {
       return TriState::kBlock;
     case apps::mojom::TriState::kAsk:
       return TriState::kAsk;
+  }
+}
+
+apps::mojom::TriState ConvertTriStateToMojomTriState(TriState tri_state) {
+  switch (tri_state) {
+    case TriState::kAllow:
+      return apps::mojom::TriState::kAllow;
+    case TriState::kBlock:
+      return apps::mojom::TriState::kBlock;
+    case TriState::kAsk:
+      return apps::mojom::TriState::kAsk;
   }
 }
 
@@ -131,6 +164,24 @@ PermissionValuePtr ConvertMojomPermissionValueToPermissionValue(
   return nullptr;
 }
 
+apps::mojom::PermissionValuePtr ConvertPermissionValueToMojomPermissionValue(
+    const PermissionValuePtr& permission_value) {
+  auto mojom_permission_value = apps::mojom::PermissionValue::New();
+  if (!permission_value) {
+    return mojom_permission_value;
+  }
+
+  if (permission_value->bool_value.has_value()) {
+    mojom_permission_value->set_bool_value(
+        permission_value->bool_value.value());
+  }
+  if (permission_value->tristate_value.has_value()) {
+    mojom_permission_value->set_tristate_value(ConvertTriStateToMojomTriState(
+        permission_value->tristate_value.value()));
+  }
+  return mojom_permission_value;
+}
+
 PermissionPtr ConvertMojomPermissionToPermission(
     const apps::mojom::PermissionPtr& mojom_permission) {
   if (!mojom_permission) {
@@ -142,6 +193,21 @@ PermissionPtr ConvertMojomPermissionToPermission(
           mojom_permission->permission_type),
       ConvertMojomPermissionValueToPermissionValue(mojom_permission->value),
       mojom_permission->is_managed);
+}
+
+apps::mojom::PermissionPtr ConvertPermissionToMojomPermission(
+    const PermissionPtr& permission) {
+  auto mojom_permission = apps::mojom::Permission::New();
+  if (!permission) {
+    return mojom_permission;
+  }
+
+  mojom_permission->permission_type =
+      ConvertPermissionTypeToMojomPermissionType(permission->permission_type);
+  mojom_permission->value =
+      ConvertPermissionValueToMojomPermissionValue(permission->value);
+  mojom_permission->is_managed = permission->is_managed;
+  return mojom_permission;
 }
 
 }  // namespace apps

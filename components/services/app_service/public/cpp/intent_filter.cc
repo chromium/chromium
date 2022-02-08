@@ -119,6 +119,24 @@ ConditionType ConvertMojomConditionTypeToConditionType(
   }
 }
 
+apps::mojom::ConditionType ConvertConditionTypeToMojomConditionType(
+    const ConditionType& condition_type) {
+  switch (condition_type) {
+    case ConditionType::kScheme:
+      return apps::mojom::ConditionType::kScheme;
+    case ConditionType::kHost:
+      return apps::mojom::ConditionType::kHost;
+    case ConditionType::kPattern:
+      return apps::mojom::ConditionType::kPattern;
+    case ConditionType::kAction:
+      return apps::mojom::ConditionType::kAction;
+    case ConditionType::kMimeType:
+      return apps::mojom::ConditionType::kMimeType;
+    case ConditionType::kFile:
+      return apps::mojom::ConditionType::kFile;
+  }
+}
+
 PatternMatchType ConvertMojomPatternMatchTypeToPatternMatchType(
     const apps::mojom::PatternMatchType& mojom_pattern_match_type) {
   switch (mojom_pattern_match_type) {
@@ -139,6 +157,26 @@ PatternMatchType ConvertMojomPatternMatchTypeToPatternMatchType(
   }
 }
 
+apps::mojom::PatternMatchType ConvertPatternMatchTypeToMojomPatternMatchType(
+    const PatternMatchType& pattern_match_type) {
+  switch (pattern_match_type) {
+    case PatternMatchType::kNone:
+      return apps::mojom::PatternMatchType::kNone;
+    case PatternMatchType::kLiteral:
+      return apps::mojom::PatternMatchType::kLiteral;
+    case PatternMatchType::kPrefix:
+      return apps::mojom::PatternMatchType::kPrefix;
+    case PatternMatchType::kGlob:
+      return apps::mojom::PatternMatchType::kGlob;
+    case PatternMatchType::kMimeType:
+      return apps::mojom::PatternMatchType::kMimeType;
+    case PatternMatchType::kFileExtension:
+      return apps::mojom::PatternMatchType::kFileExtension;
+    case PatternMatchType::kIsDirectory:
+      return apps::mojom::PatternMatchType::kIsDirectory;
+  }
+}
+
 ConditionValuePtr ConvertMojomConditionValueToConditionValue(
     const apps::mojom::ConditionValuePtr& mojom_condition_value) {
   if (!mojom_condition_value) {
@@ -150,6 +188,20 @@ ConditionValuePtr ConvertMojomConditionValueToConditionValue(
       ConvertMojomPatternMatchTypeToPatternMatchType(
           mojom_condition_value->match_type));
   return condition_value;
+}
+
+apps::mojom::ConditionValuePtr ConvertConditionValueToMojomConditionValue(
+    const ConditionValuePtr& condition_value) {
+  auto mojom_condition_value = apps::mojom::ConditionValue::New();
+  if (!condition_value) {
+    return mojom_condition_value;
+  }
+
+  mojom_condition_value->value = condition_value->value;
+  mojom_condition_value->match_type =
+      ConvertPatternMatchTypeToMojomPatternMatchType(
+          condition_value->match_type);
+  return mojom_condition_value;
 }
 
 ConditionPtr ConvertMojomConditionToCondition(
@@ -168,6 +220,25 @@ ConditionPtr ConvertMojomConditionToCondition(
       std::move(values));
 }
 
+apps::mojom::ConditionPtr ConvertConditionToMojomCondition(
+    const ConditionPtr& condition) {
+  auto mojom_condition = apps::mojom::Condition::New();
+  if (!condition) {
+    return mojom_condition;
+  }
+
+  mojom_condition->condition_type =
+      ConvertConditionTypeToMojomConditionType(condition->condition_type);
+
+  for (const auto& condition_value : condition->condition_values) {
+    if (condition_value) {
+      mojom_condition->condition_values.push_back(
+          ConvertConditionValueToMojomConditionValue(condition_value));
+    }
+  }
+  return mojom_condition;
+}
+
 IntentFilterPtr ConvertMojomIntentFilterToIntentFilter(
     const apps::mojom::IntentFilterPtr& mojom_intent_filter) {
   if (!mojom_intent_filter) {
@@ -176,8 +247,10 @@ IntentFilterPtr ConvertMojomIntentFilterToIntentFilter(
 
   IntentFilterPtr intent_filter = std::make_unique<IntentFilter>();
   for (const auto& condition : mojom_intent_filter->conditions) {
-    intent_filter->conditions.push_back(
-        ConvertMojomConditionToCondition(condition));
+    if (condition) {
+      intent_filter->conditions.push_back(
+          ConvertMojomConditionToCondition(condition));
+    }
   }
 
   if (mojom_intent_filter->activity_name.has_value())
@@ -187,6 +260,25 @@ IntentFilterPtr ConvertMojomIntentFilterToIntentFilter(
     intent_filter->activity_label = mojom_intent_filter->activity_label.value();
 
   return intent_filter;
+}
+
+apps::mojom::IntentFilterPtr ConvertIntentFilterToMojomIntentFilter(
+    const IntentFilterPtr& intent_filter) {
+  auto mojom_intent_filter = apps::mojom::IntentFilter::New();
+  if (!intent_filter) {
+    return mojom_intent_filter;
+  }
+
+  for (const auto& condition : intent_filter->conditions) {
+    if (condition) {
+      mojom_intent_filter->conditions.push_back(
+          ConvertConditionToMojomCondition(condition));
+    }
+  }
+
+  mojom_intent_filter->activity_name = intent_filter->activity_name;
+  mojom_intent_filter->activity_label = intent_filter->activity_label;
+  return mojom_intent_filter;
 }
 
 }  // namespace apps

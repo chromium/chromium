@@ -146,6 +146,29 @@ Readiness ConvertMojomReadinessToReadiness(
   }
 }
 
+apps::mojom::Readiness ConvertReadinessToMojomReadiness(Readiness readiness) {
+  switch (readiness) {
+    case Readiness::kUnknown:
+      return apps::mojom::Readiness::kUnknown;
+    case Readiness::kReady:
+      return apps::mojom::Readiness::kReady;
+    case Readiness::kDisabledByBlocklist:
+      return apps::mojom::Readiness::kDisabledByBlocklist;
+    case Readiness::kDisabledByPolicy:
+      return apps::mojom::Readiness::kDisabledByPolicy;
+    case Readiness::kDisabledByUser:
+      return apps::mojom::Readiness::kDisabledByUser;
+    case Readiness::kTerminated:
+      return apps::mojom::Readiness::kTerminated;
+    case Readiness::kUninstalledByUser:
+      return apps::mojom::Readiness::kUninstalledByUser;
+    case Readiness::kRemoved:
+      return apps::mojom::Readiness::kRemoved;
+    case Readiness::kUninstalledByMigration:
+      return apps::mojom::Readiness::kUninstalledByMigration;
+  }
+}
+
 InstallReason ConvertMojomInstallReasonToInstallReason(
     apps::mojom::InstallReason mojom_install_reason) {
   switch (mojom_install_reason) {
@@ -168,6 +191,28 @@ InstallReason ConvertMojomInstallReasonToInstallReason(
   }
 }
 
+apps::mojom::InstallReason ConvertInstallReasonToMojomInstallReason(
+    InstallReason install_reason) {
+  switch (install_reason) {
+    case InstallReason::kUnknown:
+      return apps::mojom::InstallReason::kUnknown;
+    case InstallReason::kSystem:
+      return apps::mojom::InstallReason::kSystem;
+    case InstallReason::kPolicy:
+      return apps::mojom::InstallReason::kPolicy;
+    case InstallReason::kOem:
+      return apps::mojom::InstallReason::kOem;
+    case InstallReason::kDefault:
+      return apps::mojom::InstallReason::kDefault;
+    case InstallReason::kSync:
+      return apps::mojom::InstallReason::kSync;
+    case InstallReason::kUser:
+      return apps::mojom::InstallReason::kUser;
+    case InstallReason::kSubApp:
+      return apps::mojom::InstallReason::kSubApp;
+  }
+}
+
 InstallSource ConvertMojomInstallSourceToInstallSource(
     apps::mojom::InstallSource mojom_install_source) {
   switch (mojom_install_source) {
@@ -186,6 +231,24 @@ InstallSource ConvertMojomInstallSourceToInstallSource(
   }
 }
 
+apps::mojom::InstallSource ConvertInstallSourceToMojomInstallSource(
+    InstallSource install_source) {
+  switch (install_source) {
+    case InstallSource::kUnknown:
+      return apps::mojom::InstallSource::kUnknown;
+    case InstallSource::kSystem:
+      return apps::mojom::InstallSource::kSystem;
+    case InstallSource::kSync:
+      return apps::mojom::InstallSource::kSync;
+    case InstallSource::kPlayStore:
+      return apps::mojom::InstallSource::kPlayStore;
+    case InstallSource::kChromeWebStore:
+      return apps::mojom::InstallSource::kChromeWebStore;
+    case InstallSource::kBrowser:
+      return apps::mojom::InstallSource::kBrowser;
+  }
+}
+
 WindowMode ConvertMojomWindowModeToWindowMode(
     apps::mojom::WindowMode mojom_window_mode) {
   switch (mojom_window_mode) {
@@ -200,6 +263,20 @@ WindowMode ConvertMojomWindowModeToWindowMode(
   }
 }
 
+apps::mojom::WindowMode ConvertWindowModeToMojomWindowMode(
+    WindowMode window_mode) {
+  switch (window_mode) {
+    case WindowMode::kUnknown:
+      return apps::mojom::WindowMode::kUnknown;
+    case WindowMode::kWindow:
+      return apps::mojom::WindowMode::kWindow;
+    case WindowMode::kBrowser:
+      return apps::mojom::WindowMode::kBrowser;
+    case WindowMode::kTabbedWindow:
+      return apps::mojom::WindowMode::kTabbedWindow;
+  }
+}
+
 absl::optional<bool> GetOptionalBool(
     const apps::mojom::OptionalBool& mojom_optional_bool) {
   absl::optional<bool> optional_bool;
@@ -207,6 +284,14 @@ absl::optional<bool> GetOptionalBool(
     optional_bool = mojom_optional_bool == apps::mojom::OptionalBool::kTrue;
   }
   return optional_bool;
+}
+
+apps::mojom::OptionalBool GetMojomOptionalBool(
+    const absl::optional<bool>& optional_bool) {
+  return optional_bool.has_value()
+             ? (optional_bool.value() ? apps::mojom::OptionalBool::kTrue
+                                      : apps::mojom::OptionalBool::kFalse)
+             : apps::mojom::OptionalBool::kUnknown;
 }
 
 std::unique_ptr<App> ConvertMojomAppToApp(
@@ -276,6 +361,66 @@ std::unique_ptr<App> ConvertMojomAppToApp(
   }
 
   return app;
+}
+
+apps::mojom::AppPtr ConvertAppToMojomApp(const AppPtr& app) {
+  auto mojom_app = apps::mojom::App::New();
+  mojom_app->app_type = ConvertAppTypeToMojomAppType(app->app_type);
+  mojom_app->app_id = app->app_id;
+  mojom_app->readiness = ConvertReadinessToMojomReadiness(app->readiness);
+  mojom_app->name = app->name;
+  mojom_app->short_name = app->short_name;
+  mojom_app->publisher_id = app->publisher_id;
+  mojom_app->description = app->description;
+  mojom_app->version = app->version;
+  mojom_app->additional_search_terms = app->additional_search_terms;
+
+  if (app->icon_key.has_value()) {
+    mojom_app->icon_key = ConvertIconKeyToMojomIconKey(app->icon_key.value());
+  }
+
+  mojom_app->last_launch_time = app->last_launch_time;
+  mojom_app->install_time = app->install_time;
+
+  for (const auto& permission : app->permissions) {
+    if (permission) {
+      mojom_app->permissions.push_back(
+          ConvertPermissionToMojomPermission(permission));
+    }
+  }
+
+  mojom_app->install_reason =
+      ConvertInstallReasonToMojomInstallReason(app->install_reason);
+  mojom_app->install_source =
+      ConvertInstallSourceToMojomInstallSource(app->install_source);
+  mojom_app->policy_id = app->policy_id;
+  mojom_app->is_platform_app = GetMojomOptionalBool(app->is_platform_app);
+  mojom_app->recommendable = GetMojomOptionalBool(app->recommendable);
+  mojom_app->searchable = GetMojomOptionalBool(app->searchable);
+  mojom_app->show_in_launcher = GetMojomOptionalBool(app->show_in_launcher);
+  mojom_app->show_in_shelf = GetMojomOptionalBool(app->show_in_shelf);
+  mojom_app->show_in_search = GetMojomOptionalBool(app->show_in_search);
+  mojom_app->show_in_management = GetMojomOptionalBool(app->show_in_management);
+  mojom_app->handles_intents = GetMojomOptionalBool(app->handles_intents);
+  mojom_app->allow_uninstall = GetMojomOptionalBool(app->allow_uninstall);
+  mojom_app->has_badge = GetMojomOptionalBool(app->has_badge);
+  mojom_app->paused = GetMojomOptionalBool(app->paused);
+
+  for (const auto& intent_filter : app->intent_filters) {
+    if (intent_filter) {
+      mojom_app->intent_filters.push_back(
+          ConvertIntentFilterToMojomIntentFilter(intent_filter));
+    }
+  }
+
+  mojom_app->resize_locked = GetMojomOptionalBool(app->resize_locked);
+  mojom_app->window_mode = ConvertWindowModeToMojomWindowMode(app->window_mode);
+
+  if (app->run_on_os_login.has_value()) {
+    mojom_app->run_on_os_login =
+        ConvertRunOnOsLoginToMojomRunOnOsLogin(app->run_on_os_login.value());
+  }
+  return mojom_app;
 }
 
 }  // namespace apps

@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -1002,4 +1006,169 @@ TEST_F(AppUpdateMojomTest, BothAreNonNull) {
   delta->app_id = app_id;
 
   TestAppUpdate(state.get(), delta.get());
+}
+
+TEST_F(AppUpdateMojomTest, AppConvert) {
+  apps::mojom::AppPtr input = apps::mojom::App::New();
+  input->app_type = apps::mojom::AppType::kWeb;
+  input->app_id = "abcdefg";
+  input->readiness = apps::mojom::Readiness::kReady;
+  input->name = "lacros test name";
+  input->short_name = "lacros test name";
+  input->publisher_id = "publisher_id";
+  input->description = "description";
+  input->version = "version";
+  input->additional_search_terms = {"1", "2"};
+
+  auto icon_key = apps::mojom::IconKey::New();
+  icon_key->timeline = 1;
+  icon_key->icon_effects = 2;
+  input->icon_key = std::move(icon_key);
+
+  input->last_launch_time = base::Time() + base::Days(1);
+  input->install_time = base::Time() + base::Days(2);
+
+  input->install_reason = apps::mojom::InstallReason::kUser;
+  input->policy_id = "https://app.site/alpha";
+  input->is_platform_app = apps::mojom::OptionalBool::kFalse;
+  input->recommendable = apps::mojom::OptionalBool::kTrue;
+  input->searchable = apps::mojom::OptionalBool::kTrue;
+  input->paused = apps::mojom::OptionalBool::kFalse;
+  input->show_in_launcher = apps::mojom::OptionalBool::kTrue;
+  input->show_in_shelf = apps::mojom::OptionalBool::kTrue;
+  input->show_in_search = apps::mojom::OptionalBool::kTrue;
+  input->show_in_management = apps::mojom::OptionalBool::kTrue;
+  input->has_badge = apps::mojom::OptionalBool::kUnknown;
+  input->paused = apps::mojom::OptionalBool::kFalse;
+
+  auto intent_filter = apps::mojom::IntentFilter::New();
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, "https",
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+  intent_filter->activity_name = "activity_name";
+  intent_filter->activity_label = "activity_label";
+  input->intent_filters.push_back(std::move(intent_filter));
+
+  input->window_mode = apps::mojom::WindowMode::kWindow;
+
+  auto permission = apps::mojom::Permission::New();
+  permission->permission_type = apps::mojom::PermissionType::kCamera;
+  permission->value = apps::mojom::PermissionValue::New();
+  permission->value->set_bool_value(true);
+  permission->is_managed = true;
+  input->permissions.push_back(std::move(permission));
+
+  input->allow_uninstall = apps::mojom::OptionalBool::kTrue;
+  input->handles_intents = apps::mojom::OptionalBool::kTrue;
+
+  auto output = apps::ConvertMojomAppToApp(input);
+
+  EXPECT_EQ(output->app_type, apps::AppType::kWeb);
+  EXPECT_EQ(output->app_id, "abcdefg");
+  EXPECT_EQ(output->readiness, apps::Readiness::kReady);
+  EXPECT_EQ(output->name, "lacros test name");
+  EXPECT_EQ(output->short_name, "lacros test name");
+  EXPECT_EQ(output->publisher_id, "publisher_id");
+  EXPECT_EQ(output->description, "description");
+  EXPECT_EQ(output->version, "version");
+  EXPECT_EQ(output->additional_search_terms, input->additional_search_terms);
+
+  EXPECT_EQ(output->icon_key->timeline, 1U);
+  EXPECT_EQ(output->icon_key->icon_effects, 2U);
+
+  EXPECT_EQ(output->last_launch_time, base::Time() + base::Days(1));
+  EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
+
+  EXPECT_EQ(output->install_reason, apps::InstallReason::kUser);
+  EXPECT_EQ(output->policy_id, "https://app.site/alpha");
+  EXPECT_FALSE(output->is_platform_app.value());
+  EXPECT_TRUE(output->recommendable.value());
+  EXPECT_TRUE(output->searchable.value());
+  EXPECT_FALSE(output->paused.value());
+  EXPECT_TRUE(output->show_in_launcher.value());
+  EXPECT_TRUE(output->show_in_shelf.value());
+  EXPECT_TRUE(output->show_in_search.value());
+  EXPECT_TRUE(output->show_in_management.value());
+  EXPECT_FALSE(output->has_badge.has_value());
+  EXPECT_FALSE(output->paused.value());
+
+  ASSERT_EQ(output->intent_filters.size(), 1U);
+  auto& filter = output->intent_filters[0];
+  ASSERT_EQ(filter->conditions.size(), 1U);
+  auto& condition = filter->conditions[0];
+  EXPECT_EQ(condition->condition_type, apps::ConditionType::kScheme);
+  ASSERT_EQ(condition->condition_values.size(), 1U);
+  EXPECT_EQ(condition->condition_values[0]->value, "https");
+  EXPECT_EQ(condition->condition_values[0]->match_type,
+            apps::PatternMatchType::kNone);
+  EXPECT_EQ(filter->activity_name, "activity_name");
+  EXPECT_EQ(filter->activity_label, "activity_label");
+
+  EXPECT_EQ(output->window_mode, apps::WindowMode::kWindow);
+
+  ASSERT_EQ(output->permissions.size(), 1U);
+  auto& out_permission = output->permissions[0];
+  EXPECT_EQ(out_permission->permission_type, apps::PermissionType::kCamera);
+  ASSERT_TRUE(out_permission->value->bool_value.has_value());
+  EXPECT_TRUE(out_permission->value->bool_value.value());
+  EXPECT_TRUE(out_permission->is_managed);
+
+  EXPECT_TRUE(output->allow_uninstall.value());
+  EXPECT_TRUE(output->handles_intents.value());
+
+  auto mojom_app = apps::ConvertAppToMojomApp(output);
+
+  EXPECT_EQ(mojom_app->app_type, apps::mojom::AppType::kWeb);
+  EXPECT_EQ(mojom_app->app_id, "abcdefg");
+  EXPECT_EQ(mojom_app->readiness, apps::mojom::Readiness::kReady);
+  EXPECT_EQ(mojom_app->name, "lacros test name");
+  EXPECT_EQ(mojom_app->short_name, "lacros test name");
+  EXPECT_EQ(mojom_app->publisher_id, "publisher_id");
+  EXPECT_EQ(mojom_app->description, "description");
+  EXPECT_EQ(mojom_app->version, "version");
+  EXPECT_EQ(mojom_app->additional_search_terms, input->additional_search_terms);
+
+  EXPECT_EQ(mojom_app->icon_key->timeline, 1U);
+  EXPECT_EQ(mojom_app->icon_key->icon_effects, 2U);
+
+  EXPECT_EQ(mojom_app->last_launch_time, base::Time() + base::Days(1));
+  EXPECT_EQ(mojom_app->install_time, base::Time() + base::Days(2));
+
+  EXPECT_EQ(mojom_app->install_reason, apps::mojom::InstallReason::kUser);
+  EXPECT_EQ(mojom_app->policy_id, "https://app.site/alpha");
+  EXPECT_EQ(mojom_app->recommendable, apps::mojom::OptionalBool::kTrue);
+  EXPECT_EQ(mojom_app->searchable, apps::mojom::OptionalBool::kTrue);
+  EXPECT_EQ(mojom_app->paused, apps::mojom::OptionalBool::kFalse);
+  EXPECT_EQ(mojom_app->show_in_launcher, apps::mojom::OptionalBool::kTrue);
+  EXPECT_EQ(mojom_app->show_in_shelf, apps::mojom::OptionalBool::kTrue);
+  EXPECT_EQ(mojom_app->show_in_search, apps::mojom::OptionalBool::kTrue);
+  EXPECT_EQ(mojom_app->show_in_management, apps::mojom::OptionalBool::kTrue);
+  EXPECT_EQ(mojom_app->has_badge, apps::mojom::OptionalBool::kUnknown);
+  EXPECT_EQ(mojom_app->paused, apps::mojom::OptionalBool::kFalse);
+
+  ASSERT_EQ(mojom_app->intent_filters.size(), 1U);
+  auto& mojom_filter = mojom_app->intent_filters[0];
+  ASSERT_EQ(mojom_filter->conditions.size(), 1U);
+  auto& mojom_condition = mojom_filter->conditions[0];
+  EXPECT_EQ(mojom_condition->condition_type,
+            apps::mojom::ConditionType::kScheme);
+  ASSERT_EQ(mojom_condition->condition_values.size(), 1U);
+  EXPECT_EQ(mojom_condition->condition_values[0]->value, "https");
+  EXPECT_EQ(mojom_condition->condition_values[0]->match_type,
+            apps::mojom::PatternMatchType::kNone);
+  EXPECT_EQ(mojom_filter->activity_name, "activity_name");
+  EXPECT_EQ(mojom_filter->activity_label, "activity_label");
+
+  EXPECT_EQ(mojom_app->window_mode, apps::mojom::WindowMode::kWindow);
+
+  ASSERT_EQ(mojom_app->permissions.size(), 1U);
+  auto& mojom_permission = mojom_app->permissions[0];
+  EXPECT_EQ(mojom_permission->permission_type,
+            apps::mojom::PermissionType::kCamera);
+  ASSERT_TRUE(mojom_permission->value->is_bool_value());
+  EXPECT_TRUE(mojom_permission->value->get_bool_value());
+  EXPECT_TRUE(mojom_permission->is_managed);
+
+  EXPECT_EQ(mojom_app->allow_uninstall, apps::mojom::OptionalBool::kTrue);
+  EXPECT_EQ(mojom_app->handles_intents, apps::mojom::OptionalBool::kTrue);
 }

@@ -203,6 +203,8 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // `AppUpdate` class should also be updated.
 };
 
+using AppPtr = std::unique_ptr<App>;
+
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
 COMPONENT_EXPORT(APP_TYPES)
@@ -216,23 +218,45 @@ Readiness ConvertMojomReadinessToReadiness(
     apps::mojom::Readiness mojom_readiness);
 
 COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::Readiness ConvertReadinessToMojomReadiness(Readiness readiness);
+
+COMPONENT_EXPORT(APP_TYPES)
 InstallReason ConvertMojomInstallReasonToInstallReason(
     apps::mojom::InstallReason mojom_install_reason);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::InstallReason ConvertInstallReasonToMojomInstallReason(
+    InstallReason install_reason);
 
 COMPONENT_EXPORT(APP_TYPES)
 InstallSource ConvertMojomInstallSourceToInstallSource(
     apps::mojom::InstallSource mojom_install_source);
 
 COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::InstallSource ConvertInstallSourceToMojomInstallSource(
+    InstallSource install_source);
+
+COMPONENT_EXPORT(APP_TYPES)
 WindowMode ConvertMojomWindowModeToWindowMode(
     apps::mojom::WindowMode mojom_window_mode);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::WindowMode ConvertWindowModeToMojomWindowMode(
+    WindowMode mojom_window_mode);
 
 COMPONENT_EXPORT(APP_TYPES)
 absl::optional<bool> GetOptionalBool(
     const apps::mojom::OptionalBool& mojom_optional_bool);
 
 COMPONENT_EXPORT(APP_TYPES)
-std::unique_ptr<App> ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app);
+absl::optional<bool> GetMojomOptionalBool(
+    const apps::mojom::OptionalBool& mojom_optional_bool);
+
+COMPONENT_EXPORT(APP_TYPES)
+AppPtr ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::AppPtr ConvertAppToMojomApp(const AppPtr& app);
 
 }  // namespace apps
 
