@@ -33,10 +33,13 @@
 }
 
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState
-                              withSender:(CGRect)rect {
+                              withSender:(CGRect)rect
+                                withText:(NSString*)text {
   if (base::FeatureList::IsEnabled(
           shared_highlighting::kIOSSharedHighlightingV2)) {
-    [self.consumer userTappedTextFragmentInWebState:webState withSender:rect];
+    [self.consumer userTappedTextFragmentInWebState:webState
+                                         withSender:rect
+                                           withText:text];
   }
 }
 

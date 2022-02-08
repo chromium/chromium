@@ -7,6 +7,7 @@
 #import <vector>
 
 #import "base/no_destructor.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -136,11 +137,13 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
   } else if (*command == "textFragments.onClickWithSender") {
     absl::optional<CGRect> rect =
         shared_highlighting::ParseRect(response->FindDictKey("rect"));
-    if (!rect) {
+    const std::string* text = response->FindStringKey("text");
+    if (!rect || !text) {
       return;
     }
     manager->OnClickWithSender(
-        shared_highlighting::ConvertToBrowserRect(*rect, web_state));
+        shared_highlighting::ConvertToBrowserRect(*rect, web_state),
+        base::SysUTF8ToNSString(*text));
   }
 }
 

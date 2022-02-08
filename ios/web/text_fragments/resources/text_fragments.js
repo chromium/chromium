@@ -130,7 +130,8 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
   const handleClickWithSender = function(event) {
     __gCrWeb.common.sendWebKitMessage('textFragments', {
       command: 'textFragments.onClickWithSender',
-      rect: rectFromElement(event.target)
+      rect: rectFromElement(event.target),
+      text: `"${event.target.innerText}"`
     });
   };
 

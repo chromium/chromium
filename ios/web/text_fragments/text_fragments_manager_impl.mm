@@ -97,9 +97,11 @@ void TextFragmentsManagerImpl::OnClick() {
   }
 }
 
-void TextFragmentsManagerImpl::OnClickWithSender(CGRect rect) {
+void TextFragmentsManagerImpl::OnClickWithSender(CGRect rect, NSString* text) {
   if (delegate_) {
-    [delegate_ userTappedTextFragmentInWebState:web_state_ withSender:rect];
+    [delegate_ userTappedTextFragmentInWebState:web_state_
+                                     withSender:rect
+                                       withText:text];
   }
 }
 

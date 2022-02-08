@@ -24,7 +24,7 @@
 namespace {
 
 const char kTestURL[] = "/testPage";
-const char kURLWithFragment[] = "/testPage/#:~:text=Lorem%20ipsum";
+const char kURLWithFragment[] = "/testPage/#:~:text=lorem%20ipsum";
 const char kHTMLOfTestPage[] =
     "<html><body><p>"
     "<span id='target'>Lorem ipsum</span> dolor sit amet, consectetur "
@@ -148,6 +148,39 @@ void DismissMenu() {
   GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL].host(),
                   GURL(shared_highlighting::kLearnMoreUrl).host(),
                   @"Did not open correct Learn More URL.");
+}
+
+- (void)testReshare {
+  // Clear the pasteboard
+  UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
+  [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
+
+  GURL pageURL = self.testServer->GetURL(kURLWithFragment);
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+  ClickMarkAndWaitForMenu();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SHARED_HIGHLIGHT_RESHARE))]
+      performAction:grey_tap()];
+
+  // Wait for the Activity View to show up (look for the Copy action).
+  id<GREYMatcher> copyActivityButton = chrome_test_util::CopyActivityButton();
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:copyActivityButton];
+
+  // Tap on the Copy action.
+  [[EarlGrey selectElementWithMatcher:copyActivityButton]
+      performAction:grey_tap()];
+
+  // Wait for the value to be in the pasteboard.
+  GREYCondition* getPastedURL = [GREYCondition
+      conditionWithName:@"Could not get expected URL from the pasteboard."
+                  block:^{
+                    return pageURL == [ChromeEarlGrey pasteboardURL];
+                  }];
+  GREYAssert(
+      [getPastedURL waitWithTimeout:base::test::ios::kWaitForActionTimeout],
+      @"Could not get expected URL from pasteboard.");
 }
 
 @end

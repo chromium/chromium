@@ -48,7 +48,7 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
 
   // Event propagated when the user clicks on a highlighted text fragment.
   // CGRect indicates the coordinates of the text fragment sending the event.
-  void OnClickWithSender(CGRect rect);
+  void OnClickWithSender(CGRect rect, NSString* text);
 
   // WebStateObserver methods:
   void DidFinishNavigation(WebState* web_state,
