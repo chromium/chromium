@@ -30,10 +30,9 @@
 #import "ios/chrome/app/main_application_delegate.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
+#include "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_constants.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
-#import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #include "ios/chrome/browser/crash_report/features.h"
@@ -58,6 +57,7 @@
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
+#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "net/url_request/url_request_context.h"
@@ -415,12 +415,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
-  NSMutableArray<NSString*>* sessionIDs =
-      [NSMutableArray arrayWithCapacity:sceneSessions.count];
-  // This method is invoked by iOS to inform the application that the sessions
-  // for "closed windows" is garbage collected and that any data associated with
-  // them by the application needs to be deleted.
-  //
+  DCHECK_GE(self.initStage, InitStageBrowserObjectsForBackgroundHandlers);
+
+  ios::GetChromeBrowserProvider()
+      .GetChromeIdentityService()
+      ->ApplicationDidDiscardSceneSessions(sceneSessions);
+
   // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
   // support devices that do not support multi-window (and which use a constant
   // identifier). For devices that do not support multi-window the session is
@@ -430,6 +430,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // session is garbage collected.
   //
   // Thus it is always correct to use -persistentIdentifier here.
+  NSMutableArray<NSString*>* sessionIDs =
+      [NSMutableArray arrayWithCapacity:sceneSessions.count];
   for (UISceneSession* session in sceneSessions) {
     [sessionIDs addObject:session.persistentIdentifier];
   }
@@ -633,7 +635,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Start recording info about this session.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
 }
-
 
 #pragma mark - UIBlockerManager
 
