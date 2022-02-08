@@ -75,11 +75,12 @@ ui::MenuModel* TestToolbarActionViewController::GetContextMenu(
   return nullptr;
 }
 
-bool TestToolbarActionViewController::ExecuteAction(bool by_user,
-                                                    InvocationSource source) {
+void TestToolbarActionViewController::ExecuteUserAction(
+    InvocationSource source) {
   ++execute_action_count_;
-  return false;
 }
+
+void TestToolbarActionViewController::TriggerPopupForAPI() {}
 
 void TestToolbarActionViewController::UpdateState() {
   UpdateDelegate();

@@ -107,11 +107,14 @@ class ToolbarActionViewController {
   // necessary cleanup.
   virtual void OnContextMenuClosed() {}
 
-  // Executes the default action (which is typically showing the popup). If
-  // |by_user| is true, then this was through a direct user action (as oppposed
-  // to, e.g., an API call).
-  // Returns true if a popup is shown.
-  virtual bool ExecuteAction(bool by_user, InvocationSource source) = 0;
+  // Executes the default behavior associated with the action. This should only
+  // be called as a result of a user action.
+  virtual void ExecuteUserAction(InvocationSource source) = 0;
+
+  // Shows the toolbar action popup as a result of an API call. It is the
+  // caller's responsibility to guarantee it is valid to show a popup (i.e.,
+  // the action is enabled, has a popup, etc).
+  virtual void TriggerPopupForAPI() = 0;
 
   // Updates the current state of the action.
   virtual void UpdateState() = 0;

@@ -43,6 +43,15 @@ using extensions::ActionInfo;
 using extensions::CommandService;
 using extensions::ExtensionActionRunner;
 
+namespace {
+
+void RecordInvocationSource(
+    ToolbarActionViewController::InvocationSource source) {
+  base::UmaHistogramEnumeration("Extensions.Toolbar.InvocationSource", source);
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<ExtensionActionViewController>
 ExtensionActionViewController::Create(
@@ -239,19 +248,43 @@ void ExtensionActionViewController::OnContextMenuClosed() {
   extensions_container_->OnContextMenuClosed(this);
 }
 
-bool ExtensionActionViewController::ExecuteAction(bool by_user,
-                                                  InvocationSource source) {
+void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
   if (!ExtensionIsValid())
-    return false;
+    return;
 
   if (!IsEnabled(view_delegate_->GetCurrentWebContents())) {
     GetPreferredPopupViewController()
         ->view_delegate_->ShowContextMenuAsFallback();
-    return false;
+    return;
   }
 
-  base::UmaHistogramEnumeration("Extensions.Toolbar.InvocationSource", source);
-  return ExecuteAction(SHOW_POPUP, by_user);
+  content::WebContents* const web_contents =
+      view_delegate_->GetCurrentWebContents();
+  ExtensionActionRunner* action_runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!action_runner)
+    return;
+
+  RecordInvocationSource(source);
+
+  extensions_container_->CloseOverflowMenuIfOpen();
+
+  // This method is only called to execute an action by the user, so we can
+  // always grant tab permissions.
+  constexpr bool kGrantTabPermissions = true;
+  if (action_runner->RunAction(extension(), kGrantTabPermissions) ==
+      extensions::ExtensionAction::ACTION_SHOW_POPUP) {
+    constexpr bool kByUser = true;
+    GetPreferredPopupViewController()->TriggerPopup(SHOW_POPUP, kByUser);
+  }
+}
+
+void ExtensionActionViewController::TriggerPopupForAPI() {
+  RecordInvocationSource(InvocationSource::kApi);
+  // This method is called programmatically by an API; it should never be
+  // considered a user action.
+  constexpr bool kByUser = false;
+  TriggerPopup(SHOW_POPUP, kByUser);
 }
 
 void ExtensionActionViewController::UpdateState() {
@@ -259,28 +292,6 @@ void ExtensionActionViewController::UpdateState() {
     return;
 
   view_delegate_->UpdateState();
-}
-
-bool ExtensionActionViewController::ExecuteAction(PopupShowAction show_action,
-                                                  bool grant_tab_permissions) {
-  if (!ExtensionIsValid())
-    return false;
-
-  content::WebContents* web_contents = view_delegate_->GetCurrentWebContents();
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner)
-    return false;
-
-  extensions_container_->CloseOverflowMenuIfOpen();
-
-  if (action_runner->RunAction(extension(), grant_tab_permissions) ==
-      extensions::ExtensionAction::ACTION_SHOW_POPUP) {
-    GetPreferredPopupViewController()->TriggerPopup(show_action, web_contents,
-                                                    grant_tab_permissions);
-    return true;
-  }
-  return false;
 }
 
 void ExtensionActionViewController::RegisterCommand() {
@@ -295,7 +306,11 @@ void ExtensionActionViewController::UnregisterCommand() {
 }
 
 void ExtensionActionViewController::InspectPopup() {
-  ExecuteAction(SHOW_POPUP_AND_INSPECT, true);
+  // This method is only triggered through user action (clicking on the context
+  // menu entry).
+  constexpr bool kByUser = true;
+  GetPreferredPopupViewController()->TriggerPopup(SHOW_POPUP_AND_INSPECT,
+                                                  kByUser);
 }
 
 void ExtensionActionViewController::OnIconUpdated() {
@@ -375,19 +390,19 @@ ExtensionActionViewController::GetPreferredPopupViewController() {
       extensions_container_->GetActionForId(GetId()));
 }
 
-void ExtensionActionViewController::TriggerPopup(
-    PopupShowAction show_action,
-    content::WebContents* web_contents,
-    bool grant_tab_permissions) {
-  // Callers should already have validated the extension.
+void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
+                                                 bool by_user) {
   DCHECK(ExtensionIsValid());
+  DCHECK_EQ(this, GetPreferredPopupViewController());
 
-  // Always hide the current popup, even if it's not owned by this extension.
-  // Only one popup should be visible at a time.
-  extensions_container_->HideActivePopup();
+  content::WebContents* const web_contents =
+      view_delegate_->GetCurrentWebContents();
+  const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+  DCHECK(extension_action_->GetIsVisible(tab_id));
+  DCHECK(extension_action_->HasPopup(tab_id));
 
-  GURL popup_url = extension_action_->GetPopupUrl(
-      sessions::SessionTabHelper::IdForTab(web_contents).id());
+  const GURL popup_url = extension_action_->GetPopupUrl(tab_id);
+
   std::unique_ptr<extensions::ExtensionViewHost> host =
       extensions::ExtensionViewHostFactory::CreatePopupHost(popup_url,
                                                             browser_);
@@ -395,16 +410,22 @@ void ExtensionActionViewController::TriggerPopup(
   // valid and has a valid popup URL.
   CHECK(host);
 
+  // Always hide the current popup, even if it's not owned by this extension.
+  // Only one popup should be visible at a time.
+  extensions_container_->HideActivePopup();
+
+  extensions_container_->CloseOverflowMenuIfOpen();
+
   popup_host_ = host.get();
   popup_host_observation_.Observe(popup_host_.get());
   extensions_container_->SetPopupOwner(this);
 
-  extensions_container_->CloseOverflowMenuIfOpen();
+  const bool is_sticky = show_action == SHOW_POPUP_AND_INSPECT;
   extensions_container_->PopOutAction(
-      this, show_action == SHOW_POPUP_AND_INSPECT,
+      this, is_sticky,
       base::BindOnce(&ExtensionActionViewController::ShowPopup,
-                     weak_factory_.GetWeakPtr(), std::move(host),
-                     grant_tab_permissions, show_action));
+                     weak_factory_.GetWeakPtr(), std::move(host), by_user,
+                     show_action));
 }
 
 void ExtensionActionViewController::ShowPopup(

@@ -136,8 +136,8 @@ bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
   if (controller_->IsShowingPopup()) {
     controller_->HidePopup();
   } else {
-    controller_->ExecuteAction(
-        true, ToolbarActionViewController::InvocationSource::kCommand);
+    controller_->ExecuteUserAction(
+        ToolbarActionViewController::InvocationSource::kCommand);
   }
 
   return true;

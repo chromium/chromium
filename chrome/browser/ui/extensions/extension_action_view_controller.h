@@ -82,7 +82,8 @@ class ExtensionActionViewController
           context_menu_source) override;
   void OnContextMenuShown() override;
   void OnContextMenuClosed() override;
-  bool ExecuteAction(bool by_user, InvocationSource source) override;
+  void ExecuteUserAction(InvocationSource source) override;
+  void TriggerPopupForAPI() override;
   void UpdateState() override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
@@ -140,21 +141,12 @@ class ExtensionActionViewController
   // returns the preferred controller.
   ExtensionActionViewController* GetPreferredPopupViewController();
 
-  // Executes the extension action with |show_action|. If
-  // |grant_tab_permissions| is true, this will grant the extension active tab
-  // permissions. Only do this if this was done through a user action (and not
-  // e.g. an API). Returns true if a popup is shown.
-  bool ExecuteAction(PopupShowAction show_action, bool grant_tab_permissions);
-
-  // Begins the process of showing the popup for the extension action over the
-  // given |web_contents|. |grant_tab_permissions| is true if active tab
-  // permissions should be given to the extension; this is only true if the
-  // popup is opened through a user action.
+  // Begins the process of showing the popup for the extension action on the
+  // current web contents. |by_user| is true if popup is being triggered by a
+  // user action.
   // The popup may not be shown synchronously if the extension is hidden and
   // first needs to slide itself out.
-  void TriggerPopup(PopupShowAction show_action,
-                    content::WebContents* web_contents,
-                    bool grant_tab_permissions);
+  void TriggerPopup(PopupShowAction show_action, bool by_user);
 
   // Shows the popup with the given |host|.
   void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,

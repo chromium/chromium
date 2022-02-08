@@ -106,8 +106,8 @@ void ExtensionsMenuButton::ShowContextMenuAsFallback() {
 void ExtensionsMenuButton::ButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));
-  controller_->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kMenuEntry);
+  controller_->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kMenuEntry);
 }
 
 BEGIN_METADATA(ExtensionsMenuButton, views::LabelButton)

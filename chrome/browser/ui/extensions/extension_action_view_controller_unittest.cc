@@ -301,8 +301,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
 
   // After triggering the action it should have access, which is reflected in
   // the tooltip.
-  action_controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
@@ -717,8 +717,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
 
   // Click on the action, which grants activeTab and allows the extension to
   // access the page. This changes the page interaction status to "active".
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   EXPECT_EQ(SiteInteraction::kActive,
             controller->GetSiteInteraction(web_contents));
 
@@ -727,8 +727,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   NavigateAndCommitActiveTab(GURL("chrome://extensions"));
   EXPECT_EQ(SiteInteraction::kNone,
             controller->GetSiteInteraction(web_contents));
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   EXPECT_EQ(SiteInteraction::kNone,
             controller->GetSiteInteraction(web_contents));
 }
@@ -765,8 +765,8 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 
   EXPECT_EQ(SiteInteraction::kNone,
             controller->GetSiteInteraction(web_contents));
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   EXPECT_EQ(SiteInteraction::kNone,
             controller->GetSiteInteraction(web_contents));
 
@@ -783,8 +783,8 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   controller = GetViewControllerForId(extension->id());
   EXPECT_EQ(SiteInteraction::kPending,
             controller->GetSiteInteraction(web_contents));
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   EXPECT_EQ(SiteInteraction::kActive,
             controller->GetSiteInteraction(web_contents));
 }

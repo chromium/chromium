@@ -276,8 +276,8 @@ void ToolbarActionView::ButtonPressed() {
   if (view_controller_->IsEnabled(GetCurrentWebContents())) {
     base::RecordAction(base::UserMetricsAction(
         "Extensions.Toolbar.ExtensionActivatedFromToolbar"));
-    view_controller_->ExecuteAction(
-        true, ToolbarActionViewController::InvocationSource::kToolbarButton);
+    view_controller_->ExecuteUserAction(
+        ToolbarActionViewController::InvocationSource::kToolbarButton);
   } else {
     // If the action isn't enabled, show the context menu as a fallback.
     context_menu_controller()->ShowContextMenuForView(this, GetMenuPosition(),
