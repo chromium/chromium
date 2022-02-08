@@ -77,12 +77,8 @@ class WebLaunchParamsHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
-  // Sends the launch entries to the renderer if they have been created and the
-  // renderer is ready to receive them.
-  void MaybeSendLaunchEntries();
-
   // Send the launch entries to the renderer.
-  void SendLaunchEntries();
+  void SendLaunchEntries(const GURL& current_url);
 
   // Closes the app window/tab. `this` will be deleted, return immediately after
   // calling.
@@ -106,8 +102,8 @@ class WebLaunchParamsHelper
   // The files to launch with (may be empty).
   std::vector<base::FilePath> launch_paths_;
 
-  // Which URL we first enqueued launch params in.
-  GURL url_params_enqueued_in_;
+  // False until the first time launch params have been enqueued.
+  bool has_sent_launch_entries_ = false;
 
   base::WeakPtrFactory<WebLaunchParamsHelper> weak_ptr_factory_{this};
 };

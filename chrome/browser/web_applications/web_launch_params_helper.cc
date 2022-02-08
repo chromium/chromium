@@ -147,8 +147,7 @@ void WebLaunchParamsHelper::Start(bool await_navigation) {
   if (await_navigation)
     return;
 
-  url_params_enqueued_in_ = web_contents()->GetLastCommittedURL();
-  SendLaunchEntries();
+  SendLaunchEntries(web_contents()->GetLastCommittedURL());
 }
 
 void WebLaunchParamsHelper::DidFinishNavigation(
@@ -160,38 +159,35 @@ void WebLaunchParamsHelper::DidFinishNavigation(
   if (!handle->IsInPrimaryMainFrame())
     return;
 
-  // Launch params still haven't been enqueued.
-  if (!url_params_enqueued_in_.is_valid()) {
-    if (!web_app_registrar_.IsUrlInAppScope(handle->GetURL(), app_id_)) {
-      DestroySelf();
-      return;
-    }
-
-    url_params_enqueued_in_ = handle->GetURL();
-    SendLaunchEntries();
+  if (!web_app_registrar_.IsUrlInAppScope(handle->GetURL(), app_id_)) {
+    DestroySelf();
     return;
   }
 
-  // Re-enqueue launch params for page reloads.
-  // Check the current URL still matches as it may have changed via
-  // `history.pushState()`.
-  if (handle->GetReloadType() != content::ReloadType::NONE &&
-      url_params_enqueued_in_ == handle->GetURL()) {
-    SendLaunchEntries();
+  // Launch params still haven't been enqueued, or they have been enqueued and
+  // this is a reload.
+  if (!has_sent_launch_entries_ ||
+      handle->GetReloadType() != content::ReloadType::NONE) {
+    SendLaunchEntries(handle->GetURL());
     return;
   }
 
+  // Same document navs (such as `history.pushState`) can be ignored.
+  if (handle->IsSameDocument())
+    return;
+
+  // Any other navigation indicates that launch entries will not be enqueues and
+  // our job is done here.
   DestroySelf();
-  return;
 }
 
-void WebLaunchParamsHelper::SendLaunchEntries() {
-  DCHECK(url_params_enqueued_in_.is_valid());
-  DCHECK(web_app_registrar_.IsUrlInAppScope(url_params_enqueued_in_, app_id_));
+void WebLaunchParamsHelper::SendLaunchEntries(const GURL& url) {
+  DCHECK(web_app_registrar_.IsUrlInAppScope(url, app_id_));
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &launch_service);
   DCHECK(launch_service);
+  has_sent_launch_entries_ = true;
 
   if (!launch_paths_.empty() || !launch_dir_.empty()) {
     EntriesBuilder entries_builder(web_contents(), launch_url_,

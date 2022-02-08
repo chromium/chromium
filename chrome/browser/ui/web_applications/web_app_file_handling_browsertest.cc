@@ -262,6 +262,22 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
     run_loop.Run();
   }
 
+  AppId InstallFileHandlingWebApp(const std::u16string& title,
+                                  const GURL& handler_url) {
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url =
+        https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+    web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+    web_app_info->title = title;
+    apps::FileHandler entry;
+    entry.action = handler_url;
+    entry.accept.emplace_back();
+    entry.accept[0].mime_type = "text/*";
+    entry.accept[0].file_extensions.insert(".txt");
+    web_app_info->file_handlers.push_back(std::move(entry));
+    return WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+  }
+
  protected:
   TestServerRedirectHandle redirect_handle_;
   base::test::ScopedFeatureList feature_list_{
@@ -353,24 +369,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 // Regression test for crbug.com/1126091
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnRedirect) {
-  // Install an app where the file handling action page redirects.
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url =
-      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
-  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
-  web_app_info->title = u"An app that redirects";
-
   GURL handler_url = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files_with_redirect.html");
-  apps::FileHandler entry;
-  entry.action = handler_url;
-  entry.accept.emplace_back();
-  entry.accept[0].mime_type = "text/*";
-  entry.accept[0].file_extensions.insert(".txt");
-  web_app_info->file_handlers.push_back(std::move(entry));
-
   AppId app_id =
-      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
   base::FilePath file = NewTestFilePath("txt");
 
@@ -390,23 +392,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url =
-      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
-  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
-  web_app_info->title = u"An app that will be reloaded";
-
   GURL handler_url = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
-  apps::FileHandler entry;
-  entry.action = handler_url;
-  entry.accept.emplace_back();
-  entry.accept[0].mime_type = "text/*";
-  entry.accept[0].file_extensions.insert(".txt");
-  web_app_info->file_handlers.push_back(std::move(entry));
-
   AppId app_id =
-      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
   base::FilePath file = NewTestFilePath("txt");
   LaunchWithFiles(app_id, handler_url, {file});
@@ -424,27 +413,46 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       LaunchQueueSetOnReloadAfterPushState) {
+  GURL handler_url = https_server()->GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  AppId app_id =
+      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
+
+  base::FilePath file = NewTestFilePath("txt");
+  LaunchWithFiles(app_id, handler_url, {file});
+  VerifyPwaDidReceiveFileLaunchParams(true, file);
+
+  // page initiates pushstate
+  {
+    content::TestNavigationObserver navigation_observer(web_contents_);
+    auto result = content::EvalJs(web_contents_.get(),
+                                  "window.history.replaceState(null, '', "
+                                  "window.location.href + '#foo');");
+    EXPECT_TRUE(result.error.empty());
+    navigation_observer.Wait();
+  }
+
+  // Reload the page.
+  {
+    content::TestNavigationObserver navigation_observer(web_contents_);
+    chrome::Reload(chrome::FindBrowserWithWebContents(web_contents_),
+                   WindowOpenDisposition::CURRENT_TAB);
+    navigation_observer.Wait();
+    AttachTestConsumer(web_contents_);
+  }
+  VerifyPwaDidReceiveFileLaunchParams(true, file);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnCrossOriginRedirect) {
   // Install an app where the file handling action page redirects to a page on a
   // different origin.
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url =
-      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
-  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
-  web_app_info->title = u"An app that redirects to a different origin";
-
   GURL handler_url = https_server()->GetURL(
       "app.com",
       "/web_app_file_handling/handle_files_with_redirect_to_other_origin.html");
-  apps::FileHandler entry;
-  entry.action = handler_url;
-  entry.accept.emplace_back();
-  entry.accept[0].mime_type = "text/*";
-  entry.accept[0].file_extensions.insert(".txt");
-  web_app_info->file_handlers.push_back(std::move(entry));
-
   AppId app_id =
-      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
   base::FilePath file = NewTestFilePath("txt");
 
   {
@@ -464,24 +472,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnNavigate) {
-  GURL start_url =
-      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
-  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
-  web_app_info->title = u"An app that will be navigated";
-
   GURL handler_url = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
-  apps::FileHandler entry;
-  entry.action = handler_url;
-  entry.accept.emplace_back();
-  entry.accept[0].mime_type = "text/*";
-  entry.accept[0].file_extensions.insert(".txt");
-  web_app_info->file_handlers.push_back(std::move(entry));
-
+  GURL start_url =
+      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
   AppId app_id =
-      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+      InstallFileHandlingWebApp(u"An app that will be navigated", handler_url);
 
   base::FilePath file = NewTestFilePath("txt");
   LaunchWithFiles(app_id, handler_url, {file});
