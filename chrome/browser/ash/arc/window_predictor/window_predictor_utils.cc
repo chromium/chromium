@@ -46,4 +46,13 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
   return true;
 }
 
+bool CanLaunchGhostWindowByRestoreData(
+    const app_restore::AppRestoreData& restore_data) {
+  const bool not_need_bounds =
+      restore_data.window_state_type == chromeos::WindowStateType::kMaximized ||
+      restore_data.window_state_type == chromeos::WindowStateType::kFullscreen;
+  return not_need_bounds || restore_data.bounds_in_root.has_value() ||
+         restore_data.current_bounds.has_value();
+}
+
 }  // namespace arc

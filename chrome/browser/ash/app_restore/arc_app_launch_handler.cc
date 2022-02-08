@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -428,8 +429,7 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     bool launch_ghost_window = false;
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
     if (window_handler_ &&
-        (data_it.second->bounds_in_root.has_value() ||
-         data_it.second->current_bounds.has_value()) &&
+        arc::CanLaunchGhostWindowByRestoreData(*data_it.second) &&
         window_handler_->LaunchArcGhostWindow(app_id, arc_session_id,
                                               data_it.second.get())) {
       launch_ghost_window = true;

@@ -11,6 +11,10 @@
 
 class Profile;
 
+namespace app_restore {
+struct AppRestoreData;
+}
+
 namespace arc {
 
 // Create ARC app ghost window and add the corresponding to the launching list,
@@ -21,6 +25,11 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
                                  int event_flags,
                                  arc::UserInteractionType user_interaction_type,
                                  arc::mojom::WindowInfoPtr window_info);
+
+// Is the the window info provide enough data to create corresponding ARC ghost
+// window.
+bool CanLaunchGhostWindowByRestoreData(
+    const app_restore::AppRestoreData& restore_data);
 
 }  // namespace arc
 
