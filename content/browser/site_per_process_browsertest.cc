@@ -11948,7 +11948,7 @@ INSTANTIATE_TEST_SUITE_P(SitePerProcess,
 // cross-process child frame is throttled.
 // Disabled due to flakiness. crbug.com/1293207
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       DISABlED_OccludedRenderWidgetThrottlesRAF) {
+                       DISABLED_OccludedRenderWidgetThrottlesRAF) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
