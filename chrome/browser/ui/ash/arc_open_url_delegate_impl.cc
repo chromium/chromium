@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/safe_base_name.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -54,65 +55,71 @@ namespace {
 
 ArcOpenUrlDelegateImpl* g_instance = nullptr;
 
-constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
-    {{ChromePage::ACCOUNTS,
-      chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2},
-     {ChromePage::BLUETOOTH,
-      chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
-     {ChromePage::BLUETOOTHDEVICES,
-      chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
-     {ChromePage::CHANGEPICTURE,
-      chromeos::settings::mojom::kChangePictureSubpagePath},
-     {ChromePage::CUPSPRINTERS,
-      chromeos::settings::mojom::kPrintingDetailsSubpagePath},
-     {ChromePage::DATETIME, chromeos::settings::mojom::kDateAndTimeSectionPath},
-     {ChromePage::DISPLAY, chromeos::settings::mojom::kDisplaySubpagePath},
-     {ChromePage::HELP, chromeos::settings::mojom::kAboutChromeOsSectionPath},
-     {ChromePage::KEYBOARDOVERLAY,
-      chromeos::settings::mojom::kKeyboardSubpagePath},
-     {ChromePage::OSLANGUAGESINPUT,
-      chromeos::settings::mojom::kInputSubpagePath},
-     {ChromePage::OSLANGUAGESLANGUAGES,
-      chromeos::settings::mojom::kLanguagesSubpagePath},
-     {ChromePage::LOCKSCREEN,
-      chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2},
-     {ChromePage::MAIN, ""},
-     {ChromePage::MANAGEACCESSIBILITY,
-      chromeos::settings::mojom::kManageAccessibilitySubpagePath},
-     {ChromePage::MANAGEACCESSIBILITYTTS,
-      chromeos::settings::mojom::kTextToSpeechSubpagePath},
-     {ChromePage::MULTIDEVICE,
-      chromeos::settings::mojom::kMultiDeviceSectionPath},
-     {ChromePage::NETWORKSTYPEVPN,
-      chromeos::settings::mojom::kVpnDetailsSubpagePath},
-     {ChromePage::POINTEROVERLAY,
-      chromeos::settings::mojom::kPointersSubpagePath},
-     {ChromePage::POWER, chromeos::settings::mojom::kPowerSubpagePath},
-     {ChromePage::SMARTPRIVACY,
-      chromeos::settings::mojom::kSmartPrivacySubpagePath},
-     {ChromePage::STORAGE, chromeos::settings::mojom::kStorageSubpagePath},
-     {ChromePage::WIFI, chromeos::settings::mojom::kWifiNetworksSubpagePath}};
+constexpr auto kOSSettingsMap =
+    base::MakeFixedFlatMap<ChromePage, const char*>({
+        {ChromePage::ACCOUNTS,
+         chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2},
+        {ChromePage::BLUETOOTH,
+         chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
+        {ChromePage::BLUETOOTHDEVICES,
+         chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
+        {ChromePage::CHANGEPICTURE,
+         chromeos::settings::mojom::kChangePictureSubpagePath},
+        {ChromePage::CUPSPRINTERS,
+         chromeos::settings::mojom::kPrintingDetailsSubpagePath},
+        {ChromePage::DATETIME,
+         chromeos::settings::mojom::kDateAndTimeSectionPath},
+        {ChromePage::DISPLAY, chromeos::settings::mojom::kDisplaySubpagePath},
+        {ChromePage::HELP,
+         chromeos::settings::mojom::kAboutChromeOsSectionPath},
+        {ChromePage::KEYBOARDOVERLAY,
+         chromeos::settings::mojom::kKeyboardSubpagePath},
+        {ChromePage::LOCKSCREEN,
+         chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2},
+        {ChromePage::MAIN, ""},
+        {ChromePage::MANAGEACCESSIBILITY,
+         chromeos::settings::mojom::kManageAccessibilitySubpagePath},
+        {ChromePage::MANAGEACCESSIBILITYTTS,
+         chromeos::settings::mojom::kTextToSpeechSubpagePath},
+        {ChromePage::MULTIDEVICE,
+         chromeos::settings::mojom::kMultiDeviceSectionPath},
+        {ChromePage::NETWORKSTYPEVPN,
+         chromeos::settings::mojom::kVpnDetailsSubpagePath},
+        {ChromePage::OSLANGUAGESINPUT,
+         chromeos::settings::mojom::kInputSubpagePath},
+        {ChromePage::OSLANGUAGESLANGUAGES,
+         chromeos::settings::mojom::kLanguagesSubpagePath},
+        {ChromePage::POINTEROVERLAY,
+         chromeos::settings::mojom::kPointersSubpagePath},
+        {ChromePage::POWER, chromeos::settings::mojom::kPowerSubpagePath},
+        {ChromePage::SMARTPRIVACY,
+         chromeos::settings::mojom::kSmartPrivacySubpagePath},
+        {ChromePage::STORAGE, chromeos::settings::mojom::kStorageSubpagePath},
+        {ChromePage::WIFI, chromeos::settings::mojom::kWifiNetworksSubpagePath},
+    });
 
-constexpr std::pair<arc::mojom::ChromePage, const char*>
-    kBrowserSettingsMapping[] = {
+constexpr auto kBrowserSettingsMap =
+    base::MakeFixedFlatMap<ChromePage, const char*>({
         {ChromePage::APPEARANCE, chrome::kAppearanceSubPage},
         {ChromePage::AUTOFILL, chrome::kAutofillSubPage},
         {ChromePage::CLEARBROWSERDATA, chrome::kClearBrowserDataSubPage},
         {ChromePage::CLOUDPRINTERS, chrome::kCloudPrintersSubPage},
         {ChromePage::DOWNLOADS, chrome::kDownloadsSubPage},
+        {ChromePage::LANGUAGES, chrome::kLanguagesSubPage},
         {ChromePage::ONSTARTUP, chrome::kOnStartupSubPage},
         {ChromePage::PASSWORDS, chrome::kPasswordManagerSubPage},
         {ChromePage::PRIVACY, chrome::kPrivacySubPage},
         {ChromePage::RESET, chrome::kResetSubPage},
         {ChromePage::SEARCH, chrome::kSearchSubPage},
         {ChromePage::SYNCSETUP, chrome::kSyncSetupSubPage},
-        {ChromePage::LANGUAGES, chrome::kLanguagesSubPage},
-};
+    });
 
-constexpr std::pair<arc::mojom::ChromePage, const char*> kAboutPagesMapping[] =
-    {{ChromePage::ABOUTBLANK, url::kAboutBlankURL},
-     {ChromePage::ABOUTDOWNLOADS, "chrome://downloads/"},
-     {ChromePage::ABOUTHISTORY, "chrome://history/"}};
+constexpr auto kAboutPagesMap =
+    base::MakeFixedFlatMap<ChromePage, const char*>({
+        {ChromePage::ABOUTBLANK, url::kAboutBlankURL},
+        {ChromePage::ABOUTDOWNLOADS, "chrome://downloads/"},
+        {ChromePage::ABOUTHISTORY, "chrome://history/"},
+    });
 
 // Converts the given ARC URL to an external file URL to read it via ARC content
 // file system when necessary. Otherwise, returns the given URL unchanged.
@@ -167,13 +174,7 @@ apps::mojom::IntentPtr ConvertLaunchIntent(
 
 }  // namespace
 
-ArcOpenUrlDelegateImpl::ArcOpenUrlDelegateImpl()
-    : os_settings_pages_(std::cbegin(kOSSettingsMapping),
-                         std::cend(kOSSettingsMapping)),
-      browser_settings_pages_(std::cbegin(kBrowserSettingsMapping),
-                              std::cend(kBrowserSettingsMapping)),
-      about_pages_(std::cbegin(kAboutPagesMapping),
-                   std::cend(kAboutPagesMapping)) {
+ArcOpenUrlDelegateImpl::ArcOpenUrlDelegateImpl() {
   arc::ArcIntentHelperBridge::SetOpenUrlDelegate(this);
   DCHECK(!g_instance);
   g_instance = this;
@@ -314,22 +315,20 @@ void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
 }
 
 void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
-  auto it = os_settings_pages_.find(page);
-  if (it != os_settings_pages_.end()) {
+  if (auto* it = kOSSettingsMap.find(page); it != kOSSettingsMap.end()) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
                                                                  it->second);
     return;
   }
 
-  it = browser_settings_pages_.find(page);
-  if (it != browser_settings_pages_.end()) {
+  if (auto* it = kBrowserSettingsMap.find(page);
+      it != kBrowserSettingsMap.end()) {
     OpenUrlFromArc(GURL(chrome::kChromeUISettingsURL).Resolve(it->second));
     return;
   }
 
-  it = about_pages_.find(page);
-  if (it != about_pages_.end()) {
+  if (auto* it = kAboutPagesMap.find(page); it != kAboutPagesMap.end()) {
     OpenUrlFromArc(GURL(it->second));
     return;
   }

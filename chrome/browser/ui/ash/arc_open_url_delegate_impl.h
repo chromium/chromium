@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_ARC_OPEN_URL_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_ARC_OPEN_URL_DELEGATE_IMPL_H_
 
-#include <string>
-
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "base/containers/flat_map.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 
 // Implements arc::OpenUrlDelegate to inject dependency.
@@ -34,13 +31,6 @@ class ArcOpenUrlDelegateImpl : public arc::OpenUrlDelegate {
   void OpenChromePageFromArc(arc::mojom::ChromePage page) override;
   void OpenAppWithIntent(const GURL& start_url,
                          arc::mojom::LaunchIntentPtr intent) override;
-
- private:
-  // TODO(hidehiko): Move these out form members.
-  const base::flat_map<arc::mojom::ChromePage, std::string> os_settings_pages_;
-  const base::flat_map<arc::mojom::ChromePage, std::string>
-      browser_settings_pages_;
-  const base::flat_map<arc::mojom::ChromePage, std::string> about_pages_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ARC_OPEN_URL_DELEGATE_IMPL_H_
