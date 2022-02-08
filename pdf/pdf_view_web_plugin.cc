@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -357,7 +358,17 @@ bool PdfViewWebPlugin::InitializeCommon(
       /*full_frame=*/params->full_frame,
       /*background_color=*/params->background_color,
       /*has_edits=*/params->has_edits);
+
+  SendSetSmoothScrolling();
   return true;
+}
+
+void PdfViewWebPlugin::SendSetSmoothScrolling() {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "setSmoothScrolling");
+  message.SetBoolKey("smoothScrolling",
+                     blink::Platform::Current()->IsScrollAnimatorEnabled());
+  SendMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::Destroy() {

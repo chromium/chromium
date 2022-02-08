@@ -1598,6 +1598,12 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
     GetActiveWebContents()->Resize({0, 0, 1024, 768});
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Smooth scrolling confuses the test cases that reads the scroll bar
+    // position.
+    command_line->AppendSwitch(switches::kDisableSmoothScrolling);
+  }
+
  protected:
   class ScrollEventWaiter {
    public:
