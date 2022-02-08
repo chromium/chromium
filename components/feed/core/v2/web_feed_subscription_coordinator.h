@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/v2/operation_token.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_subscribed_web_feeds_task.h"
@@ -93,6 +94,16 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   bool is_loading_model_for_testing() const { return loading_model_; }
 
+  struct HooksForTesting {
+    HooksForTesting();
+    ~HooksForTesting();
+    base::RepeatingClosure before_clear_all;
+    base::RepeatingClosure after_clear_all;
+  };
+  void SetHooksForTesting(HooksForTesting* hooks) {
+    hooks_for_testing_ = hooks;
+  }
+
  private:
   using WebFeedSubscriptionModel = internal::WebFeedSubscriptionModel;
   using InFlightChange = internal::InFlightChange;
@@ -130,7 +141,6 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   // Run `closure` after the model is loaded.
   void WithModel(base::OnceClosure closure);
-  void LoadSubscriptionModel();
   void ModelDataLoaded(FeedStore::WebFeedStartupData startup_data);
   void FindWebFeedInfoNonRecommended(
       const std::string& web_feed_id,
@@ -182,6 +192,12 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   // TODO(harringtond): Unload the model eventually.
   std::unique_ptr<WebFeedSubscriptionModel> model_;
   bool loading_model_ = false;
+  OperationToken loading_token_ = OperationToken::MakeInvalid();
+
+  // This operation is destroyed upon a ClearAll event, to cancel all
+  // in flight operations. Note that we don't destroy the whole coordinator
+  // on a ClearAll event to ensure that all callbacks are eventually called.
+  OperationToken::Operation token_generator_;
 
   // Queue of in-flight changes. For each of these, there exists a task in the
   // TaskQueue.
@@ -198,6 +214,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   bool fetching_recommended_web_feeds_ = false;
   bool fetching_subscribed_web_feeds_ = false;
   bool fetching_subscribed_web_feeds_because_stale_ = false;
+
+  HooksForTesting* hooks_for_testing_ = nullptr;
 
   base::WeakPtrFactory<WebFeedSubscriptionCoordinator> weak_ptr_factory_{this};
 };

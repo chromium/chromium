@@ -904,10 +904,23 @@ bool FeedApiTest::IsTaskQueueIdle() const {
 }
 
 void FeedApiTest::WaitForIdleTaskQueue() {
-  RunLoopUntil(base::BindLambdaForTesting([&]() {
-    return IsTaskQueueIdle() &&
-           !stream_->subscriptions().is_loading_model_for_testing();
-  }));
+  RunLoopUntil(
+      base::BindLambdaForTesting([&]() {
+        return IsTaskQueueIdle() &&
+               !stream_->subscriptions().is_loading_model_for_testing();
+      }),
+      base::BindLambdaForTesting([&]() -> std::string {
+        std::stringstream ss;
+        if (!IsTaskQueueIdle()) {
+          ss << "Task queue not idle. Queue state:\n"
+             << stream_->GetTaskQueueForTesting().GetStateForTesting() << '\n';
+        }
+        if (stream_->subscriptions().is_loading_model_for_testing()) {
+          ss << "Subscription model still loading\n";
+        }
+
+        return ss.str();
+      }));
 }
 
 void FeedApiTest::UnloadModel(const StreamType& stream_type) {

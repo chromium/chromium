@@ -8,6 +8,7 @@
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/operation_token.h"
 #include "components/offline_pages/task/task.h"
 
 namespace feed {
@@ -25,6 +26,7 @@ class UnsubscribeFromWebFeedTask : public offline_pages::Task {
 
   explicit UnsubscribeFromWebFeedTask(
       FeedStream* stream,
+      const OperationToken& operation_token,
       const std::string& web_feed_id,
       base::OnceCallback<void(Result)> callback);
   ~UnsubscribeFromWebFeedTask() override;
@@ -40,6 +42,7 @@ class UnsubscribeFromWebFeedTask : public offline_pages::Task {
   void Done(WebFeedSubscriptionRequestStatus status);
 
   FeedStream& stream_;
+  OperationToken operation_token_;
   Result result_;
   std::string web_feed_name_;
   base::OnceCallback<void(Result)> callback_;

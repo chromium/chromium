@@ -17,16 +17,18 @@ namespace feed {
 
 SubscribeToWebFeedTask::SubscribeToWebFeedTask(
     FeedStream* stream,
+    const OperationToken& operation_token,
     Request request,
     base::OnceCallback<void(Result)> callback)
     : stream_(*stream),
+      operation_token_(operation_token),
       request_(std::move(request)),
       callback_(std::move(callback)) {}
 
 SubscribeToWebFeedTask::~SubscribeToWebFeedTask() = default;
 
 void SubscribeToWebFeedTask::Run() {
-  if (stream_.ClearAllInProgress()) {
+  if (!operation_token_) {
     Done(WebFeedSubscriptionRequestStatus::
              kAbortWebFeedSubscriptionPendingClearAll);
     return;
@@ -82,6 +84,10 @@ void SubscribeToWebFeedTask::Run() {
 
 void SubscribeToWebFeedTask::RequestComplete(
     FeedNetwork::ApiResult<feedwire::webfeed::FollowWebFeedResponse> result) {
+  // This will always be valid, because ClearAllTask cannot have run after this
+  // task starts.
+  DCHECK(operation_token_);
+
   if (result.response_body) {
     stream_.SetMetadata(feedstore::MaybeUpdateConsistencyToken(
         stream_.GetMetadata(), result.response_body->consistency_token()));

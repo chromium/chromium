@@ -21,20 +21,23 @@ namespace feed {
 
 UnsubscribeFromWebFeedTask::UnsubscribeFromWebFeedTask(
     FeedStream* stream,
+    const OperationToken& operation_token,
     const std::string& web_feed_id,
     base::OnceCallback<void(Result)> callback)
     : stream_(*stream),
+      operation_token_(operation_token),
       web_feed_name_(web_feed_id),
       callback_(std::move(callback)) {}
 
 UnsubscribeFromWebFeedTask::~UnsubscribeFromWebFeedTask() = default;
 
 void UnsubscribeFromWebFeedTask::Run() {
-  if (stream_.ClearAllInProgress()) {
+  if (!operation_token_) {
     Done(WebFeedSubscriptionRequestStatus::
              kAbortWebFeedSubscriptionPendingClearAll);
     return;
   }
+
   WebFeedSubscriptionCoordinator::SubscriptionInfo info =
       stream_.subscriptions().FindSubscriptionInfoById(web_feed_name_);
   if (info.status != WebFeedSubscriptionStatus::kSubscribed) {
@@ -58,6 +61,9 @@ void UnsubscribeFromWebFeedTask::Run() {
 
 void UnsubscribeFromWebFeedTask::RequestComplete(
     FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse> result) {
+  // This will always be valid, because ClearAllTask cannot have run after this
+  // task starts.
+  DCHECK(operation_token_);
   if (!result.response_body) {
     Done(WebFeedSubscriptionRequestStatus::kFailedUnknownError);
     return;

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_TEST_TEST_UTIL_H_
 #define COMPONENTS_FEED_CORE_V2_TEST_TEST_UTIL_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/time/time.h"
 
@@ -32,8 +34,14 @@ const base::TimeDelta kEpsilon = base::Milliseconds(5);
                                << got___;                   \
   }
 
-// Execute a runloop until `criteria` is true.
-void RunLoopUntil(base::RepeatingCallback<bool()> criteria);
+// Execute a runloop until `criteria` is true. If the criteria are not true
+// after 1000 iterations, ASSERT with the content of
+// `failure_message_callback.Run()`.
+void RunLoopUntil(base::RepeatingCallback<bool()> criteria,
+                  base::OnceCallback<std::string()> failure_message_callback);
+
+void RunLoopUntil(base::RepeatingCallback<bool()> criteria,
+                  const std::string& failure_message);
 
 }  // namespace feed
 

@@ -10,6 +10,7 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
+#include "components/feed/core/v2/operation_token.h"
 #include "components/offline_pages/task/task.h"
 #include "url/gurl.h"
 
@@ -34,6 +35,7 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
     feedstore::WebFeedInfo web_feed_info;
   };
   SubscribeToWebFeedTask(FeedStream* stream,
+                         const OperationToken& operation_token,
                          Request request,
                          base::OnceCallback<void(Result)> callback);
   ~SubscribeToWebFeedTask() override;
@@ -49,6 +51,7 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
   void Done(WebFeedSubscriptionRequestStatus status);
 
   FeedStream& stream_;
+  OperationToken operation_token_;
   Request request_;
   feedstore::WebFeedInfo subscribed_web_feed_info_;
   base::OnceCallback<void(Result)> callback_;

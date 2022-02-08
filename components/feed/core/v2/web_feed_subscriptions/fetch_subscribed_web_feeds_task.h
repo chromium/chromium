@@ -9,6 +9,7 @@
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/operation_token.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/offline_pages/task/task.h"
 
@@ -30,6 +31,7 @@ class FetchSubscribedWebFeedsTask : public offline_pages::Task {
   };
 
   FetchSubscribedWebFeedsTask(FeedStream* stream,
+                              const OperationToken& operation_token,
                               base::OnceCallback<void(Result)> callback);
   ~FetchSubscribedWebFeedsTask() override;
   FetchSubscribedWebFeedsTask(const FetchSubscribedWebFeedsTask&) = delete;
@@ -43,6 +45,7 @@ class FetchSubscribedWebFeedsTask : public offline_pages::Task {
   void Done(WebFeedRefreshStatus status);
 
   FeedStream& stream_;
+  OperationToken operation_token_;
   Result result_;
   base::OnceCallback<void(Result)> callback_;
 };

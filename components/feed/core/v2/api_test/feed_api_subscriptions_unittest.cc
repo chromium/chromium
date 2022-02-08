@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
@@ -14,6 +15,7 @@
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/feed_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,10 +48,26 @@ void WriteRecommendedFeeds(
   store.WriteRecommendedFeeds(index, recommended_feeds, base::DoNothing());
 }
 
+void WriteSubscribedFeeds(
+    FeedStore& store,
+    std::vector<feedstore::WebFeedInfo> recommended_feeds) {
+  feedstore::SubscribedWebFeeds record;
+  for (const feedstore::WebFeedInfo& info : recommended_feeds) {
+    *record.add_feeds() = info;
+  }
+  record.set_update_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now()));
+
+  store.WriteSubscribedFeeds(record, base::DoNothing());
+}
+
 class FeedApiSubscriptionsTest : public FeedApiTest {
  public:
   void SetUp() override {
     FeedApiTest::SetUp();
+    subscriptions().SetHooksForTesting(&web_feed_subscription_hooks);
+    web_feed_subscription_hooks.before_clear_all = base::DoNothing();
+    web_feed_subscription_hooks.after_clear_all = base::DoNothing();
   }
 
   // The test fixture disables the delayed fetch after startup. This function
@@ -118,6 +136,9 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
   WebFeedSubscriptionCoordinator& subscriptions() {
     return stream_->subscriptions();
   }
+
+ protected:
+  WebFeedSubscriptionCoordinator::HooksForTesting web_feed_subscription_hooks;
 };
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
@@ -133,9 +154,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
   WebFeedPageInformation page_info =
       MakeWebFeedPageInformation("http://cats.com");
   page_info.SetRssUrls({GURL("http://rss1/"), GURL("http://rss2/")});
-
   subscriptions().FollowWebFeed(page_info, callback.Bind());
-
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback.RunAndGetResult().request_status);
   auto sent_request = network_.GetApiRequestSent<FollowWebFeedDiscoverApi>();
@@ -160,6 +179,121 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 1, 1);
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended", 0, 1);
+}
+
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedAbortOnClearAll) {
+  // The goal of this test is to test the task order:
+  // ClearAllTask, SubscribeToWebFeedTask.
+
+  // Set up a function to fetch the status of the "cats" webfeed. First, use
+  // GetAllSubscriptions to force the internal model to load. This ensures that
+  // FindWebFeedInfoForWebFeedId() will call its callback without a PostTask.
+  subscriptions().GetAllSubscriptions(base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  auto find_cats_subscription_status = [&]() {
+    CallbackReceiver<WebFeedMetadata> result;
+    subscriptions().FindWebFeedInfoForWebFeedId("cats", result.Bind());
+    EXPECT_TRUE(result.GetResult());
+    if (!result.GetResult())
+      return WebFeedSubscriptionStatus::kUnknown;
+    return result.GetResult()->subscription_status;
+  };
+
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
+
+  // Try to follow cats.com.
+  subscriptions().FollowWebFeed("cats", follow_callback.Bind());
+  EXPECT_EQ(WebFeedSubscriptionStatus::kSubscribeInProgress,
+            find_cats_subscription_status());
+
+  // Run until ClearAllTask completes, this should update the subscription
+  // status.
+  base::RunLoop run_loop;
+  web_feed_subscription_hooks.after_clear_all =
+      base::BindLambdaForTesting([&]() {
+        // The Follow task has not yet completed, and the subscription is no
+        // longer in progress due to ClearAll.
+        EXPECT_FALSE(follow_callback.GetResult());
+        EXPECT_EQ(WebFeedSubscriptionStatus::kNotSubscribed,
+                  find_cats_subscription_status());
+        run_loop.Quit();
+      });
+  run_loop.Run();
+
+  // Finally, let the subscription task complete.
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::
+                kAbortWebFeedSubscriptionPendingClearAll,
+            follow_callback.RunAndGetResult().request_status);
+  EXPECT_EQ(WebFeedSubscriptionStatus::kNotSubscribed,
+            find_cats_subscription_status());
+}
+
+TEST_F(FeedApiSubscriptionsTest, UnfollowWebFeedAbortOnClearAll) {
+  // Follow 'cats'.
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
+  subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
+                                follow_callback.Bind());
+  follow_callback.RunUntilCalled();
+
+  // Test task order: ClearAllTask, UnsubscribeToWebFeedTask.
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
+      unfollow_callback;
+  network_.InjectResponse(SuccessfulUnfollowResponse());
+  subscriptions().UnfollowWebFeed(
+      follow_callback.GetResult()->web_feed_metadata.web_feed_id,
+      unfollow_callback.Bind());
+
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::
+                kAbortWebFeedSubscriptionPendingClearAll,
+            unfollow_callback.RunAndGetResult().request_status);
+}
+
+TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreLoadedFromStore) {
+  // Store a subscribed web feed, and ensure it is loaded.
+  WriteSubscribedFeeds(*store_, {MakeWebFeedInfo("catfood")});
+
+  CallbackReceiver<std::vector<WebFeedMetadata>> subscriptions_callback;
+  subscriptions().GetAllSubscriptions(subscriptions_callback.Bind());
+
+  EXPECT_EQ(
+      "{ WebFeedMetadata{ id=id_catfood title=Title catfood "
+      "publisher_url=https://catfood.com/ status=kSubscribed } }",
+      PrintToString(subscriptions_callback.RunAndGetResult()));
+}
+
+TEST_F(FeedApiSubscriptionsTest, ClearAllAbortsModelLoad) {
+  // In this test, we want to trigger model loading, hit ClearAllFinished, and
+  // then verify the model loading completes. This unfortunately requires a
+  // test-only hook.
+
+  // Store a subscribed feed.
+  WriteSubscribedFeeds(*store_, {MakeWebFeedInfo("catfood")});
+
+  // Trigger ClearAll. Just before processing ClearAllFinished, trigger a model
+  // load.
+  CallbackReceiver<std::vector<WebFeedMetadata>> subscriptions_callback;
+  web_feed_subscription_hooks.before_clear_all =
+      base::BindLambdaForTesting([&]() {
+        subscriptions().GetAllSubscriptions(subscriptions_callback.Bind());
+        EXPECT_FALSE(subscriptions_callback.called());
+        EXPECT_TRUE(subscriptions().is_loading_model_for_testing());
+      });
+  stream_->OnCacheDataCleared();
+  WaitForIdleTaskQueue();
+
+  // Model should be loaded, and GetAllSubscriptions should complete.
+  EXPECT_TRUE(subscriptions_callback.called());
+  EXPECT_FALSE(subscriptions().is_loading_model_for_testing());
+  // This call uses the model, and confirms it is non-null.
+  EXPECT_EQ(WebFeedSubscriptionStatus::kUnknown,
+            subscriptions().FindSubscriptionInfoById("catfood").status);
+  // Unlike the SubscribedWebFeedsAreLoadedFromStore test, there are no
+  // subscribed feeds loaded.
+  EXPECT_EQ("{}", PrintToString(*subscriptions_callback.GetResult()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSendsCanonicalUrl) {
@@ -1017,6 +1151,26 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsDuringRefresh) {
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       PrintToString(CheckAllSubscriptions()));
+}
+
+TEST_F(FeedApiSubscriptionsTest, FetchRecommendedWebFeedsAbortOnClearAll) {
+  // Test task ordering: ClearAllTask, FetchRecommendedWebFeedsTask.
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> callback;
+  InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});
+  subscriptions().RefreshRecommendedFeeds(callback.Bind());
+
+  EXPECT_FALSE(callback.RunAndGetResult().success);
+}
+
+TEST_F(FeedApiSubscriptionsTest, FetchSubscribedWebFeedsAbortOnClearAll) {
+  // Test task ordering: ClearAllTask, FetchSubscribedWebFeedsTask.
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> callback;
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  subscriptions().RefreshSubscriptions(callback.Bind());
+
+  EXPECT_FALSE(callback.RunAndGetResult().success);
 }
 
 TEST_F(FeedApiSubscriptionsTest, FieldTrialRegistered_OneFollow) {
