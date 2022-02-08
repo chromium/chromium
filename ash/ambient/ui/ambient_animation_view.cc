@@ -74,6 +74,8 @@ void AmbientAnimationView::Init() {
   SetUseDefaultFillLayout(true);
   animated_image_view_ =
       AddChildView(std::make_unique<views::AnimatedImageView>());
+  // Purely for performance reasons. Gains 3-4 fps.
+  animated_image_view_->SetPaintToLayer();
   base::span<const uint8_t> lottie_data_bytes =
       base::as_bytes(base::make_span(static_resources_->GetLottieData()));
   // Create a serializable SkottieWrapper since the SkottieWrapper may have to
