@@ -230,6 +230,8 @@ message OmniboxEventProto {
     QUERY_TILE = 19;
     // Clusters generated on-device from the user's Chrome history.
     HISTORY_CLUSTER = 20;
+    // Suggestions from history derived from input with automatic corrections.
+    HISTORY_FUZZY = 21;
   }
 
   // The result set displayed on the completion popup

@@ -147,6 +147,8 @@ metrics::OmniboxEventProto_ProviderType AutocompleteProvider::
       return metrics::OmniboxEventProto::ZERO_SUGGEST;
     case TYPE_VOICE_SUGGEST:
       return metrics::OmniboxEventProto::SEARCH;
+    case TYPE_HISTORY_FUZZY:
+      return metrics::OmniboxEventProto::HISTORY_FUZZY;
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type_;
       return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;
