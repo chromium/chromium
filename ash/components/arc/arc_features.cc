@@ -13,7 +13,7 @@ const base::Feature kBootCompletedBroadcastFeature{
 
 // Controls experimental Compat snap feature for ARC.
 const base::Feature kCompatSnapFeature{"ArcCompatSnapFeature",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls experimental Custom Tabs feature for ARC.
 const base::Feature kCustomTabsExperimentFeature{

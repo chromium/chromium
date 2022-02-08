@@ -452,8 +452,6 @@ TEST_F(ArcResizeLockManagerTest, UpdateCompatModeButton) {
 // Tests that compatible window snapping is properly enabled for resize-locked
 // windows.
 TEST_F(ArcResizeLockManagerTest, TestCompatWindowSnap) {
-  base::test::ScopedFeatureList feature_list{arc::kCompatSnapFeature};
-
   auto arc_window = CreateFakeWindow(true);
   arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
 
@@ -479,6 +477,9 @@ TEST_F(ArcResizeLockManagerTest, TestCompatWindowSnap) {
 // Tests that compatible window snapping is properly disabled if the flag is
 // disabled.
 TEST_F(ArcResizeLockManagerTest, TestCompatWindowSnapWithFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature({arc::kCompatSnapFeature});
+
   auto arc_window = CreateFakeWindow(true);
   arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
   arc_window->SetProperty(aura::client::kResizeBehaviorKey,
