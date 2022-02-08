@@ -53,9 +53,17 @@ void ArcPredictorAppLaunchHandler::AddPendingApp(
   app_info->arc_session_id = arc_session_id;
   restore_data()->AddAppLaunchInfo(std::move(app_info));
   auto app_window_info = std::make_unique<app_restore::WindowInfo>();
+
+  // The bounds should be |WindowInfo::ArcExtraInfo::bounds_in_root|, but here
+  // we always launch the window in corresponding display, so for avoid
+  // initialize nest struct here we use |current_bounds| (the original sementic
+  // is bounds in global coordinate) instead.
   if (window_info->bounds.has_value())
     app_window_info->current_bounds = window_info->bounds.value();
+
   app_window_info->display_id = display_id;
+  app_window_info->window_state_type =
+      static_cast<chromeos::WindowStateType>(window_info->state);
   restore_data()->ModifyWindowInfo(app_id, arc_session_id, *app_window_info);
 }
 
