@@ -220,22 +220,25 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
   Tutorial::Builder builder;
   builder.SetContext(context);
 
-  int visible_step_count = 0;
-  for (const auto& step : description.steps) {
-    if (step.ShouldShowBubble())
-      visible_step_count++;
-  }
-  DCHECK(visible_step_count > 0);
+  // Last step doesn't have a progress counter.
+  const int max_progress =
+      std::count_if(description.steps.begin(), description.steps.end(),
+                    [](const auto& step) { return step.ShouldShowBubble(); }) -
+      1;
 
   int current_step = 0;
   for (const auto& step : description.steps) {
+    const bool is_last_step = &step == &description.steps.back();
+    if (!is_last_step && step.ShouldShowBubble())
+      ++current_step;
+    const auto progress =
+        !is_last_step && max_progress > 0
+            ? absl::make_optional(std::make_pair(current_step, max_progress))
+            : absl::nullopt;
     builder.AddStep(Tutorial::StepBuilder::BuildFromDescriptionStep(
-        step, std::pair<int, int>(current_step, visible_step_count - 1),
-        &step == &description.steps.back(), tutorial_service));
-    if (step.ShouldShowBubble())
-      current_step++;
+        step, progress, is_last_step, tutorial_service));
   }
-  DCHECK(visible_step_count == current_step);
+  DCHECK_EQ(current_step, max_progress);
 
   builder.SetAbortedCallback(base::BindOnce(
       [](TutorialService* tutorial_service, ui::TrackedElement* last_element,

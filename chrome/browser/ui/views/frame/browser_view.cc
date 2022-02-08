@@ -4043,6 +4043,13 @@ BrowserFeaturePromoController* BrowserView::GetFeaturePromoController() {
   return feature_promo_controller_.get();
 }
 
+bool BrowserView::IsFeaturePromoActive(const base::Feature& iph_feature,
+                                       bool include_continued_promos) const {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->IsPromoActive(iph_feature,
+                                                  include_continued_promos);
+}
+
 bool BrowserView::MaybeShowFeaturePromo(
     const base::Feature& iph_feature,
     FeaturePromoSpecification::StringReplacements body_text_replacements,
@@ -4060,10 +4067,8 @@ bool BrowserView::CloseFeaturePromo(const base::Feature& iph_feature) {
 
 FeaturePromoController::PromoHandle BrowserView::CloseFeaturePromoAndContinue(
     const base::Feature& iph_feature) {
-  if (!feature_promo_controller_ ||
-      !feature_promo_controller_->BubbleIsShowing(iph_feature)) {
+  if (!IsFeaturePromoActive(iph_feature))
     return FeaturePromoController::PromoHandle();
-  }
   return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
 }
 

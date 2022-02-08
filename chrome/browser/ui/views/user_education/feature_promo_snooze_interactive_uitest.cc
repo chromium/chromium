@@ -155,7 +155,7 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
           AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
     ASSERT_EQ(should_show,
-              promo_controller_->BubbleIsShowing(
+              promo_controller_->IsPromoActive(
                   feature_engagement::kIPHDesktopTabGroupsNewGroupFeature));
 
     // If shown, Tracker::Dismissed should be called eventually.

@@ -197,10 +197,13 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
   return bubble;
 }
 
-bool FeaturePromoControllerCommon::BubbleIsShowing(
-    const base::Feature& iph_feature) const {
-  return promo_bubble_ && promo_bubble_->is_open() &&
-         current_iph_feature_ == &iph_feature;
+bool FeaturePromoControllerCommon::IsPromoActive(
+    const base::Feature& iph_feature,
+    bool include_continued_promos) const {
+  if (current_iph_feature_ != &iph_feature)
+    return false;
+  return include_continued_promos ||
+         (promo_bubble_ && promo_bubble_->is_open());
 }
 
 bool FeaturePromoControllerCommon::CloseBubble(
@@ -399,6 +402,7 @@ void FeaturePromoControllerCommon::OnTutorialStarted(
   } else {
     DCHECK_EQ(current_iph_feature_, iph_feature);
     tutorial_promo_handle_ = CloseBubbleAndContinuePromo(*iph_feature);
+    DCHECK(tutorial_promo_handle_.is_valid());
     tutorial_service_->StartTutorial(
         tutorial_id, GetAnchorContext(),
         base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,

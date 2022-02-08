@@ -560,6 +560,9 @@ class BrowserView : public BrowserWindow,
   LocationBarView* GetLocationBarView() const;
 
   BrowserFeaturePromoController* GetFeaturePromoController() override;
+  bool IsFeaturePromoActive(
+      const base::Feature& iph_feature,
+      bool include_continued_promos = false) const override;
   bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},

@@ -342,6 +342,14 @@ FeaturePromoController* TestBrowserWindow::GetFeaturePromoController() {
   return feature_promo_controller_.get();
 }
 
+bool TestBrowserWindow::IsFeaturePromoActive(
+    const base::Feature& iph_feature,
+    bool include_continued_promos) const {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->IsPromoActive(iph_feature,
+                                                  include_continued_promos);
+}
+
 bool TestBrowserWindow::MaybeShowFeaturePromo(
     const base::Feature& iph_feature,
     FeaturePromoSpecification::StringReplacements body_text_replacements,

@@ -345,14 +345,14 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
 #endif
   EXPECT_EQ(should_show, promo_controller->MaybeShowPromo(
                              feature_engagement::kIPHProfileSwitchFeature));
-  EXPECT_EQ(should_show, promo_controller->BubbleIsShowing(
+  EXPECT_EQ(should_show, promo_controller->IsPromoActive(
                              feature_engagement::kIPHProfileSwitchFeature));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(promo_controller->BubbleIsShowing(
+  EXPECT_FALSE(promo_controller->IsPromoActive(
       feature_engagement::kIPHProfileSwitchFeature));
 }
 

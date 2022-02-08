@@ -574,6 +574,14 @@ class BrowserWindow : public ui::BaseWindow {
   // in-product help. Will return null in incognito and guest profiles.
   virtual FeaturePromoController* GetFeaturePromoController() = 0;
 
+  // Returns whether the promo bubble associated with `iph_feature` is visible.
+  // If `include_continued_promos` is true, will also return true if
+  // CloseFeaturePromoAndContinue() has been called to hide the bubble but the
+  // promo is still running in the background.
+  virtual bool IsFeaturePromoActive(
+      const base::Feature& iph_feature,
+      bool include_continued_promos = false) const = 0;
+
   // Maybe shows an in-product help promo. Returns true if the promo is shown.
   // In cases where there is no promo controller, immediately returns false.
   virtual bool MaybeShowFeaturePromo(

@@ -676,14 +676,14 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, DISABLED_PwaIntallIphSiteEngag
   BrowserFeaturePromoController* controller =
       BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the site is not highly engaged.
-  EXPECT_FALSE(controller->BubbleIsShowing(
+  EXPECT_FALSE(controller->IsPromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 
   // Manually set engagement score to be above IPH triggering threshold.
   site_engagement::SiteEngagementService::Get(profile())->AddPointsForTesting(
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
   OpenTab(app_url);
-  EXPECT_TRUE(controller->BubbleIsShowing(
+  EXPECT_TRUE(controller->IsPromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   BrowserFeaturePromoController* controller =
       BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the IPH is ignored recently.
-  EXPECT_FALSE(controller->BubbleIsShowing(
+  EXPECT_FALSE(controller->IsPromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 

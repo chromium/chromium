@@ -209,7 +209,7 @@ TEST_F(BrowserFeaturePromoControllerTest, AsksBackendToShowPromo) {
 
   EXPECT_FALSE(
       controller_->MaybeShowPromo(kTestIPHFeature, {}, close_callback.Get()));
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 }
 
@@ -218,7 +218,7 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsBubble) {
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
-  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
 }
 
@@ -237,7 +237,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   const bool result =
       controller_->DismissNonCriticalBubbleInRegion(non_overlapping_region);
   EXPECT_FALSE(result);
-  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,
@@ -254,7 +254,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   const bool result =
       controller_->DismissNonCriticalBubbleInRegion(overlapping_region);
   EXPECT_TRUE(result);
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,
@@ -277,7 +277,7 @@ TEST_F(BrowserFeaturePromoControllerTest, SnoozeServiceBlocksPromo) {
       .Times(0);
   snooze_service()->OnUserDismiss(kTestIPHFeature);
   EXPECT_FALSE(controller_->MaybeShowPromo(kTestIPHFeature));
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
   snooze_service()->Reset(kTestIPHFeature);
 }
@@ -296,14 +296,14 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsWhenRequested) {
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
 
-  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   views::test::WidgetDestroyedWaiter widget_observer(bubble->GetWidget());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   EXPECT_CALL(close_callback, Run()).Times(1);
 
   EXPECT_TRUE(controller_->CloseBubble(kTestIPHFeature));
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 
   // Ensure the widget does close.
@@ -323,7 +323,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
   EXPECT_FALSE(controller_->CloseBubble(kTutorialIPHFeature));
-  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
 }
 
@@ -341,7 +341,7 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsOnBubbleClosure) {
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
 
-  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   views::test::WidgetDestroyedWaiter widget_observer(bubble->GetWidget());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
@@ -349,7 +349,7 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsOnBubbleClosure) {
   bubble->GetWidget()->Close();
   widget_observer.Wait();
 
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 }
 
@@ -368,7 +368,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
 
-  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   views::test::WidgetDestroyedWaiter widget_observer(bubble->GetWidget());
 
   // First check that CloseBubbleAndContinuePromo() actually closes the
@@ -377,7 +377,9 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_CALL(close_callback, Run()).Times(1);
   FeaturePromoController::PromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature,
+                                         /* include_continued_promos =*/true));
   EXPECT_FALSE(GetPromoBubble());
 
   // Ensure the widget does close.
@@ -404,6 +406,8 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoHandleDismissesPromoOnRelease) {
   promo_handle.Release();
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
   EXPECT_FALSE(promo_handle);
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature,
+                                          /* include_continued_promos =*/true));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,
@@ -516,7 +520,7 @@ TEST_F(BrowserFeaturePromoControllerTest, TestCanBlockPromos) {
 
   auto lock = controller_->BlockPromosForTesting();
   EXPECT_FALSE(controller_->MaybeShowPromo(kTestIPHFeature));
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 }
 
@@ -528,7 +532,7 @@ TEST_F(BrowserFeaturePromoControllerTest, TestCanStopCurrentPromo) {
   EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
   auto lock = controller_->BlockPromosForTesting();
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 }
 
@@ -542,7 +546,7 @@ TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoBlocksNormalPromo) {
       .Times(0);
   EXPECT_FALSE(controller_->MaybeShowPromo(kTestIPHFeature));
 
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetCriticalPromoBubble());
 }
 
@@ -554,7 +558,7 @@ TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoPreemptsNormalPromo) {
   base::MockCallback<BubbleCloseCallback> close_callback;
   EXPECT_TRUE(
       controller_->MaybeShowPromo(kTestIPHFeature, {}, close_callback.Get()));
-  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
@@ -563,7 +567,7 @@ TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoPreemptsNormalPromo) {
   auto bubble =
       controller_->ShowCriticalPromo(DefaultBubbleParams(), GetAnchorElement());
   EXPECT_TRUE(bubble);
-  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetCriticalPromoBubble());
 }
 

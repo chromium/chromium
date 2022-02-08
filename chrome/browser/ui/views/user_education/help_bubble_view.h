@@ -75,7 +75,6 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   base::TimeDelta timeout_;
   base::OneShotTimer auto_close_timer_;
 
-  // (TODO) dpenning: move to using a OnceClosure.
   base::OnceClosure timeout_callback_;
 };
 

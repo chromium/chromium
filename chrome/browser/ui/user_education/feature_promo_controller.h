@@ -103,11 +103,12 @@ class FeaturePromoController {
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},
       BubbleCloseCallback close_callback = BubbleCloseCallback()) = 0;
 
-  // Returns whether a bubble is showing for the given IPH. Note that if
-  // this is false, a promo might still be in progress; for example, a
-  // promo may have continued into a menu in which case the bubble is no
-  // longer showing.
-  virtual bool BubbleIsShowing(const base::Feature& iph_feature) const = 0;
+  // Returns whether a bubble is showing for the given promo. If
+  // `include_continued_promos` is set, also returns true if a promo bubble has
+  // been hidden with CloseBubbleAndContinuePromo() but the promo is still
+  // active in the background.
+  virtual bool IsPromoActive(const base::Feature& iph_feature,
+                             bool include_continued_promos) const = 0;
 
   // If a bubble is showing for |iph_feature| close it and end the
   // promo. Does nothing otherwise. Returns true if a bubble was closed
@@ -176,7 +177,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       const base::Feature& iph_feature,
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},
       BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
-  bool BubbleIsShowing(const base::Feature& iph_feature) const override;
+  bool IsPromoActive(const base::Feature& iph_feature,
+                     bool include_continued_promos = false) const override;
   bool CloseBubble(const base::Feature& iph_feature) override;
   PromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
