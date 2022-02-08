@@ -213,8 +213,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   }
 
   if (empty_frame) {
-    root_surface->AttachBuffer(nullptr);
-    root_surface->ApplyPendingState();
+    // GPU channel has been destroyed. Do nothing for empty frames except that
+    // the frame should be marked as failed if it hasn't been presented yet.
     if (!frame->presentation_acked)
       frame->feedback = gfx::PresentationFeedback::Failure();
   } else {

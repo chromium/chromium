@@ -1941,8 +1941,8 @@ TEST_P(WaylandBufferManagerTest,
                                     bounds);
   Sync();
 
-  // Null buffer shall be attached when channel is destroyed.
-  EXPECT_CALL(*mock_surface, Attach(nullptr, _, _)).Times(1);
+  // The root surface shouldn't get null buffer attached.
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
   mock_surface->SendFrameCallback();
@@ -2067,10 +2067,9 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
 
   Sync();
 
-  // The root surface should not have the buffer detached.
-  EXPECT_FALSE(mock_surface->attached_buffer());
-
-  // The primary and secondary subsurfaces must be hidden.
+  // The root surface should still have the buffer attached....
+  EXPECT_TRUE(mock_surface->attached_buffer());
+  // ... and the primary and secondary subsurfaces must be hidden.
   EXPECT_FALSE(window_->primary_subsurface()->IsVisible());
   EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
   EXPECT_FALSE(window_->wayland_subsurfaces().begin()->get()->IsVisible());
