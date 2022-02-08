@@ -65,7 +65,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
           GetPairedDeviceName(device)));
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(
-      device::BluetoothUiSurface::kConnectionToast);
+      device::BluetoothUiSurface::kDisconnectedToast);
 }
 
 void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
@@ -79,7 +79,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
           GetPairedDeviceName(device)));
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(
-      device::BluetoothUiSurface::kDisconnectedToast);
+      device::BluetoothUiSurface::kConnectionToast);
 }
 
 void BluetoothDeviceStatusUiHandler::ShowToast(
