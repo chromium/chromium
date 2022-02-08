@@ -665,6 +665,10 @@ const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
 // Enable ChromeOS FuseBox service.
 const base::Feature kFuseBox{"FuseBox", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable GuestOS integration with the files app.
+const base::Feature kGuestOsFiles{"GuestOsFiles",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables handle of `closeView` message from Gaia. The message is
 // supposed to end the flow.
 const base::Feature kGaiaCloseViewMessage{"GaiaCloseViewMessage",
@@ -1605,6 +1609,10 @@ bool IsGaiaCloseViewMessageEnabled() {
 
 bool IsGaiaReauthEndpointEnabled() {
   return base::FeatureList::IsEnabled(kGaiaReauthEndpoint);
+}
+
+bool IsGuestOsFilesEnabled() {
+  return base::FeatureList::IsEnabled(kGuestOsFiles);
 }
 
 bool IsHideArcMediaNotificationsEnabled() {

@@ -997,5 +997,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->SetBoolKey("FUSEBOX",
                    base::FeatureList::IsEnabled(chromeos::features::kFuseBox));
 
+  dict->SetBoolKey("GUEST_OS", base::FeatureList::IsEnabled(
+                                   chromeos::features::kGuestOsFiles));
+
   dict->SetStringKey("UI_LOCALE", locale);
 }

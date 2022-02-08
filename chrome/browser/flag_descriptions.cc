@@ -4798,6 +4798,12 @@ const char kFullRestoreForLacrosDescription[] =
 const char kFuseBoxName[] = "Enable ChromeOS FuseBox service";
 const char kFuseBoxDescription[] = "ChromeOS FuseBox service.";
 
+const char kGuestOsFilesName[] =
+    "Enabled Guest OS Service + file manager integration";
+const char kGuestOsFilesDescription[] =
+    "The files app sources information about guests from the Guest OS service, "
+    "instead of querying each type individually";
+
 const char kHelpAppBackgroundPageName[] = "Help App Background Page";
 const char kHelpAppBackgroundPageDescription[] =
     "Enables the Background page in the help app. The background page is used "

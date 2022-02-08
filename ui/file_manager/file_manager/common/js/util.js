@@ -1370,6 +1370,14 @@ util.isFuseBoxEnabled = () => {
 };
 
 /**
+ * Returns true if GuestOsFiles flag is enabled.
+ * @return {boolean}
+ */
+util.isGuestOsEnabled = () => {
+  return loadTimeData.getBoolean('GUEST_OS');
+};
+
+/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of
