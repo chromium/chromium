@@ -436,15 +436,21 @@ std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
 void LayerTreeHost::WaitForProtectedSequenceCompletion() const {
   if (compositor_mode_ == CompositorMode::SINGLE_THREADED)
     return;
-  WaitForCommitCompletion();
+  WaitForCommitCompletion(/* for_protected_sequence */ true);
 }
 
-void LayerTreeHost::WaitForCommitCompletion() const {
+void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
   DCHECK(IsMainThread());
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
+    base::ElapsedTimer timer;
     commit_completion_event_->Wait();
     commit_completion_event_ = nullptr;
+    if (for_protected_sequence) {
+      waited_for_protected_sequence_ = true;
+      base::UmaHistogramMicrosecondsTimes(
+          "Compositing.MainThreadBlockedDuringCommitTime", timer.Elapsed());
+    }
   }
 }
 
@@ -463,16 +469,20 @@ bool LayerTreeHost::IsUsingLayerLists() const {
 }
 
 void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
-  DCHECK(IsMainThread());
   // This DCHECK ensures that commit_completion_event_.Wait() will not block.
   DCHECK(IsMainThread());
   DCHECK(!in_commit());
-  WaitForCommitCompletion();
+  WaitForCommitCompletion(/* for_protected_sequence */ false);
   client_->DidCommit(commit_timestamps.start, commit_timestamps.finish);
   if (did_complete_scale_animation_) {
     client_->DidCompletePageScaleAnimation();
     did_complete_scale_animation_ = false;
   }
+  if (compositor_mode_ == CompositorMode::THREADED) {
+    base::UmaHistogramBoolean("Compositing.DidMainThreadBlockDuringCommit",
+                              waited_for_protected_sequence_);
+  }
+  waited_for_protected_sequence_ = false;
 }
 
 void LayerTreeHost::NotifyTransitionRequestsFinished(

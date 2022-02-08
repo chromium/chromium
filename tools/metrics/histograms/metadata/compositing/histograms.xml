@@ -123,6 +123,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.DidMainThreadBlockDuringCommit" enum="Boolean"
+    expires_after="2022-11-09">
+  <owner>szager@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    Recorded on every commit. Indicates whether the renderer's main thread was
+    blocked waiting for the impl thread to commit. True indicates the main
+    thread did block.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.DirectRenderer.GL.DrawFrameUs"
     units="microseconds" expires_after="2022-06-26">
   <owner>weiliangc@chromium.org</owner>
@@ -446,6 +458,23 @@ chromium-metrics-reviews@google.com.
     scheduled first draw task for the current frame on Viz Compositor thread and
     the time when Gpu Thread started processing it. Recorded when swap
     completes. Only reported for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.MainThreadBlockedDuringCommitTime"
+    units="microseconds" expires_after="2022-11-09">
+  <owner>szager@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    The time that the renderer's main thread blocked waiting for the impl thread
+    to commit. This is only reported if the main thread blocked.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 

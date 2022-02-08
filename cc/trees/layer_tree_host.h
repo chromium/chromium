@@ -918,7 +918,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   bool DoUpdateLayers();
 
-  void WaitForCommitCompletion() const;
+  void WaitForCommitCompletion(bool for_protected_sequence) const;
 
   void UpdateDeferMainFrameUpdateInternal();
 
@@ -1017,6 +1017,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // A list of callbacks that need to be invoked when they are processed.
   base::flat_map<uint32_t, base::OnceClosure> document_transition_callbacks_;
+
+  // Set if WaitForCommitCompletion() was called before commit completes. Used
+  // for histograms.
+  mutable bool waited_for_protected_sequence_ = false;
 
   // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
   // objects.
