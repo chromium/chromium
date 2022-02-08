@@ -346,8 +346,7 @@ double CSSToLengthConversionData::ContainerWidthPercent() const {
     const_cast<ComputedStyle*>(style_)->SetHasContainerRelativeUnits();
   if (absl::optional<double> size = container_sizes_.Width())
     return *size / 100;
-  // TODO(crbug.com/1223030): Support "small viewport size".
-  return ViewportWidthPercent();
+  return SmallViewportWidthPercent();
 }
 
 double CSSToLengthConversionData::ContainerHeightPercent() const {
@@ -355,8 +354,7 @@ double CSSToLengthConversionData::ContainerHeightPercent() const {
     const_cast<ComputedStyle*>(style_)->SetHasContainerRelativeUnits();
   if (absl::optional<double> size = container_sizes_.Height())
     return *size / 100;
-  // // TODO(crbug.com/1223030): Support "small viewport size".
-  return ViewportHeightPercent();
+  return SmallViewportHeightPercent();
 }
 
 double CSSToLengthConversionData::ContainerInlineSizePercent() const {
