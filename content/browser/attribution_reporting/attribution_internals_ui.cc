@@ -22,8 +22,9 @@ AttributionInternalsUI::AttributionInternalsUI(WebUI* web_ui)
   // Initialize the UI with no bindings. Mojo bindings will be separately
   // granted to frames within this WebContents.
   web_ui->SetBindings(BINDINGS_POLICY_NONE);
-  WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIAttributionInternalsHost);
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIAttributionInternalsHost);
 
   source->AddResourcePath("attribution_internals.mojom-webui.js",
                           IDR_ATTRIBUTION_INTERNALS_MOJOM_JS);
@@ -35,7 +36,6 @@ AttributionInternalsUI::AttributionInternalsUI(WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
-  WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(), source);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AttributionInternalsUI)

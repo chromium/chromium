@@ -19,18 +19,15 @@ namespace content {
 PrerenderInternalsUI::PrerenderInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://prerender-internals source.
-  WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIPrerenderInternalsHost);
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIPrerenderInternalsHost);
 
   // Add required resources.
   source->AddResourcePath("prerender_internals.js", IDR_PRERENDER_INTERNALS_JS);
   source->AddResourcePath("prerender_internals.mojom-webui.js",
                           IDR_PRERENDER_INTERNALS_MOJO_JS);
   source->SetDefaultResource(IDR_PRERENDER_INTERNALS_HTML);
-
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, source);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrerenderInternalsUI)

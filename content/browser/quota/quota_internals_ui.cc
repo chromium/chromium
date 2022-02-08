@@ -17,8 +17,9 @@
 namespace content {
 
 QuotaInternalsUI::QuotaInternalsUI(WebUI* web_ui) : WebUIController(web_ui) {
-  WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIQuotaInternalsHost);
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIQuotaInternalsHost);
 
   source->AddResourcePaths(
       base::make_span(kQuotaInternalsResources, kQuotaInternalsResourcesSize));
@@ -28,9 +29,6 @@ QuotaInternalsUI::QuotaInternalsUI(WebUI* web_ui) : WebUIController(web_ui) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
-
-  WebContents* web_contents = web_ui->GetWebContents();
-  WebUIDataSource::Add(web_contents->GetBrowserContext(), source);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(QuotaInternalsUI)

@@ -78,8 +78,9 @@ void HandleWebUIRequestCallback(BrowserContext* current_context,
 NetworkErrorsListingUI::NetworkErrorsListingUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://network-errors source.
-  WebUIDataSource* html_source =
-      WebUIDataSource::Create(kChromeUINetworkErrorsListingHost);
+  WebUIDataSource* html_source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUINetworkErrorsListingHost);
 
   // Add required resources.
   html_source->UseStringsJs();
@@ -92,10 +93,6 @@ NetworkErrorsListingUI::NetworkErrorsListingUI(WebUI* web_ui)
       base::BindRepeating(&ShouldHandleWebUIRequestCallback),
       base::BindRepeating(&HandleWebUIRequestCallback,
                           web_ui->GetWebContents()->GetBrowserContext()));
-
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, html_source);
 }
 
 }  // namespace content

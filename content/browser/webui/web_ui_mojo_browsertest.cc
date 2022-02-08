@@ -89,26 +89,24 @@ class TestWebUIController : public WebUIController {
 
     web_ui->SetBindings(bindings);
     {
-      WebUIDataSource* data_source = WebUIDataSource::Create(kMojoWebUiHost);
+      WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(), kMojoWebUiHost);
       data_source->OverrideContentSecurityPolicy(
           network::mojom::CSPDirectiveName::ScriptSrc,
           "script-src chrome://resources 'self' 'unsafe-eval';");
       data_source->DisableTrustedTypesCSP();
       data_source->AddResourcePaths(kMojoWebUiResources);
       data_source->AddResourcePath("", IDR_WEB_UI_MOJO_HTML);
-      WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                           data_source);
     }
     {
-      WebUIDataSource* data_source = WebUIDataSource::Create(kDummyWebUiHost);
+      WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(), kDummyWebUiHost);
       data_source->SetRequestFilter(
           base::BindRepeating([](const std::string& path) { return true; }),
           base::BindRepeating([](const std::string& id,
                                  WebUIDataSource::GotDataCallback callback) {
             std::move(callback).Run(new base::RefCountedString);
           }));
-      WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                           data_source);
     }
   }
 

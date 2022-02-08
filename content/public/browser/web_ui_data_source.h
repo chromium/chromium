@@ -38,6 +38,15 @@ class WebUIDataSource {
  public:
   virtual ~WebUIDataSource() {}
 
+  // Calls `Create()` and `Add()` to internalize ownership of the
+  // WebUIDataSource instance. Callers just get a raw pointer, which they don't
+  // own. Prefer `CreateAndAdd` in new code.
+  CONTENT_EXPORT static WebUIDataSource* CreateAndAdd(
+      BrowserContext* browser_context,
+      const std::string& source_name);
+
+  // Creates a WebUIDataSource instance. Caller takes ownership of returned
+  // pointer. Prefer `CreateAndAdd()` when possible.
   CONTENT_EXPORT static WebUIDataSource* Create(const std::string& source_name);
 
   // Adds a WebUI data source to |browser_context|. TODO(dbeam): update this API
