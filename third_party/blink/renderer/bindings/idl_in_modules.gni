@@ -158,7 +158,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/credentialmanager/credentials_container.idl",
           "//third_party/blink/renderer/modules/credentialmanager/federated_credential.idl",
           "//third_party/blink/renderer/modules/credentialmanager/federated_credential_init.idl",
-          "//third_party/blink/renderer/modules/credentialmanager/federated_credential_logout_rps_request.idl",
+          "//third_party/blink/renderer/modules/credentialmanager/federated_credential_logout_request.idl",
           "//third_party/blink/renderer/modules/credentialmanager/federated_credential_request_options.idl",
           "//third_party/blink/renderer/modules/credentialmanager/federated_identity_provider.idl",
           "//third_party/blink/renderer/modules/credentialmanager/navigator_credentials.idl",

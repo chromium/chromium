@@ -2643,7 +2643,7 @@ interface FeaturePolicy
     method features
     method getAllowlistForFeature
 interface FederatedCredential : Credential
-    static method logoutRps
+    static method logout
     static method revoke
     attribute @@toStringTag
     getter approvedBy

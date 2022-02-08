@@ -52,8 +52,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
               const std::string& client_id,
               const std::string& account_id,
               blink::mojom::FederatedAuthRequest::RevokeCallback);
-  void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
-                 blink::mojom::FederatedAuthRequest::LogoutRpsCallback);
+  void Logout(std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
+              blink::mojom::FederatedAuthRequest::LogoutCallback);
 
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
@@ -100,7 +100,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   std::unique_ptr<WebContents> CreateIdpWebContents();
   void CompleteRequest(blink::mojom::RequestIdTokenStatus,
                        const std::string& id_token);
-  void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
+  void CompleteLogoutRequest(blink::mojom::LogoutStatus);
   void OnWellKnownFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
                                    IdpNetworkRequestManager::Endpoints);
   void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
@@ -191,8 +191,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   blink::mojom::FederatedAuthRequest::RequestIdTokenCallback
       auth_request_callback_;
 
-  base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
-  blink::mojom::FederatedAuthRequest::LogoutRpsCallback logout_callback_;
+  base::queue<blink::mojom::LogoutRequestPtr> logout_requests_;
+  blink::mojom::FederatedAuthRequest::LogoutCallback logout_callback_;
 
   blink::mojom::FederatedAuthRequest::RevokeCallback revoke_callback_;
 

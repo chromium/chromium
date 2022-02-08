@@ -27,7 +27,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "url/url_constants.h"
 
-using blink::mojom::LogoutRpsStatus;
+using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
 using blink::mojom::RevokeStatus;
@@ -295,11 +295,11 @@ void FederatedAuthRequestImpl::Revoke(
 // not problematic for any plausible use case, need not be strictly necessary
 // if there is a good way to not have to resource contention between requests.
 // https://crbug.com/1200581
-void FederatedAuthRequestImpl::LogoutRps(
-    std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
-    blink::mojom::FederatedAuthRequest::LogoutRpsCallback callback) {
+void FederatedAuthRequestImpl::Logout(
+    std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
+    blink::mojom::FederatedAuthRequest::LogoutCallback callback) {
   if (HasPendingRequest()) {
-    std::move(callback).Run(LogoutRpsStatus::kErrorTooManyRequests);
+    std::move(callback).Run(LogoutStatus::kErrorTooManyRequests);
     return;
   }
 
@@ -308,7 +308,7 @@ void FederatedAuthRequestImpl::LogoutRps(
   logout_callback_ = std::move(callback);
 
   if (logout_requests.empty()) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
+    CompleteLogoutRequest(LogoutStatus::kError);
     return;
   }
 
@@ -317,7 +317,7 @@ void FederatedAuthRequestImpl::LogoutRps(
       })) {
     bad_message::ReceivedBadMessage(render_frame_host_->GetProcess(),
                                     bad_message::FARI_LOGOUT_BAD_ENDPOINT);
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
+    CompleteLogoutRequest(LogoutStatus::kError);
     return;
   }
 
@@ -327,7 +327,7 @@ void FederatedAuthRequestImpl::LogoutRps(
 
   network_manager_ = CreateNetworkManager(origin_.GetURL());
   if (!network_manager_) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
+    CompleteLogoutRequest(LogoutStatus::kError);
     return;
   }
 
@@ -905,7 +905,7 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   logout_requests_.pop();
 
   if (!GetActiveSessionPermissionContext()) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
+    CompleteLogoutRequest(LogoutStatus::kError);
     return;
   }
 
@@ -919,7 +919,7 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
         logout_origin, origin_, account_id);
   } else {
     if (logout_requests_.empty()) {
-      CompleteLogoutRequest(LogoutRpsStatus::kSuccess);
+      CompleteLogoutRequest(LogoutStatus::kSuccess);
       return;
     }
 
@@ -929,7 +929,7 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
 
 void FederatedAuthRequestImpl::OnLogoutCompleted() {
   if (logout_requests_.empty()) {
-    CompleteLogoutRequest(LogoutRpsStatus::kSuccess);
+    CompleteLogoutRequest(LogoutStatus::kSuccess);
     return;
   }
 
@@ -1017,9 +1017,9 @@ void FederatedAuthRequestImpl::AddConsoleErrorMessage(
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(
-    blink::mojom::LogoutRpsStatus status) {
+    blink::mojom::LogoutStatus status) {
   network_manager_.reset();
-  base::queue<blink::mojom::LogoutRpsRequestPtr>().swap(logout_requests_);
+  base::queue<blink::mojom::LogoutRequestPtr>().swap(logout_requests_);
   if (logout_callback_)
     std::move(logout_callback_).Run(status);
 }

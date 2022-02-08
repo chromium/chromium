@@ -37,9 +37,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using blink::mojom::LogoutRpsRequest;
-using blink::mojom::LogoutRpsRequestPtr;
-using blink::mojom::LogoutRpsStatus;
+using blink::mojom::LogoutRequest;
+using blink::mojom::LogoutRequestPtr;
+using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
 using blink::mojom::RevokeStatus;
@@ -390,21 +390,20 @@ class AuthRequestCallbackHelper {
 };
 
 // Helper class for receiving the Logout method callback.
-class LogoutRpsRequestCallbackHelper {
+class LogoutRequestCallbackHelper {
  public:
-  LogoutRpsRequestCallbackHelper() = default;
-  ~LogoutRpsRequestCallbackHelper() = default;
+  LogoutRequestCallbackHelper() = default;
+  ~LogoutRequestCallbackHelper() = default;
 
-  LogoutRpsRequestCallbackHelper(const LogoutRpsRequestCallbackHelper&) =
+  LogoutRequestCallbackHelper(const LogoutRequestCallbackHelper&) = delete;
+  LogoutRequestCallbackHelper& operator=(const LogoutRequestCallbackHelper&) =
       delete;
-  LogoutRpsRequestCallbackHelper& operator=(
-      const LogoutRpsRequestCallbackHelper&) = delete;
 
-  LogoutRpsStatus status() const { return status_; }
+  LogoutStatus status() const { return status_; }
 
   // This can only be called once per lifetime of this object.
-  base::OnceCallback<void(LogoutRpsStatus)> callback() {
-    return base::BindOnce(&LogoutRpsRequestCallbackHelper::ReceiverMethod,
+  base::OnceCallback<void(LogoutStatus)> callback() {
+    return base::BindOnce(&LogoutRequestCallbackHelper::ReceiverMethod,
                           base::Unretained(this));
   }
 
@@ -417,7 +416,7 @@ class LogoutRpsRequestCallbackHelper {
   }
 
  private:
-  void ReceiverMethod(LogoutRpsStatus status) {
+  void ReceiverMethod(LogoutStatus status) {
     status_ = status;
     was_called_ = true;
     wait_for_callback_loop_.Quit();
@@ -425,7 +424,7 @@ class LogoutRpsRequestCallbackHelper {
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  LogoutRpsStatus status_;
+  LogoutStatus status_;
 };
 
 // Helper class for receiving the Revoke method callback.
@@ -466,9 +465,9 @@ class RevokeRequestCallbackHelper {
   RevokeStatus status_;
 };
 
-LogoutRpsRequestPtr MakeLogoutRequest(const std::string& endpoint,
-                                      const std::string& account_id) {
-  auto request = LogoutRpsRequest::New();
+LogoutRequestPtr MakeLogoutRequest(const std::string& endpoint,
+                                   const std::string& account_id) {
+  auto request = LogoutRequest::New();
   request->url = GURL(endpoint);
   request->account_id = account_id;
   return request;
@@ -523,15 +522,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return std::make_pair(auth_helper.status(), auth_helper.token());
   }
 
-  LogoutRpsStatus PerformLogoutRequest(
-      std::vector<LogoutRpsRequestPtr> logout_requests) {
+  LogoutStatus PerformLogoutRequest(
+      std::vector<LogoutRequestPtr> logout_requests) {
     auth_request_service_->GetImplForTesting()
         ->SetActiveSessionPermissionDelegateForTests(
             mock_active_session_permission_delegate_.get());
 
-    LogoutRpsRequestCallbackHelper logout_helper;
-    request_remote_->LogoutRps(std::move(logout_requests),
-                               logout_helper.callback());
+    LogoutRequestCallbackHelper logout_helper;
+    request_remote_->Logout(std::move(logout_requests),
+                            logout_helper.callback());
     logout_helper.WaitForCallback();
     return logout_helper.status();
   }
@@ -718,9 +717,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   int& logout_return_count() { return logout_return_count_; }
-  std::vector<LogoutRpsRequestPtr>& logout_requests() {
-    return logout_requests_;
-  }
+  std::vector<LogoutRequestPtr>& logout_requests() { return logout_requests_; }
   std::vector<bool>& logout_session_permissions() {
     return logout_session_permissions_;
   }
@@ -816,7 +813,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   // Test case storage for Logout tests.
   int logout_return_count_ = 0;
-  std::vector<LogoutRpsRequestPtr> logout_requests_;
+  std::vector<LogoutRequestPtr> logout_requests_;
   std::vector<bool> logout_session_permissions_;
 
   // Storage for displayed accounts
@@ -916,7 +913,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutSuccessMultiple) {
 
   SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(std::move(logout_requests()));
-  EXPECT_EQ(logout_response, LogoutRpsStatus::kSuccess);
+  EXPECT_EQ(logout_response, LogoutStatus::kSuccess);
 }
 
 // Test Logout without session permission granted.
@@ -931,7 +928,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutWithoutPermission) {
 
   SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(std::move(logout_requests()));
-  EXPECT_EQ(logout_response, LogoutRpsStatus::kSuccess);
+  EXPECT_EQ(logout_response, LogoutStatus::kSuccess);
 }
 
 // Test Logout method with an empty endpoint vector.
@@ -940,7 +937,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutNoEndpoints) {
 
   SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(std::move(logout_requests()));
-  EXPECT_EQ(logout_response, LogoutRpsStatus::kError);
+  EXPECT_EQ(logout_response, LogoutStatus::kError);
 }
 
 // Tests for Login State

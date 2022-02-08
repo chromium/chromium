@@ -40,7 +40,7 @@ enum RequestIdTokenStatus {
   kError,
 };
 
-enum LogoutRpsStatus {
+enum LogoutStatus {
   kSuccess,
   kErrorTooManyRequests,
   kError,
@@ -57,7 +57,7 @@ enum RequestMode {
 };
 
 // The details of a single logout request from an identity provider.
-struct LogoutRpsRequest {
+struct LogoutRequest {
   // URL to which the request will be sent. The origin is validated to
   // have an associated active session.
   url.mojom.Url url;
@@ -95,5 +95,5 @@ interface FederatedAuthRequest {
 
   // Contact the list of Relying Party logout endpoints and account IDs to
   // attempt to initiate user logout.
-  LogoutRps(array<LogoutRpsRequest> rp_logout_requests) => (LogoutRpsStatus status);
+  Logout(array<LogoutRequest> rp_logout_requests) => (LogoutStatus status);
 };

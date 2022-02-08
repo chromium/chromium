@@ -53,7 +53,7 @@ class MODULES_EXPORT CredentialManagerProxy
 
   mojom::blink::FederatedAuthRequest* FedCmGetRequest();
 
-  mojom::blink::FederatedAuthRequest* FedCmLogoutRpsRequest();
+  mojom::blink::FederatedAuthRequest* FedCmLogoutRequest();
 
   void Trace(Visitor*) const override;
 

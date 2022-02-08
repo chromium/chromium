@@ -54,8 +54,8 @@ class CONTENT_EXPORT FederatedAuthRequestService
               const std::string& client_id,
               const std::string& account_id,
               RevokeCallback callback) override;
-  void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
-                 LogoutRpsCallback) override;
+  void Logout(std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
+              LogoutCallback) override;
 
   FederatedAuthRequestImpl* GetImplForTesting() { return impl_.get(); }
 
