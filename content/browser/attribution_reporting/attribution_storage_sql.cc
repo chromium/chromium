@@ -288,6 +288,8 @@ absl::optional<SourceToAttribute> ReadSourceToAttribute(
 // expected ordering of columns used for the input to this function.
 absl::optional<StoredSource> ReadSourceFromStatement(
     sql::Statement& statement) {
+  DCHECK_EQ(statement.ColumnCount(), 11);
+
   StoredSource::Id source_id(statement.ColumnInt64(0));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(1));
   url::Origin impression_origin = DeserializeOrigin(statement.ColumnString(2));
@@ -355,7 +357,7 @@ AttributionStorageSql::DeactivateSources(
     static constexpr char kGetSourcesToReturnSql[] =
         "SELECT impression_id,impression_data,impression_origin,"
         "conversion_origin,reporting_origin,impression_time,expiry_time,"
-        "source_type,attributed_truthfully,priority "
+        "source_type,attributed_truthfully,priority,debug_key "
         "FROM impressions "
         DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
         "WHERE conversion_destination = ? AND reporting_origin = ? AND "
@@ -885,6 +887,8 @@ namespace {
 // ordering of columns used for the input to this function.
 absl::optional<AttributionReport> ReadReportFromStatement(
     sql::Statement& statement) {
+  DCHECK_EQ(statement.ColumnCount(), 19);
+
   uint64_t trigger_data = DeserializeUint64(statement.ColumnInt64(0));
   base::Time trigger_time = statement.ColumnTime(1);
   base::Time report_time = statement.ColumnTime(2);
@@ -1046,6 +1050,8 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   auto delete_sources_from_paged_select =
       [this](sql::Statement& statement)
           VALID_CONTEXT_REQUIRED(sequence_checker_) -> bool {
+    DCHECK_EQ(statement.ColumnCount(), 1);
+
     while (true) {
       std::vector<StoredSource::Id> source_ids;
       while (statement.Step()) {
