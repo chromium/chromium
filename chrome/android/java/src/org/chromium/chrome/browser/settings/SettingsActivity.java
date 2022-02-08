@@ -29,6 +29,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
+import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
@@ -154,6 +155,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         configureWideDisplayStyle();
         setStatusBarColor();
         initBottomSheet();
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), this::handleBackPressed);
     }
 
     @Override
@@ -334,18 +336,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
+    private boolean handleBackPressed() {
         Fragment activeFragment = getMainFragment();
-        if (!(activeFragment instanceof OnBackPressedListener)) {
-            super.onBackPressed();
-            return;
-        }
+        if (!(activeFragment instanceof OnBackPressedListener)) return false;
         OnBackPressedListener listener = (OnBackPressedListener) activeFragment;
-        if (!listener.onBackPressed()) {
-            // Fragment hasn't handled this event, fall back to AppCompatActivity handling.
-            super.onBackPressed();
-        }
+        return listener.onBackPressed();
     }
 
     @Override

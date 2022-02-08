@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 import android.os.Bundle;
 
+import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactoryHelper;
@@ -77,6 +78,8 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         setContentView(mDownloadCoordinator.getView());
         if (!showPrefetchContent) mDownloadCoordinator.updateForUrl(mCurrentUrl);
         mDownloadCoordinator.addObserver(mUiObserver);
+        BackPressHelper.create(
+                this, getOnBackPressedDispatcher(), mDownloadCoordinator::onBackPressed);
     }
 
     @Override
@@ -90,12 +93,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         super.onResume();
         ProfileKey profileKey = IncognitoUtils.getProfileKeyFromOTRProfileID(mOtrProfileID);
         DownloadUtils.checkForExternallyRemovedDownloads(profileKey);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mDownloadCoordinator.onBackPressed()) return;
-        super.onBackPressed();
     }
 
     @Override
