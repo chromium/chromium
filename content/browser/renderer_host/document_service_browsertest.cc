@@ -8,6 +8,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -66,6 +67,11 @@ IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
                        NotClosedInPrerenderingActivation) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
+  // The test assumes documents and their DocumentServices get deleted after
+  // non-activation navigations. To ensure this, disable back/forward cache.
+  DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -73,10 +79,6 @@ IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
   int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
   RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
-  // We should disable proactive BrowsingInstance swap for the navigation below
-  // to ensure that the speculative RFH is going to use the same
-  // BrowsingInstance as the original RFH and it's not replaced on navigation.
-  DisableProactiveBrowsingInstanceSwapFor(prerendered_frame_host);
 
   mojo::Remote<mojom::Echo> echo_remote;
   bool echo_deleted = false;

@@ -73,6 +73,8 @@ const char* BrowsingInstanceSwapResultToString(
         kNo_UnloadHandlerExistsOnSameSiteNavigation:
       return "BI not swapped - unload handler exists and the navigation is "
              "same-site";
+    case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
+      return "BI not swapped - not a primary main frame";
   }
 }
 

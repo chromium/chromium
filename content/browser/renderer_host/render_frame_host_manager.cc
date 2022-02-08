@@ -253,6 +253,9 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
         kNo_UnloadHandlerExistsOnSameSiteNavigation:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_NO_UNLOAD_HANDLER_EXISTS_ON_SAME_SITE_NAVIGATION;
+    case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_PRIMARY_MAIN_FRAME;
   }
 }
 
@@ -1670,9 +1673,9 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
       !IsBackForwardCacheEnabled())
     return ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled;
 
-  // Only main frames are eligible to swap BrowsingInstances.
-  if (!frame_tree_node_->IsMainFrame())
-    return ShouldSwapBrowsingInstance::kNo_NotMainFrame;
+  // Only primary main frames are eligible to swap BrowsingInstances.
+  if (frame_tree_node_->GetFrameType() != FrameType::kPrimaryMainFrame)
+    return ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame;
 
   // If the frame has not committed any navigation yet, we should not try to do
   // a proactive swap.
