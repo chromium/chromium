@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -91,7 +92,10 @@ std::u16string VirtualCardEnrollBubbleControllerImpl::GetAcceptButtonText()
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetDeclineButtonText()
     const {
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL);
+      virtual_card_enrollment_fields_->virtual_card_enrollment_source ==
+              VirtualCardEnrollmentSource::kSettingsPage
+          ? IDS_CANCEL
+          : IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL);
 }
 
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetLearnMoreLinkText()
