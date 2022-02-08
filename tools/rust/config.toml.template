@@ -8,6 +8,10 @@ changelog-seen = 2
 [llvm]
 download-ci-llvm = false
 
+# Doesn't affect LLVM build (which we don't do) but rather how rustc_llvm crate
+# is linked.
+static-libstdcpp = true
+
 [rust]
 download-rustc = false
 channel = "dev"

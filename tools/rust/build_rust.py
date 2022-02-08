@@ -2,7 +2,7 @@
 # Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-'''Builds rustc in-tree, linked against an in-tree build of LLVM.
+'''Assembles a Rust toolchain in-tree linked against in-tree LLVM.
 
 !!! DO NOT USE IN PRODUCTION
 Builds a Rust toolchain bootstrapped from an untrusted rustc build.
@@ -23,7 +23,8 @@ https://rustc-dev-guide.rust-lang.org/building/bootstrapping.html
 
 This script clones the Rust repository, checks it out to a defined revision,
 then builds stage 1 rustc and libstd using the LLVM build from
-//tools/clang/scripts/build.py.
+//tools/clang/scripts/build.py or clang-libs fetched from
+//tools/clang/scripts/update.py.
 
 Ideally our build would begin with our own trusted stage0 rustc. As it is
 simpler, for now we use an official build.
@@ -33,9 +34,11 @@ TODO(https://crbug.com/1245714): Do a proper 3-stage build
 '''
 
 import argparse
+import collections
 import os
 import sys
 import pipes
+import shutil
 import string
 import subprocess
 
@@ -45,8 +48,10 @@ from pathlib import Path
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
+
 from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
+import build
 
 # Trunk on 1/31/2021
 RUST_REVISION = '24b8bb1'
@@ -60,6 +65,7 @@ RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
+RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'config.toml.template')
 
@@ -133,28 +139,39 @@ def Configure():
     output.write(template.substitute(subs))
 
 
-def RunXPy(sub, args, verbose=False):
+def RunXPy(sub, args, gcc_toolchain_path, verbose):
   ''' Run x.py, Rust's build script'''
   clang_path = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang')
-  RUSTENV = os.environ
+  RUSTENV = collections.defaultdict(str, os.environ)
   RUSTENV['AR'] = os.path.join(LLVM_BUILD_DIR, 'bin', 'llvm-ar')
   RUSTENV['CC'] = clang_path
   RUSTENV['CXX'] = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang++')
   RUSTENV['LD'] = clang_path
+  # We use these flags to avoid linking with the system libstdc++.
+  gcc_toolchain_flag = f'--gcc-toolchain={gcc_toolchain_path}' if gcc_toolchain_path else ''
+  static_libstdcpp_flag = '-static-libstdc++'
+  # These affect how C/C++ files are compiled, but not Rust libs/exes.
+  RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
+  RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag} {static_libstdcpp_flag}'
+  # These affect how Rust crates are built. A `-Clink-arg=<foo>` arg passes foo
+  # to the clang invocation used to link.
+  #
   # TODO(https://crbug.com/1281664): remove --no-gc-sections argument.
   # Workaround for a bug causing std::env::args() to return an empty list,
   # making Rust binaries unable to take command line arguments. Fix is landed
   # upstream in LLVM but hasn't rolled into Chromium. Also see:
   # * https://github.com/rust-lang/rust/issues/92181
   # * https://reviews.llvm.org/D116528
-  RUSTENV[
-      'RUSTFLAGS_BOOTSTRAP'] = '-Clinker=%s -Clink-arg=-fuse-ld=lld -Clink-arg=-Wl,--no-gc-sections' % clang_path
+  RUSTENV['RUSTFLAGS_BOOTSTRAP'] = (
+      f'-Clinker={clang_path} -Clink-arg=-fuse-ld=lld '
+      f'-Clink-arg=-Wl,--no-gc-sections -Clink-arg={gcc_toolchain_flag} '
+      f'-Clink-arg={static_libstdcpp_flag}')
   RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] = RUSTENV['RUSTFLAGS_BOOTSTRAP']
   os.chdir(RUST_SRC_DIR)
   cmd = [sys.executable, 'x.py', sub]
   if verbose:
     cmd.append('-v')
-  RunCommand(cmd + args)
+  RunCommand(cmd + args, env=RUSTENV)
 
 
 def main():
@@ -186,14 +203,26 @@ def main():
   if args.fetch_llvm_libs:
     UpdatePackage('clang-libs', GetDefaultHostOs())
 
+  # Fetch GCC package to build against same libstdc++ as Clang. This function
+  # will only download it if necessary.
+  args.gcc_toolchain = None
+  build.MaybeDownloadHostGcc(args)
+
   if not args.skip_checkout:
     CheckoutRust(RUST_REVISION, RUST_SRC_DIR)
+
+  # Delete vendored sources and .cargo subdir. Otherwise when updating an
+  # existing checkout, vendored sources will not be re-fetched leaving deps out
+  # of date.
+  for dir in [os.path.join(RUST_SRC_DIR, d) for d in ['vendor', '.cargo']]:
+    if os.path.exists(dir):
+      shutil.rmtree(dir)
 
   # Set up config.toml in Rust source tree to configure build.
   Configure()
 
   if not args.skip_clean:
-    RunXPy('clean', [], verbose=args.verbose)
+    RunXPy('clean', [], args.gcc_toolchain, args.verbose)
 
   targets = [
       'library/proc_macro', 'library/std', 'src/tools/cargo',
@@ -201,19 +230,19 @@ def main():
   ]
 
   # Build stage 1 compiler and tools.
-  RunXPy('build', ['--stage', '1'] + targets, verbose=args.verbose)
+  RunXPy('build', ['--stage', '1'] + targets, args.gcc_toolchain, args.verbose)
 
   if not args.skip_test:
     # Run a subset of tests. Tell x.py to keep the rustc we already built.
     RunXPy('test', [
         '--stage', '1', '--keep-stage', '1', 'library/std', 'src/test/codegen',
         'src/test/ui'
-    ],
-           verbose=args.verbose)
+    ], args.gcc_toolchain, args.verbose)
 
   if not args.skip_install:
     RunXPy('install',
-           ['--stage', '1', '--keep-stage', '1'] + DISTRIBUTION_ARTIFACTS)
+           ['--stage', '1', '--keep-stage', '1'] + DISTRIBUTION_ARTIFACTS,
+           args.gcc_toolchain, args.verbose)
 
 
 if __name__ == '__main__':
