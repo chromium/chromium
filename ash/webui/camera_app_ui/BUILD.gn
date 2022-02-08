@@ -20,6 +20,8 @@ static_library("camera_app_ui") {
     "camera_app_ui.cc",
     "camera_app_ui.h",
     "camera_app_ui_delegate.h",
+    "camera_app_untrusted_ui.cc",
+    "camera_app_untrusted_ui.h",
     "resources.h",
     "url_constants.cc",
     "url_constants.h",

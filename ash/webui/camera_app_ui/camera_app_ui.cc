@@ -74,32 +74,6 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
   return source;
 }
 
-content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
-  content::WebUIDataSource* untrusted_source =
-      content::WebUIDataSource::Create(kChromeUIUntrustedCameraAppURL);
-  for (size_t i = 0; i < kAshCameraAppResourcesSize; i++) {
-    untrusted_source->AddResourcePath(kAshCameraAppResources[i].path,
-                                      kAshCameraAppResources[i].id);
-  }
-  untrusted_source->AddFrameAncestor(GURL(kChromeUICameraAppURL));
-
-  untrusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ConnectSrc,
-      std::string("connect-src http://www.google-analytics.com/ 'self';"));
-  untrusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc,
-      std::string("worker-src 'self';"));
-  // TODO(crbug/948834): Replace 'wasm-eval' with 'wasm-unsafe-eval'.
-  untrusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      std::string("script-src 'self' 'wasm-eval';"));
-  untrusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      std::string("trusted-types ga-js-static video-processor-js-static;"));
-
-  return untrusted_source;
-}
-
 // Translates the renderer-side source ID to video device id.
 void TranslateVideoDeviceId(
     const std::string& salt,
@@ -213,8 +187,6 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
   // Set up the data source.
   content::WebUIDataSource::Add(browser_context,
                                 CreateCameraAppUIHTMLSource(delegate_.get()));
-  content::WebUIDataSource::Add(browser_context,
-                                CreateUntrustedCameraAppUIHTMLSource());
 
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
