@@ -475,9 +475,6 @@ extern const char kColorProviderRedirectionForThemeProviderDescription[];
 extern const char kDesktopPWAsAdditionalWindowingControlsName[];
 extern const char kDesktopPWAsAdditionalWindowingControlsDescription[];
 
-extern const char kDesktopPWAsAppIconShortcutsMenuUIName[];
-extern const char kDesktopPWAsAppIconShortcutsMenuUIDescription[];
-
 extern const char kDesktopPWAsPrefixAppNameInWindowTitleName[];
 extern const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[];
 

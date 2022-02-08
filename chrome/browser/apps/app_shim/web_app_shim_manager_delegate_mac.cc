@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
@@ -351,11 +350,6 @@ WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(Profile* profile,
     return fallback_delegate_->GetAppShortcutsMenuItemInfos(profile, app_id);
 
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items;
-
-  if (!base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenuUI)) {
-    return dock_menu_items;
-  }
 
   DCHECK(profile);
 

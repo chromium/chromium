@@ -254,14 +254,6 @@ const base::Feature kPreinstalledWebAppDuplicationFixer{
     "PreinstalledWebAppDuplicationFixer", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-// Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS,
-// MacOS and Linux.
-const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
-    "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // API that allows PWAs manually minimizing, maximizing and restoring windows.
 const base::Feature kDesktopPWAsAdditionalWindowingControls{
     "DesktopPWAsAdditionalWindowingControls",

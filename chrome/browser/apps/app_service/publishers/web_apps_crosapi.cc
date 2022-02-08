@@ -21,7 +21,6 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -253,20 +252,16 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
     apps::AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
                          &menu_items);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenuUI)) {
-    if (!LogIfNotConnected(FROM_HERE)) {
-      std::move(callback).Run(std::move(menu_items));
-      return;
-    }
 
-    controller_->GetMenuModel(
-        app_id, base::BindOnce(&WebAppsCrosapi::OnGetMenuModelFromCrosapi,
-                               weak_factory_.GetWeakPtr(), app_id, menu_type,
-                               std::move(menu_items), std::move(callback)));
-  } else {
+  if (!LogIfNotConnected(FROM_HERE)) {
     std::move(callback).Run(std::move(menu_items));
+    return;
   }
+
+  controller_->GetMenuModel(
+      app_id, base::BindOnce(&WebAppsCrosapi::OnGetMenuModelFromCrosapi,
+                             weak_factory_.GetWeakPtr(), app_id, menu_type,
+                             std::move(menu_items), std::move(callback)));
 }
 
 void WebAppsCrosapi::OnGetMenuModelFromCrosapi(

@@ -823,11 +823,6 @@ const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[] =
     "Prefix the window title of installed PWAs with the name of the PWA. On "
     "ChromeOS this is visible only in the window/activity switcher.";
 
-const char kDesktopPWAsAppIconShortcutsMenuUIName[] =
-    "Desktop PWAs app icon shortcuts menu UI";
-const char kDesktopPWAsAppIconShortcutsMenuUIDescription[] =
-    "Show web app shortcuts in the shelf context menu";
-
 const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
 const char kDesktopPWAsRemoveStatusBarDescription[] =
     "Hides the status bar popup in Desktop PWA app windows.";

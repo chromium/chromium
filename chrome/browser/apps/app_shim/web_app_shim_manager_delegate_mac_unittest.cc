@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -381,34 +379,16 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
-  // Validate empty array when feature flag is off.
+  // Validate empty array when app does not have shortcut menus declared in the
+  // manifest.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kDesktopPWAsAppIconShortcutsMenuUI);
     auto shortcut_menu_items =
         shim_manager.GetAppShortcutsMenuItemInfos(profile(), AppId());
     EXPECT_EQ(0U, shortcut_menu_items.size());
   }
 
-  // Validate empty array when feature flag is on, and app does not have
-  // shortcut menus declared in the manifest.
+  // Validate array when app does declare shortcut menus in the manifest.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kDesktopPWAsAppIconShortcutsMenuUI);
-    auto shortcut_menu_items =
-        shim_manager.GetAppShortcutsMenuItemInfos(profile(), AppId());
-    EXPECT_EQ(0U, shortcut_menu_items.size());
-  }
-
-  // Validate array when feature flag is on, and app does declare shortcut menus
-  // in the manifest.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kDesktopPWAsAppIconShortcutsMenuUI);
-
     // Install a dummy app with shortcut menu items
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     WebAppShortcutsMenuItemInfo shortcut_info1;

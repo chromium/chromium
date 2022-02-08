@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -438,9 +437,7 @@ void WebApps::GetAppShortcutMenuModel(const std::string& app_id,
   }
 
   // Read shortcuts menu item icons from disk, if any.
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenuUI) &&
-      !web_app->shortcuts_menu_item_infos().empty()) {
+  if (!web_app->shortcuts_menu_item_infos().empty()) {
     provider()->icon_manager().ReadAllShortcutsMenuIcons(
         app_id, base::BindOnce(&WebApps::OnShortcutsMenuIconsRead,
                                base::AsWeakPtr<WebApps>(this), app_id,

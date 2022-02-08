@@ -7273,15 +7273,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kLauncherAppSort)},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-    {"enable-desktop-pwas-app-icon-shortcuts-menu-ui",
-     flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIName,
-     flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIDescription,
-     kOsCrOS | kOsMac | kOsLinux | kOsFuchsia,
-     FEATURE_VALUE_TYPE(features::kDesktopPWAsAppIconShortcutsMenuUI)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-input-event-logging",
      flag_descriptions::kEnableInputEventLoggingName,
