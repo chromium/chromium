@@ -46,10 +46,6 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
       return true;
     }
 
-    if (ToScriptWrappable(traced)->HasEventListeners()) {
-      return true;
-    }
-
     return false;
   }
 
