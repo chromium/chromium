@@ -1688,9 +1688,6 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
 void ArcApps::ConvertAndPublishPackageApps(
     const arc::mojom::ArcPackageInfo& package_info,
     bool update_icon) {
-  if (!package_info.permissions.has_value()) {
-    return;
-  }
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (prefs) {
     for (const auto& app_id :

@@ -82,8 +82,8 @@ struct ArcPackageInfo {
   // installed on the browser side.
   [MinVersion=38] WebAppInfo? web_app_info;
 
-  // Deprecated in favour of |permission_states|
-  [MinVersion=41] map<AppPermission, bool>? permissions;
+  // Deprecated and unused in favour of |permission_states|
+  [MinVersion=41] map<AppPermission, bool>? deprecated_permissions;
 
   [MinVersion=43] map<AppPermission, PermissionState>? permission_states;
 };

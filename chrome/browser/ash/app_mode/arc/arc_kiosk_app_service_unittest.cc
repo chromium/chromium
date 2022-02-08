@@ -141,7 +141,6 @@ class ArcKioskAppServiceTest : public testing::Test {
     package->last_backup_time = 1;
     package->sync = false;
     package->system = false;
-    package->permissions = base::flat_map<::arc::mojom::AppPermission, bool>();
     return package;
   }
 

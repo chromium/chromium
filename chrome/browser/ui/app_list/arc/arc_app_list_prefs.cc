@@ -1531,19 +1531,6 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
           std::move(permission_state_dict));
     }
     package_dict->SetKey(kPermissionStates, std::move(permissions_dict));
-  } else if (package.permissions.has_value()) {
-    // Support deprecated format
-    for (const auto& permission : package.permissions.value()) {
-      base::DictionaryValue permission_state_dict;
-      permission_state_dict.SetBoolKey(kPermissionStateGranted,
-                                       permission.second);
-      // Assume deprecated format is not managed.
-      permission_state_dict.SetBoolKey(kPermissionStateManaged, false);
-      permissions_dict.SetKey(
-          base::NumberToString(static_cast<int64_t>(permission.first)),
-          std::move(permission_state_dict));
-    }
-    package_dict->SetKey(kPermissionStates, std::move(permissions_dict));
   } else {
     // Remove kPermissionStates from dict if there are no permissions.
     package_dict->RemoveKey(kPermissionStates);

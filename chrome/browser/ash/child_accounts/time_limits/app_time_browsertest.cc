@@ -6,7 +6,6 @@
 #include <string>
 
 #include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
@@ -54,7 +53,6 @@ arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
   package->last_backup_time = 1;
   package->sync = false;
   package->system = false;
-  package->permissions = base::flat_map<::arc::mojom::AppPermission, bool>();
   return package;
 }
 
