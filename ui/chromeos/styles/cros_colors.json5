@@ -472,6 +472,12 @@
     toast_icon_color: "$color_primary_inverted",
     toast_icon_color_warning: "$color_warning_inverted",
     toast_icon_color_error: "$color_alert_inverted",
+
+    /* Drag selection box */
+    selection_outline: {
+      light: "rgba($black_rgb, 0.1)",
+      dark: "rgba($white_rgb, 0.12)",
+    }
   },
   opacities: {
     disabled_opacity: 0.38,

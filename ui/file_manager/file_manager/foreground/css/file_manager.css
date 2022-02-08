@@ -1370,12 +1370,11 @@ body.check-select #read-only-indicator {
   flex: auto;
 }
 
-/* TODO(crbug.com/1294713): Update with semantic color when available */
 #file-list .drag-selection-border {
   -webkit-box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 30%);
-  border: 2px solid rgba(255, 255, 255, 60%);
-  outline: 1px solid rgba(0, 0, 0, 10%);
+  background-color: rgba(var(--cros-bg-color-rgb), 30%);
+  border: 2px solid rgba(var(--cros-bg-color-rgb), 60%);
+  outline: 1px solid var(--cros-selection-outline);
   position: absolute;
   z-index: 2;
 }
