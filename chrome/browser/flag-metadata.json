@@ -4016,7 +4016,7 @@
   {
     "name": "metrickit-crash-reports",
     "owners": [ "olivierrobin", "bling-flags@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 103 
   },
   {
     "name": "metrics-settings-android",
