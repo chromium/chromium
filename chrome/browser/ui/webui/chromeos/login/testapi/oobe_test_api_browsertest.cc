@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
@@ -181,7 +182,11 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, AdvanceToScreen) {
   // skipped.
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
-  ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    ash::OobeScreenWaiter(ash::ConsolidatedConsentScreenView::kScreenId).Wait();
+  else
+    ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
 
   test::OobeJS().ExecuteAsync(
       base::StringPrintf("OobeAPI.advanceToScreen('%s')",
@@ -194,7 +199,11 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, SkipPostLoginScreens) {
   // skipped.
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
-  ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    ash::OobeScreenWaiter(ash::ConsolidatedConsentScreenView::kScreenId).Wait();
+  else
+    ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
 
   test::OobeJS().ExecuteAsync("OobeAPI.skipPostLoginScreens()");
   login_mixin_.WaitForActiveSession();
