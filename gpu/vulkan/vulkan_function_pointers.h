@@ -69,6 +69,11 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
                                   uint32_t api_version,
                                   const gfx::ExtensionSet& enabled_extensions);
 
+  // The `Bind*` functions will acquires lock, so should not be called with
+  // with this lock held. Code that writes to members directly should take this
+  // lock as well.
+  base::Lock write_lock;
+
   base::NativeLibrary vulkan_loader_library = nullptr;
 
   // This is used to allow thread safe access to a given vulkan queue when

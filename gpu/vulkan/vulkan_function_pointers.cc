@@ -25,6 +25,8 @@ VulkanFunctionPointers::~VulkanFunctionPointers() = default;
 
 bool VulkanFunctionPointers::BindUnassociatedFunctionPointers(
     PFN_vkGetInstanceProcAddr proc) {
+  base::AutoLock lock(write_lock);
+
   if (proc) {
     DCHECK(!vulkan_loader_library);
     vkGetInstanceProcAddr = proc;
@@ -81,6 +83,7 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
+  base::AutoLock lock(write_lock);
   vkCreateDevice = reinterpret_cast<PFN_vkCreateDevice>(
       vkGetInstanceProcAddr(vk_instance, "vkCreateDevice"));
   if (!vkCreateDevice) {
@@ -367,6 +370,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     uint32_t api_version,
     const gfx::ExtensionSet& enabled_extensions) {
   DCHECK_GE(api_version, kVulkanRequiredApiVersion);
+  base::AutoLock lock(write_lock);
   // Device functions
   vkAllocateCommandBuffers = reinterpret_cast<PFN_vkAllocateCommandBuffers>(
       vkGetDeviceProcAddr(vk_device, "vkAllocateCommandBuffers"));

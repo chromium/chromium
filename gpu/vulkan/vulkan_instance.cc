@@ -75,6 +75,7 @@ VulkanInstance::~VulkanInstance() {
 bool VulkanInstance::Initialize(
     const std::vector<const char*>& required_extensions,
     const std::vector<const char*>& required_layers) {
+  init_called_ = true;
   PFN_vkGetInstanceProcAddr proc = nullptr;
   if (is_from_angle_) {
     proc = gl::QueryVkGetInstanceProcAddrFromANGLE();
@@ -433,6 +434,8 @@ void VulkanInstance::Destroy() {
   }
   vk_instance_ = VK_NULL_HANDLE;
 
+  if (!init_called_)
+    return;
   VulkanFunctionPointers* vulkan_function_pointers =
       gpu::GetVulkanFunctionPointers();
   if (vulkan_function_pointers->vulkan_loader_library) {

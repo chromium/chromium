@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
 
   VkInstance owned_vk_instance_ = VK_NULL_HANDLE;
   VkInstance vk_instance_ = VK_NULL_HANDLE;
+  bool init_called_ = false;
   bool debug_report_enabled_ = false;
 #if DCHECK_IS_ON()
   VkDebugReportCallbackEXT error_callback_ = VK_NULL_HANDLE;
