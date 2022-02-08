@@ -76,10 +76,14 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
 
   // Returns whether |url| is a lookalike, setting |match_type| and
   // |suggested_url| appropriately. Used in PerformChecks() on a per-URL basis.
+  // |get_domain_info_duration| should hold zero when IsLookalikeUrl() is
+  // invoked. After invocation, it will hold the duration spent in
+  // GetDomainInfo() if GetDomainInfo() was invoked.
   bool IsLookalikeUrl(const GURL& url,
                       const std::vector<DomainInfo>& engaged_sites,
                       LookalikeUrlMatchType* match_type,
-                      GURL* suggested_url);
+                      GURL* suggested_url,
+                      base::TimeDelta* get_domain_info_duration);
 
   // Shows a full page interstitial. |safe_domain| is the domain suggested as
   // safe by the interstitial. |lookalike_domain| is the domain that triggered

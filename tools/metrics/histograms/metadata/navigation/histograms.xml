@@ -1197,6 +1197,54 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram
+    name="NavigationSuggestion.GetDomainInfoDelayBeforeAllowingNavigation"
+    units="ms" expires_after="2022-07-03">
+  <owner>meacer@chromium.org</owner>
+  <owner>blundell@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the time duration that PerformChecks() spent in calls to
+    GetDomainInfo() before the navigation was ultimately allowed to proceed.
+    Recorded only for navigations that
+    LookalikeUrlNavigationThrottle::PerfomChecks() directly allows to proceed
+    (i.e., not those that result in showing interstitials and/or digital asset
+    manifest checks).
+  </summary>
+</histogram>
+
+<histogram
+    name="NavigationSuggestion.IsLookalikeUrlDelayBeforeAllowingNavigation"
+    units="ms" expires_after="2022-07-03">
+  <owner>meacer@chromium.org</owner>
+  <owner>blundell@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the time duration that PerformChecks() spent in calls to
+    IsLookalikeUrl() before the navigation was ultimately allowed to proceed.
+    Recorded only for navigations that
+    LookalikeUrlNavigationThrottle::PerfomChecks() directly allows to proceed
+    (i.e., not those that result in showing interstitials and/or digital asset
+    manifest checks).
+  </summary>
+</histogram>
+
+<histogram
+    name="NavigationSuggestion.PerformChecksDelayBeforeAllowingNavigation"
+    units="ms" expires_after="2022-07-03">
+  <owner>meacer@chromium.org</owner>
+  <owner>blundell@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the time duration the navigation was deferred while PerformChecks()
+    was executing before the navigation was ultimately allowed to proceed.
+    Recorded only for navigations that
+    LookalikeUrlNavigationThrottle::PerfomChecks() directly allows to proceed
+    (i.e., not those that result in showing interstitials and/or digital asset
+    manifest checks).
+  </summary>
+</histogram>
+
 <histogram name="NavigationSuggestion.UpdateEngagedSitesDeferTime" units="ms"
     expires_after="2022-07-03">
   <owner>meacer@chromium.org</owner>
