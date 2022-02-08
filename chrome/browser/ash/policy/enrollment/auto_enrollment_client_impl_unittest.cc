@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/testing_psm_rlwe_id_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -194,7 +195,8 @@ class AutoEnrollmentClientImplTest
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
-              power_initial, power_limit, psm_rlwe_test_client_factory_.get());
+              power_initial, power_limit, psm_rlwe_test_client_factory_.get(),
+              testing_psm_rlwe_id_provider_.get());
     }
   }
 
@@ -553,6 +555,9 @@ class AutoEnrollmentClientImplTest
   // only used for PSM during creating the client for initial enrollment.
   std::unique_ptr<TestingPrivateMembershipRlweClient::FactoryImpl>
       psm_rlwe_test_client_factory_;
+
+  // Sets the PSM RLWE ID directly for testing.
+  std::unique_ptr<TestingPsmRlweIdProvider> testing_psm_rlwe_id_provider_;
 
   base::HistogramTester histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
@@ -1671,15 +1676,13 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     ASSERT_EQ(local_state_->GetUserPref(prefs::kEnrollmentPsmResult), nullptr);
 
     // Create PSM test case, before setting up the base class, to construct the
-    // PSM RLWE testing client factory.
+    // PSM RLWE testing client factory and its RLWE ID.
     CreatePsmTestCase();
 
     // Set up the base class AutoEnrollmentClientImplTest after creating the PSM
-    // RLWE client factory for testing in |psm_rlwe_test_client_factory_|.
+    // RLWE client factory for testing in |psm_rlwe_test_client_factory_|, and
+    // PSM RLWE ID provider in |testing_psm_rlwe_id_provider_|.
     AutoEnrollmentClientImplTest::SetUp();
-
-    // Override the stored PSM ID in the client.
-    SetPsmRlweIdClient();
   }
 
   void CreatePsmTestCase() {
@@ -1711,10 +1714,10 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
         std::make_unique<TestingPrivateMembershipRlweClient::FactoryImpl>(
             psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
             plaintext_ids);
-  }
 
-  void SetPsmRlweIdClient() {
-    client()->SetPsmRlweIdForTesting(psm_test_case_.plaintext_id());
+    // Sets the PSM RLWE ID.
+    testing_psm_rlwe_id_provider_ = std::make_unique<TestingPsmRlweIdProvider>(
+        psm_test_case_.plaintext_id());
   }
 
   void ServerWillReplyWithPsmOprfResponse() {

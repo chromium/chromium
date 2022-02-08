@@ -22,23 +22,13 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace private_membership {
-namespace rlwe {
-class RlwePlaintextId;
-}  // namespace rlwe
-}  // namespace private_membership
-
 namespace enterprise_management {
 class DeviceManagementResponse;
 }
 
 namespace policy {
 
-// Construct the PSM (private set membership) identifier. See
-// go/cros-enterprise-psm and go/cros-client-psm for more details.
-private_membership::rlwe::RlwePlaintextId ConstructDeviceRlweId(
-    const std::string& device_serial_number,
-    const std::string& device_rlz_brand_code);
+class PsmRlweIdProvider;
 
 // A class that handles all communications related to PSM protocol with
 // DMServer. Also, upon successful determination, it caches the membership state
@@ -108,7 +98,8 @@ class AutoEnrollmentClientImpl
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) override;
+        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
+        PsmRlweIdProvider* psm_rlwe_id_provider) override;
   };
 
   AutoEnrollmentClientImpl(const AutoEnrollmentClientImpl&) = delete;
@@ -127,11 +118,6 @@ class AutoEnrollmentClientImpl
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
-
-  // Sets the PSM RLWE ID for testing through |psm_helper_|, if the protocol
-  // is enabled. Also, the |psm_rlwe_client| has to be non-null.
-  void SetPsmRlweIdForTesting(
-      const private_membership::rlwe::RlwePlaintextId& psm_rlwe_id);
 
  private:
   typedef bool (AutoEnrollmentClientImpl::*RequestCompletionHandler)(

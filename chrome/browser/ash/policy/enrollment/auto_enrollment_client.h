@@ -21,6 +21,7 @@ class SharedURLLoaderFactory;
 namespace policy {
 
 class DeviceManagementService;
+class PsmRlweIdProvider;
 
 // Indicates the current state of the auto-enrollment check. (Numeric values
 // are just to make reading of log files easier.)
@@ -89,7 +90,8 @@ class AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) = 0;
+        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
+        PsmRlweIdProvider* psm_rlwe_id_provider) = 0;
   };
 
   virtual ~AutoEnrollmentClient() {}

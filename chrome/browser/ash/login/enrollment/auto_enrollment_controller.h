@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_id_provider_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -262,6 +263,10 @@ class AutoEnrollmentController {
   // It is only used for PSM during creating the client for initial enrollment.
   std::unique_ptr<policy::PrivateMembershipRlweClient::Factory>
       psm_rlwe_client_factory_;
+
+  // Constructs the PSM RLWE device ID.
+  // For more information, see go/psm-rlwe-id-provider.
+  policy::PsmRlweIdProviderImpl psm_rlwe_id_provider_;
 
   policy::AutoEnrollmentState state_ = policy::AUTO_ENROLLMENT_STATE_IDLE;
   ProgressCallbackList progress_callbacks_;
