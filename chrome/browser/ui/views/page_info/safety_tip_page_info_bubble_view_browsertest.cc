@@ -962,10 +962,9 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_EQ(IsUIShowing(), AreLookalikeWarningsEnabled());
 }
 
-// Tests that Safety Tips don't trigger on lookalike domains that are one
-// character swap away from an engaged site.
+// Tests that Character Swap for engaged sites is disabled by default.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       NoTriggerOnCharacterSwap_SiteEngagement) {
+                       TriggersOnCharacterSwap_SiteEngagement_NotLaunched) {
   const GURL kNavigatedUrl = GetURL("character-wsap.com");
   const GURL kTargetUrl = GetURL("character-swap.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -974,16 +973,60 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
 }
 
-// Tests that Safety Tips don't trigger on lookalike domains that are one
-// character swap away from a top site.
+// Tests that Character Swap for top domains is disabled by default.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       NoTriggerOnCharacterSwap_TopSite) {
+                       TriggersOnCharacterSwap_TopSite_NotLaunched) {
   const GURL kNavigatedUrl = GetURL("goolge.com");
   const GURL kTargetUrl = GetURL("google.com");
+  // Both the lookalike and the target have low engagement.
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kLowEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+}
+
+// Sets an empty launch config for Character Swap. This enables Character Swap
+// for engaged sites on local builds.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       TriggersOnCharacterSwap_SiteEngagement) {
+  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      0);
+
+  const GURL kNavigatedUrl = GetURL("character-wsap.com");
+  const GURL kTargetUrl = GetURL("character-swap.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_FALSE(IsUIShowing());
+  // Character swap is enabled for this site unless the warning UI is completely
+  // disabled.
+  if (ui_status() == UIStatus::kDisabled) {
+    EXPECT_FALSE(IsUIShowing());
+  } else {
+    EXPECT_TRUE(IsUIShowing());
+  }
+}
+
+// Set an empty launch config for Character Swap. This enables Character Swap
+// for top sites on local builds.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       TriggersOnCharacterSwap_TopSite) {
+  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES, 0);
+
+  const GURL kNavigatedUrl = GetURL("goolge.com");
+  const GURL kTargetUrl = GetURL("google.com");
+  // Both the lookalike and the target have low engagement.
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kLowEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  // Character swap is enabled for this site unless the warning UI is completely
+  // disabled.
+  if (ui_status() == UIStatus::kDisabled) {
+    EXPECT_FALSE(IsUIShowing());
+  } else {
+    EXPECT_TRUE(IsUIShowing());
+  }
 }
 
 // Tests that Safety Tips trigger on lookalike domains with tail embedding when

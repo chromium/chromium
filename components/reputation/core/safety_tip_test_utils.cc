@@ -82,4 +82,15 @@ void InitializeBlankLookalikeAllowlistForTesting() {
   SetSafetyTipAllowlistPatterns({}, {}, {});
 }
 
+void AddSafetyTipHeuristicLaunchConfigForTesting(
+    reputation::HeuristicLaunchConfig::Heuristic heuristic,
+    int launch_percentage) {
+  auto config_proto = GetConfig();
+  reputation::HeuristicLaunchConfig* launch_config =
+      config_proto->add_launch_config();
+  launch_config->set_heuristic(heuristic);
+  launch_config->set_launch_percentage(launch_percentage);
+  SetSafetyTipsRemoteConfigProto(std::move(config_proto));
+}
+
 }  // namespace reputation
