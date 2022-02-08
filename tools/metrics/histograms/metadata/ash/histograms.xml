@@ -2129,6 +2129,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Notification.SwipeControl.FadeIn.AnimationSmoothness"
+    units="%" expires_after="2023-02-07">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the fade in animation of the settings button inside a
+    swipe control notification view. 100% represents ideally smooth 60 frames
+    per second. Emitted when the fade in animation is completed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotificationPopup.AnimationSmoothness" units="%"
     expires_after="2022-06-25">
   <owner>leandre@chromium.org</owner>

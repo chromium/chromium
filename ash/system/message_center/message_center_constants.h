@@ -91,6 +91,9 @@ constexpr int kToggleInlineSettingsFadeInDelayMs = 50;
 constexpr int kToggleInlineSettingsFadeInDurationMs = 100;
 constexpr int kToggleInlineSettingsFadeOutDurationMs = 50;
 
+// Animation durations for swiping notification to reveal controls.
+constexpr int kNotificationSwipeControlFadeInDurationMs = 50;
+
 // Animation durations for expand/collapse of MessageCenterView.
 constexpr int kLargeImageExpandAndCollapseAnimationDuration = 300;
 constexpr int kInlineReplyAndGroupedParentExpandAnimationDuration = 250;
