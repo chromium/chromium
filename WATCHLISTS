@@ -597,26 +597,6 @@
     'bottombar': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/',
     },
-    'breve': {
-      'filepath': 'chrome/browser/net/spdyproxy|'\
-                  'chrome_proxy|'\
-                  'client_hints|'\
-                  'chrome/browser/predictors|'\
-                  'components/blocklist|'\
-                  'components/data_use|'\
-                  'data_reduction_proxy|'\
-                  'data_use_measurement|'\
-                  'history_clusters|'\
-		  'lazy_load|'\
-                  'lite_video|'\
-                  'navigation_predictor|'\
-                  'net/nqe|'\
-                  'optimization_guide|'\
-                  'optimization_hints|'\
-                  'prerender|'\
-                  'previews|'\
-                  'services/network/resource_scheduler'
-    },
     'browser_components': {
       'filepath': 'chrome/browser/autofill/' \
                   '|chrome/browser/bookmarks/' \
@@ -707,6 +687,23 @@
     'chrome_grc': {
       'filepath': 'chrome/browser/resource_coordinator/'\
                   '|services/resource_coordinator/',
+    },
+    'chrome_intelligence': {
+      'filepath': 'history_clusters'\
+                  '|optimization_guide'\
+                  '|optimization_hints'\
+                  '|third_party/eigen3'\
+                  '|third_party/farmhash'\
+                  '|third_party/fft2d'\
+                  '|third_party/fp16'\
+                  '|third_party/gemmlowp'\
+                  '|third_party/libzip'\
+                  '|third_party/neon_2_sse'\
+                  '|third_party/ruy'\
+                  '|third_party/tensorflow-text'\
+                  '|third_party/tflite'\
+                  '|third_party/tflite_support'\
+                  '|third_party/utf',
     },
     'chrome_performance_manager': {
       'filepath': 'chrome/browser/performance_manager/'\
@@ -2362,7 +2359,6 @@
     'borealis': ['borealis-reviews+watch@google.com'],
     'bottombar': ['donnd+watch@chromium.org',
                   'mdjones+watch@chromium.org'],
-    'breve': ['breve-team-reviews@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
@@ -2389,6 +2385,7 @@
     'chrome_elf': ['caitkp+watch@chromium.org',
                    'pmonette+watch@chromium.org'],
     'chrome_grc': ['chrome-grc-reviews@chromium.org'],
+    'chrome_intelligence': ['chrome-intelligence-reviews@chromium.org'],
     'chrome_performance_manager': ['performance-manager-reviews@chromium.org'],
     'chromecast': ['halliwell+watch@chromium.org',
                    'lcwu+watch@chromium.org'],
