@@ -189,7 +189,7 @@ void ExpandedDesksBarButton::Layout() {
       gfx::ELIDE_TAIL));
   const gfx::Size label_size = label_->GetPreferredSize();
   // Set the label to have the same height as the DeskNameView to keep them at
-  // the same horizotal level. Note, don't get the label's width from
+  // the same horizontal level. Note, don't get the label's width from
   // DeskNameView since desk's name is changeable, but this label here is not.
   const int label_height = desk_name_view->GetPreferredSize().height();
   label_->SetBoundsRect(gfx::Rect(
