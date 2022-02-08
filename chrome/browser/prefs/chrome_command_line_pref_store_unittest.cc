@@ -73,9 +73,8 @@ TEST(ChromeCommandLinePrefStoreTest, SimpleStringPref) {
 
   const base::Value* actual = nullptr;
   EXPECT_TRUE(store->GetValue(language::prefs::kApplicationLocale, &actual));
-  std::string result;
-  EXPECT_TRUE(actual->GetAsString(&result));
-  EXPECT_EQ("hi-MOM", result);
+  ASSERT_TRUE(actual->is_string());
+  EXPECT_EQ("hi-MOM", actual->GetString());
 }
 
 // Tests a simple boolean pref on the command line.

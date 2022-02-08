@@ -308,13 +308,12 @@ class ProfilePrefStoreManagerTest : public testing::Test,
   void ExpectStringValueEquals(const std::string& name,
                                const std::string& expected) {
     const base::Value* value = NULL;
-    std::string as_string;
     if (!pref_store_->GetValue(name, &value)) {
       ADD_FAILURE() << name << " is not a defined value.";
-    } else if (!value->GetAsString(&as_string)) {
+    } else if (!value->is_string()) {
       ADD_FAILURE() << name << " could not be coerced to a string.";
     } else {
-      EXPECT_EQ(expected, as_string);
+      EXPECT_EQ(expected, value->GetString());
     }
   }
 
