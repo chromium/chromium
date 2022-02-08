@@ -11628,18 +11628,19 @@ bool CalculateShouldReplaceCurrentEntry(
   // DidCommitProvisionalLoadParams to DidCommitSameDocumentNavigationParams.
   // For other navigations, the CommonNavigationParams' value supplied by the
   // browser to the renderer at commit time can be used, as the renderer will
-  // always follow it.
-  // Note: We will always replace the initial NavigationEntry (CommonParams'
-  // should_replace_current_entry will be true) but the renderer doesn't know
-  // about it so DidCommitParams' should_replace_current_entry might differ,
-  // which is why we depend on the DidCommitParams for that case (for now).
+  // always follow it. An exception is when on the initial NavigationEntry,
+  // CommonParams' should_replace_current_entry will always be true on the
+  // browser side but the renderer might not know about it so DidCommitParams'
+  // should_replace_current_entry might differ, which is why we "skip" comparing
+  // for browser vs renderer values in that case, by comparing the renderer
+  // value against itself (through returning DidCommitParams'
+  // should_replace_current_entry here).
   NavigationEntryImpl* last_entry = request->frame_tree_node()
                                         ->navigator()
                                         .controller()
                                         .GetLastCommittedEntry();
   return (request->IsSameDocument() ||
-          (request->IsInMainFrame() && last_entry &&
-           last_entry->IsInitialEntry()))
+          (last_entry && last_entry->IsInitialEntry()))
              ? params.should_replace_current_entry
              : request->common_params().should_replace_current_entry;
 }
