@@ -166,8 +166,12 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
   }
   if (!BackoffDurationSafeToSerialize(backoff_duration))
     return nullptr;
-  entry->SetCustomReleaseTime(
-      entry->BackoffDurationToReleaseTime(backoff_duration));
+
+  const base::TimeTicks release_time =
+      entry->BackoffDurationToReleaseTime(backoff_duration);
+  if (release_time.is_inf())
+    return nullptr;
+  entry->SetCustomReleaseTime(release_time);
 
   return entry;
 }
