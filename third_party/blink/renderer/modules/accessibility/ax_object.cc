@@ -1314,7 +1314,7 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
       node_data->role == ax::mojom::blink::Role::kMathMLMath) {
     TruncateAndAddStringAttribute(node_data,
                                   ax::mojom::blink::StringAttribute::kInnerHtml,
-                                  element->innerHTML());
+                                  element->innerHTML(), kMaxStaticTextLength);
   }
 #endif
 }
