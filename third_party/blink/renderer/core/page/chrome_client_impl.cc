@@ -532,15 +532,6 @@ const display::ScreenInfos& ChromeClientImpl::GetScreenInfos(
   return frame.GetWidgetForLocalRoot()->GetScreenInfos();
 }
 
-void ChromeClientImpl::OverrideVisibleRectForMainFrame(
-    LocalFrame& frame,
-    gfx::Rect* visible_rect) const {
-  DCHECK(web_view_);
-  DCHECK(frame.IsMainFrame());
-  return web_view_->GetDevToolsEmulator()->OverrideVisibleRect(
-      frame.GetWidgetForLocalRoot()->ViewRect().size(), visible_rect);
-}
-
 float ChromeClientImpl::InputEventsScaleForEmulation() const {
   DCHECK(web_view_);
   return web_view_->GetDevToolsEmulator()->InputEventsScaleForEmulation();

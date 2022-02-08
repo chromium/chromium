@@ -5175,11 +5175,6 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
   TransformationMatrix expected_matrix;
   expected_matrix.MakeIdentity();
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
-  {
-    gfx::Rect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(gfx::Size(), &visible_rect);
-    EXPECT_EQ(gfx::Rect(1, 2, 3, 4), visible_rect);  // Was modified.
-  }
 
   // Override applies transform, sets visible rect, and disables
   // visual viewport clipping.
@@ -5187,33 +5182,18 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
       dev_tools_emulator->ForceViewportForTesting(gfx::PointF(50, 55), 2.f);
   expected_matrix.MakeIdentity().Scale(2.f).Translate(-50, -55);
   EXPECT_EQ(expected_matrix, matrix);
-  {
-    gfx::Rect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
-    EXPECT_EQ(gfx::Rect(50, 55, 100, 150), visible_rect);
-  }
 
   // Setting new override discards previous one.
   matrix = dev_tools_emulator->ForceViewportForTesting(gfx::PointF(5.4f, 10.5f),
                                                        1.5f);
   expected_matrix.MakeIdentity().Scale(1.5f).Translate(-5.4f, -10.5f);
   EXPECT_EQ(expected_matrix, matrix);
-  {
-    gfx::Rect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
-    EXPECT_EQ(gfx::Rect(5, 10, 101, 151), visible_rect);  // Was modified.
-  }
 
   // Clearing override restores original transform, visible rect and
   // visual viewport clipping.
   matrix = dev_tools_emulator->ResetViewportForTesting();
   expected_matrix.MakeIdentity();
   EXPECT_EQ(expected_matrix, matrix);
-  {
-    gfx::Rect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(gfx::Size(), &visible_rect);
-    EXPECT_EQ(gfx::Rect(1, 2, 3, 4), visible_rect);  // Not modified.
-  }
 }
 
 TEST_F(WebViewTest, ViewportOverrideIntegratesDeviceMetricsOffsetAndScale) {
@@ -5248,7 +5228,6 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   SetViewportSize(gfx::Size(100, 150));
   LocalFrameView* frame_view =
       web_view_impl->MainFrameImpl()->GetFrame()->View();
-  DevToolsEmulator* dev_tools_emulator = web_view_impl->GetDevToolsEmulator();
 
   TransformationMatrix expected_matrix;
   expected_matrix.MakeIdentity();
@@ -5271,12 +5250,6 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
       .Translate(100, 150)
       .Scale(1. / 1.5f);
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
-  // Scale is irrelevant for visible rect.
-  {
-    gfx::Rect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
-    EXPECT_EQ(gfx::Rect(50 - 100, 55 - 150, 100, 150), visible_rect);
-  }
 
   // Transform adapts to scroll changes.
   frame_view->LayoutViewport()->SetScrollOffset(
@@ -5288,12 +5261,6 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
       .Translate(50, 55)
       .Scale(1. / 1.5f);
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
-  // Visible rect adapts to scroll change.
-  {
-    gfx::Rect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
-    EXPECT_EQ(gfx::Rect(50 - 50, 55 - 55, 100, 150), visible_rect);
-  }
 
   // Transform adapts to page scale changes.
   web_view_impl->SetPageScaleFactor(2.f);
@@ -5303,12 +5270,6 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
       .Translate(50, 55)
       .Scale(1. / 2.f);
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
-  // Visible rect doesn't change.
-  {
-    gfx::Rect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
-    EXPECT_EQ(gfx::Rect(50 - 50, 55 - 55, 100, 150), visible_rect);
-  }
 }
 
 TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {

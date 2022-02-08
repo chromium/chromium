@@ -471,21 +471,6 @@ TransformationMatrix DevToolsEmulator::ComputeRootLayerTransform() {
   return transform;
 }
 
-void DevToolsEmulator::OverrideVisibleRect(
-    const gfx::Size& viewport_size,
-    gfx::Rect* visible_rect_in_frame) const {
-  WebLocalFrameImpl* frame = web_view_->MainFrameImpl();
-  if (!viewport_override_ || !frame)
-    return;
-
-  // Don't apply viewport_override_->scale because all coordinates here are
-  // under the same scale.
-  gfx::Rect visible_rect_in_document = gfx::ToEnclosingRect(
-      gfx::RectF(viewport_override_->position, gfx::SizeF(viewport_size)));
-  *visible_rect_in_frame =
-      frame->GetFrameView()->DocumentToFrame(visible_rect_in_document);
-}
-
 float DevToolsEmulator::InputEventsScaleForEmulation() {
   return device_metrics_enabled_ ? emulation_params_.scale : 1.0;
 }

@@ -309,11 +309,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void SetCursorForPlugin(const ui::Cursor&, LocalFrame*) = 0;
 
-  // Returns a custom visible rect if a viewport override is active. Requires
-  // the |frame| being painted, but only supports being used for the main frame.
-  virtual void OverrideVisibleRectForMainFrame(LocalFrame& frame,
-                                               gfx::Rect* paint_rect) const {}
-
   // Returns the scale used to convert incoming input events while emulating
   // device metics.
   virtual float InputEventsScaleForEmulation() const { return 1; }
