@@ -61,7 +61,7 @@ const base::Feature kDownloadBubble{"DownloadBubble",
 #if !defined(ANDROID)
 // Enables "Access Code Cast" UI.
 const base::Feature kAccessCodeCastUI{"AccessCodeCastUI",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Enables showing the EV certificate details in the Page Info bubble.
