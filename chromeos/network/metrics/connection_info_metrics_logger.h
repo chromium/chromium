@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
   struct ConnectionInfo {
    public:
     enum class Status {
-      // The network is not connected or being connected to.
+      // The network is not connected, connecting, or disconnecting.
       kDisconnected = 0,
 
       // The network is being connected to.
@@ -55,9 +55,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
 
       // The network is connected.
       kConnected = 2,
+
+      // The network is disconnecting.
+      kDisconnecting = 3,
     };
 
-    ConnectionInfo(const NetworkState* network, bool was_disconnect_requested);
+    ConnectionInfo(const NetworkState* network);
     ~ConnectionInfo();
 
     bool operator==(const ConnectionInfo& other) const;
@@ -65,7 +68,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
     Status status;
     std::string guid;
     std::string shill_error;
-    bool was_disconnect_requested;
   };
 
   // NetworkStateHandlerObserver::
@@ -73,13 +75,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
   void NetworkConnectionStateChanged(const NetworkState* network) override;
 
   // NetworkConnectionObserver::
-  void DisconnectRequested(const std::string& service_path) override;
   void ConnectSucceeded(const std::string& service_path) override;
   void ConnectFailed(const std::string& service_path,
                      const std::string& error_name) override;
 
-  void UpdateConnectionInfo(const NetworkState* network,
-                            bool disconnect_requested = false);
+  void UpdateConnectionInfo(const NetworkState* network);
   void AttemptLogAllConnectionResult(
       const absl::optional<ConnectionInfo>& prev_info,
       const ConnectionInfo& curr_info) const;
@@ -88,8 +88,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
       const ConnectionInfo& curr_info) const;
   absl::optional<ConnectionInfo> GetCachedInfo(const std::string& guid) const;
 
-  NetworkStateHandler* network_state_handler_;
-  NetworkConnectionHandler* network_connection_handler_;
+  NetworkStateHandler* network_state_handler_ = nullptr;
+  NetworkConnectionHandler* network_connection_handler_ = nullptr;
 
   // Stores connection information for all networks.
   base::flat_map<std::string, ConnectionInfo> guid_to_connection_info_;

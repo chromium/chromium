@@ -10,19 +10,19 @@
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 
 ConnectionInfoMetricsLogger::ConnectionInfo::ConnectionInfo(
-    const NetworkState* network,
-    bool was_disconnect_requested)
-    : guid(network->guid()),
-      shill_error(network->GetError()),
-      was_disconnect_requested(was_disconnect_requested) {
+    const NetworkState* network)
+    : guid(network->guid()), shill_error(network->GetError()) {
   if (network->IsConnectedState())
     status = Status::kConnected;
   else if (network->IsConnectingState())
     status = Status::kConnecting;
+  else if (network->connection_state() == shill::kStateDisconnect)
+    status = Status::kDisconnecting;
   else
     status = Status::kDisconnected;
 }
@@ -31,9 +31,8 @@ ConnectionInfoMetricsLogger::ConnectionInfo::~ConnectionInfo() = default;
 
 bool ConnectionInfoMetricsLogger::ConnectionInfo::operator==(
     const ConnectionInfoMetricsLogger::ConnectionInfo& other) const {
-  return status == other.status &&
-         was_disconnect_requested == other.was_disconnect_requested &&
-         guid == other.guid && shill_error == other.shill_error;
+  return status == other.status && guid == other.guid &&
+         shill_error == other.shill_error;
 }
 
 ConnectionInfoMetricsLogger::ConnectionInfoMetricsLogger() = default;
@@ -88,20 +87,6 @@ void ConnectionInfoMetricsLogger::NetworkConnectionStateChanged(
   UpdateConnectionInfo(network);
 }
 
-void ConnectionInfoMetricsLogger::DisconnectRequested(
-    const std::string& service_path) {
-  if (!network_state_handler_)
-    return;
-
-  const NetworkState* network =
-      network_state_handler_->GetNetworkState(service_path);
-
-  if (!network)
-    return;
-
-  UpdateConnectionInfo(network, /*disconnect_requested=*/true);
-}
-
 void ConnectionInfoMetricsLogger::ConnectSucceeded(
     const std::string& service_path) {
   const NetworkState* network =
@@ -126,13 +111,10 @@ void ConnectionInfoMetricsLogger::ConnectFailed(const std::string& service_path,
 }
 
 void ConnectionInfoMetricsLogger::UpdateConnectionInfo(
-    const NetworkState* network,
-    bool disconnect_requested) {
+    const NetworkState* network) {
   const absl::optional<ConnectionInfo> prev_info =
       GetCachedInfo(network->guid());
-  ConnectionInfo curr_info =
-      ConnectionInfo(network,
-                     /*was_disconnect_requested=*/disconnect_requested);
+  const ConnectionInfo& curr_info = ConnectionInfo(network);
 
   // No updates if the ConnectionInfo did not change.
   if (prev_info == curr_info)
@@ -144,8 +126,6 @@ void ConnectionInfoMetricsLogger::UpdateConnectionInfo(
   if (!prev_info || prev_info->status != curr_info.status) {
     AttemptLogAllConnectionResult(prev_info, curr_info);
     AttemptLogConnectionStateResult(prev_info, curr_info);
-  } else if (prev_info && prev_info->was_disconnect_requested) {
-    curr_info.was_disconnect_requested = true;
   }
   guid_to_connection_info_.insert_or_assign(network->guid(), curr_info);
 }
@@ -159,11 +139,12 @@ void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
     return;
   }
 
-  // If the network becomes disconnected from a connected state without a
-  // user initiated disconnect request.
+  // If the network becomes disconnected or disconnecting from a connected state
+  // as a result of a shill error.
   if (prev_info && prev_info->status == ConnectionInfo::Status::kConnected &&
-      curr_info.status == ConnectionInfo::Status::kDisconnected &&
-      (!prev_info->was_disconnect_requested)) {
+      (curr_info.status == ConnectionInfo::Status::kDisconnected ||
+       curr_info.status == ConnectionInfo::Status::kDisconnecting) &&
+      NetworkState::ErrorIsValid(curr_info.shill_error)) {
     NetworkMetricsHelper::LogConnectionStateResult(
         curr_info.guid,
         NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction);
@@ -179,9 +160,13 @@ void ConnectionInfoMetricsLogger::AttemptLogAllConnectionResult(
   if (curr_info.status == ConnectionInfo::Status::kConnected)
     NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid);
 
-  if (prev_info && !prev_info->was_disconnect_requested &&
-      prev_info->status == ConnectionInfo::Status::kConnecting &&
-      curr_info.status == ConnectionInfo::Status::kDisconnected) {
+  // If the network goes from connecting or disconnecting state to the
+  // disconnected state, log the shill error if it's valid.
+  if (prev_info &&
+      (prev_info->status == ConnectionInfo::Status::kConnecting ||
+       prev_info->status == ConnectionInfo::Status::kDisconnecting) &&
+      curr_info.status == ConnectionInfo::Status::kDisconnected &&
+      NetworkState::ErrorIsValid(curr_info.shill_error)) {
     NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid,
                                                  curr_info.shill_error);
   }
