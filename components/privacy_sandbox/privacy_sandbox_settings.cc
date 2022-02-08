@@ -276,10 +276,14 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
 void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlled, true);
 
-  // Simply apply the decision to both versions of the preference. The correct
-  // preference will be consulted when the value is read.
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
+  // Only apply the decision to the appropriate preference. Confirmation logic
+  // DCHECKS that the user has not been able to enable the V2 preference
+  // without seeing a dialog.
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
+    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
+  } else {
+    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
+  }
 }
 
 void PrivacySandboxSettings::OnCookiesCleared() {
