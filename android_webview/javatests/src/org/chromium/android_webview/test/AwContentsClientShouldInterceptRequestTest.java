@@ -889,6 +889,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         // The following call will try to send an IPC and wait for a reply from renderer.
         // We do not check the actual result, because it can be bogus. The important
         // thing is that the call does not cause a deadlock.
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         mActivityTestRule.executeJavaScriptAndWaitForResult(mAwContents, client, "1+1");
         signalAfterSendingIpc.countDown();
     }

@@ -165,8 +165,13 @@ public class AwSettingsTest {
         }
 
         protected String executeJavaScriptAndWaitForResult(String script) throws Exception {
+            return executeJavaScriptAndWaitForResult(script, /*shouldCheckSettings=*/true);
+        }
+
+        protected String executeJavaScriptAndWaitForResult(
+                String script, boolean shouldCheckSettings) throws Exception {
             return mActivityTestRule.executeJavaScriptAndWaitForResult(
-                    mAwContents, mContentViewClient, script);
+                    mAwContents, mContentViewClient, script, shouldCheckSettings);
         }
 
         private void ensureSettingHasValue(T value) throws Throwable {
@@ -233,7 +238,9 @@ public class AwSettingsTest {
         protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
             String oldTitle = getTitleOnUiThread();
             String newTitle = oldTitle + "_modified";
-            executeJavaScriptAndWaitForResult(getScript(newTitle));
+            // Do not check if JavaScript is enabled, since the point of this test is to verify that
+            // when JavaScript is disabled the script does not execute and cannot change the title.
+            executeJavaScriptAndWaitForResult(getScript(newTitle), /*shouldCheckSettings=*/false);
             Assert.assertEquals(value == ENABLED ? newTitle : oldTitle, getTitleOnUiThread());
         }
 

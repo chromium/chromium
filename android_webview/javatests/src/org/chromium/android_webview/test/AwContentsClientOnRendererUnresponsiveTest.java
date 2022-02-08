@@ -172,7 +172,8 @@ public class AwContentsClientOnRendererUnresponsiveTest {
         });
     }
 
-    private void addJsBlockerInterface(final AwContents awContents, final JSBlocker blocker) {
+    private void addJsBlockerInterface(final AwContents awContents, final JSBlocker blocker)
+            throws Exception {
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, blocker, "blocker");
     }
 
