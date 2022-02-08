@@ -195,7 +195,7 @@ void PaintLayerScrollableArea::DisposeImpl() {
 
   if (LocalFrame* frame = GetLayoutBox()->GetFrame()) {
     if (LocalFrameView* frame_view = frame->View()) {
-      frame_view->RemoveScrollableArea(this);
+      frame_view->RemoveScrollAnchoringScrollableArea(this);
       frame_view->RemoveUserScrollableArea(this);
       frame_view->RemoveAnimatingScrollableArea(this);
     }
@@ -2313,6 +2313,13 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
                                           ? HasVerticalOverflow()
                                           : HasHorizontalOverflow();
 
+  if (overflows_in_block_direction) {
+    DCHECK(CanHaveOverflowScrollbars(*GetLayoutBox()));
+    frame_view->AddScrollAnchoringScrollableArea(this);
+  } else {
+    frame_view->RemoveScrollAnchoringScrollableArea(this);
+  }
+
   bool is_visible_to_hit_test =
       GetLayoutBox()->StyleRef().VisibleToHitTesting();
   bool did_scroll_overflow = scrolls_overflow_;
@@ -2326,14 +2333,6 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   }
 
   scrolls_overflow_ = has_overflow && is_visible_to_hit_test;
-
-  if (scrolls_overflow_ || overflows_in_block_direction) {
-    DCHECK(CanHaveOverflowScrollbars(*GetLayoutBox()));
-    frame_view->AddScrollableArea(this);
-  } else {
-    frame_view->RemoveScrollableArea(this);
-  }
-
   if (did_scroll_overflow == ScrollsOverflow())
     return;
 
@@ -2374,6 +2373,13 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   // They are painted in the background phase
   // (see: BoxPainter::PaintBoxDecorationBackground).
   GetLayoutBox()->SetBackgroundNeedsFullPaintInvalidation();
+
+  if (scrolls_overflow_) {
+    DCHECK(CanHaveOverflowScrollbars(*GetLayoutBox()));
+    frame_view->AddUserScrollableArea(this);
+  } else {
+    frame_view->RemoveUserScrollableArea(this);
+  }
 
   layer_->DidUpdateScrollsOverflow();
 }

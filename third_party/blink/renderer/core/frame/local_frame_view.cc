@@ -318,7 +318,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(layout_subtree_root_list_);
   visitor->Trace(orthogonal_writing_mode_root_list_);
   visitor->Trace(fragment_anchor_);
-  visitor->Trace(scrollable_areas_);
+  visitor->Trace(scroll_anchoring_scrollable_areas_);
   visitor->Trace(animating_scrollable_areas_);
   visitor->Trace(user_scrollable_areas_);
   visitor->Trace(viewport_constrained_objects_);
@@ -660,8 +660,8 @@ bool LocalFrameView::LayoutFromRootObject(LayoutObject& root) {
   }
 
   LayoutState layout_state(root);
-  if (scrollable_areas_) {
-    for (auto& scrollable_area : *scrollable_areas_) {
+  if (scroll_anchoring_scrollable_areas_) {
+    for (auto& scrollable_area : *scroll_anchoring_scrollable_areas_) {
       if (scrollable_area->GetScrollAnchor() &&
           scrollable_area->ShouldPerformScrollAnchoring())
         scrollable_area->GetScrollAnchor()->NotifyBeforeLayout();
@@ -1900,10 +1900,10 @@ void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
   if (!page)
     return;
 
-  if (!scrollable_areas_)
+  if (!user_scrollable_areas_)
     return;
 
-  for (const auto& scrollable_area : *scrollable_areas_) {
+  for (const auto& scrollable_area : *user_scrollable_areas_) {
     if (!scrollable_area->ScrollbarsCanBeActive())
       continue;
 
@@ -3610,21 +3610,20 @@ void LocalFrameView::ScheduleAnimation(base::TimeDelta delay) {
     client->ScheduleAnimation(this, delay);
 }
 
-void LocalFrameView::AddScrollableArea(
+void LocalFrameView::AddScrollAnchoringScrollableArea(
     PaintLayerScrollableArea* scrollable_area) {
   DCHECK(scrollable_area);
-  if (!scrollable_areas_)
-    scrollable_areas_ = MakeGarbageCollected<ScrollableAreaSet>();
-  scrollable_areas_->insert(scrollable_area);
+  if (!scroll_anchoring_scrollable_areas_) {
+    scroll_anchoring_scrollable_areas_ =
+        MakeGarbageCollected<ScrollableAreaSet>();
+  }
+  scroll_anchoring_scrollable_areas_->insert(scrollable_area);
 }
 
-void LocalFrameView::RemoveScrollableArea(
+void LocalFrameView::RemoveScrollAnchoringScrollableArea(
     PaintLayerScrollableArea* scrollable_area) {
-  if (!scrollable_areas_)
-    return;
-  scrollable_areas_->erase(scrollable_area);
-  if (user_scrollable_areas_)
-    user_scrollable_areas_->erase(scrollable_area);
+  if (scroll_anchoring_scrollable_areas_)
+    scroll_anchoring_scrollable_areas_->erase(scrollable_area);
 }
 
 void LocalFrameView::AddAnimatingScrollableArea(
@@ -3799,18 +3798,19 @@ void LocalFrameView::DidChangeScrollOffset() {
 
 ScrollableArea* LocalFrameView::ScrollableAreaWithElementId(
     const CompositorElementId& id) {
-  // Check for the layout viewport, which may not be in scrollable_areas_ if it
-  // is styled overflow: hidden.  (Other overflow: hidden elements won't have
-  // composited scrolling layers per crbug.com/784053, so we don't have to worry
-  // about them.)
+  // Check for the layout viewport, which may not be in user_scrollable_areas_
+  // if it is styled overflow: hidden.  (Other overflow: hidden elements won't
+  // have composited scrolling layers per crbug.com/784053, so we don't have to
+  // worry about them.)
   ScrollableArea* viewport = LayoutViewport();
   if (id == viewport->GetScrollElementId())
     return viewport;
 
-  if (scrollable_areas_) {
-    // This requires iterating over all scrollable areas. We may want to store a
-    // map of ElementId to ScrollableArea if this is an issue for performance.
-    for (ScrollableArea* scrollable_area : *scrollable_areas_) {
+  if (user_scrollable_areas_) {
+    // This requires iterating over all user-scrollable areas. We may want to
+    // store a map of ElementId to ScrollableArea if this is an issue for
+    // performance.
+    for (ScrollableArea* scrollable_area : *user_scrollable_areas_) {
       if (id == scrollable_area->GetScrollElementId())
         return scrollable_area;
     }

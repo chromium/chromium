@@ -792,7 +792,7 @@ void Page::SettingsChanged(ChangeType change_type) {
         // Iterate through all of the scrollable areas and mark their layout
         // objects for layout.
         if (LocalFrameView* view = local_frame->View()) {
-          if (const auto* scrollable_areas = view->ScrollableAreas()) {
+          if (const auto* scrollable_areas = view->UserScrollableAreas()) {
             for (const auto& scrollable_area : *scrollable_areas) {
               if (scrollable_area->ScrollsOverflow()) {
                 if (auto* layout_box = scrollable_area->GetLayoutBox()) {
@@ -872,7 +872,7 @@ void Page::UpdateAcceleratedCompositingSettings() {
       continue;
     // Mark all scrollable areas as needing a paint property update because the
     // compositing reasons may have changed.
-    if (const auto* areas = local_frame->View()->ScrollableAreas()) {
+    if (const auto* areas = local_frame->View()->UserScrollableAreas()) {
       for (const auto& scrollable_area : *areas) {
         if (scrollable_area->ScrollsOverflow()) {
           if (auto* layout_box = scrollable_area->GetLayoutBox())
