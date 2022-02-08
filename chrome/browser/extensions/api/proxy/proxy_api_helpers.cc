@@ -182,8 +182,10 @@ bool GetProxyServer(const base::DictionaryValue* proxy_server,
 
   // TODO(battre): handle UTF-8 in hostnames (http://crbug.com/72692).
   std::u16string host16;
-  if (!proxy_server->GetString(proxy_api_constants::kProxyConfigRuleHost,
-                               &host16)) {
+  if (const std::string* ptr = proxy_server->FindStringKey(
+          proxy_api_constants::kProxyConfigRuleHost)) {
+    host16 = base::UTF8ToUTF16(*ptr);
+  } else {
     LOG(ERROR) << "Could not parse a 'rules.*.host' entry.";
     *bad_message = true;
     return false;
