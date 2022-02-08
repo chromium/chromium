@@ -48,16 +48,20 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
              Component* hash,
              base::PassKey<URLPattern> key);
 
-  bool test(const V8URLPatternInput* input,
+  bool test(ScriptState* script_state,
+            const V8URLPatternInput* input,
             const String& base_url,
             ExceptionState& exception_state) const;
-  bool test(const V8URLPatternInput* input,
+  bool test(ScriptState* script_state,
+            const V8URLPatternInput* input,
             ExceptionState& exception_state) const;
 
-  URLPatternResult* exec(const V8URLPatternInput* input,
+  URLPatternResult* exec(ScriptState* script_state,
+                         const V8URLPatternInput* input,
                          const String& base_url,
                          ExceptionState& exception_state) const;
-  URLPatternResult* exec(const V8URLPatternInput* input,
+  URLPatternResult* exec(ScriptState* script_state,
+                         const V8URLPatternInput* input,
                          ExceptionState& exception_state) const;
 
   String protocol() const;
@@ -79,7 +83,8 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
   // A utility function to determine if a given `input` matches the pattern or
   // not.  Returns `true` if there is a match and `false` otherwise.  If
   // `result` is not nullptr then the URLPatternResult contents will be filled.
-  bool Match(const V8URLPatternInput* input,
+  bool Match(ScriptState* script_state,
+             const V8URLPatternInput* input,
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
